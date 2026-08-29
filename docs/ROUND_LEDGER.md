@@ -1,6 +1,6 @@
 # 开发轮次账本
 
-`ROUND_LEDGER_REVISION=7 / CURRENT_ROUND=R1 / STATUS=FRONTEND_BACKEND_DISPATCHED`
+`ROUND_LEDGER_REVISION=8 / CURRENT_ROUND=R1 / STATUS=INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE`
 
 此文件记录可从仓库恢复的实际开发状态。设计决定仍以 `PROJECT_STATE_LEDGER.md` 为准。
 
@@ -8,10 +8,10 @@
 
 | 角色 | 任务/深度链接 | 模型 | 状态 | 当前授权 |
 |---|---|---|---|---|
-| 主任务 | 当前对话 | 当前模型 | `ACTIVE` | R1 合同已冻结并下发；等待候选后审查、接线和验收 |
-| 设计 Grill | `01a04d69-e530-7df1-b7e9-abc2d24803f1` | `gpt-5.6-sol / high` | `D-V1CC4_INTEGRATED_CONTINUING` | 未决设计逐题 Grill、持久化并交主任务合入 |
-| 前端 | `01a04d7d-abe2-7732-9ac0-e4ff95397ca2` | `gpt-5.6-luna / max` | `R1_IN_PROGRESS` | `src/renderer/**`、`tests/renderer/**`、自己的状态文件 |
-| 后端 | `01a04d7d-b97c-7311-8700-2f86c39f86c5` | `gpt-5.6-luna / max` | `R1_IN_PROGRESS` | Main/领域/SQLite、`tests/backend/**`、自己的状态文件 |
+| 主任务 | 当前对话 | 当前模型 | `ACTIVE` | R1 已接线并通过本机桌面 smoke；等待用户实际审查 |
+| 设计 Grill | `01a04d69-e530-7df1-b7e9-abc2d24803f1` | `gpt-5.6-sol / high` | `D-V1CC9_INTEGRATED_WAITING_ENGINEERING_SYNC` | 收到 revision 254 同步后继续 R2+ 出身/职业名册逐题 Grill |
+| 前端 | `01a04d7d-abe2-7732-9ac0-e4ff95397ca2` | `gpt-5.6-luna / max` | `R1_INTEGRATED_HOLD` | 无新增写权限；等待玩家审查或主任务定界修正 |
+| 后端 | `01a04d7d-b97c-7311-8700-2f86c39f86c5` | `gpt-5.6-luna / max` | `R1_INTEGRATED_HOLD` | 无新增写权限；等待玩家审查或主任务定界修正 |
 
 “1.5x”不是任务 API 可锁定的模型参数；若 Codex 主机提供速度/服务档位，需在客户端设置。仓库只把可验证的 `model=luna`、`thinking=max` 和实际提交证据写入权威状态。
 
@@ -32,23 +32,31 @@
 
 - `CONTRACT`: `docs/rounds/R1_DESKTOP_AUTHORITY_CONTRACT.md` / `r1-v1`
 - `ROOT_SCAFFOLD`: `8048ff1c69fdd540d5b9e7cdae16aec7e007ca21`
-- `DESIGN_AUTHORITY`: `LEDGER_REVISION=247 / MAIN_SHA=4107945c276a1d6658bafe2bae49ca6b2b2d86e7`
+- `R1_DESIGN_AUTHORITY`: `LEDGER_REVISION=247 / MAIN_SHA=4107945c276a1d6658bafe2bae49ca6b2b2d86e7`
+- `LATEST_DESIGN_LEDGER`: `LEDGER_REVISION=253 / D-V1CC9_MAIN_SHA=aba4d32990c6a0bb48b2304dc24981be959aa745`
 - `DISPATCH_BASE`: `e2bfe3833c967d3d9c129919a46b4d9f0d202962`（本地与公开 origin/main 已实测一致）
 - `SHARED_TYPES`: `src/shared/contracts.ts`
-- `TYPECHECK`: `PASSED`
-- `CONTRACT_TEST`: `PASSED_1_FILE_3_TESTS`
+- `FRONTEND_CANDIDATE`: `72946759cf1c3b0309f85ddf29b26a5b67df7996 / INTEGRATED_AS=0b1520ea751a5659b3226397872b2796526e019d`
+- `BACKEND_CANDIDATE`: `e8ee23c60d4c0a52d476ad1203639db3c52a2ac4 / INTEGRATED_AS=74e64d3b333ce060aabbccc8114cd578451fdce1`
+- `MASTER_WIRING_AND_SMOKE`: `14d17c60eb910137a270c645993d374ab74f5231`
+- `TYPECHECK`: `PASSED_FULL_MAIN`
+- `AUTOMATED_TEST`: `PASSED_6_FILES_44_TESTS`
+- `BUILD`: `PASSED_MAIN_PRELOAD_RENDERER / RELATIVE_ASSET_BASE_VERIFIED`
 - `NPM_AUDIT`: `PASSED_0_VULNERABILITIES`
-- `FRONTEND`: `R1_IN_PROGRESS / WORKTREE=fc83`
-- `BACKEND`: `R1_IN_PROGRESS / WORKTREE=12c6`
-- `INTEGRATION`: `NOT_STARTED`
-- `DESKTOP_SMOKE`: `NOT_RUN`
+- `FRONTEND`: `INTEGRATED / WORKTREE=fc83 / PLAYER_ACCEPTANCE_NOT_RUN`
+- `BACKEND`: `INTEGRATED / WORKTREE=12c6 / PLAYER_ACCEPTANCE_NOT_RUN`
+- `INTEGRATION`: `PASSED_LOCAL_MAINLINE`
+- `DESKTOP_SMOKE`: `PASSED_LOCAL_TWO_PROCESS_ELECTRON`
+- `SMOKE_RECEIPT`: `runId=60e809b9-b3b2-43af-ad4c-16614dfb6a74 / revision=1 / checksum=b443baef5a75746cbcaec21a14d508566d586ab25662888054071e14fc16b70a`
 - `PLAYER_ACCEPTANCE`: `NOT_RUN`
 - `PACKAGE`: `NOT_RUN`
+- `CLEAN_MACHINE`: `NOT_RUN`
 - `DESIGN_GAP_ROUTING`: `DIRECT_TO_DESIGN_GRILL`
+- `NEXT`: `OPEN_R1_DESKTOP_FOR_USER_REVIEW / R2_NOT_DISPATCHED`
 
 ## 轮次历史
 
 | 轮次 | 合同 | 前端 | 后端 | 接线 | 玩家审查 | 备注 |
 |---|---|---|---|---|---|---|
 | R0 | v1 | N/A | N/A | N/A | `PASSED_CONTINUE_AUTHORIZED_2026-08-29` | 治理与仓库基线 |
-| R1 | r1-v1 | `IN_PROGRESS` | `IN_PROGRESS` | `NOT_STARTED` | `NOT_RUN` | 桌面壳、窄桥接、SQLite回执与重启恢复 |
+| R1 | r1-v1 | `INTEGRATED` | `INTEGRATED` | `LOCAL_GATE_PASSED` | `NOT_RUN` | 44项测试、完整构建、两进程Electron恢复通过；待用户审查 |

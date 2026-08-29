@@ -5,9 +5,9 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 253
-- `PROJECT_STATUS`: `R1_FRONTEND_BACKEND_IN_PROGRESS_AND_DESIGN_GRILL_ACTIVE`
-- `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_DISPATCHED / INTEGRATION_NOT_STARTED`
+- `LEDGER_REVISION`: 254
+- `PROJECT_STATUS`: `R1_INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE_AND_DESIGN_GRILL_ACTIVE`
+- `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
 - `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
 
@@ -3005,7 +3005,12 @@
 335. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从已包含状态同步的公开 `origin/main=294ec4f2ae373e1201c4165b1d55073139356695` 记录用户原答 `b`；`D-V1CC6` 锁定为第一版恰好10个整合出身、五层社会阶层各2个。主任务已将决定作为 `4ec039da4df244d8a318fae61b7ce23ad600185d` 合入公开 `main` 并发送 ledger revision 250 的 `DESIGN_SYNC`；状态同步又作为 `c7da4524b076387a64300e60a652a04e9a3b1206` 合入公开 `main`。
 336. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=c7da4524b076387a64300e60a652a04e9a3b1206` 记录用户原答 `b`；`D-V1CC7` 锁定为第一版恰好12个当前职业，玩家选择其中1个。主任务已将决定作为 `4994ae60663d816018a39523ab5b49ab950c3065` 合入公开 `main` 并发送 ledger revision 251 的 `DESIGN_SYNC`；状态同步又作为 `6eec130cfe361edd71c4e9fca5edf57ebcb8b6ea` 合入公开 `main`。
 337. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务在记录用户原答 `b` 后，于提交前同步到公开 `origin/main=0b1520ea751a5659b3226397872b2796526e019d`；`D-V1CC8` 锁定为出身×当前职业采用直接可选、附带解释与代价可选、绝对禁止三级兼容。主任务已将决定作为 `1cb79b523d0974fb0419b71f1d954aa2b386e6b4` 合入公开 `main` 并发送 ledger revision 252 的 `DESIGN_SYNC`；状态同步又作为 `9afa9239b01f465644a695fe504f72a5b5d4dba0` 合入公开 `main`。
-338. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从最新公开 `origin/main=74e64d3b333ce060aabbccc8114cd578451fdce1` 记录用户原答 `b`；`D-V1CC9` 候选锁定贫民阶层两张整合出身的核心原型为“无依街巷长大”与“负债失业家庭”。该候选等待主任务审查合入和新的 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
+338. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=74e64d3b333ce060aabbccc8114cd578451fdce1` 记录用户原答 `b`；`D-V1CC9` 锁定贫民阶层两张整合出身的核心原型为“无依街巷长大”与“负债失业家庭”。主任务已将决定作为 `aba4d32990c6a0bb48b2304dc24981be959aa745` 合入公开 `main` 并发送 ledger revision 253 的 `DESIGN_SYNC`；状态同步又作为 `9ac028d4826d1a8e30066714ece6f2694689f469` 合入公开 `main`。
+339. `R1_FRONTEND_INTEGRATED`: 前端候选 `72946759cf1c3b0309f85ddf29b26a5b67df7996` 经主任务源码审查、独立类型检查、2文件16项候选测试和完整构建后，作为主线提交 `0b1520ea751a5659b3226397872b2796526e019d` 合入；生产路径没有 mock fallback，R1 后续入口保持不可操作占位。
+340. `R1_BACKEND_INTEGRATED`: 后端最终候选 `e8ee23c60d4c0a52d476ad1203639db3c52a2ac4` 经主任务源码审查、独立类型检查、5文件31项候选测试和 Main 构建后，作为主线提交 `74e64d3b333ce060aabbccc8114cd578451fdce1` 合入；负资源值、持久回执身份交叉校验和远程 Renderer 注入缺口均在合入前修正并有回归测试。
+341. `R1_MAINLINE_GATE_PASSED`: 主任务在前后端同一主线实测 `npm run typecheck=PASS`、`vitest=6 files / 44 tests PASS`、`npm run build=PASS`。Vite 生产资源绝对路径缺口已修为 `./assets/**`；修复与两进程 Electron 集成烟测作为 `14d17c60eb910137a270c645993d374ab74f5231` 合入。
+342. `R1_ELECTRON_TWO_PROCESS_SMOKE_PASSED`: 两个独立真实 Electron 进程通过 preload 窄 bridge 和同一 SQLite 文件完成无周目读取、fixture 创建、完全相同 intent 幂等重放、同 ID 异 payload 拒绝、旧 revision 拒绝、第二进程重启恢复以及活动周目 DOM 呈现；两进程保持同一 `runId=60e809b9-b3b2-43af-ad4c-16614dfb6a74`、revision 1 和 `checksum=b443baef5a75746cbcaec21a14d508566d586ab25662888054071e14fc16b70a`。这是本机集成 smoke，不是玩家验收、安装包或干净机器证据。
+343. `R1_PLAYER_REVIEW_GATE`: `PLAYER_ACCEPTANCE=NOT_RUN`、`PACKAGE=NOT_RUN`、`CLEAN_MACHINE=NOT_RUN`、`RELEASE=NOT_STARTED`。R2 尚未冻结或下发；只有用户实际审查当前桌面壳并明确通过后，R1 才能进入 `PLAYER_ACCEPTED`。
 
 ## FOUNDATION_AUDIT
 
@@ -3021,7 +3026,7 @@
   6. 胜负后的后果、重战、先手、取整和死亡/俘虏/逃脱等终局边界。
 - `COUNT_NOTE`: 这 6 个是内容/后续数值主题簇，不再解释为“开工前还要回答约27题”。R1—R3 的桌面壳、权威存档、公开投影、捏人 fixture、周循环、普通判定和事件 schema 没有新的玩法阻塞题；R4 经济细数、R5 后置战斗细节和 R6 魔药/晋升/真实能力在相应轮次前再 Grill。
 - `TECHNICAL_FOUNDATION_BLOCKERS`: 0。事件卡 `D-EVENT1..18`、UI `D-UI1..3` 和底层 fixture 边界足以开始分阶段工程；未决内容不得被占位实现偷偷锁定。
-- `MVP_SCOPE_NOTE`: R0 已获用户授权并执行开源/Git/多任务治理。R1 共享合同与根脚手架已冻结，前后端已从同一公开 SHA 开工；这只代表 `R1_IN_PROGRESS`，不代表接线、桌面运行、玩家验收、打包或发布完成。
+- `MVP_SCOPE_NOTE`: R0 已获用户授权并执行开源/Git/多任务治理。R1 前后端已接线，完整类型/测试/构建与本机两进程 Electron smoke 已通过；当前仍只是 `R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE`，不代表玩家验收、安装包、干净机器或发布完成。
 
 ## RECOVERY_PROTOCOL
 
@@ -3035,4 +3040,4 @@
 
 ## NEXT_ACTION
 
-主任务审查并合入 `D-V1CC9=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD` 的候选提交，再发送新的 `DESIGN_SYNC`；在此之前前后端不得直接实现该聊天答案。其余8张出身卡、12个职业名册和全部120组具体兼容状态继续保持待定，R1实现权限保持不变。
+主任务启动已接线的 R1 桌面应用交用户实际审查；在用户明确确认前保持 `PLAYER_ACCEPTANCE=NOT_RUN`，不得下发 R2。设计 Grill 在收到 `ENGINEERING_SYNC=254` 后可继续逐题确认其余8张出身卡和后续职业名册；正式名称、数值与全部120组具体兼容状态继续保持待定，不能进入 R1 fixture。

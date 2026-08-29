@@ -2,7 +2,7 @@
 
 `STATUS=SUPERSEDED_FOR_ROUND_SCHEDULING / IMPLEMENTATION=GOVERNANCE_ONLY / SOURCE=D-DESIGNORDER,D-IMPLEMENTORDER1,D-ABILITYENGINE1..4,D-COMBAT6K,D-EVENT1..18 / MASTER_PLAN=MASTER_DEVELOPMENT_PLAN.md`
 
-本文件保留底层模块与旧 S0—S5 技术切片，供实现时查阅；跨任务轮次、前后端写集、接线和用户审查以 [主开发计划](MASTER_DEVELOPMENT_PLAN.md) 为准。当前用户已授权 R0 开源/Git/任务治理，产品代码仍为 `NOT_STARTED`；R1 只有在主任务冻结精确合同后才开始。
+本文件保留底层模块与旧 S0—S5 技术切片，供实现时查阅；跨任务轮次、前后端写集、接线和用户审查以 [主开发计划](MASTER_DEVELOPMENT_PLAN.md) 为准。R1 已完成前后端接线与本机自动门禁，当前为 `R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE`；R2 尚未冻结或下发。
 
 ## 施工顺序
 
@@ -10,7 +10,7 @@
 
 战斗底层批次 `D-GRILLBATCH6..8`、事件卡结构 `D-EVENT1..18` 与 UI `D-UI1..3` 已收口。一次性物品、先手数值和后果公开层级已延期，不阻塞最小纵切。不要批量写入具体途径能力；未决项必须保持原状态。
 
-底层工程已经具备分阶段开工条件：`D-IMPLEMENTORDER1` 明确不必等待22条途径全部能力完成。R0 已获授权；R1 精确合同冻结后可用占位能力实现通用数值、判定、战斗转盘、随机流、持久化与内容装载。事件工具可按 `D-EVENT10=A` 预留构建期变体与固定文本兜底接口，但生产模型链后置；魔药/扮演/晋升和完整能力内容继续等对应轮次 Grill。
+底层工程已经具备分阶段开工条件：`D-IMPLEMENTORDER1` 明确不必等待22条途径全部能力完成。R1 已用普通人 fixture 验证桌面壳、窄 bridge、SQLite 权威提交与重启恢复；R2 只有在用户通过 R1 界面审查且主任务冻结新合同后才能开始。事件工具可按 `D-EVENT10=A` 预留构建期变体与固定文本兜底接口，但生产模型链后置；魔药/扮演/晋升和完整能力内容继续等对应轮次 Grill。
 
 ### 1. 底层引擎
 

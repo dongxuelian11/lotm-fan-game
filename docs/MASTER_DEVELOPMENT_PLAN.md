@@ -1,8 +1,10 @@
 # 主开发计划：双工作流、逐轮接线与用户审查
 
-`PLAN_REVISION=1 / PRODUCT_CODE=NOT_STARTED / AUTHORITY=PROJECT_STATE_LEDGER.md / ORCHESTRATOR=CURRENT_MASTER_TASK`
+`PLAN_REVISION=2 / PRODUCT_CODE=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / AUTHORITY=PROJECT_STATE_LEDGER.md / ORCHESTRATOR=CURRENT_MASTER_TASK`
 
 本计划把已经锁定的玩法设计变成可执行开发轮次。当前对话是唯一的计划审查、合同冻结、接线和发任务入口；独立设计 Grill 任务负责逐题采访和候选设计提交，前端、后端两个开发任务只执行当前轮合同。深度链接方便进入任务，但不是项目权威，自动压缩后必须从仓库文件恢复状态。
+
+当前执行事实：R1 前端/后端已接线，完整类型检查、6文件44项测试、生产构建和本机两进程 Electron/SQLite 恢复 smoke 已通过；`PLAYER_ACCEPTANCE=NOT_RUN`、`PACKAGE=NOT_RUN`、`CLEAN_MACHINE=NOT_RUN`，R2 尚未冻结或下发。
 
 ## 1. 复核结论与遗漏归类
 
@@ -66,6 +68,8 @@
 用户审查：开源边界、主计划、前后端权限和第一轮范围。
 
 ### R1 — 桌面壳与权威状态边界
+
+`STATUS=INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / MASTER_GATE_SHA=14d17c60eb910137a270c645993d374ab74f5231`
 
 - 前端：标题页、无存档态、周仪表盘空壳、中央叠层和 mock bridge；
 - 后端：Main/preload 启动、SQLite 元数据/迁移、幂等回执、最小公开投影；

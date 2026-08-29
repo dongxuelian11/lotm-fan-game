@@ -1,6 +1,6 @@
 # 《诡秘之主》同人游戏：Agent 接管与开发合同
 
-`CONTRACT_REVISION=3 / STATUS=R1_WORKSTREAMS_ACTIVE / PRODUCT_CODE=R1_IN_PROGRESS / USER_DESIGN_AUTHORITY=FINAL`
+`CONTRACT_REVISION=4 / STATUS=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
 
 本文件是所有 Codex/agent 的强制入口。Windows 路径大小写不敏感，仓库只保留规范文件名 `AGENTS.md`，不要再创建重复的 `agents.md`。
 
@@ -34,13 +34,14 @@
 - 事件卡是一级内容系统：第一版目标90张独立卡 + 9条三阶段链（共117个定义）；一次只弹一张阻塞卡，其余进入最小待处理列表/纪事；处理列表事件不消耗行动点，但硬资源成本照常；
 - RAG/小模型只在作者/构建期辅助生成待审文本变体；schema、规则、选项、难度、奖励、惩罚和后果由引擎决定；运行时确定性选择已审核文本；
 - UI 是常驻周仪表盘 + 弹层/抽屉，战斗为周舞台上的全屏遮罩，视觉为克制的神秘学卷宗/工作台。
+- 第一版捏人保持六步短流程：10个整合出身、12个当前职业、出身×职业三级兼容、恰好2个性格特质+1个真实缺陷、摘要页恰好1项背景过滤专精；贫民层两项核心原型已锁定，但其余8项、所有正式名称/数值和120组具体兼容矩阵仍待逐题确认。
 
 具体公式、决定编号、撤回项和延期项只能从 `PROJECT_STATE_LEDGER.md` 与对应主题文档读取，不以本摘要替代。
 
 ## 3. 当前开发边界
 
 - R0 已完成开源、Git、合同、任务注册和抗压缩状态；
-- R1 已授权并从同一公开基线并行开发；每轮前端与后端都必须参与，随后由主任务真实接线；
+- R1 已从同一公开基线完成前后端开发、主任务接线、完整类型/测试/构建与本机两进程 Electron smoke；当前等待用户实际审查，R2 未冻结或下发；
 - 允许用占位能力/fixture 建立存档、随机流、事件和转盘底座；
 - 不等待22条途径全部能力才开发底层；也不得借“底层开发”提前臆造真实能力、魔药、晋升、经济细数或原著事件内容；
 - `READY_FOR_INTEGRATION` 只是候选；接线、自动门禁、玩家验收、打包和发布均为独立事实；
@@ -141,8 +142,9 @@
 ## 11. 当前接管点
 
 - 当前轮次：R1 桌面权威纵切；R0 已提交并公开发布；
-- 产品代码：`R1_FRONTEND_AND_BACKEND_IN_PROGRESS / INTEGRATION_NOT_STARTED`；
-- 前端任务：`01a04d7d-abe2-7732-9ac0-e4ff95397ca2`，worktree `C:\Users\Administrator\.codex\worktrees\fc83\诡秘`；后端任务：`01a04d7d-b97c-7311-8700-2f86c39f86c5`，worktree `C:\Users\Administrator\.codex\worktrees\12c6\诡秘`；两者均从公开基线 `e2bfe3833c967d3d9c129919a46b4d9f0d202962` 收到 `r1-v1` dispatch；
-- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`，分支 `work/design-grill-r2-foundation`；`D-V1CC4` 已合入公开 main，下一次写入前必须从 ledger revision 248 与最新 `origin/main` 同步；
-- 下一步：前后端在独立写集完成 R1 并提交 `READY_FOR_INTEGRATION`；主任务逐项审查、接线、运行自动门禁和真实 Electron smoke，再交用户审查；
+- 产品代码：`R1_INTEGRATED / LOCAL_TWO_PROCESS_ELECTRON_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN / PACKAGE_NOT_RUN`；
+- 前端任务：`01a04d7d-abe2-7732-9ac0-e4ff95397ca2`，候选 `72946759cf1c3b0309f85ddf29b26a5b67df7996` 已合入；后端任务：`01a04d7d-b97c-7311-8700-2f86c39f86c5`，候选 `e8ee23c60d4c0a52d476ad1203639db3c52a2ac4` 已合入；两者当前均为 hold，无后续轮写权限；
+- 主任务接线/烟测提交为 `14d17c60eb910137a270c645993d374ab74f5231`；全量门禁为类型检查通过、6文件44项测试通过、完整构建通过、生产相对资源路径通过、两进程 Electron/SQLite 恢复通过；这不是安装包或干净机器证据；
+- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`，分支 `work/design-grill-r2-foundation`；当前 ledger revision 253，等待本轮 `ENGINEERING_SYNC=254` 后继续 R2+ 出身名册单题；
+- 下一步：主任务启动 R1 桌面壳交用户实际审查；用户明确通过前保持 `PLAYER_ACCEPTANCE=NOT_RUN`，不得冻结或下发 R2；
 - 真实魔药、晋升、能力和事件内容仍在相应轮次前继续 Grill，不阻塞 R1 技术壳。
