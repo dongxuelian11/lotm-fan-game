@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 252
+- `LEDGER_REVISION`: 253
 - `PROJECT_STATUS`: `R1_FRONTEND_BACKEND_IN_PROGRESS_AND_DESIGN_GRILL_ACTIVE`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_DISPATCHED / INTEGRATION_NOT_STARTED`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -132,6 +132,7 @@
 - `D-V1CC6`: 第一版整合出身池规模与五层覆盖 — `LOCKED=B_TEN_INTEGRATED_ORIGINS_TWO_PER_TIER`
 - `D-V1CC7`: 第一版当前职业池规模 — `LOCKED=B_TWELVE_CURRENT_PROFESSIONS`
 - `D-V1CC8`: 第一版出身与当前职业的组合限制 — `LOCKED=B_THREE_STATE_ORIGIN_PROFESSION_COMPATIBILITY`
+- `D-V1CC9`: 第一版贫民阶层的两张整合出身核心原型 — `LOCKED=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -2435,6 +2436,15 @@
 - `FORBIDDEN` 组合不能确认角色，并必须显示不泄露未来秘密的世界内理由；`DIRECT` 组合不需要额外背景补丁，但仍承受该职业和出身各自正常的义务与后果。
 - 本决定只锁定兼容状态模型及捏人时的玩家可见行为；具体120组状态、解释模板、代价形式与数值、职业名称、工资、技能、事件、失业和转职规则仍保持待定。
 
+### D-V1CC9 贫民阶层采用无依街巷长大与负债失业家庭两种出身原型
+
+- `DECISION`: `B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户针对当前单题原样回复 `b`。
+- 第一版贫民阶层的两张整合出身卡分别采用“无依街巷长大”和“负债失业家庭”作为核心原型；两者均保持贫民阶层，不因出身名称自动获得非凡知识、魔药或序列能力。
+- “无依街巷长大”以家庭支持缺失或极弱、非正式街巷关系和日常求生经验为核心；“负债失业家庭”以仍然存在的家庭关系、失去稳定营生、债务压力和长期义务为核心。
+- 两张卡必须在家庭基线、社会环境、关系入口、机会与义务上形成可理解差异，不能只改文案；玩家随后仍独立选择当前职业。
+- 本决定只锁定两张贫民出身卡的核心身份与差异轴；正式显示名称、家庭成员、当前家境、现金与债务数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
+
 ## LOCKED_PROFESSION_DESIGN
 
 ### D-003A4A 普通职业是否构成长期玩法线
@@ -2994,7 +3004,8 @@
 334. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务收到 `ENGINEERING_SYNC=248:86aeb04debe91bc168ac114499479a0293d78c64:R1_FRONTEND_BACKEND_DISPATCHED` 后，从该公开 main 同步并记录用户原答 `a`；`D-V1CC5` 锁定为第一版自动摘要页内选择恰好1项背景过滤的普通技能专精。主任务已将决定作为 `108fc0a457221bca5f8e73e6cb478f4ad2909c2c` 合入公开 `main` 并发送 ledger revision 249 的 `DESIGN_SYNC`。
 335. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从已包含状态同步的公开 `origin/main=294ec4f2ae373e1201c4165b1d55073139356695` 记录用户原答 `b`；`D-V1CC6` 锁定为第一版恰好10个整合出身、五层社会阶层各2个。主任务已将决定作为 `4ec039da4df244d8a318fae61b7ce23ad600185d` 合入公开 `main` 并发送 ledger revision 250 的 `DESIGN_SYNC`；状态同步又作为 `c7da4524b076387a64300e60a652a04e9a3b1206` 合入公开 `main`。
 336. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=c7da4524b076387a64300e60a652a04e9a3b1206` 记录用户原答 `b`；`D-V1CC7` 锁定为第一版恰好12个当前职业，玩家选择其中1个。主任务已将决定作为 `4994ae60663d816018a39523ab5b49ab950c3065` 合入公开 `main` 并发送 ledger revision 251 的 `DESIGN_SYNC`；状态同步又作为 `6eec130cfe361edd71c4e9fca5edf57ebcb8b6ea` 合入公开 `main`。
-337. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务在记录用户原答 `b` 后，于提交前同步到最新公开 `origin/main=0b1520ea751a5659b3226397872b2796526e019d`；`D-V1CC8` 候选锁定为出身×当前职业采用直接可选、附带解释与代价可选、绝对禁止三级兼容。该候选等待主任务审查合入和新的 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
+337. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务在记录用户原答 `b` 后，于提交前同步到公开 `origin/main=0b1520ea751a5659b3226397872b2796526e019d`；`D-V1CC8` 锁定为出身×当前职业采用直接可选、附带解释与代价可选、绝对禁止三级兼容。主任务已将决定作为 `1cb79b523d0974fb0419b71f1d954aa2b386e6b4` 合入公开 `main` 并发送 ledger revision 252 的 `DESIGN_SYNC`；状态同步又作为 `9afa9239b01f465644a695fe504f72a5b5d4dba0` 合入公开 `main`。
+338. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从最新公开 `origin/main=74e64d3b333ce060aabbccc8114cd578451fdce1` 记录用户原答 `b`；`D-V1CC9` 候选锁定贫民阶层两张整合出身的核心原型为“无依街巷长大”与“负债失业家庭”。该候选等待主任务审查合入和新的 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
 
 ## FOUNDATION_AUDIT
 
@@ -3024,4 +3035,4 @@
 
 ## NEXT_ACTION
 
-主任务审查并合入 `D-V1CC8=B_THREE_STATE_ORIGIN_PROFESSION_COMPATIBILITY` 的候选提交，再发送新的 `DESIGN_SYNC`；在此之前前后端不得直接实现该聊天答案。R1 实现权限保持不变，任何新 `DESIGN_GAP` 仍直接推送设计 Grill。
+主任务审查并合入 `D-V1CC9=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD` 的候选提交，再发送新的 `DESIGN_SYNC`；在此之前前后端不得直接实现该聊天答案。其余8张出身卡、12个职业名册和全部120组具体兼容状态继续保持待定，R1实现权限保持不变。

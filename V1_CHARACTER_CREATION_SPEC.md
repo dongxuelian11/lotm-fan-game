@@ -1,7 +1,7 @@
 # 第一版角色创建实施规格
 
-- `STATUS`: `LOCKED_FOR_V1_FLOW_TRAIT_COUNT_SPECIALIZATION_ORIGIN_PROFESSION_SCALE_AND_COMPATIBILITY`
-- `DECISION`: `D-V1CC3=A_ADAPTED_COMPACT_FLOW / D-V1CC4=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW / D-V1CC5=A_ONE_BACKGROUND_FILTERED_FREE_SPECIALIZATION_IN_SUMMARY / D-V1CC6=B_TEN_INTEGRATED_ORIGINS_TWO_PER_TIER / D-V1CC7=B_TWELVE_CURRENT_PROFESSIONS / D-V1CC8=B_THREE_STATE_ORIGIN_PROFESSION_COMPATIBILITY`
+- `STATUS`: `LOCKED_FOR_V1_FLOW_TRAIT_COUNT_SPECIALIZATION_ORIGIN_PROFESSION_SCALE_COMPATIBILITY_AND_FIRST_ORIGIN_PAIR`
+- `DECISION`: `D-V1CC3=A_ADAPTED_COMPACT_FLOW / D-V1CC4=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW / D-V1CC5=A_ONE_BACKGROUND_FILTERED_FREE_SPECIALIZATION_IN_SUMMARY / D-V1CC6=B_TEN_INTEGRATED_ORIGINS_TWO_PER_TIER / D-V1CC7=B_TWELVE_CURRENT_PROFESSIONS / D-V1CC8=B_THREE_STATE_ORIGIN_PROFESSION_COMPATIBILITY / D-V1CC9=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD`
 - `IMPLEMENTATION_STATUS`: `NOT_STARTED`
 - `DESIGN_AUTHORITY`: 用户最终决定
 
@@ -22,6 +22,7 @@
 
 - 鲁恩国籍固定，不显示只有一个答案的国籍选择控件。
 - 同层两个出身必须具有可解释的家庭或社会差异，上流层至少覆盖1个贵族出身和1个获得社会承认的非贵族精英出身；贵族出身按既有决定属于标准新游戏可选项，本题不新增其他局外解锁规则。
+- 贫民阶层两张卡的核心原型为“无依街巷长大”和“负债失业家庭”：前者以家庭支持缺失或极弱、街巷关系与求生经验为核心，后者以仍存在的家庭关系、失去稳定营生、债务和长期义务为核心；两者都不替代当前职业选择。
 - 12个当前职业与10个整合出身保持独立输入；每个职业必须形成真实的长期身份差异，并进入收入、背景技能、义务、机会、出身兼容与冲突解释、存档重放和内容验证矩阵。
 - 每组出身×职业组合必须精确标记为 `DIRECT`、`CONDITIONAL` 或 `FORBIDDEN`：条件组合在确认前展示可信解释和明确代价、义务或家境变化，玩家接受后才可选；禁止组合不能确认并显示不泄密的世界内理由；直接组合不需要额外背景补丁。
 - 预设头像必须有稳定资源ID和结构化外貌标签；第一版不逐项编辑外貌。
@@ -42,7 +43,7 @@
 
 ## 实施前待定内容
 
-- 10个整合出身和12个当前职业的具体名称与内容，以及性格特质和缺陷的具体清单；出身数量已经锁定为每层2个，职业数量已经锁定为12个，性格特质数量已经锁定为2个，缺陷数量已经锁定为1个。
+- 其余8个整合出身的核心原型、全部10张出身的正式名称与具体内容、12个当前职业的具体名称与内容，以及性格特质和缺陷的具体清单；贫民层两张卡的核心原型已锁定，出身数量仍为每层2个。
 - 属性与技能字段、普通技能及专精清单、候选池大小、派生公式、具体120组出身×职业兼容状态、条件组合代价和结果摘要样式。
 - 预设头像画风、数量、来源与许可清单。
 - 鲁恩境内出生地选项和实际开局城市。
