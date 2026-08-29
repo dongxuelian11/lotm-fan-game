@@ -145,6 +145,6 @@
 - 产品代码：`R1_INTEGRATED / LOCAL_TWO_PROCESS_ELECTRON_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN / PACKAGE_NOT_RUN`；
 - 前端任务：`01a04d7d-abe2-7732-9ac0-e4ff95397ca2`，候选 `72946759cf1c3b0309f85ddf29b26a5b67df7996` 已合入；后端任务：`01a04d7d-b97c-7311-8700-2f86c39f86c5`，候选 `e8ee23c60d4c0a52d476ad1203639db3c52a2ac4` 已合入；两者当前均为 hold，无后续轮写权限；
 - 主任务接线/烟测提交为 `14d17c60eb910137a270c645993d374ab74f5231`；全量门禁为类型检查通过、6文件44项测试通过、完整构建通过、生产相对资源路径通过、两进程 Electron/SQLite 恢复通过；这不是安装包或干净机器证据；
-- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`，分支 `work/design-grill-r2-foundation`；当前 ledger revision 255，`D-V1CC10` 已合入主线，等待新的 `DESIGN_SYNC` 后继续小市民层出身名册单题；
-- 下一步：主任务公开当前主线并发送 revision 255 的 `DESIGN_SYNC`，同时继续等待用户实际审查 R1 桌面壳；用户明确通过前保持 `PLAYER_ACCEPTANCE=NOT_RUN`，不得冻结或下发 R2；
+- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`，分支 `work/design-grill-r2-foundation`；当前 ledger revision 255，`D-V1CC10` 已合入并完成 `DESIGN_SYNC`，当前只可继续 `D-V1CC11` 小市民层出身名册单题；
+- 下一步：设计任务继续一次一题 Grill 并交主任务审查候选；主任务继续等待用户实际审查 R1 桌面壳。用户明确通过前保持 `PLAYER_ACCEPTANCE=NOT_RUN`，不得冻结或下发 R2；
 - 真实魔药、晋升、能力和事件内容仍在相应轮次前继续 Grill，不阻塞 R1 技术壳。
