@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 250
+- `LEDGER_REVISION`: 251
 - `PROJECT_STATUS`: `R1_FRONTEND_BACKEND_IN_PROGRESS_AND_DESIGN_GRILL_ACTIVE`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_DISPATCHED / INTEGRATION_NOT_STARTED`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -130,6 +130,7 @@
 - `D-V1CC4`: 第一版捏人的性格特质选择数量 — `LOCKED=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW`
 - `D-V1CC5`: 第一版自由专精在短流程中的位置与数量 — `LOCKED=A_ONE_BACKGROUND_FILTERED_FREE_SPECIALIZATION_IN_SUMMARY`
 - `D-V1CC6`: 第一版整合出身池规模与五层覆盖 — `LOCKED=B_TEN_INTEGRATED_ORIGINS_TWO_PER_TIER`
+- `D-V1CC7`: 第一版当前职业池规模 — `LOCKED=B_TWELVE_CURRENT_PROFESSIONS`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -2416,6 +2417,14 @@
 - 10个出身都必须进入派生、职业兼容、冲突解释、存档重放和内容验证矩阵；除已由 `D-003A3D` 锁定为标准新游戏可选的贵族出身外，本题不新增其他局外解锁规则。
 - 本决定只锁定出身总数、每层覆盖数量与上流层最低身份覆盖；具体出身名称、家庭营生、当前家境、派生数值、关系、事件入口、职业兼容表、文案和美术仍保持待定。
 
+### D-V1CC7 第一版提供十二个当前职业
+
+- `DECISION`: `B_TWELVE_CURRENT_PROFESSIONS`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户针对当前单题原样回复 `b`。
+- 第一版标准新游戏提供恰好12个当前职业，玩家仍只选择其中1个；职业与已经锁定的10个整合出身保持独立输入，不把职业重新并入出身卡。
+- 12个职业必须形成可理解的长期身份差异，并进入收入、背景技能、义务、机会、出身兼容与冲突解释、存档重放和内容验证矩阵；不能只用名称或工资不同冒充独立职业。
+- 本决定只锁定第一版职业池总数；具体职业名称、阶层或出身兼容表、教育与准入门槛、收入数值、技能效果、时间义务、专属事件、失业、离职和转职规则仍保持待定。
+
 ## LOCKED_PROFESSION_DESIGN
 
 ### D-003A4A 普通职业是否构成长期玩法线
@@ -2973,7 +2982,8 @@
 332. `R1_ROOT_CONTRACT_FROZEN`: 主任务在 `8048ff1c69fdd540d5b9e7cdae16aec7e007ca21` 建立锁版本 Electron/React/TypeScript/Vite/Vitest 根脚手架、共享 `r1-v1` 类型和最小 CI；在 `e2bfe3833c967d3d9c129919a46b4d9f0d202962` 冻结 R1 桌面权威合同。实测 `npm run typecheck=PASS`、`vitest=1 file / 3 tests PASS`、`npm audit=0 vulnerabilities`；完整 build、桌面 smoke、接线和玩家验收仍为 `NOT_RUN/NOT_STARTED`。
 333. `R1_WORKTREES_DISPATCHED`: 前端已迁入任务 `01a04d7d-abe2-7732-9ac0-e4ff95397ca2` / worktree `C:\Users\Administrator\.codex\worktrees\fc83\诡秘`，后端已迁入任务 `01a04d7d-b97c-7311-8700-2f86c39f86c5` / worktree `C:\Users\Administrator\.codex\worktrees\12c6\诡秘`；两者实测清洁且 HEAD 均为公开 `origin/main=e2bfe3833c967d3d9c129919a46b4d9f0d202962`，已收到 Luna/Max、精确写集和 `r1-v1` dispatch。任何新增玩法缺口直接路由设计 Grill，不在开发任务临时决定。
 334. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务收到 `ENGINEERING_SYNC=248:86aeb04debe91bc168ac114499479a0293d78c64:R1_FRONTEND_BACKEND_DISPATCHED` 后，从该公开 main 同步并记录用户原答 `a`；`D-V1CC5` 锁定为第一版自动摘要页内选择恰好1项背景过滤的普通技能专精。主任务已将决定作为 `108fc0a457221bca5f8e73e6cb478f4ad2909c2c` 合入公开 `main` 并发送 ledger revision 249 的 `DESIGN_SYNC`。
-335. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从已包含状态同步的公开 `origin/main=294ec4f2ae373e1201c4165b1d55073139356695` 记录用户原答 `b`；`D-V1CC6` 候选锁定为第一版恰好10个整合出身、五层社会阶层各2个。该候选等待主任务审查合入和新的 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
+335. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从已包含状态同步的公开 `origin/main=294ec4f2ae373e1201c4165b1d55073139356695` 记录用户原答 `b`；`D-V1CC6` 锁定为第一版恰好10个整合出身、五层社会阶层各2个。主任务已将决定作为 `4ec039da4df244d8a318fae61b7ce23ad600185d` 合入公开 `main` 并发送 ledger revision 250 的 `DESIGN_SYNC`；状态同步又作为 `c7da4524b076387a64300e60a652a04e9a3b1206` 合入公开 `main`。
+336. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从公开 `origin/main=c7da4524b076387a64300e60a652a04e9a3b1206` 记录用户原答 `b`；`D-V1CC7` 候选锁定为第一版恰好12个当前职业，玩家选择其中1个。该候选等待主任务审查合入和新的 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
 
 ## FOUNDATION_AUDIT
 
@@ -3003,4 +3013,4 @@
 
 ## NEXT_ACTION
 
-主任务审查并合入 `D-V1CC6=B_TEN_INTEGRATED_ORIGINS_TWO_PER_TIER` 的候选提交，再发送新的 `DESIGN_SYNC`；在此之前前后端不得直接实现该聊天答案。R1 其余工作继续按 `r1-v1` 推进，任何新 `DESIGN_GAP` 仍直接推送设计 Grill。
+主任务审查并合入 `D-V1CC7=B_TWELVE_CURRENT_PROFESSIONS` 的候选提交，再发送新的 `DESIGN_SYNC`；在此之前前后端不得直接实现该聊天答案。R1 其余工作继续按 `r1-v1` 推进，任何新 `DESIGN_GAP` 仍直接推送设计 Grill。

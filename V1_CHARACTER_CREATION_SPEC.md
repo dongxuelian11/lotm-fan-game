@@ -1,7 +1,7 @@
 # 第一版角色创建实施规格
 
-- `STATUS`: `LOCKED_FOR_V1_FLOW_TRAIT_COUNT_SPECIALIZATION_AND_ORIGIN_SCALE`
-- `DECISION`: `D-V1CC3=A_ADAPTED_COMPACT_FLOW / D-V1CC4=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW / D-V1CC5=A_ONE_BACKGROUND_FILTERED_FREE_SPECIALIZATION_IN_SUMMARY / D-V1CC6=B_TEN_INTEGRATED_ORIGINS_TWO_PER_TIER`
+- `STATUS`: `LOCKED_FOR_V1_FLOW_TRAIT_COUNT_SPECIALIZATION_ORIGIN_AND_PROFESSION_SCALE`
+- `DECISION`: `D-V1CC3=A_ADAPTED_COMPACT_FLOW / D-V1CC4=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW / D-V1CC5=A_ONE_BACKGROUND_FILTERED_FREE_SPECIALIZATION_IN_SUMMARY / D-V1CC6=B_TEN_INTEGRATED_ORIGINS_TWO_PER_TIER / D-V1CC7=B_TWELVE_CURRENT_PROFESSIONS`
 - `IMPLEMENTATION_STATUS`: `NOT_STARTED`
 - `DESIGN_AUTHORITY`: 用户最终决定
 
@@ -13,7 +13,7 @@
 
 1. 基础身份：姓名、性别、18—45岁年龄、鲁恩境内出生地、预设头像。
 2. 出身：从10个整合出身中选择1个；贫民、劳工、小市民、中上、上流五层社会阶层各有2个，由所选出身派生阶层、家庭基线和初始社会环境。
-3. 当前职业：只选择一个职业，作为持续有效的收入、身份、人脉、义务和机会入口。
+3. 当前职业：从12个职业中选择1个，作为持续有效的收入、身份、人脉、义务和机会入口。
 4. 人格：恰好选择2个性格特质，并另行强制选择1个真实缺陷；缺陷不计入这2个特质，也不奖励额外属性点。
 5. 自动摘要与专精：系统确定性派生初始属性、基础普通技能、主要关系和资源；玩家再从按背景与前置条件过滤的候选中选择恰好1项普通技能专精，摘要即时展示主要能力倾向与关键后果。
 6. 玩家确认后进入普通人开局；角色创建时不提供魔药或序列能力。
@@ -22,6 +22,7 @@
 
 - 鲁恩国籍固定，不显示只有一个答案的国籍选择控件。
 - 同层两个出身必须具有可解释的家庭或社会差异，上流层至少覆盖1个贵族出身和1个获得社会承认的非贵族精英出身；贵族出身按既有决定属于标准新游戏可选项，本题不新增其他局外解锁规则。
+- 12个当前职业与10个整合出身保持独立输入；每个职业必须形成真实的长期身份差异，并进入收入、背景技能、义务、机会、出身兼容与冲突解释、存档重放和内容验证矩阵。
 - 预设头像必须有稳定资源ID和结构化外貌标签；第一版不逐项编辑外貌。
 - 属性不显示点数购买或自由加点；派生输入、规则版本和结果必须写入存档，确保可重现。
 - 性格特质影响检定、代价、NPC反应和可见选项，但普通状态下不强制或替玩家执行行动。
@@ -40,7 +41,7 @@
 
 ## 实施前待定内容
 
-- 10个整合出身的具体名称和内容、职业、性格特质和缺陷的具体清单；出身数量已经锁定为每层2个，性格特质数量已经锁定为2个，缺陷数量已经锁定为1个。
+- 10个整合出身和12个当前职业的具体名称与内容，以及性格特质和缺陷的具体清单；出身数量已经锁定为每层2个，职业数量已经锁定为12个，性格特质数量已经锁定为2个，缺陷数量已经锁定为1个。
 - 属性与技能字段、普通技能及专精清单、候选池大小、派生公式、冲突规则和结果摘要样式。
 - 预设头像画风、数量、来源与许可清单。
 - 鲁恩境内出生地选项和实际开局城市。
