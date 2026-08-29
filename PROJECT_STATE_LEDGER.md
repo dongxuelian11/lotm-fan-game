@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 245
+- `LEDGER_REVISION`: 246
 - `PROJECT_STATUS`: `R1_CONTRACT_PREPARATION_AND_DESIGN_GRILL_SETUP`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_NOT_DISPATCHED / PRODUCT_CODE_NOT_STARTED`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -2938,6 +2938,7 @@
 327. `WORKSTREAM_ONBOARDING_READY`: 前端和后端均完成只读接管并独立确认 `DESIGN_GAP=NONE_FOR_R1`；共同要求主任务冻结 R1 共享类型、窄 bridge、公开投影、intent/receipt/error、根工具链与精确写集，未写产品代码。
 328. `GITHUB_AUTHORIZED_AND_PUBLISHED`: 用户明确授权 GitHub 与开源部署；GitHub 插件/CLI 账户为 `dongxuelian11`，仓库本地身份来自授权资料 `E1aina <2806418887@qq.com>`。初始提交 `e0a7677` 已推送到公开仓库 `https://github.com/dongxuelian11/lotm-fan-game` 的 `main`。
 329. `DESIGN_GRILL_WORKSTREAM_AUTHORIZED`: 用户要求新增独立深度链接对话，对所有真正未决定的设计按 `grill-me` 一次一题询问，并将回答写入总账本和对应项目 MD。决定只有提交并由主任务合入 `main`、发送 `DESIGN_SYNC` 后才可供开发任务实现。
+330. `DESIGN_GRILL_TASK_CREATED`: 已创建独立 worktree 任务 `01a04d69-e530-7df1-b7e9-abc2d24803f1`，模型 `gpt-5.6-sol / high`，基线 `07cf112b6856600981bd1056b3045a8ea029f62f`。它必须先完成只读依赖审计，再从 R2+ 最早未决项一次只问一题；首次写入前切换到 `work/design-grill-r2-foundation`，不得在 detached HEAD 提交。
 
 ## FOUNDATION_AUDIT
 
@@ -2967,4 +2968,4 @@
 
 ## NEXT_ACTION
 
-创建设计 Grill 独立 worktree 任务并从最早的 R2+ 未决依赖开始一次一题提问；主任务同时冻结 R1 共享类型、根工具链、精确写集和验收合同，从同一 main SHA 将前后端任务迁入独立 worktree并同步 dispatch。任何新设计回答必须先合入 `main` 并发送 `DESIGN_SYNC`，不得直接从聊天进入实现。
+设计 Grill 任务完成只读接管并从最早的 R2+ 未决依赖开始一次一题提问；主任务同时冻结 R1 共享类型、根工具链、精确写集和验收合同，从同一 main SHA 将前后端任务迁入独立 worktree并同步 dispatch。任何新设计回答必须先合入 `main` 并发送 `DESIGN_SYNC`，不得直接从聊天进入实现。

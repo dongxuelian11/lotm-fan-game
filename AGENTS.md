@@ -143,6 +143,6 @@
 - 当前轮次：R1 合同与根脚手架准备；R0 已提交并公开发布；
 - 产品代码：`NOT_STARTED / R1_NOT_DISPATCHED`；
 - 前端任务：`01a04d52-87f7-7c00-a047-7343867cb955`；后端任务：`01a04d52-95e5-72c0-91d8-ebf0cfe85315`；两者均 `ONBOARDING_READY`，等待同一 R1 dispatch；
-- 设计 Grill 任务：创建前保持 `PENDING_CREATION`，创建后把任务 ID 写入轮次账本和设计状态；
+- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`，独立 worktree 基线 `07cf112`；当前只读接管并准备第一题；
 - 下一步：建立设计 Grill worktree 任务，同时由主任务冻结 R1 合同、共享类型和根工具链，再从同一基线同步下发前后端开发；
 - 真实魔药、晋升、能力和事件内容仍在相应轮次前继续 Grill，不阻塞 R1 技术壳。
