@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 255
+- `LEDGER_REVISION`: 256
 - `PROJECT_STATUS`: `R1_INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE_AND_DESIGN_GRILL_ACTIVE`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -134,6 +134,7 @@
 - `D-V1CC8`: 第一版出身与当前职业的组合限制 — `LOCKED=B_THREE_STATE_ORIGIN_PROFESSION_COMPATIBILITY`
 - `D-V1CC9`: 第一版贫民阶层的两张整合出身核心原型 — `LOCKED=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD`
 - `D-V1CC10`: 第一版劳工阶层的两张整合出身核心原型 — `LOCKED=B_FACTORY_WAGE_HOUSEHOLD_PLUS_EMPLOYER_DEPENDENT_SERVICE_HOUSEHOLD`
+- `D-V1CC11`: 第一版小市民阶层的两张整合出身核心原型 — `LOCKED=B_SELF_EMPLOYED_SMALL_BUSINESS_OR_WORKSHOP_HOUSEHOLD_PLUS_EDUCATED_JUNIOR_CLERICAL_HOUSEHOLD`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -2455,6 +2456,15 @@
 - 两张卡都保持劳工阶层：工厂家庭不自动等同于玩家本人从事工厂职业，服务家庭也不自动赋予上层身份、贵族关系或秘密知识；任何可见机会和信息仍受具体关系、知识与事件条件约束。
 - 本决定只锁定两张劳工出身卡的核心身份与差异轴；正式显示名称、具体工种或服务岗位、雇主、家庭成员、当前家境、数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
 
+### D-V1CC11 小市民阶层采用自营小店或小作坊家庭与受教育基层职员家庭两种出身原型
+
+- `DECISION`: `B_SELF_EMPLOYED_SMALL_BUSINESS_OR_WORKSHOP_HOUSEHOLD_PLUS_EDUCATED_JUNIOR_CLERICAL_HOUSEHOLD`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户针对当前单题原样回复 `b`。
+- 第一版小市民阶层的两张整合出身卡分别采用“自营小店/小作坊家庭”和“受教育的基层职员家庭”作为核心原型；这里描述的是角色成长时期的家庭生计、教育与社会环境，不替代玩家随后独立选择的当前职业。
+- “自营小店/小作坊家庭”以少量经营资产、客户和街区关系、家庭协作以及租金、库存、现金流和债务风险为核心；“受教育的基层职员家庭”以基础教育、机构职位、固定薪资和体面声誉，以及考核、解雇和身份压力为核心。
+- 两张卡都保持小市民阶层：自营家庭不自动拥有大型产业或上层商业关系，职员家庭也不自动赋予高等专业资格、官职、组织权限或秘密知识；任何具体资源、职位与信息仍受后续内容和世界条件约束。
+- 本决定只锁定两张小市民出身卡的核心身份与“资产/市井网络对教育/机构网络”差异轴；正式显示名称、店铺或作坊类型、任职机构、家庭成员、资产与教育程度、数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
+
 ## LOCKED_PROFESSION_DESIGN
 
 ### D-003A4A 普通职业是否构成长期玩法线
@@ -3023,6 +3033,7 @@
 343. `R1_PLAYER_REVIEW_GATE`: `PLAYER_ACCEPTANCE=NOT_RUN`、`PACKAGE=NOT_RUN`、`CLEAN_MACHINE=NOT_RUN`、`RELEASE=NOT_STARTED`。R2 尚未冻结或下发；只有用户实际审查当前桌面壳并明确通过后，R1 才能进入 `PLAYER_ACCEPTED`。
 344. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=467eac09ac902a94e0dbfbbe70059714e9a2411f` 记录用户原答 `b`；`D-V1CC10` 锁定劳工阶层两张整合出身的核心原型为“工厂工资家庭”与“雇主依附的服务家庭”。主任务已按 `edd58ad9b7d9889fbeb9bb5e1d8fddb77fd87427` → `8782bd132c7dabf4c4f2c2805eb855d5d5225e27` 的依赖顺序审查，并将决定作为 `a3fdb6c822db8d28aeabebf92f0cee22682b2f56` 合入 `main`；精确公开主线 `9b12b6f9f21a5eb846721c481c4d82d33ab3ccf1` 的 CI #33256166561 通过后，主任务已发送 ledger revision 255 的 `DESIGN_SYNC`。R2 仍未获实现授权。
 345. `GOVERNANCE_METADATA_AUDIT_PASSED`: 主任务为当前 R1 轮次补充唯一机器可读合同 `docs/rounds/R1_DESKTOP_AUTHORITY_CONTRACT.md` 与当前实现工作流 `FRONTEND,BACKEND`，并把 R2+ 设计准备标记为独立 `ROUND_ID=R2_DESIGN_FOUNDATION`；`ledgered-game-dev` 只读治理审计结果为 `ERROR=0 / WARN=0`，未改变任何玩法、合同内容或验收状态。
+346. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从公开 `origin/main=eceebbf13ea44064a7c474bee8ea29dd638db467` 记录用户原答 `b`；`D-V1CC11` 锁定小市民阶层两张整合出身的核心原型为“自营小店/小作坊家庭”与“受教育的基层职员家庭”。该设计在主任务审查合入并发送 ledger revision 256 的 `DESIGN_SYNC` 前仍为候选，不授权 R2 实现。
 
 ## FOUNDATION_AUDIT
 
@@ -3052,4 +3063,4 @@
 
 ## NEXT_ACTION
 
-设计 Grill 从 ledger revision 255 与已核验公开主线继续 `D-V1CC11` 小市民层出身名册单题，回答后仍须交主任务审查合入。其余6张出身卡、全部正式名称与数值、12个职业和120组具体兼容状态继续保持待定。主任务同时等待用户实际审查 R1 桌面壳；`PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+主任务审查 `D-V1CC11` 决定候选；只有合入公开 `main` 并发送 ledger revision 256 的 `DESIGN_SYNC` 后，小市民阶层两项核心原型才成为开发权威。随后设计 Grill 继续逐题确认剩余4张中上层与上流层出身卡，再进入职业名册；全部正式名称、数值、12个职业和120组具体兼容状态继续保持待定。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
