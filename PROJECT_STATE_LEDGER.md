@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 248
+- `LEDGER_REVISION`: 249
 - `PROJECT_STATUS`: `R1_FRONTEND_BACKEND_IN_PROGRESS_AND_DESIGN_GRILL_ACTIVE`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_DISPATCHED / INTEGRATION_NOT_STARTED`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -128,6 +128,7 @@
 - `D-V1CC2`: 第一版是否显示手动属性加点 — `LOCKED=A_AUTO_DERIVED_NO_POINT_BUY_UI`
 - `D-V1CC3`: 第一版捏人最终短流程 — `LOCKED=A_ADAPTED_COMPACT_FLOW`
 - `D-V1CC4`: 第一版捏人的性格特质选择数量 — `LOCKED=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW`
+- `D-V1CC5`: 第一版自由专精在短流程中的位置与数量 — `LOCKED=A_ONE_BACKGROUND_FILTERED_FREE_SPECIALIZATION_IN_SUMMARY`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -2371,7 +2372,7 @@
 
 - `DECISION`: `A_AUTO_DERIVED_NO_POINT_BUY_UI`
 - `CONFIRMED_BY_USER`: 2026-08-28，用户回复 `a`。
-- 第一版捏人不显示手动属性加点或点数购买界面；初始属性和基础技能由出身、当前职业、年龄及所选特质确定性派生。
+- 第一版捏人不显示手动属性加点或点数购买界面；初始属性和背景基础技能由出身、当前职业、年龄及所选特质确定性派生，自由专精则按 `D-V1CC5` 在摘要页另选1项。
 - 确认角色前应显示简短结果摘要，让玩家知道选择带来的能力倾向，而不是隐藏关键后果。
 - 存档需记录派生输入与规则版本，确保同一选择可重现，并支持未来规则迁移。
 - `D-003A5A` 的“统一基线＋有限自由分配”保留为长期设计方向；本决定仅锁定第一版不向玩家暴露自由加点步骤。
@@ -2383,7 +2384,7 @@
 - `CONFIRMED_BY_USER`: 2026-08-28，用户回复 `a`。
 - 第一版依次完成：基础身份（姓名、性别、18—45岁年龄、鲁恩境内出生地、预设头像）→一个出身→一个当前职业→恰好2个性格特质＋一个强制缺陷→自动派生属性/技能摘要→确认开局。
 - 鲁恩国籍固定，不增加无意义的单选控件；预设头像自带结构化外貌标签，第一版不要求玩家逐项编辑发色、五官等细节。
-- 玩家手动确认所有关键身份选择；属性、技能、初始关系和资源由已选输入确定性派生，不在第一版增加点数购买、家庭营生、关系网或秘密配置页。
+- 玩家手动确认所有关键身份选择；属性、背景基础技能、初始关系和资源由已选输入确定性派生，并在摘要页按 `D-V1CC5` 补选1项自由专精；第一版不增加点数购买、家庭营生、关系网或秘密配置页。
 - 确认页必须展示主要能力倾向与关键后果，不能让玩家在不知情的情况下进入游戏。
 - 本决定完成第一版捏人方向封板；具体出身/职业/特质/缺陷清单、派生公式和美术资产属于后续内容与实现任务；性格特质与缺陷的选择数量由后续 `D-V1CC4` 单独锁定。
 
@@ -2395,6 +2396,15 @@
 - 领域层和界面层都必须执行相同的精确数量校验：少于2个或多于2个均不能确认角色，不能继承参考项目只限制上限、没有执行最少数量校验的缺口。
 - 该数量在保持短流程的同时提供两条可组合的人格倾向；不扩张为3个以上特质，也不把缺陷当作第三个正向特质。
 - 本决定只锁定选择数量及最小/最大校验；具体特质与缺陷清单、效果、互斥关系、派生公式、文案和美术仍保持待定。
+
+### D-V1CC5 自动摘要页选择一项背景过滤的普通技能专精
+
+- `DECISION`: `A_ONE_BACKGROUND_FILTERED_FREE_SPECIALIZATION_IN_SUMMARY`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户针对当前单题回复 `a`。
+- 第一版在自动摘要页展示出身、当前职业、年龄、特质与缺陷派生出的属性和基础技能，并要求玩家再选择恰好1项普通技能专精；该选择属于摘要页内的最后一项输入，不新增第七个捏人步骤。
+- 专精候选必须按已经选择的背景和世界内前置条件过滤，排除明显不可能或与角色经历冲突的项目，同时保留可信的跨背景兴趣、业余训练或个人长处选项。
+- 未选择或选择多于1项时不能确认角色；选择后摘要必须即时展示它带来的可见倾向，存档把专精ID与派生规则版本一并记录以保证可重现。
+- 本决定只锁定第一版专精数量、所在步骤与背景过滤边界；具体技能清单、候选池大小、初始等级、数值效果、训练速度、检定公式和界面美术仍保持待定。
 
 ## LOCKED_PROFESSION_DESIGN
 
@@ -2414,7 +2424,7 @@
 - 家庭/成长背景、教育和普通职业共同赋予一组与角色经历一致的基础技能。
 - 在背景技能之外，玩家拥有有限的自由专精空间，用于塑造跨背景兴趣、业余训练或个人长处。
 - 自由专精不能抹除技能前置、世界合理性或背景代价，也不能让单一最优技能组合覆盖所有开局身份。
-- 本决定尚未锁定技能清单、专精数量、技能等级、上限、教育字段、训练速度或具体检定公式；这些细节按用户优先级要求后置。
+- 第一版自由专精的数量和流程位置已由 `D-V1CC5` 锁定为自动摘要页内恰好1项；技能清单、候选池大小、技能等级、上限、教育字段、训练速度或具体检定公式仍按用户优先级要求后置。
 
 ## LOCKED_ATTRIBUTE_AND_TRAIT_DESIGN
 
@@ -2949,9 +2959,10 @@
 328. `GITHUB_AUTHORIZED_AND_PUBLISHED`: 用户明确授权 GitHub 与开源部署；GitHub 插件/CLI 账户为 `dongxuelian11`，仓库本地身份来自授权资料 `E1aina <2806418887@qq.com>`。初始提交 `e0a7677` 已推送到公开仓库 `https://github.com/dongxuelian11/lotm-fan-game` 的 `main`。
 329. `DESIGN_GRILL_WORKSTREAM_AUTHORIZED`: 用户要求新增独立深度链接对话，对所有真正未决定的设计按 `grill-me` 一次一题询问，并将回答写入总账本和对应项目 MD。决定只有提交并由主任务合入 `main`、发送 `DESIGN_SYNC` 后才可供开发任务实现。
 330. `DESIGN_GRILL_TASK_CREATED`: 已创建独立 worktree 任务 `01a04d69-e530-7df1-b7e9-abc2d24803f1`，模型 `gpt-5.6-sol / high`，基线 `07cf112b6856600981bd1056b3045a8ea029f62f`。它必须先完成只读依赖审计，再从 R2+ 最早未决项一次只问一题；首次写入前切换到 `work/design-grill-r2-foundation`，不得在 detached HEAD 提交。
-331. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从最新公开 `origin/main=92a6fd9882c154aa998793295b14d172404a50c9` 创建 `work/design-grill-r2-foundation`；用户回复 `a`，将 `D-V1CC4` 锁定为第一版恰好选择2个性格特质并另选1个真实缺陷。该决定作为候选提交等待主任务审查合入和 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
+331. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=92a6fd9882c154aa998793295b14d172404a50c9` 创建 `work/design-grill-r2-foundation`；用户回复 `a`，将 `D-V1CC4` 锁定为第一版恰好选择2个性格特质并另选1个真实缺陷。主任务已将决定作为 `4107945c276a1d6658bafe2bae49ca6b2b2d86e7` 合入公开 `main` 并发送 ledger revision 247 的 `DESIGN_SYNC`。
 332. `R1_ROOT_CONTRACT_FROZEN`: 主任务在 `8048ff1c69fdd540d5b9e7cdae16aec7e007ca21` 建立锁版本 Electron/React/TypeScript/Vite/Vitest 根脚手架、共享 `r1-v1` 类型和最小 CI；在 `e2bfe3833c967d3d9c129919a46b4d9f0d202962` 冻结 R1 桌面权威合同。实测 `npm run typecheck=PASS`、`vitest=1 file / 3 tests PASS`、`npm audit=0 vulnerabilities`；完整 build、桌面 smoke、接线和玩家验收仍为 `NOT_RUN/NOT_STARTED`。
 333. `R1_WORKTREES_DISPATCHED`: 前端已迁入任务 `01a04d7d-abe2-7732-9ac0-e4ff95397ca2` / worktree `C:\Users\Administrator\.codex\worktrees\fc83\诡秘`，后端已迁入任务 `01a04d7d-b97c-7311-8700-2f86c39f86c5` / worktree `C:\Users\Administrator\.codex\worktrees\12c6\诡秘`；两者实测清洁且 HEAD 均为公开 `origin/main=e2bfe3833c967d3d9c129919a46b4d9f0d202962`，已收到 Luna/Max、精确写集和 `r1-v1` dispatch。任何新增玩法缺口直接路由设计 Grill，不在开发任务临时决定。
+334. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务收到 `ENGINEERING_SYNC=248:86aeb04debe91bc168ac114499479a0293d78c64:R1_FRONTEND_BACKEND_DISPATCHED` 后，从该公开 main 同步并记录用户原答 `a`；`D-V1CC5` 候选锁定为第一版自动摘要页内选择恰好1项背景过滤的普通技能专精。该候选等待主任务审查合入和新的 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
 
 ## FOUNDATION_AUDIT
 
@@ -2981,4 +2992,4 @@
 
 ## NEXT_ACTION
 
-前后端任务按 `r1-v1` 与各自写集完成候选提交并停在 `READY_FOR_INTEGRATION`；主任务分别审查后再接线、运行类型/单元/契约/集成/build/真实 Electron smoke，并交用户实际审查。设计 Grill 从 ledger revision 248 与最新公开 main 同步后继续一次一题；任何开发中新 `DESIGN_GAP` 直接推送该设计任务。
+主任务审查并合入 `D-V1CC5=A_ONE_BACKGROUND_FILTERED_FREE_SPECIALIZATION_IN_SUMMARY` 的候选提交，再发送新的 `DESIGN_SYNC`；在此之前前后端不得直接实现该聊天答案。R1 其余工作继续按 `r1-v1` 推进，任何新 `DESIGN_GAP` 仍直接推送设计 Grill。
