@@ -23,6 +23,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run test && npm run build",
+    "smoke:electron": "npm run build && node tests/integration/run-electron-smoke.mjs",
     "start": "electron ."
   },
   "dependencies": {
@@ -46,4 +47,3 @@
     "wait-on": "9.1.0"
   }
 }
-
