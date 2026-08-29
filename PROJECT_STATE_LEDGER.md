@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 257
+- `LEDGER_REVISION`: 259
 - `PROJECT_STATUS`: `R1_INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE_AND_DESIGN_GRILL_HOLD`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -138,6 +138,8 @@
 - `D-V1CC9`: 第一版贫民阶层的两张整合出身核心原型 — `LOCKED=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD`
 - `D-V1CC10`: 第一版劳工阶层的两张整合出身核心原型 — `LOCKED=B_FACTORY_WAGE_HOUSEHOLD_PLUS_EMPLOYER_DEPENDENT_SERVICE_HOUSEHOLD`
 - `D-V1CC11`: 第一版小市民阶层的两张整合出身核心原型 — `LOCKED=B_SELF_EMPLOYED_SMALL_BUSINESS_OR_WORKSHOP_HOUSEHOLD_PLUS_EDUCATED_JUNIOR_CLERICAL_HOUSEHOLD`
+- `D-V1CC12`: 第一版中上阶层的两张整合出身核心原型 — `LOCKED=A_HIGHER_EDUCATED_PROFESSIONAL_HOUSEHOLD_PLUS_MEDIUM_COMMERCE_OR_ENTERPRISE_HOUSEHOLD`
+- `D-V1CC13`: 第一版上流阶层的两张整合出身核心原型 — `LOCKED=A_NOBLE_LINEAGE_HOUSEHOLD_PLUS_RECOGNIZED_INDUSTRIAL_OR_FINANCIAL_ELITE_HOUSEHOLD`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -2469,6 +2471,24 @@
 - 两张卡都保持小市民阶层：自营家庭不自动拥有大型产业或上层商业关系，职员家庭也不自动赋予高等专业资格、官职、组织权限或秘密知识；任何具体资源、职位与信息仍受后续内容和世界条件约束。
 - 本决定只锁定两张小市民出身卡的核心身份与“资产/市井网络对教育/机构网络”差异轴；正式显示名称、店铺或作坊类型、任职机构、家庭成员、资产与教育程度、数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
 
+### D-V1CC12 中上阶层采用高等教育专业人士家庭与中型商贸或产业经营家庭两种出身原型
+
+- `DECISION`: `A_HIGHER_EDUCATED_PROFESSIONAL_HOUSEHOLD_PLUS_MEDIUM_COMMERCE_OR_ENTERPRISE_HOUSEHOLD`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户明确授权“后续几个出生都按推荐来，不要问我”；主任务据此采用本项推荐。
+- 第一版中上阶层的两张整合出身卡分别采用“高等教育专业人士家庭”和“中型商贸/产业经营家庭”作为核心原型；这里描述的是角色成长时期的家庭资本与社会环境，不替代玩家随后独立选择的当前职业。
+- “高等教育专业人士家庭”以高等教育、专业资格与声誉、机构或客户网络、稳定较高收入，以及考试、职业伦理与名誉压力为核心；“中型商贸/产业经营家庭”以可观经营资产、雇员与供应关系、信用和商贸网络，以及市场、现金流、债务与监管风险为核心。
+- 两张卡都保持中上阶层：专业人士家庭不自动赋予玩家本人专业资格或机构权限，经营家庭也不自动等同于大型产业、上流社会完全接纳或无限资金；两者都不自动赋予官职、教会权限或秘密知识。
+- 本决定只锁定两张中上阶层出身卡的核心身份与“教育/专业声望对经营资产/商业信用”差异轴；正式显示名称、具体专业或行业、机构、家庭成员、资产与负债、数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
+
+### D-V1CC13 上流阶层采用贵族家系与获社会承认的实业或金融精英家庭两种出身原型
+
+- `DECISION`: `A_NOBLE_LINEAGE_HOUSEHOLD_PLUS_RECOGNIZED_INDUSTRIAL_OR_FINANCIAL_ELITE_HOUSEHOLD`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户明确授权“后续几个出生都按推荐来，不要问我”；主任务据此采用本项推荐。
+- 第一版上流阶层的两张整合出身卡分别采用“贵族家系”和“获社会承认的实业/金融精英家庭”作为核心原型，满足上流层必须同时覆盖贵族与非贵族精英的既有决定；这里描述的是家庭背景，不替代当前职业。
+- “贵族家系”以家名、法律与礼制地位、上流关系网络，以及继承、婚姻、家族义务和声誉压力为核心；“获社会承认的实业/金融精英家庭”以大型经营与资本网络、商业和社会影响力，以及市场、政治、监管与公众关注风险为核心，但不拥有世袭贵族特权。
+- 贵族家系不代表玩家本人必然持有爵位或继承权，非贵族精英也不自动获得贵族身份；两张卡都不自动赋予无限现金、政府或教会权限、魔药、序列能力或秘密知识。
+- 本决定只锁定两张上流阶层出身卡的核心身份与“世袭身份/家名网络对资本经营/社会承认”差异轴；正式显示名称、爵位与继承、具体产业或金融业务、家境、资产、数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
+
 ## LOCKED_PROFESSION_DESIGN
 
 ### D-003A4A 普通职业是否构成长期玩法线
@@ -3040,6 +3060,8 @@
 346. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=eceebbf13ea44064a7c474bee8ea29dd638db467` 记录用户原答 `b`；`D-V1CC11` 锁定小市民阶层两张整合出身的核心原型为“自营小店/小作坊家庭”与“受教育的基层职员家庭”。主任务已审查候选 `a840e1a269830d14609c7e0bbb6bdb460241325c` 并将其作为 `488e89dfa3f922c88bf608ba41de245a8d8ab728` 合入 `main`；精确公开主线 `a2e5c64cd5ebab7d2cd2b23b496ce695074b4763` 的 CI #33257013970 通过后，主任务已发送 ledger revision 256 的 `DESIGN_SYNC`。R2 未获实现授权。
 347. `USER_SCOPED_RECOMMENDATION_AUTHORITY`: 用户明确要求“后续几个出生都按推荐来，不要问我”。本授权严格限定为尚未锁定的4张中上层与上流层整合出身核心原型：由主任务按原著贴合度、阶层差异与第一版简洁性采用推荐并固化，不再逐题等待用户答复。正式名称、具体数值、12个职业、120组兼容、事件及其他未决设计不在此授权范围内。
 348. `GRILL_ONLY_GLOBAL_HOLD_GATE`: 用户进一步明确“grill任务只进行grill，不进行其他；需要grill时其他任务都暂停等待我grill”。独立 Grill 任务从此无文件写集，不写 MD、不提交、不做同步、不自动决策；主任务负责固化回答。任何真正需要 Grill 的新问题都会先触发 `GLOBAL_GRILL_HOLD`，主任务实施、前端与后端在用户回答并完成固化前全部暂停。
+349. `DONE_RECOMMENDED_DECISION_PERSISTED`: 依据用户对剩余出身核心原型“都按推荐来，不要问我”的限定授权，主任务将 `D-V1CC12` 锁定为中上阶层采用“高等教育专业人士家庭”与“中型商贸/产业经营家庭”，区分教育/专业声望与经营资产/商业信用；未调用 Grill 任务，未授权 R2 实现。
+350. `DONE_RECOMMENDED_DECISION_PERSISTED`: 同一限定授权下，主任务将 `D-V1CC13` 锁定为上流阶层采用“贵族家系”与“获社会承认的实业/金融精英家庭”，区分世袭身份/家名网络与资本经营/社会承认；第一版10张出身的五层核心原型至此齐备，但正式名称、数值与实现仍未冻结。
 
 ## FOUNDATION_AUDIT
 
@@ -3069,4 +3091,4 @@
 
 ## NEXT_ACTION
 
-主任务按用户限定授权直接固化剩余4张中上层与上流层出身核心原型，不调用 Grill 任务。之后若出现未被授权覆盖且必须由用户决定的问题，先把主任务实施、前端与后端全部置于 `GLOBAL_GRILL_HOLD`，再派发 Grill 任务只进行提问；回答由主任务写入项目文件。全部正式名称与数值、12个职业和120组具体兼容状态继续保持待定。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+第一版10张整合出身的五层核心原型已齐备；正式显示名称、具体数值与120组兼容状态仍待后续。下一项会影响角色创建的核心缺口是12个当前职业的具体名册；在派发该 Grill 前，主任务实施、前端与后端必须全部保持或进入 `GLOBAL_GRILL_HOLD`，独立 Grill 任务只负责向用户提问，回答由主任务固化。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
