@@ -1,0 +1,47 @@
+# Dependencies and generated output
+node_modules/
+dist/
+out/
+release/
+coverage/
+*.tsbuildinfo
+
+# Runtime state must never enter source control
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+userdata/
+saves/
+runtime-data/
+
+# Private or unlicensed knowledge/content
+private/
+knowledge/corpus/
+knowledge/generated/
+content/generated/
+
+# Secrets and local overrides
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs and test artifacts
+*.log
+playwright-report/
+test-results/
+.vitest/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local Codex/gstack state
+.gstack/
+.playwright-cli/

@@ -1,0 +1,20 @@
+# Notice and content boundary
+
+This repository is an unofficial fan-game engineering project. It is not
+affiliated with, sponsored by, or endorsed by the author, publisher, or any
+other rightsholder of Lord of Mysteries (诡秘之主).
+
+The MIT License applies only to original software code and original project
+documentation contributed to this repository. It does not grant rights to the
+Lord of Mysteries setting, characters, terminology, story text, illustrations,
+or any other third-party material. All such rights remain with their respective
+rightsholders.
+
+The public repository must not contain copied novel text, private RAG corpora,
+credentials, user saves, generated databases, or assets without documented
+permission and provenance. Content distribution, branding, and any public game
+release require a separate rights and provenance review.
+
+The two local reference projects named in the design documentation are
+read-only research sources. Their source code, prose, assets, private corpora,
+runtime data, and build artifacts are not part of this repository.
