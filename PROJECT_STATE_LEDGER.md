@@ -5,14 +5,14 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 261
-- `PROJECT_STATUS`: `R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / DESIGN_GRILL_IDLE`
+- `LEDGER_REVISION`: 262
+- `PROJECT_STATUS`: `GLOBAL_STOP_THE_LINE / AWAITING_WORLD_FEEDBACK_BATCH`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
 - `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
 - `GRILL_POLICY`: `GLOBAL_STOP_THE_LINE`
-- `GRILL_GATE`: `CLEAR`
-- `GRILL_DECISION_ID`: `NONE`
+- `GRILL_GATE`: `AWAITING_USER`
+- `GRILL_DECISION_ID`: `D-WORLDFEEDBACK-B1`
 
 ## TASK_GOAL
 
@@ -906,6 +906,15 @@
 - 世界脉冲的基础周期为一周；动态主动行动束完成后进入下一周，并结算NPC议程、关系变化、经济义务、事件推进与可见世界反馈。
 - 月、季、年仍可作为工资账期、房租、重大仪式、组织计划和时代事件的聚合节点，但不替代每周基础回合。
 - 本决定尚未锁定每周具体行动数、周内日期细分、跨周行动、月末额外结算或时间暂停规则。
+
+### D-WORLDFEEDBACK0 持续世界动态与逐行动反馈
+
+- `DECISION`: `LOCKED=CONTINUOUS_WORLD_EVENT_REFRESH_AND_EVERY_ACCEPTED_ACTION_FEEDBACK`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户明确要求参考项目中世界事件持续刷新、玩家做过的事情也必须得到反馈。
+- 每个被接受并完成结算的玩家行动都必须产生至少一条玩家可见反馈；世界不能只在静态剧情节点变化，周期推进时还必须继续产生独立于玩家的世界事件与 NPC/组织动向。
+- 该反馈可以进入结果面板、纪事或事件卡，但本决定不推翻 `D-EVENT2` 与 `D-EVENT5`：不是每次行动都强制生成阻塞事件卡，同一行动/世界脉冲仍最多显示一张阻塞卡。
+- `REFERENCE_CONFIRMATION`: 参考源码同时存在行动日志、时间脉冲、世界状态漂移、NPC 议程和被动事件调度；新项目只借鉴这种反馈节奏，不复制其全局状态、`Math.random()`、可执行事件函数或先推进时间再补写行动结果的顺序缺口。
+- `PENDING_BATCH`: `D-WORLDFEEDBACK1..6` 仍需锁定轻量反应频率、逐行动反馈载体、可见知识层、因果归因、首版离屏模拟范围与延迟后果结构。
 
 ### D-CORE4 工作占用一个主要行动
 
@@ -3079,6 +3088,9 @@
 353. `GRILL_ANSWER_RECEIVED_D-V1CC14`: 独立 Grill 任务只读提问后返回用户原答 `b`；`D-V1CC14` 锁定为第一版12职业池直接包含非法/地下职业，具体名册与数量分配继续待定。全局 Grill 门禁在主任务完成文档固化、公开提交与精确验证前保持开启。
 354. `D-V1CC14_PUBLICATION_PASSED`: 回答固化提交 `b6827ed6a0e77c0259e5e73da85dc56db1595db3` 已推送到公开 `main`，精确 GitHub Actions CI #33258631657 完成且结论为 `success`；该提交仍明确保留职业名称、数量、比例、效果和120组兼容状态待定。
 355. `GLOBAL_GRILL_GATE_CLEARED_D-V1CC14`: 本题完成公开固化和精确验证后，`GRILL_GATE` 清除；前端与后端只恢复到暂停前的 `INTEGRATED_AWAITING_PLAYER_ACCEPTANCE` hold，Grill 任务恢复只读待命。此清门不授予任何新实现、R2、玩家验收、打包或干净机器权限。
+356. `REFERENCE_WORLD_FEEDBACK_CONFIRMED`: 只读复核参考项目 `engine.js`、`world_state.js`、`events_core.js` 与 `npc_ai_engine.js`，确认其行动日志、周期世界演化、NPC 议程和事件刷新共同形成持续反馈；同时确认其结算顺序与不可重放随机实现不能直接继承。
+357. `DONE_USER_PRINCIPLE_D-WORLDFEEDBACK0`: 用户明确锁定“持续刷新世界事件，玩家做过的事情也要有反馈”；这是一项总原则，不等于每次行动强制弹阻塞卡，具体节奏与呈现进入下一批设计。
+358. `GLOBAL_GRILL_HOLD_D-WORLDFEEDBACK-B1`: 用户明确授权进入一轮批量深度 Grill。主任务、前端与后端统一暂停，设计 Grill 任务只可一次询问 `D-WORLDFEEDBACK1..6` 并原样返回答案，不得编辑文件、提交、同步状态或推进下一批。
 
 ## FOUNDATION_AUDIT
 
@@ -3108,4 +3120,4 @@
 
 ## NEXT_ACTION
 
-当前没有活跃 Grill 问题。下一项职业名册设计必须先由主任务识别一个真正未决的单题、重新开启 `GLOBAL_STOP_THE_LINE` 门并暂停前端与后端，再交给独立 Grill 任务只读询问；不得在清门时自动提问或实施。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+当前 `D-WORLDFEEDBACK-B1` 批量 Grill 门已开启；前端、后端和主任务实施均暂停。独立 Grill 任务只询问 `D-WORLDFEEDBACK1..6`，等待用户按 `1A 2A 3A 4A 5A 6A` 格式作答后停止；回答由主任务固化并通过审计后才能清门。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。

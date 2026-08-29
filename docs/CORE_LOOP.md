@@ -1,6 +1,6 @@
 # 核心循环与日常行动
 
-`STATUS=PARTIALLY_LOCKED / SOURCE=D-CORE1..5,D-ACTIONS1..2,D-WORK1..3,D-LEARN1,D-INVEST1,D-ACTING1,D-REST1,D-VISIT1,D-CITYTRAVEL*,D-ACTIONBUDGET1..3,D-RECOVERYVALUES1..3,D-RESOURCECAP1,D-ECON0..9,D-DEBT1..3`
+`STATUS=PARTIALLY_LOCKED / SOURCE=D-CORE1..5,D-WORLDFEEDBACK0..6,D-ACTIONS1..2,D-WORK1..3,D-LEARN1,D-INVEST1,D-ACTING1,D-REST1,D-VISIT1,D-CITYTRAVEL*,D-ACTIONBUDGET1..3,D-RECOVERYVALUES1..3,D-RESOURCECAP1,D-ECON0..9,D-DEBT1..3`
 
 ## 周循环
 
@@ -10,6 +10,12 @@
 4. 行动结算写入资源变化、能力掌握度、知识、扮演进度、线索、关系和事件日志。
 5. 本周动态行动力用尽后按 `D-CORE5` 进入世界脉冲：职业与产业收入、生活费、债务、世界脉冲、NPC议程、事件和后续条件依次结算。
 6. 玩家看到世界回应，再规划下一周；没有固定周数上限，死亡或明确终局条件才结束一局。
+
+## 持续世界动态与行动反馈
+
+`D-WORLDFEEDBACK0` 已锁定：每个被接受并结算完成的玩家行动都必须产生可见反馈，世界还要在周期推进中持续生成独立事件与 NPC/组织动向。它补强“行动后世界回应”的体验，但不把每次行动都改成阻塞事件卡，也不改变最后一个行动持久化后才执行完整周脉冲的既有顺序。
+
+参考源码已确认存在行动日志、世界状态漂移、NPC 议程与被动事件四条反馈链；新项目必须按“行动结算并持久化 → 轻量反馈/候选反应 → 最后一次行动后的完整周脉冲”保持因果顺序。轻量反应是否每次运行、反馈显示位置、玩家知识过滤、因果标签、首版离屏模拟范围和延迟后果仍由 `D-WORLDFEEDBACK1..6` 决定。
 
 ## 固定与情境按钮
 
