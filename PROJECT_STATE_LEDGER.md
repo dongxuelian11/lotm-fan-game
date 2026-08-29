@@ -3062,6 +3062,7 @@
 348. `GRILL_ONLY_GLOBAL_HOLD_GATE`: 用户进一步明确“grill任务只进行grill，不进行其他；需要grill时其他任务都暂停等待我grill”。独立 Grill 任务从此无文件写集，不写 MD、不提交、不做同步、不自动决策；主任务负责固化回答。任何真正需要 Grill 的新问题都会先触发 `GLOBAL_GRILL_HOLD`，主任务实施、前端与后端在用户回答并完成固化前全部暂停。
 349. `DONE_RECOMMENDED_DECISION_PERSISTED`: 依据用户对剩余出身核心原型“都按推荐来，不要问我”的限定授权，主任务将 `D-V1CC12` 锁定为中上阶层采用“高等教育专业人士家庭”与“中型商贸/产业经营家庭”，区分教育/专业声望与经营资产/商业信用；未调用 Grill 任务，未授权 R2 实现。
 350. `DONE_RECOMMENDED_DECISION_PERSISTED`: 同一限定授权下，主任务将 `D-V1CC13` 锁定为上流阶层采用“贵族家系”与“获社会承认的实业/金融精英家庭”，区分世袭身份/家名网络与资本经营/社会承认；第一版10张出身的五层核心原型至此齐备，但正式名称、数值与实现仍未冻结。
+351. `MASTER_RECOMMENDATION_PUBLICATION_PASSED`: `D-V1CC12` 与 `D-V1CC13` 已由主任务作为 `a0b53ee6e8ad0129a90b88af4c01f1ceec52767c` 推送到公开 `main`，精确 CI #33257869398 通过；独立 Grill 任务保持 `GRILL_ONLY_HOLD`，前端/后端保持 R1 hold，`PLAYER_ACCEPTANCE=NOT_RUN`，R2 未下发。
 
 ## FOUNDATION_AUDIT
 
