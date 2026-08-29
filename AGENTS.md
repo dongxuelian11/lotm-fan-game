@@ -1,5 +1,8 @@
 # 《诡秘之主》同人游戏：Agent 接管与开发合同
 
+`BMGD_POLICY=ISOLATED_PROPOSAL_ONLY`
+`BMGD_CONTRACT=docs/BMGD_ADOPTION_CONTRACT.md`
+
 `CONTRACT_REVISION=9 / STATUS=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
 
 本文件是所有 Codex/agent 的强制入口。Windows 路径大小写不敏感，仓库只保留规范文件名 `AGENTS.md`，不要再创建重复的 `agents.md`。
@@ -107,6 +110,10 @@
 任务每完成一个原子切片，必须先更新自己的状态文件，包含轮次、合同、基线、HEAD、写集、测试、已知缺口和下一步。自动压缩后从该文件恢复，不重做已完成工作。
 
 ## 8. 参考项目和 IP/数据边界
+
+- BMGD 只作为隔离的审查与模板工具，输出只能标记为 `PROPOSAL_ONLY`。
+- 它不能把自己的 GDD 设为本项目权威，不能直接修改总账本或锁定玩法。
+- 它不能绕过 Grill、当前轮合同和玩家验收；完整规则见 `docs/BMGD_ADOPTION_CONTRACT.md`。
 
 - `D:\游戏\汴京梦华_Game——初步正式版\汴京梦华_Game` 与 `D:\gmzz` 永远只读；
 - `D:\gmzz` 是并行脏工作树，绝不读取或触碰 `.qa-prodserver3.err.log`、`.qa-prodserver3.out.log`；

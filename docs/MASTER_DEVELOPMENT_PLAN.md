@@ -1,6 +1,6 @@
 # 主开发计划：双工作流、逐轮接线与用户审查
 
-`PLAN_REVISION=3 / PRODUCT_CODE=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / AUTHORITY=PROJECT_STATE_LEDGER.md / ORCHESTRATOR=CURRENT_MASTER_TASK`
+`PLAN_REVISION=4 / PRODUCT_CODE=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / AUTHORITY=PROJECT_STATE_LEDGER.md / ORCHESTRATOR=CURRENT_MASTER_TASK`
 
 本计划把已经锁定的玩法设计变成可执行开发轮次。当前对话是唯一的计划审查、合同冻结、设计固化、接线和发任务入口；独立设计 Grill 任务只负责逐题采访，前端、后端两个开发任务只执行当前轮合同。深度链接方便进入任务，但不是项目权威，自动压缩后必须从仓库文件恢复状态。
 
@@ -35,6 +35,10 @@
 - 不复制题材文案、素材或许可证不清的代码；
 - 捏人最低选择必须由领域层校验，不能只在页面提示；
 - 页面变化不能作为保存成功证据，提交必须有 SQLite 事务回执并通过重启恢复测试。
+
+## BMGD 辅助工具边界
+
+BMGD 已获用户授权进行隔离试用，但不新增产品工作流或设计权威。当前只允许对权威文档副本运行 GDD Validate/Analyze 与 Implementation Readiness，输出统一为 `PROPOSAL_ONLY`。任何真实玩法空缺仍必须暂停其他任务并转给专门 Grill 任务；BMGD 不得绕过 R1 玩家验收或提前冻结 R2。详见 `BMGD_ADOPTION_CONTRACT.md`。
 
 ## 2. 工程形态
 

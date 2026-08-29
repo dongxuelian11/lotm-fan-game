@@ -24,6 +24,7 @@
 16. [UI 与实现方案](UI_IMPLEMENTATION_PLAN.md)
 17. [事件卡系统与内容生产](EVENT_CARD_SYSTEM.md)
 18. [未决问题](OPEN_DECISIONS.md)
+19. [BMGD 隔离试用合同](BMGD_ADOPTION_CONTRACT.md)
 
 ## 权威层级
 

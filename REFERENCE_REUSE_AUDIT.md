@@ -1,8 +1,8 @@
 # 《诡秘之主》同人游戏参考项目审计与复用矩阵
 
-> `AUDIT_REVISION=1`
+> `AUDIT_REVISION=2`
 > `AUDIT_DATE=2026-08-28 Asia/Shanghai`
-> `IMPLEMENTATION_STATUS=NOT_STARTED`
+> `IMPLEMENTATION_STATUS=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE`
 > 结论只覆盖本次实际读取与实机验证的本地快照；两个参考目录全程只读。
 
 ## 1. 结论先行
@@ -160,7 +160,18 @@ gmzz 的核心价值不是把它当前游戏外壳搬过来，而是把下面这
 - 检索器设置场景引用数和字符预算，并记录候选、选中、拒绝和来源事件；回执区分 delivered/presented/recalled 并按受众幂等。
 - 该模块并非独立 npm 包，字段仍依赖 gmzz 的 actor/faction/project、WorldKernel、周回合、运行限制与提示词。当前 gmzz 还有大量并行脏改动，尤其调用侧 world runtime/kernel 正在变化；因此结论是 `LICENSE_DIRECT_REUSE_ALLOWED / TECHNICAL_DIRECT_REUSE_AS_IS=NO / ADAPT_REUSE=YES`。
 
-## 6. 推荐的新项目边界（尚未锁定）
+## 6. BMGD 辅助设计专项审计（2026-08-29）
+
+- 来源为 `https://github.com/bmad-code-org/bmad-module-game-dev-studio`，本轮固定公开 `main=478cc09f2e2f9a1fc6d78b1eb7e19fe0323fc08e`，许可证为 MIT。
+- 它提供前期研究、GDD、叙事、UX、架构、Epic/Story、生产和测试工作流；GDD Validate 与 Implementation Readiness 对本项目最有价值。
+- 它在自己的 GDD 工作流中把 GDD 定义为设计权威真值源，因此不能原样接管本项目；否则会与用户最终设计权、总账本、Grill 和轮次合同形成第二权威。
+- `package.json=0.7.1`、`src/module.yaml=0.7.0`，且仓库 `test` 主要执行 lint、Markdown lint 与格式检查；只能证明工具仓库的静态卫生，不能证明游戏设计质量。
+- 采用结论为 `SELECTIVE_ADAPT / ISOLATED_PROPOSAL_ONLY`：先只运行 Validate/Analyze 和 Implementation Readiness，输出进入 Git 忽略的隔离目录；需要设计决定时转入既有全局 Grill 门。
+- 首轮 `BMGD-PILOT-001` 的 GDD Validate 判定为 `PILOT_USEFUL_WITH_ADAPTER_REQUIRED`：没有新玩家设计缺口；真实工具缺口是它无法直接理解总账 + 主题文档 + 轮次合同的分布式权威形态。
+- Implementation Readiness 仅完成 Step 1 文档发现，因单体 GDD/Epics/UX 假设与当前 R1 实现后验收阶段不匹配，记录为 `NOT_RUN_BEYOND_STEP1`；不得据此宣称 `READY`。
+- 详细执行合同见 `docs/BMGD_ADOPTION_CONTRACT.md`。
+
+## 7. 推荐的新项目边界（尚未锁定）
 
 推荐建立以下独立层，而不是先复制页面：
 

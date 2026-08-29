@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 264
+- `LEDGER_REVISION`: 265
 - `PROJECT_STATUS`: `R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / DESIGN_GRILL_IDLE`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -84,6 +84,14 @@
 - gmzz 状态文档仍明确 `PLAYER_ACCEPTANCE=NOT_RUN`、真实模型 `NOT_RUN`，并存在主线接线/旧入口切换缺口；不得宣称产品完成。
 - `private/` 语料、generated seed、凭据、用户数据、SQLite 存档和 dirty 构建产物禁止进入新项目。
 
+### BMad Game Dev Studio（BMGD）
+
+- 用户已同意采用，但只作为隔离的设计审查、模板和实施前查漏工具。
+- 本轮核验公开 `main=478cc09f2e2f9a1fc6d78b1eb7e19fe0323fc08e`，许可证为 MIT；`package.json=0.7.1`，`module.yaml=0.7.0`。
+- BMGD 默认把 GDD 视作其设计真值源，与本项目权威体系冲突；本项目强制将全部输出降级为 `PROPOSAL_ONLY/VALIDATION_FINDING/REFERENCE_TEMPLATE`。
+- 只允许隔离运行 GDD Validate/Analyze 与 Implementation Readiness；不得直接 Create/Update/Finalize 权威 GDD，不得绕过 Grill、轮次合同、R1 玩家验收或 R2 冻结。
+- 完整边界见 `docs/BMGD_ADOPTION_CONTRACT.md`。
+
 ## REUSE_CLASSIFICATION
 
 - `DIRECT_REUSE`: 许可证、依赖和架构边界允许，且不携带原题材规则/素材，可在保留必要归属后复制。
@@ -92,6 +100,8 @@
 - `DO_NOT_REUSE`: 许可不明、第三方素材、强耦合题材数据、秘密/凭据或质量风险使其不应进入新项目。
 
 ## DECISION_REGISTER
+
+- `TOOL-BMGD1`: 是否采用 BMGD 辅助游戏设计 — `LOCKED=ISOLATED_PROPOSAL_ONLY_VALIDATION_AND_TEMPLATE_ASSISTANCE`
 
 - `D-001`: 游戏首要玩家幻想 / 首个可玩纵切 — `LOCKED=A_PERSONAL_BEYONDER_SURVIVAL_GROWTH`
 - `D-002`: 与《诡秘之主》原作关系及时间线 — `LOCKED=A_CANON_ERA_PARALLEL_STORY`
@@ -3106,6 +3116,12 @@
 363. `DESIGN_SYNC_264_D-WORLDFEEDBACK_B1`: 主任务向前端、后端和设计 Grill 状态同步 `DESIGN_SYNC=264:538fb5e0a364e7713315c203339fd73799d789be:D-WORLDFEEDBACK0..6,CORE_LOOP,EVENT_CARD_SYSTEM,KNOWLEDGE_PROJECTION,REFERENCE_REUSE`。
 364. `GLOBAL_GRILL_GATE_CLEARED_D-WORLDFEEDBACK_B1`: 公开固化与精确 CI 后清门；前后端只恢复到暂停前的 `INTEGRATED_AWAITING_PLAYER_ACCEPTANCE` hold，设计 Grill 恢复只读待命。未授权世界反馈实现、R2、玩家验收、打包或干净机器工作。
 
+365. `DONE_READ_ONLY_BMGD_AUDIT`: 已核验 BMGD 公开仓库、MIT 许可证、0.x 元数据、角色与前期/设计/技术/生产工作流；确认 GDD Validate 与 Implementation Readiness 有查漏价值，但其“GDD 为权威真值源”的默认与本项目总账本冲突。
+366. `LOCKED_TOOL_BMGD1`: 用户明确同意按推荐方案接入；BMGD 只在 `.bmgd-evaluation/` 隔离试用，输出为 `PROPOSAL_ONLY`，不得修改权威设计、重问锁定决定、绕过 Grill 或获得实现权限。
+367. `DONE_BMGD_SOURCE_RESTORE_PROOF`: 完整源码固定为 Git bundle 并实际离线还原到 `478cc09f2e2f9a1fc6d78b1eb7e19fe0323fc08e`；首个由浅克隆生成、静态 verify 通过但恢复失败的 bundle 已废弃。
+368. `DONE_BMGD_PILOT001_GDD_VALIDATE`: 旁路验证结果为 `PILOT_USEFUL_WITH_ADAPTER_REQUIRED`；确认现有核心循环/R1边界可追溯，序列能力与完整 RPG 内容属于已知 R6/R7 延期；未发现新的玩家设计缺口，`GRILL_TRIGGERED=NO`。
+369. `BLOCKED_BMGD_READINESS_PREFLIGHT`: BMGD 原生要求单体 GDD/Epics/UX 和逐步交互确认，不能直接消费本项目分布式权威文档；且当前是 R1 实现后玩家验收阶段、R2 未冻结，因此只完成文档发现，`READINESS=NOT_RUN_BEYOND_STEP1`。
+
 ## FOUNDATION_AUDIT
 
 - `AUDIT_DATE`: 2026-08-29 Asia/Shanghai。
@@ -3133,5 +3149,7 @@
 5. 保留所有 `PENDING`、`NOT_STARTED`、`NOT_RUN`、`NOT_AVAILABLE`、`NOT_CONFIGURED`、`BLOCKED` 字面状态，除非得到新证据或用户确认。
 
 ## NEXT_ACTION
+
+BMGD 隔离试用政策已经用户锁定；首轮 GDD Validate 已完成并判定 `PILOT_USEFUL_WITH_ADAPTER_REQUIRED`，没有新的玩家设计缺口，Grill 保持空闲。Implementation Readiness 因文档形态和当前阶段不匹配只完成 Step 1 预检，必须等待 R2 冻结并使用只读适配清单。该工具接入不改变当前产品下一步。
 
 `D-WORLDFEEDBACK1..6` 已公开固化并完成 `DESIGN_SYNC`，gmzz 分层记忆结论为“MIT 允许、抽取改造、不整包零修改搬入”。当前无活跃 Grill 问题；前后端只恢复到原有 R1 集成待玩家验收 hold，没有世界反馈实现权限。下一项真正未决设计必须重新开启全局暂停门。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。

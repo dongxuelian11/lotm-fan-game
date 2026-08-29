@@ -63,6 +63,22 @@ gmzz `app/memory/**` 本身在当前脏工作树中无未提交修改，最近�
 
 本项目采用 `ADAPT_REUSE`：借用世界事实与角色认知分离、观察/传播/调查授权知识、受众白名单投影、交付/呈现/回忆幂等回执、检索条数/字符预算和来源 ID 校验；按本项目的 `confirmed / rumor-or-inference / hidden`、角色知识、事件卡和 SQLite schema 重新建模。gmzz 的具体字段、提示词、NPC/组织/项目模型和 `private/` 数据不迁入。
 
+## BMad Game Dev Studio（BMGD）
+
+### 允许的选择性采用
+
+- GDD Validate/Analyze：只生成遗漏、矛盾、范围漂移和可测量性报告。
+- Implementation Readiness：只检查设计、UX、架构与任务拆分的一致性。
+- 叙事、UX、事件卡、Epic/Story 模板：只作为结构参考，并等待对应设计或轮次合同先锁定。
+
+### 不允许直接采用
+
+- 不采用它的“GDD 是设计权威真值源”默认；本项目权威仍是用户与 `PROJECT_STATE_LEDGER.md`。
+- 不让它 Create/Update/Finalize 本项目权威设计，不让 Quick Dev/生产工作流绕过 Grill、R1 玩家验收或 R2 冻结。
+- 不把它的输出、lint 或格式测试当作已锁定设计、实现正确、玩家验收或发布证据。
+
+本轮固定审计源为公开 `main=478cc09f2e2f9a1fc6d78b1eb7e19fe0323fc08e`；MIT 允许保留归属后复用模板和代码。隔离目录、输出标签和试用标准见 [BMGD 隔离试用合同](BMGD_ADOPTION_CONTRACT.md)。
+
 ## 总结
 
 复用原则是：汴京梦华主要借鉴玩家反馈节奏和信息架构；gmzz 主要借鉴可靠性边界、持久化、公开投影和 RAG 管线；《诡秘之主》的角色、途径、序列、魔药、扮演、污染、组织、地点和文本全部重新建模。

@@ -45,3 +45,6 @@ desktop.ini
 # Local Codex/gstack state
 .gstack/
 .playwright-cli/
+
+# Local third-party evaluation sandboxes (never source authority)
+.bmgd-evaluation/
