@@ -7,7 +7,7 @@
 | 主题 | 决定范围 | 主题文档 |
 |---|---|---|
 | 产品目标、原作关系、玩家身份 | `D-001`、`D-002`、`D-003*` | [项目总览](PROJECT_OVERVIEW.md)、[角色与成长](CHARACTER_AND_PROGRESSION.md) |
-| 第一版捏人 | `D-V1CC`、`D-V1CC1..7`、`D-003A*`、`D-003A4*`、`D-003A5*`、`D-003A6*` | [角色与成长](CHARACTER_AND_PROGRESSION.md)、`../V1_CHARACTER_CREATION_SPEC.md` |
+| 第一版捏人 | `D-V1CC`、`D-V1CC1..8`、`D-003A*`、`D-003A4*`、`D-003A5*`、`D-003A6*` | [角色与成长](CHARACTER_AND_PROGRESSION.md)、`../V1_CHARACTER_CREATION_SPEC.md` |
 | 核心数值、普通判定、污染 | `D-NUM*`、`D-NUM1S*`、`D-NUM2*`、`D-NUM3*`、`D-NUM4`、`D-NUM5*`、`D-NUM6`、`D-RESOURCEOVERDRAFT*`、`D-RESOURCECAP1`、`D-POLLUTIONEFFECT1..3` | [底层数值与判定](NUMERIC_SYSTEM.md) |
 | 周循环、行动、恢复、经济 | `D-CORE*`、`D-ACTIONS*`、`D-WORK*`、`D-LEARN1`、`D-INVEST1`、`D-ACTING1`、`D-REST1`、`D-RECOVERYVALUES1..3`、`D-ACTIONBUDGET1..3`、`D-CITYTRAVEL*`、`D-ECON*`、`D-DEBT*`、`D-INDUSTRY*` | [核心循环与日常行动](CORE_LOOP.md) |
 | 战斗转盘与胜负 | `D-V1COMBAT1`、`D-COMBAT1*`、`D-COMBAT2*`、`D-COMBAT3*`、`D-COMBAT4*`、`D-COMBAT5*`、`D-COMBAT6*` | [战斗与转盘](COMBAT_ROULETTE.md) |
