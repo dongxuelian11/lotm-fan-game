@@ -50,8 +50,8 @@
 
 ### 当前工作区
 
-- `D:\诡秘`: 已形成设计文档集并进入 R0 开源/Git/多任务治理；产品代码仍为 `NOT_STARTED`。
-- 本地 Git 已在 `main` 初始化，但作者名/邮箱均未配置，初始提交保持 `BLOCKED_GIT_IDENTITY_NOT_CONFIGURED`；公共 GitHub 远端与公开发布保持 `NOT_CONFIGURED/NOT_PUBLISHED`，不得用本地文件或暂存区冒充已提交/公开仓库。
+- `D:\诡秘`: 已完成 R0 开源治理与 R1 桌面权威纵切接线；产品代码当前为 `R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE`，安装包与干净机器验证仍为 `NOT_RUN`。
+- 本地 Git `main` 已配置作者 `E1aina <2806418887@qq.com>`，并连接公开仓库 `https://github.com/dongxuelian11/lotm-fan-game`；精确当前 SHA 仍须从实时 Git/GitHub 和轮次账本核验，不能由本段静态文字替代。
 - 规范 agent 入口是根目录 `AGENTS.md`；Windows 不再创建重复的大小写变体 `agents.md`。
 
 ### 《汴京梦华》参考项目
@@ -3021,7 +3021,8 @@
 341. `R1_MAINLINE_GATE_PASSED`: 主任务在前后端同一主线实测 `npm run typecheck=PASS`、`vitest=6 files / 44 tests PASS`、`npm run build=PASS`。Vite 生产资源绝对路径缺口已修为 `./assets/**`；修复与两进程 Electron 集成烟测作为 `14d17c60eb910137a270c645993d374ab74f5231` 合入。
 342. `R1_ELECTRON_TWO_PROCESS_SMOKE_PASSED`: 两个独立真实 Electron 进程通过 preload 窄 bridge 和同一 SQLite 文件完成无周目读取、fixture 创建、完全相同 intent 幂等重放、同 ID 异 payload 拒绝、旧 revision 拒绝、第二进程重启恢复以及活动周目 DOM 呈现；两进程保持同一 `runId=60e809b9-b3b2-43af-ad4c-16614dfb6a74`、revision 1 和 `checksum=b443baef5a75746cbcaec21a14d508566d586ab25662888054071e14fc16b70a`。这是本机集成 smoke，不是玩家验收、安装包或干净机器证据。
 343. `R1_PLAYER_REVIEW_GATE`: `PLAYER_ACCEPTANCE=NOT_RUN`、`PACKAGE=NOT_RUN`、`CLEAN_MACHINE=NOT_RUN`、`RELEASE=NOT_STARTED`。R2 尚未冻结或下发；只有用户实际审查当前桌面壳并明确通过后，R1 才能进入 `PLAYER_ACCEPTED`。
-344. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从公开 `origin/main=467eac09ac902a94e0dbfbbe70059714e9a2411f` 记录用户原答 `b`；`D-V1CC10` 锁定劳工阶层两张整合出身的核心原型为“工厂工资家庭”与“雇主依附的服务家庭”。该设计在主任务审查合入并发送 ledger revision 255 的 `DESIGN_SYNC` 前仍为候选，不授权 R2 实现。
+344. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=467eac09ac902a94e0dbfbbe70059714e9a2411f` 记录用户原答 `b`；`D-V1CC10` 锁定劳工阶层两张整合出身的核心原型为“工厂工资家庭”与“雇主依附的服务家庭”。主任务已按 `edd58ad9b7d9889fbeb9bb5e1d8fddb77fd87427` → `8782bd132c7dabf4c4f2c2805eb855d5d5225e27` 的依赖顺序审查，并将决定作为 `a3fdb6c822db8d28aeabebf92f0cee22682b2f56` 合入 `main`；新的 `DESIGN_SYNC` 仍是后续开发使用该决定的门禁，R2 未获实现授权。
+345. `GOVERNANCE_METADATA_AUDIT_PASSED`: 主任务为当前 R1 轮次补充唯一机器可读合同 `docs/rounds/R1_DESKTOP_AUTHORITY_CONTRACT.md` 与当前实现工作流 `FRONTEND,BACKEND`，并把 R2+ 设计准备标记为独立 `ROUND_ID=R2_DESIGN_FOUNDATION`；`ledgered-game-dev` 只读治理审计结果为 `ERROR=0 / WARN=0`，未改变任何玩法、合同内容或验收状态。
 
 ## FOUNDATION_AUDIT
 
@@ -3051,4 +3052,4 @@
 
 ## NEXT_ACTION
 
-主任务先按依赖顺序审查设计状态同步候选与 `D-V1CC10` 决定候选；只有合入公开 `main` 并发送 ledger revision 255 的 `DESIGN_SYNC` 后，劳工阶层两项核心原型才成为开发权威。随后设计 Grill 继续逐题确认其余6张出身卡和后续职业名册；全部正式名称、数值、12个职业和120组具体兼容状态继续保持待定。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+主任务公开包含 `D-V1CC10` 与治理元数据修正的当前 `main`，核验精确远端 SHA/CI 后发送 ledger revision 255 的 `DESIGN_SYNC`；随后设计 Grill 才继续小市民层出身名册单题。其余6张出身卡、全部正式名称与数值、12个职业和120组具体兼容状态继续保持待定。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
