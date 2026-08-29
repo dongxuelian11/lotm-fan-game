@@ -5,13 +5,13 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 262
-- `PROJECT_STATUS`: `GLOBAL_STOP_THE_LINE / AWAITING_WORLD_FEEDBACK_BATCH`
+- `LEDGER_REVISION`: 263
+- `PROJECT_STATUS`: `GLOBAL_STOP_THE_LINE / WORLD_FEEDBACK_DECISION_RECORDED_PENDING_INTEGRATION`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
 - `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
 - `GRILL_POLICY`: `GLOBAL_STOP_THE_LINE`
-- `GRILL_GATE`: `AWAITING_USER`
+- `GRILL_GATE`: `DECISION_RECORDED_PENDING_INTEGRATION`
 - `GRILL_DECISION_ID`: `D-WORLDFEEDBACK-B1`
 
 ## TASK_GOAL
@@ -152,6 +152,8 @@
 - `D-CORE1`: 第一版主交互骨架 — `LOCKED=A_PANEL_LIFE_SIMULATION`
 - `D-CORE2`: 主动行动与世界推进的基本节拍 — `LOCKED=C_DYNAMIC_MAJOR_ACTION_BUNDLE`
 - `D-CORE3`: 世界推进周期单位 — `LOCKED=A_WEEKLY_WORLD_PULSE`
+- `D-WORLDFEEDBACK0`: 持续世界动态与逐行动反馈 — `LOCKED=CONTINUOUS_WORLD_EVENT_REFRESH_AND_EVERY_ACCEPTED_ACTION_FEEDBACK`
+- `D-WORLDFEEDBACK1..6`: 世界反馈批次 — `LOCKED=1A_2A_3A_4A_5A_6A`
 - `D-CORE4`: 普通职业与每周主动行动的关系 — `LOCKED=A_WORK_CONSUMES_ONE_MAJOR_ACTION`
 - `D-CORE5`: 行动用尽后的世界脉冲确认边界 — `LOCKED=AUTO_PULSE_AFTER_LAST_ACTION`
 - `D-V1COMBAT1`: 第一版战斗复杂度范围 — `LOCKED=A_MINIMAL_TWO_CORE_QUESTIONS`
@@ -907,14 +909,20 @@
 - 月、季、年仍可作为工资账期、房租、重大仪式、组织计划和时代事件的聚合节点，但不替代每周基础回合。
 - 本决定尚未锁定每周具体行动数、周内日期细分、跨周行动、月末额外结算或时间暂停规则。
 
-### D-WORLDFEEDBACK0 持续世界动态与逐行动反馈
+### D-WORLDFEEDBACK0..6 持续世界动态、知识投影与后果回响
 
 - `DECISION`: `LOCKED=CONTINUOUS_WORLD_EVENT_REFRESH_AND_EVERY_ACCEPTED_ACTION_FEEDBACK`
 - `CONFIRMED_BY_USER`: 2026-08-29，用户明确要求参考项目中世界事件持续刷新、玩家做过的事情也必须得到反馈。
 - 每个被接受并完成结算的玩家行动都必须产生至少一条玩家可见反馈；世界不能只在静态剧情节点变化，周期推进时还必须继续产生独立于玩家的世界事件与 NPC/组织动向。
 - 该反馈可以进入结果面板、纪事或事件卡，但本决定不推翻 `D-EVENT2` 与 `D-EVENT5`：不是每次行动都强制生成阻塞事件卡，同一行动/世界脉冲仍最多显示一张阻塞卡。
 - `REFERENCE_CONFIRMATION`: 参考源码同时存在行动日志、时间脉冲、世界状态漂移、NPC 议程和被动事件调度；新项目只借鉴这种反馈节奏，不复制其全局状态、`Math.random()`、可执行事件函数或先推进时间再补写行动结果的顺序缺口。
-- `PENDING_BATCH`: `D-WORLDFEEDBACK1..6` 仍需锁定轻量反应频率、逐行动反馈载体、可见知识层、因果归因、首版离屏模拟范围与延迟后果结构。
+- `D-WORLDFEEDBACK1=A`: 每个行动结算并持久化后执行一次轻量世界反应；本周行动束结束后才执行完整周脉冲。轻量反应不结算整周经济/NPC议程，也不消耗额外行动。
+- `D-WORLDFEEDBACK2=A`: 每个行动立即显示紧凑结果条，并把同一结果持久写入纪事；满足事件卡条件时仍按事件系统处理，不用结果条取代事件卡。
+- `D-WORLDFEEDBACK3=A`: 玩家世界消息按角色知识分为“已确认／传闻或推测／暂时不可见”；暂时不可见的真实世界状态不得进入 Renderer，后续观察、调查、通信或传播可以改变投影层级。
+- `D-WORLDFEEDBACK4=A`: 角色能够知道因果时明确标注；不能知道时只呈现迹象或传闻，并允许后续揭露。后台必须保存真实因果链，不能用界面未知删除世界事实。
+- `D-WORLDFEEDBACK5=A`: 第一版离屏模拟只维护区域/组织聚合状态与少量关键具名 NPC 议程，不逐周模拟全部具名 NPC。
+- `D-WORLDFEEDBACK6=A`: 后果允许即时、延迟和潜伏三类，并受角色知识/可见条件控制；具体延迟周数、概率、事件文本与数值仍由内容批次决定。
+- `GMZZ_LAYERED_MEMORY_AUDIT`: gmzz 的 MIT 许可允许代码复用，但现有 `app/memory/**` 与其 WorldKernel、actor/faction/project、周回合和提示词语义耦合，整包原样复制为 `DO_NOT_DIRECT_COPY_AS_IS`。可 `ADAPT_REUSE` 的是事实/观察/知识授权/主体信念分离、受众投影、幂等交付回执、有界检索与来源追溯；必须按本项目 schema 改名、缩减并保留 MIT 归属。`private/` RAG、旧存档、生成索引、用户数据和当前脏工作树其他改动继续禁止迁入。
 
 ### D-CORE4 工作占用一个主要行动
 
@@ -3091,6 +3099,9 @@
 356. `REFERENCE_WORLD_FEEDBACK_CONFIRMED`: 只读复核参考项目 `engine.js`、`world_state.js`、`events_core.js` 与 `npc_ai_engine.js`，确认其行动日志、周期世界演化、NPC 议程和事件刷新共同形成持续反馈；同时确认其结算顺序与不可重放随机实现不能直接继承。
 357. `DONE_USER_PRINCIPLE_D-WORLDFEEDBACK0`: 用户明确锁定“持续刷新世界事件，玩家做过的事情也要有反馈”；这是一项总原则，不等于每次行动强制弹阻塞卡，具体节奏与呈现进入下一批设计。
 358. `GLOBAL_GRILL_HOLD_D-WORLDFEEDBACK-B1`: 用户明确授权进入一轮批量深度 Grill。主任务、前端与后端统一暂停，设计 Grill 任务只可一次询问 `D-WORLDFEEDBACK1..6` 并原样返回答案，不得编辑文件、提交、同步状态或推进下一批。
+359. `GRILL_ANSWER_RECEIVED_D-WORLDFEEDBACK-B1`: 用户原答 `1.a 2.a 3.a 4.a 5.a 6.a`；六项均锁定为 A。用户另要求核查 gmzz 分层记忆能否直接复用，该要求是事实审计，不新增 Grill 题。
+360. `DONE_READ_ONLY_GMZZ_LAYERED_MEMORY_AUDIT`: gmzz `app/memory/**` 在其大型脏工作树中本身保持 clean，最近相关提交为 `7b11fbc691da304c6d1c3235a24bd2e881a5ae17`，许可证为 MIT。源码确认其采用五类长期记忆、世界事实/观察/知识授权、actor/faction/player 受众、可见性过滤、检索预算和交付/呈现/回忆回执；但字段和运行链依赖 gmzz WorldKernel 与主体模型，不能作为本项目零修改组件。结论为“法律上可复用，技术上抽取改造，不整包直接搬”。
+361. `DECISION_RECORDED_PENDING_INTEGRATION_D-WORLDFEEDBACK-B1`: 六项回答与 gmzz 复用边界已同步到总账本、核心循环、事件、UI、RAG/参考复用和状态文档；所有产品任务继续暂停，等待公开提交、精确 CI 与 `DESIGN_SYNC`。
 
 ## FOUNDATION_AUDIT
 
@@ -3120,4 +3131,4 @@
 
 ## NEXT_ACTION
 
-当前 `D-WORLDFEEDBACK-B1` 批量 Grill 门已开启；前端、后端和主任务实施均暂停。独立 Grill 任务只询问 `D-WORLDFEEDBACK1..6`，等待用户按 `1A 2A 3A 4A 5A 6A` 格式作答后停止；回答由主任务固化并通过审计后才能清门。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+`D-WORLDFEEDBACK1..6` 已按用户原答 `1A 2A 3A 4A 5A 6A` 固化，并完成 gmzz 分层记忆只读复用审计。当前门保持 `DECISION_RECORDED_PENDING_INTEGRATION`；下一步仅允许精确提交、公开 CI、`DESIGN_SYNC` 和清门，产品实现继续暂停。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。

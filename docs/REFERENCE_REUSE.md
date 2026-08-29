@@ -45,6 +45,7 @@
 - `PREPARED → RUNNING → RESPONDED → VALIDATED → COMMITTED` 的 AI 回合状态机和 fail-closed 边界。
 - Renderer 只显示公开投影，模型原文、prompt、RAG context 和秘密世界事件留在 Main。
 - world kernel 的 actor/faction/project/location/event/knowledge 分层与受众投影。
+- 分层记忆的事实/观察/知识授权/主体信念分离、受众过滤、幂等交付回执和有界检索；只抽取改造，不整包直接复制。
 - RAG 建库、检索收据、泄漏评估、seed manifest、地图/资产来源和安装验证管线。
 - D 盘运行路径、安装器和证据链流程；只能后期按真实本项目验证，不把同机 smoke 当干净机器证明。
 
@@ -55,6 +56,12 @@
 ### 禁止迁入
 
 `private/` 原文、RAG 语料、generated seed、凭据、用户数据、SQLite 存档、dirty `dist`/打包产物、未验收地图/UI、旧 save schema/migration 历史，以及任何并行工作树内容。
+
+### 分层记忆专项结论（2026-08-29）
+
+gmzz `app/memory/**` 本身在当前脏工作树中无未提交修改，最近相关提交为 `7b11fbc691da304c6d1c3235a24bd2e881a5ae17`，根许可证为 MIT，因此法律上允许在保留许可证和归属的前提下复制、修改或重写代码。技术上不能把该目录零修改搬入：它的事件、信念、承诺、关系、计划、actor/faction audience、WorldKernel 派生与提示词均使用 gmzz 领域语义。
+
+本项目采用 `ADAPT_REUSE`：借用世界事实与角色认知分离、观察/传播/调查授权知识、受众白名单投影、交付/呈现/回忆幂等回执、检索条数/字符预算和来源 ID 校验；按本项目的 `confirmed / rumor-or-inference / hidden`、角色知识、事件卡和 SQLite schema 重新建模。gmzz 的具体字段、提示词、NPC/组织/项目模型和 `private/` 数据不迁入。
 
 ## 总结
 

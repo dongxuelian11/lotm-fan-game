@@ -142,6 +142,7 @@ gmzz 的核心价值不是把它当前游戏外壳搬过来，而是把下面这
 | `ADAPT_REUSE` | `shared/turn-resolution-contract.cjs` 与 `app/turn-loop/*` | 沿用状态机和 fail-closed 原则，重写领域 envelope、资源腿、效果与错误码。 |
 | `ADAPT_REUSE` | `app/world-kernel.ts`、audience projection、knowledge 边界 | 可作为新世界内核的参考实现；先由用户锁定玩家身份、时间尺度和秘密规则，再建新类型。 |
 | `ADAPT_REUSE` | RAG 建库、检索收据、泄漏评估、seed manifest | 管线可用，语料不可用；新语料必须有单独权利来源和发行策略。 |
+| `ADAPT_REUSE` | `app/memory/**` 分层记忆与 WorldKernel 受众投影 | MIT 允许复用，但不能整包零修改搬入；抽取事实/观察/知识授权/信念分离、受众过滤、幂等回执、有界检索与来源追溯，按本项目知识三层和 schema 重建。 |
 | `ADAPT_REUSE` | Atlas 生成/校验/哈希/来源登记与离线加载 | 仅在用户选择地图型产品后启用；所有实际几何目前应视为近似表达，不能冒充官方坐标。 |
 | `ADAPT_REUSE` | 安装器、D 盘运行路径、来源/seed/证据验证脚本 | 适合后期交付，不能把“同机可运行”写成独立干净机器证明。 |
 | `REFERENCE_ONLY` | 地图工作台、组织领导、自由文本拆任务卡 | 这是可选产品路线；只有用户选择组织/地图主幻想才进入新项目。 |
@@ -150,6 +151,14 @@ gmzz 的核心价值不是把它当前游戏外壳搬过来，而是把下面这
 | `DO_NOT_REUSE` | `app/game-model.ts` 整体、旧 save schema/migration 历史 | 领域和历史包袱过重，新项目不需要继承 v15–v22 迁移债务。 |
 | `DO_NOT_REUSE` | 当前未验收地图/UI、dirty `dist`/打包产物和其他并行改动 | 不是稳定产品基线；不得把 `READY_FOR_INTEGRATION` 写成已完成。 |
 | `DO_NOT_REUSE` | 官方/社区图片及仅供参考的地理资产 | 代码 MIT 不覆盖第三方内容或原作 IP。 |
+
+### 5.4 分层记忆专项源码审计（2026-08-29）
+
+- `app/memory/types.ts` 定义事件、主体信念、承诺、关系原因、计划、受众状态和交付回执；`BeliefTruth`、`Secrecy`、`learnedFrom` 可以表达真假、不确定、传闻与信息来源。
+- `deriveMemoryFromWorldState` 不把全知世界事件直接变成玩家知识；它从具体 observation、knowledge grant 与 holder 派生主体信念，并记录 witness/communication/investigation/propagation 来源。
+- `permissions.ts`、`buildAutonomousMemoryProjection` 和 `projectWorldForAudience` 按 world/player/actor/faction 受众过滤；未知主体、未授权记忆引用和越权知识在真实调用链中 fail closed。
+- 检索器设置场景引用数和字符预算，并记录候选、选中、拒绝和来源事件；回执区分 delivered/presented/recalled 并按受众幂等。
+- 该模块并非独立 npm 包，字段仍依赖 gmzz 的 actor/faction/project、WorldKernel、周回合、运行限制与提示词。当前 gmzz 还有大量并行脏改动，尤其调用侧 world runtime/kernel 正在变化；因此结论是 `LICENSE_DIRECT_REUSE_ALLOWED / TECHNICAL_DIRECT_REUSE_AS_IS=NO / ADAPT_REUSE=YES`。
 
 ## 6. 推荐的新项目边界（尚未锁定）
 

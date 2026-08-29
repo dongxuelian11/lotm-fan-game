@@ -1,6 +1,6 @@
 # UI 与实现方案
 
-`STATUS=UI_DIRECTION_AND_ENGINEERING_BASELINE_LOCKED / IMPLEMENTATION=NOT_STARTED / SOURCE=REFERENCE_REUSE_AUDIT,D-TECH1,D-ORCH1..3,D-CORE1..5,D-ACTIONS1..2,D-WORK1..3,D-LEARN1,D-INVEST1,D-ACTING1,D-REST1,D-RECOVERY1..3,D-ECON0..9,D-DEBT1..3,D-INDUSTRY1..6,D-MARKET1,D-AUCTION1,D-EVENT1..18,D-UI1..3,D-RESOLUTIONBOUNDARY,D-COMBAT1..D-COMBAT6K,D-SETTLEMENT1..3`
+`STATUS=UI_DIRECTION_AND_ENGINEERING_BASELINE_LOCKED / IMPLEMENTATION=NOT_STARTED / SOURCE=REFERENCE_REUSE_AUDIT,D-TECH1,D-ORCH1..3,D-CORE1..5,D-WORLDFEEDBACK0..6,D-ACTIONS1..2,D-WORK1..3,D-LEARN1,D-INVEST1,D-ACTING1,D-REST1,D-RECOVERY1..3,D-ECON0..9,D-DEBT1..3,D-INDUSTRY1..6,D-MARKET1,D-AUCTION1,D-EVENT1..18,D-UI1..3,D-RESOLUTIONBOUNDARY,D-COMBAT1..D-COMBAT6K,D-SETTLEMENT1..3`
 
 本文件把参考项目的真实交互拆成可施工的界面和状态流，同时吸收 gmzz 的工程边界。事件卡结构 `D-EVENT1..18`、常驻周仪表盘 `D-UI1=A`、全屏遮罩战斗 `D-UI2=A` 和神秘学卷宗/工作台视觉 `D-UI3=A` 已全部锁定；生产实现仍为 `NOT_STARTED`。
 
@@ -112,6 +112,8 @@ DASHBOARD → QUARTERLY_AUCTION（每三个月可用时） → AUCTION_RESULT �
 ```
 
 左栏是可折叠卷宗，不复制参考项目的官员名册；中心区优先显示“本周我需要做什么”和“上周世界怎么回应”。行动按钮点击后先打开预览，不立即扣资源。底部四个核心按钮永远位置稳定，情境按钮按序列、身份、地点、线索、关系、状态和事件插入第二排。
+
+每次行动提交成功后，中心区顶部出现紧凑结果条，显示玩家当前能够知道的行动结果、资源变化与因果提示；同一条结果同时写入纪事。结果条不做阻塞弹窗，不取代满足条件的事件卡。纪事条目标记“已确认”或“传闻/推测”，暂时不可见事实不渲染；因果只有角色可知时明示，否则显示迹象/传闻并在后续知识授权时揭露。
 
 顶栏只放玩家需要持续监控的数值；能力详情、知识来源、污染诊断和产业明细放入卷宗抽屉，避免把所有系统堆在主屏。
 

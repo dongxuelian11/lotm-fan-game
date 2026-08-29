@@ -1,6 +1,6 @@
 # 《诡秘之主》同人游戏：Agent 接管与开发合同
 
-`CONTRACT_REVISION=7 / STATUS=GLOBAL_STOP_THE_LINE_D-WORLDFEEDBACK-B1 / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
+`CONTRACT_REVISION=8 / STATUS=D-WORLDFEEDBACK-B1_RECORDED_PENDING_INTEGRATION / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
 
 本文件是所有 Codex/agent 的强制入口。Windows 路径大小写不敏感，仓库只保留规范文件名 `AGENTS.md`，不要再创建重复的 `agents.md`。
 
@@ -32,7 +32,7 @@
 - 普通情景使用统一数值判定，不使用战斗转盘；核心能力为体质、感知、意志、知识（0—500）；状态为健康、精神、灵性，污染另行可见；
 - 战斗按“次数盘 → 双方实时能力盘 → 双方都转完后的胜负盘”处理；胜负盘只判胜负，伤势/逃脱/俘虏/生死走因果与生存规则；生存失败即死亡，死亡结束并封存周目；
 - 事件卡是一级内容系统：第一版目标90张独立卡 + 9条三阶段链（共117个定义）；一次只弹一张阻塞卡，其余进入最小待处理列表/纪事；处理列表事件不消耗行动点，但硬资源成本照常；
-- 世界反馈是持续系统：每个被接受并完成结算的行动必须有玩家可见回应，周期推进还会刷新独立世界事件与 NPC/组织动向；这不等于每次行动必弹阻塞卡，具体节奏与知识边界正在 `D-WORLDFEEDBACK1..6` Grill；
+- 世界反馈是持续系统：每个行动后轻量反应并显示结果条/写入纪事，行动束结束后完整周脉冲；世界消息按已确认、传闻/推测、暂不可见分层，可知因果明示，否则后揭；首版模拟聚合状态和少量关键 NPC，并支持即时/延迟/潜伏后果；
 - RAG/小模型只在作者/构建期辅助生成待审文本变体；schema、规则、选项、难度、奖励、惩罚和后果由引擎决定；运行时确定性选择已审核文本；
 - UI 是常驻周仪表盘 + 弹层/抽屉，战斗为周舞台上的全屏遮罩，视觉为克制的神秘学卷宗/工作台。
 - 第一版捏人保持六步短流程：10个整合出身、12个当前职业、出身×职业三级兼容、恰好2个性格特质+1个真实缺陷、摘要页恰好1项背景过滤专精；五层各2张的10项出身核心原型已全部锁定，但正式显示名称、具体数值、12个职业名册和120组具体兼容矩阵仍待确认。
@@ -147,5 +147,5 @@
 - 前端任务：`01a04d7d-abe2-7732-9ac0-e4ff95397ca2`，候选 `72946759cf1c3b0309f85ddf29b26a5b67df7996` 已合入；后端任务：`01a04d7d-b97c-7311-8700-2f86c39f86c5`，候选 `e8ee23c60d4c0a52d476ad1203639db3c52a2ac4` 已合入；两者当前均为 hold，无后续轮写权限；
 - 主任务接线/烟测提交为 `14d17c60eb910137a270c645993d374ab74f5231`；全量门禁为类型检查通过、6文件44项测试通过、完整构建通过、生产相对资源路径通过、两进程 Electron/SQLite 恢复通过；这不是安装包或干净机器证据；
 - 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`；当前为 `GRILL_ONLY_HOLD`，只在主任务明确派发问题后采访用户，不再写文件或提交候选；
-- 下一步：用户已锁定持续世界动态与逐行动反馈总原则 `D-WORLDFEEDBACK0`，并授权一次批量深度 Grill。当前 `GRILL_GATE=AWAITING_USER`、`GRILL_DECISION_ID=D-WORLDFEEDBACK-B1`；主任务、前端与后端全部暂停，Grill 任务只可一次询问 `D-WORLDFEEDBACK1..6` 并原样返回答案。R1 桌面壳仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，不得冻结或下发 R2；
+- 下一步：`D-WORLDFEEDBACK1..6` 已按 `1A 2A 3A 4A 5A 6A` 记录，gmzz 分层记忆已审计为“MIT 法律可复用、技术上抽取改造、不可整包零修改搬入”。当前 `GRILL_GATE=DECISION_RECORDED_PENDING_INTEGRATION`；主任务仅可提交、公开验证、发送 `DESIGN_SYNC` 并清门，前端与后端继续暂停。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，不得冻结或下发 R2；
 - 真实魔药、晋升、能力和事件内容仍在相应轮次前继续 Grill，不阻塞 R1 技术壳。
