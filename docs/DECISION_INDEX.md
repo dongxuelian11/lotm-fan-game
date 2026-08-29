@@ -19,7 +19,7 @@
 | UI 承载与视觉 | `D-UI1..3` | [UI 与实现方案](UI_IMPLEMENTATION_PLAN.md)、[未决问题](OPEN_DECISIONS.md) |
 | 事件卡与内容生产 | `D-EVENT1..18` | [事件卡系统与内容生产](EVENT_CARD_SYSTEM.md)、[UI 与实现方案](UI_IMPLEMENTATION_PLAN.md)、[未决问题](OPEN_DECISIONS.md) |
 | 文档与接管治理 | `D-DOCS1..2`、`D-GRILLMODE1`、`D-GRILLBATCH1..8`、`GRILL_PROTOCOL`、`RECOVERY_PROTOCOL` | `../AGENTS.md`、[文档入口](README.md) |
-| 开源、工程底座与多任务开发 | `D-006A`、`D-TECH1`、`D-ORCH1..3` | [主开发计划](MASTER_DEVELOPMENT_PLAN.md)、[架构合同](ARCHITECTURE_CONTRACT.md)、[任务交接协议](THREAD_HANDOFF_PROTOCOL.md)、[开源与 Git](OPEN_SOURCE_AND_GIT.md) |
+| 开源、工程底座与多任务开发 | `D-006A`、`D-TECH1`、`D-ORCH1..5` | [主开发计划](MASTER_DEVELOPMENT_PLAN.md)、[架构合同](ARCHITECTURE_CONTRACT.md)、[任务交接协议](THREAD_HANDOFF_PROTOCOL.md)、[开源与 Git](OPEN_SOURCE_AND_GIT.md) |
 
 ## 状态标记
 

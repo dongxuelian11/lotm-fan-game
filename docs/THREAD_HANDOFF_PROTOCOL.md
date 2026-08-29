@@ -1,11 +1,11 @@
 # 主任务、设计 Grill、前端与后端任务交接协议
 
-`PROTOCOL_REVISION=2 / STATUS=ACTIVE`
+`PROTOCOL_REVISION=3 / STATUS=ACTIVE`
 
 ## 1. 权威与任务拓扑
 
 - 当前主任务：计划审查、公共合同、根配置、Git、设计提交审查/合入、接线、测试汇总和用户验收；
-- 设计 Grill 任务：一次只问一个未决设计问题；回答后更新总账本和对应主题 MD，并以独立提交交给主任务；
+- 设计 Grill 任务：一次只问一个由主任务明确派发的未决设计问题；只返回用户原答，不编辑文件或提交；
 - 前端任务：只实现当前轮前端写集；
 - 后端任务：只实现当前轮后端写集；
 - 深度链接是进入对应任务的导航，不是实时状态或设计权威；
@@ -15,10 +15,10 @@
 
 | 所有者 | 可写 | 不可自行修改 |
 |---|---|---|
-| 设计 Grill | `PROJECT_STATE_LEDGER.md`、`docs/OPEN_DECISIONS.md`、`docs/DECISION_INDEX.md`、受影响主题 MD、`docs/workstreams/DESIGN_STATUS.md` | 产品代码、工程合同、根配置、前后端状态 |
+| 设计 Grill | 无；项目仓库只读 | 所有项目文件、Git 提交、状态同步和自动决策 |
 | 前端 | `src/renderer/**`、`tests/renderer/**`、`docs/workstreams/FRONTEND_STATUS.md` | `src/shared/**`、Main/领域/SQLite、根配置、总账本 |
 | 后端 | `src/main/**`、`src/domain/**`、`src/resolution/**`、`src/simulation/**`、`src/content/**`、`src/persistence/**`、`tests/backend/**`、`docs/workstreams/BACKEND_STATUS.md` | `src/shared/**`、Renderer、根配置、总账本 |
-| 主任务 | `src/shared/**`、`tests/integration/**`、根配置、`.github/**`、合同/账本/许可证 | 不覆盖两个任务未接线的在途改动 |
+| 主任务 | `src/shared/**`、`tests/integration/**`、根配置、`.github/**`、合同/账本/许可证、主题设计 MD 与设计状态 | 不覆盖两个任务未接线的在途改动 |
 
 当前轮合同可以缩小写集，不能默认为扩大。任务不是独自在仓库工作：不得回滚、覆盖、重排或格式化他人的文件。
 
@@ -28,7 +28,7 @@
 
 开发工作流：`NOT_STARTED -> ONBOARDING -> IMPLEMENTING -> READY_FOR_INTEGRATION`
 
-设计工作流：`QUESTION_READY -> AWAITING_USER -> ANSWER_RECEIVED -> DOCUMENTING -> DECISION_READY_FOR_INTEGRATION`。
+设计 Grill 工作流：`GRILL_ONLY_HOLD -> QUESTION_READY -> AWAITING_USER -> ANSWER_RETURNED -> GRILL_ONLY_HOLD`。进入 `QUESTION_READY` 前，其他任务统一转为 `GLOBAL_GRILL_HOLD`；文档固化不属于 Grill 任务。
 
 异常状态：`BLOCKED`、`CONTRACT_CONFLICT`、`SYNC_REQUIRED`。主任务接线后写 `INTEGRATED`；只有用户可使本轮进入 `PLAYER_ACCEPTED`。
 
@@ -57,23 +57,21 @@ STATUS=
 NEXT_ACTION=
 ```
 
-设计任务使用：
+设计 Grill 任务只返回：
 
 ```text
 WORKSTREAM=DESIGN_GRILL
 QUESTION_ID=
-LEDGER_REVISION_BEFORE=
+QUESTION=
+OPTIONS=
+RECOMMENDATION=
 USER_ANSWER=
-AFFECTED_FILES=
-COMMIT_SHA=
-DECISION_RECEIPT=
-STATUS=
-NEXT_QUESTION_DEPENDENCY=
+STATUS=ANSWER_RETURNED
 ```
 
-设计回答传播顺序固定为：用户回答 → 设计任务写总账本和主题文档 → 提交候选 → 主任务审查并合入 `main` → 主任务发送 `DESIGN_SYNC` → 前后端确认同步。前后端不得实现尚未合入 `main` 的聊天答案。
+设计回答传播顺序固定为：主任务确认缺口并暂停其他任务 → Grill 任务向用户提问 → 用户回答 → 主任务写总账本和主题文档 → 主任务审计并提交 `main` → 主任务解除暂停并向受影响任务发送同步。前后端不得实现尚未由主任务固化的聊天答案。
 
-先把回执写入自己的状态文件并提交，再在任务中回复。聊天摘要缺失时，以文件和 Git 提交为准。
+Grill 任务不写状态文件或提交；主任务必须在收到用户原答后先完成仓库固化，再恢复其他任务。聊天摘要缺失时，以主任务写入的文件和 Git 提交为准。
 
 ## 5. 主任务接线协议
 

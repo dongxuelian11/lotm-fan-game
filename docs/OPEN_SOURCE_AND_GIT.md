@@ -15,7 +15,7 @@
 - `main`：主任务维护的已接线基线；
 - `work/frontend-rNN-<slice>`：前端任务独立 worktree；
 - `work/backend-rNN-<slice>`：后端任务独立 worktree；
-- `work/design-grill-<topic>`：设计 Grill 独立 worktree；
+- `work/design-grill-<topic>`：历史设计候选 worktree；最新流程下 Grill 任务对仓库只读，不再从该分支提交；
 - 可选 `integration/rNN`：高风险轮次由主任务临时使用；
 - 任何任务不得从不明工作树状态开始，基线 SHA 必须写入轮次合同。
 

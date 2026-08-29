@@ -1,10 +1,10 @@
 # 《诡秘之主》同人游戏：Agent 接管与开发合同
 
-`CONTRACT_REVISION=5 / STATUS=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
+`CONTRACT_REVISION=6 / STATUS=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
 
 本文件是所有 Codex/agent 的强制入口。Windows 路径大小写不敏感，仓库只保留规范文件名 `AGENTS.md`，不要再创建重复的 `agents.md`。
 
-当前任务目标是在 `D:\诡秘` 制作一款参考《汴京梦华》节奏、但以《诡秘之主》世界为背景的原创旁线同人单机游戏。用户拥有总设计权；当前主对话负责审查计划、冻结合同、Git/接线和发任务，独立设计 Grill 任务逐题采访并固化新决定，前端与后端两个开发任务只执行已下发轮次。
+当前任务目标是在 `D:\诡秘` 制作一款参考《汴京梦华》节奏、但以《诡秘之主》世界为背景的原创旁线同人单机游戏。用户拥有总设计权；当前主对话负责审查计划、冻结合同、设计决定的文档固化、Git/接线和发任务，独立设计 Grill 任务只负责逐题采访，前端与后端两个开发任务只执行已下发轮次。
 
 ## 1. 自动压缩或接管后的恢复顺序
 
@@ -55,21 +55,21 @@
 - 按主题分批，每题独立编号，提供互斥选项、推荐项、影响和代价；
 - 说明本题锁定什么、不锁定什么；
 - 用户未明确选择前保持 `PENDING/QUESTION_READY`；
-- 回答后先更新 `PROJECT_STATE_LEDGER.md`，再同步所有主题 Markdown；
+- 回答后由主任务先更新 `PROJECT_STATE_LEDGER.md`，再同步所有主题 Markdown；
 - 不重问已锁定机械决定；不把“之后再说”“不重要”改写成完成；
 - 用户要求第一版简单时，技术底座可用 fixture 开工，内容细节推迟到真正依赖它的轮次。
 
-发现空缺时使用 `DESIGN_GAP=<decision-id>:<why>`，不要自行补完。
+发现空缺时使用 `DESIGN_GAP=<decision-id>:<why>`，不要自行补完。主任务一旦确认必须 Grill，立即把主任务实施、前端与后端全部置于 `GLOBAL_GRILL_HOLD`；只有设计 Grill 任务继续向用户提问。用户作答且主任务完成文档固化、审计与提交后，才可解除暂停。
 
 ## 5. 三方所有权与写集
 
 ### 主任务
 
-独占：`src/shared/**`、`tests/integration/**`、根配置、依赖/锁文件、`.github/**`、许可证、总计划、架构/轮次合同、总账本、Git 集成和玩家审查。
+独占：`src/shared/**`、`tests/integration/**`、根配置、依赖/锁文件、`.github/**`、许可证、总计划、架构/轮次合同、总账本、主题设计 Markdown、设计状态、Git 集成和玩家审查。
 
 ### 设计 Grill 任务
 
-串行独占当前设计批次：`PROJECT_STATE_LEDGER.md`、`docs/OPEN_DECISIONS.md`、`docs/DECISION_INDEX.md`、受影响主题设计文档和 `docs/workstreams/DESIGN_STATUS.md`。一次只问一个真正未决且会影响玩家体验的问题，必须提供2—3个互斥选项与推荐；可从源码/文档查明的事实先调查。用户回答后先更新总账本和对应主题 MD，再提交 `DECISION_RECEIPT`。不得修改产品代码、工程合同、根配置或开发工作流状态。
+默认只读、无文件写集。一次只问一个由主任务明确派发、真正未决且会影响玩家体验的问题，必须提供2—3个互斥选项与推荐；可从源码/文档查明的事实先调查。只把用户原答和问题结果返回主任务；不得编辑项目文件、提交 commit、写决定回执、同步状态、自动采用推荐、修改产品代码或推进下一题。没有明确 Grill 派发时保持 `GRILL_ONLY_HOLD`。
 
 ### 前端任务
 
@@ -145,6 +145,6 @@
 - 产品代码：`R1_INTEGRATED / LOCAL_TWO_PROCESS_ELECTRON_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN / PACKAGE_NOT_RUN`；
 - 前端任务：`01a04d7d-abe2-7732-9ac0-e4ff95397ca2`，候选 `72946759cf1c3b0309f85ddf29b26a5b67df7996` 已合入；后端任务：`01a04d7d-b97c-7311-8700-2f86c39f86c5`，候选 `e8ee23c60d4c0a52d476ad1203639db3c52a2ac4` 已合入；两者当前均为 hold，无后续轮写权限；
 - 主任务接线/烟测提交为 `14d17c60eb910137a270c645993d374ab74f5231`；全量门禁为类型检查通过、6文件44项测试通过、完整构建通过、生产相对资源路径通过、两进程 Electron/SQLite 恢复通过；这不是安装包或干净机器证据；
-- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`，分支 `work/design-grill-r2-foundation`；当前 ledger revision 256，`D-V1CC11` 已合入主线，等待新的 `DESIGN_SYNC`；用户已授权剩余4张中上层/上流层出身核心原型直接采用设计任务推荐，不再逐题询问，但每项仍须形成候选并交主任务审查；
-- 下一步：主任务公开当前主线并发送 revision 256 的 `DESIGN_SYNC`，设计任务随后只在上述4张出身核心原型范围内自动采用推荐；正式名称、数值、职业、兼容矩阵及其他设计不在这项授权内。主任务同时继续等待用户实际审查 R1 桌面壳；用户明确通过前保持 `PLAYER_ACCEPTANCE=NOT_RUN`，不得冻结或下发 R2；
+- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`；当前为 `GRILL_ONLY_HOLD`，只在主任务明确派发问题后采访用户，不再写文件或提交候选；
+- 下一步：主任务在不触发 Grill 的前提下固化用户已授权采用推荐的剩余4张中上层/上流层出身核心原型；正式名称、数值、职业、兼容矩阵及其他设计不在这项授权内。遇到新的必答问题时，所有其他任务必须暂停等待用户 Grill。主任务同时继续等待用户实际审查 R1 桌面壳；用户明确通过前保持 `PLAYER_ACCEPTANCE=NOT_RUN`，不得冻结或下发 R2；
 - 真实魔药、晋升、能力和事件内容仍在相应轮次前继续 Grill，不阻塞 R1 技术壳。

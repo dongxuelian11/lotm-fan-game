@@ -1,8 +1,8 @@
 # 主开发计划：双工作流、逐轮接线与用户审查
 
-`PLAN_REVISION=2 / PRODUCT_CODE=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / AUTHORITY=PROJECT_STATE_LEDGER.md / ORCHESTRATOR=CURRENT_MASTER_TASK`
+`PLAN_REVISION=3 / PRODUCT_CODE=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / AUTHORITY=PROJECT_STATE_LEDGER.md / ORCHESTRATOR=CURRENT_MASTER_TASK`
 
-本计划把已经锁定的玩法设计变成可执行开发轮次。当前对话是唯一的计划审查、合同冻结、接线和发任务入口；独立设计 Grill 任务负责逐题采访和候选设计提交，前端、后端两个开发任务只执行当前轮合同。深度链接方便进入任务，但不是项目权威，自动压缩后必须从仓库文件恢复状态。
+本计划把已经锁定的玩法设计变成可执行开发轮次。当前对话是唯一的计划审查、合同冻结、设计固化、接线和发任务入口；独立设计 Grill 任务只负责逐题采访，前端、后端两个开发任务只执行当前轮合同。深度链接方便进入任务，但不是项目权威，自动压缩后必须从仓库文件恢复状态。
 
 当前执行事实：R1 前端/后端已接线，完整类型检查、6文件44项测试、生产构建和本机两进程 Electron/SQLite 恢复 smoke 已通过；`PLAYER_ACCEPTANCE=NOT_RUN`、`PACKAGE=NOT_RUN`、`CLEAN_MACHINE=NOT_RUN`，R2 尚未冻结或下发。
 
@@ -43,13 +43,13 @@
 - 前端：Electron Renderer，React + TypeScript + Vite，只消费公开投影并发送类型化意图；
 - 后端：Electron Main、preload、领域规则、判定/模拟、内容校验和 SQLite 权威持久化；
 - 主任务：共享合同、根配置、轮次合同、集成测试、接线、Git 和用户审查。
-- 设计 Grill：在独立 worktree 中逐题确认未决设计，先更新台账/主题 MD，再交给主任务合入；不写产品代码。
+- 设计 Grill：只读调查并逐题采访用户，不编辑文件、不提交候选、不自行推进；用户回答由主任务固化。
 
 详细依赖和信任边界见 `ARCHITECTURE_CONTRACT.md`。
 
 ## 3. 每轮固定状态机
 
-1. 设计 Grill 任务把本轮依赖的新决定写入台账/主题 MD；主任务审查合入后冻结 `ROUND_ID`、合同版本、共享类型、写集、验收场景和停止条件。
+1. 若本轮存在必须由用户决定的设计缺口，主任务先暂停主任务实施、前端与后端，派发设计 Grill 任务只进行提问；用户回答后由主任务写入台账/主题 MD、审计并提交，再冻结 `ROUND_ID`、合同版本、共享类型、写集、验收场景和停止条件。
 2. 前端/后端从同一已知基线在独立分支/worktree 并行实现；任何越界改动先报给主任务。
 3. 两边分别提交原子变更和证据，状态到 `READY_FOR_INTEGRATION` 后停止。
 4. 主任务重新读取源码与提交头，先检查合同冲突，再按轮次声明的顺序接线；不直接相信任务摘要。

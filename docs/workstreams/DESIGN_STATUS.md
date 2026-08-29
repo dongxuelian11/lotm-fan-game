@@ -25,14 +25,16 @@ DESIGN_SYNC=256:a2e5c64cd5ebab7d2cd2b23b496ce695074b4763:D-V1CC11=B_SELF_EMPLOYE
 CI_RUN=33257013970 / SUCCESS
 LEDGERED_AUDIT=ALL_SCOPE_ERROR_0_WARN_0
 DECISION_RECEIPT=D-V1CC11=B_SELF_EMPLOYED_SMALL_BUSINESS_OR_WORKSHOP_HOUSEHOLD_PLUS_EDUCATED_JUNIOR_CLERICAL_HOUSEHOLD / INTEGRATED_AND_SYNCED
-USER_SCOPED_AUTHORITY=For the remaining 4 middle-upper-tier and upper-tier integrated origin cores only, adopt the Design Grill recommendation without asking the user; each item still requires its own persisted decision candidate, master review and DESIGN_SYNC. This authority does not extend to formal names, values, the 12 professions, 120 compatibility pairs, events or any other design.
+USER_SCOPED_AUTHORITY=For the remaining 4 middle-upper-tier and upper-tier integrated origin cores only, the master task may adopt and persist the recommendation without asking the user. This authority does not extend to formal names, values, the 12 professions, 120 compatibility pairs, events or any other design.
 ENGINEERING_SYNC=254:467eac09ac902a94e0dbfbbe70059714e9a2411f:R1_INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE
 R1_EVIDENCE=TYPECHECK_PASS / 6_FILES_44_TESTS_PASS / BUILD_PASS / LOCAL_TWO_PROCESS_ELECTRON_SQLITE_RECOVERY_SMOKE_PASS
 PLAYER_ACCEPTANCE=NOT_RUN
 PACKAGE=NOT_RUN
 CLEAN_MACHINE=NOT_RUN
 R2_STATUS=NOT_DISPATCHED
-STATUS=DESIGN_SYNC_RECEIVED
-INTEGRATION_STATUS=INTEGRATED
-NEXT_ACTION=The master task must review and integrate this single-file D-V1CC11 status-sync candidate. After that integration, Design Grill may adopt its explicit recommendation for D-V1CC12 without asking the user, persist that one decision and submit a separate candidate for master review. The remaining 4 origin cores are covered only by the user's scoped no-question authority; all formal names and values, the 12-profession roster, all 120 concrete compatibility pairs, events and other designs remain pending. PLAYER_ACCEPTANCE=NOT_RUN and R2 is not dispatched or authorized.
+STATUS=GRILL_ONLY_HOLD
+INTEGRATION_STATUS=STATUS_SYNC_INTEGRATED_AS_426461aa3575e5f0915c72ff3b3e348cff172f25
+CURRENT_WRITE_SET=NONE
+ROLE_BOUNDARY=Ask exactly one master-dispatched Grill question and return the user answer. Do not edit files, commit, synchronize status, auto-adopt recommendations or advance design.
+NEXT_ACTION=Wait for an explicit Grill dispatch from the master task. If dispatched, ask only that question while all other tasks remain on GLOBAL_GRILL_HOLD, then return the user's original answer and stop. PLAYER_ACCEPTANCE=NOT_RUN and R2 is not dispatched or authorized.
 ```
