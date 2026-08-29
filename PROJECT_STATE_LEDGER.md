@@ -5,11 +5,11 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 265
-- `PROJECT_STATUS`: `R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / DESIGN_GRILL_IDLE`
-- `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
+- `LEDGER_REVISION`: 266
+- `PROJECT_STATUS`: `R1_CORRECTED_BUILD_AWAITING_PLAYER_REVIEW / DESIGN_GRILL_IDLE`
+- `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / PLAYER_FEEDBACK_CORRECTION_BUILT / PLAYER_ACCEPTANCE_CHANGES_REQUESTED`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
-- `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
+- `LAST_UPDATED`: 2026-08-30 Asia/Shanghai
 - `GRILL_POLICY`: `GLOBAL_STOP_THE_LINE`
 - `GRILL_GATE`: `CLEAR`
 - `GRILL_DECISION_ID`: `NONE`
@@ -3122,6 +3122,8 @@
 368. `DONE_BMGD_PILOT001_GDD_VALIDATE`: 旁路验证结果为 `PILOT_USEFUL_WITH_ADAPTER_REQUIRED`；确认现有核心循环/R1边界可追溯，序列能力与完整 RPG 内容属于已知 R6/R7 延期；未发现新的玩家设计缺口，`GRILL_TRIGGERED=NO`。
 369. `BLOCKED_BMGD_READINESS_PREFLIGHT`: BMGD 原生要求单体 GDD/Epics/UX 和逐步交互确认，不能直接消费本项目分布式权威文档；且当前是 R1 实现后玩家验收阶段、R2 未冻结，因此只完成文档发现，`READINESS=NOT_RUN_BEYOND_STEP1`。
 
+370. `R1_PLAYER_FEEDBACK_CORRECTED_AWAITING_REVIEW`: 用户实际审查 R1 窗口后要求“不要有滚动条，不要有太多的开发语言，我们是在做游戏”。主任务据此只修改 Renderer 与对应测试：玩家可见的 `R1`、fixture、工程验证、公开投影、Main/SQLite/bridge/回执和后续轮次语言已改为游戏内表达；1280×720 窗口使用紧凑一屏布局。实测 Electron 客户区 `1266×660`，document/body 的 client 与 scroll 尺寸均为 `1266×660`；活动周目的人物卷宗、本周纪事、行动区均无内部裁切，禁用词扫描为空。`typecheck=PASS`、`6 files / 44 tests=PASS`、`build=PASS`。修正版窗口已重新打开给用户审查；`PLAYER_ACCEPTANCE` 仍不得由任务代填为通过，R2 不下发。
+
 ## FOUNDATION_AUDIT
 
 - `AUDIT_DATE`: 2026-08-29 Asia/Shanghai。
@@ -3152,4 +3154,4 @@
 
 BMGD 隔离试用政策已经用户锁定；首轮 GDD Validate 已完成并判定 `PILOT_USEFUL_WITH_ADAPTER_REQUIRED`，没有新的玩家设计缺口，Grill 保持空闲。Implementation Readiness 因文档形态和当前阶段不匹配只完成 Step 1 预检，必须等待 R2 冻结并使用只读适配清单。该工具接入不改变当前产品下一步。
 
-`D-WORLDFEEDBACK1..6` 已公开固化并完成 `DESIGN_SYNC`，gmzz 分层记忆结论为“MIT 允许、抽取改造、不整包零修改搬入”。当前无活跃 Grill 问题；前后端只恢复到原有 R1 集成待玩家验收 hold，没有世界反馈实现权限。下一项真正未决设计必须重新开启全局暂停门。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+R1 玩家反馈修正版已构建并在真实 1280×720 Electron 窗口完成无滚动、无内部裁切和无玩家可见开发术语复核；窗口保持打开等待用户再次审查。当前没有活跃 Grill 问题，后端保持暂停。只有用户明确表示通过后，才冻结并下发 R2；现在 `PLAYER_ACCEPTANCE=CHANGES_REQUESTED_AWAITING_REVIEW`，R2 未冻结或下发。

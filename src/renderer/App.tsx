@@ -46,10 +46,10 @@ const RESOURCES = [
 const DAILY_ACTIONS = ["工作", "学习", "调查", "休养"] as const;
 
 const FUTURE_ENTRIES = [
-  { label: "黑市", detail: "R4 · 交易与风险" },
-  { label: "季度拍卖", detail: "R4 · 每三个月开放" },
-  { label: "事件卡", detail: "R3 · 阻塞卡与纪事" },
-  { label: "战斗转盘", detail: "R5 · 战斗与生存" },
+  { label: "黑市", detail: "隐秘交易与未知风险" },
+  { label: "季度拍卖", detail: "珍稀之物每三个月现身" },
+  { label: "事件", detail: "遭遇、抉择与后果" },
+  { label: "战斗", detail: "危险中的较量与生存" },
 ] as const;
 
 let fallbackIntentSequence = 0;
@@ -73,7 +73,7 @@ function makePublicError(
 function bridgeUnavailableError(): PublicError {
   return makePublicError(
     "PERSISTENCE_UNAVAILABLE",
-    "生产 bridge 不可用：window.mysteryGame 未注入。未启用 mock 回退。",
+    "游戏记录暂时无法读取，请重新启动游戏。",
     false,
   );
 }
@@ -81,7 +81,7 @@ function bridgeUnavailableError(): PublicError {
 function rendererFailureError(): PublicError {
   return makePublicError(
     "INTERNAL_ERROR",
-    "无法读取公开存储状态。请稍后重试。",
+    "卷宗暂时无法打开，请稍后再试。",
     true,
   );
 }
@@ -89,7 +89,7 @@ function rendererFailureError(): PublicError {
 function invalidBootstrapError(): PublicError {
   return makePublicError(
     "SCHEMA_INVALID",
-    "公开存储状态无效，已停止渲染。",
+    "卷宗内容出现异常，请重新启动游戏。",
     false,
   );
 }
@@ -123,7 +123,7 @@ function validateDisplayName(displayName: string): string | null {
   }
 
   if (displayName.length > 80) {
-    return "名字不能超过 80 个 UTF-16 code units。";
+    return "名字不能超过 80 个字。";
   }
 
   if ([...displayName].some((character) => character === "\u0000")) {
@@ -275,9 +275,9 @@ export function App() {
       <div className="ambient-glow ambient-glow--two" aria-hidden="true" />
       <header className="app-header">
         <div className="brand-lockup">
-          <span className="brand-kicker">R1 / 工程 fixture</span>
+          <span className="brand-kicker">贝克兰德纪闻</span>
           <h1>雾都纪事</h1>
-          <p>一份从普通人开始的公开卷宗</p>
+          <p>从一名普通人的命运开始</p>
         </div>
         <div className="header-mark" aria-hidden="true">
           <span>✦</span>
@@ -289,8 +289,8 @@ export function App() {
       </div>
 
       <footer className="app-footer">
-        <span>本地桌面 · 权威状态由 Main / SQLite 管理</span>
-        <span>公开投影 · {CONTRACT_VERSION}</span>
+        <span>雾都沉睡，命运仍在暗处转动</span>
+        <span>每一次选择都会留下痕迹</span>
       </footer>
     </main>
   );
@@ -348,9 +348,9 @@ function LoadingState() {
       <div className="state-symbol state-symbol--spinner" aria-hidden="true">
         ◌
       </div>
-      <p className="eyebrow">正在建立连接</p>
-      <h2 id="loading-title">正在读取公开状态</h2>
-      <p className="state-copy">正在向本地权威存储请求启动投影。</p>
+      <p className="eyebrow">雾中来信</p>
+      <h2 id="loading-title">正在翻开卷宗</h2>
+      <p className="state-copy">散落在雾中的记录正在归位。</p>
     </section>
   );
 }
@@ -361,14 +361,12 @@ function StorageUnavailableState({ error }: { readonly error: PublicError }) {
       <div className="state-symbol state-symbol--danger" aria-hidden="true">
         !
       </div>
-      <p className="eyebrow eyebrow--danger">安全停止</p>
-      <h2 id="storage-title">存储不可用</h2>
-      <p className="state-copy">没有获得可信的公开状态，因此没有载入或创建本地周目。</p>
+      <p className="eyebrow eyebrow--danger">卷宗蒙尘</p>
+      <h2 id="storage-title">卷宗暂时无法打开</h2>
+      <p className="state-copy">记录没有成功载入，请稍后再试。</p>
       <div className="error-callout" role="alert">
-        <code>{error.code}</code>
-        <p>{error.message}</p>
+        <p>{error.retryable ? "你可以稍后再次打开游戏。" : "请重新启动游戏后再试。"}</p>
       </div>
-      <p className="state-note">Renderer 不会静默回退到 mock；请由桌面端提供 window.mysteryGame。</p>
     </section>
   );
 }
@@ -387,7 +385,7 @@ function CreateForm({
   nameError,
   onNameChange,
   onSubmit,
-  submitLabel = "创建 R1 工程周目",
+  submitLabel = "开始新的旅程",
   submitDisabled = false,
 }: CreateFormProps) {
   const nameErrorId = "display-name-error";
@@ -397,7 +395,7 @@ function CreateForm({
   return (
     <form className="create-form" onSubmit={onSubmit} noValidate>
       <div className="field-group">
-        <label htmlFor="display-name">卷宗显示名</label>
+        <label htmlFor="display-name">姓名</label>
         <input
           id="display-name"
           name="displayName"
@@ -411,7 +409,7 @@ function CreateForm({
           placeholder="输入一个名字"
         />
         <p className="field-hint" id={nameHintId}>
-          只用于这份工程 fixture 的公开显示。
+          这个名字将写在你的个人卷宗上。
         </p>
         {nameError !== null ? (
           <p className="field-error" id={nameErrorId} role="alert">
@@ -440,10 +438,10 @@ function CreateRunState({
       <div className="state-symbol state-symbol--seal" aria-hidden="true">
         ◈
       </div>
-      <p className="eyebrow">没有可恢复周目</p>
-      <h2 id="no-run-title">从一份工程卷宗开始</h2>
+      <p className="eyebrow">命运尚未落笔</p>
+      <h2 id="no-run-title">在雾都写下你的名字</h2>
       <p className="state-copy">
-        这会创建 R1 的普通人第一周 fixture，仅用于验证公开投影、窄 bridge 与持久化回执；它不是正式捏人、职业、特质或经济开局。
+        你将以一名普通人的身份踏入贝克兰德。故事尚未开始，但雾已经在等待。
       </p>
       <CreateForm
         displayName={displayName}
@@ -461,9 +459,9 @@ function CreatingState({ displayName }: { readonly displayName: string }) {
       <div className="state-symbol state-symbol--spinner" aria-hidden="true">
         ◌
       </div>
-      <p className="eyebrow">正在提交</p>
-      <h2 id="creating-title">正在创建 R1 工程周目</h2>
-      <p className="state-copy">正在为“{displayName}”请求一次性权威回执，请勿重复提交。</p>
+      <p className="eyebrow">命运落笔</p>
+      <h2 id="creating-title">正在整理行装</h2>
+      <p className="state-copy">正在为“{displayName}”准备旅程的第一周。</p>
       <div className="progress-line" aria-hidden="true">
         <span />
       </div>
@@ -483,12 +481,11 @@ function CreateFailedState({
       <div className="state-symbol state-symbol--danger" aria-hidden="true">
         ×
       </div>
-      <p className="eyebrow eyebrow--danger">提交未完成</p>
-      <h2 id="create-failed-title">创建失败</h2>
-      <p className="state-copy">“{displayName}”没有进入活动周目，权威状态未被前端假定改变。</p>
+      <p className="eyebrow eyebrow--danger">命运受阻</p>
+      <h2 id="create-failed-title">旅程未能开始</h2>
+      <p className="state-copy">“{displayName}”的卷宗没有成功建立，你可以再次尝试。</p>
       <div className="error-callout" role="alert">
-        <code>{error.code}</code>
-        <p>{error.message}</p>
+        <p>{error.retryable ? "请确认名字后再次尝试。" : "请重新启动游戏后再试。"}</p>
       </div>
       <CreateForm
         displayName={displayName}
@@ -525,14 +522,14 @@ function ActiveHeader({ game }: { readonly game: PublicGameState }) {
   return (
     <div className="active-heading">
       <div>
-        <p className="eyebrow">活动周目 / R1 工程 fixture</p>
+        <p className="eyebrow">雾都纪事</p>
         <h2 id="active-run-title">第 {game.week} 周</h2>
         <p className="active-subtitle">
-          {formatOrigin(character.origin)} · {formatSequence(character.sequence)} · 公开状态视图
+          {formatOrigin(character.origin)} · {formatSequence(character.sequence)}
         </p>
       </div>
-      <div className="revision-stamp" aria-label={`当前状态修订号 ${game.revision}`}>
-        <span>状态修订</span>
+      <div className="revision-stamp" aria-label={`卷宗页码 ${game.revision}`}>
+        <span>卷宗页码</span>
         <strong>{game.revision}</strong>
       </div>
     </div>
@@ -561,7 +558,7 @@ function PanelHeading({ index, label }: { readonly index: string; readonly label
 function DossierPanel({ character }: { readonly character: PublicGameState["character"] }) {
   return (
     <aside className="dossier-panel" aria-labelledby="dossier-title">
-      <PanelHeading index="01" label="PERSONAL DOSSIER" />
+      <PanelHeading index="01" label="人物卷宗" />
       <h3 id="dossier-title">人物卷宗</h3>
       <DossierIdentity character={character} />
       <div className="dossier-divider" />
@@ -638,13 +635,13 @@ function ResourceSection({ resources }: { readonly resources: PublicGameState["c
 function StagePanel({ game }: { readonly game: PublicGameState }) {
   return (
     <section className="stage-panel" aria-labelledby="stage-title">
-      <PanelHeading index="02" label="WEEKLY STAGE" />
+      <PanelHeading index="02" label="本周纪事" />
       <div className="stage-heading-row">
         <div>
-          <h3 id="stage-title">本周周舞台</h3>
-          <p>当前只展示 Main 返回的公开投影。</p>
+          <h3 id="stage-title">本周纪事</h3>
+          <p>雾都的一切变化都会在这里留下痕迹。</p>
         </div>
-        <span className="fixture-tag">FIXTURE / READ ONLY VIEW</span>
+        <span className="fixture-tag">命运记录</span>
       </div>
       <ChronicleCard chronicle={game.chronicle} />
       <FutureSection />
@@ -656,18 +653,22 @@ function ChronicleCard({ chronicle }: { readonly chronicle: PublicGameState["chr
   return (
     <section className="chronicle-card" aria-labelledby="chronicle-title">
       <div className="section-caption" id="chronicle-title">
-        最小纪事
+        纪事
       </div>
       {chronicle.length === 0 ? (
-        <p className="empty-chronicle">暂无公开纪事。</p>
+        <p className="empty-chronicle">这一周还没有新的记录。</p>
       ) : (
         <ol className="chronicle-list">
           {chronicle.map((entry) => (
             <li key={entry.id}>
               <span className="chronicle-week">第 {entry.week} 周</span>
               <div>
-                <strong>{entry.title}</strong>
-                <p>{entry.summary}</p>
+                <strong>{entry.id === "r1-fixture-created" ? "抵达贝克兰德" : entry.title}</strong>
+                <p>
+                  {entry.id === "r1-fixture-created"
+                    ? "雾中的第一周已经开始，你的名字被写入了一份新卷宗。"
+                    : entry.summary}
+                </p>
               </div>
             </li>
           ))}
@@ -681,7 +682,7 @@ function FutureSection() {
   return (
     <section className="future-section" aria-labelledby="future-title">
       <div className="section-caption" id="future-title">
-        后续轮次承载
+        雾中入口
       </div>
       <div className="future-grid">
         {FUTURE_ENTRIES.map((entry) => (
@@ -693,7 +694,7 @@ function FutureSection() {
               <h4>{entry.label}</h4>
               <p>{entry.detail}</p>
             </div>
-            <span className="future-status">未开放</span>
+            <span className="future-status">尚未解锁</span>
           </article>
         ))}
       </div>
@@ -706,16 +707,16 @@ function ActionSection() {
     <section className="action-section" aria-labelledby="action-title">
       <div className="action-section-heading">
         <div>
-          <PanelHeading index="03" label="DAILY ACTION DOCK" />
+          <PanelHeading index="03" label="行动安排" />
           <h3 id="action-title">日常行动</h3>
         </div>
-        <p>R2 起开放；本轮不触发伪逻辑。</p>
+        <p>旅程展开后，你可以在这里安排每周行动。</p>
       </div>
       <div className="action-dock">
         {DAILY_ACTIONS.map((action) => (
           <button className="action-placeholder" type="button" disabled key={action}>
             <span>{action}</span>
-            <small>后续轮次开放</small>
+            <small>尚未解锁</small>
           </button>
         ))}
       </div>

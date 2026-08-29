@@ -27,13 +27,15 @@
 html,
 body,
 #root {
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
   margin: 0;
+  overflow: hidden;
 }
 
 body {
   min-width: 320px;
-  overflow-x: hidden;
+  overflow: hidden;
   background:
     radial-gradient(circle at 18% 6%, rgba(131, 83, 47, 0.18), transparent 28rem),
     radial-gradient(circle at 88% 84%, rgba(88, 41, 42, 0.15), transparent 34rem),
@@ -61,7 +63,8 @@ input:focus-visible {
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100vh;
+  height: 100dvh;
+  min-height: 0;
   padding: clamp(24px, 4vw, 52px) clamp(18px, 5vw, 76px) 22px;
   overflow: hidden;
 }
@@ -189,6 +192,8 @@ input:focus-visible {
   display: flex;
   align-items: stretch;
   justify-content: center;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .app-footer {
@@ -898,6 +903,239 @@ input:focus-visible {
 
   .dossier-panel > .dossier-divider:last-of-type {
     display: none;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 760px) {
+  .app-shell {
+    padding: 10px 28px 8px;
+  }
+
+  .app-header {
+    align-items: center;
+    padding-bottom: 6px;
+  }
+
+  .brand-kicker {
+    margin-bottom: 2px;
+  }
+
+  .brand-lockup h1 {
+    font-size: 1.65rem;
+    line-height: 1.1;
+  }
+
+  .brand-lockup p {
+    margin-top: 2px;
+    font-size: 0.7rem;
+  }
+
+  .header-mark {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .app-footer {
+    min-height: 16px;
+    padding-top: 5px;
+    font-size: 0.58rem;
+    line-height: 1.2;
+  }
+
+  .state-card {
+    margin: 8px auto 10px;
+    padding: 22px 28px;
+  }
+
+  .state-symbol {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 12px;
+  }
+
+  .state-copy {
+    margin: 8px 0 14px;
+    line-height: 1.5;
+  }
+
+  .active-run {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+  }
+
+  .active-heading {
+    align-items: center;
+    min-height: 42px;
+    margin-bottom: 5px;
+  }
+
+  .active-heading h2 {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .eyebrow {
+    margin-bottom: 4px;
+  }
+
+  .active-subtitle {
+    margin-top: 3px;
+    font-size: 0.72rem;
+  }
+
+  .revision-stamp {
+    min-width: 82px;
+    padding: 4px 8px;
+  }
+
+  .revision-stamp strong {
+    font-size: 0.92rem;
+  }
+
+  .status-rail {
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+
+  .metric {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+  }
+
+  .metric strong {
+    font-size: 0.92rem;
+  }
+
+  .dashboard-grid {
+    flex: 1;
+    min-height: 0;
+    gap: 6px;
+  }
+
+  .dossier-panel,
+  .stage-panel {
+    min-height: 0;
+    padding: 9px 12px;
+    overflow: hidden;
+  }
+
+  .panel-heading {
+    margin-bottom: 5px;
+  }
+
+  .dossier-panel h3,
+  .stage-panel h3,
+  .action-section h3 {
+    font-size: 1rem;
+  }
+
+  .identity-block {
+    gap: 8px;
+    margin: 6px 0;
+  }
+
+  .portrait-placeholder {
+    width: 38px;
+    height: 44px;
+    font-size: 1rem;
+  }
+
+  .identity-block strong {
+    font-size: 0.92rem;
+  }
+
+  .dossier-divider {
+    margin: 6px 0;
+  }
+
+  .section-caption {
+    margin-bottom: 5px;
+  }
+
+  .core-stat-list,
+  .resource-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3px;
+  }
+
+  .core-stat {
+    padding: 3px 6px;
+  }
+
+  .core-stat small {
+    display: none;
+  }
+
+  .resource-row {
+    padding: 3px 5px;
+    border: 1px solid rgba(220, 197, 159, 0.08);
+    background: rgba(13, 16, 20, 0.22);
+  }
+
+  .stage-panel {
+    gap: 6px;
+  }
+
+  .stage-heading-row p,
+  .action-section-heading > p {
+    margin-top: 2px;
+    font-size: 0.68rem;
+    line-height: 1.25;
+  }
+
+  .fixture-tag {
+    padding: 4px 6px;
+  }
+
+  .chronicle-card {
+    min-height: 74px;
+    padding: 8px 10px;
+  }
+
+  .empty-chronicle {
+    margin: 14px 0 4px;
+  }
+
+  .future-grid {
+    gap: 4px;
+  }
+
+  .future-card {
+    gap: 6px;
+    padding: 5px 7px;
+  }
+
+  .future-card p {
+    margin-top: 2px;
+  }
+
+  .action-section {
+    margin-top: 6px;
+    padding: 7px 10px 8px;
+  }
+
+  .action-section-heading {
+    margin-bottom: 5px;
+  }
+
+  .action-section-heading .panel-heading {
+    margin-bottom: 2px;
+  }
+
+  .action-dock {
+    gap: 4px;
+  }
+
+  .action-placeholder {
+    min-height: 38px;
+    padding: 5px 8px;
   }
 }
 

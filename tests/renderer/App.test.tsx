@@ -67,8 +67,8 @@ function activeGame(displayName = "阿黛尔"): PublicGameState {
       {
         id: "chronicle-1",
         week: 1,
-        title: "工程周目已建立",
-        summary: "公开 fixture 状态已提交并可恢复。",
+        title: "抵达贝克兰德",
+        summary: "雾中的第一周已经开始。",
       },
     ],
     stateChecksum: "a".repeat(64),
@@ -121,19 +121,19 @@ describe("R1 renderer shell", () => {
 
     renderWithBridge(bridge);
 
-    expect(screen.getByRole("status").textContent).toContain("正在读取公开状态");
+    expect(screen.getByRole("status").textContent).toContain("正在翻开卷宗");
 
     resolveBootstrap(ok(noRunBootstrap()));
-    expect(await screen.findByRole("heading", { name: "从一份工程卷宗开始" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "在雾都写下你的名字" })).toBeTruthy();
   });
 
   it("fails closed when the production bridge is missing", async () => {
     render(<App />);
 
-    expect(await screen.findByRole("heading", { name: "存储不可用" })).toBeTruthy();
-    expect(screen.getByText(/window\.mysteryGame 未注入/)).toBeTruthy();
-    expect(screen.getByText(/未启用 mock 回退/)).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "创建 R1 工程周目" })).toBeNull();
+    expect(await screen.findByRole("heading", { name: "卷宗暂时无法打开" })).toBeTruthy();
+    expect(screen.getByText("请重新启动游戏后再试。")).toBeTruthy();
+    expect(document.body.textContent).not.toMatch(/window\.mysteryGame|mock|bridge|R1|fixture/i);
+    expect(screen.queryByRole("button", { name: "开始新的旅程" })).toBeNull();
   });
 
   it("renders the no-run state with immediate name validation and only the create action", async () => {
@@ -141,9 +141,9 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    expect(await screen.findByRole("heading", { name: "从一份工程卷宗开始" })).toBeTruthy();
-    const input = screen.getByLabelText("卷宗显示名");
-    const createButton = screen.getByRole("button", { name: "创建 R1 工程周目" });
+    expect(await screen.findByRole("heading", { name: "在雾都写下你的名字" })).toBeTruthy();
+    const input = screen.getByLabelText("姓名");
+    const createButton = screen.getByRole("button", { name: "开始新的旅程" });
 
     expect(input.getAttribute("aria-invalid")).toBe("true");
     expect((createButton as HTMLButtonElement).disabled).toBe(true);
@@ -160,8 +160,8 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    const input = (await screen.findByLabelText("卷宗显示名")) as HTMLInputElement;
-    const createButton = screen.getByRole("button", { name: "创建 R1 工程周目" });
+    const input = (await screen.findByLabelText("姓名")) as HTMLInputElement;
+    const createButton = screen.getByRole("button", { name: "开始新的旅程" });
     expect(input.maxLength).toBe(80);
 
     const exactlyEightyUnits = "😀".repeat(40);
@@ -172,7 +172,7 @@ describe("R1 renderer shell", () => {
     fireEvent.change(input, { target: { value: `${exactlyEightyUnits}a` } });
     expect(input.getAttribute("aria-invalid")).toBe("true");
     expect((createButton as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getByText("名字不能超过 80 个 UTF-16 code units。")).toBeTruthy();
+    expect(screen.getByText("名字不能超过 80 个字。")).toBeTruthy();
     await user.clear(input);
   });
 
@@ -186,12 +186,11 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    const input = await screen.findByLabelText("卷宗显示名");
+    const input = await screen.findByLabelText("姓名");
     await user.type(input, "阿黛尔");
-    await user.click(screen.getByRole("button", { name: "创建 R1 工程周目" }));
+    await user.click(screen.getByRole("button", { name: "开始新的旅程" }));
 
-    expect(screen.getByRole("status").textContent).toContain("正在创建 R1 工程周目");
-    expect(screen.getByText(/请勿重复提交/)).toBeTruthy();
+    expect(screen.getByRole("status").textContent).toContain("正在整理行装");
     expect(submitIntent).toHaveBeenCalledTimes(1);
 
     resolveSubmit(
@@ -201,7 +200,7 @@ describe("R1 renderer shell", () => {
         retryable: true,
       }),
     );
-    expect(await screen.findByRole("heading", { name: "创建失败" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "旅程未能开始" })).toBeTruthy();
   });
 
   it("reuses the uncertain fixture envelope for a same-name retry", async () => {
@@ -213,10 +212,10 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    const input = await screen.findByLabelText("卷宗显示名");
+    const input = await screen.findByLabelText("姓名");
     await user.type(input, "阿黛尔");
-    await user.click(screen.getByRole("button", { name: "创建 R1 工程周目" }));
-    await screen.findByRole("heading", { name: "创建失败" });
+    await user.click(screen.getByRole("button", { name: "开始新的旅程" }));
+    await screen.findByRole("heading", { name: "旅程未能开始" });
 
     await user.click(screen.getByRole("button", { name: "重试创建" }));
     expect(await screen.findByRole("heading", { name: "第 1 周" })).toBeTruthy();
@@ -241,16 +240,16 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    const input = await screen.findByLabelText("卷宗显示名");
+    const input = await screen.findByLabelText("姓名");
     await user.type(input, "阿黛尔");
-    await user.click(screen.getByRole("button", { name: "创建 R1 工程周目" }));
-    await screen.findByRole("heading", { name: "创建失败" });
+    await user.click(screen.getByRole("button", { name: "开始新的旅程" }));
+    await screen.findByRole("heading", { name: "旅程未能开始" });
 
-    const retryInput = screen.getByLabelText("卷宗显示名");
+    const retryInput = screen.getByLabelText("姓名");
     fireEvent.change(retryInput, { target: { value: "伊莎贝拉" } });
     expect((retryInput as HTMLInputElement).value).toBe("伊莎贝拉");
     await user.click(screen.getByRole("button", { name: "重试创建" }));
-    expect(await screen.findByText("重试时存储仍不可用。")).toBeTruthy();
+    expect(await screen.findByText("请确认名字后再次尝试。")).toBeTruthy();
     expect(submitIntent).toHaveBeenCalledTimes(2);
 
     const firstIntent = submitIntent.mock.calls[0]?.[0];
@@ -272,13 +271,14 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    const input = await screen.findByLabelText("卷宗显示名");
+    const input = await screen.findByLabelText("姓名");
     await user.type(input, "阿黛尔");
-    await user.click(screen.getByRole("button", { name: "创建 R1 工程周目" }));
+    await user.click(screen.getByRole("button", { name: "开始新的旅程" }));
 
-    expect(await screen.findByRole("heading", { name: "创建失败" })).toBeTruthy();
-    expect(screen.getByText("REVISION_CONFLICT")).toBeTruthy();
-    expect(screen.getByText("公开状态已变化，请重新读取。")).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "旅程未能开始" })).toBeTruthy();
+    expect(screen.queryByText("REVISION_CONFLICT")).toBeNull();
+    expect(screen.queryByText("公开状态已变化，请重新读取。")).toBeNull();
+    expect(screen.getByText("请确认名字后再次尝试。")).toBeTruthy();
     expect(screen.getByRole("alert").textContent).not.toMatch(/SQL|堆栈|stack/i);
   });
 
@@ -289,9 +289,9 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    const input = await screen.findByLabelText("卷宗显示名");
+    const input = await screen.findByLabelText("姓名");
     await user.type(input, "阿黛尔");
-    await user.click(screen.getByRole("button", { name: "创建 R1 工程周目" }));
+    await user.click(screen.getByRole("button", { name: "开始新的旅程" }));
 
     expect(await screen.findByRole("heading", { name: "第 1 周" })).toBeTruthy();
     expect(submitIntent).toHaveBeenCalledTimes(1);
@@ -309,7 +309,7 @@ describe("R1 renderer shell", () => {
     });
     expect(submitted.intentId).toEqual(expect.any(String));
     expect(screen.getByText("1,234 便士")).toBeTruthy();
-    expect(screen.getByText("工程周目已建立")).toBeTruthy();
+    expect(screen.getByText("抵达贝克兰德")).toBeTruthy();
   });
 
   it("renders an active public projection and keeps all later-round entrances inert", async () => {
@@ -349,17 +349,18 @@ describe("R1 renderer shell", () => {
     expect(screen.getByText("灵性")).toBeTruthy();
     expect(screen.getAllByText("污染")).toHaveLength(2);
     expect(screen.getByText("1,234 便士")).toBeTruthy();
-    expect(screen.getByText("工程周目已建立")).toBeTruthy();
+    expect(screen.getByText("抵达贝克兰德")).toBeTruthy();
 
     for (const label of ["工作", "学习", "调查", "休养"]) {
       const actionButton = screen.getByRole("button", { name: new RegExp(`^${label}`) });
       expect((actionButton as HTMLButtonElement).disabled).toBe(true);
     }
 
-    for (const label of ["黑市", "季度拍卖", "事件卡", "战斗转盘"]) {
+    for (const label of ["黑市", "季度拍卖", "事件", "战斗"]) {
       expect(screen.getByRole("heading", { name: label })).toBeTruthy();
     }
-    expect(screen.getAllByText("未开放")).toHaveLength(4);
+    expect(screen.getAllByText("尚未解锁")).toHaveLength(8);
+    expect(document.body.textContent).not.toMatch(/R1|fixture|工程|公开投影|公开状态|Main|SQLite|bridge|回执|后续轮次|READ ONLY/i);
   });
 
   it("debounces duplicate clicks before the first receipt returns", async () => {
@@ -372,9 +373,9 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    const input = await screen.findByLabelText("卷宗显示名");
+    const input = await screen.findByLabelText("姓名");
     await user.type(input, "阿黛尔");
-    const createButton = screen.getByRole("button", { name: "创建 R1 工程周目" });
+    const createButton = screen.getByRole("button", { name: "开始新的旅程" });
 
     act(() => {
       fireEvent.click(createButton);
@@ -390,7 +391,7 @@ describe("R1 renderer shell", () => {
         retryable: true,
       }),
     );
-    await waitFor(() => expect(screen.getByRole("heading", { name: "创建失败" })).toBeTruthy());
+    await waitFor(() => expect(screen.getByRole("heading", { name: "旅程未能开始" })).toBeTruthy());
   });
 
   it("allows keyboard users to focus and submit the create form", async () => {
@@ -400,7 +401,7 @@ describe("R1 renderer shell", () => {
     const user = userEvent.setup();
     renderWithBridge(bridge);
 
-    const input = await screen.findByLabelText("卷宗显示名");
+    const input = await screen.findByLabelText("姓名");
     await user.tab();
     expect(document.activeElement).toBe(input);
     await user.type(input, "键盘用户");
@@ -421,8 +422,9 @@ describe("R1 renderer shell", () => {
 
     renderWithBridge(bridge);
 
-    expect(await screen.findByRole("heading", { name: "存储不可用" })).toBeTruthy();
-    expect(screen.getByText("PERSISTENCE_UNAVAILABLE")).toBeTruthy();
-    expect(screen.getByText("无法打开本地存储。")).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "卷宗暂时无法打开" })).toBeTruthy();
+    expect(screen.queryByText("PERSISTENCE_UNAVAILABLE")).toBeNull();
+    expect(screen.queryByText("无法打开本地存储。")).toBeNull();
+    expect(screen.getByText("你可以稍后再次打开游戏。")).toBeTruthy();
   });
 });
