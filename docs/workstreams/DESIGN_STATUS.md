@@ -32,9 +32,10 @@ PLAYER_ACCEPTANCE=NOT_RUN
 PACKAGE=NOT_RUN
 CLEAN_MACHINE=NOT_RUN
 R2_STATUS=NOT_DISPATCHED
-STATUS=GRILL_ONLY_HOLD
+STATUS=QUESTION_READY_D-V1CC14
 INTEGRATION_STATUS=STATUS_SYNC_INTEGRATED_AS_426461aa3575e5f0915c72ff3b3e348cff172f25
 CURRENT_WRITE_SET=NONE
 ROLE_BOUNDARY=Ask exactly one master-dispatched Grill question and return the user answer. Do not edit files, commit, synchronize status, auto-adopt recommendations or advance design.
-NEXT_ACTION=Wait for an explicit Grill dispatch from the master task. If dispatched, ask only that question while all other tasks remain on GLOBAL_GRILL_HOLD, then return the user's original answer and stop. PLAYER_ACCEPTANCE=NOT_RUN and R2 is not dispatched or authorized.
+CURRENT_QUESTION=D-V1CC14 / Should the standard 12-current-profession pool directly include openly illegal or underworld professions, or only publicly explainable lawful/gray identities?
+NEXT_ACTION=Ask the user exactly D-V1CC14 with 2-3 mutually exclusive options, a marked recommendation, impact and a short reply format. Return the user's original answer and stop. Do not edit any file or ask the next question. All other tasks remain on GLOBAL_GRILL_HOLD; PLAYER_ACCEPTANCE=NOT_RUN and R2 is not dispatched or authorized.
 ```

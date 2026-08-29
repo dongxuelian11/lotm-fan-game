@@ -1,6 +1,6 @@
 # 开发轮次账本
 
-`ROUND_LEDGER_REVISION=14 / CURRENT_ROUND=R1 / STATUS=INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE`
+`ROUND_LEDGER_REVISION=15 / CURRENT_ROUND=R1 / STATUS=GLOBAL_GRILL_HOLD_AWAITING_D-V1CC14`
 
 `CONTRACT=docs/rounds/R1_DESKTOP_AUTHORITY_CONTRACT.md`
 
@@ -16,10 +16,10 @@
 
 | 角色 | 任务/深度链接 | 模型 | 状态 | 当前授权 |
 |---|---|---|---|---|
-| 主任务 | 当前对话 | 当前模型 | `ACTIVE` | R1 已接线并通过本机桌面 smoke；等待用户实际审查 |
-| 设计 Grill | `01a04d69-e530-7df1-b7e9-abc2d24803f1` | `gpt-5.6-sol / high` | `GRILL_ONLY_HOLD` | 仓库只读；只在主任务明确派发问题后向用户 Grill，不写文件、不提交、不自动决定；不授予 R2 实现权限 |
-| 前端 | `01a04d7d-abe2-7732-9ac0-e4ff95397ca2` | `gpt-5.6-luna / max` | `R1_INTEGRATED_HOLD` | 无新增写权限；等待玩家审查或主任务定界修正 |
-| 后端 | `01a04d7d-b97c-7311-8700-2f86c39f86c5` | `gpt-5.6-luna / max` | `R1_INTEGRATED_HOLD` | 无新增写权限；等待玩家审查或主任务定界修正 |
+| 主任务 | 当前对话 | 当前模型 | `GLOBAL_GRILL_HOLD` | 等待用户回答 D-V1CC14；只可接收并固化回答 |
+| 设计 Grill | `01a04d69-e530-7df1-b7e9-abc2d24803f1` | `gpt-5.6-sol / high` | `QUESTION_READY_D-V1CC14` | 仓库只读；只问 D-V1CC14 并返回用户原答，不写文件、不提交、不推进下一题 |
+| 前端 | `01a04d7d-abe2-7732-9ac0-e4ff95397ca2` | `gpt-5.6-luna / max` | `GLOBAL_GRILL_HOLD` | 无新增写权限；等待 D-V1CC14 固化与主任务解除暂停 |
+| 后端 | `01a04d7d-b97c-7311-8700-2f86c39f86c5` | `gpt-5.6-luna / max` | `GLOBAL_GRILL_HOLD` | 无新增写权限；等待 D-V1CC14 固化与主任务解除暂停 |
 
 “1.5x”不是任务 API 可锁定的模型参数；若 Codex 主机提供速度/服务档位，需在客户端设置。仓库只把可验证的 `model=luna`、`thinking=max` 和实际提交证据写入权威状态。
 
@@ -65,7 +65,7 @@
 - `MASTER_DESIGN_PERSISTENCE_259`: `PUBLIC_MAIN_SHA=a0b53ee6e8ad0129a90b88af4c01f1ceec52767c / CI_RUN_33257869398=SUCCESS / D-V1CC12_AND_D-V1CC13`
 - `ORIGIN_RECOMMENDATION_AUTHORITY`: `REMAINING_4_CORE_PROTOTYPES_ONLY / NO_USER_QUESTION / MASTER_PERSISTS`
 - `DESIGN_GAP_ROUTING`: `GLOBAL_GRILL_HOLD_THEN_GRILL_TASK_QUESTIONS_ONLY`
-- `NEXT`: `OPEN_R1_DESKTOP_FOR_USER_REVIEW / R2_NOT_DISPATCHED`
+- `NEXT`: `WAIT_USER_D-V1CC14_IN_DESIGN_GRILL / GLOBAL_GRILL_HOLD / R2_NOT_DISPATCHED`
 
 ## 轮次历史
 

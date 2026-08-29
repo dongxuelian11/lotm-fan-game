@@ -6,7 +6,7 @@
 ## LEDGER
 
 - `LEDGER_REVISION`: 259
-- `PROJECT_STATUS`: `R1_INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE_AND_DESIGN_GRILL_HOLD`
+- `PROJECT_STATUS`: `GLOBAL_GRILL_HOLD_AWAITING_USER_D-V1CC14 / R1_PLAYER_ACCEPTANCE_NOT_RUN`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
 - `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
@@ -140,6 +140,7 @@
 - `D-V1CC11`: 第一版小市民阶层的两张整合出身核心原型 — `LOCKED=B_SELF_EMPLOYED_SMALL_BUSINESS_OR_WORKSHOP_HOUSEHOLD_PLUS_EDUCATED_JUNIOR_CLERICAL_HOUSEHOLD`
 - `D-V1CC12`: 第一版中上阶层的两张整合出身核心原型 — `LOCKED=A_HIGHER_EDUCATED_PROFESSIONAL_HOUSEHOLD_PLUS_MEDIUM_COMMERCE_OR_ENTERPRISE_HOUSEHOLD`
 - `D-V1CC13`: 第一版上流阶层的两张整合出身核心原型 — `LOCKED=A_NOBLE_LINEAGE_HOUSEHOLD_PLUS_RECOGNIZED_INDUSTRIAL_OR_FINANCIAL_ELITE_HOUSEHOLD`
+- `D-V1CC14`: 第一版12个当前职业是否纳入公开非法/地下职业 — `QUESTION_READY / GLOBAL_GRILL_HOLD`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -3063,6 +3064,7 @@
 349. `DONE_RECOMMENDED_DECISION_PERSISTED`: 依据用户对剩余出身核心原型“都按推荐来，不要问我”的限定授权，主任务将 `D-V1CC12` 锁定为中上阶层采用“高等教育专业人士家庭”与“中型商贸/产业经营家庭”，区分教育/专业声望与经营资产/商业信用；未调用 Grill 任务，未授权 R2 实现。
 350. `DONE_RECOMMENDED_DECISION_PERSISTED`: 同一限定授权下，主任务将 `D-V1CC13` 锁定为上流阶层采用“贵族家系”与“获社会承认的实业/金融精英家庭”，区分世袭身份/家名网络与资本经营/社会承认；第一版10张出身的五层核心原型至此齐备，但正式名称、数值与实现仍未冻结。
 351. `MASTER_RECOMMENDATION_PUBLICATION_PASSED`: `D-V1CC12` 与 `D-V1CC13` 已由主任务作为 `a0b53ee6e8ad0129a90b88af4c01f1ceec52767c` 推送到公开 `main`，精确 CI #33257869398 通过；独立 Grill 任务保持 `GRILL_ONLY_HOLD`，前端/后端保持 R1 hold，`PLAYER_ACCEPTANCE=NOT_RUN`，R2 未下发。
+352. `GLOBAL_GRILL_HOLD_D-V1CC14`: 第一版10张出身核心原型齐备后，下一项会改变12职业名册、120组兼容与内容范围的前置问题是：标准新游戏的当前职业池是否直接包含公开非法/地下职业，还是只包含可公开解释的合法/灰色身份。主任务实施、前端与后端已统一暂停；独立 Grill 任务只可向用户询问这一题并返回原答，不得写文件或推进下一题。
 
 ## FOUNDATION_AUDIT
 
@@ -3092,4 +3094,4 @@
 
 ## NEXT_ACTION
 
-第一版10张整合出身的五层核心原型已齐备；正式显示名称、具体数值与120组兼容状态仍待后续。下一项会影响角色创建的核心缺口是12个当前职业的具体名册；在派发该 Grill 前，主任务实施、前端与后端必须全部保持或进入 `GLOBAL_GRILL_HOLD`，独立 Grill 任务只负责向用户提问，回答由主任务固化。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+等待用户在独立 Grill 任务回答 `D-V1CC14`；在主任务收到原答、写入总账与主题文档并提交前，主任务实施、前端和后端全部保持 `GLOBAL_GRILL_HOLD`，Grill 任务只问这一题。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
