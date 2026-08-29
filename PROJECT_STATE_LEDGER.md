@@ -3033,7 +3033,8 @@
 343. `R1_PLAYER_REVIEW_GATE`: `PLAYER_ACCEPTANCE=NOT_RUN`、`PACKAGE=NOT_RUN`、`CLEAN_MACHINE=NOT_RUN`、`RELEASE=NOT_STARTED`。R2 尚未冻结或下发；只有用户实际审查当前桌面壳并明确通过后，R1 才能进入 `PLAYER_ACCEPTED`。
 344. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=467eac09ac902a94e0dbfbbe70059714e9a2411f` 记录用户原答 `b`；`D-V1CC10` 锁定劳工阶层两张整合出身的核心原型为“工厂工资家庭”与“雇主依附的服务家庭”。主任务已按 `edd58ad9b7d9889fbeb9bb5e1d8fddb77fd87427` → `8782bd132c7dabf4c4f2c2805eb855d5d5225e27` 的依赖顺序审查，并将决定作为 `a3fdb6c822db8d28aeabebf92f0cee22682b2f56` 合入 `main`；精确公开主线 `9b12b6f9f21a5eb846721c481c4d82d33ab3ccf1` 的 CI #33256166561 通过后，主任务已发送 ledger revision 255 的 `DESIGN_SYNC`。R2 仍未获实现授权。
 345. `GOVERNANCE_METADATA_AUDIT_PASSED`: 主任务为当前 R1 轮次补充唯一机器可读合同 `docs/rounds/R1_DESKTOP_AUTHORITY_CONTRACT.md` 与当前实现工作流 `FRONTEND,BACKEND`，并把 R2+ 设计准备标记为独立 `ROUND_ID=R2_DESIGN_FOUNDATION`；`ledgered-game-dev` 只读治理审计结果为 `ERROR=0 / WARN=0`，未改变任何玩法、合同内容或验收状态。
-346. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从公开 `origin/main=eceebbf13ea44064a7c474bee8ea29dd638db467` 记录用户原答 `b`；`D-V1CC11` 锁定小市民阶层两张整合出身的核心原型为“自营小店/小作坊家庭”与“受教育的基层职员家庭”。该设计在主任务审查合入并发送 ledger revision 256 的 `DESIGN_SYNC` 前仍为候选，不授权 R2 实现。
+346. `DONE_DECISION_INTEGRATED`: 设计 Grill 任务从公开 `origin/main=eceebbf13ea44064a7c474bee8ea29dd638db467` 记录用户原答 `b`；`D-V1CC11` 锁定小市民阶层两张整合出身的核心原型为“自营小店/小作坊家庭”与“受教育的基层职员家庭”。主任务已审查候选 `a840e1a269830d14609c7e0bbb6bdb460241325c` 并将其作为 `488e89dfa3f922c88bf608ba41de245a8d8ab728` 合入 `main`；新的 `DESIGN_SYNC` 仍是后续开发使用该决定的门禁，R2 未获实现授权。
+347. `USER_SCOPED_RECOMMENDATION_AUTHORITY`: 用户明确要求“后续几个出生都按推荐来，不要问我”。本授权严格限定为尚未锁定的4张中上层与上流层整合出身核心原型：设计 Grill 可按原著贴合度、阶层差异与第一版简洁性直接采用自己的推荐，不再逐题等待用户答复；但每项仍须形成独立决定回执、写入对应设计文档并交主任务审查合入。正式名称、具体数值、12个职业、120组兼容、事件及其他未决设计不在此授权范围内。
 
 ## FOUNDATION_AUDIT
 
@@ -3063,4 +3064,4 @@
 
 ## NEXT_ACTION
 
-主任务审查 `D-V1CC11` 决定候选；只有合入公开 `main` 并发送 ledger revision 256 的 `DESIGN_SYNC` 后，小市民阶层两项核心原型才成为开发权威。随后设计 Grill 继续逐题确认剩余4张中上层与上流层出身卡，再进入职业名册；全部正式名称、数值、12个职业和120组具体兼容状态继续保持待定。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+主任务公开包含 `D-V1CC11` 与用户限定授权的当前 `main`，核验精确远端 SHA/CI 后发送 ledger revision 256 的 `DESIGN_SYNC`；随后设计 Grill 对剩余4张中上层与上流层出身核心原型逐项采用推荐、形成候选并交主任务审查，不再向用户提问。全部正式名称与数值、12个职业和120组具体兼容状态继续保持待定。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
