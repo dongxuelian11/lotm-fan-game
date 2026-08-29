@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 246
+- `LEDGER_REVISION`: 247
 - `PROJECT_STATUS`: `R1_CONTRACT_PREPARATION_AND_DESIGN_GRILL_SETUP`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_NOT_DISPATCHED / PRODUCT_CODE_NOT_STARTED`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -127,6 +127,7 @@
 - `D-V1CC1`: 第一版背景选择结构 — `LOCKED=B_ORIGIN_PLUS_CURRENT_PROFESSION`
 - `D-V1CC2`: 第一版是否显示手动属性加点 — `LOCKED=A_AUTO_DERIVED_NO_POINT_BUY_UI`
 - `D-V1CC3`: 第一版捏人最终短流程 — `LOCKED=A_ADAPTED_COMPACT_FLOW`
+- `D-V1CC4`: 第一版捏人的性格特质选择数量 — `LOCKED=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -401,7 +402,7 @@
 - `DECISION`: `A_FULLY_CUSTOM_ORIGINAL_CHARACTER`
 - `CONFIRMED_BY_USER`: 2026-08-28，用户回复 `a`。
 - 玩家控制完全自建的原创角色，而不是固定主角、预设角色或原作人物。
-- 角色创建至少允许玩家定义姓名、性别、出身、普通职业和性格特质；具体选项、点数与限制尚未锁定。
+- 角色创建至少允许玩家定义姓名、性别、出身、普通职业和性格特质；第一版性格特质数量已由 `D-V1CC4` 锁定为2个并另选1个真实缺陷，具体选项、效果与其余限制仍待后续决定。
 - 自建角色必须嵌入原作同期世界，并通过合法身份、关系、知识与行为后果保持世界可信度，不能成为没有社会来历的万能化身。
 - 首个可玩版本仍围绕一名主角色展开，不因自建功能扩张为多主角并行叙事。
 - 本决定尚未锁定角色开局是否为非凡者、首发开放途径、是否允许转途径，以及外貌/年龄/国籍的可选边界。
@@ -2380,11 +2381,20 @@
 
 - `DECISION`: `A_ADAPTED_COMPACT_FLOW`
 - `CONFIRMED_BY_USER`: 2026-08-28，用户回复 `a`。
-- 第一版依次完成：基础身份（姓名、性别、18—45岁年龄、鲁恩境内出生地、预设头像）→一个出身→一个当前职业→少量性格特质＋一个强制缺陷→自动派生属性/技能摘要→确认开局。
+- 第一版依次完成：基础身份（姓名、性别、18—45岁年龄、鲁恩境内出生地、预设头像）→一个出身→一个当前职业→恰好2个性格特质＋一个强制缺陷→自动派生属性/技能摘要→确认开局。
 - 鲁恩国籍固定，不增加无意义的单选控件；预设头像自带结构化外貌标签，第一版不要求玩家逐项编辑发色、五官等细节。
 - 玩家手动确认所有关键身份选择；属性、技能、初始关系和资源由已选输入确定性派生，不在第一版增加点数购买、家庭营生、关系网或秘密配置页。
 - 确认页必须展示主要能力倾向与关键后果，不能让玩家在不知情的情况下进入游戏。
-- 本决定完成第一版捏人方向封板；具体出身/职业/特质/缺陷清单、精确数量、派生公式和美术资产属于后续内容与实现任务，不再作为当前产品方向 Grill。
+- 本决定完成第一版捏人方向封板；具体出身/职业/特质/缺陷清单、派生公式和美术资产属于后续内容与实现任务；性格特质与缺陷的选择数量由后续 `D-V1CC4` 单独锁定。
+
+### D-V1CC4 第一版固定选择两个性格特质
+
+- `DECISION`: `A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户针对当前单题回复 `a`。
+- 第一版捏人的人格步骤必须恰好选择2个互不重复、通过组合校验的性格特质；此前已经锁定的1个真实缺陷另行选择，不计入这2个特质。
+- 领域层和界面层都必须执行相同的精确数量校验：少于2个或多于2个均不能确认角色，不能继承参考项目只限制上限、没有执行最少数量校验的缺口。
+- 该数量在保持短流程的同时提供两条可组合的人格倾向；不扩张为3个以上特质，也不把缺陷当作第三个正向特质。
+- 本决定只锁定选择数量及最小/最大校验；具体特质与缺陷清单、效果、互斥关系、派生公式、文案和美术仍保持待定。
 
 ## LOCKED_PROFESSION_DESIGN
 
@@ -2939,6 +2949,7 @@
 328. `GITHUB_AUTHORIZED_AND_PUBLISHED`: 用户明确授权 GitHub 与开源部署；GitHub 插件/CLI 账户为 `dongxuelian11`，仓库本地身份来自授权资料 `E1aina <2806418887@qq.com>`。初始提交 `e0a7677` 已推送到公开仓库 `https://github.com/dongxuelian11/lotm-fan-game` 的 `main`。
 329. `DESIGN_GRILL_WORKSTREAM_AUTHORIZED`: 用户要求新增独立深度链接对话，对所有真正未决定的设计按 `grill-me` 一次一题询问，并将回答写入总账本和对应项目 MD。决定只有提交并由主任务合入 `main`、发送 `DESIGN_SYNC` 后才可供开发任务实现。
 330. `DESIGN_GRILL_TASK_CREATED`: 已创建独立 worktree 任务 `01a04d69-e530-7df1-b7e9-abc2d24803f1`，模型 `gpt-5.6-sol / high`，基线 `07cf112b6856600981bd1056b3045a8ea029f62f`。它必须先完成只读依赖审计，再从 R2+ 最早未决项一次只问一题；首次写入前切换到 `work/design-grill-r2-foundation`，不得在 detached HEAD 提交。
+331. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从最新公开 `origin/main=92a6fd9882c154aa998793295b14d172404a50c9` 创建 `work/design-grill-r2-foundation`；用户回复 `a`，将 `D-V1CC4` 锁定为第一版恰好选择2个性格特质并另选1个真实缺陷。该决定作为候选提交等待主任务审查合入和 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
 
 ## FOUNDATION_AUDIT
 
@@ -2968,4 +2979,4 @@
 
 ## NEXT_ACTION
 
-设计 Grill 任务完成只读接管并从最早的 R2+ 未决依赖开始一次一题提问；主任务同时冻结 R1 共享类型、根工具链、精确写集和验收合同，从同一 main SHA 将前后端任务迁入独立 worktree并同步 dispatch。任何新设计回答必须先合入 `main` 并发送 `DESIGN_SYNC`，不得直接从聊天进入实现。
+主任务审查并合入 `D-V1CC4=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW` 的候选提交，再发送 `DESIGN_SYNC`；设计 Grill 在该同步后继续下一项真正依赖性问题。前后端在合入前只能收到“候选待主任务合入”通知，不得直接从聊天答案实现。
