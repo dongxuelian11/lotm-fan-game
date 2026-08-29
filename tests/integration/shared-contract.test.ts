@@ -4,6 +4,7 @@ import {
   CONTENT_VERSION,
   CONTRACT_VERSION,
   PUBLIC_ERROR_CODES,
+  R1_FIXTURE_DEFAULTS,
   RULE_VERSION,
   STORAGE_SCHEMA_VERSION,
 } from "@shared/index";
@@ -28,5 +29,24 @@ describe("R1 shared authority contract", () => {
     expect(PUBLIC_ERROR_CODES).not.toContain("SQL_ERROR");
     expect(PUBLIC_ERROR_CODES).not.toContain("STACK_TRACE");
   });
-});
 
+  it("pins a neutral ordinary-person fixture without turning it into final game content", () => {
+    expect(R1_FIXTURE_DEFAULTS).toEqual({
+      week: 1,
+      availableActions: 3,
+      cashPence: 0,
+      coreStats: {
+        physique: 15,
+        perception: 15,
+        will: 15,
+        knowledge: 15,
+      },
+      resources: {
+        health: { current: 100, max: 100 },
+        mind: { current: 100, max: 100 },
+        spirituality: { current: 15, max: 15 },
+        pollution: 0,
+      },
+    });
+  });
+});

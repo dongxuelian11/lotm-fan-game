@@ -1,6 +1,6 @@
 # 架构与信任边界合同
 
-`CONTRACT_REVISION=1 / STATUS=FROZEN_FOR_R0 / STACK=ELECTRON_REACT_TYPESCRIPT_VITE_SQLITE`
+`CONTRACT_REVISION=2 / STATUS=FROZEN_FOR_R1 / STACK=ELECTRON_REACT_TYPESCRIPT_VITE_SQLITE`
 
 本文件是工程决定，不新增玩法规则。变更公共接口、依赖方向、权威状态或写集必须由主任务更新合同版本并通知两个工作流。
 
@@ -62,7 +62,7 @@ tests/integration/**  主任务
 
 成功回执至少含 `intentId`、`runId`、`previousRevision`、`newRevision`、`stateChecksum` 和新的公开投影；重复 `intentId` 返回同一结果而不是再次生效。错误使用固定错误码，不把内部堆栈或秘密字段发送到 Renderer。
 
-R1 的精确 API 名称和 TypeScript 类型由主任务在 `R1_*_CONTRACT.md` 冻结后才能实现；两个任务不能各自发明一套共享类型。
+R1 的精确 API 名称和 TypeScript 类型已经由主任务冻结在 `src/shared/contracts.ts` 与 `docs/rounds/R1_DESKTOP_AUTHORITY_CONTRACT.md`；两个任务不能各自发明、复制或扩写一套共享类型。
 
 ## 4. 随机、事件与保存不变量
 

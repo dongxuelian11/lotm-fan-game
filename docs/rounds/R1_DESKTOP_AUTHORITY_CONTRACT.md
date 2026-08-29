@@ -1,6 +1,6 @@
 # R1 桌面权威纵切合同
 
-`ROUND_ID=R1 / CONTRACT_VERSION=r1-v1 / STATUS=FROZEN_PENDING_DISPATCH / BASE_SHA=PENDING_ROOT_SCAFFOLD_COMMIT`
+`ROUND_ID=R1 / CONTRACT_VERSION=r1-v1 / STATUS=FROZEN_FOR_DISPATCH / ROOT_SCAFFOLD_SHA=8048ff1c69fdd540d5b9e7cdae16aec7e007ca21 / DESIGN_AUTHORITY_SHA=4107945c276a1d6658bafe2bae49ca6b2b2d86e7`
 
 ## 1. 本轮结果
 
@@ -17,6 +17,8 @@ R1 不实现真实捏人、周行动结算、事件抽取、经济、魔药、�
 - `CONTENT_VERSION=fixture-r1`；
 - `STORAGE_SCHEMA_VERSION=1`。
 
+技术 fixture 固定为：第1周、3次可用行动、现金0便士、四项核心能力均15、健康100/100、精神100/100、灵性15/15、污染0。它只用于接线和存档证据，不代表最终出身、职业、特质或经济开局。
+
 bridge 只公开两个方法：
 
 1. `getBootstrap()`：读取存储状态、周目摘要与当前公开状态；
@@ -28,10 +30,11 @@ bridge 只公开两个方法：
 
 - Main/SQLite 是权威；Renderer 显示不等于保存成功；
 - 新建 fixture 的 `runId=null`、`expectedRevision=0`；成功后周目从 revision 0 变为 1；
-- 同一个 `intentId` 与同一规范 payload 重试，返回同一提交事实，`replayed=true`，不发生第二次状态变化；
+- 同一个 `intentId` 与同一规范 envelope 重试，返回相同的提交身份、时间、revision、checksum 和公开状态，仅 `replayed` 从 `false` 变为 `true`，不发生第二次状态变化；
 - 同一个 `intentId` 携带不同规范 payload，返回 `DUPLICATE_INTENT_CONFLICT`；
 - 非当前 `expectedRevision` 返回 `REVISION_CONFLICT`；
 - 回执和公开状态都携带相同的 `stateChecksum`；
+- `stateChecksum` 是不含其自身字段的权威公开状态规范序列化结果之 SHA-256 小写十六进制值；对象键按字典序，数组保序，禁止依赖平台默认对象遍历或本地化格式；
 - 金钱只用整数便士 `cashPence`，时间只用 ISO 8601 字符串，revision 只用非负安全整数；
 - 关闭并重启 Electron 后，`getBootstrap()` 必须恢复相同 `runId`、revision、checksum 与公开状态；
 - 错误只返回共享错误码与可公开消息，不返回 SQL、路径、堆栈、隐藏字段或内部异常文本。
@@ -87,4 +90,3 @@ R1 当前 `DESIGN_GAP=NONE`。开发时若出现会改变玩法、数值、文�
 4. 设计任务一次一题 Grill 用户并更新对应 MD；
 5. 决定提交、审计并合入 `main` 后，主任务发送 `DESIGN_SYNC=<ledger revision>:<main sha>:<affected contracts>`；
 6. 只有受影响代码等待，其他 R1 工作继续。
-

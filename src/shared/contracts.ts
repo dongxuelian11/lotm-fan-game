@@ -42,12 +42,35 @@ export interface PublicCoreStats {
   readonly knowledge: number;
 }
 
+export interface PublicResourceMeter {
+  readonly current: number;
+  readonly max: number;
+}
+
 export interface PublicResources {
-  readonly health: number;
-  readonly mind: number;
-  readonly spirituality: number;
+  readonly health: PublicResourceMeter;
+  readonly mind: PublicResourceMeter;
+  readonly spirituality: PublicResourceMeter;
   readonly pollution: number;
 }
+
+export const R1_FIXTURE_DEFAULTS = {
+  week: 1,
+  availableActions: 3,
+  cashPence: 0,
+  coreStats: {
+    physique: 15,
+    perception: 15,
+    will: 15,
+    knowledge: 15,
+  },
+  resources: {
+    health: { current: 100, max: 100 },
+    mind: { current: 100, max: 100 },
+    spirituality: { current: 15, max: 15 },
+    pollution: 0,
+  },
+} as const;
 
 export interface PublicCharacterProjection {
   readonly displayName: string;
@@ -135,4 +158,3 @@ declare global {
     mysteryGame?: MysteryGameBridge;
   }
 }
-
