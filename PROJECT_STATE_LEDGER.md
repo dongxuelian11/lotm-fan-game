@@ -5,7 +5,7 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 254
+- `LEDGER_REVISION`: 255
 - `PROJECT_STATUS`: `R1_INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE_AND_DESIGN_GRILL_ACTIVE`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
@@ -133,6 +133,7 @@
 - `D-V1CC7`: 第一版当前职业池规模 — `LOCKED=B_TWELVE_CURRENT_PROFESSIONS`
 - `D-V1CC8`: 第一版出身与当前职业的组合限制 — `LOCKED=B_THREE_STATE_ORIGIN_PROFESSION_COMPATIBILITY`
 - `D-V1CC9`: 第一版贫民阶层的两张整合出身核心原型 — `LOCKED=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD`
+- `D-V1CC10`: 第一版劳工阶层的两张整合出身核心原型 — `LOCKED=B_FACTORY_WAGE_HOUSEHOLD_PLUS_EMPLOYER_DEPENDENT_SERVICE_HOUSEHOLD`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -2445,6 +2446,15 @@
 - 两张卡必须在家庭基线、社会环境、关系入口、机会与义务上形成可理解差异，不能只改文案；玩家随后仍独立选择当前职业。
 - 本决定只锁定两张贫民出身卡的核心身份与差异轴；正式显示名称、家庭成员、当前家境、现金与债务数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
 
+### D-V1CC10 劳工阶层采用工厂工资家庭与雇主依附服务家庭两种出身原型
+
+- `DECISION`: `B_FACTORY_WAGE_HOUSEHOLD_PLUS_EMPLOYER_DEPENDENT_SERVICE_HOUSEHOLD`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户针对当前单题原样回复 `b`。
+- 第一版劳工阶层的两张整合出身卡分别采用“工厂工资家庭”和“雇主依附的服务家庭”作为核心原型；这里描述的是角色成长时期的家庭生计与社会环境，不替代玩家随后独立选择的当前职业。
+- “工厂工资家庭”以工业雇佣、工友网络、工伤、停工与工资波动风险为核心；“雇主依附的服务家庭”以接触较高阶层家庭及其内部环境、雇主依附、声誉约束与忠诚义务为核心。
+- 两张卡都保持劳工阶层：工厂家庭不自动等同于玩家本人从事工厂职业，服务家庭也不自动赋予上层身份、贵族关系或秘密知识；任何可见机会和信息仍受具体关系、知识与事件条件约束。
+- 本决定只锁定两张劳工出身卡的核心身份与差异轴；正式显示名称、具体工种或服务岗位、雇主、家庭成员、当前家境、数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
+
 ## LOCKED_PROFESSION_DESIGN
 
 ### D-003A4A 普通职业是否构成长期玩法线
@@ -3011,6 +3021,7 @@
 341. `R1_MAINLINE_GATE_PASSED`: 主任务在前后端同一主线实测 `npm run typecheck=PASS`、`vitest=6 files / 44 tests PASS`、`npm run build=PASS`。Vite 生产资源绝对路径缺口已修为 `./assets/**`；修复与两进程 Electron 集成烟测作为 `14d17c60eb910137a270c645993d374ab74f5231` 合入。
 342. `R1_ELECTRON_TWO_PROCESS_SMOKE_PASSED`: 两个独立真实 Electron 进程通过 preload 窄 bridge 和同一 SQLite 文件完成无周目读取、fixture 创建、完全相同 intent 幂等重放、同 ID 异 payload 拒绝、旧 revision 拒绝、第二进程重启恢复以及活动周目 DOM 呈现；两进程保持同一 `runId=60e809b9-b3b2-43af-ad4c-16614dfb6a74`、revision 1 和 `checksum=b443baef5a75746cbcaec21a14d508566d586ab25662888054071e14fc16b70a`。这是本机集成 smoke，不是玩家验收、安装包或干净机器证据。
 343. `R1_PLAYER_REVIEW_GATE`: `PLAYER_ACCEPTANCE=NOT_RUN`、`PACKAGE=NOT_RUN`、`CLEAN_MACHINE=NOT_RUN`、`RELEASE=NOT_STARTED`。R2 尚未冻结或下发；只有用户实际审查当前桌面壳并明确通过后，R1 才能进入 `PLAYER_ACCEPTED`。
+344. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从公开 `origin/main=467eac09ac902a94e0dbfbbe70059714e9a2411f` 记录用户原答 `b`；`D-V1CC10` 锁定劳工阶层两张整合出身的核心原型为“工厂工资家庭”与“雇主依附的服务家庭”。该设计在主任务审查合入并发送 ledger revision 255 的 `DESIGN_SYNC` 前仍为候选，不授权 R2 实现。
 
 ## FOUNDATION_AUDIT
 
@@ -3040,4 +3051,4 @@
 
 ## NEXT_ACTION
 
-主任务启动已接线的 R1 桌面应用交用户实际审查；在用户明确确认前保持 `PLAYER_ACCEPTANCE=NOT_RUN`，不得下发 R2。设计 Grill 在收到 `ENGINEERING_SYNC=254` 后可继续逐题确认其余8张出身卡和后续职业名册；正式名称、数值与全部120组具体兼容状态继续保持待定，不能进入 R1 fixture。
+主任务先按依赖顺序审查设计状态同步候选与 `D-V1CC10` 决定候选；只有合入公开 `main` 并发送 ledger revision 255 的 `DESIGN_SYNC` 后，劳工阶层两项核心原型才成为开发权威。随后设计 Grill 继续逐题确认其余6张出身卡和后续职业名册；全部正式名称、数值、12个职业和120组具体兼容状态继续保持待定。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
