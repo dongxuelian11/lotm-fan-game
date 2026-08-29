@@ -5,11 +5,14 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 259
-- `PROJECT_STATUS`: `GLOBAL_GRILL_HOLD_AWAITING_USER_D-V1CC14 / R1_PLAYER_ACCEPTANCE_NOT_RUN`
+- `LEDGER_REVISION`: 260
+- `PROJECT_STATUS`: `GLOBAL_GRILL_HOLD_PERSISTING_D-V1CC14 / R1_PLAYER_ACCEPTANCE_NOT_RUN`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
 - `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
+- `GRILL_POLICY`: `GLOBAL_STOP_THE_LINE`
+- `GRILL_GATE`: `ANSWER_RECEIVED_PENDING_MASTER_PERSISTENCE`
+- `GRILL_DECISION_ID`: `D-V1CC14`
 
 ## TASK_GOAL
 
@@ -140,7 +143,7 @@
 - `D-V1CC11`: 第一版小市民阶层的两张整合出身核心原型 — `LOCKED=B_SELF_EMPLOYED_SMALL_BUSINESS_OR_WORKSHOP_HOUSEHOLD_PLUS_EDUCATED_JUNIOR_CLERICAL_HOUSEHOLD`
 - `D-V1CC12`: 第一版中上阶层的两张整合出身核心原型 — `LOCKED=A_HIGHER_EDUCATED_PROFESSIONAL_HOUSEHOLD_PLUS_MEDIUM_COMMERCE_OR_ENTERPRISE_HOUSEHOLD`
 - `D-V1CC13`: 第一版上流阶层的两张整合出身核心原型 — `LOCKED=A_NOBLE_LINEAGE_HOUSEHOLD_PLUS_RECOGNIZED_INDUSTRIAL_OR_FINANCIAL_ELITE_HOUSEHOLD`
-- `D-V1CC14`: 第一版12个当前职业是否纳入公开非法/地下职业 — `QUESTION_READY / GLOBAL_GRILL_HOLD`
+- `D-V1CC14`: 第一版12个当前职业是否纳入公开非法/地下职业 — `LOCKED=B_INCLUDE_ILLEGAL_OR_UNDERWORLD_CURRENT_PROFESSIONS / GLOBAL_GRILL_HOLD_PENDING_PERSISTENCE`
 - `D-003C2`: 第一份魔药的选择/获得机制 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C2A`: 第一份魔药的玩家选择权呈现方式 — `DEFERRED_UNTIL_CORE_GAMEPLAY_LOCKED`
 - `D-003C3`: 晋升上限、转途径与高序列边界 — `IN_PROGRESS_SPLIT`
@@ -2490,6 +2493,14 @@
 - 贵族家系不代表玩家本人必然持有爵位或继承权，非贵族精英也不自动获得贵族身份；两张卡都不自动赋予无限现金、政府或教会权限、魔药、序列能力或秘密知识。
 - 本决定只锁定两张上流阶层出身卡的核心身份与“世袭身份/家名网络对资本经营/社会承认”差异轴；正式显示名称、爵位与继承、具体产业或金融业务、家境、资产、数值、城区、派生技能和属性、关系、事件、文案、美术及职业兼容状态仍保持待定。
 
+### D-V1CC14 第一版十二个当前职业直接包含非法或地下职业
+
+- `DECISION`: `B_INCLUDE_ILLEGAL_OR_UNDERWORLD_CURRENT_PROFESSIONS`
+- `CONFIRMED_BY_USER`: 2026-08-29，用户在独立 Grill 任务原样回复 `b`。
+- 第一版标准新游戏的12个当前职业池直接包含非法/地下职业；这类身份不是只能在开局后通过事件获得的隐藏转职。
+- 非法/地下职业仍遵守既有职业规则：它是持续有效的当前身份入口，不替代出身，并与10个出身继续使用 `DIRECT`、`CONDITIONAL`、`FORBIDDEN` 三级兼容；本题不改变普通人开局，也不自动赋予魔药、序列能力或秘密知识。
+- 本决定只锁定职业池会直接包含非法/地下身份；具体职业名称、非法职业数量、合法/灰色/非法比例、收入、技能、关系、义务、风险、黑市权限、掩护身份、事件、转职规则和120组兼容状态仍保持待定。
+
 ## LOCKED_PROFESSION_DESIGN
 
 ### D-003A4A 普通职业是否构成长期玩法线
@@ -3065,6 +3076,7 @@
 350. `DONE_RECOMMENDED_DECISION_PERSISTED`: 同一限定授权下，主任务将 `D-V1CC13` 锁定为上流阶层采用“贵族家系”与“获社会承认的实业/金融精英家庭”，区分世袭身份/家名网络与资本经营/社会承认；第一版10张出身的五层核心原型至此齐备，但正式名称、数值与实现仍未冻结。
 351. `MASTER_RECOMMENDATION_PUBLICATION_PASSED`: `D-V1CC12` 与 `D-V1CC13` 已由主任务作为 `a0b53ee6e8ad0129a90b88af4c01f1ceec52767c` 推送到公开 `main`，精确 CI #33257869398 通过；独立 Grill 任务保持 `GRILL_ONLY_HOLD`，前端/后端保持 R1 hold，`PLAYER_ACCEPTANCE=NOT_RUN`，R2 未下发。
 352. `GLOBAL_GRILL_HOLD_D-V1CC14`: 第一版10张出身核心原型齐备后，下一项会改变12职业名册、120组兼容与内容范围的前置问题是：标准新游戏的当前职业池是否直接包含公开非法/地下职业，还是只包含可公开解释的合法/灰色身份。主任务实施、前端与后端已统一暂停；独立 Grill 任务只可向用户询问这一题并返回原答，不得写文件或推进下一题。
+353. `GRILL_ANSWER_RECEIVED_D-V1CC14`: 独立 Grill 任务只读提问后返回用户原答 `b`；`D-V1CC14` 锁定为第一版12职业池直接包含非法/地下职业，具体名册与数量分配继续待定。全局 Grill 门禁在主任务完成文档固化、公开提交与精确验证前保持开启。
 
 ## FOUNDATION_AUDIT
 
@@ -3094,4 +3106,4 @@
 
 ## NEXT_ACTION
 
-等待用户在独立 Grill 任务回答 `D-V1CC14`；在主任务收到原答、写入总账与主题文档并提交前，主任务实施、前端和后端全部保持 `GLOBAL_GRILL_HOLD`，Grill 任务只问这一题。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+主任务只执行 `D-V1CC14=b` 的文档固化、审计、公开提交与精确验证；完成前前端和后端保持 `PAUSED_FOR_GRILL`，Grill 任务不得再问下一题。门禁清除后再评估12职业名册的下一项真正未决问题。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
