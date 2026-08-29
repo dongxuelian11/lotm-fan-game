@@ -1,6 +1,6 @@
 # 《诡秘之主》同人游戏：Agent 接管与开发合同
 
-`CONTRACT_REVISION=2 / STATUS=R0_GOVERNANCE_ACTIVE / PRODUCT_CODE=NOT_STARTED / USER_DESIGN_AUTHORITY=FINAL`
+`CONTRACT_REVISION=3 / STATUS=R1_WORKSTREAMS_ACTIVE / PRODUCT_CODE=R1_IN_PROGRESS / USER_DESIGN_AUTHORITY=FINAL`
 
 本文件是所有 Codex/agent 的强制入口。Windows 路径大小写不敏感，仓库只保留规范文件名 `AGENTS.md`，不要再创建重复的 `agents.md`。
 
@@ -39,8 +39,8 @@
 
 ## 3. 当前开发边界
 
-- R0 只做开源、Git、合同、任务注册和抗压缩状态；产品代码尚未授权；
-- R1 以后每轮前端与后端必须并行参与，随后由主任务真实接线；
+- R0 已完成开源、Git、合同、任务注册和抗压缩状态；
+- R1 已授权并从同一公开基线并行开发；每轮前端与后端都必须参与，随后由主任务真实接线；
 - 允许用占位能力/fixture 建立存档、随机流、事件和转盘底座；
 - 不等待22条途径全部能力才开发底层；也不得借“底层开发”提前臆造真实能力、魔药、晋升、经济细数或原著事件内容；
 - `READY_FOR_INTEGRATION` 只是候选；接线、自动门禁、玩家验收、打包和发布均为独立事实；
@@ -140,9 +140,9 @@
 
 ## 11. 当前接管点
 
-- 当前轮次：R1 合同与根脚手架准备；R0 已提交并公开发布；
-- 产品代码：`NOT_STARTED / R1_NOT_DISPATCHED`；
-- 前端任务：`01a04d52-87f7-7c00-a047-7343867cb955`；后端任务：`01a04d52-95e5-72c0-91d8-ebf0cfe85315`；两者均 `ONBOARDING_READY`，等待同一 R1 dispatch；
-- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`，独立 worktree 基线 `07cf112`；当前只读接管并准备第一题；
-- 下一步：建立设计 Grill worktree 任务，同时由主任务冻结 R1 合同、共享类型和根工具链，再从同一基线同步下发前后端开发；
+- 当前轮次：R1 桌面权威纵切；R0 已提交并公开发布；
+- 产品代码：`R1_FRONTEND_AND_BACKEND_IN_PROGRESS / INTEGRATION_NOT_STARTED`；
+- 前端任务：`01a04d7d-abe2-7732-9ac0-e4ff95397ca2`，worktree `C:\Users\Administrator\.codex\worktrees\fc83\诡秘`；后端任务：`01a04d7d-b97c-7311-8700-2f86c39f86c5`，worktree `C:\Users\Administrator\.codex\worktrees\12c6\诡秘`；两者均从公开基线 `e2bfe3833c967d3d9c129919a46b4d9f0d202962` 收到 `r1-v1` dispatch；
+- 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`，分支 `work/design-grill-r2-foundation`；`D-V1CC4` 已合入公开 main，下一次写入前必须从 ledger revision 248 与最新 `origin/main` 同步；
+- 下一步：前后端在独立写集完成 R1 并提交 `READY_FOR_INTEGRATION`；主任务逐项审查、接线、运行自动门禁和真实 Electron smoke，再交用户审查；
 - 真实魔药、晋升、能力和事件内容仍在相应轮次前继续 Grill，不阻塞 R1 技术壳。

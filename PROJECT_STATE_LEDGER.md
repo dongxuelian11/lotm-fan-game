@@ -5,9 +5,9 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 247
-- `PROJECT_STATUS`: `R1_CONTRACT_PREPARATION_AND_DESIGN_GRILL_SETUP`
-- `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_NOT_DISPATCHED / PRODUCT_CODE_NOT_STARTED`
+- `LEDGER_REVISION`: 248
+- `PROJECT_STATUS`: `R1_FRONTEND_BACKEND_IN_PROGRESS_AND_DESIGN_GRILL_ACTIVE`
+- `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_DISPATCHED / INTEGRATION_NOT_STARTED`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
 - `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
 
@@ -2950,6 +2950,8 @@
 329. `DESIGN_GRILL_WORKSTREAM_AUTHORIZED`: 用户要求新增独立深度链接对话，对所有真正未决定的设计按 `grill-me` 一次一题询问，并将回答写入总账本和对应项目 MD。决定只有提交并由主任务合入 `main`、发送 `DESIGN_SYNC` 后才可供开发任务实现。
 330. `DESIGN_GRILL_TASK_CREATED`: 已创建独立 worktree 任务 `01a04d69-e530-7df1-b7e9-abc2d24803f1`，模型 `gpt-5.6-sol / high`，基线 `07cf112b6856600981bd1056b3045a8ea029f62f`。它必须先完成只读依赖审计，再从 R2+ 最早未决项一次只问一题；首次写入前切换到 `work/design-grill-r2-foundation`，不得在 detached HEAD 提交。
 331. `DONE_DECISION_CANDIDATE`: 设计 Grill 任务从最新公开 `origin/main=92a6fd9882c154aa998793295b14d172404a50c9` 创建 `work/design-grill-r2-foundation`；用户回复 `a`，将 `D-V1CC4` 锁定为第一版恰好选择2个性格特质并另选1个真实缺陷。该决定作为候选提交等待主任务审查合入和 `DESIGN_SYNC`，合入前不得直接进入前后端实现。
+332. `R1_ROOT_CONTRACT_FROZEN`: 主任务在 `8048ff1c69fdd540d5b9e7cdae16aec7e007ca21` 建立锁版本 Electron/React/TypeScript/Vite/Vitest 根脚手架、共享 `r1-v1` 类型和最小 CI；在 `e2bfe3833c967d3d9c129919a46b4d9f0d202962` 冻结 R1 桌面权威合同。实测 `npm run typecheck=PASS`、`vitest=1 file / 3 tests PASS`、`npm audit=0 vulnerabilities`；完整 build、桌面 smoke、接线和玩家验收仍为 `NOT_RUN/NOT_STARTED`。
+333. `R1_WORKTREES_DISPATCHED`: 前端已迁入任务 `01a04d7d-abe2-7732-9ac0-e4ff95397ca2` / worktree `C:\Users\Administrator\.codex\worktrees\fc83\诡秘`，后端已迁入任务 `01a04d7d-b97c-7311-8700-2f86c39f86c5` / worktree `C:\Users\Administrator\.codex\worktrees\12c6\诡秘`；两者实测清洁且 HEAD 均为公开 `origin/main=e2bfe3833c967d3d9c129919a46b4d9f0d202962`，已收到 Luna/Max、精确写集和 `r1-v1` dispatch。任何新增玩法缺口直接路由设计 Grill，不在开发任务临时决定。
 
 ## FOUNDATION_AUDIT
 
@@ -2965,7 +2967,7 @@
   6. 胜负后的后果、重战、先手、取整和死亡/俘虏/逃脱等终局边界。
 - `COUNT_NOTE`: 这 6 个是内容/后续数值主题簇，不再解释为“开工前还要回答约27题”。R1—R3 的桌面壳、权威存档、公开投影、捏人 fixture、周循环、普通判定和事件 schema 没有新的玩法阻塞题；R4 经济细数、R5 后置战斗细节和 R6 魔药/晋升/真实能力在相应轮次前再 Grill。
 - `TECHNICAL_FOUNDATION_BLOCKERS`: 0。事件卡 `D-EVENT1..18`、UI `D-UI1..3` 和底层 fixture 边界足以开始分阶段工程；未决内容不得被占位实现偷偷锁定。
-- `MVP_SCOPE_NOTE`: R0 已获用户授权并执行开源/Git/多任务治理。产品代码仍为 `NOT_STARTED`；只有主任务冻结 R1 合同和共享类型后，两个开发任务才可开始 R1。
+- `MVP_SCOPE_NOTE`: R0 已获用户授权并执行开源/Git/多任务治理。R1 共享合同与根脚手架已冻结，前后端已从同一公开 SHA 开工；这只代表 `R1_IN_PROGRESS`，不代表接线、桌面运行、玩家验收、打包或发布完成。
 
 ## RECOVERY_PROTOCOL
 
@@ -2979,4 +2981,4 @@
 
 ## NEXT_ACTION
 
-主任务审查并合入 `D-V1CC4=A_EXACTLY_TWO_TRAITS_PLUS_ONE_FLAW` 的候选提交，再发送 `DESIGN_SYNC`；设计 Grill 在该同步后继续下一项真正依赖性问题。前后端在合入前只能收到“候选待主任务合入”通知，不得直接从聊天答案实现。
+前后端任务按 `r1-v1` 与各自写集完成候选提交并停在 `READY_FOR_INTEGRATION`；主任务分别审查后再接线、运行类型/单元/契约/集成/build/真实 Electron smoke，并交用户实际审查。设计 Grill 从 ledger revision 248 与最新公开 main 同步后继续一次一题；任何开发中新 `DESIGN_GAP` 直接推送该设计任务。
