@@ -6,16 +6,17 @@ THREAD_ID=01a04d69-e530-7df1-b7e9-abc2d24803f1
 MODEL=gpt-5.6-sol
 THINKING=high
 BRANCH=work/design-grill-r2-foundation
-BASE_SHA=74e64d3b333ce060aabbccc8114cd578451fdce1
+BASE_SHA=aba4d32990c6a0bb48b2304dc24981be959aa745
 QUESTION_ID=D-V1CC9
 LEDGER_REVISION_BEFORE=252
 LEDGER_REVISION_AFTER=253
 USER_ANSWER=b
 AFFECTED_FILES=PROJECT_STATE_LEDGER.md,docs/OPEN_DECISIONS.md,docs/DECISION_INDEX.md,V1_CHARACTER_CREATION_SPEC.md,docs/CHARACTER_AND_PROGRESSION.md,docs/UI_IMPLEMENTATION_PLAN.md,docs/workstreams/DESIGN_STATUS.md
-CANDIDATE_COMMIT_SHA=THIS_COMMIT
+CANDIDATE_COMMIT_SHA=4604c6faee34b19ee99751cd6d02c4500d4682a3
 PRIOR_INTEGRATED_MAIN_SHA=1cb79b523d0974fb0419b71f1d954aa2b386e6b4
-STATUS_SYNC_MAIN_SHA=9afa9239b01f465644a695fe504f72a5b5d4dba0
-DECISION_RECEIPT=D-V1CC9=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD / CANDIDATE_AWAITING_MASTER_INTEGRATION
-STATUS=DECISION_READY_FOR_INTEGRATION
-NEXT_ACTION=Wait for the master task to review and merge this candidate, then continue only after a new DESIGN_SYNC; the remaining 8 origin cores, 12-profession roster and all 120 concrete compatibility pairs remain pending, and R1 implementation authority is unchanged.
+INTEGRATED_MAIN_SHA=aba4d32990c6a0bb48b2304dc24981be959aa745
+SYNCED_ORIGIN_MAIN_SHA=aba4d32990c6a0bb48b2304dc24981be959aa745
+DECISION_RECEIPT=D-V1CC9=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD / INTEGRATED_AND_DESIGN_SYNC_RECEIVED
+STATUS=WAITING_ENGINEERING_SYNC
+NEXT_ACTION=Wait for the master task to record completed R1 integration evidence in PROJECT_STATE_LEDGER.md and docs/ROUND_LEDGER.md and send ENGINEERING_SYNC; only then fetch the new public main and continue the next origin-roster Grill question. The remaining 8 origin cores, all formal names and values, the 12-profession roster and all 120 concrete compatibility pairs remain pending; R1 gameplay authority is unchanged.
 ```
