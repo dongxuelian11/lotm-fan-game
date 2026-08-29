@@ -44,11 +44,11 @@ BMGD 输出永远标记为 `PROPOSAL_ONLY`、`VALIDATION_FINDING` 或 `REFERENCE
 
 ## 4. 隔离目录与数据规则
 
-- 本地试用根目录：`.bmgd-evaluation/`；整个目录由 Git 忽略，不进入公共仓库。
+- 本地试用根目录：`.bmgd-evaluation/`；目录由 Git 忽略，但仓库内只保留 `bundle`、`inputs/` 清单和机器可读 `outputs/`。
 - `bmgd-source-478cc09.bundle`：固定到已审计提交的完整 Git bundle；可离线校验精确 SHA。
-- `work/`：需要运行时临时从 bundle 展开；试用结束后删除，避免第三方模板进入项目总账审计范围。
+- 展开的源码副本与运行 `work/` 必须放在仓库外临时目录（如系统 temp）并从 bundle 还原；不得长期留在仓库根内，否则会污染 `scope=all` 的总账审计。
 - `inputs/`：需要时放置权威文档的临时副本或清单，不在副本上产生反向同步。
-- `outputs/`：BMGD 生成的候选报告；只能由主任务人工复核后摘录。
+- `outputs/`：BMGD 生成的候选报告；优先使用 JSON/TXT 等机器可读文件，只能由主任务人工复核后摘录。
 - 不向 BMGD 输入原著正文、私人 RAG 语料、凭据、运行数据库、存档或未公开用户数据。
 - 任何安装脚本、模型调用或外部连接必须另行核查；本合同不自动授权凭据、联网模型或发布。
 
