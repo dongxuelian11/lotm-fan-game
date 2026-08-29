@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "rootDir": "src",
+    "outDir": "dist/main",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "sourceMap": true,
+    "declaration": false,
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/main/**/*.ts",
+    "src/domain/**/*.ts",
+    "src/resolution/**/*.ts",
+    "src/simulation/**/*.ts",
+    "src/content/**/*.ts",
+    "src/persistence/**/*.ts",
+    "src/shared/**/*.ts"
+  ]
+}
