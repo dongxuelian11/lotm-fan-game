@@ -1,6 +1,6 @@
 # 开源与 Git 治理
 
-`POLICY_REVISION=2 / LOCAL_REPOSITORY=INITIALIZED_MAIN_NO_COMMIT / PUBLIC_REMOTE=NOT_CONFIGURED / PUBLICATION=NOT_PUBLISHED`
+`POLICY_REVISION=3 / LOCAL_REPOSITORY=COMMITTED / PUBLIC_REMOTE=CONFIGURED / PUBLICATION=PUBLISHED`
 
 ## 开源边界
 
@@ -15,6 +15,7 @@
 - `main`：主任务维护的已接线基线；
 - `work/frontend-rNN-<slice>`：前端任务独立 worktree；
 - `work/backend-rNN-<slice>`：后端任务独立 worktree；
+- `work/design-grill-<topic>`：设计 Grill 独立 worktree；
 - 可选 `integration/rNN`：高风险轮次由主任务临时使用；
 - 任何任务不得从不明工作树状态开始，基线 SHA 必须写入轮次合同。
 
@@ -28,4 +29,4 @@
 
 ## 当前事实
 
-本地仓库已在 `main` 初始化，`core.autocrlf=false`、`core.safecrlf=warn`。当前没有 Git 作者名/邮箱，因此初始提交为 `BLOCKED_GIT_IDENTITY_NOT_CONFIGURED`；主任务不会伪造用户身份。公共仓库名称、远端和发布授权也未提供，保持 `NOT_CONFIGURED/NOT_PUBLISHED`。
+GitHub 插件和 CLI 已由用户授权账户 `dongxuelian11`。本仓库使用该授权资料中的 `E1aina <2806418887@qq.com>` 作为仓库本地提交身份；不修改全局 Git。初始提交为 `e0a7677`，公开远端为 `https://github.com/dongxuelian11/lotm-fan-game`，`main` 已推送并跟踪 `origin/main`。

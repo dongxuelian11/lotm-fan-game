@@ -5,9 +5,9 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 244
-- `PROJECT_STATUS`: `R0_OPEN_SOURCE_GIT_ORCHESTRATION_ACTIVE`
-- `IMPLEMENTATION_STATUS`: `GOVERNANCE_BASELINE_IN_PROGRESS / PRODUCT_CODE_NOT_STARTED`
+- `LEDGER_REVISION`: 245
+- `PROJECT_STATUS`: `R1_CONTRACT_PREPARATION_AND_DESIGN_GRILL_SETUP`
+- `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_NOT_DISPATCHED / PRODUCT_CODE_NOT_STARTED`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
 - `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
 
@@ -366,9 +366,11 @@
 - `D-006`: 商用、免费公开或仅私人试玩范围 — `PARTIALLY_LOCKED_CODE_OPEN_SOURCE_GAME_DISTRIBUTION_PENDING`
 - `D-006A`: 开源代码许可证与题材内容边界 — `LOCKED=MIT_CODE_AND_ORIGINAL_DOCS / THIRD_PARTY_IP_SEPARATE_NOTICE`
 - `D-TECH1`: 第一版工程底座 — `ENGINEERING_BASELINE=ELECTRON_REACT_TYPESCRIPT_VITE_MAIN_SQLITE`
-- `D-ORCH1`: 开发任务拓扑 — `LOCKED=MASTER_REVIEW_DISPATCH_PLUS_FRONTEND_AND_BACKEND_TASKS`
+- `D-ORCH1`: 开发任务拓扑 — `LOCKED=MASTER_REVIEW_DISPATCH_PLUS_DESIGN_GRILL_FRONTEND_BACKEND_TASKS`
 - `D-ORCH2`: 每轮完成门禁 — `LOCKED=BOTH_WORKSTREAMS_THEN_MASTER_WIRING_AND_USER_REVIEW`
 - `D-ORCH3`: 自动压缩恢复权威 — `LOCKED=REPOSITORY_LEDGER_CONTRACT_STATUS_AND_GIT_HEADS / DEEP_LINKS_NAVIGATION_ONLY`
+- `D-ORCH4`: 新设计决定的传播门禁 — `LOCKED=GRILL_ANSWER_TO_LEDGER_AND_TOPIC_DOCS_TO_COMMIT_TO_MASTER_INTEGRATION_TO_DESIGN_SYNC`
+- `D-GITHUB1`: 公共开源仓库 — `LOCKED=PUBLIC_GITHUB_DONGXUELIAN11_LOTM_FAN_GAME`
 - `D-RAG1`: 是否采用 gmzz RAG 边界与本地小模型检索 — `FEASIBLE_PENDING_MODEL_AND_CORPUS_DECISIONS`
 - `D-PATH-BODY1`: 序列晋升造成的性别/身体变化 — `DEFERRED_TO_PATHWAY_DESIGN`
 
@@ -2933,6 +2935,9 @@
 324. `GIT_INITIALIZED`: 已在 `D:\诡秘` 创建 `main` 本地仓库并设置文本换行策略；Git 作者名/邮箱均未配置，因此不伪造身份、不创建初始提交，状态为 `BLOCKED_GIT_IDENTITY_NOT_CONFIGURED`。公共远端与公开发布均未配置。
 325. `DOC_VALIDATION`: 当前31个 Markdown 文件的相对链接检查为0个悬空；这只证明文档链接，不代表产品代码、构建或运行测试。
 326. `WORKSTREAM_TASKS_CREATED`: 已创建前端任务 `01a04d52-87f7-7c00-a047-7343867cb955` 与后端任务 `01a04d52-95e5-72c0-91d8-ebf0cfe85315`，均为 `gpt-5.6-luna / thinking=max`，当前只读接管并等待 R1 精确合同。任务 API 不提供可验证的“1.5x”参数，因此只把 Luna/Max 写为权威；速度档位若存在由客户端/主机设置。
+327. `WORKSTREAM_ONBOARDING_READY`: 前端和后端均完成只读接管并独立确认 `DESIGN_GAP=NONE_FOR_R1`；共同要求主任务冻结 R1 共享类型、窄 bridge、公开投影、intent/receipt/error、根工具链与精确写集，未写产品代码。
+328. `GITHUB_AUTHORIZED_AND_PUBLISHED`: 用户明确授权 GitHub 与开源部署；GitHub 插件/CLI 账户为 `dongxuelian11`，仓库本地身份来自授权资料 `E1aina <2806418887@qq.com>`。初始提交 `e0a7677` 已推送到公开仓库 `https://github.com/dongxuelian11/lotm-fan-game` 的 `main`。
+329. `DESIGN_GRILL_WORKSTREAM_AUTHORIZED`: 用户要求新增独立深度链接对话，对所有真正未决定的设计按 `grill-me` 一次一题询问，并将回答写入总账本和对应项目 MD。决定只有提交并由主任务合入 `main`、发送 `DESIGN_SYNC` 后才可供开发任务实现。
 
 ## FOUNDATION_AUDIT
 
@@ -2962,4 +2967,4 @@
 
 ## NEXT_ACTION
 
-收取两个任务的只读接管报告；用户配置 Git 作者名/邮箱后完成初始提交并将任务移入独立 worktree。用户审查 R0 后，主任务冻结 R1 共享类型和精确写集，同时下发桌面壳与 Main/SQLite 权威状态，待双方 `READY_FOR_INTEGRATION` 后由本任务接真实 preload。逐卡真实内容、经济细数、魔药/扮演/晋升、具体序列能力与城市/地图仍在对应轮次前 Grill。
+创建设计 Grill 独立 worktree 任务并从最早的 R2+ 未决依赖开始一次一题提问；主任务同时冻结 R1 共享类型、根工具链、精确写集和验收合同，从同一 main SHA 将前后端任务迁入独立 worktree并同步 dispatch。任何新设计回答必须先合入 `main` 并发送 `DESIGN_SYNC`，不得直接从聊天进入实现。
