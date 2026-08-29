@@ -6,7 +6,7 @@ THREAD_ID=01a04d69-e530-7df1-b7e9-abc2d24803f1
 MODEL=gpt-5.6-sol
 THINKING=high
 BRANCH=work/design-grill-r2-foundation
-BASE_SHA=aba4d32990c6a0bb48b2304dc24981be959aa745
+BASE_SHA=467eac09ac902a94e0dbfbbe70059714e9a2411f
 QUESTION_ID=D-V1CC9
 LEDGER_REVISION_BEFORE=252
 LEDGER_REVISION_AFTER=253
@@ -17,6 +17,12 @@ PRIOR_INTEGRATED_MAIN_SHA=1cb79b523d0974fb0419b71f1d954aa2b386e6b4
 INTEGRATED_MAIN_SHA=aba4d32990c6a0bb48b2304dc24981be959aa745
 SYNCED_ORIGIN_MAIN_SHA=aba4d32990c6a0bb48b2304dc24981be959aa745
 DECISION_RECEIPT=D-V1CC9=B_UNATTACHED_STREET_UPBRINGING_PLUS_INDEBTED_UNEMPLOYED_HOUSEHOLD / INTEGRATED_AND_DESIGN_SYNC_RECEIVED
-STATUS=WAITING_ENGINEERING_SYNC
-NEXT_ACTION=Wait for the master task to record completed R1 integration evidence in PROJECT_STATE_LEDGER.md and docs/ROUND_LEDGER.md and send ENGINEERING_SYNC; only then fetch the new public main and continue the next origin-roster Grill question. The remaining 8 origin cores, all formal names and values, the 12-profession roster and all 120 concrete compatibility pairs remain pending; R1 gameplay authority is unchanged.
+ENGINEERING_SYNC=254:467eac09ac902a94e0dbfbbe70059714e9a2411f:R1_INTEGRATED_SMOKE_PASSED_AWAITING_PLAYER_ACCEPTANCE
+R1_EVIDENCE=TYPECHECK_PASS / 6_FILES_44_TESTS_PASS / BUILD_PASS / LOCAL_TWO_PROCESS_ELECTRON_SQLITE_RECOVERY_SMOKE_PASS
+PLAYER_ACCEPTANCE=NOT_RUN
+PACKAGE=NOT_RUN
+CLEAN_MACHINE=NOT_RUN
+R2_STATUS=NOT_DISPATCHED
+STATUS=ENGINEERING_SYNCED_CONTINUING_DESIGN_GRILL
+NEXT_ACTION=From ledger revision 254 and public origin/main 467eac09ac902a94e0dbfbbe70059714e9a2411f, ask the next single origin-roster question. The remaining 8 origin cores, all formal names and values, the 12-profession roster and all 120 concrete compatibility pairs remain pending; this sync does not authorize R2 implementation.
 ```
