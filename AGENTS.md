@@ -1,6 +1,6 @@
 # 《诡秘之主》同人游戏：Agent 接管与开发合同
 
-`CONTRACT_REVISION=8 / STATUS=D-WORLDFEEDBACK-B1_RECORDED_PENDING_INTEGRATION / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
+`CONTRACT_REVISION=9 / STATUS=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
 
 本文件是所有 Codex/agent 的强制入口。Windows 路径大小写不敏感，仓库只保留规范文件名 `AGENTS.md`，不要再创建重复的 `agents.md`。
 
@@ -147,5 +147,5 @@
 - 前端任务：`01a04d7d-abe2-7732-9ac0-e4ff95397ca2`，候选 `72946759cf1c3b0309f85ddf29b26a5b67df7996` 已合入；后端任务：`01a04d7d-b97c-7311-8700-2f86c39f86c5`，候选 `e8ee23c60d4c0a52d476ad1203639db3c52a2ac4` 已合入；两者当前均为 hold，无后续轮写权限；
 - 主任务接线/烟测提交为 `14d17c60eb910137a270c645993d374ab74f5231`；全量门禁为类型检查通过、6文件44项测试通过、完整构建通过、生产相对资源路径通过、两进程 Electron/SQLite 恢复通过；这不是安装包或干净机器证据；
 - 设计 Grill 任务：`01a04d69-e530-7df1-b7e9-abc2d24803f1`，`gpt-5.6-sol / high`；当前为 `GRILL_ONLY_HOLD`，只在主任务明确派发问题后采访用户，不再写文件或提交候选；
-- 下一步：`D-WORLDFEEDBACK1..6` 已按 `1A 2A 3A 4A 5A 6A` 记录，gmzz 分层记忆已审计为“MIT 法律可复用、技术上抽取改造、不可整包零修改搬入”。当前 `GRILL_GATE=DECISION_RECORDED_PENDING_INTEGRATION`；主任务仅可提交、公开验证、发送 `DESIGN_SYNC` 并清门，前端与后端继续暂停。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，不得冻结或下发 R2；
+- 下一步：`D-WORLDFEEDBACK1..6=1A 2A 3A 4A 5A 6A` 已在公开 `538fb5e` 固化并通过 CI #33260421539；gmzz 分层记忆结论为“MIT 法律可复用、技术上抽取改造、不可整包零修改搬入”。当前 `GRILL_GATE=CLEAR`；前端与后端只恢复到原有 R1 集成待玩家验收 hold，没有世界反馈实现或 R2 权限。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`；
 - 真实魔药、晋升、能力和事件内容仍在相应轮次前继续 Grill，不阻塞 R1 技术壳。

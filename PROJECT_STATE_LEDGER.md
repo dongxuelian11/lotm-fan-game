@@ -5,14 +5,14 @@
 
 ## LEDGER
 
-- `LEDGER_REVISION`: 263
-- `PROJECT_STATUS`: `GLOBAL_STOP_THE_LINE / WORLD_FEEDBACK_DECISION_RECORDED_PENDING_INTEGRATION`
+- `LEDGER_REVISION`: 264
+- `PROJECT_STATUS`: `R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / DESIGN_GRILL_IDLE`
 - `IMPLEMENTATION_STATUS`: `R0_PUBLISHED / R1_INTEGRATED / DESKTOP_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN`
 - `USER_DESIGN_AUTHORITY`: `FINAL`
 - `LAST_UPDATED`: 2026-08-29 Asia/Shanghai
 - `GRILL_POLICY`: `GLOBAL_STOP_THE_LINE`
-- `GRILL_GATE`: `DECISION_RECORDED_PENDING_INTEGRATION`
-- `GRILL_DECISION_ID`: `D-WORLDFEEDBACK-B1`
+- `GRILL_GATE`: `CLEAR`
+- `GRILL_DECISION_ID`: `NONE`
 
 ## TASK_GOAL
 
@@ -3102,6 +3102,9 @@
 359. `GRILL_ANSWER_RECEIVED_D-WORLDFEEDBACK-B1`: 用户原答 `1.a 2.a 3.a 4.a 5.a 6.a`；六项均锁定为 A。用户另要求核查 gmzz 分层记忆能否直接复用，该要求是事实审计，不新增 Grill 题。
 360. `DONE_READ_ONLY_GMZZ_LAYERED_MEMORY_AUDIT`: gmzz `app/memory/**` 在其大型脏工作树中本身保持 clean，最近相关提交为 `7b11fbc691da304c6d1c3235a24bd2e881a5ae17`，许可证为 MIT。源码确认其采用五类长期记忆、世界事实/观察/知识授权、actor/faction/player 受众、可见性过滤、检索预算和交付/呈现/回忆回执；但字段和运行链依赖 gmzz WorldKernel 与主体模型，不能作为本项目零修改组件。结论为“法律上可复用，技术上抽取改造，不整包直接搬”。
 361. `DECISION_RECORDED_PENDING_INTEGRATION_D-WORLDFEEDBACK-B1`: 六项回答与 gmzz 复用边界已同步到总账本、核心循环、事件、UI、RAG/参考复用和状态文档；所有产品任务继续暂停，等待公开提交、精确 CI 与 `DESIGN_SYNC`。
+362. `D-WORLDFEEDBACK_B1_PUBLICATION_PASSED`: 答案固化提交 `538fb5e0a364e7713315c203339fd73799d789be` 已推送到公开 `main`；精确 GitHub Actions CI #33260421539 完成且结论为 `success`。
+363. `DESIGN_SYNC_264_D-WORLDFEEDBACK_B1`: 主任务向前端、后端和设计 Grill 状态同步 `DESIGN_SYNC=264:538fb5e0a364e7713315c203339fd73799d789be:D-WORLDFEEDBACK0..6,CORE_LOOP,EVENT_CARD_SYSTEM,KNOWLEDGE_PROJECTION,REFERENCE_REUSE`。
+364. `GLOBAL_GRILL_GATE_CLEARED_D-WORLDFEEDBACK_B1`: 公开固化与精确 CI 后清门；前后端只恢复到暂停前的 `INTEGRATED_AWAITING_PLAYER_ACCEPTANCE` hold，设计 Grill 恢复只读待命。未授权世界反馈实现、R2、玩家验收、打包或干净机器工作。
 
 ## FOUNDATION_AUDIT
 
@@ -3131,4 +3134,4 @@
 
 ## NEXT_ACTION
 
-`D-WORLDFEEDBACK1..6` 已按用户原答 `1A 2A 3A 4A 5A 6A` 固化，并完成 gmzz 分层记忆只读复用审计。当前门保持 `DECISION_RECORDED_PENDING_INTEGRATION`；下一步仅允许精确提交、公开 CI、`DESIGN_SYNC` 和清门，产品实现继续暂停。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
+`D-WORLDFEEDBACK1..6` 已公开固化并完成 `DESIGN_SYNC`，gmzz 分层记忆结论为“MIT 允许、抽取改造、不整包零修改搬入”。当前无活跃 Grill 问题；前后端只恢复到原有 R1 集成待玩家验收 hold，没有世界反馈实现权限。下一项真正未决设计必须重新开启全局暂停门。R1 仍为 `PLAYER_ACCEPTANCE=NOT_RUN`，R2 未冻结或下发。
