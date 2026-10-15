@@ -114,7 +114,7 @@ export function hypnotistActions(s: SliceState): HypnotistAction[] {
   return out;
 }
 export function hypnotistCases(s: SliceState): HypnotistProjection['cases'] {
-  if (s.progression.pathwayId !== 'audience' || (s.progression.sequence !== 6&&s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&s.progression.sequence!==2)) return [];
+  if (s.progression.pathwayId !== 'audience' || (s.progression.sequence !== 6&&s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&(s.progression.sequence!==2&&s.progression.sequence!==1))) return [];
   return CASES.map(p => { const r = s.hypnotist.cases[p.id]!; return { id: p.id, title: p.title, story: p.story, observations: r.status === 'AVAILABLE' ? [] : [...p.facts, ...r.notes], preparation: r.status === 'PREPARED' ? r.revised ? REVISION + (r.method === 'ABILITY' ? ' 只作本人接受的有限专注，实施另耗3灵性。' : ' 使用普通旁观说明。') : r.method === 'ABILITY' ? p.ability : p.ordinary : null, result: ['EXAMINED', 'RESOLVED'].includes(r.status) ? p.result : r.notes.includes(REFUSAL) ? REFUSAL + (r.revised ? ' 原方案已修订，仍须实际评估。' : ' 下一真实周可据新事实修订。') : r.attemptWeek !== null ? '此前练习未成，原成本、抵抗与未知保留。' : r.withdrawals ? '尚未实施的准备已取消。' : null, status: r.status, contactOpen: r.contactOpen ? '本次现场仍须停止精神影响并退离' : '没有尚未结束的本次事项', closes: r.closes }; });
 }
 /** Fixed original consent, stop signals and refusal evidence; no generic mind-control state. */

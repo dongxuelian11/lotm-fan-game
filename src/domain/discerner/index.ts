@@ -1,3 +1,4 @@
+import { WRITER_ABILITY_IDS } from '../writer/types.js';
 import { DREAM_WEAVER_ABILITY_IDS } from '../dream-weaver/types.js';
 import { hasDreamWeaverLock } from '../dream-weaver/index.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -29,7 +30,8 @@ export function createDiscernerState(): DiscernerState {
     preparations: [], preparedWeek: null, life: createDiscernerLifeState(), encounter: createDiscernerEncounterState() };
 }
 export const isDiscerner = (s: SliceState) => s.progression.pathwayId === 'audience' && s.progression.sequence === 2;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'audience' && [3, 2].includes(s.progression.sequence ?? 0) && s.audience.discovered && s.dreamWeaver.guidanceKnown && s.dreamWeaver.promotionWeek !== null;
+const hasDiscernerHistory = (s: SliceState) => isDiscerner(s) || (s.progression.pathwayId === 'audience' && s.progression.sequence === 1);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'audience' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.audience.discovered && s.dreamWeaver.guidanceKnown && s.dreamWeaver.promotionWeek !== null;
 export const hasDiscernerLock = (s: SliceState): boolean => s.discerner.preparedWeek !== null || hasDiscernerLifeLock(s) || hasDiscernerEncounterLock(s);
 const bottleNumber = (b: Pick<DiscernerBottle, 'id'>) => Number(b.id.slice('discerner-potion-'.length));
 const potionPrice = (b: DiscernerBottle) => DISCERNER_PRICES.potion - (b.labourSteps === DISCERNER_LABOUR_STEPS ? DISCERNER_PRICES.labourCredit : 0);
@@ -66,7 +68,7 @@ export function discernerAcquisitionBlock(s: SliceState, command: DiscernerAcqui
       hasDiscernerLifeLock(s) || hasDiscernerEncounterLock(s)) return '先实际收束旧梦境、人格、原物、集会与现场接触，不能同时占用原场。';
   if (s.world.city !== 'BACKLUND') return '须沿实际行程回到贝克兰德原指导室与核验室。';
   if (!knownChannel(s)) return '实际成为织梦人并保留原指导渠道后，才能了解洞察者之路。';
-  if (isDiscerner(s)) return '已经真实晋升洞察者2，不能重复准备或服药；未服原瓶保留。';
+  if (hasDiscernerHistory(s)) return '已经真实晋升洞察者2，不能重复准备或服药；未服原瓶保留。';
   const state = s.discerner;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
@@ -161,7 +163,7 @@ export function applyDiscernerCommand(s: SliceState, command: DiscernerCommand, 
 }
 
 export function projectDiscerner(s: SliceState): DiscernerProjection {
-  const state = s.discerner, available = knownChannel(s), promoted = isDiscerner(s), actions: DiscernerAction[] = [];
+  const state = s.discerner, available = knownChannel(s), promoted = hasDiscernerHistory(s), actions: DiscernerAction[] = [];
   const add = (id: string, label: string, cost: string, command: DiscernerAcquisitionCommand) => { const reason = discernerAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-discerner-guidance', '听取洞察者成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -184,11 +186,11 @@ export function projectDiscerner(s: SliceState): DiscernerProjection {
     title: promoted ? '洞察者 · 序列2' : '洞察者之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${DISCERNER_FORMULA_STATUS}${DISCERNER_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...discernerLifeActions(s), ...discernerEncounterActions(s)] : [],
+    actions: available && s.progression.sequence !== 1 ? [...actions, ...discernerLifeActions(s), ...discernerEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 洞察者成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为织梦人' : '排异，仍为织梦人'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? DISCERNER_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? DISCERNER_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `织梦人消化${state.dreamWeaverActingAtPromotion}/100留存；洞察者扮演${s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `织梦人需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${dreamWeaverWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完织梦人之路。',
+    acting: promoted ? (s.progression.sequence===1?s.writer.discernerActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `织梦人消化${state.dreamWeaverActingAtPromotion}/100留存；洞察者扮演${s.progression.sequence===1?s.writer.discernerActingAtPromotion:s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `织梦人需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${dreamWeaverWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完织梦人之路。',
     pollution: s.seer.pollution, risk: available ? DISCERNER_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -204,7 +206,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.discerner;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'dreamWeaverActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as DiscernerState, promoted = isDiscerner(s), firstWeek = s.dreamWeaver.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + DISCERNER_MIN_DREAM_WEAVER_WEEKS;
+  const state = raw as unknown as DiscernerState, promoted = hasDiscernerHistory(s), firstWeek = s.dreamWeaver.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + DISCERNER_MIN_DREAM_WEAVER_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !DISCERNER_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
@@ -212,7 +214,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasDiscernerLifeLock(s) || hasDiscernerEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.dreamWeaver.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.dreamWeaverActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS, ...PSYCHOLOGIST_ABILITY_IDS, ...HYPNOTIST_ABILITY_IDS, ...DREAMWALKER_ABILITY_IDS, ...MANIPULATOR_ABILITY_IDS, ...DREAM_WEAVER_ABILITY_IDS, ...DISCERNER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?WRITER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS, ...PSYCHOLOGIST_ABILITY_IDS, ...HYPNOTIST_ABILITY_IDS, ...DREAMWALKER_ABILITY_IDS, ...MANIPULATOR_ABILITY_IDS, ...DREAM_WEAVER_ABILITY_IDS, ...DISCERNER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.dreamWeaverActingAtPromotion !== null || DISCERNER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

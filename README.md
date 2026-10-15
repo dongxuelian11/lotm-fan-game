@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.187.0 阶段版
+# 诡秘之主同人游戏 · 0.188.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家与猎人已有有限序列1基础；其余20条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人与观众已有有限序列1基础；其余19条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -115,6 +115,8 @@ node --expose-gc scripts/play/entropy-duke-save.mjs --key directed --source-dire
 
 ## 当前验证与限制
 
+188增量：观众新增有限序列1作家。原580条洞察者活档同种子续至667条，首瓶晋升；互知线索实际成功、合理安排失败后普通归还，三项生活事务及反思完成。可选新敌五轮战斗中玩家实际死亡，原终档保留；47个唯一转换已完成SQLite回滚、重开、重试与死亡旁档验证。相关36文件484项、32项恢复/CI工具、完整严格类型与生产构建通过；54个新增原始输入独立恢复核验。详见[作家阶段记录](docs/WRITER_PLAYABLE_STAGE.md)。
+
 187增量：猎人新增有限序列1征服者。沿原658条活分支公开命令继续至795条，前两瓶失败、第三瓶成功；原五位疲劳同伴真实付费跨周恢复，两项新能力分别在生活中实际应用，第三项按撤回的许可普通完成。可选新敌八轮战斗后死亡，玩家保留两处轻伤，普通退出后工作跨周，最终第200周ACTIVE、健康80、精神100、灵性120。48个唯一自然边界全部SQLite验证。详见[征服者阶段记录](docs/CONQUEROR_PLAYABLE_STAGE.md)。
 
 186增量验证：占卜家新增有限序列1诡秘侍者，24原身体、六设施、十二个实际生活周及三位外客形成新灵界区域。沿原1038条公开命令继续，首瓶失败、第二瓶成功，三项原物实践实际应用；可选新敌三轮重伤投降，玩家带一处新轻伤普通退出、跨周后工作。44个自然边界/43唯一状态全部SQLite验证；新增11文件128项、12同链文件299项、48项烟测、16项存档回归、严格类型/构建和32项恢复/CI工具通过。49个新原输入独立恢复，48包2197文件hash全部核验；1053文件枚举无漏重，本阶段未全量重跑。详见[诡秘侍者阶段记录](docs/ATTENDANT_MYSTERIES_PLAYABLE_STAGE.md)。
@@ -169,3 +171,12 @@ node --expose-gc scripts/play/barren-matriarch-save.mjs --key directed --source-
 ```
 
 新增两包保存105份原始输入；90边界重放分为六组15条，保留同一851条命令与全部断言。阶段范围与真实结果见[荒芜主母阶段记录](docs/BARREN_MATRIARCH_PLAYABLE_STAGE.md)。
+
+作家专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix discerner-v01660 --only-prefix writer-v01880
+npx vitest run tests/domain/writer-acquisition.test.ts tests/domain/writer-life.test.ts tests/domain/writer-combat.test.ts tests/domain/writer-inheritance.test.ts tests/domain/writer-shared.test.ts tests/domain/writer-natural.test.ts tests/renderer/writer-panel.test.tsx tests/renderer/writer-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/writer-save.mjs --expected-boundaries 47
+```

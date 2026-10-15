@@ -1,3 +1,4 @@
+import { WRITER_ABILITY_IDS } from '../writer/types.js';
 import {DISCERNER_ABILITY_IDS} from '../discerner/types.js';
 import {DREAM_WEAVER_ABILITY_IDS} from '../dream-weaver/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -57,7 +58,7 @@ export function createManipulatorState(): ManipulatorState {
 }
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isManipulator = (s: SliceState) => s.progression.pathwayId === 'audience' && s.progression.sequence === 4;
-const hasManipulatorHistory = (s:SliceState) => isManipulator(s)||(s.progression.pathwayId==='audience'&&(s.progression.sequence===3||s.progression.sequence===2));
+const hasManipulatorHistory = (s:SliceState) => isManipulator(s)||(s.progression.pathwayId==='audience'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)));
 const isDreamwalker = (s: SliceState) => s.progression.pathwayId === 'audience' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.audience.discovered && s.dreamwalker.guidanceKnown && s.dreamwalker.promotionWeek !== null && (isDreamwalker(s) || hasManipulatorHistory(s));
 const dreamwalkerWeeks = (s: SliceState) => Math.max(0, (s.manipulator.promotionWeek ?? s.week) - (s.dreamwalker.promotionWeek ?? s.week));
@@ -218,7 +219,7 @@ export function projectManipulator(s: SliceState): ManipulatorProjection {
   return {
     title: promoted ? '操纵师 · 序列4' : '操纵师之路', discovered: available, guidanceKnown: known, promoted,
     formulaKnown: known, formula: known ? MANIPULATOR_FORMULA.map(item => ({ ...item })) : [], formulaAlternatives: known ? MANIPULATOR_FORMULA_ALTERNATIVES : '',
-    actions: available && ![3,2].includes(s.progression.sequence??0) ? [...actions, ...manipulatorRitualActions(s), ...manipulatorLifeActions(s), ...manipulatorEncounterActions(s)] : [],
+    actions: available && ![3,2,1].includes(s.progression.sequence??0) ? [...actions, ...manipulatorRitualActions(s), ...manipulatorLifeActions(s), ...manipulatorEncounterActions(s)] : [],
     batches: known ? state.batches.map(batch => ({
       id: batch.id, title: `第${batchNumber(batch)}批 · 三组材料与七滴泪水`, source: batch.source,
       status: batch.status === 'SUPPLIER' ? '原供应方保管' : batch.status === 'PLAYER' ? '三组原材料已交付，等待七滴与调配' : `十份原来源已耗尽，原瓶${batch.bottleId}`,
@@ -233,8 +234,8 @@ export function projectManipulator(s: SliceState): ManipulatorProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: promoted ? MANIPULATOR_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.dreamWeaver.manipulatorActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: promoted ? `梦境行者消化${state.dreamwalkerActingAtPromotion}/100与全部旧掌握保留；操纵师扮演${(s.progression.sequence===3||s.progression.sequence===2)?s.dreamWeaver.manipulatorActingAtPromotion:s.progression.acting}/100。` : available ? `梦境行者消化需100（当前${s.progression.acting}/100），晋升后12整周（${dreamwalkerWeeks(s)}/12）；材料、七次实际自愿贡献和当前万人共鸣须分别完成。` : '先完成梦境行者之路。',
+    acting: promoted ? ((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.dreamWeaver.manipulatorActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `梦境行者消化${state.dreamwalkerActingAtPromotion}/100与全部旧掌握保留；操纵师扮演${(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.dreamWeaver.manipulatorActingAtPromotion:s.progression.acting}/100。` : available ? `梦境行者消化需100（当前${s.progression.acting}/100），晋升后12整周（${dreamwalkerWeeks(s)}/12）；材料、七次实际自愿贡献和当前万人共鸣须分别完成。` : '先完成梦境行者之路。',
     pollution: s.seer.pollution, risk: known ? MANIPULATOR_CONSUMPTION_RISK : '先通过原导师了解操纵师材料与仪式。',
     supplies: known ? `原供应方保管${state.batches.filter(batch => batch.status === 'SUPPLIER').length}批三组材料；持有未用原瓶${state.bottles.filter(bottle => bottle.status === 'PLAYER').length}瓶。${state.resupply.requestedWeek === null ? `后续实际到货${state.resupply.deliveries}次。` : `第${state.resupply.requestedWeek}周申请，下一真实周起实际到货。`}购买不附送泪水，补货不复用旧泪水或旧共鸣。` : '',
     ...(available ? { story: `${MANIPULATOR_FORMULA_STATUS}${MANIPULATOR_RITUAL_SOURCE}${MANIPULATOR_SOURCE_STATUS}` } : {}),
@@ -271,7 +272,7 @@ function validateState(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.dreamwalker.promotionWeek, 1, s.week) || !integer(state.promotionWeek, earliestConsumption, s.week) || state.dreamwalkerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?DISCERNER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS, ...PSYCHOLOGIST_ABILITY_IDS, ...HYPNOTIST_ABILITY_IDS, ...DREAMWALKER_ABILITY_IDS, ...MANIPULATOR_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?DREAM_WEAVER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?WRITER_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?DISCERNER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS, ...PSYCHOLOGIST_ABILITY_IDS, ...HYPNOTIST_ABILITY_IDS, ...DREAMWALKER_ABILITY_IDS, ...MANIPULATOR_ABILITY_IDS,...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?DREAM_WEAVER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.dreamwalkerActingAtPromotion !== null || MANIPULATOR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   const latestAcquisition = state.promotionWeek ?? s.week, allTears = new Set<string>(), allBottles = new Set<string>();
   for (const definition of MANIPULATOR_DONORS) {

@@ -1,3 +1,4 @@
+import { WRITER_ABILITY_IDS } from '../writer/types.js';
 import {DISCERNER_ABILITY_IDS} from '../discerner/types.js';
 import {DREAM_WEAVER_ABILITY_IDS} from '../dream-weaver/types.js';
 import {MANIPULATOR_ABILITY_IDS} from '../manipulator/types.js';
@@ -35,7 +36,7 @@ export function createDreamwalkerState(): DreamwalkerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'audience' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'audience' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isHypnotist = (s: SliceState) => s.progression.pathwayId === 'audience' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.audience.discovered && s.audience.formulaKnown && s.mindreader.formulaKnown && s.psychologist.guidanceKnown && s.hypnotist.guidanceKnown && s.hypnotist.promotionWeek !== null && (isHypnotist(s) || promoted(s));
 const potionPrice = (bottle: DreamwalkerBottle) => DREAMWALKER_PRICES.potion - (bottle.labourSteps === 5 ? DREAMWALKER_PRICES.labourCredit : 0);
@@ -179,7 +180,7 @@ export function applyDreamwalkerCommand(s: SliceState, command: DreamwalkerAcqui
 
 export function projectDreamwalker(s: SliceState): DreamwalkerProjection {
   const actions: DreamwalkerAction[] = [], available = knownChannel(s), isPromoted = promoted(s), ritual = s.dreamwalker.ritual;
-  const visit = currentVisit(s), acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.manipulator.dreamwalkerActingAtPromotion??100:s.progression.acting) : 0;
+  const visit = currentVisit(s), acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?s.manipulator.dreamwalkerActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: DreamwalkerAcquisitionCommand) => {
     const reason = commandBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -275,7 +276,7 @@ export function validateDreamwalkerState(s: SliceState): boolean {
   if (dreamwalker.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!dreamwalker.guidanceKnown || !integer(s.hypnotist.promotionWeek, 1, s.week) || !integer(dreamwalker.promotionWeek, firstConsumptionWeek, s.week) || dreamwalker.hypnotistActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?DISCERNER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS, ...PSYCHOLOGIST_ABILITY_IDS, ...HYPNOTIST_ABILITY_IDS, ...DREAMWALKER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?MANIPULATOR_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?DREAM_WEAVER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?WRITER_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?DISCERNER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS, ...PSYCHOLOGIST_ABILITY_IDS, ...HYPNOTIST_ABILITY_IDS, ...DREAMWALKER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?MANIPULATOR_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?DREAM_WEAVER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (dreamwalker.promotionWeek !== null || dreamwalker.hypnotistActingAtPromotion !== null || DREAMWALKER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (dreamwalker.reflected || Object.values(dreamwalker.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0 || value.notes.length !== 0 || value.sessions !== 0 || value.sessionWeeks.length !== 0 || value.verified)) return false;

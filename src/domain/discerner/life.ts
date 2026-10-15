@@ -321,7 +321,7 @@ export function discernerLifeActions(s: SliceState): DiscernerLifeAction[] {
 }
 export function projectDiscernerLife(s: SliceState): DiscernerLifeProjection {
   const l = s.discerner.life;
-  if (!active(s)) return { title: '洞察者生活', source: '尚未进入洞察者有限原场。', environment: '', insideCase: false, reflected: false, practice: null, currentAttempt: null, currentConsents: [], cases: [] };
+  if (!active(s) && !(s.progression.pathwayId==='audience'&&s.progression.sequence===1)) return { title: '洞察者生活', source: '尚未进入洞察者有限原场。', environment: '', insideCase: false, reflected: false, practice: null, currentAttempt: null, currentConsents: [], cases: [] };
   const all = Object.fromEntries(DISCERNER_CASE_IDS.map(id => [id, replays(s, id)])) as Record<DiscernerCaseId, Replay[]>;
   const id = selectedCase(s), a = id ? all[id].at(-1)! : null;
   const participants = Object.fromEntries(CASES.map(e => [e.personId, { id: e.personId, name: e.name, age: e.age, node: 'FAR', health: 100, mind: 100 }])) as Record<DiscernerPersonId, DiscernerPerson>;

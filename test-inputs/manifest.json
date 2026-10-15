@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.187.0",
+  "version": "0.188.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -246,6 +246,11 @@
       "name": "lotm_release_0.187.0_conqueror_test_inputs_1_2026-10-15.tar.gz",
       "bytes": 14339636,
       "sha256": "c99ab56c49446f73ecf9d99bd8c2d6f6649d4692789417b9dd547872c0fb1293"
+    },
+    {
+      "name": "lotm_release_0.188.0_writer_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 14201766,
+      "sha256": "93f735f00e7c9819f27d78b3931dd36546705986d940540ae0a99740ecb1aa42"
     }
   ],
   "fileEntries": [
@@ -11503,6 +11508,276 @@
       "path": "tests/fixtures/wraith-v01120/natural.json",
       "bytes": 2314882,
       "sha256": "fc4ace93c9b71b323193ce79e5166150192625da134825d9ec9cf0a2281559ae"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundaries.index.json",
+      "bytes": 3719,
+      "sha256": "4ea25641b63e7816ad17979b80f2909ec6888defc1200b39eb896c7006d58a28"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-actual-name-and-original-report-shown.json",
+      "bytes": 1968297,
+      "sha256": "64bca46f5578dd4a5cb230fc7154095ace50626af7b1780cdaad9e959cf5efe8"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-buy-writer-potion-1.json",
+      "bytes": 1932673,
+      "sha256": "9cd357775d6297c2b7f5006a0e2bde67a00d3026275a55dd68979cf6c36919a7"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-choose-limited-powers-before-fight.json",
+      "bytes": 2411608,
+      "sha256": "ebcf106a3930dc13707f8df700b378e078158bb0b23e9104acb504ece3789eb7"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-combat-round-1.json",
+      "bytes": 2533158,
+      "sha256": "6c809006603b3fce9461f3e03f6f83d5a0703bea1b8279941976388127d2de29"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-combat-round-2.json",
+      "bytes": 2619742,
+      "sha256": "b1befce73678248c9b950c7bcfeed88cd4cddb6ff853a39071d728d3ac7a9e47"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-combat-round-3.json",
+      "bytes": 2638197,
+      "sha256": "b4915f982cee00b61429d03371ec35b1fbdb034978079e037011ac722b405ad3"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-combat-round-4.json",
+      "bytes": 2685431,
+      "sha256": "aecad0c2e11609ba4da9ae466a7a2ded243b157009d1cb167a748afa3a5bd222"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-combat-round-5.json",
+      "bytes": 2724914,
+      "sha256": "9f773dc9b8f9aaa2ff434172532d6684a23e44887e7d26a036dd391cb57c8686"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-consume-writer-potion-1.json",
+      "bytes": 1954693,
+      "sha256": "9a855a597365d49032d1c67b913a6de2d19f8c6910f0dd63afd5e531415852ad"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-guidance.json",
+      "bytes": 1824615,
+      "sha256": "728dea5b79d79a7f3a1e8cfc37f8089eb1f5204893cce5cc56d2493d27ff8ebf"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-independent-lucian-name-exchange.json",
+      "bytes": 2211803,
+      "sha256": "b58639e1d3447f9871ceb38216d8ddbfc31cf5d8be28a00a225a4ebc26668a70"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-independent-optional-fight.json",
+      "bytes": 2435310,
+      "sha256": "79cf8e7da2587e88b782e08cef7d7fb62c18d819975abd0465c1916a0c79762b"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-mutual-clue-actual-all-participants-exit.json",
+      "bytes": 1980705,
+      "sha256": "8855188a87b7dcaacbec2851dc6ec3dd2b0b0bc0c2ab5d2533998e3db0191407"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-mutual-clue-actual-six-metre-entry.json",
+      "bytes": 1966627,
+      "sha256": "d4027077d331d6876ac645707a3009db8379ab184a2a6f20c6d91de5676e31c8"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-mutual-clue-honest-report.json",
+      "bytes": 1982308,
+      "sha256": "01327d62151e5a638eeba3c2dff89aba580837f2fca7015cdb5b0f175744f691"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-mutual-clue-invite-original-adults.json",
+      "bytes": 1964967,
+      "sha256": "53b4acddccbe158be345881416e74682214d4682ee009cb8fa26c7a7aec8c7ee"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-mutual-clue-observe-original.json",
+      "bytes": 1961939,
+      "sha256": "5ae402607228a53e4f5d709567c87d22cad98dce15452a806df368ac304829c6"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-mutual-clue-paid-attempt.json",
+      "bytes": 1970595,
+      "sha256": "787d764709eb9ce26a86cb9a6303ae96941443256f647690439074cfa952c661"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1850371,
+      "sha256": "2772137b2c6aa6f71e348d3fc9a99cf54c76ee4688c90337ee7d6e146124289d"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1861261,
+      "sha256": "885ed7d76bb0472954fdaa69b8d62b68e2ce6c24e2613ebfc07e0d75a42d9b41"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1840831,
+      "sha256": "4b9b59b2273717b04610205cac76fdf74cfcd16a60d098f4e324343fa27d960e"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-prepare-writer-potion-1.json",
+      "bytes": 1943007,
+      "sha256": "2b2879f5a6e4fb608d9ac91009235359394602316e10059c1d4846161b02e3da"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-same-book-label-checked.json",
+      "bytes": 1974867,
+      "sha256": "82be8d1169e61b13b12e7b1cd5677c4e4047deb69b7315ecd8d766c014cdccfa"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-same-book-returned-to-original-owner.json",
+      "bytes": 1977805,
+      "sha256": "05eb429e72039a05e28ea47cb66f8074329d4be49c734c37dfbf3c0d165874e7"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-same-book-taken.json",
+      "bytes": 1972213,
+      "sha256": "0c699a74903cd3f39d86934e89acc792411820ee5f8767a06ab8e4458636733b"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-same-book-walked-back.json",
+      "bytes": 1976379,
+      "sha256": "6e27b6e67ee2e376586d4d3704138b58e7ea6c7b832e6d025b0f9074360aa2c4"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-same-book-walked-six-metres.json",
+      "bytes": 1973325,
+      "sha256": "385b4619005386a495aa9a747b6219473d482b47a923502dfd29f58028485340"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-actual-all-participants-exit.json",
+      "bytes": 1998982,
+      "sha256": "0536185e357c86636ab845e4f00900cdf3799ea85464d544122ed55a8685814f"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-actual-six-metre-entry.json",
+      "bytes": 1989898,
+      "sha256": "49161a68b5d3b1e06c2a63e827d72bbe9f4c162ac13d3eb20af31e8ff8078c56"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-book-six-metres.json",
+      "bytes": 1992521,
+      "sha256": "b54e1f56744ebfd8fe0d2e523fa618c4d779516037c6447d952d2d400e972124"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-honest-report.json",
+      "bytes": 2000525,
+      "sha256": "30702093b1bc170a04c611bd8ebc363cbd9626a8ae6cd202c5b12132d9a7e567"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-invite-original-adults.json",
+      "bytes": 1988231,
+      "sha256": "7356d2f5e9663d9d8a2ffbeb91558b75ec184df75e2f665e64b2e9e5866a4eec"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-observe-original.json",
+      "bytes": 1984504,
+      "sha256": "c365f7356214218de51bf101a82eca30ca4c9ef60ce99cfce57ff67defe14e83"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-ordinary-physical-return.json",
+      "bytes": 1997665,
+      "sha256": "0b11bfdbb6b5c2a01b742163a5999499a01a009f0392a414fdf94621fd0997c5"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-same-book-handed-to-thomas.json",
+      "bytes": 1993966,
+      "sha256": "398bd7d66f00d224cc160d3b8f56777202fd27a2ddc6a318e5157926225f71d0"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-scheduled-return-same-book-taken.json",
+      "bytes": 1991153,
+      "sha256": "f44f03e40805ab4eaf9c57647f944760627aa9e6115206b4b01330efe0338bc2"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-single-future-event-paid-attempt.json",
+      "bytes": 1995932,
+      "sha256": "ea1b4599ff7bc21aaa609b892d65683a51fb2ec36862cc30aeaabb693f916860"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-three-honest-reports-reflected.json",
+      "bytes": 2018267,
+      "sha256": "ed056b26923cb79dbcacc0b63530851afbfd04031b2563e80785c9abaa4aad2c"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-actual-all-participants-exit.json",
+      "bytes": 2015093,
+      "sha256": "52ffcdf25856d9e5ac1c253fe08a8d66cadfc39528d5da78a8379ff6ad51fb67"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-actual-six-metre-entry.json",
+      "bytes": 2007917,
+      "sha256": "fa50fc5e8045026f51212b2a2ca87b19e236af219b09251262cf43ac3c8a4e9a"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-book-six-metres.json",
+      "bytes": 2010546,
+      "sha256": "b2313544102c09580f1ebd4c4b86223f74306b16054901dc6edc801043d35a3f"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-honest-report.json",
+      "bytes": 2016645,
+      "sha256": "e973e410d4a6e3f635928c96cee9b0b1f497b3b5d13633cc51a5112c5803ad7c"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-invite-original-adults.json",
+      "bytes": 2006032,
+      "sha256": "076651c984662083dde0761909fc56b3dec899ba875f5d5ecc2dc0671714d10d"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-observe-original.json",
+      "bytes": 2002510,
+      "sha256": "22ad8ffe4c883d3806ae077b163397e90956e62a1d5545f7b8f62690b14a474c"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-ordinary-physical-return.json",
+      "bytes": 2013541,
+      "sha256": "b36ef11879d3d143b9f476719b6fe120213c4f8ea875330292d1187c422b3fad"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-same-book-handed-to-thomas.json",
+      "bytes": 2011993,
+      "sha256": "b0363676e346180bffaf1add524f506e9174422c2fb0a815541b4fae23b5017b"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/boundary-withdrawn-request-same-book-taken.json",
+      "bytes": 2009281,
+      "sha256": "7d4bf95075f8857598875ef982f8ceb4cc46daed2cde2bebf529c03fffbece23"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/natural.json",
+      "bytes": 2884612,
+      "sha256": "7b4a0998bd36ba06108ddb5c8dd7884f474d99145e9f9edbe1b56ba811f35399"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/snapshot-combatStart.json",
+      "bytes": 1225881,
+      "sha256": "d87bc1e58a9495b89b654e9f3bf80018d1e7c0b5ecbd239d42a543d5a2d6b3d0"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/snapshot-departure.json",
+      "bytes": 905961,
+      "sha256": "54bfb0357388aa692d6524ab60aad60710325ba27871ecdfc340442fd030eaee"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/snapshot-practiced.json",
+      "bytes": 1009544,
+      "sha256": "49e6d09f367fab24667093f32a1a887aef5b000a2fe505a56cb3190276e3a0bc"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/snapshot-promoted.json",
+      "bytes": 980529,
+      "sha256": "73dca3013f77affae4ecbca987d4ed8bbdc324a84d03a2bd2915ed41defe2b8d"
+    },
+    {
+      "path": "tests/fixtures/writer-v01880/summary.json",
+      "bytes": 3818,
+      "sha256": "b5cf5911d34dc22f23e3d6c673c195b7b9767193c2083d72e7131af0664067fb"
     },
     {
       "path": "tests/fixtures/zombie-v0900/boundaries.json",

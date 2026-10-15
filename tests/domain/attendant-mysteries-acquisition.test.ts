@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { attendantMysteriesAcquisitionBlock, validateAttendantMysteriesAcquisitionJournal, validateAttendantMysteriesState } from '../../src/domain/attendant-mysteries/index.js';
 import { attendantMysteriesSourceDigest } from '../../src/domain/attendant-mysteries/ritual.js';
@@ -21,7 +22,7 @@ const same = (actual: unknown, expected: unknown, label?: string): void => {
 interface Boundary { beforeLast: SliceState; lastIntent: SliceIntent; final: SliceState }
 let savedBoundary: Boundary | undefined;
 function boundary(): Boundary {
-  return savedBoundary ??= { beforeLast: readObjectEntry<SliceState>(SUCCESS, 'beforeLast'), lastIntent: readObjectEntry<SliceIntent>(SUCCESS, 'lastIntent'), final: readObjectEntry<SliceState>(SUCCESS, 'final') };
+  return savedBoundary ??= { beforeLast: migrateSliceState(readObjectEntry<unknown>(SUCCESS, 'beforeLast')), lastIntent: readObjectEntry<SliceIntent>(SUCCESS, 'lastIntent'), final: migrateSliceState(readObjectEntry<unknown>(SUCCESS, 'final')) };
 }
 const consumption = (bottleId: string): SliceIntent => ({ type: 'ATTENDANT_MYSTERIES', command: { type: 'CONSUME', bottleId, confirmed: true } });
 
@@ -73,8 +74,8 @@ describe('Attendant acquisition from the real original town and original bottles
     expect(t.fates.filter(f => Object.keys(f.output).length === 0).map(f => f.eventIndex)).toEqual([3, 4, 5, 9, 10, 11]);
     // Replay only the 36 captured town commands after actual founding, not the
     // 1,038-command source run. Keep every recorded host fact and die untouched.
-    const founded = readObjectEntry<SliceState>(`${ROOT}/boundary-actual-twenty-four-town-founded.json`, 'final');
-    const lived = readObjectEntry<SliceState>(`${ROOT}/boundary-actual-life-weeks-12.json`, 'final');
+    const founded = migrateSliceState(readObjectEntry<unknown>(`${ROOT}/boundary-actual-twenty-four-town-founded.json`, 'final'));
+    const lived = migrateSliceState(readObjectEntry<unknown>(`${ROOT}/boundary-actual-life-weeks-12.json`, 'final'));
     assertValidSliceState(founded); assertValidSliceState(lived);
     let rebuilt = founded.attendantMysteries.town!;
     const target = lived.attendantMysteries.town!;
@@ -244,7 +245,7 @@ describe('Attendant acquisition from the real original town and original bottles
     expect(provenance).toMatchObject({ kind: 'SAME_SEED_ORIGINAL_LIVING_BRANCH_PUBLIC_CONTINUATION', source: ORIGINAL, newRandomChanges: false });
     expect(readObjectEntry<number>(NATURAL, 'prefixCount')).toBe(1038);
     expect(readObjectEntry<boolean>(NATURAL, 'prefixVerified')).toBe(true);
-    const s = readObjectEntry<SliceState>(NATURAL, 'final'), promoted = boundary().final;
+    const s = migrateSliceState(readObjectEntry<unknown>(NATURAL, 'final')), promoted = boundary().final;
     assertValidSliceState(s);
     expect(s.status).toBe('ACTIVE'); expect(s.progression.sequence).toBe(1); expect(s.progression.acting).toBe(100);
     expect(attendantMysteriesLifeClosed(s)).toBe(true);

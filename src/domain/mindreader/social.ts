@@ -22,7 +22,7 @@ function blocked(s:SliceState,c:MindreaderCommand):string|null{
  if(c.type==='READ')return r.readSucceeded?'已经记下本次浅层片段，不重复读取。':r.readWeek===s.week?'本周读取没有成功，休养或交谈后再来。':s.spirituality<2?'读取需要2灵性。':null;
  return r.attemptWeek===s.week?'本周交涉尚未取得共同确认，下周再来。':null;
 }
-export function mindreaderScenes(s:SliceState){return s.progression.pathwayId==='audience'&&(s.progression.sequence===8||s.progression.sequence===7||s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?CASES.map(c=>{const r=s.mindreader.cases[c.id]!;return{id:c.id,title:c.title,story:c.story,...(r.status==='RESOLVED'?{dialogue:c.result}:{}),observations:r.status==='AVAILABLE'?[]:[...c.facts],impression:r.readSucceeded?`第${r.readWeek}周留下的读取记录：${c.thought}`:'尚未读到本次浅层想法；普通观察和当面询问仍可进行。',status:r.status};}):[];}
+export function mindreaderScenes(s:SliceState){return s.progression.pathwayId==='audience'&&(s.progression.sequence===8||s.progression.sequence===7||s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?CASES.map(c=>{const r=s.mindreader.cases[c.id]!;return{id:c.id,title:c.title,story:c.story,...(r.status==='RESOLVED'?{dialogue:c.result}:{}),observations:r.status==='AVAILABLE'?[]:[...c.facts],impression:r.readSucceeded?`第${r.readWeek}周留下的读取记录：${c.thought}`:'尚未读到本次浅层想法；普通观察和当面询问仍可进行。',status:r.status};}):[];}
 export function mindreaderSocialActions(s:SliceState):MindreaderAction[]{
  if(s.progression.pathwayId!=='audience'||s.progression.sequence!==8)return [];
  const a:MindreaderAction[]=[];const add=(id:string,label:string,cost:string,command:MindreaderCommand)=>{const reason=blocked(s,command);a.push({id,label,cost,command,enabled:reason===null,reason});};
@@ -49,6 +49,6 @@ export function validateMindreaderSocial(s:SliceState){
  if(r.readSucceeded!==s.seer.completedSources.includes(`mindreader-reading:${c.id}`)||(r.status==='RESOLVED')!==s.seer.completedSources.includes(`mindreader-case:${c.id}`))return false;
  }
  if(m.reflected!==s.seer.completedSources.includes('mindreader-reflection')||m.reflected&&CASES.some(c=>m.cases[c.id]?.status!=='RESOLVED'))return false;
- if((s.progression.pathwayId!=='audience'||(s.progression.sequence!==8&&s.progression.sequence!==7&&s.progression.sequence!==6&&s.progression.sequence!==5&&s.progression.sequence!==4&&s.progression.sequence!==3&&s.progression.sequence!==2))&&(m.reflected||Object.values(m.cases).some(r=>r.status!=='AVAILABLE')))return false;
+ if((s.progression.pathwayId!=='audience'||(s.progression.sequence!==8&&s.progression.sequence!==7&&s.progression.sequence!==6&&s.progression.sequence!==5&&s.progression.sequence!==4&&s.progression.sequence!==3&&(s.progression.sequence!==2&&s.progression.sequence!==1)))&&(m.reflected||Object.values(m.cases).some(r=>r.status!=='AVAILABLE')))return false;
  return true;
 }

@@ -214,7 +214,7 @@ export function validateManipulatorRitualState(s: SliceState): boolean {
   if (!record(raw) || !shape(raw, ['playerLocation', 'activeGatheringId', 'gatherings']) || !['OUTSIDE', 'HALL'].includes(String(raw.playerLocation)) || !Array.isArray(raw.gatherings)) return false;
   if (raw.activeGatheringId !== null && typeof raw.activeGatheringId !== 'string') return false;
   const r = raw as unknown as ManipulatorRitualState, week = (value: unknown) => integer(value, 1, s.week);
-  if (r.gatherings.length && (!s.manipulator.guidanceKnown || s.progression.pathwayId !== 'audience' || ![5, 4, 3, 2].includes(s.progression.sequence ?? 0) || !week(s.dreamwalker.promotionWeek))) return false;
+  if (r.gatherings.length && (!s.manipulator.guidanceKnown || s.progression.pathwayId !== 'audience' || ![5, 4, 3, 2, 1].includes(s.progression.sequence ?? 0) || !week(s.dreamwalker.promotionWeek))) return false;
   let active: ManipulatorGathering | undefined;
   const usedBottles = new Set<string>();
   for (const [index, g] of r.gatherings.entries()) {

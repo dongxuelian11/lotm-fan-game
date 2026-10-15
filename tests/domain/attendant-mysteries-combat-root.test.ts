@@ -16,7 +16,7 @@ const same = (actual: unknown, expected: unknown, label?: string): void => {
   expect(stableStringify(actual), label).toBe(stableStringify(expected));
 };
 function state(key: 'beforeLast' | 'final', which: keyof typeof BOUNDARIES = 'first'): SliceState {
-  const value = entry<unknown>(key, which);
+  const value = migrateSliceState(entry<unknown>(key, which));
   assertValidSliceState(value);
   return value;
 }

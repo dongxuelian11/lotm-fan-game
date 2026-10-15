@@ -1,3 +1,4 @@
+import { WRITER_ABILITY_IDS } from '../writer/types.js';
 import {DISCERNER_ABILITY_IDS} from '../discerner/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
@@ -28,8 +29,8 @@ export function createDreamWeaverState(): DreamWeaverState {
     preparations: [], preparedWeek: null, life: createDreamWeaverLifeState(), encounter: createDreamWeaverEncounterState() };
 }
 export const isDreamWeaver = (s: SliceState) => s.progression.pathwayId === 'audience' && s.progression.sequence === 3;
-const hasDreamWeaverHistory = (s:SliceState) => isDreamWeaver(s)||(s.progression.pathwayId==='audience'&&s.progression.sequence===2);
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'audience' && [4, 3, 2].includes(s.progression.sequence ?? 0) && s.audience.discovered && s.manipulator.guidanceKnown && s.manipulator.promotionWeek !== null;
+const hasDreamWeaverHistory = (s:SliceState) => isDreamWeaver(s)||(s.progression.pathwayId==='audience'&&(s.progression.sequence===2||s.progression.sequence===1));
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'audience' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.audience.discovered && s.manipulator.guidanceKnown && s.manipulator.promotionWeek !== null;
 export const hasDreamWeaverLock = (s: SliceState): boolean => s.dreamWeaver.preparedWeek !== null || hasDreamWeaverLifeLock(s) || hasDreamWeaverEncounterLock(s);
 const bottleNumber = (b: Pick<DreamWeaverBottle, 'id'>) => Number(b.id.slice('dream-weaver-potion-'.length));
 const potionPrice = (b: DreamWeaverBottle) => DREAM_WEAVER_PRICES.potion - (b.labourSteps === DREAM_WEAVER_LABOUR_STEPS ? DREAM_WEAVER_PRICES.labourCredit : 0);
@@ -184,11 +185,11 @@ export function projectDreamWeaver(s: SliceState): DreamWeaverProjection {
     title: promoted ? '织梦人 · 序列3' : '织梦人之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${DREAM_WEAVER_FORMULA_STATUS}${DREAM_WEAVER_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available && s.progression.sequence!==2 ? [...actions, ...dreamWeaverLifeActions(s), ...dreamWeaverEncounterActions(s)] : [],
+    actions: available && (s.progression.sequence!==2&&s.progression.sequence!==1) ? [...actions, ...dreamWeaverLifeActions(s), ...dreamWeaverEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 织梦人成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为操纵师' : '排异，仍为操纵师'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? DREAM_WEAVER_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? DREAM_WEAVER_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? (s.progression.sequence===2?s.discerner.dreamWeaverActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `操纵师消化${state.manipulatorActingAtPromotion}/100留存；织梦人扮演${s.progression.sequence===2?s.discerner.dreamWeaverActingAtPromotion:s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `操纵师需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${manipulatorWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完操纵师之路。',
+    acting: promoted ? ((s.progression.sequence===2||s.progression.sequence===1)?s.discerner.dreamWeaverActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `操纵师消化${state.manipulatorActingAtPromotion}/100留存；织梦人扮演${(s.progression.sequence===2||s.progression.sequence===1)?s.discerner.dreamWeaverActingAtPromotion:s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `操纵师需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${manipulatorWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完操纵师之路。',
     pollution: s.seer.pollution, risk: available ? DREAM_WEAVER_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -212,7 +213,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasDreamWeaverLifeLock(s) || hasDreamWeaverEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.manipulator.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.manipulatorActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?DISCERNER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS, ...PSYCHOLOGIST_ABILITY_IDS, ...HYPNOTIST_ABILITY_IDS, ...DREAMWALKER_ABILITY_IDS, ...MANIPULATOR_ABILITY_IDS, ...DREAM_WEAVER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?WRITER_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?DISCERNER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS, ...PSYCHOLOGIST_ABILITY_IDS, ...HYPNOTIST_ABILITY_IDS, ...DREAMWALKER_ABILITY_IDS, ...MANIPULATOR_ABILITY_IDS, ...DREAM_WEAVER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.manipulatorActingAtPromotion !== null || DREAM_WEAVER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

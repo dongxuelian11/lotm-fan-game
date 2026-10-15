@@ -130,7 +130,7 @@ export function discernerEncounterActions(s: SliceState): DiscernerEncounterActi
 }
 export function projectDiscernerEncounter(s: SliceState): DiscernerEncounterProjection {
   const e = s.discerner.encounter;
-  if (!stage(s)) return { title: '尚未开放的洞察者实践', story: '', status: 'AVAILABLE', inside: false, enemy: null, mentalPlague: 0, mentalImprintUses: 0, mentalImprintSuccesses: 0, insightWindowUses: 0, insightWindowSuccesses: 0, exitTravelMetres: 0, exitSeconds: 0, helpHistory: [], actions: [], facts: [] };
+  if (!stage(s) && !(s.progression.pathwayId==='audience'&&s.progression.sequence===1)) return { title: '尚未开放的洞察者实践', story: '', status: 'AVAILABLE', inside: false, enemy: null, mentalPlague: 0, mentalImprintUses: 0, mentalImprintSuccesses: 0, insightWindowUses: 0, insightWindowSuccesses: 0, exitTravelMetres: 0, exitSeconds: 0, helpHistory: [], actions: [], facts: [] };
   return { title: '阿尔里克·维尔的独立原石院', story: DISCERNER_ENCOUNTER_STORY, status: e.status, inside: isInsideDiscernerEncounter(s),
     enemy: { id: e.targetId, name: '阿尔里克·维尔', age: 47, sequence: 2, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, weaponId: 'DCR2-ALRIC-CLUB', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } },
@@ -163,7 +163,7 @@ export function validateDiscernerEncounter(s: SliceState): boolean {
     if (e.helpHistory.some((h, i) => !h || !same(Object.keys(h).sort(), ['after', 'before', 'fee', 'week']) || !integer(h.week, e.attemptWeek ?? 0, s.week) || i > 0 && h.week <= e.helpHistory[i - 1]!.week || !integer(h.before, 1, 3) || h.after !== h.before - 1 || h.fee !== 40 || i > 0 && h.before !== e.helpHistory[i - 1]!.after) ||
         e.helpHistory.length > 0 && (e.enemyStatus === 'DEAD' || !['RESOLVED', 'RETREATED'].includes(e.status) || e.helpHistory.at(-1)!.after !== e.mentalPlague)) return false;
     if (s.discerner.promotionWeek === null) return same(e, createDiscernerEncounterState()) && s.combat?.encounterId !== 'DISCERNER_DISPUTE';
-    if (!stage(s)) return false;
+    if (!stage(s) && !(s.progression.pathwayId==='audience'&&s.progression.sequence===1)) return false;
     if (e.startHistoryIndex === null) {
       const initial = createDiscernerEncounterState();
       return ['AVAILABLE', 'READY', 'RESOLVED'].includes(e.status) && e.terminal === null && e.attemptWeek === null && s.combat?.encounterId !== 'DISCERNER_DISPUTE' &&

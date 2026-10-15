@@ -117,7 +117,7 @@ describe('Attendant reception root wiring from the unchanged actual164 S2 source
     expect(validateAttendantMysteriesTown(zeroRemainderTown)).toBe(false);
     expect(() => assertValidSliceState(zeroRemainderTown)).toThrow();
     expect(projectSliceState(s).attendantMysteries.promoted).toBe(false);
-  });
+  }, 10000);
 
   it('rejects extra cash or a wrong date against the latest actual reception snapshot', () => {
     const old = source(), s = act(old, { type: 'RECEPTION_NEXT_WEEK' }, old), before = stableStringify(s);

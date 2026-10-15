@@ -122,7 +122,7 @@ export function dreamWeaverEncounterActions(s: SliceState): DreamWeaverEncounter
 }
 export function projectDreamWeaverEncounter(s: SliceState): DreamWeaverEncounterProjection {
   const e = s.dreamWeaver.encounter;
-  if (!stage(s) && !(s.progression.pathwayId==='audience'&&s.progression.sequence===2)) return { title: '尚未开放的织梦人实践', story: '', status: 'AVAILABLE', inside: false, enemy: null, mentalPlague: 0, helpHistory: [], actions: [], facts: [] };
+  if (!stage(s) && !(s.progression.pathwayId==='audience'&&(s.progression.sequence===2||s.progression.sequence===1))) return { title: '尚未开放的织梦人实践', story: '', status: 'AVAILABLE', inside: false, enemy: null, mentalPlague: 0, helpHistory: [], actions: [], facts: [] };
   return { title: '奥斯蒙德的独立原石院', story: DREAM_WEAVER_ENCOUNTER_STORY, status: e.status, inside: isInsideDreamWeaverEncounter(s),
     enemy: { id: e.targetId, name: '奥斯蒙德', age: 45, sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, weaponId: 'DWV3-OSMOND-CLUB', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } },
@@ -150,7 +150,7 @@ export function validateDreamWeaverEncounter(s: SliceState): boolean {
     if (e.helpHistory.some((h, i) => !h || !same(Object.keys(h).sort(), ['after', 'before', 'fee', 'week']) || !integer(h.week, e.attemptWeek ?? 0, s.week) || i > 0 && h.week <= e.helpHistory[i - 1]!.week || !integer(h.before, 1, 3) || h.after !== h.before - 1 || h.fee !== 40 || i > 0 && h.before !== e.helpHistory[i - 1]!.after) ||
         e.helpHistory.length > 0 && (e.enemyStatus === 'DEAD' || !['RESOLVED', 'RETREATED'].includes(e.status) || e.helpHistory.at(-1)!.after !== e.mentalPlague)) return false;
     if (s.dreamWeaver.promotionWeek === null) return same(e, createDreamWeaverEncounterState()) && s.combat?.encounterId !== 'DREAM_WEAVER_DISPUTE';
-    if (!stage(s) && !(s.progression.pathwayId==='audience'&&s.progression.sequence===2)) return false;
+    if (!stage(s) && !(s.progression.pathwayId==='audience'&&(s.progression.sequence===2||s.progression.sequence===1))) return false;
     if (e.startHistoryIndex === null) {
       const initial = createDreamWeaverEncounterState();
       return ['AVAILABLE', 'READY', 'RESOLVED'].includes(e.status) && e.terminal === null && e.attemptWeek === null && s.combat?.encounterId !== 'DREAM_WEAVER_DISPUTE' &&

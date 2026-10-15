@@ -212,7 +212,7 @@ export function dreamWeaverLifeActions(s: SliceState): DreamWeaverLifeAction[] {
 }
 export function projectDreamWeaverLife(s: SliceState): DreamWeaverLifeProjection {
   const l = s.dreamWeaver.life;
-  if (!active(s) && !(s.progression.pathwayId==='audience'&&s.progression.sequence===2)) return { title: '织梦人生活', source: '尚未进入织梦人原场。', environment: '', insideCase: false, reflected: false, practice: null, currentAttempt: null, currentConsents: [], cases: [] };
+  if (!active(s) && !(s.progression.pathwayId==='audience'&&(s.progression.sequence===2||s.progression.sequence===1))) return { title: '织梦人生活', source: '尚未进入织梦人原场。', environment: '', insideCase: false, reflected: false, practice: null, currentAttempt: null, currentConsents: [], cases: [] };
   const a = lastAttempt(s);
   return { title: '织梦人生活：单一外部身份、原消息与有限梦像', source: '能力边界依据原著；人物、场景、数值与具体反馈均原创G。', environment: DREAM_WEAVER_LIFE_ENVIRONMENT, insideCase: hasDreamWeaverLifeLock(s), reflected: l.reflected, practice: structuredClone(l.practice), currentAttempt: a ? structuredClone(a) : null, currentConsents: DREAM_WEAVER_PERSON_IDS.map(id => ({ id, consented: consented(a, id, s.week) })), cases: CASES.map(entry => { const r = l.cases[entry.id]; return { id: entry.id, title: entry.title, story: entry.story, observations: r.status === 'AVAILABLE' ? [] : [...entry.facts], preparation: r.status === 'PREPARED' ? r.method === 'ABILITY' ? '本次有限能力方式；须分别取得两位新原人的当前同意，能力失败可普通完成。' : '本次由原身体普通完成，仍需本次双方同意。' : null, result: r.result !== 'NONE' ? r.contactOpen ? '已有实际结果；仍须结束能力、本人还物、走返并复核。' : entry.result : r.attempts.some(v => v.performed) ? '尚无完成结果；所有能力失败与已付代价仍在。' : null, status: r.status, contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: structuredClone(r.attempts) }; }) };
 }

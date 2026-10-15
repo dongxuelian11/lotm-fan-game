@@ -167,7 +167,7 @@ export function dreamwalkerActions(s: SliceState): DreamwalkerAction[] {
   return out;
 }
 export function dreamwalkerCases(s: SliceState): DreamwalkerProjection['cases'] {
-  if (s.progression.pathwayId !== 'audience' || (s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&s.progression.sequence!==2)) return [];
+  if (s.progression.pathwayId !== 'audience' || (s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&(s.progression.sequence!==2&&s.progression.sequence!==1))) return [];
   return CASES.map(p => {
     const r = s.dreamwalker.cases[p.id]!, f = s.dreamwalker.practice;
     const result = r.verified ? p.verification : r.sessions > 0
@@ -183,7 +183,7 @@ export function validateDreamwalkerLife(s: SliceState): boolean {
   const f = m.practice;
   if (!['SOURCE_ROOM', 'TARGET_ROOM'].includes(f.location) || !['NONE', 'NOEL', 'AMINA'].includes(f.dream) || !integer(f.outboundTrips, 0, 1) || !integer(f.returns, 0, 1) || !integer(f.wakingChecks, 0, 3)) return false;
   if (f.outboundTrips !== f.returns + (f.location === 'TARGET_ROOM' ? 1 : 0)) return false;
-  const promoted = s.progression.pathwayId === 'audience' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+  const promoted = s.progression.pathwayId === 'audience' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
   let open = 0, prepared = 0, resolved = 0, verified = 0;
   for (const p of CASES) {
     const r = m.cases[p.id];
@@ -227,6 +227,6 @@ export function validateDreamwalkerLife(s: SliceState): boolean {
   if (typeof m.reflected !== 'boolean' || s.seer.completedSources.filter(x => x === 'dreamwalker-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
   if (!promoted && (m.reflected || f.outboundTrips !== 0 || f.dream !== 'NONE' || f.location !== 'SOURCE_ROOM')) return false;
   if (s.progression.pathwayId==='audience'&&s.progression.sequence===5 && s.progression.acting !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
-  if(s.progression.pathwayId==='audience'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) && (s.manipulator.dreamwalkerActingAtPromotion!==100||resolved!==3||!m.reflected))return false;
+  if(s.progression.pathwayId==='audience'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))) && (s.manipulator.dreamwalkerActingAtPromotion!==100||resolved!==3||!m.reflected))return false;
   return true;
 }

@@ -85,7 +85,7 @@ export function validateDreamwalkerEncounter(s: SliceState): boolean {
   const rewards = s.seer.completedSources.filter(source => source === 'dreamwalker-dispute').length;
   if (rewards > 1) return false;
   const initial = e.status === 'AVAILABLE' && e.startHistoryIndex === null && e.attemptWeek === null;
-  const promoted = s.progression.pathwayId === 'audience' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+  const promoted = s.progression.pathwayId === 'audience' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
   if (!promoted) return initial && rewards === 0 && c?.encounterId !== 'DREAMWALKER_DISPUTE';
   if (!initial && (!Object.values(s.dreamwalker.cases).some(r => r.status === 'RESOLVED') ||
       s.dreamwalker.promotionWeek === null || e.attemptWeek === null ||

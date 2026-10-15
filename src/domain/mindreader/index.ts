@@ -1,3 +1,4 @@
+import { WRITER_ABILITY_IDS } from '../writer/types.js';
 import {DISCERNER_ABILITY_IDS} from '../discerner/types.js';
 import {DREAM_WEAVER_ABILITY_IDS} from '../dream-weaver/types.js';
 import {MANIPULATOR_ABILITY_IDS} from '../manipulator/types.js';
@@ -40,7 +41,7 @@ export function createMindreaderState(): MindreaderState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'audience' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'audience' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const isAudience = (s: SliceState) => s.progression.pathwayId === 'audience' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.audience.discovered && s.audience.formulaKnown && (isAudience(s) || promoted(s));
 const materialPrice = (batch: MindreaderBatch) => MINDREADER_PRICES.auxiliaryMaterials + (batch.labourSteps === 3 ? 0 : MINDREADER_PRICES.mainMaterials);
@@ -227,8 +228,8 @@ export function projectMindreader(s: SliceState): MindreaderProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? MINDREADER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.psychologist.mindreaderActingAtPromotion??100:s.progression.acting) : 0,
-    digestion:s.progression.pathwayId==='audience'&&(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?'读心者魔药已消化，原有谈话与浅层读取记录保留。':isPromoted ? `观众消化成果${s.mindreader.audienceActingAtPromotion}/100已保留；读心者扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?s.psychologist.mindreaderActingAtPromotion??100:s.progression.acting) : 0,
+    digestion:s.progression.pathwayId==='audience'&&(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?'读心者魔药已消化，原有谈话与浅层读取记录保留。':isPromoted ? `观众消化成果${s.mindreader.audienceActingAtPromotion}/100已保留；读心者扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成观众消化（${s.progression.acting}/100），并在观众晋升后度过6整周（${audienceWeeks(s)}/6）。配方与材料可以提前准备。` : '先走完观众之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：配方指导 → 采购或三次劳动后领取材料 → 调配 → 独立确认服药。读心者材料每轮仅有3批，不自动补货；三批全已服用且失败后，可花1行动向原指导者申请下一轮，最早下一个真实周到货，材料与调配仍需原费用或劳动。供应方剩余${remaining}批，现有未服原瓶${prepared}瓶。${MINDREADER_CONSUMPTION_RISK}` : '成为观众后，可向原有指导者了解下一序列。',
@@ -273,7 +274,7 @@ export function validateMindreaderState(s: SliceState): boolean {
   if (mindreader.formulaKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!mindreader.formulaKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(mindreader.promotionWeek, firstConsumptionWeek, s.week) || mindreader.audienceActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?DISCERNER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?PSYCHOLOGIST_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?HYPNOTIST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?DREAMWALKER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?MANIPULATOR_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?DREAM_WEAVER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?WRITER_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?DISCERNER_ABILITY_IDS:[]),...AUDIENCE_ABILITY_IDS, ...MINDREADER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?PSYCHOLOGIST_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?HYPNOTIST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?DREAMWALKER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?MANIPULATOR_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?DREAM_WEAVER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
     if (Object.values(mindreader.cases).some(value => value.readWeek !== null && value.readWeek < mindreader.promotionWeek! || value.attemptWeek !== null && value.attemptWeek < mindreader.promotionWeek!)) return false;
   } else {
     if (mindreader.promotionWeek !== null || mindreader.audienceActingAtPromotion !== null || MINDREADER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
