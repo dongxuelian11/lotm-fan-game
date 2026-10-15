@@ -1,40 +1,67 @@
-# 诡秘同人游戏（项目代号）
+# 诡秘之主同人游戏 · 0.177.0 阶段版
 
-> `STATUS=DESIGN_AND_ENGINEERING_BASELINE / PLAYABLE_BUILD=NOT_AVAILABLE`
+基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-这是一个以《诡秘之主》世界为背景的非官方同人单机游戏项目。玩家从普通人开始，在按周推进的世界中工作、学习、调查和休养，逐步接触非凡体系；第一版计划开放占卜家、观众、猎人三条途径至序列7。
+当前22条途径包含9→3有限可玩切片，14条接至有限序列2。余下8条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。已暂停后续序列，优先验收现有内容。
 
-当前仓库首先公开原创代码、设计合同和开发记录。它还不是可玩的发行版，也不包含原著正文、私人知识库、来源不明素材或参考项目代码。
+## 安装和启动
 
-## 当前重点
+需要Node.js24.15–24.x、npm及图形桌面。npm ci会安装锁定依赖；Electron44在首次启动时按需下载桌面运行时，因此首次启动也需要网络。可提前执行 `npx --no-install install-electron` 准备运行时。当前云环境没有进行可见窗口或Windows实机验证。
 
-- 常驻周仪表盘与事件卡驱动的个人生存/调查循环；
-- 可重放的普通判定、战斗转盘和因果结算；
-- Main/SQLite 权威状态、窄 preload 接口和 Renderer 公开投影；
-- 工作/产业、黑市与每三个月一次的拍卖会；
-- 构建期模板 + RAG/小模型辅助的受审事件文本，不让模型决定规则和数值；
-- 每轮前后端并行、主任务接线、自动验证和玩家审查分离。
+```sh
+npm ci
+npm run build
+npm start
+```
 
-## 从哪里开始
+浏览器开发界面可运行 `npm run dev:renderer`。Electron桌面开发使用 `npm run dev`。浏览器内存试玩不是正式持久存档；桌面版通过SQLite保存。Windows和可见Electron窗口尚未实机验证，不将Linux构建通过等同Windows运行通过。
 
-参与开发前依次阅读：
+## 测试输入
 
-1. [AGENTS.md](AGENTS.md)
-2. [项目状态账本](PROJECT_STATE_LEDGER.md)
-3. [主开发计划](docs/MASTER_DEVELOPMENT_PLAN.md)
-4. [架构合同](docs/ARCHITECTURE_CONTRACT.md)
-5. [任务交接协议](docs/THREAD_HANDOFF_PROTOCOL.md)
-6. [当前轮次账本](docs/ROUND_LEDGER.md)
+所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以32个完整文件tar.gz包保存在test-inputs，总压缩约537MB；清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
 
-玩法主题文档索引见 [docs/README.md](docs/README.md)。
+```sh
+npm run typecheck
+npm run test:smoke
+npm run test:fixture-restore
+```
 
-## 开源边界
+运行全部历史测试前恢复完整输入（需额外约3.9GB空间）：
 
-原创软件代码以 [MIT License](LICENSE) 开源。题材、原著内容、素材与发行权不由该许可证授予，详见 [NOTICE](NOTICE)。公共远端、正式名称、素材许可和游戏发行状态必须按事实单独记录；本地初始化不等于已经发布到 GitHub。
+```sh
+npm run fixtures:restore
+npm test -- --exclude tests/domain/catastrophe-shared.test.ts --exclude tests/domain/wisdom-angel-life.test.ts --maxWorkers=1 --no-file-parallelism
+npm run test:catastrophe-isolated
+npm run test:wisdom-angel-life-isolated
+```
 
-## 开发状态词
+本次云环境运行天灾共享测试、智慧天使生活测试整文件时出现 worker 意外退出；请分别使用 `npm run test:catastrophe-isolated` 和 `npm run test:wisdom-angel-life-isolated`，将原15个和33个案例逐项放在独立进程运行。两命令核对完整案例名单，任何失败、漏项或异常退出都会返回非零状态。其他测试仍可通过 Vitest 的文件参数分批执行。 `npm run check`仍调用默认整文件测试，受同一限制；在此环境请采用上列分步命令。
 
-- `READY_FOR_INTEGRATION`：某工作流已交付候选，不等于已合入或完成。
-- `INTEGRATED`：主任务已经完成源码审查、接线和自动门禁。
-- `PLAYER_ACCEPTANCE=PASSED`：只有用户实际看过本轮产品并明确通过后才能写入。
-- `NOT_RUN` / `NOT_AVAILABLE` / `PENDING`：必须保留原义，不得用推测升级。
+恢复脚本使用Node标准库，拒绝不安全路径、损坏包和不同内容覆盖，可安全重试。也可仅恢复某个测试目录，例如：
+
+```sh
+npm run fixtures:restore -- --only-prefix calamity-demoness-v01770 --only-prefix unaging-demoness-v01530
+```
+
+若只复现本次60个历史输入相关测试，必须同时恢复其旧存档和辅助模块依赖；不能只恢复补充输入包。下面的命令与本次发布树验证使用的58个目录一致（298个文件，约232MB展开空间）。完整测试仍使用上面的全量恢复命令。
+
+<details>
+<summary>60个相关测试的完整输入恢复命令</summary>
+
+```sh
+npm run fixtures:restore -- --only-prefix apothecary-v0130 --only-prefix appraiser-v0180 --only-prefix apprentice-v0350 --only-prefix archaeologist-v0120 --only-prefix artisan-v0760 --only-prefix astrologer-v0370 --only-prefix astronomer-v0980 --only-prefix audience-v080 --only-prefix biologist-v0940 --only-prefix bizarro-sorcerer-v01170 --only-prefix clown-v050 --only-prefix conspirator-v0740 --only-prefix corpsecollector-v0320 --only-prefix crimson-scholar-v0990 --only-prefix cryptologist-v0410 --only-prefix dawn-paladin-v0850 --only-prefix demon-v0890 --only-prefix desire-apostle-v01110 --only-prefix dream-stealer-v01060 --only-prefix dreamwalker-v0970 --only-prefix faceless-v0730 --only-prefix fire-thief-v0840 --only-prefix gatekeeper-v01040 --only-prefix gladiator-v0430 --only-prefix gravedigger-v0330 --only-prefix guardian-v01070 --only-prefix harvestpriest-v0710 --only-prefix hunter-v060 --only-prefix hypnotist-v0750 --only-prefix iron-blood-knight-v01180 --only-prefix magician-v0150 --only-prefix manipulator-v01190 --only-prefix marauder-tool-v0390 --only-prefix marauder-v0380 --only-prefix marionettist-v0950 --only-prefix mindreader-v090 --only-prefix notary-v0810 --only-prefix potion-professor-v0770 --only-prefix priest-of-light-v01030 --only-prefix provoker-v070 --only-prefix psychologist-v0170 --only-prefix pyromaniac-v0160 --only-prefix reaper-v0960 --only-prefix recorder-v0830 --only-prefix release-legacy-output-v0177 --only-prefix savant-v0110 --only-prefix seer-v040 --only-prefix spirit-guide-v0820 --only-prefix spiritmedium-v0340 --only-prefix sunpriest-v0310 --only-prefix swindler-v0400 --only-prefix tamer-v0140 --only-prefix town-v0100 --only-prefix traveler-v01050 --only-prefix trickmaster-v0360 --only-prefix vampire-v0190 --only-prefix warrior-v0420 --only-prefix weaponmaster-v0440
+```
+
+</details>
+
+`npm run fixtures:check`只流式验证完整输入，不创建展开副本。完整历史测试类型与全量测试的最终验收状态见发布验收报告，不能把专项通过当全量通过。
+
+## 当前验证与限制
+
+主工程与干净发布树完整严格类型检查、生产构建均通过。最终影响范围488个测试文件、8608个断言通过，覆盖全部296个界面文件；其余495个未改测试保留基线通过记录。干净发布树60个历史输入相关文件、466断言，以及48项烟测、17项恢复工具测试通过。全部范围、两项整文件运行限制和未验证内容见[验收报告](docs/RELEASE_ACCEPTANCE.md)。
+
+本版仍有构建大分块警告；可见Electron窗口、Windows实机及全路线自然通关尚未验证。门与银骑士部分高阶使用定向起点。177阶段原585条公开命令及54命名/50唯一SQLite转换证据见[阶段记录](docs/CALAMITY_DEMONESS_PLAYABLE_STAGE.md)。
+
+## 来源与许可
+
+仓库不包含上传小说全文、个人存档、凭据、node_modules或生成测试输出。原创代码许可和第三方设定/素材权利分别见LICENSE、NOTICE及public/assets/ART_SOURCES.txt。源码、游戏资源和测试输入通过明确清单交付。
