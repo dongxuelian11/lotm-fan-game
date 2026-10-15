@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.196.0",
+  "version": "0.197.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -376,6 +376,16 @@
       "name": "lotm_release_0.196.0_star_key_test_inputs_3_2026-10-15.tar.gz",
       "bytes": 14765801,
       "sha256": "3056e0da824ac2d6956c1ad95b30b9b10c2a8458f8714bbc7a223b8d12174cae"
+    },
+    {
+      "name": "lotm_release_0.197.0_time_worm_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17684636,
+      "sha256": "5e3af383922548e88ab5c9bf11381627e775fd7da35e0e8cf27219a5ce3e0c2b"
+    },
+    {
+      "name": "lotm_release_0.197.0_time_worm_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 16478225,
+      "sha256": "1c514cc1f683c17d96b520335b5b803cae7b09f34ce8c2ad7c2173a1495bf713"
     }
   ],
   "fileEntries": [
@@ -16638,6 +16648,671 @@
       "path": "tests/fixtures/thunder-god-v01930/summary.json",
       "bytes": 167073,
       "sha256": "25da575fb718db8f4dcc31679c45965e8c5a90297b6263f33ea631f41b24673f"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundaries.index.json",
+      "bytes": 9942,
+      "sha256": "f5e00632783acb83af14931230f921547212844b6364c9ffa5c86274c5a1f444"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundaries.steps.json",
+      "bytes": 4647,
+      "sha256": "cdd3f35b194b24da4e1b5b2b443dc133f3fa658a33ae223ad0fa84b05e0fe9f9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-clinic-pay60.json",
+      "bytes": 1945678,
+      "sha256": "22600577bc59de829dc512a875a3e4b8e2c56c1e8c6f706f90eeb6d0816ff7e9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-consumption-time-worm-potion-1.json",
+      "bytes": 2216959,
+      "sha256": "d877d3dbcfb0a2c1a219c02b240f2968c722ce45e6b48bf1e2b99c19c0c409f0"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-four-metre-arrival-and-independent-adrian-name-exchange.json",
+      "bytes": 3172037,
+      "sha256": "038f5e82ce64b0d8c7401968af7881f5ed84ada569989c654923ceaad1b80a64"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-outside-paid-energy-rest.json",
+      "bytes": 2381870,
+      "sha256": "fe60c7ec155b11555c22bd4cd69bf64d50aaa1e18fd6db41272538b05fef28a7"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-paid-work-after-living-four-metre-exit.json",
+      "bytes": 3912970,
+      "sha256": "cc1bd1c62c02b0f18d3b8e9b6cbd5ee6e25f863b41be107e6dcc0a8c65d3cf61"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-preparation-DECLARE_PENDING_ACTION.json",
+      "bytes": 2128847,
+      "sha256": "7a58138e05446e2e15e7cc98b427cd33804eee65dcfce598173aecfd6520bad4"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-preparation-PLAN_RETURN.json",
+      "bytes": 2138083,
+      "sha256": "78612a72a62c2c8d683a58af29e6a384b7314cbacf45ad025aadb903159d73e3"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 2119136,
+      "sha256": "2ef3ab896a45258586ac57e79acd7196292610c79fa3f7ec9be5984cb805ce67"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-rest-requests-known-clinic.json",
+      "bytes": 1945283,
+      "sha256": "4f4eb42adfed20fd638774ea5538ecce68d75d17f140f6a1ff986fbc8ddbc493"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-subsequent-injury-rest-2.json",
+      "bytes": 1946182,
+      "sha256": "e3ad6a4750c99d9a0ff877f2220f925a402ba96f1d241a0f2fb42402d7c24561"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-subsequent-injury-rest-3.json",
+      "bytes": 1946624,
+      "sha256": "7e051703122a7f69eef3359f1e50159f9efd26355c7035544f2a045f05742dfb"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-subsequent-injury-rest-4.json",
+      "bytes": 1946703,
+      "sha256": "4e414cb2757af209794f4c447e318c78b792b9e2e5ded3150129449875746bbc"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual-subsequent-injury-rest.json",
+      "bytes": 1945794,
+      "sha256": "7ae424596c90612f4a2f57bda9f952f7926a5b48a3dbbbdf77f52c0e7f5b680c"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual1100p-buy-time-worm-potion-1.json",
+      "bytes": 2197804,
+      "sha256": "1533f934bc7db1ee794caeae990fbd1656472ba2196a943706acf74d36fe63cb"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual150p-current-week-preparation-time-worm-potion-1.json",
+      "bytes": 2206699,
+      "sha256": "1b07d0d5a8ac60db8c69e24d8d5bbf95319038c082abde39a1f9e94ac599011c"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-actual500p-guidance-freezes-eight-original-error-roots.json",
+      "bytes": 2031459,
+      "sha256": "246c1ef8feaf625bf4ae877f917759c89598a5187df0e062b2dfe1624634d144"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-combat-round-1.json",
+      "bytes": 3781609,
+      "sha256": "54987c773690db131dd07e71a2c406f2f23ae8c2e4436906d0dd5441d9f2704c"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-combat-round-2.json",
+      "bytes": 3899716,
+      "sha256": "3a630762fda023a6ad2dab80565d8e1bd575ddf8dc7b5b139d0f63376d0b69d4"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-actual-ordinary-baseline-look.json",
+      "bytes": 2290560,
+      "sha256": "1e724babf81cf5578c820b2fbb9def5383d2f1072c092964019ed0d0fd43a496"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-actual-original-observation.json",
+      "bytes": 2226987,
+      "sha256": "0ef752150e908ac51d30cb5faac0915ba8fd268b362b5056bb303e91ebcb4304"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-actual-three-second-target-delay.json",
+      "bytes": 2322283,
+      "sha256": "c05abff58b0c8e5e07e627eacdcbcb8c861b6bb85f564dc845b121ec575db5c2"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-actual20p1AP-fresh-preparation.json",
+      "bytes": 2239475,
+      "sha256": "fd63271e211637ce425eeff6488b04f10da0274863428c624a7529fbf1999bcd"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-both-original-bodies-walk-four-metres-out.json",
+      "bytes": 2341521,
+      "sha256": "2ebfd4540ff926059d930114fa8f31fd98fe04c19b3acf7534114fb920d1722a"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-both-original-bodies-walk-four-metres-to-desk.json",
+      "bytes": 2280675,
+      "sha256": "006225d02039ab26698ab1b3bef38822a87752112f63b34e4415418ac4ee1af9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-close-this-contact-without-resetting-any-body.json",
+      "bytes": 2351439,
+      "sha256": "0f43ee58dca9ecaf697faf13f69587743663e0e2dff725d5c936d25b7d78820c"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-fresh-ability-consent.json",
+      "bytes": 2270810,
+      "sha256": "2e9311d5aa563ae2fe3557afb209906887bcd8805ac5aee7dc602708d256ae1c"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-fresh-observer-consent.json",
+      "bytes": 2261192,
+      "sha256": "e7f6a5b0d2da6c3d3bb35d68faecced737f5e78bd0e5ecd4ed0e7c56bab23eee"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-fresh-owner-consent.json",
+      "bytes": 2251626,
+      "sha256": "5bfb250dd04089eaa4bf3e163c7cf9ad58c1cdd24e17a0116ed4a26f784826a8"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-honest-actual-result-report.json",
+      "bytes": 2361443,
+      "sha256": "d2de595667b5aa7e648cec17c7a97bee10fbc8238821a25f70f5aef0c2d6e1c4"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-one-new-pending-original-label-look.json",
+      "bytes": 2300567,
+      "sha256": "c2afa061e6542993abcc6a968caf5b946430eeb3a05c87c91efe0ed6b37a2368"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-original-owner-actually-executes-the-declared-look.json",
+      "bytes": 2331512,
+      "sha256": "b024c8a4d24eff107815c6b5678265d59700b1a57a65e878a03f4ff3ab13eab4"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-delayed-observation-single-paid-short-time-theft-attempt.json",
+      "bytes": 2311887,
+      "sha256": "50267c9047be1076aafcc978b0b590f27dfa3e51dda498d9d3ffea8de6b36eac"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-exact-original551-command-living-source.json",
+      "bytes": 1944926,
+      "sha256": "c4593dbc889b0607f4589a2621fa44762a5039455a159eac4d9da439f4a97ab1"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-fixed-all-policy-before-fight.json",
+      "bytes": 3642694,
+      "sha256": "d5ad73c322ca4f25d9fae77f14daa6af66d5f9293c0e97310026bb7f521fa2da"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-independent-optional-adrian-fight.json",
+      "bytes": 3662605,
+      "sha256": "359bf93a56b78e1ee52888aebab1a1648129ccc931fe96e2de09ab2d2dfb9bdd"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-actual-ordinary-baseline-look.json",
+      "bytes": 2445182,
+      "sha256": "dd2fe6112c46df59eca13de29e32ffe0c379d9a1f48cb038bc9e049b1bdb1ee2"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-actual-original-observation.json",
+      "bytes": 2371431,
+      "sha256": "7b04e531c9adbc1490112b8660b4e9ec1252c6da19f2e1db216d437c0bcc2eea"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-actual20p1AP-fresh-preparation.json",
+      "bytes": 2394216,
+      "sha256": "c62d100c643223604a4f3949e042cca59ed0fa3360ab2db681fd6f3d3a0ba3f9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-both-original-bodies-walk-four-metres-out.json",
+      "bytes": 2497895,
+      "sha256": "6e5cc4c30c647aa8a7fcbca96095e71266da6d29b5601ad7a71d9556d29b7a9a"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-both-original-bodies-walk-four-metres-to-desk.json",
+      "bytes": 2435288,
+      "sha256": "7d7cabd19fe2e67387699bef1300bc67d8768e9966daf357894d4ca05bffd241"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-close-this-contact-without-resetting-any-body.json",
+      "bytes": 2507710,
+      "sha256": "dc1162ce6318eebe0c15d81994c7e8673302463ea5d44c94a2dd32d3e8ba5b86"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-fresh-ability-consent.json",
+      "bytes": 2425413,
+      "sha256": "8a8b2bba4cc6dc1f6b93476041cddac63736a3098b6a0d5de6662a9d907362be"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-fresh-observer-consent.json",
+      "bytes": 2415786,
+      "sha256": "979795878b0854ddf1f005fb68178807040944424dec6e8849303ef0170c8c30"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-fresh-owner-consent.json",
+      "bytes": 2406212,
+      "sha256": "d1797dd39d38c168e1c77c4c6a64d524670912278252e667b42ff573e9512ef9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-honest-actual-result-report.json",
+      "bytes": 2517532,
+      "sha256": "21eaf5f9263aea6fd88ee52118a23eb7a04d3bd4a93ff57c10f39e206862e32f"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-one-new-pending-original-label-look.json",
+      "bytes": 2455191,
+      "sha256": "4f75e360eaa0e3f06288bb2f99dfd5e01e4c704e9409444f028ed436f5c9bbcd"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-one-real-comparison-with-ordinary-fallback.json",
+      "bytes": 2477905,
+      "sha256": "19a7a7a8b91b9abd5eab4e1b3977cb2587295f32b8dafa99500d6f87b71a8c37"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-original-owner-actually-executes-the-declared-look.json",
+      "bytes": 2488162,
+      "sha256": "e1e34f4828128e98c18e731d663d93d5820a9242fc90b69225ea8360421ee6dc"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-released-interval-single-paid-short-time-theft-attempt.json",
+      "bytes": 2466348,
+      "sha256": "b5aac6b848d7c1ca71c7533e16fdedbeb21ba2b175f9dedda77f02da6ca53e92"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-558-action.json",
+      "bytes": 1946948,
+      "sha256": "35f90d635e36614bb01f17b0dde0fa888cc7ca678f5d2008367e523275071366"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-559-action.json",
+      "bytes": 1947332,
+      "sha256": "5f5cc734a431442a71e408b90b8ece0e944d6674c47844f6a1767aa8e01fc3cf"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-560-action.json",
+      "bytes": 1947549,
+      "sha256": "3bedabeaeb57363b2c36c5fa82d618a53fb89b9ba127597400f20f5e5b397aef"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-561-action.json",
+      "bytes": 1947991,
+      "sha256": "01171506ad1169793201fae0a77a868ea3a6226d103c032578308932c802bb30"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-562-action.json",
+      "bytes": 1948432,
+      "sha256": "d0749d723f394bb7c856a0f39f438095ce9ebbaaad0694fceba4904e261734b3"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-563-action.json",
+      "bytes": 1948652,
+      "sha256": "f4eee95b58f27ba886b2349623b0d71f6b291f89d09a7d1ed92409da6b3c654f"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-573-action.json",
+      "bytes": 2187343,
+      "sha256": "a2fdddeba19b28209c22e3b568acc824b039d3b04c1a05341aa32c671aae4a97"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-574-action.json",
+      "bytes": 2187608,
+      "sha256": "2859441a15ae96277735904ed0ffa5c76423d81aa74b01a5307d116c0a1a4b25"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-575-action.json",
+      "bytes": 2187829,
+      "sha256": "ea8175db347cc1856f33bbbad29ce36a8ab10ebce500f24153b4e23338c2be50"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-576-action.json",
+      "bytes": 2188275,
+      "sha256": "6c9aaa7c0f92bbc0887eef7d56bf75b3e4827e5a63dca15f46aee8fdf2eafe49"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-577-action.json",
+      "bytes": 2188716,
+      "sha256": "9b67ceffb8d86a49968b051b27b78f28ae1f7343780197522090822fad9590da"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-578-action.json",
+      "bytes": 2188937,
+      "sha256": "33d3ae3d365cf0e327d3604648877a3fe435a53a3e61ce94d0692d1d7a7dd791"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-579-action.json",
+      "bytes": 2189383,
+      "sha256": "87bf0e708694b8bb860f04ca2fee5a2250ea88b39897e8e2497b2aec121c900b"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-580-action.json",
+      "bytes": 2189824,
+      "sha256": "1a1fe4f053369c489ea86688b1910a6af637cf327c3a95d9b8510c99d09665d6"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-581-action.json",
+      "bytes": 2190045,
+      "sha256": "95196e85f8a03592589fc8a656dfb70f3d5fbdb6b7480b56e949680924e08fc2"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-582-action.json",
+      "bytes": 2190490,
+      "sha256": "aa83706cb6cff9de385cbeffd50873d889d3771ffdc44fbfa1bc570f185b7eaa"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-583-action.json",
+      "bytes": 2190931,
+      "sha256": "a4eeae7d6ae4fb79d4d97ff990e1447aacc414f688d67405a4fdaea04f22e0f5"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-584-action.json",
+      "bytes": 2191153,
+      "sha256": "d6516f283951eafd500d41aadeb55d07f047e030f23b1c3f8e3f9e89f249fe07"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-585-action.json",
+      "bytes": 2191600,
+      "sha256": "383a74723bb72303fd4078aacf3c64b0008503bb260a532e5f9e715f1a8a88f5"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-586-action.json",
+      "bytes": 2192042,
+      "sha256": "6e4bab7d430ab35f1359d95fe155cbee0f67c5f9f680fec54ef0f19e20d28693"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-587-action.json",
+      "bytes": 2192263,
+      "sha256": "5274ec835f882fea8f8de5cdf683d63ac9123c9604a79e4d2ac18e0d5a20707c"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-588-action.json",
+      "bytes": 2192709,
+      "sha256": "2302d8e26590b81a230c9b5788656d2429eb1532a112598e5549d2fd4e610099"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-589-action.json",
+      "bytes": 2193150,
+      "sha256": "e5e0b6e799589860aeb5321fa2102cf60cc38e3fa3f77b4c5db548cf8a186cb9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-594-action.json",
+      "bytes": 2231363,
+      "sha256": "21a80eccc472ae6f783874b5c637117e30bca1526e12457949917672bb9a0bf4"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-595-action.json",
+      "bytes": 2231645,
+      "sha256": "44b1d3bde1966e0b42f50261b74264c95d6f832edc90f1ea8cbb75445cf0d019"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-596-action.json",
+      "bytes": 2231868,
+      "sha256": "ebe73443587316bcb198d04f1ea5cae7c5d9fb0fc941f1e44f68e4fa63192896"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-611-action.json",
+      "bytes": 2376186,
+      "sha256": "834187e1779e4771bb8d6c041a6ba0419d572460eec7258c65dde6dd8df6336a"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-612-action.json",
+      "bytes": 2376470,
+      "sha256": "82f9a67177912d1214f04949c313def6b291460fbeba75efedcd19d7ed0f627b"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-628-action.json",
+      "bytes": 2532586,
+      "sha256": "93135910e6080994f6c76be713b54d4c26011210d74eab40792ae60aacd8ad05"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-629-action.json",
+      "bytes": 2532646,
+      "sha256": "8a43f18c70f9f35bde8a2426ecbbfa7fdf806abab9f17a956be776ecd6d42463"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-647-action.json",
+      "bytes": 2706001,
+      "sha256": "91c10b5cd0b66329ab3d6648e390a57185ec81c5f8b494f0459985a71cff9cf8"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-648-action.json",
+      "bytes": 2706288,
+      "sha256": "57c0d9a5dca7a0542be5aba33c3fd01698ed53da0b937be7cbc0f2846e7ab62d"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-649-action.json",
+      "bytes": 2706510,
+      "sha256": "b141cf1c587d84be4e84f05c5703c77c9f1e0bd7594af35296dba26a0bcb85e1"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-step-650-action.json",
+      "bytes": 2706957,
+      "sha256": "5c5c9c356f41c252f8d62eea490d1368117992ae4bba7ee0f0e88388b8d52255"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-three-honest-actual-reports-reflected.json",
+      "bytes": 2701001,
+      "sha256": "99b6d18957faa59490ad2fb1a2e237212a2f9865894192930df644b70d01e7ac"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-time-worm-potion-1-actual-labour-2.json",
+      "bytes": 2156111,
+      "sha256": "7e60f1d7fb9d542e95c8e9dfdd0a2d31f97aaa764c40bbba4a07eac9cd0e7e65"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-time-worm-potion-1-actual-labour-3.json",
+      "bytes": 2164922,
+      "sha256": "98b1e907afee55b6d326febf19f44dbbade9553a403361090fb9256f58bd3640"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-time-worm-potion-1-actual-labour-4.json",
+      "bytes": 2173917,
+      "sha256": "e697eb0a683adc838b20e55a7f0242cf312b9d138464584a23cf152c3ea8d556"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-time-worm-potion-1-actual-labour-5.json",
+      "bytes": 2182860,
+      "sha256": "1b66aa06e96594e0fc3e296e53d43c19ab9a3738907d0961846790b168446917"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-time-worm-potion-1-actual-labour.json",
+      "bytes": 2147171,
+      "sha256": "6c86b09edccff87f48df9873aa44a2d3a8f2e96e86ba1ea56280fccbbb1b79d4"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-actual-ordinary-baseline-look.json",
+      "bytes": 2591386,
+      "sha256": "1e706a73d5bdbb91ba04c55133e33d7f3f2dacc67929234f7688a83ccb0c2bbc"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-actual-original-observation.json",
+      "bytes": 2527638,
+      "sha256": "66ab8581993170842a31e7d5a77c15a1486c30874fb2c941c34f5c0f1369e1d7"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-actual20p1AP-fresh-preparation.json",
+      "bytes": 2540250,
+      "sha256": "397764e323c938148c59ef56ec1c43134c5e1a9d369a108a1031934d3a6e3e27"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-both-original-bodies-walk-four-metres-out.json",
+      "bytes": 2671129,
+      "sha256": "9d8985fe03dbc023d5c363341bd8730962768b1f2871a5f70ed4c6f3199f2ac9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-both-original-bodies-walk-four-metres-to-desk.json",
+      "bytes": 2581494,
+      "sha256": "e373fb52adb17112ae0c973e14f742c9d390abab3630aa686d6bd99234a9dc05"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-close-this-contact-without-resetting-any-body.json",
+      "bytes": 2681057,
+      "sha256": "04d5f70b5b826847a90f42d70e98a36b368f279a13f0f17becbf317c31a6819d"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-fresh-ability-consent.json",
+      "bytes": 2571620,
+      "sha256": "87707f9d6d05f4e0acf6451d6dda05f4f51d4248194af5ab4c7a15b4b602bbfa"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-fresh-observer-consent.json",
+      "bytes": 2561990,
+      "sha256": "4161bd058e64a4328d9881540af7691f299c4a5621effe5e24bcdf81e583a3f0"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-fresh-owner-consent.json",
+      "bytes": 2552412,
+      "sha256": "4152f0dd65b834c8389d1fae6f66537d1b0db58f9aa8fd2d55da936db7e00bdf"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-honest-actual-result-report.json",
+      "bytes": 2691060,
+      "sha256": "7a38d80609509f82f1bcf480b53926f29fa9cf51ac7c66c72c499b22113c6062"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-one-new-pending-original-label-look.json",
+      "bytes": 2601389,
+      "sha256": "4cd690d8e80932d82eea763b8689fba789a62f3e2501342025cb93658797aa84"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-one-real-second-before-withdrawal.json",
+      "bytes": 2623215,
+      "sha256": "16342d46cfe8eae09d9a08b49b9cfdae81175f46b278283547e2d0c7ddd9475e"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-original-owner-actually-executes-the-declared-look.json",
+      "bytes": 2661114,
+      "sha256": "0951b705becf6bcb7dc027ccbaefa5ca50add7121e46336ce739fed6de8aa573"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-real-one-second-wait-2.json",
+      "bytes": 2651401,
+      "sha256": "93ace66ca5201ef561a630bc143c89fec492425ded84c054f61ab801f3e3881f"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-real-one-second-wait.json",
+      "bytes": 2641887,
+      "sha256": "40da5e388d60a7cef06853e04cd03bd855577c36e8022284dd4d376a4c0471d3"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-single-paid-short-time-theft-attempt.json",
+      "bytes": 2612679,
+      "sha256": "7768c31c5ef8e9e7e953ece6a4c61bc2853093e02820166918f123d047d4c13b"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/boundary-withdrawn-delay-withdraw-ability-without-refunding-target-time.json",
+      "bytes": 2632444,
+      "sha256": "a0eaceda2d397a123c29237083e54ffc8d888871043008a7cb5f98b866833a67"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/capture-integrity.json",
+      "bytes": 16648,
+      "sha256": "f0249b2b08afe900d00b58c2f69669fe37c039976dcf1c27eff105f4f13b4604"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/commands.jsonl",
+      "bytes": 889820,
+      "sha256": "b2e3b94872480770b4e597fe32ba60bebee64907ce7c39f9ec6c33592ad01265"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/natural.json",
+      "bytes": 5549566,
+      "sha256": "e9920991623fdd3f1b8ecf4e5c8049720f362145462703d6b804afa9dfd390cf"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-boundaries.index.json",
+      "bytes": 8337,
+      "sha256": "9d3fbcced1628b8fa2385e3ab0e153561876dccf48f0f09821219886516ba5e9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-boundaries.steps.json",
+      "bytes": 3885,
+      "sha256": "f180860171edd23c0d2487a39c7b512d7eec6af96344321de865c255ef3dd497"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-capture-integrity.json",
+      "bytes": 11760,
+      "sha256": "769227e0201492e9a8c7d506b2ed7ebb6c9e6b510b7399261a481d16ff55f0dc"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-commands.jsonl",
+      "bytes": 863715,
+      "sha256": "a4ecd4a20a563bf1532f715b0ca016dce36784ac97d7b08c81ff7b380479829b"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-natural.json",
+      "bytes": 4266633,
+      "sha256": "125dd0290a1c11925ea52f4feb9bc9ba72747d8d693a93fb3f468796657916cd"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-public.jsonl",
+      "bytes": 475866,
+      "sha256": "92adbee9012a85a970ecc8ff0fdf0aac40aa8f99da8f6db5e68c5c582cb7832d"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-source-prefix.json",
+      "bytes": 1430886,
+      "sha256": "ffa1ae2c0414627517f48ba623ae968f1b6dd89a1ab22ba792133f6a7200ee80"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-summary.json",
+      "bytes": 26076,
+      "sha256": "c76859730af73a458ca3134ac6d575998da2488f04c095f301bd036b12da9f8d"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/prior-blocker-transitions.json",
+      "bytes": 14708,
+      "sha256": "5eedc6458155a8150dad35d7abb19eb0b07dcdbddb4e12783926f67dc596c69b"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/public.jsonl",
+      "bytes": 562827,
+      "sha256": "49ba8b10acafc3d74ca8f462ac3672eda335bf0d9f282bf997d9220dbbb72385"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/resume-verification.json",
+      "bytes": 2174,
+      "sha256": "3ffa558977980e343e10d38cb1a7307692dd4fecea86683b9230fbe01658c8fc"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/snapshot-afterOriginalCare.json",
+      "bytes": 973291,
+      "sha256": "975d35886fb398d9717ee393774792730ee2c89cf8d6d77cdbfc8ab92252b6af"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/snapshot-combatStart.json",
+      "bytes": 1838251,
+      "sha256": "b1f31eee1f21263c6c4ac538360ae8d653b246dd70bf7012cae7a326cc277438"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/snapshot-combatTerminal.json",
+      "bytes": 1956358,
+      "sha256": "d2c4d3794e327babdaf78f61a08b93f519887eb4d010c7db0182d3913341eac9"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/snapshot-departure.json",
+      "bytes": 972502,
+      "sha256": "c6f1aa074a01229bb1041e07e792c5e7839e449df8cd6a26ed6e1e569db54380"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/snapshot-guidance.json",
+      "bytes": 1057009,
+      "sha256": "446495c8e49fc663f067da50b4889e996dd394750cdea292def5978ced2de54e"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/snapshot-practiced.json",
+      "bytes": 1352866,
+      "sha256": "fbefa12fc1445a5460db80b32510a68c5bed8759685d5dcd1308bded3a909921"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/snapshot-promoted.json",
+      "bytes": 1111300,
+      "sha256": "220453530523cad2e17dd66205be0280c29beb02bd7515a92fb2c787ce674a91"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 1353600,
+      "sha256": "3a395bbfd66cfcd90a50e71aa090051985aed5d9a4258daabd0097e123f769cc"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/source-prefix.json",
+      "bytes": 1430886,
+      "sha256": "ffa1ae2c0414627517f48ba623ae968f1b6dd89a1ab22ba792133f6a7200ee80"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/summary.json",
+      "bytes": 30532,
+      "sha256": "b69b28ace8cf3bd2d52dcd71480adce53b12cc07c0bd36063d5af719e7c157a3"
+    },
+    {
+      "path": "tests/fixtures/time-worm-v01970/transitions.json",
+      "bytes": 17513,
+      "sha256": "921fd5d0b30b130a2fb3ab5d433159d559210b85b44649fe9e2b4d12a8c64afa"
     },
     {
       "path": "tests/fixtures/town-v0100/natural.json",

@@ -35,7 +35,7 @@ export function createFateTrojanState(): FateTrojanState {
 /** Current playability and historical membership are deliberately separate. */
 export const isFateTrojan = (s: SliceState) => s.progression.pathwayId === 'error' && s.progression.sequence === 2;
 export const isFateTrojanAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'error' && s.progression.sequence === 3;
-export const hasFateTrojanHistory = (s: SliceState) => isFateTrojan(s) && s.fateTrojan.promotionWeek !== null;
+export const hasFateTrojanHistory = (s: SliceState) => (isFateTrojan(s) || s.progression.pathwayId === 'error' && s.progression.sequence === 1) && s.fateTrojan.promotionWeek !== null;
 /** Each predecessor remains a real consumed original bottle at a non-future week. */
 function sourceHistory(s: SliceState): boolean {
   if (!s.marauder.discovered || !s.marauder.guidanceKnown) return false;
@@ -52,7 +52,7 @@ function sourceHistory(s: SliceState): boolean {
     s.fireThief.cryptologistActingAtPromotion === 100 && s.dreamStealer.fireThiefActingAtPromotion === 100 &&
     s.parasite.dreamStealerActingAtPromotion === 100 && s.deceitMentor.parasiteActingAtPromotion === 100;
 }
-const knownChannel = (s: SliceState) => (isFateTrojanAcquisitionStage(s) || isFateTrojan(s)) && sourceHistory(s);
+const knownChannel = (s: SliceState) => (isFateTrojanAcquisitionStage(s) || isFateTrojan(s) || s.progression.pathwayId === 'error' && s.progression.sequence === 1 && hasFateTrojanHistory(s) && s.timeWorm.promotionWeek !== null) && sourceHistory(s);
 export function hasFateTrojanOldPractice(s: SliceState): boolean {
   return hasDeceitMentorOldPractice(s) || hasDeceitMentorRitualLock(s) || hasDeceitMentorLifeLock(s) || hasDeceitMentorEncounterLock(s) ||
     hasDreamStealerOpenPractice(s) || hasParasiteLifeLock(s) || hasParasiteEncounterLock(s) ||
@@ -66,7 +66,7 @@ export function hasFateTrojanOldPractice(s: SliceState): boolean {
 }
 export const hasFateTrojanOldSceneLock = hasFateTrojanOldPractice;
 export const hasFateTrojanRitualLock = (s: SliceState): boolean => s.fateTrojan.preparedWeek !== null;
-export const hasFateTrojanLock = (s: SliceState): boolean => hasFateTrojanRitualLock(s) || hasFateTrojanLifeLock(s) || hasFateTrojanEncounterLock(s);
+export const hasFateTrojanLock = (s: SliceState): boolean => s.progression.pathwayId === 'error' && [3, 2].includes(s.progression.sequence ?? 0) && (hasFateTrojanRitualLock(s) || hasFateTrojanLifeLock(s) || hasFateTrojanEncounterLock(s));
 const bottleNumber = (b: Pick<FateTrojanBottle, 'id'>) => Number(b.id.slice('fate-trojan-potion-'.length));
 const potionPrice = (b: FateTrojanBottle) => FATE_TROJAN_PRICES.potion - (b.labourSteps === FATE_TROJAN_LABOUR_STEPS ? FATE_TROJAN_PRICES.labourCredit : 0);
 const deceitMentorWeeks = (s: SliceState) => Math.max(0, (s.fateTrojan.promotionWeek ?? s.week) - (s.deceitMentor.promotionWeek ?? s.week));
@@ -194,7 +194,7 @@ export function applyFateTrojanCommand(s: SliceState, command: FateTrojanCommand
 }
 
 export function projectFateTrojan(s: SliceState): FateTrojanProjection {
-  const state = s.fateTrojan, available = knownChannel(s), promoted = isFateTrojan(s), actions: FateTrojanAction[] = [];
+  const state = s.fateTrojan, available = knownChannel(s), promoted = hasFateTrojanHistory(s), actions: FateTrojanAction[] = [];
   const add = (id: string, label: string, cost: string, command: FateTrojanAcquisitionCommand) => { const reason = fateTrojanAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-fate-trojan-guidance', '听取命运木马成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -217,11 +217,11 @@ export function projectFateTrojan(s: SliceState): FateTrojanProjection {
     title: '命运木马·错误序列2', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${FATE_TROJAN_FORMULA_STATUS}${FATE_TROJAN_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6400便士或对应五项真实劳动后900便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...fateTrojanLifeActions(s), ...fateTrojanEncounterActions(s)] : [],
+    actions: available && s.progression.sequence !== 1 ? [...actions, ...fateTrojanLifeActions(s), ...fateTrojanEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 命运木马成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为欺瞒导师' : '排异，仍为欺瞒导师'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? FATE_TROJAN_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? FATE_TROJAN_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `欺瞒导师消化${state.deceitMentorActingAtPromotion}/100留存；命运木马扮演${s.progression.acting}/100。三项报告各25、反思25；普通完成同样可消化，掌握只计实际能力应用。` : available ? `欺瞒导师需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${deceitMentorWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完欺瞒导师之路。',
+    acting: promoted ? (s.progression.sequence === 1 ? s.timeWorm.fateTrojanActingAtPromotion ?? 100 : s.progression.acting) : 0, digestion: promoted && s.progression.sequence === 1 ? '命运木马消化与原登记室记录已经保留，旧操作结束，当前实践请前往时之虫登记室。' : promoted ? `欺瞒导师消化${state.deceitMentorActingAtPromotion}/100留存；命运木马扮演${s.progression.acting}/100。三项报告各25、反思25；普通完成同样可消化，掌握只计实际能力应用。` : available ? `欺瞒导师需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${deceitMentorWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完欺瞒导师之路。',
     pollution: s.seer.pollution, risk: available ? FATE_TROJAN_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,

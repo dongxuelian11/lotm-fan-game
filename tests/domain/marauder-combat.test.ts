@@ -7,6 +7,7 @@ import { MARAUDER_COUNT_WHEEL, currentMarauderCombatSource, drawMarauderAbility,
   marauderAbilityWheel, marauderActionCount, resolveMarauderCombatAbility,
   type MarauderCombatSource, type MarauderMoveId,
 } from '../../src/domain/marauder/combat.js';
+import { TIME_WORM_COUNT_WHEEL, timeWormAbilityWheel } from '../../src/domain/time-worm/combat.js';
 import * as marauderCombat from '../../src/domain/marauder/combat.js';
 import { APPRENTICE_COUNT_WHEEL, apprenticeAbilityWheel } from '../../src/domain/apprentice/combat.js';
 import { CORPSECOLLECTOR_COUNT_WHEEL, corpsecollectorAbilityWheel } from '../../src/domain/corpsecollector/combat.js';
@@ -122,11 +123,14 @@ describe('Marauder S9 Error V1 profile and public routing', () => {
 
   it('keeps unimplemented Error levels ordinary and retains neighboring profiles', () => {
     const state = fixture();
-    for (const [pathwayId, sequence] of [[null, null],  ['error', 1], ['error', 0], ['moon', 9], ['paragon', 9]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['error', 0], ['moon', 9], ['paragon', 9]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isMarauder(state)).toBe(false); expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
     }
+    state.progression.pathwayId = 'error'; state.progression.sequence = 1;
+    expect(isMarauder(state)).toBe(false); expect(playerCountWheel(state)).toEqual(TIME_WORM_COUNT_WHEEL);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(timeWormAbilityWheel(state, 'CONTROL'));
     state.progression.pathwayId = 'door'; state.progression.sequence = 9;
     expect(playerCountWheel(state)).toEqual(APPRENTICE_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'DEFEND')).toEqual(apprenticeAbilityWheel('DEFEND'));
