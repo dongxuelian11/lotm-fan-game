@@ -255,8 +255,11 @@ export function bizarroActions(s: SliceState): BizarroSorcererAction[] {
   if (!l.reflected) add({ type: 'REFLECT' }, '反思变化、往返与不可逆代价', '1行动 · 三报告完成后扮演25');
   return out;
 }
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
 export function bizarroCases(s: SliceState): BizarroCaseProjection[] {
-  if (!active(s)&&!(s.progression.pathwayId==='diviner'&&(s.progression.sequence===3||s.progression.sequence===2))) return [];
+  if (!active(s)&&!(s.progression.pathwayId==='diviner'&&(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s))))) return [];
   return CASES.map(p => { const r = s.bizarroSorcerer.life.cases[p.id]; return { id: p.id, title: p.title, story: p.story,
     observations: r.status === 'AVAILABLE' ? [] : [...p.facts], preparation: r.status === 'PREPARED' ? r.method === 'ABILITY' ? p.ability : p.ordinary : null,
     result: r.result !== 'NONE' ? r.contactOpen ? '实际结果已发生，但原现场仍须真实返回、收物并结束。' : `${p.result}${r.result === 'ORDINARY' ? '普通比较，无能力掌握。' : '实际能力结果。'}` : r.attemptWeek !== null ? '尚无成功结果；实际费用、原位置和失败保留。' : null,
@@ -327,5 +330,5 @@ export function validateBizarroLife(s: SliceState): boolean {
   if (!integer(m.illusionUses, 0, 1) || m.illusionUses > w.split || m.spirituality !== 6 - m.illusionUses * 3 || l.cases['one-way-gift'].method === 'ABILITY' && l.cases['one-way-gift'].outwardAttempted && m.illusionUses !== 1) return false;
   if (s.seer.completedSources.filter(v => v === 'bizarro-reflection').length !== (l.reflected ? 1 : 0) || l.reflected && resolved !== 3) return false;
   if (s.bizarroSorcerer.promotionWeek === null && stableStringify(l) !== stableStringify(createBizarroLifeState())) return false;
-  return s.progression.pathwayId==='diviner'&&(s.progression.sequence===3||s.progression.sequence===2) ? s.ancientScholar.bizarroActingAtPromotion===resolved*25+(l.reflected?25:0) : !active(s) || s.progression.acting === resolved * 25 + (l.reflected ? 25 : 0);
+  return s.progression.pathwayId==='diviner'&&(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s))) ? s.ancientScholar.bizarroActingAtPromotion===resolved*25+(l.reflected?25:0) : !active(s) || s.progression.acting === resolved * 25 + (l.reflected ? 25 : 0);
 }

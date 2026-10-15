@@ -80,6 +80,9 @@ const shape = (v: Record<string, unknown>, keys: readonly string[]) => Object.ke
 const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
 const success = (v: PublicResolutionTier | null) => v === 'SUCCESS' || v === 'GREAT_SUCCESS';
 const ready = (s: SliceState) => s.progression.pathwayId === 'diviner' && s.progression.sequence === 2 && s.miracleWorker.promotionWeek !== null;
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
 const freshCase = (): MiracleWorkerCaseState => ({ status: 'AVAILABLE', observedWeek: null, startedWeek: null, closes: 0, attempted: false, outcome: null, result: 'NONE' });
 export function createMiracleWorkerLifeState(): MiracleWorkerLifeState {
   return { cases: { 'small-repairs': freshCase(), 'limited-odds': freshCase(), 'familiar-court': freshCase() }, activeCase: null, reflected: false, elapsedSeconds: 0,
@@ -261,7 +264,7 @@ export function miracleWorkerLifeActions(s: SliceState): MiracleWorkerAction[] {
   return out;
 }
 export function projectMiracleWorkerLife(s: SliceState): MiracleWorkerLifeProjection {
-  if (!ready(s)) return { insideCase: false, environment: '', cases: [], practice: null };
+  if (!ready(s) && !hasAttendantHistory(s)) return { insideCase: false, environment: '', cases: [], practice: null };
   const l = s.miracleWorker.life;
   return { insideCase: hasMiracleWorkerLifeLock(s), environment: MIRACLE_WORKER_LIFE_ENVIRONMENT,
     cases: CASES.map(c => { const r = l.cases[c.id]; return { id: c.id, title: c.title, story: c.story, observations: r.status === 'AVAILABLE' ? [] : [...c.facts], preparation: null, status: r.status, closes: r.closes,
@@ -414,6 +417,7 @@ export function validateMiracleWorkerLife(s: SliceState): boolean {
         l.spent.mind !== (repair.attempted ? 2 : 0) + (changedOdds ? 1 : 0) + (court.attempted ? 2 : 0)) return false;
     if (s.seer.completedSources.filter(x => x === 'miracle-worker-reflection').length !== (l.reflected ? 1 : 0) || l.reflected && resolved !== 3) return false;
     if (s.miracleWorker.promotionWeek === null && stableStringify(l) !== stableStringify(initial)) return false;
-    return !ready(s) || s.progression.acting === resolved * 25 + (l.reflected ? 25 : 0);
+    const acting = hasAttendantHistory(s) ? s.attendantMysteries.miracleWorkerActingAtPromotion : s.progression.acting;
+    return (!ready(s) && !hasAttendantHistory(s)) || acting === resolved * 25 + (l.reflected ? 25 : 0);
   } catch { return false; }
 }

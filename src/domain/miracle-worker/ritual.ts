@@ -3,6 +3,7 @@ import type {SliceState} from '../slice/types.js';
 import type {SeerContext} from '../seer/index.js';
 import {addGameDays,isValidGameDate,formatGameDate} from '../game-calendar.js';
 import {stableStringify} from '../canonical.js';
+import { receptionEconomySnapshot, resolveReceptionEconomy, type ReceptionEconomyCommand } from '../reception-economy.js';
 import type {MiracleWorkerAction} from './types.js';
 export type MiracleWorkerPlace='RECEPTION'|'GATE_OUT'|'GATE_IN'|'COURTYARD'|'ARCHIVE';
 export type MiracleWorkerRitualCommand=
@@ -131,9 +132,13 @@ function exchange(q:MiracleWorkerSource,n:number,now:number){
 const EXCHANGE_TEXT=['保管员当面把同一现住原册交给瑟薇，门房把原闸印交给诺安。','诺安由原记录室、院落、门内走76米到外端，携同一原印；现生本人出现于当代。','瑟薇携原册与本季原布样走同一76米到当代台面；不是投影。','当代接待员核原印原册、接过原布样；把已买原灯与刚写的唯一当日回执交给诺安。','诺安携同一原灯/原回执和原印走12米返内门，亲手给现生乔林与门房。','瑟薇携同一现住原册走76米回原记录室归还保管员；不把原册消耗成魔药。','内门乔林沿12米走出，当面确认原灯已装入门房、回执留内侧；两侧实际往返与持续通道共同成立。'];
 export function applyMiracleWorkerRitual(s:SliceState,c:MiracleWorkerRitualCommand,ctx:SeerContext):void{
  const reason=blockMiracleWorkerRitual(s,c);if(reason)throw Error(reason);const r=s.miracleWorker.ritual,q=('sourceId'in c?r.sources.find(x=>x.id===c.sourceId):currentMiracleWorkerSource(s))!;
- if(c.type==='WORK'){if(s.actionsRemaining>0)s.actionsRemaining--;else r.work.emergencyUsed=true;s.cash+=24;r.work.income+=24;r.work.works++;r.work.week=s.week;ctx.note('当代实际劳动','花1行动完成原机构普通整理，得24便士G；不调用三百年前工资。');return;}
- if(c.type==='REST'){s.actionsRemaining--;s.cash-=8;r.work.expenses+=8;r.work.rests++;s.health=Math.min(100,s.health+5);s.mind=Math.min(100,s.mind+8);s.spirituality=Math.min(120,s.spirituality+10);s.seer.pollution=Math.max(0,s.seer.pollution-10);for(const injury of s.injuries)if(injury.treatedRevision===null)injury.treatedRevision=s.revision+1;s.injuryRisk=0;ctx.note('当代接待处实际处置休养','沿用本机构后世G服务：1行动、8便士，健康+5、精神+8、灵性+10、排异−10；普通处置原伤并重置风险，原受伤历史保留。');return;}
- if(c.type==='NEXT_WEEK'){s.cash-=24;r.work.expenses+=24;r.work.weeks++;s.week++;s.date=addGameDays(s.date,7);s.actionsRemaining=4;r.work.emergencyUsed=false;r.work.week=s.week;ctx.note('后世实际经过七天','扣24便士生活费、下一周4行动；居民仍是当代原人，旧时代不重开。');return;}
+ if(['WORK','REST','NEXT_WEEK'].includes(c.type)){
+  const {after,workAfter}=resolveReceptionEconomy(receptionEconomySnapshot(s),r.work,c.type as ReceptionEconomyCommand);
+  s.actionsRemaining=after.actions;s.cash=after.cash;s.week=after.week;s.date=after.date;s.health=after.health;s.mind=after.mind;s.spirituality=after.spirituality;s.seer.pollution=after.pollution;s.injuries=after.injuries;s.injuryRisk=after.injuryRisk;r.work=workAfter;
+  if(c.type==='WORK')ctx.note('当代实际劳动','花1行动完成原机构普通整理，得24便士G；不调用三百年前工资。');
+  else if(c.type==='REST')ctx.note('当代接待处实际处置休养','沿用本机构后世G服务：1行动、8便士，健康+5、精神+8、灵性+10、排异−10；普通处置原伤并重置风险，原受伤历史保留。');
+  else ctx.note('后世实际经过七天','扣24便士生活费、下一周4行动；居民仍是当代原人，旧时代不重开。');return;
+ }
  if(c.type==='REVIEW_RETURN'){r.reviewed=true;ctx.note('核对让遗落历史回到当代','固定G隔绝空间曾真正脱离外界现实，内有代际生死；回归不是发文章。真实联系一旦建立不可逆，每原来源仅开一次绑定原瓶600秒G窗口。');return;}
  if(c.type==='REQUEST_NEW_LEAD'){const n=r.sources.length+1;s.actionsRemaining--;s.cash-=48;r.leads.push({id:`MW2-LEAD-REQUEST-${n}`,sourceId:`MW2-LEAD-${n}`,requestedWeek:s.week,confirmedWeek:null,paidPennies:48});ctx.note('付费调查另一处独立遗落线索',`花1行动48便士查外部原产权/失联目录；线索MW2-LEAD-${n}尚未变成已确认聚落，须下一真实周再次实地核验。已回归原三处、旧药败与居民不改。`);return;}
  if(c.type==='VERIFY_NEW_LEAD'){const lead=r.leads.find(x=>x.confirmedWeek===null)!;s.actionsRemaining--;s.cash-=48;lead.confirmedWeek=s.week;lead.paidPennies+=48;const next=freshSource(sourceDef(r.sources.length));r.sources.push(next);ctx.note('隔周实核新独立旧址与原封材料渠道',`${next.id} ${sourceDef(r.sources.length-1).origin} 本次另付1行动48便士；只确认独立来源和供应方同号原批，尚未接触内部原人、购买材料、调药或完成回归。新来源仍须逐步现场原流程。`);return;}

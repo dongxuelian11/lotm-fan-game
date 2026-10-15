@@ -1,3 +1,4 @@
+import { ATTENDANT_MYSTERIES_ABILITY_IDS } from '../attendant-mysteries/types.js';
 import {MIRACLE_WORKER_ABILITY_IDS} from '../miracle-worker/content.js';
 import {ANCIENT_SCHOLAR_ABILITY_IDS} from '../ancient-scholar/types.js';
 import { BIZARRO_SORCERER_ABILITY_IDS } from '../bizarro-sorcerer/types.js';
@@ -185,10 +186,16 @@ export function applyMagicianCommand(s: SliceState, command: MagicianAcquisition
   }
 }
 
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
+const historicallyPromoted = (s: SliceState) => promoted(s) || hasAttendantHistory(s);
+const historicallyKnownChannel = (s: SliceState) => s.seer.discovered && s.clown.formulaKnown && (isClown(s) || historicallyPromoted(s));
 export function projectMagician(s: SliceState): MagicianProjection {
   const actions: MagicianAction[] = [];
-  const available = knownChannel(s), isPromoted = promoted(s);
+  const available = historicallyKnownChannel(s), isPromoted = historicallyPromoted(s);
   const add = (id: string, label: string, cost: string, command: MagicianAcquisitionCommand) => {
+    if (hasAttendantHistory(s)) return;
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -228,8 +235,8 @@ export function projectMagician(s: SliceState): MagicianProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? MAGICIAN_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.faceless.magicianActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'魔术师魔药已消化，原材料、原瓶与实践记录保留。':isPromoted ? `小丑消化成果${s.magician.clownActingAtPromotion}/100已保留；魔术师扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))))?s.faceless.magicianActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))))?'魔术师魔药已消化，原材料、原瓶与实践记录保留。':isPromoted ? `小丑消化成果${s.magician.clownActingAtPromotion}/100已保留；魔术师扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成小丑消化（${s.progression.acting}/100），并在小丑晋升后度过8整周（${clownWeeks(s)}/8）。配方与材料可以提前准备。` : '先走完小丑之路。',
     pollution: s.seer.pollution,
     practices: [],
@@ -285,11 +292,11 @@ export function validateMagicianState(s: SliceState): boolean {
   if ((raw.lantern.lastSupplyWeek === null) !== (raw.lantern.deliveries === 0 && raw.lantern.oilStock === MAGICIAN_OIL_STOCK && raw.lantern.oilHeld === 0 && raw.lantern.oilSpent === 0)) return false;
   if (!record(raw.encounter) || !shape(raw.encounter, ['status', 'startHistoryIndex', 'attemptWeek']) || !['AVAILABLE', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(raw.encounter.status as string)) return false;
   if (raw.encounter.startHistoryIndex !== null && !integer(raw.encounter.startHistoryIndex, 0) || raw.encounter.attemptWeek !== null && !integer(raw.encounter.attemptWeek, firstConsumptionWeek, s.week)) return false;
-  const magician = raw as unknown as MagicianState, isPromoted = promoted(s);
-  if (magician.formulaKnown && !knownChannel(s)) return false;
+  const magician = raw as unknown as MagicianState, isPromoted = historicallyPromoted(s);
+  if (magician.formulaKnown && !historicallyKnownChannel(s)) return false;
   if (isPromoted) {
     if (!magician.formulaKnown || !integer(s.clown.promotionWeek, 1, s.week) || !integer(magician.promotionWeek, firstConsumptionWeek, s.week) || magician.clownActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SEER_ABILITY_IDS, ...CLOWN_ABILITY_IDS, ...MAGICIAN_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?FACELESS_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?MARIONETTIST_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?BIZARRO_SORCERER_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?ANCIENT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?MIRACLE_WORKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SEER_ABILITY_IDS, ...CLOWN_ABILITY_IDS, ...MAGICIAN_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))))?FACELESS_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))))?MARIONETTIST_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s))))?BIZARRO_SORCERER_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))?ANCIENT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||hasAttendantHistory(s))?MIRACLE_WORKER_ABILITY_IDS:[]),...(hasAttendantHistory(s)?ATTENDANT_MYSTERIES_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
     if (Object.values(magician.practiceAttempts).some(week => week < magician.promotionWeek!) || magician.encounter.attemptWeek !== null && magician.encounter.attemptWeek < magician.promotionWeek!) return false;
     if (magician.lantern.deliveries > s.week - magician.promotionWeek! || magician.lantern.lastSupplyWeek !== null && magician.lantern.lastSupplyWeek < magician.promotionWeek! + magician.lantern.deliveries) return false;
   } else {

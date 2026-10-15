@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.185.0",
+  "version": "0.186.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -231,6 +231,16 @@
       "name": "lotm_release_0.185.0_barren_matriarch_test_inputs_2_2026-10-15.tar.gz",
       "bytes": 9667919,
       "sha256": "ea46ebbdde43822ba1ef891beee5dda405a769a177269b589c188a54e63f0ddf"
+    },
+    {
+      "name": "lotm_release_0.186.0_attendant_mysteries_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17667981,
+      "sha256": "9be526192f6e04d485a512eb68bf933bd3000af5fc8e4d1a2d786d10378366c4"
+    },
+    {
+      "name": "lotm_release_0.186.0_attendant_mysteries_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 4764724,
+      "sha256": "1968209696f969572af6aa97eedacb3399f41c36901dcd789ed542b173daee48"
     }
   ],
   "fileEntries": [
@@ -743,6 +753,251 @@
       "path": "tests/fixtures/astronomer-v0980/natural.json",
       "bytes": 1769450,
       "sha256": "6735f1ecf4aec9ac1d975ba415e8dad1c8a25bcedd5dd3517bdc3ac64a939392"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/battle-summary.json",
+      "bytes": 91245,
+      "sha256": "53bbaf6effe15b1c44591c7d8b840ee80f03ab2af11df1b18d9f31dbf6c49f30"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundaries.index.json",
+      "bytes": 3877,
+      "sha256": "67c65530ffd5bf76bd2e1e954dc6ca7e5125ea1ce79f6036cccd4a8a2792091e"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-life-weeks-12.json",
+      "bytes": 8291032,
+      "sha256": "f6f44f16b479cba5586b1c362871ce91ed387cb5301b48f45c9be92cbd1eaa38"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-life-weeks-6.json",
+      "bytes": 7844005,
+      "sha256": "1d1452688ff30c8780d9a553e16053afd611172be9edd61dda9a4d0acdc37475"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-next-week.json",
+      "bytes": 12208279,
+      "sha256": "99dc88b096bb3ed8d552ca0ab7f92a58ce82c05ceeb76f6f8e04036c21677750"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-paid-guidance.json",
+      "bytes": 2415534,
+      "sha256": "df717ee3eff58fa1fd95e354aad66ffc90d12588e447ab97cd616925dd7347bb"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-rest-before-fight.json",
+      "bytes": 12217001,
+      "sha256": "cb06bc7d72691f1fb07ec944f424d6f4e0329c0d439730c3d5d9eab6828c8294"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-round-3.json",
+      "bytes": 13633425,
+      "sha256": "4bfcc857b149ec5d3bf6684fd17f61a5bb2b3edab9ede11c4bd43b8b9debe9fd"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-seven-days-after-real-exit.json",
+      "bytes": 13633497,
+      "sha256": "d79377a6956add609ecbab46b40ed81aa0f823e2e2f6200cda583091e3c20fe3"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-three-case-reflection.json",
+      "bytes": 12180095,
+      "sha256": "5590648eca8403e86268b8bde94dec58e0a1675e03139179a9e3e7c9ee5b091c"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-twenty-four-town-founded.json",
+      "bytes": 7382057,
+      "sha256": "ffee19509ce1063a2a937392e1947515f16ba5c34807fa0077d76f1037a4cd1a"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-work-1.json",
+      "bytes": 12191263,
+      "sha256": "dc3a6254481bb0e9873a37c2ba34f28064d9541b5175af3704c8f6097b586655"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-work-2.json",
+      "bytes": 12199699,
+      "sha256": "f351b36c558297ce01c8829778857b61b10879fbafdb29b43e87a6d04c3e55e1"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-workshop-bounded-door.json",
+      "bytes": 12050768,
+      "sha256": "5ec152b23b35aa97dba4f2e07f8602a63ea29a0d5f5e864d791d88e6ac8008f8"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-workshop-enclosed-realm.json",
+      "bytes": 12149170,
+      "sha256": "033cc43a425aa78cfcfb64a27beca74270edb4e24fb921ba03560c11819a73b5"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-actual-workshop-lost-threads.json",
+      "bytes": 11956902,
+      "sha256": "47fa267330bc46c042c061cfa010e74b294c2aadb0282e70a1876daca28bf9db"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-attendant-mysteries-batch-1-actual-original-bottle.json",
+      "bytes": 9518150,
+      "sha256": "3199ee114774c7ffb141d94c5df40232b6ba5159a5e447400412939fc85e74a7"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-attendant-mysteries-batch-1-original-ten-ingredients.json",
+      "bytes": 9503239,
+      "sha256": "778cf24946bceeb6764528ef4a114b4a053f46a519b1916276a35f5032ed62b0"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-attendant-mysteries-batch-1_bottle-actual-consumption-result.json",
+      "bytes": 10153634,
+      "sha256": "997912a1b2d588fd4a8d75536b3cd2f59b44827016dda26e031f69716d3543da"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-attendant-mysteries-batch-1_bottle-actual-town-preparation.json",
+      "bytes": 9843651,
+      "sha256": "9295ad291d2b10a9326f0dfb04d257e399c313480c6f6d31e9a635c18dc64e91"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-attendant-mysteries-batch-2-actual-original-bottle.json",
+      "bytes": 11102449,
+      "sha256": "a8d7f30e47211e63d5ff2776fcaa8ad83874d8b669f8494df454f67c1fcddaca"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-attendant-mysteries-batch-2-original-ten-ingredients.json",
+      "bytes": 11087541,
+      "sha256": "5deef23281f816ca0b783782476e4730fd61240cd867e7482043d48e5cc39099"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-attendant-mysteries-batch-2_bottle-actual-town-preparation.json",
+      "bytes": 11371486,
+      "sha256": "f02d47cffdbf4022fd7a938f2d03fb13aa89ff177a2b30329faa9679d5f9ffab"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-courier-neri-actual-return-journey.json",
+      "bytes": 8574684,
+      "sha256": "948805f04277a6791886d972bd1084ab562944ffd1d25134f7dd7a168798947e"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-exact-original-1038-prefix.json",
+      "bytes": 2253101,
+      "sha256": "41b039b41b40ae177f2e7ba933e74cb4359e2b0f963603c1c314361395ab0fe6"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-first-original-irreversible-conversion.json",
+      "bytes": 3311398,
+      "sha256": "541cf9982bc82b279d6ee8c65df5cd4de43495c9848f2553b1ea0aaf527ec361"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-four-original-workers-bakery.json",
+      "bytes": 4340175,
+      "sha256": "8353cf19578e6f6b70720cbd6c75612500462a047825f2843cc80bb32ff1d3d1"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-four-original-workers-clinic.json",
+      "bytes": 5821574,
+      "sha256": "f8d63243f9dfd0369e46734c07b8c78e9a234c7883b29e7667415e791ec3f534"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-four-original-workers-market.json",
+      "bytes": 7303217,
+      "sha256": "2f7db5b2210f5bad9c453315809cfa5a1c5b5693b73a4ef3f99624dd8e1fb6d5"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-four-original-workers-mill.json",
+      "bytes": 3739678,
+      "sha256": "3342b2afab6752b62fb592c971d287f5b12610c279c6a2a100445f8454d70dc8"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-four-original-workers-post.json",
+      "bytes": 6511963,
+      "sha256": "9b6ba20bb2887f8055d3341b1d81af5ad395d809d398da11f6a5df7f016923bd"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-four-original-workers-workshop.json",
+      "bytes": 4998012,
+      "sha256": "363f2541e65a52aef0f52eb83238c63cbcd85f78146d1a7bb1b1fc51b642adf6"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-genuine-corresponding-region.json",
+      "bytes": 8716110,
+      "sha256": "b41c8d3d0e5e14e4fa9c2c81e000a3ef5ae9b74d0cb10e33f0d258ea5635cbf8"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-independent-optional-fight.json",
+      "bytes": 13392297,
+      "sha256": "dafb73d4565ed92e7a611faaca14f37e4397105d7ed3eec2175e7e0aad1c49ca"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-merchant-ada-actual-return-journey.json",
+      "bytes": 8386455,
+      "sha256": "e72c0a4848c08a5930b784501facf22fc9f4a7a24553468b9333ab4cf5a62265"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-ordinary-walk-to-empty-clearing.json",
+      "bytes": 13364338,
+      "sha256": "ebf7e7fcf4761cb9a111b9cfd855df40d52e10d6de753eafc34589efb062191e"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-ordinary-work-after-real-exit.json",
+      "bytes": 13642399,
+      "sha256": "49414393096284766be3f52cf911d4d49460f54b690dc268e26195f559e9a590"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-original-cart-delivered-and-unloaded.json",
+      "bytes": 2804305,
+      "sha256": "0e9e1558993d3902f7144c21012297735759a87740ef343f4de15d6468cf623e"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-original-letter-delivered-next-week.json",
+      "bytes": 8645185,
+      "sha256": "78d56ac026ffd87910a8fcee722229387716eddee43f811f32d2894d9fd494f5"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-paid-original-remnant.json",
+      "bytes": 12788678,
+      "sha256": "a464beaed644ecaebb2b6aa8367180d07cd43fdff853230fcca7e0584e9bdb3a"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-promoted-same-original-character-and-town.json",
+      "bytes": 11683304,
+      "sha256": "c858a89848ca5d035081b498252f2f0bebd356e07dc2ad3bb6ef49410057b5db"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-same-first-round-revalidated.json",
+      "bytes": 13491188,
+      "sha256": "677e7c6362dc92aee70807830dde0ab78ea9731c07c587ee176c548ec5e5c498"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-same-original-successful-consumption-revalidated.json",
+      "bytes": 11683304,
+      "sha256": "c858a89848ca5d035081b498252f2f0bebd356e07dc2ad3bb6ef49410057b5db"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-same-second-round-revalidated.json",
+      "bytes": 13604196,
+      "sha256": "9a1963f65246c49f4bee8955f3dd8b1ccfa950ed496faf68b388aff9fd9dcd51"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-six-original-facilities-built.json",
+      "bytes": 3163289,
+      "sha256": "53cb7fea4b1b7eae4bbf5c5fb9296cc1fea55c71b82ff442bbd0ba9d28c7caed"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/boundary-weaver-iven-actual-return-journey.json",
+      "bytes": 8480658,
+      "sha256": "edf8f6838a512fe54e19a7d3077b92c7cd1892588a3e00f043185e4a9554e7b2"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/natural-battle.json",
+      "bytes": 19873527,
+      "sha256": "31e1b112e8495aece7f3bf8dc0fc63384f90ef4f0fd98aac1b14de645f334ffa"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/natural.json",
+      "bytes": 14014442,
+      "sha256": "c648c22aa6e3d1c70ecf4b975b165fc0c73f6b70be2035818651c41c66f2e8a7"
+    },
+    {
+      "path": "tests/fixtures/attendant-mysteries-v01860/summary.json",
+      "bytes": 20347,
+      "sha256": "649a0b9eb5a911378940708bb54f080355f742642071ccfe611aee230b85eb8f"
     },
     {
       "path": "tests/fixtures/audience-v080/natural.json",

@@ -109,8 +109,14 @@ export function applyAncientScholarCommand(s: SliceState, c: AncientScholarComma
   if (validateAncientScholarEncounterCommand(c)) return applyAncientScholarEncounter(s, c, ctx);
   throw new Error('古代学者命令无效。');
 }
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
+const historicallyAvailable = (s: SliceState) => available(s) || hasAttendantHistory(s) && s.bizarroSorcerer.promotionWeek !== null;
+const historicallyPromoted = (s: SliceState) => isAncientScholar(s) ||
+  s.progression.pathwayId === 'diviner' && s.progression.sequence === 2 || hasAttendantHistory(s);
 export function projectAncientScholar(s: SliceState): AncientScholarProjection {
-  const a = s.ancientScholar, discovered = available(s), promoted = a.promotionWeek !== null, actions: AncientScholarAction[] = [];
+  const a = s.ancientScholar, discovered = historicallyAvailable(s), promoted = a.promotionWeek !== null, actions: AncientScholarAction[] = [];
   const add = (id: string, label: string, cost: string, command: AncientScholarAcquisitionCommand) => { const reason = ancientScholarAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (discovered && !promoted) {
     if (!a.formulaKnown) add('as3-learn-formula', '了解古代学者核心配方、隔绝与原设施', '1行动 · 180便士 · 不冒称完整未知配方', { type: 'LEARN_FORMULA' });
@@ -130,8 +136,8 @@ export function projectAncientScholar(s: SliceState): AncientScholarProjection {
     story: `${ANCIENT_SCHOLAR_SOURCE}${ANCIENT_SCHOLAR_BOUNDARY}`, supplies: `现有${a.batches.length}批独立原材料；已调配${a.bottles.length}瓶，未用${a.bottles.filter(b => b.status === 'PREPARED').length}瓶，耗尽${a.bottles.filter(b => b.status === 'CONSUMED').length}瓶。后续实际到货${a.resupply.deliveries}批；不在300年中自动累积补给。`,
     actions: discovered ? [...actions, ...ancientScholarRitualActions(s), ...ancientScholarLifeActions(s), ...ancientScholarEncounterActions(s)] : [],
     bottles: a.formulaKnown ? a.bottles.map(b => ({ id: b.id, title: b.id, source: `${b.batchId}的六项原件实际消耗调配；第${b.brewedWeek}周。${b.visitId ? `实际在${b.visitId}消耗。` : '尚未服用。'}`, status: b.status === 'PREPARED' ? '同一原瓶未用；只有入舱登记者受保护' : `原瓶耗尽 · ${b.outcome}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
-    abilities: promoted ? ANCIENT_SCHOLAR_ABILITIES.map(b => ({ ...b, mastery: s.progression.mastery[b.id] ?? 0 })) : [], acting: promoted ? (s.progression.sequence===2?s.miracleWorker.ancientActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: promoted ? `诡法师原消化${a.bizarroActingAtPromotion}/100保留；古代学者${s.progression.acting}/100，三个真实不同实践后反思为本作G。300年没有自动送消化。` : `须先诡法师100消化（当前${s.progression.acting}/100）；可以保持序列4。`, pollution: s.seer.pollution, risk: ANCIENT_SCHOLAR_CONSUMPTION_RISK,
+    abilities: promoted ? ANCIENT_SCHOLAR_ABILITIES.map(b => ({ ...b, mastery: s.progression.mastery[b.id] ?? 0 })) : [], acting: promoted ? ((s.progression.sequence===2||hasAttendantHistory(s))?s.miracleWorker.ancientActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `诡法师原消化${a.bizarroActingAtPromotion}/100保留；古代学者${hasAttendantHistory(s)?s.miracleWorker.ancientActingAtPromotion??100:s.progression.acting}/100，三个真实不同实践后反思为本作G。300年没有自动送消化。` : `须先诡法师100消化（当前${s.progression.acting}/100）；可以保持序列4。`, pollution: s.seer.pollution, risk: ANCIENT_SCHOLAR_CONSUMPTION_RISK,
     eraClosed: hasAncientScholarEraClosure(s), locked: hasAncientScholarLock(s), insideIsolation: insideAncientScholarIsolation(s), insideCase: insideAncientScholarIsolation(s) || hasAncientScholarLifeLock(s) || hasAncientScholarEncounterLock(s), environment: ritual.summary,
     ritual, life: projectAncientScholarLife(s), encounter: projectAncientScholarEncounter(s) };
 }
@@ -139,7 +145,7 @@ export function validateAncientScholarState(s: SliceState): boolean { try { retu
 function validateState(s: SliceState): boolean {
   const a = s.ancientScholar;
   if (!record(a) || !shape(a, ['formulaKnown', 'batches', 'bottles', 'resupply', 'promotionWeek', 'bizarroActingAtPromotion', 'ritual', 'life', 'encounter']) || typeof a.formulaKnown !== 'boolean' || !record(a.resupply) || !shape(a.resupply, ['requestedWeek', 'deliveries']) || !integer(a.resupply.deliveries) || a.resupply.requestedWeek !== null && !integer(a.resupply.requestedWeek, 1, s.week)) return false;
-  if (a.formulaKnown && !available(s) || !Array.isArray(a.batches) || a.batches.length !== 3 * (a.resupply.deliveries + 1) || !Array.isArray(a.bottles) || new Set(a.bottles.map(b => b.id)).size !== a.bottles.length) return false;
+  if (a.formulaKnown && !historicallyAvailable(s) || !Array.isArray(a.batches) || a.batches.length !== 3 * (a.resupply.deliveries + 1) || !Array.isArray(a.bottles) || new Set(a.bottles.map(b => b.id)).size !== a.bottles.length) return false;
   for (const [i, b] of a.batches.entries()) {
     const base = createBatch(i + 1, b.stockedWeek);
     if (!record(b) || !shape(b, Object.keys(base)) || b.id !== base.id || !integer(b.labourSteps, 0, 3) || ![b.stockedWeek, b.acquiredWeek, b.brewedWeek].every(w => w === null || integer(w, 1, s.week)) || !Array.isArray(b.materials) || b.materials.length !== ANCIENT_SCHOLAR_FORMULA.length) return false;
@@ -163,10 +169,10 @@ function validateState(s: SliceState): boolean {
       if (success(b.outcome)) { wins += 1; if (b.consumedWeek !== a.promotionWeek || v.result !== 'PROMOTED') return false; }
     } else return false;
   }
-  if (isAncientScholar(s) || s.progression.pathwayId === 'diviner' && s.progression.sequence === 2) {
+  if (historicallyPromoted(s)) {
     if (!a.formulaKnown || !integer(a.promotionWeek, 1, s.week) || a.bizarroActingAtPromotion !== 100 || wins !== 1 || ANCIENT_SCHOLAR_ABILITY_IDS.some(id => !integer(s.progression.mastery[id], 0, 500))) return false;
   } else if (a.promotionWeek !== null || a.bizarroActingAtPromotion !== null || wins || ANCIENT_SCHOLAR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
-  if (!a.batches.slice(0, a.resupply.deliveries * 3).every(b => failedBatch(a, b)) || a.resupply.requestedWeek !== null && (!exhausted(a) || isAncientScholar(s))) return false;
+  if (!a.batches.slice(0, a.resupply.deliveries * 3).every(b => failedBatch(a, b)) || a.resupply.requestedWeek !== null && (!exhausted(a) || isAncientScholar(s) || hasAttendantHistory(s))) return false;
   if (a.batches.some(b => b.acquiredWeek !== null) && a.ritual.records.some(r => r.verifiedDate === null)) return false;
   return validateAncientScholarRitualState(s) && validateAncientScholarLife(s) && validateAncientScholarEncounter(s);
 }

@@ -63,13 +63,19 @@ export function applyMiracleWorkerCommand(s:SliceState,c:MiracleWorkerCommand,ct
  else if(validateMiracleWorkerEncounterCommand(c))applyMiracleWorkerEncounter(s,c,ctx);
  return 'OK';
 }
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
+const historicallyPromoted = (s: SliceState) => isMiracleWorker(s) || hasAttendantHistory(s);
+const historicallyEligible = (s: SliceState) => eligible(s) || hasAttendantHistory(s) &&
+  s.ancientScholar.promotionWeek !== null && s.ancientScholar.ritual.location === 'RECEPTION';
 export function projectMiracleWorker(s:SliceState):MiracleWorkerProjection{
- const m=s.miracleWorker,discovered=eligible(s),a:MiracleWorkerAction[]=[];
+ const m=s.miracleWorker,discovered=historicallyEligible(s),a:MiracleWorkerAction[]=[];
  const add=(label:string,c:MiracleWorkerCommand,cost:string)=>{const reason=miracleWorkerCommandBlock(s,c);a.push({id:`MW2:${a.length}:${c.type}`,label,cost,command:c,enabled:reason===null,reason});};
  if(discovered&&s.progression.sequence===3){if(!m.formulaKnown)add('学习奇迹师完整方与真实历史回归',{type:'LEARN_FORMULA'},'1行动 180便士');else for(const b of m.batches){if(b.acquiredWeek===null){if(b.labourSteps<3)add(`${b.id}材料劳动${b.labourSteps}/3`,{type:'MATERIAL_WORK',batchId:b.id},'1行动');add(`取得${b.id}原材料`,{type:'BUY_MATERIALS',batchId:b.id},`${price(b)}便士`);}else if(b.brewedWeek===null)add(`调配${b.id}`,{type:'BREW',batchId:b.id},'1行动 60便士');}
  for(const b of m.bottles.filter(x=>x.status==='PREPARED'))add(`在真实回归尾声饮用${b.id}`,{type:'CONSUME',bottleId:b.id,confirmed:true},'独立确认 · 一次原瓶和药窗');}
- if(discovered)for(const x of [...miracleWorkerRitualActions(s),...miracleWorkerLifeActions(s),...miracleWorkerEncounterActions(s),...miracleWorkerRevivalActions(s)]){const reason=miracleWorkerCommandBlock(s,x.command);a.push({...x,enabled:reason===null,reason});}
- const ritual=projectMiracleWorkerRitual(s);return {title:isMiracleWorker(s)?'奇迹师 · 序列2':'奇迹师之路 · 遗落历史真正回归',discovered,promoted:isMiracleWorker(s),formulaKnown:m.formulaKnown,formula:m.formulaKnown?MIRACLE_WORKER_FORMULA.map(x=>({...x})):[],story:MIRACLE_WORKER_SOURCE,boundary:MIRACLE_WORKER_BOUNDARY,risk:MIRACLE_WORKER_RISK,acting:isMiracleWorker(s)?s.progression.acting:0,digestion:`古代学者消化${m.ancientActingAtPromotion??s.progression.acting}/100；奇迹师三种实际情境与反思100为G，不靠复活刷消化。`,supplies:`${m.batches.length}个独立原材料批次，原瓶${m.bottles.length}，耗尽${m.bottles.filter(x=>x.status==='CONSUMED').length}；每个回归来源仅一次药窗。`,actions:a,abilities:isMiracleWorker(s)?MIRACLE_WORKER_ABILITIES.map(x=>({...x,mastery:s.progression.mastery[x.id]??0})):[],insideCase:hasMiracleWorkerLock(s),environment:ritual.summary,ritual,life:projectMiracleWorkerLife(s),encounter:projectMiracleWorkerEncounter(s),revival:projectMiracleWorkerRevival(s)};
+ if(discovered&&!hasAttendantHistory(s))for(const x of [...miracleWorkerRitualActions(s),...miracleWorkerLifeActions(s),...miracleWorkerEncounterActions(s),...miracleWorkerRevivalActions(s)]){const reason=miracleWorkerCommandBlock(s,x.command);a.push({...x,enabled:reason===null,reason});}
+ const ritual=projectMiracleWorkerRitual(s);return {title:historicallyPromoted(s)?'奇迹师 · 序列2':'奇迹师之路 · 遗落历史真正回归',discovered,promoted:historicallyPromoted(s),formulaKnown:m.formulaKnown,formula:m.formulaKnown?MIRACLE_WORKER_FORMULA.map(x=>({...x})):[],story:MIRACLE_WORKER_SOURCE,boundary:MIRACLE_WORKER_BOUNDARY,risk:MIRACLE_WORKER_RISK,acting:historicallyPromoted(s)?(hasAttendantHistory(s)?s.attendantMysteries.miracleWorkerActingAtPromotion??0:s.progression.acting):0,digestion:`古代学者消化${m.ancientActingAtPromotion??s.progression.acting}/100；${hasAttendantHistory(s)?`奇迹师原消化${s.attendantMysteries.miracleWorkerActingAtPromotion??0}/100保留；`:''}奇迹师三种实际情境与反思100为G，不靠复活刷消化。`,supplies:`${m.batches.length}个独立原材料批次，原瓶${m.bottles.length}，耗尽${m.bottles.filter(x=>x.status==='CONSUMED').length}；每个回归来源仅一次药窗。`,actions:a,abilities:historicallyPromoted(s)?MIRACLE_WORKER_ABILITIES.map(x=>({...x,mastery:s.progression.mastery[x.id]??0})):[],insideCase:hasMiracleWorkerLock(s),environment:ritual.summary,ritual,life:projectMiracleWorkerLife(s),encounter:projectMiracleWorkerEncounter(s),revival:projectMiracleWorkerRevival(s)};
 }
 export function validateMiracleWorkerState(s:SliceState):boolean{try{const m=s.miracleWorker,f=createMiracleWorkerState();if(!obj(m)||!keys(m,Object.keys(f))||typeof m.formulaKnown!=='boolean'||!Array.isArray(m.batches)||m.batches.length!==m.ritual.sources.length||!Array.isArray(m.bottles))return false;
  let wins=0;for(const [i,b]of m.batches.entries()){const base=batch(i+1);if(!obj(b)||!keys(b,Object.keys(base))||b.id!==base.id||!int(b.labourSteps,0,3)||![b.acquiredWeek,b.brewedWeek].every(x=>x===null||int(x,1,s.week))||!Array.isArray(b.materials)||b.materials.length!==4)return false;
@@ -82,9 +88,9 @@ export function validateMiracleWorkerState(s:SliceState):boolean{try{const m=s.m
   else if(b.status==='CONSUMED'){if(!int(b.consumedWeek,b.brewedWeek,s.week)||!['SUCCESS','GREAT_SUCCESS','FAILURE','GREAT_FAILURE'].includes(b.outcome??'')||!m.ritual.sources.some(q=>q.restorationId===b.restorationId&&q.bottleId===b.id&&q.window==='CONSUMED'))return false;if(win(b.outcome)){wins++;if(b.consumedWeek!==m.promotionWeek)return false;}}
   else return false;
  }
- if(isMiracleWorker(s)){if(!m.formulaKnown||!int(m.promotionWeek,1,s.week)||m.ancientActingAtPromotion!==100||wins!==1||MIRACLE_WORKER_ABILITY_IDS.some(id=>!int(s.progression.mastery[id],0,500)))return false;}
+ if(historicallyPromoted(s)){if(!m.formulaKnown||!int(m.promotionWeek,1,s.week)||m.ancientActingAtPromotion!==100||wins!==1||MIRACLE_WORKER_ABILITY_IDS.some(id=>!int(s.progression.mastery[id],0,500)))return false;}
  else if(m.promotionWeek!==null||m.ancientActingAtPromotion!==null||wins||MIRACLE_WORKER_ABILITY_IDS.some(id=>Object.hasOwn(s.progression.mastery,id)))return false;
- if(m.formulaKnown&&!eligible(s))return false;
+ if(m.formulaKnown&&!historicallyEligible(s))return false;
  return validateMiracleWorkerRitualState(s)&&validateMiracleWorkerLife(s)&&validateMiracleWorkerEncounter(s)&&validateMiracleWorkerRevivalState(s);
 }catch{return false;}}
 export type * from './types.js';

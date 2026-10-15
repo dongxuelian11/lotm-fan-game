@@ -1,7 +1,7 @@
 import type {SeerPracticeCommand,SeerPracticeState,SeerPracticeProjection} from './practice.js';
 export const SEER_ABILITY_IDS=['diviner.s9.spiritual-sight','diviner.s9.divination','diviner.s9.spiritual-intuition','diviner.s9.mysticism-memory'] as const;
 export type SeerAbilityId=typeof SEER_ABILITY_IDS[number];
-export interface ProgressionState {pathwayId:null|'diviner'|'hunter'|'audience'|'paragon'|'moon'|'darkness'|'white-tower'|'tyrant'|'sun'|'death'|'door'|'error'|'warrior'|'demoness'|'hermit'|'hanged-man'|'abyss'|'chained'|'wheel'|'black-emperor'|'justiciar'|'mother';sequence:null|9|8|7|6|5|4|3|2;mastery:Record<string,number>;acting:number;promotionWeek:number|null;}
+export interface ProgressionState {pathwayId:null|'diviner'|'hunter'|'audience'|'paragon'|'moon'|'darkness'|'white-tower'|'tyrant'|'sun'|'death'|'door'|'error'|'warrior'|'demoness'|'hermit'|'hanged-man'|'abyss'|'chained'|'wheel'|'black-emperor'|'justiciar'|'mother';sequence:null|9|8|7|6|5|4|3|2|1;mastery:Record<string,number>;acting:number;promotionWeek:number|null;}
 export type SeerCommand=SeerPracticeCommand|{type:'DISCOVER'}|{type:'LEARN_FORMULA'}|{type:'REQUEST_SUPPLY'}|{type:'RECEIVE_SUPPLY'}|{type:'MATERIAL_WORK';batchId:string}|{type:'BUY_MATERIALS';batchId:string}|{type:'BREW';batchId:string}|{type:'CONSUME';bottleId:string;confirmed:true}|{type:'DIVINE';targetId:'FIRST_CASE'};
 export interface SeerMaterial {id:string;name:string;quantity:number;unit:string;source:string;holder:'SUPPLIER'|'PLAYER'|'CONSUMED';}
 export interface SeerBatch {id:string;materials:SeerMaterial[];labourSteps:number;acquired:boolean;brewed:boolean;}

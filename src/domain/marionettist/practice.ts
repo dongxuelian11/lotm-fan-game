@@ -111,8 +111,11 @@ export function marionettistActions(s: SliceState): MarionettistAction[] {
   if (s.marionettist.encounter.status === 'AVAILABLE') { add('marionettist-encounter-talk', '向多恩当面澄清', '1行动 · 本人可以拒绝', { type: 'ENCOUNTER_TALK' }); add('marionettist-encounter-fight', '承担原现场冲突', '1行动 · 真实伤势与死亡风险', { type: 'ENCOUNTER_FIGHT' }); }
   return [...out, ...marionettistPuppetActions(s)];
 }
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
 export function marionettistCases(s: SliceState): MarionettistProjection['cases'] {
-  if (!active(s) && !(s.progression.pathwayId === 'diviner' && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))) return [];
+  if (!active(s) && !(s.progression.pathwayId === 'diviner' && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))))) return [];
   return CASES.map(p => { const r = s.marionettist.cases[p.id]; return {
     id: p.id, title: p.title, story: p.story, observations: r.status === 'AVAILABLE' ? [] : [...p.facts],
     preparation: r.status === 'PREPARED' ? p.preparation : null,
@@ -158,6 +161,6 @@ export function validateMarionettistPractice(s: SliceState): boolean {
   }
   if (open > 1 || prepared > 1 || open && prepared) return false;
   if (s.seer.completedSources.filter(x => x === 'marionettist-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (s.progression.pathwayId === 'diviner' && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) return open === 0 && prepared === 0 && s.bizarroSorcerer?.marionettistActingAtPromotion === resolved * 25 + (m.reflected ? 25 : 0);
+  if (s.progression.pathwayId === 'diviner' && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s))))) return open === 0 && prepared === 0 && s.bizarroSorcerer?.marionettistActingAtPromotion === resolved * 25 + (m.reflected ? 25 : 0);
   return !active(s) || s.progression.acting === resolved * 25 + (m.reflected ? 25 : 0);
 }

@@ -1,3 +1,4 @@
+import { ATTENDANT_MYSTERIES_ABILITY_IDS } from '../attendant-mysteries/types.js';
 import {MIRACLE_WORKER_ABILITY_IDS} from '../miracle-worker/content.js';
 import {ANCIENT_SCHOLAR_ABILITY_IDS} from '../ancient-scholar/types.js';
 import { BIZARRO_SORCERER_ABILITY_IDS } from '../bizarro-sorcerer/types.js';
@@ -237,10 +238,16 @@ export function applyMarionettistAcquisition(s: SliceState, command: Marionettis
   }
 }
 
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
+const historicallyPromoted = (s: SliceState) => promoted(s) || hasAttendantHistory(s);
+const historicallyKnownChannel = (s: SliceState) => s.seer.discovered && s.faceless.formulaKnown && (isFaceless(s) || historicallyPromoted(s));
 export function projectMarionettist(s: SliceState): MarionettistProjection {
   const actions: MarionettistAction[] = [];
-  const available = knownChannel(s), isPromoted = promoted(s);
+  const available = historicallyKnownChannel(s), isPromoted = historicallyPromoted(s);
   const add = (id: string, label: string, cost: string, command: MarionettistAcquisitionCommand) => {
+    if (hasAttendantHistory(s)) return;
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -289,8 +296,8 @@ export function projectMarionettist(s: SliceState): MarionettistProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? MARIONETTIST_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) ? s.bizarroSorcerer.marionettistActingAtPromotion ?? 100 : s.progression.acting) : 0,
-    digestion: isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) ? '秘偶大师魔药已消化；原现场歌声、实践、原身体与消耗记录保留。' : isPromoted ? `无面人消化成果${s.marionettist.facelessActingAtPromotion}/100已保留；秘偶大师扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))) ? s.bizarroSorcerer.marionettistActingAtPromotion ?? 100 : s.progression.acting) : 0,
+    digestion: isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))) ? '秘偶大师魔药已消化；原现场歌声、实践、原身体与消耗记录保留。' : isPromoted ? `无面人消化成果${s.marionettist.facelessActingAtPromotion}/100已保留；秘偶大师扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成无面人消化（${s.progression.acting}/100），并在无面人晋升后度过12整周（${facelessWeeks(s)}/12）。配方与材料可以提前准备。` : '先走完无面人之路。',
     pollution: s.seer.pollution,
     cases: isPromoted ? marionettistCases(s) : [], insideCase: marionettistInside(s), environment: MARIONETTIST_ENVIRONMENT,
@@ -325,12 +332,12 @@ export function validMarionettistState(s: SliceState): boolean {
   if (!Array.isArray(raw.batches) || raw.batches.length !== MARIONETTIST_BATCH_IDS.length * (deliveries + 1) || !Array.isArray(raw.bottles) || raw.bottles.length > raw.batches.length) return false;
   if (!record(raw.encounter) || !shape(raw.encounter, ['status', 'startHistoryIndex', 'attemptWeek']) || !['AVAILABLE', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(raw.encounter.status as string)) return false;
   if (raw.encounter.startHistoryIndex !== null && !integer(raw.encounter.startHistoryIndex, 0, s.combatHistory.length) || raw.encounter.attemptWeek !== null && !integer(raw.encounter.attemptWeek, firstConsumptionWeek, s.week)) return false;
-  const f = raw as unknown as MarionettistState, isPromoted = promoted(s);
-  if (f.formulaKnown && !knownChannel(s)) return false;
+  const f = raw as unknown as MarionettistState, isPromoted = historicallyPromoted(s);
+  if (f.formulaKnown && !historicallyKnownChannel(s)) return false;
   if (isPromoted) {
     if (!f.formulaKnown || !integer(s.faceless.promotionWeek, 1, s.week) || !integer(f.promotionWeek, firstConsumptionWeek, s.week) || f.facelessActingAtPromotion !== 100) return false;
-    if ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) && (!record(s.bizarroSorcerer) || !integer(s.bizarroSorcerer.promotionWeek, f.promotionWeek, s.week) || s.bizarroSorcerer.marionettistActingAtPromotion !== 100)) return false;
-    if (!shape(s.progression.mastery, [...SEER_ABILITY_IDS, ...CLOWN_ABILITY_IDS, ...MAGICIAN_ABILITY_IDS, ...FACELESS_ABILITY_IDS, ...MARIONETTIST_ABILITY_IDS, ...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) ? BIZARRO_SORCERER_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?ANCIENT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?MIRACLE_WORKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))) && (!record(s.bizarroSorcerer) || !integer(s.bizarroSorcerer.promotionWeek, f.promotionWeek, s.week) || s.bizarroSorcerer.marionettistActingAtPromotion !== 100)) return false;
+    if (!shape(s.progression.mastery, [...SEER_ABILITY_IDS, ...CLOWN_ABILITY_IDS, ...MAGICIAN_ABILITY_IDS, ...FACELESS_ABILITY_IDS, ...MARIONETTIST_ABILITY_IDS, ...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))) ? BIZARRO_SORCERER_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))?ANCIENT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||hasAttendantHistory(s))?MIRACLE_WORKER_ABILITY_IDS:[]),...(hasAttendantHistory(s)?ATTENDANT_MYSTERIES_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
     if (f.encounter.attemptWeek !== null && f.encounter.attemptWeek < f.promotionWeek) return false;
   } else {
     if (f.promotionWeek !== null || f.facelessActingAtPromotion !== null || MARIONETTIST_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
@@ -382,7 +389,7 @@ export function validMarionettistState(s: SliceState): boolean {
     earliestRoundWeek = Math.max(earliestRoundWeek, ...bottles.map(bottle => bottle.consumedWeek ?? bottle.brewedWeek)) + 1;
   }
   if (f.resupply.requestedWeek !== null && (!f.formulaKnown || isPromoted || !exhaustedSupply(f) || f.resupply.requestedWeek < Math.max(firstConsumptionWeek + deliveries, ...f.bottles.map(bottle => bottle.consumedWeek ?? bottle.brewedWeek)))) return false;
-  if (s.progression.pathwayId === 'diviner' && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) && (f.ritual?.location !== 'CLUB' || hasMarionettistOpenCapture(s))) return false;
+  if (s.progression.pathwayId === 'diviner' && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))) && (f.ritual?.location !== 'CLUB' || hasMarionettistOpenCapture(s))) return false;
   return successfulBottles === (isPromoted ? 1 : 0) && validateMarionettistRitual(s) && validateMarionettistEncounter(s);
 }
 
@@ -398,7 +405,7 @@ function projectMarionettistRitual(s: SliceState): MarionettistProjection['ritua
   const r = s.marionettist.ritual;
   return {
     location: r.location, singing: r.singing, visits: r.visits, consumptions: r.consumptions,
-    source: knownChannel(s) ? MARIONETTIST_RITUAL_SOURCE : '',
+    source: historicallyKnownChannel(s) ? MARIONETTIST_RITUAL_SOURCE : '',
     status: r.location === 'COAST' ? r.singing ? '真实现场歌声正在进行' : '已到原水湾，当前没有歌声' : r.requestedWeek !== null ? `第${r.requestedWeek}周已请求，最早下一真实周出发` : '尚未预约下一次现场仪式',
     summary: r.location === 'COAST' ? `本次实际到访第${r.visits}次；歌者${r.singerPresent ? '真实在场' : '不在场'}、${r.singerHealthy ? '健康' : '目前不适'}、${r.singerWilling ? '本人自愿' : '未同意'}。${r.history.at(-1)?.consumedBottleId ? '本次已耗一原瓶，须返回后另约。' : '本次尚未服药。'}0行动按已付原路返程始终可用。` : '普通往返已付行程不会移动其它NPC；每次会面最多服一原瓶，结束后重新预约，不自动生成下一周歌声。',
   };
@@ -424,7 +431,7 @@ export function validateMarionettistRitual(s: SliceState): boolean {
     }
   }
   if (r.consumptions !== consumed || consumed !== m.bottles.filter(b => b.status === 'CONSUMED').length) return false;
-  if (r.requestedWeek !== null && (r.location !== 'CLUB' || promoted(s) || r.requestedWeek < lastVisitWeek)) return false;
+  if (r.requestedWeek !== null && (r.location !== 'CLUB' || historicallyPromoted(s) || r.requestedWeek < lastVisitWeek)) return false;
   if (r.location === 'CLUB') return r.visitWeek === null && !r.singerPresent && !r.singerWilling && !r.singerHealthy && !r.singing && r.history.every(h => h.returned);
   return r.visits > 0 && r.requestedWeek === null && r.visitWeek === s.week && s.world.city === 'ELSEWHERE' && s.activeEvent === null && s.combat === null && r.singerPresent && r.singerWilling && r.singerHealthy && r.history.at(-1)?.returned === false && r.history.at(-1)?.visitWeek === r.visitWeek && !Object.values(m.cases).some(c => c.contactOpen || c.status === 'PREPARED');
 }

@@ -1,3 +1,4 @@
+import { ATTENDANT_MYSTERIES_ABILITY_IDS } from '../attendant-mysteries/types.js';
 import {MIRACLE_WORKER_ABILITY_IDS} from '../miracle-worker/content.js';
 import {ANCIENT_SCHOLAR_ABILITY_IDS} from '../ancient-scholar/types.js';
 import { BIZARRO_SORCERER_ABILITY_IDS } from '../bizarro-sorcerer/types.js';
@@ -189,10 +190,16 @@ export function applyFacelessAcquisition(s: SliceState, command: FacelessAcquisi
   }
 }
 
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
+const historicallyPromoted = (s: SliceState) => promoted(s) || hasAttendantHistory(s);
+const historicallyKnownChannel = (s: SliceState) => s.seer.discovered && s.magician.formulaKnown && (isMagician(s) || historicallyPromoted(s));
 export function projectFaceless(s: SliceState): FacelessProjection {
   const actions: FacelessAction[] = [];
-  const available = knownChannel(s), isPromoted = promoted(s);
+  const available = historicallyKnownChannel(s), isPromoted = historicallyPromoted(s);
   const add = (id: string, label: string, cost: string, command: FacelessAcquisitionCommand) => {
+    if (hasAttendantHistory(s)) return;
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -232,8 +239,8 @@ export function projectFaceless(s: SliceState): FacelessProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? FACELESS_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.marionettist.facelessActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'无面人魔药已消化；原外貌、服装与本人经历保留。':isPromoted ? `魔术师消化成果${s.faceless.magicianActingAtPromotion}/100已保留；无面人扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))))?s.marionettist.facelessActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))))?'无面人魔药已消化；原外貌、服装与本人经历保留。':isPromoted ? `魔术师消化成果${s.faceless.magicianActingAtPromotion}/100已保留；无面人扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成魔术师消化（${s.progression.acting}/100），并在魔术师晋升后度过12整周（${magicianWeeks(s)}/12）。配方与材料可以提前准备。` : '先走完魔术师之路。',
     pollution: s.seer.pollution,
     cases: isPromoted ? facelessCases(s) : [], insideCase: facelessInside(s), environment: FACELESS_ENVIRONMENT,
@@ -268,11 +275,11 @@ export function validFacelessState(s: SliceState): boolean {
   if (!Array.isArray(raw.batches) || raw.batches.length !== FACELESS_BATCH_IDS.length * (deliveries + 1) || !Array.isArray(raw.bottles) || raw.bottles.length > raw.batches.length) return false;
   if (!record(raw.encounter) || !shape(raw.encounter, ['status', 'startHistoryIndex', 'attemptWeek']) || !['AVAILABLE', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(raw.encounter.status as string)) return false;
   if (raw.encounter.startHistoryIndex !== null && !integer(raw.encounter.startHistoryIndex, 0, s.combatHistory.length) || raw.encounter.attemptWeek !== null && !integer(raw.encounter.attemptWeek, firstConsumptionWeek, s.week)) return false;
-  const f = raw as unknown as FacelessState, isPromoted = promoted(s);
-  if (f.formulaKnown && !knownChannel(s)) return false;
+  const f = raw as unknown as FacelessState, isPromoted = historicallyPromoted(s);
+  if (f.formulaKnown && !historicallyKnownChannel(s)) return false;
   if (isPromoted) {
     if (!f.formulaKnown || !integer(s.magician.promotionWeek, 1, s.week) || !integer(f.promotionWeek, firstConsumptionWeek, s.week) || f.magicianActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SEER_ABILITY_IDS, ...CLOWN_ABILITY_IDS, ...MAGICIAN_ABILITY_IDS, ...FACELESS_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?MARIONETTIST_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?BIZARRO_SORCERER_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?ANCIENT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?MIRACLE_WORKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SEER_ABILITY_IDS, ...CLOWN_ABILITY_IDS, ...MAGICIAN_ABILITY_IDS, ...FACELESS_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))))?MARIONETTIST_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s))))?BIZARRO_SORCERER_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))?ANCIENT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||hasAttendantHistory(s))?MIRACLE_WORKER_ABILITY_IDS:[]),...(hasAttendantHistory(s)?ATTENDANT_MYSTERIES_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
     if (f.encounter.attemptWeek !== null && f.encounter.attemptWeek < f.promotionWeek) return false;
   } else {
     if (f.promotionWeek !== null || f.magicianActingAtPromotion !== null || FACELESS_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;

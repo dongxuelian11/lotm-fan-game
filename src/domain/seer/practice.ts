@@ -161,13 +161,13 @@ export function createSeerPractice(): SeerPracticeState {
     reflected: false,
   };
 }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'diviner' && (s.progression.sequence === 9||s.progression.sequence === 8||s.progression.sequence === 7||s.progression.sequence === 6||s.progression.sequence === 5||(s.progression.sequence === 4 || (s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'diviner' && (s.progression.sequence === 9||s.progression.sequence === 8||s.progression.sequence === 7||s.progression.sequence === 6||s.progression.sequence === 5||(s.progression.sequence === 4 || (s.progression.sequence===3||s.progression.sequence===2||s.progression.sequence===1)));
 const sourceId = (caseId: string) => `seer-practice:${caseId}`;
 const successful = (tier: PublicCheckResult['tier']) => tier === 'GREAT_SUCCESS' || tier === 'SUCCESS';
 const completedCount = (s: SliceState) => s.seer.practice.cases.filter(entry => entry.status === 'COMPLETED').length;
 
 function commonBlock(s: SliceState): string | null {
-  if (s.progression.pathwayId === 'diviner' && (s.progression.sequence === 4 || (s.progression.sequence===3||s.progression.sequence===2))) return '占卜家委托卷宗已保留，请继续诡法师阶段的实践。';
+  if (s.progression.pathwayId === 'diviner' && (s.progression.sequence === 4 || (s.progression.sequence===3||s.progression.sequence===2||s.progression.sequence===1))) return '占卜家委托卷宗已保留，请继续诡法师阶段的实践。';
   if (s.progression.sequence===8||s.progression.sequence===7||s.progression.sequence===6||s.progression.sequence===5) return '占卜家委托卷宗已保留，请继续小丑阶段的实践。';
   if (s.status !== 'ACTIVE') return '当前周目已结束。';
   if (s.activeEvent || s.combat) return '先处理当前事件或战斗。';

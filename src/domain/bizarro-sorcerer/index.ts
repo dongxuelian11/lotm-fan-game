@@ -1,3 +1,4 @@
+import { ATTENDANT_MYSTERIES_ABILITY_IDS } from '../attendant-mysteries/types.js';
 import {MIRACLE_WORKER_ABILITY_IDS} from '../miracle-worker/content.js';
 import {ANCIENT_SCHOLAR_ABILITY_IDS} from '../ancient-scholar/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -185,9 +186,15 @@ export function applyBizarroSorcererCommand(s: SliceState, command: BizarroSorce
   throw new Error('诡法师生活实践须由共享入口结算实际掌握与消化。');
 }
 
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
+const historicallyPromoted = (s: SliceState) => isBizarroSorcerer(s) || hasAttendantHistory(s);
+const historicallyKnownChannel = (s: SliceState) => s.seer.discovered && s.marionettist.formulaKnown && s.marionettist.promotionWeek !== null && (isMarionettist(s) || historicallyPromoted(s));
 export function projectBizarroSorcerer(s: SliceState): BizarroSorcererProjection {
-  const state = s.bizarroSorcerer, available = knownChannel(s), promoted = isBizarroSorcerer(s), actions: BizarroSorcererAction[] = [];
+  const state = s.bizarroSorcerer, available = historicallyKnownChannel(s), promoted = historicallyPromoted(s), actions: BizarroSorcererAction[] = [];
   const add = (id: string, label: string, cost: string, command: BizarroSorcererAcquisitionCommand) => {
+    if (hasAttendantHistory(s)) return;
     const reason = bizarroSorcererAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
   if (available && !promoted) {
@@ -216,8 +223,8 @@ export function projectBizarroSorcerer(s: SliceState): BizarroSorcererProjection
       chance, command: { type: 'CONSUME_FINALE', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: promoted ? BIZARRO_SORCERER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.ancientScholar.bizarroActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===3||s.progression.sequence===2)?'诡法师原消化100与原鼠/原虫/原仪式后果保留。':promoted ? `秘偶大师消化成果${state.marionettistActingAtPromotion}/100已保留；诡法师扮演${s.progression.acting}/100，旧掌握全部继承。` : available ? `服药前需秘偶大师扮演100（当前${s.progression.acting}/100），并在晋升后度过12整周（${marionettistWeeks(s)}/12）。备料可提前，饮药必须在新的真实谋杀谢幕。` : '先走完秘偶大师之路。',
+    acting: promoted ? ((s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))?s.ancientScholar.bizarroActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))?'诡法师原消化100与原鼠/原虫/原仪式后果保留。':promoted ? `秘偶大师消化成果${state.marionettistActingAtPromotion}/100已保留；诡法师扮演${s.progression.acting}/100，旧掌握全部继承。` : available ? `服药前需秘偶大师扮演100（当前${s.progression.acting}/100），并在晋升后度过12整周（${marionettistWeeks(s)}/12）。备料可提前，饮药必须在新的真实谋杀谢幕。` : '先走完秘偶大师之路。',
     pollution: s.seer.pollution,
     ...(available ? { story: `${BIZARRO_SORCERER_FORMULA_SOURCE}${BIZARRO_SORCERER_RITUAL_SOURCE}${BIZARRO_SORCERER_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.batches.filter(batch => !batch.acquired).length}批，已有未服原瓶${state.bottles.filter(bottle => bottle.status === 'PREPARED').length}瓶。每轮3批独立七料；两项主材原著未标用量，G供货各1份。${state.resupply.requestedWeek === null ? `后续实际到货${state.resupply.deliveries}轮。` : `第${state.resupply.requestedWeek}周申请，最早下一真实周到货。`}` : '',
@@ -248,11 +255,11 @@ function validateState(s: SliceState): boolean {
   const firstConsumptionWeek = (s.marionettist.promotionWeek ?? s.week) + BIZARRO_SORCERER_MIN_MARIONETTIST_WEEKS;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, Math.max(0, s.week - firstConsumptionWeek)) || raw.resupply.requestedWeek !== null && !integer(raw.resupply.requestedWeek, firstConsumptionWeek, s.week)) return false;
   if (!Array.isArray(raw.batches) || raw.batches.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.bottles) || raw.bottles.length > raw.batches.length) return false;
-  const state = raw as unknown as BizarroSorcererState, promoted = isBizarroSorcerer(s);
-  if (state.formulaKnown && !knownChannel(s)) return false;
+  const state = raw as unknown as BizarroSorcererState, promoted = historicallyPromoted(s);
+  if (state.formulaKnown && !historicallyKnownChannel(s)) return false;
   if (promoted) {
     if (!state.formulaKnown || !integer(s.marionettist.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.marionettistActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SEER_ABILITY_IDS, ...CLOWN_ABILITY_IDS, ...MAGICIAN_ABILITY_IDS, ...FACELESS_ABILITY_IDS, ...MARIONETTIST_ABILITY_IDS, ...BIZARRO_SORCERER_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?ANCIENT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?MIRACLE_WORKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SEER_ABILITY_IDS, ...CLOWN_ABILITY_IDS, ...MAGICIAN_ABILITY_IDS, ...FACELESS_ABILITY_IDS, ...MARIONETTIST_ABILITY_IDS, ...BIZARRO_SORCERER_ABILITY_IDS,...((s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s)))?ANCIENT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||hasAttendantHistory(s))?MIRACLE_WORKER_ABILITY_IDS:[]),...(hasAttendantHistory(s)?ATTENDANT_MYSTERIES_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.marionettistActingAtPromotion !== null || BIZARRO_SORCERER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   for (const [i, batch] of state.batches.entries()) {
     if (!record(batch) || !shape(batch, ['id', 'materials', 'labourSteps', 'acquired', 'brewed']) || batch.id !== `bizarro-sorcerer-batch-${i + 1}` || !integer(batch.labourSteps, 0, 5) || typeof batch.acquired !== 'boolean' || typeof batch.brewed !== 'boolean' || !Array.isArray(batch.materials) || batch.materials.length !== 7) return false;

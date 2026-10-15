@@ -191,10 +191,16 @@ export function applyClownCommand(s: SliceState, command: ClownAcquisitionComman
   }
 }
 
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
+const historicallyPromoted = (s: SliceState) => promoted(s) || hasAttendantHistory(s);
+const historicallyKnownChannel = (s: SliceState) => s.seer.discovered && (isSeer(s) || historicallyPromoted(s));
 export function projectClown(s: SliceState): ClownProjection {
   const actions: ClownAction[] = [];
-  const available = knownChannel(s), isPromoted = promoted(s);
+  const available = historicallyKnownChannel(s), isPromoted = historicallyPromoted(s);
   const add = (id: string, label: string, cost: string, command: ClownAcquisitionCommand) => {
+    if (hasAttendantHistory(s)) return;
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -238,8 +244,8 @@ export function projectClown(s: SliceState): ClownProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? CLOWN_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.magician.clownActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: s.progression.pathwayId==='diviner'&&(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?'小丑魔药已消化，原纸张与实践卷宗保留。':isPromoted ? `占卜家消化成果${s.clown.seerActingAtPromotion}/100已保留；小丑扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s))))))?s.magician.clownActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: s.progression.pathwayId==='diviner'&&(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||hasAttendantHistory(s))))))?'小丑魔药已消化，原纸张与实践卷宗保留。':isPromoted ? `占卜家消化成果${s.clown.seerActingAtPromotion}/100已保留；小丑扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成占卜家消化（${s.progression.acting}/100），并在占卜家晋升后度过6整周（${seerWeeks(s)}/6）。配方与材料可以提前准备。` : '先走完占卜家之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：配方指导 → 采购或三次劳动后领取材料 → 调配 → 独立确认服药。小丑材料每轮仅有3批，不自动补货；三批全已服用且失败后，可花1行动向原指导者申请下一轮，最早下一个真实周到货，材料与调配仍需原费用或劳动。供应方剩余${remaining}批，现有未服原瓶${prepared}瓶。${CLOWN_CONSUMPTION_RISK}` : '成为占卜家后，可向原有指导者了解下一序列。',
@@ -266,8 +272,8 @@ export function validateClownState(s: SliceState): boolean {
   if (!Array.isArray(raw.practices) || !raw.practices.every(id => typeof id === 'string' && id.length > 0 && id.length <= 200) || new Set(raw.practices).size !== raw.practices.length || !record(raw.trainingAttempts) || !Object.values(raw.trainingAttempts).every(week => integer(week, 1, s.week))) return false;
   if (!record(raw.rescue) || !shape(raw.rescue, ['status', 'attemptWeek', 'startHistoryIndex', 'enemyStatus', 'parcelHolder', 'parcelOwner']) || !['AVAILABLE', 'FIGHTING', 'RESCUED', 'RETREATED', 'LOST'].includes(raw.rescue.status as string) || raw.rescue.attemptWeek !== null && !integer(raw.rescue.attemptWeek, 1, s.week) || raw.rescue.startHistoryIndex !== null && !integer(raw.rescue.startHistoryIndex, 0)) return false;
   if (!['RESISTING', 'SURRENDERED', 'DEAD'].includes(raw.rescue.enemyStatus as string) || raw.rescue.parcelHolder !== 'COURIER' || raw.rescue.parcelOwner !== 'courier-elsie') return false;
-  const clown = raw as unknown as ClownState, isPromoted = promoted(s);
-  if (clown.formulaKnown && !knownChannel(s)) return false;
+  const clown = raw as unknown as ClownState, isPromoted = historicallyPromoted(s);
+  if (clown.formulaKnown && !historicallyKnownChannel(s)) return false;
   if (isPromoted) {
     if (!clown.formulaKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(clown.promotionWeek, s.progression.promotionWeek! + CLOWN_MIN_SEER_WEEKS, s.week) || clown.seerActingAtPromotion !== 100) return false;
     if (!CLOWN_ABILITY_IDS.every(id => integer(s.progression.mastery[id], 0, 500))) return false;

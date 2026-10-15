@@ -1,3 +1,5 @@
+import type { projectAttendantMysteriesCombat } from "../domain/attendant-mysteries/combat";
+import { AttendantMysteriesPanel } from "./AttendantMysteriesPanel";
 import type { BarrenMatriarchCombatProjection } from "../domain/barren-matriarch/combat";
 import type { BalancerCombatProjection } from "../domain/balancer/combat";
 import type { EntropyDukeCombatProjection } from "../domain/entropy-duke/combat";
@@ -277,6 +279,9 @@ const portraitPath = (id: string) =>
   );
 function pathwayTitle(state: SliceProjection): string {
   const { pathwayId, sequence } = state.progression;
+  if (pathwayId === "diviner" && sequence === 1) return "诡秘侍者 · 序列1";
+  if (pathwayId === "diviner" && sequence === 2) return "奇迹师 · 序列2";
+  if (pathwayId === "diviner" && sequence === 3) return "古代学者 · 序列3";
   if (pathwayId === "black-emperor" && sequence === 2) return "熵之公爵 · 序列2";
   if (pathwayId === "black-emperor" && sequence === 3) return "狂乱法师 · 序列3";
   if (pathwayId === "black-emperor" && sequence === 4) return "堕落伯爵 · 序列4";
@@ -446,8 +451,13 @@ interface DashboardGuide {
   label: string;
   destination: GuideDestination;
 }
+function attendantMysteriesPageAvailable(state: SliceProjection): boolean {
+  return !!state.attendantMysteries?.discovered && state.progression.pathwayId === "diviner" && (state.progression.sequence === 2 || state.progression.sequence === 1);
+}
 /** Navigation advice uses only facts already available to the player. Opening it spends nothing. */
 function dashboardGuide(state: SliceProjection): DashboardGuide {
+  if (state.attendantMysteries?.insideCase) return {goal:"继续当前城镇与原物事务",detail:state.attendantMysteries.nextStep,label:"返回诡秘侍者现场",destination:"GROWTH"};
+  if (attendantMysteriesPageAvailable(state) && !state.miracleWorker?.insideCase && state.status !== "REVIVAL_PENDING") return {goal:state.attendantMysteries.promoted ? "继续诡秘侍者的实际生活" : "准备诡秘侍者城镇与晋升",detail:state.attendantMysteries.nextStep,label:state.attendantMysteries.promoted ? "查看城镇与实践" : "查看城镇、材料与原瓶",destination:state.attendantMysteries.promoted ? "GROWTH" : "ADVANCE"};
   if (state.barrenMatriarch?.insideCase) return {goal:"收束当前休眠与承冲",detail:"停止当前短效，亲自交还同一原样本、匣和记录，再沿原路回到门口。",label:"返回荒芜主母现场",destination:"GROWTH"};
   if (state.balancer?.insideCase) return {goal:"收束当前辨察与抵御",detail:"停止当前短效，亲取并归还同一原包、纸和标线，再沿原路回到门口。",label:"返回平衡者现场",destination:"GROWTH"};
   if (state.entropyDuke?.insideCase) return {goal:"收束当前动作与短效",detail:"已完成的事件不能重来，等待原球落下或停止当前施作，归还原件后走回门口。",label:"返回熵之公爵现场",destination:"GROWTH"};
@@ -2041,6 +2051,18 @@ function Details({
     </div>
   );
 }
+type AttendantMysteriesCombatProjection = ReturnType<typeof projectAttendantMysteriesCombat>;
+function AttendantMysteriesActionSequence({actions}:{actions:AttendantMysteriesCombatProjection["lastActionSequence"]}) {
+  return <ol>{actions.map(action => <li key={`${action.actor}-${action.order}`}>
+    <strong>{action.actor === "PLAYER" ? "本人" : "对手"}第{action.order + 1}槽：{action.label}</strong>
+    <p>实耗{action.paidCost}灵性、{action.mindCost}精神；自身优势{displayNumber(action.selfGain)}，减势{displayNumber(action.enemyReduction)}。实际经过{action.elapsedSeconds}秒、移动{action.travelMetres}米。</p>
+    {action.fallbackReason && <p>{action.fallbackReason}</p>}
+    {action.check && <p>本次检定骰{action.check.roll}，成功率{action.check.chance}%；{action.succeeded ? "本槽判定成功" : "本槽判定失败，已付成本保留"}。</p>}
+    {action.segmentId && <p>本槽耗用原残料段：{action.segmentId}；同一原料仍已死亡，已耗段不补发。</p>}
+    {action.sourceId && <p>实际来源：{action.sourceId}；本槽支出借用储备{action.reserveSpent}，丢弃余量{action.discardedReserve}。</p>}
+    <p>本槽后本人健康{action.playerHealthAfter}、精神{action.playerMindAfter}、灵性{action.playerSpiritualityAfter}；对手灵性{action.enemySpiritualityAfter}。</p>
+  </li>)}</ol>;
+}
 function BarrenMatriarchActionSequence({actions}:{actions:BarrenMatriarchCombatProjection["lastActionSequence"]}) {
  return <ol>{actions.map(action=><li key={`${action.actor}-${action.order}`}><strong>{action.actor==='PLAYER'?'本人':'对手'}第{action.order+1}槽：{playerText(action.label)}</strong><p>实耗{action.paidCost}灵性、{action.mindCost}精神；自身优势{displayNumber(action.selfGain)}，减势{displayNumber(action.enemyReduction)}；实际恢复{action.recoveredHealth}健康，护垫磨损{action.padWear}，剩余完整度{action.rootPadAfter.integrity}。</p></li>)}</ol>;
 }
@@ -2116,6 +2138,7 @@ function RoundRecord({
         </strong>
       </p>
       <p>{round.consequence}</p>
+      {round.attendantMysteriesOutcome && <section aria-label="诡秘侍者本回合实际记录"><h3>同一原身体、原残料与实际动作</h3><p>本人健康{round.attendantMysteriesOutcome.playerHealthAfter}、精神{round.attendantMysteriesOutcome.playerMindAfter}、灵性{round.attendantMysteriesOutcome.playerSpiritualityAfter}；对手健康{round.attendantMysteriesOutcome.enemyHealth}、精神{round.attendantMysteriesOutcome.enemyMind}、灵性{round.attendantMysteriesOutcome.enemySpirituality}。</p><p>原残料{round.attendantMysteriesOutcome.remnantAfter.id}剩余{round.attendantMysteriesOutcome.remnantAfter.segments.filter(segment => segment.status === "UNUSED").length}段；原料仍已死亡。本人累计实际步行{round.attendantMysteriesOutcome.rootAfter.playerTravelMetres}米，现场时钟{round.attendantMysteriesOutcome.rootAfter.clockSeconds}秒。镇中居民实际参战{round.attendantMysteriesOutcome.rootAfter.residentsJoined}位。</p><p>{round.consequenceDomain === "BODY" ? "本回合由实际身体打击或法术冲击进入身体后果。" : round.consequenceDomain === "MENTAL" ? "本回合只结算实际精神压力，不生成身体伤口。" : "本回合没有已记录的身体或精神后果盘。"}旧四次复起仅为历史，本场真实死亡即终局。</p><AttendantMysteriesActionSequence actions={[...round.attendantMysteriesOutcome.playerActions,...round.attendantMysteriesOutcome.enemyActions].sort((a,b)=>a.order-b.order)}/></section>}
       {round.barrenMatriarchOutcome && <section aria-label="荒芜主母本回合实际记录"><h3>当前动作与实际消耗</h3><p>本人健康{round.barrenMatriarchOutcome.playerHealthAfter}、精神{round.barrenMatriarchOutcome.playerMindAfter}、灵性{round.barrenMatriarchOutcome.playerSpiritualityAfter}；原根系垫完整度{round.barrenMatriarchOutcome.rootPadAfter.integrity}/65；对手健康{round.barrenMatriarchOutcome.enemyHealth}、精神{round.barrenMatriarchOutcome.enemyMind}、灵性{round.barrenMatriarchOutcome.enemySpirituality}。</p><BarrenMatriarchActionSequence actions={[...round.barrenMatriarchOutcome.playerActions,...round.barrenMatriarchOutcome.enemyActions].sort((a,b)=>a.order-b.order)}/></section>}
       {round.balancerOutcome && <section aria-label="平衡者本回合实际记录"><h3>当前动作与实际消耗</h3><p>本人健康{round.balancerOutcome.playerHealthAfter}、精神{round.balancerOutcome.playerMindAfter}、灵性{round.balancerOutcome.playerSpiritualityAfter}；原护片完整度{round.balancerOutcome.guardPlateAfter.integrity}/65；对手健康{round.balancerOutcome.enemyHealth}、精神{round.balancerOutcome.enemyMind}、灵性{round.balancerOutcome.enemySpirituality}。</p><BalancerActionSequence actions={[...round.balancerOutcome.playerActions,...round.balancerOutcome.enemyActions].sort((a,b)=>a.order-b.order)}/></section>}
       {round.entropyDukeOutcome && <section aria-label="熵之公爵本回合实际记录"><h3>当前动作与实际消耗</h3><p>本人健康{round.entropyDukeOutcome.playerHealthAfter}、精神{round.entropyDukeOutcome.playerMindAfter}、灵性{round.entropyDukeOutcome.playerSpiritualityAfter}；对手健康{round.entropyDukeOutcome.enemyHealth}、精神{round.entropyDukeOutcome.enemyMind}、灵性{round.entropyDukeOutcome.enemySpirituality}。</p><EntropyDukeActionSequence actions={[...round.entropyDukeOutcome.playerActions,...round.entropyDukeOutcome.enemyActions].sort((a,b)=>a.order-b.order)}/></section>}
@@ -2133,8 +2156,8 @@ function RoundRecord({
       {round.madmanBurst && <p aria-label="本回合短暂强化记录">
         短暂强化：{round.madmanBurst.policy === "HOLD" ? "保持理智" : "首次条件满足时短暂强化"} · {round.madmanBurst.triggered ? "已实际触发" : "未触发"} · 实际消耗 {round.madmanBurst.mentalCost}精神、{round.madmanBurst.spiritualCost}灵性。
       </p>}
-      {round.consequenceWeights && (
-        (round.consequenceDomain === "MENTAL" || (round.consequenceDomain === undefined && !(round.unagingDemonessOutcome || round.silverKnightOutcome || round.barrenMatriarchOutcome || round.balancerOutcome || round.entropyDukeOutcome || round.fateProphetOutcome || round.ancientEvilOutcome || round.bloodDukeOutcome || round.elderOutcome || round.sageOutcome || round.calamityDemonessOutcome || round.gloryOutcome || round.fateTrojanOutcome || round.deceitMentorOutcome || round.planeswalkerOutcome || round.wandererOutcome || round.deathConsulOutcome || round.justiceMentorOutcome || round.lightSeekerOutcome || round.catastropheOutcome || round.wisdomAngelOutcome || round.concealmentServantOutcome || round.lifeGiverOutcome || round.knowledgeMentorOutcome || round.discernerOutcome || round.weatherWarlockOutcome || round.miracleWorkerOutcome) && round.consequenceRoll !== undefined && round.pendingConsequence === undefined)) ? <p>{playerText("精神后果盘（G）：损耗10点 ")}{round.consequenceWeights.light}% · 损耗25点{" "}
+      {round.consequenceWeights && (!round.attendantMysteriesOutcome || round.consequenceDomain !== undefined) && (
+        (round.consequenceDomain === "MENTAL" || (round.consequenceDomain === undefined && !(round.attendantMysteriesOutcome || round.unagingDemonessOutcome || round.silverKnightOutcome || round.barrenMatriarchOutcome || round.balancerOutcome || round.entropyDukeOutcome || round.fateProphetOutcome || round.ancientEvilOutcome || round.bloodDukeOutcome || round.elderOutcome || round.sageOutcome || round.calamityDemonessOutcome || round.gloryOutcome || round.fateTrojanOutcome || round.deceitMentorOutcome || round.planeswalkerOutcome || round.wandererOutcome || round.deathConsulOutcome || round.justiceMentorOutcome || round.lightSeekerOutcome || round.catastropheOutcome || round.wisdomAngelOutcome || round.concealmentServantOutcome || round.lifeGiverOutcome || round.knowledgeMentorOutcome || round.discernerOutcome || round.weatherWarlockOutcome || round.miracleWorkerOutcome) && round.consequenceRoll !== undefined && round.pendingConsequence === undefined)) ? <p>{playerText("精神后果盘（G）：损耗10点 ")}{round.consequenceWeights.light}% · 损耗25点{" "}
           {round.consequenceWeights.heavy}% · 损耗40点{" "}
           {round.consequenceWeights.death}%
         </p> : <p>
@@ -2397,6 +2420,7 @@ function Combat({
                 {battle.prophecyMaster && <p className="slice-muted">{battle.prophecyMaster.summary}</p>}
                 {battle.unagingDemoness && <p className="slice-muted">{battle.unagingDemoness.summary}</p>}
                 {battle.silverKnight && <p className="slice-muted">{battle.silverKnight.summary}</p>}
+                {battle.attendantMysteries && <section className="slice-notice" aria-label="诡秘侍者本回合实际资源"><h3>原身体与有限残料</h3><p>本人健康{state.health}/{state.maxHealth} · 精神{state.mind}/{state.maxMind} · 灵性{state.spirituality}/{state.maxSpirituality}。</p><p>{battle.attendantMysteries.enemyName}：健康{battle.attendantMysteries.enemyHealth}、精神{battle.attendantMysteries.enemyMind}、灵性{battle.attendantMysteries.enemySpirituality}；原杖{battle.attendantMysteries.weaponLocation === "HAND" ? "仍由本人持有" : "留在原空地"}。</p><p>原残料{battle.attendantMysteries.remnant.id}，原来源{battle.attendantMysteries.remnant.sourceId}；尚可耗用{battle.attendantMysteries.remainingMaterialSegments}段，原料生命保持死亡。</p><ul>{battle.attendantMysteries.facts.map((fact,index)=><li key={index}>{fact}</li>)}</ul><AttendantMysteriesActionSequence actions={battle.attendantMysteries.lastActionSequence}/></section>}
                 {battle.barrenMatriarch&&<section className="slice-notice" aria-label="荒芜主母本回合实际资源"><p>本人健康{state.health}/{state.maxHealth} · 精神{state.mind}/{state.maxMind} · 灵性{state.spirituality}/{state.maxSpirituality} · 原根系垫完整度{battle.barrenMatriarch.rootPad.integrity}/65。</p><p>根系垫只承接下一次身体打击，不能抵御法术或精神冲击。休眠针对原活植，不对人施加睡眠。失败仍消费资源，原垫磨损保留；两位成年协作者已实际离场。</p><p>对手健康{battle.barrenMatriarch.enemyHealth}、精神{battle.barrenMatriarch.enemyMind}、灵性{battle.barrenMatriarch.enemySpirituality}；原杖{battle.barrenMatriarch.weaponLocation==='HAND'?'仍在本人手中':'留在原地'}。</p><BarrenMatriarchActionSequence actions={battle.barrenMatriarch.lastActionSequence}/></section>}
                 {battle.balancer&&<section className="slice-notice" aria-label="平衡者本回合实际资源"><p>本人健康{state.health}/{state.maxHealth} · 精神{state.mind}/{state.maxMind} · 灵性{state.spirituality}/{state.maxSpirituality} · 原护片完整度{battle.balancer.guardPlate.integrity}/65。</p><p>辨察只针对实际可见的出手空隙；抵御只减轻下一次身体打击，不能抵御法术或精神冲击。失败仍消费资源，护片耗损真实保留。原同伴已走出交战现场。</p><p>对手健康{battle.balancer.enemyHealth}、精神{battle.balancer.enemyMind}、灵性{battle.balancer.enemySpirituality}；原杖{battle.balancer.weaponLocation==='HAND'?'仍在本人手中':'留在原地'}。</p><BalancerActionSequence actions={battle.balancer.lastActionSequence}/></section>}
                 {battle.entropyDuke&&<section className="slice-notice" aria-label="熵之公爵本回合实际资源"><p>本人健康{state.health}/{state.maxHealth} · 精神{state.mind}/{state.maxMind} · 灵性{state.spirituality}/{state.maxSpirituality}。</p><p>只有自己当前动作或尚未结束的短效可以施作，失败仍消费资源；已发生的结果无法重来。原同伴已走出交战现场。</p><p>对手健康{battle.entropyDuke.enemyHealth}、精神{battle.entropyDuke.enemyMind}、灵性{battle.entropyDuke.enemySpirituality}；原杖{battle.entropyDuke.weaponLocation==='HAND'?'仍在本人手中':'留在原地'}。</p><EntropyDukeActionSequence actions={battle.entropyDuke.lastActionSequence}/></section>}
@@ -2693,7 +2717,7 @@ function Ending({
 
 type Screen = "TITLE" | "SLOTS" | "ARCHIVE" | "CREATE" | "PLAY";
 type Drawer =
-  "LEARN" | "INVESTIGATE" | "DETAILS" | "CHRONICLE" | "LIFESTYLE" | "SEER" | "TOWN" | "LONG_CHAPTER" | "ANCIENT_SCHOLAR" | "WAR_BISHOP" | "DREAM_WEAVER" | "ARCANE_SCHOLAR" | "SUMMONING_MASTER" | "FEAR_BISHOP" | "INSIGHT_SCHOLAR" | "SEA_KING" | "JUSTICE_MENTOR" | "FERRYMAN" | "WANDERER" | "BARREN_MATRIARCH" | "BALANCER" | "ENTROPY_DUKE" | "FATE_PROPHET" | "ANCIENT_EVIL" | "BLOOD_DUKE" | "ELDER" | "SAGE" | "CALAMITY_DEMONESS" | "GLORY" | "FATE_TROJAN" | "DECEIT_MENTOR" | "SILVER_KNIGHT" | "UNAGING_DEMONESS" | "PROPHECY_MASTER" | "THREE_HEADED_TEMPLAR" | "BLATHERER" | "SILENT_DISCIPLE" | "CHAOS_WALKER" | "FRENZY_MAGE" | "CHAOS_HUNTER" | "COFFIN_BEARER" | "MIRACLE_WORKER" | "PLANESWALKER" | "DEATH_CONSUL" | "LIGHT_SEEKER" | "CATASTROPHE" | "WISDOM_ANGEL" | "CONCEALMENT_SERVANT" | "LIFE_GIVER" | "KNOWLEDGE_MENTOR" | "DISCERNER" | "WEATHER_WARLOCK" | null;
+  "LEARN" | "INVESTIGATE" | "DETAILS" | "CHRONICLE" | "LIFESTYLE" | "SEER" | "TOWN" | "LONG_CHAPTER" | "ANCIENT_SCHOLAR" | "WAR_BISHOP" | "DREAM_WEAVER" | "ARCANE_SCHOLAR" | "SUMMONING_MASTER" | "FEAR_BISHOP" | "INSIGHT_SCHOLAR" | "SEA_KING" | "JUSTICE_MENTOR" | "FERRYMAN" | "WANDERER" | "ATTENDANT_MYSTERIES" | "BARREN_MATRIARCH" | "BALANCER" | "ENTROPY_DUKE" | "FATE_PROPHET" | "ANCIENT_EVIL" | "BLOOD_DUKE" | "ELDER" | "SAGE" | "CALAMITY_DEMONESS" | "GLORY" | "FATE_TROJAN" | "DECEIT_MENTOR" | "SILVER_KNIGHT" | "UNAGING_DEMONESS" | "PROPHECY_MASTER" | "THREE_HEADED_TEMPLAR" | "BLATHERER" | "SILENT_DISCIPLE" | "CHAOS_WALKER" | "FRENZY_MAGE" | "CHAOS_HUNTER" | "COFFIN_BEARER" | "MIRACLE_WORKER" | "PLANESWALKER" | "DEATH_CONSUL" | "LIGHT_SEEKER" | "CATASTROPHE" | "WISDOM_ANGEL" | "CONCEALMENT_SERVANT" | "LIFE_GIVER" | "KNOWLEDGE_MENTOR" | "DISCERNER" | "WEATHER_WARLOCK" | null;
 export function SliceApp() {
   const [bootstrap, setBootstrap] = useState<SliceBootstrap | null>(null);
   const [state, setState] = useState<SliceProjection | null>(null);
@@ -3454,6 +3478,7 @@ export function SliceApp() {
       ) {
         stateRef.current = next;
         setState(next);
+        if (envelope.payload.type === "ATTENDANT_MYSTERIES" && !next.lastCombatRound?.attendantMysteriesOutcome) setRoundReveal(null);
         if (envelope.payload.type === "MIRACLE_WORKER" && !next.lastCombatRound?.miracleWorkerOutcome) setRoundReveal(null);
         if (envelope.payload.type === "COFFIN_BEARER" && !next.lastCombatRound?.coffinBearerOutcome) setRoundReveal(null);
         if (envelope.payload.type === "CHAOS_HUNTER" && !next.lastCombatRound?.chaosHunterOutcome) setRoundReveal(null);
@@ -3481,6 +3506,7 @@ export function SliceApp() {
         if ((envelope.payload.type === "FERRYMAN" || next.ferryman?.era.available) && !next.lastCombatRound?.ferrymanOutcome && !next.lastCombatRound?.deathConsulOutcome) setRoundReveal(null);
         if (
           next.lastCombatRound &&
+          (!next.attendantMysteries?.promoted || !!next.lastCombatRound.attendantMysteriesOutcome) &&
           (!next.barrenMatriarch?.promoted || !!next.lastCombatRound.barrenMatriarchOutcome) &&
           (!next.balancer?.promoted || !!next.lastCombatRound.balancerOutcome) &&
           (!next.entropyDuke?.promoted || !!next.lastCombatRound.entropyDukeOutcome) &&
@@ -3524,7 +3550,8 @@ export function SliceApp() {
       pending.current = null;
       setError(null);
       // Keep this dossier and its chosen work site in place until an actual blocking event takes over.
-      if ((envelope.payload.type !== "BARREN_MATRIARCH" && envelope.payload.type !== "BALANCER" && envelope.payload.type !== "ENTROPY_DUKE" && envelope.payload.type !== "FATE_PROPHET" && envelope.payload.type !== "ANCIENT_EVIL" && envelope.payload.type !== "BLOOD_DUKE" && envelope.payload.type !== "ELDER" && envelope.payload.type !== "SAGE" && envelope.payload.type !== "CALAMITY_DEMONESS" && envelope.payload.type !== "GLORY" && envelope.payload.type !== "FATE_TROJAN" && envelope.payload.type !== "PLANESWALKER" && envelope.payload.type !== "DEATH_CONSUL" && envelope.payload.type !== "LIGHT_SEEKER" && envelope.payload.type !== "CATASTROPHE" && envelope.payload.type !== "WISDOM_ANGEL" && envelope.payload.type !== "CONCEALMENT_SERVANT" && envelope.payload.type !== "LIFE_GIVER" && envelope.payload.type !== "KNOWLEDGE_MENTOR" && envelope.payload.type !== "DISCERNER" && envelope.payload.type !== "WEATHER_WARLOCK" && envelope.payload.type !== "MIRACLE_WORKER" && envelope.payload.type !== "COFFIN_BEARER" && envelope.payload.type !== "CHAOS_HUNTER" && envelope.payload.type !== "FRENZY_MAGE" && envelope.payload.type !== "CHAOS_WALKER" && envelope.payload.type !== "SILENT_DISCIPLE" && envelope.payload.type !== "BLATHERER" && envelope.payload.type !== "THREE_HEADED_TEMPLAR" && envelope.payload.type !== "PROPHECY_MASTER" && envelope.payload.type !== "UNAGING_DEMONESS" && envelope.payload.type !== "SILVER_KNIGHT" && envelope.payload.type !== "DECEIT_MENTOR" && envelope.payload.type !== "WANDERER" && envelope.payload.type !== "FERRYMAN" && envelope.payload.type !== "JUSTICE_MENTOR" && envelope.payload.type !== "SEA_KING" && envelope.payload.type !== "INSIGHT_SCHOLAR" && envelope.payload.type !== "FEAR_BISHOP" && envelope.payload.type !== "SUMMONING_MASTER" && envelope.payload.type !== "ARCANE_SCHOLAR" && envelope.payload.type !== "DREAM_WEAVER" && envelope.payload.type !== "WAR_BISHOP" && envelope.payload.type !== "ANCIENT_SCHOLAR" && envelope.payload.type !== "CATACLYSM_PRIEST" && envelope.payload.type !== "UNSHADOWED" && envelope.payload.type !== "ANCIENT_ALCHEMIST" && envelope.payload.type !== "IMPERATIVE_MAGE" && envelope.payload.type !== "FALLEN_EARL" && envelope.payload.type !== "MISFORTUNE_MAGE" && envelope.payload.type !== "PUPPET" && envelope.payload.type !== "DEVIL" && envelope.payload.type !== "BLACK_KNIGHT" && envelope.payload.type !== "MYSTIC" && envelope.payload.type !== "DESPAIR" && envelope.payload.type !== "DEMON_HUNTER" && envelope.payload.type !== "PARASITE" && envelope.payload.type !== "SECRETS_SORCERER" && envelope.payload.type !== "UNDYING" && envelope.payload.type !== "PROPHET" && envelope.payload.type !== "NIGHTWATCHER" && envelope.payload.type !== "WITCH_KING" && envelope.payload.type !== "ALCHEMIST" && envelope.payload.type !== "MANIPULATOR" && envelope.payload.type !== "IRON_BLOOD_KNIGHT" && envelope.payload.type !== "BIZARRO_SORCERER" && envelope.payload.type !== "DRUID" && envelope.payload.type !== "PUNISHMENT_KNIGHT" && envelope.payload.type !== "MENTOR_DISORDER" && envelope.payload.type !== "WINNER" && envelope.payload.type !== "WRAITH" && envelope.payload.type !== "DESIRE_APOSTLE" && envelope.payload.type !== "SHEPHERD" && envelope.payload.type !== "STAR_MYSTIC" && envelope.payload.type !== "PAIN" && envelope.payload.type !== "GUARDIAN" && envelope.payload.type !== "DREAM_STEALER" && envelope.payload.type !== "TRAVELER" && envelope.payload.type !== "GATEKEEPER" && envelope.payload.type !== "PRIEST_OF_LIGHT" && envelope.payload.type !== "OCEAN_SINGER" && envelope.payload.type !== "MYSTICISM_MAGISTER" && envelope.payload.type !== "SPIRIT_WARLOCK" && envelope.payload.type !== "CRIMSON_SCHOLAR" && envelope.payload.type !== "ASTRONOMER" && envelope.payload.type !== "DREAMWALKER" && envelope.payload.type !== "REAPER" && envelope.payload.type !== "MARIONETTIST" && envelope.payload.type !== "BIOLOGIST" && envelope.payload.type !== "JUDGE" && envelope.payload.type !== "CORRUPTION_BARON" && envelope.payload.type !== "CALAMITY_PRIEST" && envelope.payload.type !== "ZOMBIE" && envelope.payload.type !== "DEMON" && envelope.payload.type !== "ROSE_BISHOP" && envelope.payload.type !== "SCROLL_PROFESSOR" && envelope.payload.type !== "PLEASURE" && envelope.payload.type !== "DAWN_PALADIN" && envelope.payload.type !== "FIRE_THIEF" && envelope.payload.type !== "RECORDER" && envelope.payload.type !== "SPIRIT_GUIDE" && envelope.payload.type !== "NOTARY" && envelope.payload.type !== "WIND_BLESSED" && envelope.payload.type !== "POLYMATH" && envelope.payload.type !== "SOOTHER" && envelope.payload.type !== "POTION_PROFESSOR" && envelope.payload.type !== "ARTISAN" && envelope.payload.type !== "HYPNOTIST" && envelope.payload.type !== "CONSPIRATOR" && envelope.payload.type !== "FACELESS" && envelope.payload.type !== "HARVESTPRIEST" && envelope.payload.type !== "PHYSICIAN" && envelope.payload.type !== "CULTIVATOR" && envelope.payload.type !== "INTERROGATOR" && envelope.payload.type !== "SHERIFF" && envelope.payload.type !== "ARBITER" && envelope.payload.type !== "BRIBER" && envelope.payload.type !== "BARBARIAN" && envelope.payload.type !== "LAWYER" && envelope.payload.type !== "LUCKY" && envelope.payload.type !== "MACHINE" && envelope.payload.type !== "MONSTER" && envelope.payload.type !== "WEREWOLF" && envelope.payload.type !== "MADMAN" && envelope.payload.type !== "PRISONER" && envelope.payload.type !== "SERIAL_KILLER" && envelope.payload.type !== "UNWINGED" && envelope.payload.type !== "CRIMINAL" && envelope.payload.type !== "SHADOW_ASCETIC" && envelope.payload.type !== "LISTENER" && envelope.payload.type !== "SECRET_SUPPLICANT" && envelope.payload.type !== "WIZARD" && envelope.payload.type !== "COMBAT_SCHOLAR" && envelope.payload.type !== "PRYER" && envelope.payload.type !== "ASSASSIN" && envelope.payload.type !== "INSTIGATOR" && envelope.payload.type !== "WITCH" && envelope.payload.type !== "WARRIOR" && envelope.payload.type !== "GLADIATOR" && envelope.payload.type !== "WEAPONMASTER") || next.activeEvent || next.combat || next.ending || next.status !== "ACTIVE") setDrawer(null);
+      if ((envelope.payload.type !== "ATTENDANT_MYSTERIES" && envelope.payload.type !== "BARREN_MATRIARCH" && envelope.payload.type !== "BALANCER" && envelope.payload.type !== "ENTROPY_DUKE" && envelope.payload.type !== "FATE_PROPHET" && envelope.payload.type !== "ANCIENT_EVIL" && envelope.payload.type !== "BLOOD_DUKE" && envelope.payload.type !== "ELDER" && envelope.payload.type !== "SAGE" && envelope.payload.type !== "CALAMITY_DEMONESS" && envelope.payload.type !== "GLORY" && envelope.payload.type !== "FATE_TROJAN" && envelope.payload.type !== "PLANESWALKER" && envelope.payload.type !== "DEATH_CONSUL" && envelope.payload.type !== "LIGHT_SEEKER" && envelope.payload.type !== "CATASTROPHE" && envelope.payload.type !== "WISDOM_ANGEL" && envelope.payload.type !== "CONCEALMENT_SERVANT" && envelope.payload.type !== "LIFE_GIVER" && envelope.payload.type !== "KNOWLEDGE_MENTOR" && envelope.payload.type !== "DISCERNER" && envelope.payload.type !== "WEATHER_WARLOCK" && envelope.payload.type !== "MIRACLE_WORKER" && envelope.payload.type !== "COFFIN_BEARER" && envelope.payload.type !== "CHAOS_HUNTER" && envelope.payload.type !== "FRENZY_MAGE" && envelope.payload.type !== "CHAOS_WALKER" && envelope.payload.type !== "SILENT_DISCIPLE" && envelope.payload.type !== "BLATHERER" && envelope.payload.type !== "THREE_HEADED_TEMPLAR" && envelope.payload.type !== "PROPHECY_MASTER" && envelope.payload.type !== "UNAGING_DEMONESS" && envelope.payload.type !== "SILVER_KNIGHT" && envelope.payload.type !== "DECEIT_MENTOR" && envelope.payload.type !== "WANDERER" && envelope.payload.type !== "FERRYMAN" && envelope.payload.type !== "JUSTICE_MENTOR" && envelope.payload.type !== "SEA_KING" && envelope.payload.type !== "INSIGHT_SCHOLAR" && envelope.payload.type !== "FEAR_BISHOP" && envelope.payload.type !== "SUMMONING_MASTER" && envelope.payload.type !== "ARCANE_SCHOLAR" && envelope.payload.type !== "DREAM_WEAVER" && envelope.payload.type !== "WAR_BISHOP" && envelope.payload.type !== "ANCIENT_SCHOLAR" && envelope.payload.type !== "CATACLYSM_PRIEST" && envelope.payload.type !== "UNSHADOWED" && envelope.payload.type !== "ANCIENT_ALCHEMIST" && envelope.payload.type !== "IMPERATIVE_MAGE" && envelope.payload.type !== "FALLEN_EARL" && envelope.payload.type !== "MISFORTUNE_MAGE" && envelope.payload.type !== "PUPPET" && envelope.payload.type !== "DEVIL" && envelope.payload.type !== "BLACK_KNIGHT" && envelope.payload.type !== "MYSTIC" && envelope.payload.type !== "DESPAIR" && envelope.payload.type !== "DEMON_HUNTER" && envelope.payload.type !== "PARASITE" && envelope.payload.type !== "SECRETS_SORCERER" && envelope.payload.type !== "UNDYING" && envelope.payload.type !== "PROPHET" && envelope.payload.type !== "NIGHTWATCHER" && envelope.payload.type !== "WITCH_KING" && envelope.payload.type !== "ALCHEMIST" && envelope.payload.type !== "MANIPULATOR" && envelope.payload.type !== "IRON_BLOOD_KNIGHT" && envelope.payload.type !== "BIZARRO_SORCERER" && envelope.payload.type !== "DRUID" && envelope.payload.type !== "PUNISHMENT_KNIGHT" && envelope.payload.type !== "MENTOR_DISORDER" && envelope.payload.type !== "WINNER" && envelope.payload.type !== "WRAITH" && envelope.payload.type !== "DESIRE_APOSTLE" && envelope.payload.type !== "SHEPHERD" && envelope.payload.type !== "STAR_MYSTIC" && envelope.payload.type !== "PAIN" && envelope.payload.type !== "GUARDIAN" && envelope.payload.type !== "DREAM_STEALER" && envelope.payload.type !== "TRAVELER" && envelope.payload.type !== "GATEKEEPER" && envelope.payload.type !== "PRIEST_OF_LIGHT" && envelope.payload.type !== "OCEAN_SINGER" && envelope.payload.type !== "MYSTICISM_MAGISTER" && envelope.payload.type !== "SPIRIT_WARLOCK" && envelope.payload.type !== "CRIMSON_SCHOLAR" && envelope.payload.type !== "ASTRONOMER" && envelope.payload.type !== "DREAMWALKER" && envelope.payload.type !== "REAPER" && envelope.payload.type !== "MARIONETTIST" && envelope.payload.type !== "BIOLOGIST" && envelope.payload.type !== "JUDGE" && envelope.payload.type !== "CORRUPTION_BARON" && envelope.payload.type !== "CALAMITY_PRIEST" && envelope.payload.type !== "ZOMBIE" && envelope.payload.type !== "DEMON" && envelope.payload.type !== "ROSE_BISHOP" && envelope.payload.type !== "SCROLL_PROFESSOR" && envelope.payload.type !== "PLEASURE" && envelope.payload.type !== "DAWN_PALADIN" && envelope.payload.type !== "FIRE_THIEF" && envelope.payload.type !== "RECORDER" && envelope.payload.type !== "SPIRIT_GUIDE" && envelope.payload.type !== "NOTARY" && envelope.payload.type !== "WIND_BLESSED" && envelope.payload.type !== "POLYMATH" && envelope.payload.type !== "SOOTHER" && envelope.payload.type !== "POTION_PROFESSOR" && envelope.payload.type !== "ARTISAN" && envelope.payload.type !== "HYPNOTIST" && envelope.payload.type !== "CONSPIRATOR" && envelope.payload.type !== "FACELESS" && envelope.payload.type !== "HARVESTPRIEST" && envelope.payload.type !== "PHYSICIAN" && envelope.payload.type !== "CULTIVATOR" && envelope.payload.type !== "INTERROGATOR" && envelope.payload.type !== "SHERIFF" && envelope.payload.type !== "ARBITER" && envelope.payload.type !== "BRIBER" && envelope.payload.type !== "BARBARIAN" && envelope.payload.type !== "LAWYER" && envelope.payload.type !== "LUCKY" && envelope.payload.type !== "MACHINE" && envelope.payload.type !== "MONSTER" && envelope.payload.type !== "WEREWOLF" && envelope.payload.type !== "MADMAN" && envelope.payload.type !== "PRISONER" && envelope.payload.type !== "SERIAL_KILLER" && envelope.payload.type !== "UNWINGED" && envelope.payload.type !== "CRIMINAL" && envelope.payload.type !== "SHADOW_ASCETIC" && envelope.payload.type !== "LISTENER" && envelope.payload.type !== "SECRET_SUPPLICANT" && envelope.payload.type !== "WIZARD" && envelope.payload.type !== "COMBAT_SCHOLAR" && envelope.payload.type !== "PRYER" && envelope.payload.type !== "ASSASSIN" && envelope.payload.type !== "INSTIGATOR" && envelope.payload.type !== "WITCH" && envelope.payload.type !== "WARRIOR" && envelope.payload.type !== "GLADIATOR" && envelope.payload.type !== "WEAPONMASTER") || next.activeEvent || next.combat || next.ending || next.status !== "ACTIVE") setDrawer(null);
+      else if (envelope.payload.type === "ATTENDANT_MYSTERIES") setDrawer("ATTENDANT_MYSTERIES");
       else if (envelope.payload.type === "SUMMONING_MASTER") setDrawer("SUMMONING_MASTER");
         else if (envelope.payload.type === "FEAR_BISHOP") setDrawer("FEAR_BISHOP");
         else if (envelope.payload.type === "INSIGHT_SCHOLAR") setDrawer("INSIGHT_SCHOLAR");
@@ -3741,7 +3768,7 @@ export function SliceApp() {
         setInspect(false);
         setDrawer(null);
         setError(null);
-        setRoundReveal(result.value.barrenMatriarch?.promoted ? (result.value.lastCombatRound?.barrenMatriarchOutcome ? result.value.lastCombatRound : null) : result.value.balancer?.promoted ? (result.value.lastCombatRound?.balancerOutcome ? result.value.lastCombatRound : null) : result.value.entropyDuke?.promoted ? (result.value.lastCombatRound?.entropyDukeOutcome ? result.value.lastCombatRound : null) : result.value.fateProphet?.promoted ? (result.value.lastCombatRound?.fateProphetOutcome ? result.value.lastCombatRound : null) : result.value.ancientEvil?.promoted ? (result.value.lastCombatRound?.ancientEvilOutcome ? result.value.lastCombatRound : null) : result.value.bloodDuke?.promoted ? (result.value.lastCombatRound?.bloodDukeOutcome ? result.value.lastCombatRound : null) : result.value.elder?.promoted ? (result.value.lastCombatRound?.elderOutcome ? result.value.lastCombatRound : null) : result.value.sage?.promoted ? (result.value.lastCombatRound?.sageOutcome ? result.value.lastCombatRound : null) : result.value.calamityDemoness?.promoted ? (result.value.lastCombatRound?.calamityDemonessOutcome ? result.value.lastCombatRound : null) : result.value.glory?.promoted ? (result.value.lastCombatRound?.gloryOutcome ? result.value.lastCombatRound : null) : result.value.fateTrojan?.promoted ? (result.value.lastCombatRound?.fateTrojanOutcome ? result.value.lastCombatRound : null) : (result.value.planeswalker?.promoted && !result.value.lastCombatRound?.planeswalkerOutcome) || (result.value.deathConsul?.promoted && !result.value.lastCombatRound?.deathConsulOutcome) || (result.value.lightSeeker?.promoted && !result.value.lastCombatRound?.lightSeekerOutcome) || (result.value.catastrophe?.promoted && !result.value.lastCombatRound?.catastropheOutcome) || (result.value.wisdomAngel?.promoted && !result.value.lastCombatRound?.wisdomAngelOutcome) || (result.value.concealmentServant?.promoted && !result.value.lastCombatRound?.concealmentServantOutcome) || (result.value.lifeGiver?.promoted && !result.value.lastCombatRound?.lifeGiverOutcome) || (result.value.knowledgeMentor?.promoted && !result.value.lastCombatRound?.knowledgeMentorOutcome) || (result.value.discerner?.promoted && !result.value.lastCombatRound?.discernerOutcome) || (result.value.weatherWarlock?.promoted && !result.value.lastCombatRound?.weatherWarlockOutcome) || (result.value.miracleWorker?.promoted && !result.value.lastCombatRound?.miracleWorkerOutcome) || (result.value.coffinBearer?.promoted && !result.value.lastCombatRound?.coffinBearerOutcome) || (result.value.chaosHunter?.promoted && !result.value.lastCombatRound?.chaosHunterOutcome) || (result.value.frenzyMage?.promoted && !result.value.lastCombatRound?.frenzyMageOutcome) || (result.value.chaosWalker?.promoted && !result.value.lastCombatRound?.chaosWalkerOutcome) || (result.value.silentDisciple?.promoted && !result.value.lastCombatRound?.silentDiscipleOutcome) || (result.value.blatherer?.promoted && !result.value.lastCombatRound?.blathererOutcome) || (result.value.threeHeadedTemplar?.promoted && !result.value.lastCombatRound?.threeHeadedTemplarOutcome) || (result.value.prophecyMaster?.promoted && !result.value.lastCombatRound?.prophecyMasterOutcome) || (result.value.unagingDemoness?.promoted && !result.value.lastCombatRound?.unagingDemonessOutcome) || (result.value.silverKnight?.discovered && !result.value.lastCombatRound?.silverKnightOutcome) || (result.value.deceitMentor?.promoted && !result.value.lastCombatRound?.deceitMentorOutcome) || (result.value.wanderer?.promoted && !result.value.lastCombatRound?.wandererOutcome && !result.value.lastCombatRound?.planeswalkerOutcome) || (!result.value.miracleWorker?.promoted && (result.value.ancientScholar?.locked || result.value.ancientScholar?.eraClosed) && !result.value.lastCombatRound?.ancientScholarOutcome) || ((result.value.ferryman?.era.available || result.value.ferryman?.promoted) && !result.value.lastCombatRound?.ferrymanOutcome && !result.value.lastCombatRound?.deathConsulOutcome) ? null : result.value.lastCombatRound);
+        setRoundReveal(result.value.attendantMysteries?.promoted || result.value.attendantMysteries?.guidanceKnown ? (result.value.lastCombatRound?.attendantMysteriesOutcome ? result.value.lastCombatRound : null) : result.value.barrenMatriarch?.promoted ? (result.value.lastCombatRound?.barrenMatriarchOutcome ? result.value.lastCombatRound : null) : result.value.balancer?.promoted ? (result.value.lastCombatRound?.balancerOutcome ? result.value.lastCombatRound : null) : result.value.entropyDuke?.promoted ? (result.value.lastCombatRound?.entropyDukeOutcome ? result.value.lastCombatRound : null) : result.value.fateProphet?.promoted ? (result.value.lastCombatRound?.fateProphetOutcome ? result.value.lastCombatRound : null) : result.value.ancientEvil?.promoted ? (result.value.lastCombatRound?.ancientEvilOutcome ? result.value.lastCombatRound : null) : result.value.bloodDuke?.promoted ? (result.value.lastCombatRound?.bloodDukeOutcome ? result.value.lastCombatRound : null) : result.value.elder?.promoted ? (result.value.lastCombatRound?.elderOutcome ? result.value.lastCombatRound : null) : result.value.sage?.promoted ? (result.value.lastCombatRound?.sageOutcome ? result.value.lastCombatRound : null) : result.value.calamityDemoness?.promoted ? (result.value.lastCombatRound?.calamityDemonessOutcome ? result.value.lastCombatRound : null) : result.value.glory?.promoted ? (result.value.lastCombatRound?.gloryOutcome ? result.value.lastCombatRound : null) : result.value.fateTrojan?.promoted ? (result.value.lastCombatRound?.fateTrojanOutcome ? result.value.lastCombatRound : null) : (result.value.planeswalker?.promoted && !result.value.lastCombatRound?.planeswalkerOutcome) || (result.value.deathConsul?.promoted && !result.value.lastCombatRound?.deathConsulOutcome) || (result.value.lightSeeker?.promoted && !result.value.lastCombatRound?.lightSeekerOutcome) || (result.value.catastrophe?.promoted && !result.value.lastCombatRound?.catastropheOutcome) || (result.value.wisdomAngel?.promoted && !result.value.lastCombatRound?.wisdomAngelOutcome) || (result.value.concealmentServant?.promoted && !result.value.lastCombatRound?.concealmentServantOutcome) || (result.value.lifeGiver?.promoted && !result.value.lastCombatRound?.lifeGiverOutcome) || (result.value.knowledgeMentor?.promoted && !result.value.lastCombatRound?.knowledgeMentorOutcome) || (result.value.discerner?.promoted && !result.value.lastCombatRound?.discernerOutcome) || (result.value.weatherWarlock?.promoted && !result.value.lastCombatRound?.weatherWarlockOutcome) || (result.value.miracleWorker?.promoted && !result.value.lastCombatRound?.miracleWorkerOutcome) || (result.value.coffinBearer?.promoted && !result.value.lastCombatRound?.coffinBearerOutcome) || (result.value.chaosHunter?.promoted && !result.value.lastCombatRound?.chaosHunterOutcome) || (result.value.frenzyMage?.promoted && !result.value.lastCombatRound?.frenzyMageOutcome) || (result.value.chaosWalker?.promoted && !result.value.lastCombatRound?.chaosWalkerOutcome) || (result.value.silentDisciple?.promoted && !result.value.lastCombatRound?.silentDiscipleOutcome) || (result.value.blatherer?.promoted && !result.value.lastCombatRound?.blathererOutcome) || (result.value.threeHeadedTemplar?.promoted && !result.value.lastCombatRound?.threeHeadedTemplarOutcome) || (result.value.prophecyMaster?.promoted && !result.value.lastCombatRound?.prophecyMasterOutcome) || (result.value.unagingDemoness?.promoted && !result.value.lastCombatRound?.unagingDemonessOutcome) || (result.value.silverKnight?.discovered && !result.value.lastCombatRound?.silverKnightOutcome) || (result.value.deceitMentor?.promoted && !result.value.lastCombatRound?.deceitMentorOutcome) || (result.value.wanderer?.promoted && !result.value.lastCombatRound?.wandererOutcome && !result.value.lastCombatRound?.planeswalkerOutcome) || (!result.value.miracleWorker?.promoted && (result.value.ancientScholar?.locked || result.value.ancientScholar?.eraClosed) && !result.value.lastCombatRound?.ancientScholarOutcome) || ((result.value.ferryman?.era.available || result.value.ferryman?.promoted) && !result.value.lastCombatRound?.ferrymanOutcome && !result.value.lastCombatRound?.deathConsulOutcome) ? null : result.value.lastCombatRound);
         pending.current = null;
       } else setError(result.error);
     } catch {
@@ -3766,6 +3793,7 @@ export function SliceApp() {
   };
   function openGrowth(advance = false) {
     if (!state || busy || pending.current !== null || error !== null) return;
+    if (attendantMysteriesPageAvailable(state) && (state.attendantMysteries.promoted || !state.miracleWorker?.insideCase && state.status !== "REVIVAL_PENDING")) { setDrawer("ATTENDANT_MYSTERIES"); return; }
     if (state.miracleWorker?.discovered && state.progression.pathwayId === "diviner" && (state.progression.sequence === 2 || (advance && state.progression.sequence === 3))) {setDrawer("MIRACLE_WORKER");return;}
     if (state.planeswalker?.discovered && state.progression.pathwayId === "door" && (state.progression.sequence === 2 || (advance && state.progression.sequence === 3))) {setDrawer("PLANESWALKER");return;}
     if (state.deathConsul?.discovered && state.progression.pathwayId === "death" && (state.progression.sequence === 2 || (advance && state.progression.sequence === 3))) {setDrawer("DEATH_CONSUL");return;}
@@ -3988,6 +4016,95 @@ export function SliceApp() {
       ? "浏览器试玩：刷新页面会重置进度。"
       : "桌面版：行动、选择与完整战斗回合确认后自动保存。";
   const recoveryNotice = activePlay && !isEnding ? <RecoveryNotice value={state.recovery} busy={busy || error !== null || pending.current !== null} onNavigate={navigateRecovery}/> : null;
+  const eventDialog = activePlay && event ? (
+        <Modal key={event.instanceId} title={event.title} blocking>
+          <div className="slice-event-layout">
+            <div
+              className={`slice-event-art ${event.actor ? "slice-event-actor" : ""}`}
+            >
+              <img
+                src={
+                  event.actor === "MAEVE"
+                    ? assetPath("npcs/maeve.webp")
+                    : event.actor === "INTERMEDIARY"
+                      ? assetPath("npcs/intermediary.webp")
+                      : event.id.startsWith("ARC-C") ||
+                          event.id === "ARC-CRISIS"
+                        ? assetPath("scenes/boiler-room.webp")
+                        : event.id === "ARC-B"
+                          ? assetPath("scenes/east-district.webp")
+                          : assetPath("scenes/factory.webp")
+                }
+                alt={
+                  event.actor === "MAEVE"
+                    ? "工场门口的梅芙"
+                    : event.actor === "INTERMEDIARY"
+                      ? "带来委托信的匿名代理人"
+                      : "事件发生的城市环境"
+                }
+              />
+            </div>
+            <div className="slice-dialog-content">
+              <div className="slice-eyebrow">
+                {event.id.includes("ORIGIN") ? "个人履历" : "生活与调查"}
+              </div>
+              <DialogHeading title={event.title} />
+              <p className="slice-event-body">{event.body}</p>
+              {event.facts.length > 0 && (
+                <div className="slice-notice slice-event-facts">
+                  <strong>可以确认</strong>
+                  <ul className="slice-simple-list">
+                    {event.facts.map((fact) => (
+                      <li key={fact}>{fact}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div className="slice-event-options">
+                {event.choices.map((choice) => (
+                  <button
+                    key={choice.id}
+                    className="slice-choice"
+                    disabled={busy || !choice.enabled || error !== null}
+                    onClick={() =>
+                      command({
+                        type: "EVENT_CHOICE",
+                        eventInstanceId: event.instanceId,
+                        choiceId: choice.id,
+                      })
+                    }
+                  >
+                    <strong>{choice.label}</strong>
+                    <p>{choice.preview}</p>
+                    {choice.disabledReason && <p>{choice.disabledReason}</p>}
+                  </button>
+                ))}
+              </div>
+              <p className="slice-event-cost">
+                处理事件不额外消耗行动点。选项上的现金成本与风险仍会结算。
+              </p>
+              {error && (
+                <ErrorNotice error={error} onRetry={retryLast} busy={busy} />
+              )}
+            </div>
+          </div>
+        </Modal>
+  ) : null;
+  if(activePlay && (state.attendantMysteries?.promoted || state.attendantMysteries?.insideCase || drawer === "ATTENDANT_MYSTERIES" || !!state.combat?.attendantMysteries || !!roundReveal?.attendantMysteriesOutcome || (attendantMysteriesPageAvailable(state) && (state.attendantMysteries.guidanceKnown || drawer !== "MIRACLE_WORKER" && !state.miracleWorker?.insideCase && state.status !== "REVIVAL_PENDING" && !state.combat?.miracleWorker && !roundReveal?.miracleWorkerOutcome)))) {
+    return <Fragment><div className="slice-shell" ref={shell} style={large ? {fontSize:24} : undefined}>
+      <header className="slice-topbar"><span>{dateText(state.date)} · 第 {state.week} 周</span><strong>{state.character.name} · {state.attendantMysteries.title}</strong><span>{sliceMoney(state.cash)}</span>
+        <button className="slice-button quiet" disabled={busy || pending.current !== null} onClick={() => {setDrawer(null);setScreen("TITLE");}}>返回主菜单</button></header>
+      <main className="slice-main"><p className="slice-notice">{browserNotice}</p>
+        {recoveryNotice}
+        {error && <ErrorNotice error={error} onRetry={retryLast} busy={busy}/>}
+        {isEnding ? <Ending state={state} onInspect={() => setInspect(true)} onTitle={title} onContinue={() => command({type:"CONTINUE_LIFE"})} busy={busy} error={error} onRetry={retryLast}/> :
+        <AttendantMysteriesPanel value={state.attendantMysteries} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
+          onCommand={c => command({type:"ATTENDANT_MYSTERIES",command:c})}/>}
+        {!isEnding && !state.attendantMysteries.promoted && !state.attendantMysteries.guidanceKnown && !state.attendantMysteries.insideCase && !combat && !event && <button className="slice-button quiet" disabled={busy || error !== null || pending.current !== null || state.status !== "ACTIVE"} onClick={() => setDrawer("MIRACLE_WORKER")}>完成奇迹师旧实践</button>}
+        <details className="seer-fold"><summary>旧复起与已保存的真实经历</summary><p>此处只回看历史；诡秘侍者阶段不会因此获得新的复起次数或复起操作。</p>{state.attendantMysteries.inheritedHistory.map((entry,index)=><p key={index}>{entry}</p>)}</details>
+      </main>
+    </div>{eventDialog}{combat && <Combat state={state} reveal={roundReveal} onAcknowledge={() => setRoundReveal(null)} onCommand={command} busy={busy} error={error} onRetry={retryLast} fast={fast} onFastChange={setFast}/>}</Fragment>;
+  }
   if(activePlay && (state.planeswalker?.insideCase || drawer === "PLANESWALKER")) {
     return <Fragment><div className="slice-shell" ref={shell} style={large ? {fontSize:24} : undefined}>
       <header className="slice-topbar"><span>{dateText(state.date)} · 第 {state.week} 周</span><strong>{state.character.name} · {state.planeswalker.title}</strong><span>{sliceMoney(state.cash)}</span>
@@ -4993,13 +5110,14 @@ export function SliceApp() {
       </main>
     </div>{combat && <Combat state={state} reveal={roundReveal} onAcknowledge={() => setRoundReveal(null)} onCommand={command} busy={busy} error={error} onRetry={retryLast} fast={fast} onFastChange={setFast}/>}</Fragment>;
   }
-  if(activePlay && (state.miracleWorker?.insideCase || state.miracleWorker?.promoted || state.status === "REVIVAL_PENDING" || drawer === "MIRACLE_WORKER")) {
+  if(activePlay && !state.attendantMysteries?.promoted && !state.attendantMysteries?.guidanceKnown && (state.miracleWorker?.insideCase || state.miracleWorker?.promoted || state.status === "REVIVAL_PENDING" || drawer === "MIRACLE_WORKER")) {
     return <Fragment><div className="slice-shell" ref={shell} style={large ? {fontSize:24} : undefined}>
       <header className="slice-topbar"><span>{dateText(state.date)} · 第 {state.week} 周</span><strong>{state.character.name} · {state.miracleWorker.title}</strong><span>{sliceMoney(state.cash)}</span>
         <button className="slice-button quiet" disabled={busy || pending.current !== null} onClick={() => {setDrawer(null);setScreen("TITLE");}}>返回主菜单</button></header>
       <main className="slice-main"><p className="slice-notice">{browserNotice}</p>{recoveryNotice}
         <p className="slice-muted">健康{state.health} / 精神{state.mind} / 灵性{state.spirituality} · 本周行动{state.actionsRemaining}</p>
         {error && <ErrorNotice error={error} onRetry={retryLast} busy={busy}/>}
+        {attendantMysteriesPageAvailable(state) && !state.miracleWorker.insideCase && !combat && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null || state.status !== "ACTIVE"} onClick={() => setDrawer("ATTENDANT_MYSTERIES")}>查看诡秘侍者城镇与晋升</button>}
         {isEnding ? <Ending state={state} onInspect={() => setInspect(true)} onTitle={title} onContinue={() => command({type:"CONTINUE_LIFE"})} busy={busy} error={error} onRetry={retryLast}/> :
         <MiracleWorkerPanel value={state.miracleWorker} busy={busy} blocked={error !== null || pending.current !== null || (state.status !== "ACTIVE" && state.status !== "REVIVAL_PENDING") || !!combat} error={error?.message ?? null}
           onCommand={c => command({type:"MIRACLE_WORKER",command:c})}
@@ -5007,7 +5125,7 @@ export function SliceApp() {
         <details className="seer-fold"><summary>真实历史与旧时代卷宗</summary>{state.chronicle.map(r=><article key={r.id}><h3>第{r.week}周 · {r.title}</h3><p>{r.text}</p></article>)}</details>
       </main></div>{combat && <Combat state={state} reveal={roundReveal} onAcknowledge={() => setRoundReveal(null)} onCommand={command} busy={busy} error={error} onRetry={retryLast} fast={fast} onFastChange={setFast}/>}</Fragment>;
   }
-  if(activePlay && (state.ancientScholar?.eraClosed || state.ancientScholar?.locked || drawer === "ANCIENT_SCHOLAR")) {
+  if(activePlay && !state.attendantMysteries?.promoted && (state.ancientScholar?.eraClosed || state.ancientScholar?.locked || drawer === "ANCIENT_SCHOLAR")) {
     return <Fragment><div className="slice-shell" ref={shell} style={large ? {fontSize:24} : undefined}>
       <header className="slice-topbar"><span>{dateText(state.date)} · 第 {state.week} 周</span><strong>{state.character.name} · {state.ancientScholar.title}</strong><span>{sliceMoney(state.cash)}</span>
         <button className="slice-button quiet" disabled={busy || pending.current !== null} onClick={() => {setDrawer(null);setScreen("TITLE");}}>返回主菜单</button></header>
@@ -5278,6 +5396,7 @@ export function SliceApp() {
                 {state.silentDisciple?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("SILENT_DISCIPLE")}>沉默门徒与有限变形</button>}
                 {state.blatherer?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("BLATHERER")}>呓语者与有限低语</button>}
                 {state.threeHeadedTemplar?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("THREE_HEADED_TEMPLAR")}>三首圣堂与有限双灵外放</button>}
+                {attendantMysteriesPageAvailable(state) && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("ATTENDANT_MYSTERIES")}>诡秘侍者城镇与当前动作</button>}
                 {state.barrenMatriarch?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("BARREN_MATRIARCH")}>荒芜主母与当前动作</button>}
                 {state.balancer?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("BALANCER")}>平衡者与当前动作</button>}
                 {state.entropyDuke?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("ENTROPY_DUKE")}>熵之公爵与当前动作</button>}
@@ -5556,80 +5675,7 @@ export function SliceApp() {
           </>
         )}
       </div>
-      {activePlay && event && (
-        <Modal key={event.instanceId} title={event.title} blocking>
-          <div className="slice-event-layout">
-            <div
-              className={`slice-event-art ${event.actor ? "slice-event-actor" : ""}`}
-            >
-              <img
-                src={
-                  event.actor === "MAEVE"
-                    ? assetPath("npcs/maeve.webp")
-                    : event.actor === "INTERMEDIARY"
-                      ? assetPath("npcs/intermediary.webp")
-                      : event.id.startsWith("ARC-C") ||
-                          event.id === "ARC-CRISIS"
-                        ? assetPath("scenes/boiler-room.webp")
-                        : event.id === "ARC-B"
-                          ? assetPath("scenes/east-district.webp")
-                          : assetPath("scenes/factory.webp")
-                }
-                alt={
-                  event.actor === "MAEVE"
-                    ? "工场门口的梅芙"
-                    : event.actor === "INTERMEDIARY"
-                      ? "带来委托信的匿名代理人"
-                      : "事件发生的城市环境"
-                }
-              />
-            </div>
-            <div className="slice-dialog-content">
-              <div className="slice-eyebrow">
-                {event.id.includes("ORIGIN") ? "个人履历" : "生活与调查"}
-              </div>
-              <DialogHeading title={event.title} />
-              <p className="slice-event-body">{event.body}</p>
-              {event.facts.length > 0 && (
-                <div className="slice-notice slice-event-facts">
-                  <strong>可以确认</strong>
-                  <ul className="slice-simple-list">
-                    {event.facts.map((fact) => (
-                      <li key={fact}>{fact}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              <div className="slice-event-options">
-                {event.choices.map((choice) => (
-                  <button
-                    key={choice.id}
-                    className="slice-choice"
-                    disabled={busy || !choice.enabled || error !== null}
-                    onClick={() =>
-                      command({
-                        type: "EVENT_CHOICE",
-                        eventInstanceId: event.instanceId,
-                        choiceId: choice.id,
-                      })
-                    }
-                  >
-                    <strong>{choice.label}</strong>
-                    <p>{choice.preview}</p>
-                    {choice.disabledReason && <p>{choice.disabledReason}</p>}
-                  </button>
-                ))}
-              </div>
-              <p className="slice-event-cost">
-                处理事件不额外消耗行动点。选项上的现金成本与风险仍会结算。
-              </p>
-              {error && (
-                <ErrorNotice error={error} onRetry={retryLast} busy={busy} />
-              )}
-            </div>
-          </div>
-        </Modal>
-      )}
+      {eventDialog}
       {activePlay && combat && (
         <Combat
           state={state}

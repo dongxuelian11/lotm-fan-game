@@ -61,6 +61,9 @@ const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is numbe
 const success = (v: PublicResolutionTier | null) => v === 'SUCCESS' || v === 'GREAT_SUCCESS';
 export const isAncientScholarStage = (s: SliceState) => s.progression.pathwayId === 'diviner' && s.progression.sequence === 3;
 const ready = (s: SliceState) => isAncientScholarStage(s) && s.ancientScholar.ritual.location === 'RECEPTION';
+// Historical inheritance only; existing stage command predicates stay unchanged.
+const hasAttendantHistory = (s: SliceState) => s.progression.pathwayId === 'diviner' &&
+  s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null;
 const freshCase = (): AncientScholarCaseState => ({ status: 'AVAILABLE', observedWeek: null, attemptWeek: null, method: null, result: 'NONE', attempted: false, outcome: null, returned: false, closes: 0, withdrawals: 0 });
 export function createAncientScholarLifeState(): AncientScholarLifeState {
   return { cases: { 'past-reserve': freshCase(), 'old-tag': freshCase(), 'lit-fragment': freshCase() }, reflected: false,
@@ -204,7 +207,7 @@ export function ancientScholarLifeActions(s: SliceState): AncientScholarAction[]
   return out;
 }
 export function projectAncientScholarLife(s: SliceState): AncientScholarLifeProjection {
-  if (!isAncientScholarStage(s)) return { insideCase: false, environment: '', cases: [], practice: null };
+  if (!isAncientScholarStage(s) && !hasAttendantHistory(s)) return { insideCase: false, environment: '', cases: [], practice: null };
   const l = s.ancientScholar.life;
   return { insideCase: hasAncientScholarLifeLock(s), environment: ANCIENT_SCHOLAR_LIFE_ENVIRONMENT,
     cases: CASES.map(c => { const r = l.cases[c.id]; return { id: c.id, title: c.title, story: c.story, observations: r.status === 'AVAILABLE' ? [] : [...c.facts], status: r.status,
@@ -245,6 +248,8 @@ export function validateAncientScholarLife(s: SliceState): boolean {
     if ((p.ownerAt === 'OWN_HISTORY') !== (p.shelterRemainingSeconds === 10) || p.ownerAt === 'OWN_HISTORY' && (p.activeCase !== 'lit-fragment' || !success(active!.outcome) || !hasAncientScholarFragment(s))) return false;
     if (s.seer.completedSources.filter(x => x === 'ancient-scholar-reflection').length !== (l.reflected ? 1 : 0) || l.reflected && resolved !== 3) return false;
     if (s.ancientScholar.promotionWeek === null && stableStringify(l) !== stableStringify(createAncientScholarLifeState())) return false;
-    return s.progression.pathwayId!=='diviner'||![3,2].includes(s.progression.sequence??0)||(s.progression.sequence===2?s.miracleWorker.ancientActingAtPromotion:s.progression.acting) === resolved * 25 + (l.reflected ? 25 : 0);
+    const retained = s.progression.pathwayId === 'diviner' && s.progression.sequence === 2 || hasAttendantHistory(s);
+    const acting = retained ? s.miracleWorker.ancientActingAtPromotion : s.progression.acting;
+    return (!isAncientScholarStage(s) && !retained) || acting === resolved * 25 + (l.reflected ? 25 : 0);
   } catch { return false; }
 }

@@ -298,6 +298,6 @@ export function validateFacelessPractice(s: SliceState): boolean {
   if (a.templateId !== 'SELF' && (m.cases[a.sourceCaseId!].observedWeek === null || m.cases[a.sourceCaseId!].observedWeek! > a.changedWeek!)) return false;
   if (o.caseId !== null && m.cases[o.caseId].observedWeek === null) return false;
   if (m.reflected !== s.seer.completedSources.includes('faceless-reflection') || m.reflected && CASES.some(p => m.cases[p.id].status !== 'RESOLVED')) return false;
-  if (!promoted(s) && (a.templateId !== 'SELF' || a.changes !== 0 || a.restores !== 0 || a.changedWeek !== null || o.loans !== 0 || o.returns !== 0 || o.location !== 'WARDROBE' || m.reflected || CASES.some(p => m.cases[p.id].status !== 'AVAILABLE'))) return false;
+  if (!promoted(s) && !(s.progression.pathwayId === 'diviner' && s.progression.sequence === 1 && s.attendantMysteries?.promotionWeek != null) && (a.templateId !== 'SELF' || a.changes !== 0 || a.restores !== 0 || a.changedWeek !== null || o.loans !== 0 || o.returns !== 0 || o.location !== 'WARDROBE' || m.reflected || CASES.some(p => m.cases[p.id].status !== 'AVAILABLE'))) return false;
   return true;
 }
