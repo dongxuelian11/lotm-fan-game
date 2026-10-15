@@ -4,7 +4,7 @@ import type {
   CommitReceipt,
 } from "../shared/contracts.js";
 import { makePublicError } from "../domain/public-error.js";
-import { validateR1Intent } from "../content/r1-validation.js";
+import { validateR2Intent } from "../content/r2-validation.js";
 import { unavailableBootstrap, type SqliteGameStore } from "../persistence/sqlite-store.js";
 
 export const IPC_CHANNELS = {
@@ -117,7 +117,7 @@ function submitValidatedInput(
   store: SqliteGameStore,
   input: unknown,
 ): BridgeResult<CommitReceipt> {
-  const validation = validateR1Intent(input);
+  const validation = validateR2Intent(input);
   if (!validation.ok) {
     return { ok: false, error: validation.error };
   }
