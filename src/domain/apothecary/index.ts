@@ -1,3 +1,4 @@
+import { BEAUTY_GODDESS_ABILITY_IDS } from '../beauty-goddess/types.js';
 import { LIFE_GIVER_ABILITY_IDS } from '../life-giver/types.js';
 import {SUMMONING_MASTER_ABILITY_IDS} from '../summoning-master/types.js';
 import {WITCH_KING_ABILITY_IDS} from '../witch-king/types.js';
@@ -36,7 +37,7 @@ function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Err
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const shape = (value: Record<string, unknown>, fields: readonly string[]) => Object.keys(value).sort().join('|') === [...fields].sort().join('|');
 const integer = (value: unknown, min: number, max = Number.MAX_SAFE_INTEGER) => Number.isSafeInteger(value) && (value as number) >= min && (value as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'moon' && (s.progression.sequence === 9 || s.progression.sequence === 8 || s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'moon' && (s.progression.sequence === 9 || s.progression.sequence === 8 || s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))));
 const potionPrice = (bottle: ApothecaryBottle) => APOTHECARY_PRICES.potion - (bottle.labourSteps === 2 ? APOTHECARY_PRICES.labourCredit : 0);
 const bottleNumber = (bottle: ApothecaryBottle) => Number(bottle.id.slice('apothecary-potion-'.length));
 const ordinaryWeeks = (s: SliceState) => Math.min(4, Math.max(0, (s.progression.promotionWeek ?? s.week) - 1));
@@ -249,7 +250,7 @@ export function validateApothecaryState(s: SliceState): boolean {
   const apothecary = raw as unknown as ApothecaryState, isPromoted = promoted(s);
   if (s.progression.pathwayId === 'moon' && !isPromoted) return false;
   if (isPromoted) {
-    if (!apothecary.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...APOTHECARY_ABILITY_IDS,...(s.progression.sequence!==9?TAMER_ABILITIES.map(a=>a.id):[]),...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))))?VAMPIRE_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?POTION_PROFESSOR_ABILITY_IDS:[]),...((s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?CRIMSON_SCHOLAR_ABILITY_IDS:[]),...(([4, 3, 2].includes(s.progression.sequence ?? 0))?WITCH_KING_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...(s.progression.sequence === 2 ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!apothecary.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...(s.progression.sequence===1?BEAUTY_GODDESS_ABILITY_IDS:[]),...APOTHECARY_ABILITY_IDS,...(s.progression.sequence!==9?TAMER_ABILITIES.map(a=>a.id):[]),...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))))?VAMPIRE_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?POTION_PROFESSOR_ABILITY_IDS:[]),...((s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?CRIMSON_SCHOLAR_ABILITY_IDS:[]),...(([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?WITCH_KING_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (APOTHECARY_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id)) || apothecary.reflected) return false;
     if (apothecary.clinic.purchased !== 0 || apothecary.clinic.materials !== 0 || apothecary.clinic.healing !== 0 || apothecary.clinic.calming !== 0 || apothecary.clinic.spent !== 0 || apothecary.clinic.supplyWeek !== null) return false;

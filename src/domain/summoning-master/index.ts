@@ -1,3 +1,4 @@
+import { BEAUTY_GODDESS_ABILITY_IDS } from '../beauty-goddess/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -27,8 +28,8 @@ export function createSummoningMasterState(): SummoningMasterState {
     preparations: [], preparedWeek: null, life: createSummoningMasterLifeState(), encounter: createSummoningMasterEncounterState() };
 }
 export const isSummoningMaster = (s: SliceState) => s.progression.pathwayId === 'moon' && s.progression.sequence === 3;
-const hasSummoningMasterHistory = (s: SliceState) => s.progression.pathwayId === 'moon' && [3, 2].includes(s.progression.sequence ?? 0);
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'moon' && [4, 3, 2].includes(s.progression.sequence ?? 0) && s.apothecary.discovered && s.witchKing.guidanceKnown && s.witchKing.promotionWeek !== null;
+const hasSummoningMasterHistory = (s: SliceState) => s.progression.pathwayId === 'moon' && [3, 2, 1].includes(s.progression.sequence ?? 0);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'moon' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.apothecary.discovered && s.witchKing.guidanceKnown && s.witchKing.promotionWeek !== null;
 export const hasSummoningMasterLock = (s: SliceState): boolean => s.summoningMaster.preparedWeek !== null || hasSummoningMasterLifeLock(s) || hasSummoningMasterEncounterLock(s);
 const bottleNumber = (b: Pick<SummoningMasterBottle, 'id'>) => Number(b.id.slice('summoning-master-potion-'.length));
 const potionPrice = (b: SummoningMasterBottle) => SUMMONING_MASTER_PRICES.potion - (b.labourSteps === SUMMONING_MASTER_LABOUR_STEPS ? SUMMONING_MASTER_PRICES.labourCredit : 0);
@@ -164,7 +165,7 @@ export function applySummoningMasterCommand(s: SliceState, command: SummoningMas
 
 export function projectSummoningMaster(s: SliceState): SummoningMasterProjection {
   const state = s.summoningMaster, available = knownChannel(s), promoted = hasSummoningMasterHistory(s), actions: SummoningMasterAction[] = [];
-  const acting = promoted ? (s.progression.sequence === 2 ? s.lifeGiver.summoningMasterActingAtPromotion ?? 0 : s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence === 2||s.progression.sequence===1) ? s.lifeGiver.summoningMasterActingAtPromotion ?? 0 : s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: SummoningMasterAcquisitionCommand) => { const reason = summoningMasterAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-summoning-master-guidance', '听取召唤大师成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -222,7 +223,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasSummoningMasterLifeLock(s) || hasSummoningMasterEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.witchKing.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.witchKingActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS, ...WITCH_KING_ABILITY_IDS, ...SUMMONING_MASTER_ABILITY_IDS, ...(s.progression.sequence === 2 ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?BEAUTY_GODDESS_ABILITY_IDS:[]),...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS, ...WITCH_KING_ABILITY_IDS, ...SUMMONING_MASTER_ABILITY_IDS, ...((s.progression.sequence === 2||s.progression.sequence===1) ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.witchKingActingAtPromotion !== null || SUMMONING_MASTER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

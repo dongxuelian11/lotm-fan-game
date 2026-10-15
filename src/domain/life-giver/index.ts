@@ -1,3 +1,4 @@
+import { BEAUTY_GODDESS_ABILITY_IDS } from '../beauty-goddess/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -30,8 +31,8 @@ export function createLifeGiverState(): LifeGiverState {
 /** Current-stage checks never grant acquisition from an inherited S3 history. */
 export const isLifeGiver = (s: SliceState) => s.progression.pathwayId === 'moon' && s.progression.sequence === 2;
 export const isLifeGiverAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'moon' && s.progression.sequence === 3;
-const hasSummoningMasterHistory = (s: SliceState) => s.progression.pathwayId === 'moon' && [3, 2].includes(s.progression.sequence ?? 0) && s.apothecary.discovered && s.summoningMaster.guidanceKnown && s.summoningMaster.promotionWeek !== null;
-export const hasLifeGiverHistory = (s: SliceState) => isLifeGiver(s) && s.lifeGiver.promotionWeek !== null;
+const hasSummoningMasterHistory = (s: SliceState) => s.progression.pathwayId === 'moon' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.apothecary.discovered && s.summoningMaster.guidanceKnown && s.summoningMaster.promotionWeek !== null;
+export const hasLifeGiverHistory = (s: SliceState) => (isLifeGiver(s)||(s.progression.pathwayId==='moon'&&s.progression.sequence===1)) && s.lifeGiver.promotionWeek !== null;
 const knownChannel = hasSummoningMasterHistory;
 export const hasLifeGiverLock = (s: SliceState): boolean => s.lifeGiver.preparedWeek !== null || hasLifeGiverLifeLock(s) || hasLifeGiverEncounterLock(s);
 const bottleNumber = (b: Pick<LifeGiverBottle, 'id'>) => Number(b.id.slice('life-giver-potion-'.length));
@@ -171,7 +172,7 @@ export function applyLifeGiverCommand(s: SliceState, command: LifeGiverCommand, 
 }
 
 export function projectLifeGiver(s: SliceState): LifeGiverProjection {
-  const state = s.lifeGiver, available = knownChannel(s), promoted = isLifeGiver(s), actions: LifeGiverAction[] = [];
+  const state = s.lifeGiver, available = knownChannel(s), promoted = hasLifeGiverHistory(s), actions: LifeGiverAction[] = [];
   const add = (id: string, label: string, cost: string, command: LifeGiverAcquisitionCommand) => { const reason = lifeGiverAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && isLifeGiverAcquisitionStage(s)) {
     if (!state.guidanceKnown) add('learn-life-giver-guidance', '听取创生者成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -194,11 +195,11 @@ export function projectLifeGiver(s: SliceState): LifeGiverProjection {
     title: promoted ? '创生者 · 序列2' : '创生者之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${LIFE_GIVER_FORMULA_STATUS}${LIFE_GIVER_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...(promoted ? [...lifeGiverLifeActions(s), ...lifeGiverEncounterActions(s)] : [])] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...(promoted ? [...lifeGiverLifeActions(s), ...lifeGiverEncounterActions(s)] : [])] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 创生者成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为召唤大师' : '排异，仍为召唤大师'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? LIFE_GIVER_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? LIFE_GIVER_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `召唤大师消化${state.summoningMasterActingAtPromotion}/100留存；创生者扮演${s.progression.acting}/100。新阶段按实际完成的G情境积累扮演，普通完成与能力实测分别记账；旧三案与旧反思不能重复记为本阶经历。` : available ? `召唤大师需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${summoningMasterWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完召唤大师之路。',
+    acting: promoted ? (s.progression.sequence===1?s.beautyGoddess.lifeGiverActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `召唤大师消化${state.summoningMasterActingAtPromotion}/100留存；创生者扮演${s.progression.sequence===1?s.beautyGoddess.lifeGiverActingAtPromotion:s.progression.acting}/100。新阶段按实际完成的G情境积累扮演，普通完成与能力实测分别记账；旧三案与旧反思不能重复记为本阶经历。` : available ? `召唤大师需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${summoningMasterWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完召唤大师之路。',
     pollution: s.seer.pollution, risk: available ? LIFE_GIVER_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -223,16 +224,16 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.lifeGiver;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'summoningMasterActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as LifeGiverState, promoted = isLifeGiver(s), firstWeek = s.summoningMaster.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + LIFE_GIVER_MIN_SUMMONING_MASTER_WEEKS;
+  const state = raw as unknown as LifeGiverState, promoted = hasLifeGiverHistory(s), firstWeek = s.summoningMaster.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + LIFE_GIVER_MIN_SUMMONING_MASTER_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
-  if (isLifeGiverAcquisitionStage(s) && (!shape(s.progression.mastery, [...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS, ...WITCH_KING_ABILITY_IDS, ...SUMMONING_MASTER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500)))) return false;
+  if (isLifeGiverAcquisitionStage(s) && (!shape(s.progression.mastery, [...(s.progression.sequence===1?BEAUTY_GODDESS_ABILITY_IDS:[]),...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS, ...WITCH_KING_ABILITY_IDS, ...SUMMONING_MASTER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500)))) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !LIFE_GIVER_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
   if (!state.guidanceKnown && (state.preparations.length || state.preparedWeek !== null)) return false;
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || !isLifeGiverAcquisitionStage(s) || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasLifeGiverLifeLock(s) || hasLifeGiverEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.summoningMaster.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.summoningMasterActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS, ...WITCH_KING_ABILITY_IDS, ...SUMMONING_MASTER_ABILITY_IDS, ...LIFE_GIVER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?BEAUTY_GODDESS_ABILITY_IDS:[]),...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS, ...WITCH_KING_ABILITY_IDS, ...SUMMONING_MASTER_ABILITY_IDS, ...LIFE_GIVER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.summoningMasterActingAtPromotion !== null || LIFE_GIVER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

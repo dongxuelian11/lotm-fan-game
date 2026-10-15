@@ -1,3 +1,4 @@
+import { BEAUTY_GODDESS_ABILITY_IDS } from '../beauty-goddess/types.js';
 import { LIFE_GIVER_ABILITY_IDS } from '../life-giver/types.js';
 import {SUMMONING_MASTER_ABILITY_IDS} from '../summoning-master/types.js';
 import {WITCH_KING_ABILITY_IDS} from '../witch-king/types.js';
@@ -37,7 +38,7 @@ export function createCrimsonScholarState(): CrimsonScholarState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'moon' && (s.progression.sequence === 5||([4, 3, 2].includes(s.progression.sequence ?? 0)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'moon' && (s.progression.sequence === 5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)));
 const isPotionProfessor = (s: SliceState) => s.progression.pathwayId === 'moon' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.apothecary.discovered && s.apothecary.guidanceKnown && s.tamer.guidanceKnown && s.vampire.guidanceKnown && s.potionProfessor.guidanceKnown && s.potionProfessor.promotionWeek !== null && (isPotionProfessor(s) || promoted(s));
 const potionPrice = (bottle: CrimsonScholarBottle) => CRIMSON_SCHOLAR_PRICES.potion - (bottle.labourSteps === 5 ? CRIMSON_SCHOLAR_PRICES.labourCredit : 0);
@@ -224,7 +225,7 @@ export function applyCrimsonScholarCommand(s: SliceState, command: CrimsonSchola
 
 export function projectCrimsonScholar(s: SliceState): CrimsonScholarProjection {
   const actions: CrimsonScholarAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? (([4, 3, 2].includes(s.progression.sequence ?? 0))?s.witchKing.crimsonScholarActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? (([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?s.witchKing.crimsonScholarActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: CrimsonScholarAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -373,7 +374,7 @@ export function validateCrimsonScholarState(s: SliceState): boolean {
   if (crimsonScholar.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!crimsonScholar.guidanceKnown || !integer(s.potionProfessor.promotionWeek, 1, s.week) || !integer(crimsonScholar.promotionWeek, firstConsumptionWeek, s.week) || crimsonScholar.potionProfessorActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS,...(([4, 3, 2].includes(s.progression.sequence ?? 0))?WITCH_KING_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...(s.progression.sequence === 2 ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?BEAUTY_GODDESS_ABILITY_IDS:[]),...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS,...(([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?WITCH_KING_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (crimsonScholar.promotionWeek !== null || crimsonScholar.potionProfessorActingAtPromotion !== null || CRIMSON_SCHOLAR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (crimsonScholar.practice.field !== 'NONE' || crimsonScholar.practice.location !== 'START' || crimsonScholar.practice.outboundTrips !== 0 || crimsonScholar.practice.returns !== 0 || crimsonScholar.practice.reassemblies !== 0 || crimsonScholar.practice.reassembledWeek !== null) return false;

@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.189.0 阶段版
+# 诡秘之主同人游戏 · 0.190.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众与通识者已有有限序列1基础；其余18条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者与月亮已有有限序列1基础；其余17条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -115,6 +115,8 @@ node --expose-gc scripts/play/entropy-duke-save.mjs --key directed --source-dire
 
 ## 当前验证与限制
 
+190增量：月亮新增有限序列1美神。原572条活档同种子继续，七次魔药失败后第八瓶成功；身体变化在晋升前单独说明确认。原流灯亲自完成两米搬运并消耗真实精力，遮挡和撤回会关闭未用窗口；两轮可选战斗后对手投降，玩家无伤沿原路离开并工作。详见[美神阶段记录](docs/BEAUTY_GODDESS_PLAYABLE_STAGE.md)。
+
 188增量：观众新增有限序列1作家。原580条洞察者活档同种子续至667条，首瓶晋升；互知线索实际成功、合理安排失败后普通归还，三项生活事务及反思完成。可选新敌五轮战斗中玩家实际死亡，原终档保留；47个唯一转换已完成SQLite回滚、重开、重试与死亡旁档验证。相关36文件484项、32项恢复/CI工具、完整严格类型与生产构建通过；54个新增原始输入独立恢复核验。详见[作家阶段记录](docs/WRITER_PLAYABLE_STAGE.md)。
 
 187增量：猎人新增有限序列1征服者。沿原658条活分支公开命令继续至795条，前两瓶失败、第三瓶成功；原五位疲劳同伴真实付费跨周恢复，两项新能力分别在生活中实际应用，第三项按撤回的许可普通完成。可选新敌八轮战斗后死亡，玩家保留两处轻伤，普通退出后工作跨周，最终第200周ACTIVE、健康80、精神100、灵性120。48个唯一自然边界全部SQLite验证。详见[征服者阶段记录](docs/CONQUEROR_PLAYABLE_STAGE.md)。
@@ -191,3 +193,12 @@ node --expose-gc scripts/play/civilization-enlightener-save.mjs --expected-bound
 ```
 
 同一691条通识者原分支自然续行至797条：真实诊治、首瓶晋1、原护架付费修理和失败后的普通操作均保留。可选战斗第四轮撤退，玩家仍活并保留新伤。详见[文明启蒙者阶段](docs/CIVILIZATION_ENLIGHTENER_PLAYABLE_STAGE.md)。
+
+### 美神阶段专项恢复与检查
+
+```sh
+npm run fixtures:restore -- --only-prefix life-giver-v01680 --only-prefix beauty-goddess-v01900
+npx vitest run tests/domain/beauty-goddess-acquisition.test.ts tests/domain/beauty-goddess-life.test.ts tests/domain/beauty-goddess-combat.test.ts tests/domain/beauty-goddess-inheritance.test.ts tests/domain/beauty-goddess-shared.test.ts tests/domain/beauty-goddess-natural.test.ts tests/renderer/beauty-goddess-panel.test.tsx tests/renderer/beauty-goddess-source.test.tsx tests/renderer/beauty-goddess-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/beauty-goddess-save.mjs --expected-boundaries 102
+```

@@ -166,7 +166,7 @@ describe('Potion Professor S6 finite inherited combat', () => {
         .toMatchObject({ selfGain: 0, enemyReduction: 0, threatens: false });
       expect(state).toEqual(before); expect(random.cursor).toBe(0);
     }
-    Object.assign(state.progression, { sequence: 1 }); // S4/S3/S2 have dedicated routes; S1 remains unsupported runtime input.
+    Object.assign(state.progression, { sequence: 0 }); // S4 through S1 have dedicated routes; S0 remains unsupported runtime input.
     expect(isVampire(state)).toBe(false);
     expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
     expect(playerAbilityWheel(state, null)).toEqual(ordinaryAbilityWheel(false, null));

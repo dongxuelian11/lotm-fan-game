@@ -1,3 +1,4 @@
+import { BEAUTY_GODDESS_ABILITY_IDS } from '../beauty-goddess/types.js';
 import { LIFE_GIVER_ABILITY_IDS } from '../life-giver/types.js';
 import {SUMMONING_MASTER_ABILITY_IDS} from '../summoning-master/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -45,7 +46,7 @@ export function createWitchKingState(): WitchKingState {
 }
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isWitchKing = (s: SliceState) => s.progression.pathwayId === 'moon' && s.progression.sequence === 4;
-const hasWitchKingHistory = (s:SliceState) => s.progression.pathwayId === 'moon' && [4, 3, 2].includes(s.progression.sequence ?? 0);
+const hasWitchKingHistory = (s:SliceState) => s.progression.pathwayId === 'moon' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0);
 const isCrimsonScholar = (s: SliceState) => s.progression.pathwayId === 'moon' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.apothecary.discovered && s.apothecary.guidanceKnown && s.tamer.guidanceKnown && s.vampire.guidanceKnown && s.potionProfessor.guidanceKnown && s.crimsonScholar.guidanceKnown && s.crimsonScholar.promotionWeek !== null && (isCrimsonScholar(s) || hasWitchKingHistory(s));
 const bottleNumber = (bottle: Pick<WitchKingBottle, 'id'>) => Number(bottle.id.slice('witch-king-potion-'.length));
@@ -179,15 +180,15 @@ export function projectWitchKing(s: SliceState): WitchKingProjection {
   const chance = computeCheckChance({ baseAbility: s.character.coreStats.will, difficulty: 28, modifiers: [] });
   return {
     title: promoted ? '巫王 · 序列4' : '巫王之路', discovered: available, guidanceKnown: known, promoted,
-    formulaKnown: false, formula: [], actions: available && ![3, 2].includes(s.progression.sequence ?? 0) ? [...actions, ...witchKingRitualActions(s), ...witchKingLifeActions(s), ...witchKingEncounterActions(s)] : [],
+    formulaKnown: false, formula: [], actions: available && ![3, 2, 1].includes(s.progression.sequence ?? 0) ? [...actions, ...witchKingRitualActions(s), ...witchKingLifeActions(s), ...witchKingEncounterActions(s)] : [],
     bottles: known ? state.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 独立巫王成品`, source: `${bottle.source}${bottle.ritualId ? `第${bottle.ritualWindowWeek}周在原厅预约${bottle.ritualId}专业准备窗口服用；本次原包与原瓶均耗尽。` : ''}`,
       status: bottle.status === 'SUPPLIER' ? '原供应方持有，未交付' : bottle.status === 'PLAYER' ? '你实际持有，尚未服用' : `原瓶已耗尽 · ${bottle.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : bottle.outcome === 'SUCCESS' ? '成功晋升' : bottle.outcome === 'GREAT_FAILURE' ? '严重排异，仍为深红学者' : '排异，仍为深红学者'}`,
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: promoted ? WITCH_KING_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: promoted ? ([3, 2].includes(s.progression.sequence ?? 0)?s.summoningMaster.witchKingActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: promoted ? `深红学者消化${state.crimsonScholarActingAtPromotion}/100与原掌握保留；巫王扮演${[3, 2].includes(s.progression.sequence ?? 0)?s.summoningMaster.witchKingActingAtPromotion:s.progression.acting}/100。` : available ? `深红学者消化需100（当前${s.progression.acting}/100），晋升后满12整周（${crimsonScholarWeeks(s)}/12）；当前专业准备与原封装包须另行完成，可选择保持深红学者。` : '先完成深红学者之路。',
+    acting: promoted ? ([3, 2, 1].includes(s.progression.sequence ?? 0)?s.summoningMaster.witchKingActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `深红学者消化${state.crimsonScholarActingAtPromotion}/100与原掌握保留；巫王扮演${[3, 2, 1].includes(s.progression.sequence ?? 0)?s.summoningMaster.witchKingActingAtPromotion:s.progression.acting}/100。` : available ? `深红学者消化需100（当前${s.progression.acting}/100），晋升后满12整周（${crimsonScholarWeeks(s)}/12）；当前专业准备与原封装包须另行完成，可选择保持深红学者。` : '先完成深红学者之路。',
     pollution: s.seer.pollution, risk: known ? WITCH_KING_CONSUMPTION_RISK : '先通过原导师了解巫王成品来源与实际仪式风险。',
     supplies: known ? `供应方持有${state.bottles.filter(bottle => bottle.status === 'SUPPLIER').length}瓶，你持有未用原瓶${state.bottles.filter(bottle => bottle.status === 'PLAYER').length}瓶。${state.resupply.requestedWeek === null ? `后续实际到货${state.resupply.deliveries}批。` : `第${state.resupply.requestedWeek}周申请，下一真实周起实际到货。`}成品配方仍未知，原瓶、付费预约与专业准备分别结算，旧仪式不能代替。` : '',
     ...(available ? { story: `${WITCH_KING_FORMULA_STATUS}${WITCH_KING_RITUAL_SOURCE}${WITCH_KING_SOURCE_STATUS}` } : {}),
@@ -226,7 +227,7 @@ function validateState(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.crimsonScholar.promotionWeek, 1, s.week) || !integer(state.promotionWeek, earliestConsumption, s.week) || state.crimsonScholarActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS, ...WITCH_KING_ABILITY_IDS,...([3, 2].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...(s.progression.sequence === 2 ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?BEAUTY_GODDESS_ABILITY_IDS:[]),...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS, ...CRIMSON_SCHOLAR_ABILITY_IDS, ...WITCH_KING_ABILITY_IDS,...([3, 2, 1].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.crimsonScholarActingAtPromotion !== null || WITCH_KING_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   for (const [index, bottle] of state.bottles.entries()) {
     if (!record(bottle) || !shape(bottle, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'status', 'outcome', 'ritualId', 'ritualWindowWeek']) || bottle.id !== `witch-king-potion-${index + 1}` || typeof bottle.source !== 'string' || !integer(bottle.labourSteps, 0, 5)) return false;

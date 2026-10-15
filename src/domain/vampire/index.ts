@@ -1,3 +1,4 @@
+import { BEAUTY_GODDESS_ABILITY_IDS } from '../beauty-goddess/types.js';
 import { LIFE_GIVER_ABILITY_IDS } from '../life-giver/types.js';
 import {SUMMONING_MASTER_ABILITY_IDS} from '../summoning-master/types.js';
 import {WITCH_KING_ABILITY_IDS} from '../witch-king/types.js';
@@ -33,7 +34,7 @@ export function createVampireState(): VampireState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'moon' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'moon' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))));
 const isTamer = (s: SliceState) => s.progression.pathwayId === 'moon' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.apothecary.discovered && s.apothecary.guidanceKnown && s.tamer.guidanceKnown && s.tamer.promotionWeek !== null && (isTamer(s) || promoted(s));
 const potionPrice = (bottle: VampireBottle) => VAMPIRE_PRICES.potion - (bottle.labourSteps === 4 ? VAMPIRE_PRICES.labourCredit : 0);
@@ -194,8 +195,8 @@ export function projectVampire(s: SliceState): VampireProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? VAMPIRE_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?s.potionProfessor.vampireActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?'吸血鬼魔药已消化，原饮食与实践记录保留。':isPromoted ? `驯兽师消化成果${s.vampire.tamerActingAtPromotion}/100已保留；吸血鬼扮演${s.progression.acting}/100，能力掌握分别记录。人类服药晋升后仍须扮演与消化，不适用天生血族的序列7例外。`
+    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?s.potionProfessor.vampireActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?'吸血鬼魔药已消化，原饮食与实践记录保留。':isPromoted ? `驯兽师消化成果${s.vampire.tamerActingAtPromotion}/100已保留；吸血鬼扮演${s.progression.acting}/100，能力掌握分别记录。人类服药晋升后仍须扮演与消化，不适用天生血族的序列7例外。`
       : available ? `服药前需完成驯兽师消化（${s.progression.acting}/100），并在晋升驯兽师后度过8整周（${tamerWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完驯兽师之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${VAMPIRE_CONSUMPTION_RISK}` : '成为驯兽师后，可向原导师了解下一序列。',
@@ -243,7 +244,7 @@ export function validateVampireState(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!state.guidanceKnown || !integer(s.tamer.promotionWeek, 11, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.tamerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?POTION_PROFESSOR_ABILITY_IDS:[]),...((s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?CRIMSON_SCHOLAR_ABILITY_IDS:[]),...(([4, 3, 2].includes(s.progression.sequence ?? 0))?WITCH_KING_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...(s.progression.sequence === 2 ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?BEAUTY_GODDESS_ABILITY_IDS:[]),...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?POTION_PROFESSOR_ABILITY_IDS:[]),...((s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?CRIMSON_SCHOLAR_ABILITY_IDS:[]),...(([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?WITCH_KING_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
     if (s.tamer.companionId !== null) return false;
     const activityWeeks = [...Object.values(state.practiceAttempts), state.blood.lastPurchaseWeek, state.blood.lastFedWeek, state.regenerationWeek, state.encounter.attemptWeek];
     if (activityWeeks.some(week => week !== null && week < state.promotionWeek!)) return false;

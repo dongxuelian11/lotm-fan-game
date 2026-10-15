@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.189.0",
+  "version": "0.190.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -261,6 +261,21 @@
       "name": "lotm_release_0.189.0_civilization_enlightener_test_inputs_2_2026-10-15.tar.gz",
       "bytes": 3745964,
       "sha256": "bbb9e03a0bb3022515fd9e6971fd7f4d122ca9f775c901943493719b6827a1ee"
+    },
+    {
+      "name": "lotm_release_0.190.0_beauty_goddess_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17582499,
+      "sha256": "b4595395ddb740590899b25ca211f61f08d5cb3679996e0539ee386fcbe0e4a4"
+    },
+    {
+      "name": "lotm_release_0.190.0_beauty_goddess_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 17839091,
+      "sha256": "1542c45e5d7017350edeac71e71c2474fbfa111f869ace02be14d252bb447ca9"
+    },
+    {
+      "name": "lotm_release_0.190.0_beauty_goddess_test_inputs_3_2026-10-15.tar.gz",
+      "bytes": 10283093,
+      "sha256": "9c3880bf69d3387994def8e0675e6799c0a9ec5e596ff97b86d3f2157202c78a"
     }
   ],
   "fileEntries": [
@@ -2043,6 +2058,576 @@
       "path": "tests/fixtures/barren-matriarch-v01850/summary.json",
       "bytes": 12457,
       "sha256": "ca42997752ce929952c6cf4353c44b992090579db884ab221d7ea14513838221"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundaries.index.json",
+      "bytes": 8279,
+      "sha256": "2955ffe6aed01a1fa181bf4ffb8e72dfe4a982673d4229e23330f5d1352fb059"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-actual-next-precision-operation.json",
+      "bytes": 6702173,
+      "sha256": "85c66cfb42d9ef701871b288416062be013d0165150a4165bc41d7addd54adbc"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-actual-paid-finite-oil.json",
+      "bytes": 6765836,
+      "sha256": "b80dcce69f7c24022bf74d3349f480ebf46438ef02e821503b9c5fa9e91d4a64"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-buy-beauty-goddess-potion-1.json",
+      "bytes": 6021194,
+      "sha256": "2a181a02c3c2153ff71d36373bb50774467fe4fe8866db28daea3cd6e4dd0ff9"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-buy-beauty-goddess-potion-2.json",
+      "bytes": 6103901,
+      "sha256": "0e639205ce36169c72b1e30955c8794cd76df737839606523979a4f96cf81cc1"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-buy-beauty-goddess-potion-3.json",
+      "bytes": 6184208,
+      "sha256": "939c384a7267fcf0a81c16e7875fd0bb55e4d33cd530f6d8d97d1954c501bc9a"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-buy-beauty-goddess-potion-4.json",
+      "bytes": 6287020,
+      "sha256": "1799426e4c05dfb659534ac8f98bb1c45c379f68668d5ff5ef301b0e08ad5692"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-buy-beauty-goddess-potion-5.json",
+      "bytes": 6367350,
+      "sha256": "c7b712b6b3367da7b0c5648fd119512ffb1e2532e08f2cfb3b976007f56b0ad3"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-buy-beauty-goddess-potion-6.json",
+      "bytes": 6449626,
+      "sha256": "2e97f10a04b76be453f9bac8c00c471bc63abecf5f175b8d11093371ce75b904"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-buy-beauty-goddess-potion-7.json",
+      "bytes": 6551850,
+      "sha256": "69e18145d9f052a89f4628f65428fa1ea43bd05c79e9162afd2b2992a062c780"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-buy-beauty-goddess-potion-8.json",
+      "bytes": 6632154,
+      "sha256": "80e17c63ce01f910e52638c4283a59044fe11d78f76bdf2b786ac43a40c62823"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-choose-limited-powers-before-fight.json",
+      "bytes": 10702040,
+      "sha256": "1d44de6ef076ece52520a450c6dbeeabdb60392dbd6ef299467aa186d288c4a5"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-combat-round-1.json",
+      "bytes": 10793116,
+      "sha256": "84bbf317d0d4c39abd6bd82a1ae12e1cd2f9907addd04b2e6f4949fb75b907bd"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-combat-round-2.json",
+      "bytes": 10803075,
+      "sha256": "32aa0d37f802fb4b404e37255dcc0e5d910bafcc92cbd8f1f16ab80e9be184d0"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-consume-beauty-goddess-potion-1.json",
+      "bytes": 6039816,
+      "sha256": "a35f76639f7f2cc7bb83284676c35aa1e92b0cb394211a229b22e4f700a21a77"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-consume-beauty-goddess-potion-2.json",
+      "bytes": 6122532,
+      "sha256": "c7e54a89fb3ddf4f57ec2b2701368c6a3d61daf1d76ed7a8ea57b530430059ac"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-consume-beauty-goddess-potion-3.json",
+      "bytes": 6202838,
+      "sha256": "968a9884f4907aeb06f1b3bfaf889cca434178cad85d446186fe91e2e01d5285"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-consume-beauty-goddess-potion-4.json",
+      "bytes": 6305656,
+      "sha256": "4aaa39f398d1d885ad008307f5329341fac91c4aff8eda7d917f573642440c9e"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-consume-beauty-goddess-potion-5.json",
+      "bytes": 6385980,
+      "sha256": "c748cadecdb7fecb7529d99c6b791605d71b674486584aab5c1873453c7d90bd"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-consume-beauty-goddess-potion-6.json",
+      "bytes": 6468262,
+      "sha256": "270dcad484cb8fe27e438007ddb7b2a6796f1cca7c116299f82661a2f0dfdfdb"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-consume-beauty-goddess-potion-7.json",
+      "bytes": 6570480,
+      "sha256": "318efd7b54f00685a752cecad60033c5dbece5ab9bffa6c89c7bd9564ce05a18"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-consume-beauty-goddess-potion-8.json",
+      "bytes": 6652100,
+      "sha256": "a4a92e85105a67d22af19c290c5a22a0308e66de2f3fe0d8131ea5a3ce98d385"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-explicit-successful-female-body-confirmation.json",
+      "bytes": 5934652,
+      "sha256": "798e6b42aa1d529d1cdaf99f60baa307107b2b40e1ca4bf920e50aef3a2fd88a"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-guidance.json",
+      "bytes": 5496723,
+      "sha256": "e87fc3188b1281f317bf3738ce7eb071f18a6ca9ba3bd7175152427a0dc41e88"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-independent-optional-fight.json",
+      "bytes": 10741018,
+      "sha256": "a81097241b499c5aa553982185dbf2da4c8663fac29010bb084f8f6e42a6d41c"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-independent-oswald-name-exchange.json",
+      "bytes": 8846580,
+      "sha256": "6d16f479d23fe1d571fe1cf8708deaaa7b85c1172c0c37e61d87f06294517ba1"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-actual-lamp-extinguished.json",
+      "bytes": 6795768,
+      "sha256": "3bebeb4f8c60ee790ee2cb5fcaf4d79029eed5f566366d8130b6123df405cb63"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-actual-lamp-lit.json",
+      "bytes": 6775407,
+      "sha256": "de2509d05736333379d9245a2487a29d3f99ca2e5d41a81acc18bda9f6935407"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-actual-paid-piece.json",
+      "bytes": 6770660,
+      "sha256": "9b5d0e7e7be7539e328806756f3d804033f69a3596b83fd39c2e4bb8d091cc46"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-actual-pending-crossing.json",
+      "bytes": 6780148,
+      "sha256": "b41f895e0a581606421fa363e9f97677ef195b05b508bf48817996a81fda06ce"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-actual60metre-return.json",
+      "bytes": 6819096,
+      "sha256": "aa5ecac3a6112bf14b7f61778eb5ea520e19a718609cc131ba1e7a12786793e6"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-actual60metre-walk.json",
+      "bytes": 6737486,
+      "sha256": "7fa9e68ae69ff5313aed655813e757dd659a83c2d36b73e8f554046fed55cfb4"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-consent-CARETAKER.json",
+      "bytes": 6747034,
+      "sha256": "96caab66a4a91edf1a58e63bd46b52e4532d4b6d8959afabaa2412c27e786934"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-consent-GUEST.json",
+      "bytes": 6742246,
+      "sha256": "056b34f24ed7e448056c2aa4aaef6b619a5f34d2869795da9aef9765bb212fa2"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-consent-SELF_POWER.json",
+      "bytes": 6751818,
+      "sha256": "aa0ca2f95bc2b30d0bfb7bfed29084757ad86bab3998669ecbe4fa727a0d9d91"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-fresh-invitation.json",
+      "bytes": 6732648,
+      "sha256": "76c766a0988b4e960409358cc7bc5da0ade729bf63e75179aba95be79c249b68"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-honest-report.json",
+      "bytes": 6823949,
+      "sha256": "5eb1187e9594061e9f8c6e6d47a3280e4346a72b318b633e8730ffe840fd68ca"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-observe-original.json",
+      "bytes": 6726906,
+      "sha256": "f9e955eff679559cccde04c3ff78b14b3a7f261f776f726b7099bd94d068df28"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-paid-bounded-window.json",
+      "bytes": 6785531,
+      "sha256": "f3184e8a83be48ad4efe50f523e293d7a7f09a36c890f540eeff01a58b836687"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-physical-pieces-returned.json",
+      "bytes": 6809725,
+      "sha256": "833536682e814fd05afffc00091fd920139cbb4538565ed78a361b8050ba55ec"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-same-lamp-returned.json",
+      "bytes": 6814406,
+      "sha256": "0f2590f73a9e11b36e1fb2b9fbf85ba27474abd4aa4d49d0dd1af5706db10b51"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-same-original-weight.json",
+      "bytes": 6756504,
+      "sha256": "6f9abc2c554df7ed49fb68b3b082868516506b20c9fda36504558f69ee751178"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-same-real-lamp.json",
+      "bytes": 6761145,
+      "sha256": "9f6606a60647f952b4d430e93b86d87f7f6fafb87ee368149782c992821a0ad8"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-lit-crossing-same-weight-returned.json",
+      "bytes": 6800179,
+      "sha256": "6b61d5838c57e3c23d8fe68ffdd8939c414b32e1a3e8df31a9fe4a8f3852da02"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-ordinary-life-after-exit.json",
+      "bytes": 10791451,
+      "sha256": "7793c9fb5abf2e7eda7e5e23eb4bd165daee2a7a610e15820c1fb438ae91a707"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-ordinary-reopen-original-path.json",
+      "bytes": 6897947,
+      "sha256": "74299d7c11f184a77c7318b5b1b791c9c8529cd0016b20020c71572bb5afa439"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-original-wound-rest-0.json",
+      "bytes": 5060353,
+      "sha256": "9499f362777ddfd528f2b79efa5a3cb61f57bab927a896ccff8f2e194d90e647"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-original-wound-rest-1.json",
+      "bytes": 5060425,
+      "sha256": "7f1a5897ec605391e9ec8508cbc7ab89b493da8876b89dfab6c12792761c396a"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-paid-independent-battle-lamp.json",
+      "bytes": 6945625,
+      "sha256": "5913af22f970855b92223a5a84a8b1734a52aaf85c797a7689740eb205d487f1"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-paid-independent-battle-piece-1.json",
+      "bytes": 6959857,
+      "sha256": "c868873947e1711babf82e8d17c283b49b31e29044b54038d776cb862b154f50"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-paid-independent-battle-piece-2.json",
+      "bytes": 6974898,
+      "sha256": "c30249cea8cd085b0e0c85d3bad772b687b1e006ebf68bc8fc291dd6461aaf0c"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-paid-independent-battle-piece-3.json",
+      "bytes": 6990828,
+      "sha256": "20a17fef319cb1f149ea03d1cef7c36f31a628b185b740fe237e0a1167e2bb0a"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-paid-self-only-poise.json",
+      "bytes": 6696740,
+      "sha256": "2a1f0ee4999d637487972c8a046f633551429b7952bef058464c25c5be830843"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 5951816,
+      "sha256": "5dd4d2489545b6b2801d02d476839b36c60361176d31cd53f1f852c8e8cb3735"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-preparation-MARK_EXIT.json",
+      "bytes": 5961382,
+      "sha256": "2fff9d4940004ef11914c31cf5dd4bb093258af23965e85a9b31760a42a3f85e"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 5942543,
+      "sha256": "4e83d73f237cf0e405c8a06022bed3407db32a1eb741e3668b93cf3e19055789"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-prepare-beauty-goddess-potion-1.json",
+      "bytes": 6030165,
+      "sha256": "ac7f460214df548f11a360fd5590db4552f5122de535ffb0b2ed73acdb523962"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-prepare-beauty-goddess-potion-2.json",
+      "bytes": 6112876,
+      "sha256": "71d5a10697480095e0f3db3a7b91ef5b3087d52261c85942715820bccc4fed04"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-prepare-beauty-goddess-potion-3.json",
+      "bytes": 6193183,
+      "sha256": "c03f481e8b5734a1be29560f3c67b7cb610bdb95ae9460f8308bc584e45e95c5"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-prepare-beauty-goddess-potion-4.json",
+      "bytes": 6295997,
+      "sha256": "5e0474e2d2b9b0a81d02277c6d44eea44737b510c693fb9a523a5aad3715dba5"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-prepare-beauty-goddess-potion-5.json",
+      "bytes": 6376325,
+      "sha256": "0675db71a98f387256a07d9760931b5fc8639cca6fda90481e6b54c3a220fd9d"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-prepare-beauty-goddess-potion-6.json",
+      "bytes": 6458603,
+      "sha256": "40882a88bd54bf79bbb5fa7effc28ae0f3d6536bc2fa317af370adbbbc4f8266"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-prepare-beauty-goddess-potion-7.json",
+      "bytes": 6560825,
+      "sha256": "a695f9ac86b3652c68cf67f6ddb2aeeb333c2f15187bade0da3bdb2cc7a90ff1"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-prepare-beauty-goddess-potion-8.json",
+      "bytes": 6641129,
+      "sha256": "ccdcf2fa1a122b525472587a1aca727767236208dc3c3b13231a1c6cfca38e6a"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-real-shutter-blocks-window.json",
+      "bytes": 6888880,
+      "sha256": "75478e612632434df26b414550f47ec651b086dcaccb87e135def94c7828c9f6"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-receive-real-later-week-3.json",
+      "bytes": 6223666,
+      "sha256": "54e1bb4798458726413cd6cd6ab2d9cd05d10185e5d61955844de9cc0e882963"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-receive-real-later-week-6.json",
+      "bytes": 6487360,
+      "sha256": "f91e88b8eb73a500bbda3befffb45b000d75c5af41b53531f9481a0d7356989d"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-request-after-3-failures.json",
+      "bytes": 6212576,
+      "sha256": "aaa505f00647b20b8f8ab5a9e1eb21c079a0c56dc424432ab3a477d14db51c64"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-request-after-6-failures.json",
+      "bytes": 6477457,
+      "sha256": "410b19fcf17b1464974dd6f62ca59ef5c31e89eb14717a2574722c922aa41464"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-same-guest-independent-carry.json",
+      "bytes": 6791140,
+      "sha256": "97fdc22407b3ad61b3666cf3082757789a62a00539c3a596ff8e78665d77de34"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-same-guest-real-two-metre-return.json",
+      "bytes": 6804963,
+      "sha256": "21ace7c962934bee811d7f8b0a3bfe181bc9613d09ca3376e42e4f4089a3ec47"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-same-guest-withdraws-current-permission.json",
+      "bytes": 6893244,
+      "sha256": "24eb89c3ee785136c33faac965b90c9bed10c1c52b062bdc3512296312bab37f"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-actual60metre-return.json",
+      "bytes": 6716212,
+      "sha256": "639f2ee498c336b90977de6d8cb6a3650c4ea1313359b7160493308fc64352c2"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-actual60metre-walk.json",
+      "bytes": 6672596,
+      "sha256": "bf2d34326a2d8eab00c5550cec5cf25dc325aef3c8754feaa3f77571caadab2d"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-consent-CARETAKER.json",
+      "bytes": 6682141,
+      "sha256": "18d6e9a76ae97e0c11d0edc621f3d94f887ff4e2d8f36616658cad72e2b7260e"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-consent-GUEST.json",
+      "bytes": 6677355,
+      "sha256": "1cef9367e2544d2684af27035517a349d363ad9957b8dc65981b404d4fab115f"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-consent-SELF_POWER.json",
+      "bytes": 6686923,
+      "sha256": "4a8ace4373f6cfe654d5d493e5c3577b1ffe56df80422b9c2c24fd69e4176884"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-fresh-invitation.json",
+      "bytes": 6667759,
+      "sha256": "4db2406c2afb7d3b833ab81556fdad3d3dc5de8e2d4682deba0442d2a3588bf8"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-honest-report.json",
+      "bytes": 6721162,
+      "sha256": "7c5fd0271078cb72ff0cb7c55c9fc378ae619d92bee9687a2975307692ad1c4b"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-observe-original.json",
+      "bytes": 6661038,
+      "sha256": "27a3150a3d5a7620773dc7b6788250910ff2b6d4cc6ca5194d280f31a069c415"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-ordinary-safe-handling.json",
+      "bytes": 6706938,
+      "sha256": "964af4a3fa4a0fd8a3d3a78980d99334cbed0eb1d402cdf0ba4387b9c854536c"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-same-original-weight.json",
+      "bytes": 6691607,
+      "sha256": "7d057fdae39c597c2158386b8e2bb8fc6416628cf78ef6346ec668bc9b54d68d"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-steady-hands-same-weight-returned.json",
+      "bytes": 6711476,
+      "sha256": "a3b50897bd1feb865e7b23cde792986618a8bef7998b10ef4e43900d4a6e833b"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-three-honest-reports-reflected.json",
+      "bytes": 6936095,
+      "sha256": "bd3ba95ce63c62bf12d03379f0ca9cb31b14cc7be89c9a213badc360a4573d4c"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-actual-lamp-extinguished.json",
+      "bytes": 6907381,
+      "sha256": "1c02369aef9ae26d5ef8e4c961f852ca4b45a7dcab8e6caf40ca3d12eca97ca8"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-actual-lamp-lit.json",
+      "bytes": 6873854,
+      "sha256": "ec3c30782d6d91b050d966fd9a670479a596fe05548b792cda1c0ac850e19af2"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-actual-paid-piece.json",
+      "bytes": 6869087,
+      "sha256": "61816bb7aa9e84c57f724476a590d21d3bc78a817d3575bceb00abdac5715f91"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-actual-pending-crossing.json",
+      "bytes": 6878593,
+      "sha256": "633b62407f23bbe5d63dfcb0d7419426b27145b9317154f08dfb2c731da5319f"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-actual60metre-return.json",
+      "bytes": 6926258,
+      "sha256": "489d4bbff47eead944d286a083156ee580622ff3af96a6420d5418c57a451da2"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-actual60metre-walk.json",
+      "bytes": 6840635,
+      "sha256": "3fb38b44aa5aafbac6fd94e97281001ca7fb215a5ae039715861c7bc5d13910c"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-consent-CARETAKER.json",
+      "bytes": 6850179,
+      "sha256": "9a1f8b5c60cf1d0c36113d03c7269dbb285837ba0035d3cabf92cf3cd435e529"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-consent-GUEST.json",
+      "bytes": 6845393,
+      "sha256": "496b43a9592d5a99ac967fbd1b0467064f7f570b7dbd57fce2b4ebb8231caf2f"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-consent-SELF_POWER.json",
+      "bytes": 6854961,
+      "sha256": "5e81f90a6932808ca25456754c7f074af2b37cafafaea29c279a504de448094c"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-fresh-invitation.json",
+      "bytes": 6835792,
+      "sha256": "c6258918df0f7c660edbfe1ac6f19fc294aa134b5b3ea713d91c7568d3398805"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-honest-report.json",
+      "bytes": 6931123,
+      "sha256": "6d23892e74319a3083b1a376a9b41e34960b4b4c51e6f40768c632c6a2ad13d4"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-observe-original.json",
+      "bytes": 6829254,
+      "sha256": "2d8501f96273a31b656a038b5eb2cf7bbe05919cc9279b080c7a9ee83abf61d3"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-ordinary-safe-handling.json",
+      "bytes": 6902660,
+      "sha256": "2c60cd1d9df9391d9baf12951f462f9d463c9fd9bd241565031ae6ec98b22c9e"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-paid-bounded-window.json",
+      "bytes": 6883979,
+      "sha256": "ff46d389b39935284becc76984cb2f83fd05f88460acc5e4aa37dd1c3963432f"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-physical-pieces-returned.json",
+      "bytes": 6916899,
+      "sha256": "c9a5bcf148e11c70d8d99922669a212d5900846b0ac74c5edced8ad69af2b035"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-same-lamp-returned.json",
+      "bytes": 6921577,
+      "sha256": "520da0105942fdbadbaac4fd88131067192e9f96652565be45a5dd0b7ae694c9"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-same-original-weight.json",
+      "bytes": 6859645,
+      "sha256": "960b5205389bb1e8ceea154691d97f9c5d61de1cef761eb95a0ea1442e2861aa"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-same-real-lamp.json",
+      "bytes": 6864284,
+      "sha256": "96c228139f6a7de04252be979bb353bebe35651d0f9178a9292a8b01d3f7ae5e"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/boundary-withdrawn-moonlight-same-weight-returned.json",
+      "bytes": 6912096,
+      "sha256": "69ef0d081891ecc5f17e2ba0692795541c5ff6887a2efce55fd8ea6ec7ff848c"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/natural.json",
+      "bytes": 8565661,
+      "sha256": "6c797e81ca08b1140089a3bf22179f19b58f687e95df31a5b20a0508cf88e1a1"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/script-blocker-first-summary.json",
+      "bytes": 3078,
+      "sha256": "b91df83611fde2850fd8213a945b8a5b14c401fb5186017522852f25b578b69b"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/script-blocker-first.json",
+      "bytes": 6260272,
+      "sha256": "195064d584c3fa6bb7c87584970ab5e2a43d5493613cb66afa3252902fc453eb"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/script-blocker-second-summary.json",
+      "bytes": 4099,
+      "sha256": "b9625f50fb168dc3fbbe329274d94c54a167fd65da01f42d9349114e68d583ed"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/script-blocker-second.json",
+      "bytes": 6500313,
+      "sha256": "84b57b129d618ea8e5dc5bfadc4e3fed50dc63126153eb39aae4173bf32c1d75"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/snapshot-combatStart.json",
+      "bytes": 5385690,
+      "sha256": "9b620cb6063eecbf493e89360e530234d3e5a3672a041ce0bc52c8258fd76695"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/snapshot-combatTerminal.json",
+      "bytes": 5395648,
+      "sha256": "d2a7c9b7ec8a1dcbaed4720e8165dfa4fb4b69427f157a719b9a28ddb69c6811"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/snapshot-departure.json",
+      "bytes": 2530086,
+      "sha256": "43b2ab148629e706eb051ed9faa5370ea76259015b99d62ecb591da53bc7b28b"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/snapshot-practiced.json",
+      "bytes": 3469278,
+      "sha256": "d38a4df6c1fabfc00d112b0a2847a8f50c01245c2f31b31950fb38902a85b6a1"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/snapshot-promoted.json",
+      "bytes": 3329210,
+      "sha256": "da7349c08bfd23f6ace5a360373379c0b335f0ae52018e918228e2dc4cbadddf"
+    },
+    {
+      "path": "tests/fixtures/beauty-goddess-v01900/summary.json",
+      "bytes": 6585,
+      "sha256": "82531867a9f4f0093ac0af1107ca56beb57e546257626ee521bd358ff4c1568a"
     },
     {
       "path": "tests/fixtures/biologist-v0940/boundaries.json",

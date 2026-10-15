@@ -1,3 +1,4 @@
+import { BEAUTY_GODDESS_ABILITY_IDS } from '../beauty-goddess/types.js';
 import { LIFE_GIVER_ABILITY_IDS } from '../life-giver/types.js';
 import {SUMMONING_MASTER_ABILITY_IDS} from '../summoning-master/types.js';
 import {WITCH_KING_ABILITY_IDS} from '../witch-king/types.js';
@@ -34,7 +35,7 @@ export function createPotionProfessorState(): PotionProfessorState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'moon' && (s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'moon' && (s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)));
 const isVampire = (s: SliceState) => s.progression.pathwayId === 'moon' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.apothecary.discovered && s.apothecary.guidanceKnown && s.tamer.guidanceKnown && s.vampire.guidanceKnown && s.vampire.promotionWeek !== null && (isVampire(s) || promoted(s));
 const potionPrice = (bottle: PotionProfessorBottle) => POTION_PROFESSOR_PRICES.potion - (bottle.labourSteps === 5 ? POTION_PROFESSOR_PRICES.labourCredit : 0);
@@ -159,7 +160,7 @@ export function applyPotionProfessorCommand(s: SliceState, command: PotionProfes
 
 export function projectPotionProfessor(s: SliceState): PotionProfessorProjection {
   const actions: PotionProfessorAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?s.crimsonScholar.potionProfessorActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?s.crimsonScholar.potionProfessorActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: PotionProfessorAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -205,7 +206,7 @@ export function projectPotionProfessor(s: SliceState): PotionProfessorProjection
     })) : [],
     abilities: isPromoted ? POTION_PROFESSOR_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: (s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?'魔药教授魔药已消化；原药剂、材料、本人教学与实际用药记录保留。':isPromoted ? `吸血鬼消化成果${s.potionProfessor.vampireActingAtPromotion}/100已保留；魔药教授扮演${acting}/100，能力掌握分别记录。`
+    digestion: (s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?'魔药教授魔药已消化；原药剂、材料、本人教学与实际用药记录保留。':isPromoted ? `吸血鬼消化成果${s.potionProfessor.vampireActingAtPromotion}/100已保留；魔药教授扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成吸血鬼消化（${s.progression.acting}/100），并在晋升吸血鬼后度过12整周（${vampireWeeks(s)}/12）。用药指导与原瓶可以提前准备。` : '先走完吸血鬼之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应五次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${POTION_PROFESSOR_CONSUMPTION_RISK}` : '成为吸血鬼后，可向原导师了解下一序列。',
@@ -257,7 +258,7 @@ export function validatePotionProfessorState(s: SliceState): boolean {
   if (potionProfessor.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!potionProfessor.guidanceKnown || !integer(s.vampire.promotionWeek, 1, s.week) || !integer(potionProfessor.promotionWeek, firstConsumptionWeek, s.week) || potionProfessor.vampireActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS,...((s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?CRIMSON_SCHOLAR_ABILITY_IDS:[]),...(([4, 3, 2].includes(s.progression.sequence ?? 0))?WITCH_KING_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...(s.progression.sequence === 2 ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?BEAUTY_GODDESS_ABILITY_IDS:[]),...APOTHECARY_ABILITY_IDS, ...TAMER_ABILITY_IDS, ...VAMPIRE_ABILITY_IDS, ...POTION_PROFESSOR_ABILITY_IDS,...((s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?CRIMSON_SCHOLAR_ABILITY_IDS:[]),...(([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?WITCH_KING_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0) ? SUMMONING_MASTER_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? LIFE_GIVER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (potionProfessor.promotionWeek !== null || potionProfessor.vampireActingAtPromotion !== null || POTION_PROFESSOR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (potionProfessor.reflected || Object.values(potionProfessor.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

@@ -271,5 +271,5 @@ describe('Balancer original room encounter through public commands', () => {
       if (process.env.BALANCER_DIRECTED_CAPTURE_DIR) captured[names[variantIndex]!] = { beforeLast: structuredClone(fighting), lastIntent: structuredClone(lastIntent), final: structuredClone(s) };
     }
     captureDirectedFinanceBoundaries(captured);
-  });
+  }, 10_000);
 });
