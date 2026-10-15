@@ -1,3 +1,4 @@
+import { ENTROPY_DUKE_ABILITY_IDS } from '../entropy-duke/types.js';
 import {FRENZY_MAGE_ABILITY_IDS} from '../frenzy-mage/types.js';
 import {FALLEN_EARL_ABILITY_IDS} from '../fallen-earl/types.js';
 import {MENTOR_DISORDER_ABILITY_IDS} from '../mentor-disorder/types.js';
@@ -40,7 +41,7 @@ export function createBriberState(): BriberState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isBarbarian = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.lawyer.discovered && s.lawyer.guidanceKnown && (isBarbarian(s) || promoted(s));
 const materialPrice = (batch: BriberBatch) => BRIBER_PRICES.auxiliaryMaterials + (batch.labourSteps === BRIBER_LABOUR_STEPS ? 0 : BRIBER_PRICES.mainMaterials);
@@ -229,8 +230,8 @@ export function projectBriber(s: SliceState): BriberProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? BRIBER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?s.corruptionBaron.briberActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?'贿赂者魔药已消化；原木筹的真实去向与有限削弱能力继续保留。':isPromoted ? `野蛮人消化成果${s.briber.barbarianActingAtPromotion}/100已保留；贿赂者扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.corruptionBaron.briberActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?'贿赂者魔药已消化；原木筹的真实去向与有限削弱能力继续保留。':isPromoted ? `野蛮人消化成果${s.briber.barbarianActingAtPromotion}/100已保留；贿赂者扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成野蛮人消化（${s.progression.acting}/100），并在野蛮人晋升后度过8整周（${barbarianWeeks(s)}/8）。配方与材料可以提前准备。` : '先走完野蛮人之路。',
     pollution: s.seer.pollution,
     cases: [], insideCase: available && Object.values(s.briber.cases).some(scene => scene.contactOpen), environment: '',
@@ -299,7 +300,7 @@ export function validateBriberState(s: SliceState): boolean {
   if (briber.formulaKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!briber.formulaKnown || !integer(s.barbarian.promotionWeek, 1, s.week) || !integer(briber.promotionWeek, firstConsumptionWeek, s.week) || briber.barbarianActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS, ...BRIBER_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?CORRUPTION_BARON_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?MENTOR_DISORDER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?FALLEN_EARL_ABILITY_IDS:[]),...(s.progression.sequence===3?FRENZY_MAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS, ...BRIBER_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?CORRUPTION_BARON_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?MENTOR_DISORDER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?FALLEN_EARL_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?FRENZY_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===2?ENTROPY_DUKE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (briber.promotionWeek !== null || briber.barbarianActingAtPromotion !== null || BRIBER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (briber.giftPacks !== 0 || briber.gifts.length !== 0) return false;

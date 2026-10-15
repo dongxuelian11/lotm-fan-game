@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.182.0 阶段版
+# 诡秘之主同人游戏 · 0.183.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径包含9→3有限可玩切片，19条接至有限序列2。余下3条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径包含9→3有限可玩切片，20条接至有限序列2。仲裁人、耕种者两条途径的序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -18,7 +18,7 @@ npm start
 
 ## 测试输入
 
-所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以38个完整文件tar.gz包保存在test-inputs，总压缩约622MB；清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
+所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以完整文件tar.gz包保存在test-inputs；包数、体积和原文件总数以当前manifest.json清单为准，清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
 
 ```sh
 npm run typecheck
@@ -26,7 +26,7 @@ npm run test:smoke
 npm run test:fixture-restore
 ```
 
-运行全部历史测试前恢复完整输入（需额外约4.5GB空间）：
+运行全部历史测试前恢复完整输入（需另预留清单所列原文件的展开空间）：
 
 ```sh
 npm run fixtures:restore
@@ -100,7 +100,22 @@ node --expose-gc scripts/play/fate-prophet-save.mjs --expected-boundaries 64
 node --expose-gc scripts/play/fate-prophet-save.mjs --key directed --expected-boundaries 11 --tag finance-directed
 ```
 
+熵之公爵专项输入、公开续行与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix frenzy-mage-v01590 --only-prefix entropy-duke-v01830
+npx vitest run tests/domain/entropy-duke-acquisition.test.ts tests/domain/entropy-duke-life.test.ts tests/domain/entropy-duke-combat.test.ts tests/domain/entropy-duke-inheritance.test.ts tests/domain/entropy-duke-shared.test.ts tests/renderer/entropy-duke-panel.test.tsx tests/renderer/entropy-duke-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/entropy-duke-stage.mjs
+node --expose-gc scripts/play/entropy-duke-save.mjs --expected-boundaries 84
+node --expose-gc scripts/play/entropy-duke-save.mjs --key directed --source-directory tests/fixtures/entropy-duke-v01830/directed --expected-boundaries 5
+```
+
+公开续行脚本将新记录写入独立的output/play/entropy-duke-01830-*目录，保留原558条死亡记录；保存命令分别检查已交付的84个自然边界和5个明确标注的定向财务边界，定向输入不计入自然路线。这些命令均不等于可见窗口试玩。
+
 ## 当前验证与限制
+
+183增量验证：新增领域及实档共享125项、界面41项，共166项通过；743条公开命令续行的84个唯一自然SQLite边界及另5个定向财务SQLite边界全部通过。同seed的555条活分支继续，原558条死亡分支保留；实际支付60便士诊疗后，前三瓶失败，第四瓶大成功晋升。生活延效与战斗增幅各获得实际掌握8，新对手第三轮投降，玩家普通离场后回到工作，最终第185周ACTIVE、健康100、精神95、灵性94、现金800便士、3行动。37个相关回归文件676项已去重通过；两项旧序列2普通盘断言按当前规则更新，所缺旧输入由原包恢复。新增99个JSON原始输入以3包归档并独立恢复核验，最终41包、1952个输入的全部hash通过。完整main/renderer严格类型和32项恢复/CI工具通过，CI枚举1028个测试文件无漏重，但枚举不等于执行全量测试。生产构建、6项保存辅助及48项烟测最终复验通过，烟测已包含于相关回归，不重复计数；详见[熵之公爵阶段记录](docs/ENTROPY_DUKE_PLAYABLE_STAGE.md)。本阶段未声称重跑全部历史测试或完成1.0。PR6远端CI已确认两项Windows单案例超时：贿赂者完整重放5075ms超过5秒、古代学者工作/休息/跨周导航16022ms超过15秒。本次仅将这两项预算分别调至10秒和25秒，保留全部原断言并完成整文件复验；古代学者7项另计，新远端矩阵仍待实际终值。
 
 182增量验证：新增领域124项、界面44项、64个唯一自然SQLite边界与11个定向财务边界通过。完整551条命运之轮原活档继续至703条，第三瓶晋先知，新对手三轮投降，玩家存活并回到普通工作。修复真实零行动战斗终局与公共账单/还款衔接，保持原费用、随机与伤势；合法欠款和信用提示也有实际保存复验。新增85个输入在独立目录恢复并核验。完整严格类型、生产构建、48烟测、6保存辅助和32恢复/CI工具检查通过。本阶段未重跑整日历史全量验收；相关旧格式断言和Windows CI问题已按受影响范围完成121文件1775项去重复验；新远端矩阵仍以实际终值为准。
 

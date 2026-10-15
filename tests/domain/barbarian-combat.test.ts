@@ -3,6 +3,7 @@ import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { ORDINARY_COUNT_WHEEL, ordinaryAbilityWheel, playerAbilityWheel, playerCountWheel,
   resolveSliceCombatRound } from '../../src/domain/slice/combat.js';
+import { ENTROPY_DUKE_COUNT_WHEEL, entropyDukeAbilityWheel } from '../../src/domain/entropy-duke/combat.js';
 import { BARBARIAN_COUNT_WHEEL, currentBarbarianCombatSource, drawBarbarianAbility, isBarbarian,
   barbarianAbilityWheel, barbarianActionCount, resolveBarbarianCombatAbility,
   type BarbarianCombatSource, type BarbarianMoveId } from '../../src/domain/barbarian/combat.js';
@@ -105,7 +106,11 @@ describe('Barbarian S8 exact profile and inherited Lawyer dispatch', () => {
     expect(isBarbarian(state)).toBe(false); expect(currentBarbarianCombatSource(state)).toBeNull();
     expect(playerCountWheel(state)).toEqual(LAWYER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'ATTACK')).toEqual(lawyerAbilityWheel('ATTACK', state));
-    for (const sequence of [2, null] as const) {
+    state.progression.sequence = 2;
+    expect(isBarbarian(state)).toBe(false); expect(currentBarbarianCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(ENTROPY_DUKE_COUNT_WHEEL);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(entropyDukeAbilityWheel(state, 'CONTROL'));
+    for (const sequence of [null] as const) {
       state.progression.sequence = sequence as typeof state.progression.sequence;
       expect(isBarbarian(state)).toBe(false); expect(currentBarbarianCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);

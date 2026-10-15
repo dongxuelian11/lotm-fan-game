@@ -1,3 +1,4 @@
+import { validateEntropyDukeSourceFrenzyMageLife } from '../entropy-duke/life.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -8,7 +9,7 @@ import { hasFrenzyMageOldPractice, hasFrenzyMageRitualLock } from './index.js';
 
 export const FRENZY_MAGE_CASE_IDS = ['courier-route', 'withdrawn-route', 'own-throw'] as const;
 export type FrenzyMageCaseId = typeof FRENZY_MAGE_CASE_IDS[number];
-export type FrenzyMageLocation = 'START' | 'A' | 'B' | 'C';
+export type FrenzyMageLocation = 'START' | 'A' | 'B' | 'C' | 'OUTSIDE';
 export type FrenzyMageConsent = 'UNASKED' | 'GRANTED' | 'DECLINED' | 'REVOKED' | 'ORDINARY';
 type SceneType = 'GO_A' | 'CHECK_OBJECT' | 'PERFORM' | 'ORDINARY_CHECK' | 'EXECUTE_ACTION' | 'STOP_INPUT' | 'WAIT_EFFECT' | 'WITHDRAW_CONSENT' | 'WALK_RESULT' | 'READ_RESULT' | 'RETURN_PERSON' | 'TAKE_OBJECT' | 'RETURN_A' | 'RETURN_OBJECT' | 'RECORD_OUTCOME' | 'RETURN_START';
 export type FrenzyMageActivityCommand =
@@ -38,10 +39,10 @@ export interface FrenzyMageCaseState {
 export interface FrenzyMageLifeState {
   siteId: 'FM3-DELIVERY-PRACTICE'; introducedWeek: number | null; introducedDate: PublicGameDate | null; activeCase: FrenzyMageCaseId | null;
   playerLocation: FrenzyMageLocation; playerTravelMetres: number; guideTravelMetres: number; clockSeconds: number;
-  guide: { id: 'GUIDE'; name: '米蕾·沃德'; location: 'START' | 'A' };
-  volunteer: { id: 'FM3-DARIAN'; name: '达里安·维尔'; age: 42; alive: true; independentMind: true; willing: boolean; location: 'A' | 'B' | 'C'; health: 100; mind: 100; injuries: [] };
+  guide: { id: 'GUIDE'; name: '米蕾·沃德'; location: 'START' | 'A' | 'OUTSIDE' };
+  volunteer: { id: 'FM3-DARIAN'; name: '达里安·维尔'; age: 42; alive: true; independentMind: true; willing: boolean; location: 'A' | 'B' | 'C' | 'OUTSIDE'; health: 100; mind: 100; injuries: [] };
   parcel: { id: 'FM3-PARCEL'; owner: 'GUIDE'; quantity: 1; massGrams: 400; sealed: true; confidential: false; holder: 'GUIDE' | 'DARIAN'; location: FrenzyMageLocation; handovers: number; returns: number };
-  ball: { id: 'FM3-PRACTICE-BALL'; owner: 'GUIDE'; quantity: 1; massGrams: 80; soft: true; holder: 'GUIDE' | 'PLAYER' | 'PAD'; location: FrenzyMageLocation; throws: number; returns: number };
+  ball: { id: 'FM3-PRACTICE-BALL'; owner: 'GUIDE'; quantity: 1; massGrams: 80; soft: true; holder: 'GUIDE' | 'PLAYER' | 'PAD' | 'AIRBORNE'; location: FrenzyMageLocation; throws: number; returns: number };
   paper: { id: 'FM3-ROUTE-PAPER'; owner: 'GUIDE'; quantity: 1; holder: 'GUIDE' | 'PLAYER'; location: FrenzyMageLocation; text: '从A到B' };
   pads: { id: 'FM3-PAD-B' | 'FM3-PAD-C'; location: 'B' | 'C'; padded: true; people: 0 }[];
   cases: Record<FrenzyMageCaseId, FrenzyMageCaseState>; reflected: boolean;
@@ -100,7 +101,18 @@ function cleanupBlock(s: SliceState): string | null {
   if (l.volunteer.location !== 'A' || l.parcel.holder !== 'GUIDE' || l.ball.holder !== 'GUIDE' || l.paper.holder !== 'GUIDE') return '须信差本人带原包普通回A，或本人实际取原球回A；在场亲交同一原物与原纸给导引。';
   return l.playerLocation !== 'START' || l.guide.location !== 'START' || l.parcel.location !== 'START' || l.ball.location !== 'START' || l.paper.location !== 'START' ? '本人和导引须沿原路实走回START，导引亲带原物，不可瞬移退出。' : null;
 }
-export const hasFrenzyMageLifeLock = (s: SliceState): boolean => s.frenzyMage.life.activeCase !== null || Object.values(s.frenzyMage.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+export const hasFrenzyMageLifeLock = (s: SliceState): boolean => {
+  if (s.entropyDuke?.life.source != null) {
+    // During settlement the shared weekly pulse has not run yet. Check only the
+    // immutable inherited scene here; full S2 replay is enforced by state validation.
+    if (s.progression.pathwayId !== 'black-emperor' || s.progression.sequence !== 2 || s.entropyDuke.promotionWeek === null || s.entropyDuke.frenzyMageActingAtPromotion !== 100) return true;
+    const original = s.entropyDuke.life.source.snapshot;
+    const inherited = { ...s, progression: { ...s.progression, sequence: 3 as const, acting: s.entropyDuke.frenzyMageActingAtPromotion }, frenzyMage: { ...s.frenzyMage, life: original } };
+    if (!validateFrenzyMageLifeOriginal(inherited)) return true;
+    return original.activeCase !== null || Object.values(original.cases).some(r => r.status === 'PREPARED') || cleanupBlock(inherited) !== null;
+  }
+  return s.frenzyMage.life.activeCase !== null || Object.values(s.frenzyMage.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+};
 function sceneReason(s: SliceState, id: FrenzyMageCaseId, type: SceneType | 'CONFIRM_LIMITED'): string | null {
   const l = s.frenzyMage.life, a = l.cases[id].attempts.at(-1)!, at = l.playerLocation, item = id === 'own-throw' ? l.ball : l.parcel;
   if (type === 'STOP_INPUT') return a.abilityTier !== null && !a.stopped ? null : '没有尚未停止的本次能力尝试。';
@@ -271,7 +283,7 @@ export function projectFrenzyMageLife(s: SliceState): FrenzyMageLifeProjection {
 }
 
 /** Replays the sole ability check and each original actor/object movement; no event draw exists. */
-export function validateFrenzyMageLife(s: SliceState): boolean {
+export function validateFrenzyMageLifeOriginal(s: SliceState): boolean {
   const l = s.frenzyMage.life, initial = createFrenzyMageLifeState(), promotion = s.frenzyMage.promotionWeek;
   if (!record(l) || !shape(l, Object.keys(initial)) || !record(l.cases) || !shape(l.cases, FRENZY_MAGE_CASE_IDS) || !record(l.volunteer) || typeof l.volunteer.willing !== 'boolean' || !integer(l.clockSeconds)) return false;
   let externalSeconds: number = s.frenzyMage.encounter.exitSeconds;
@@ -317,5 +329,8 @@ export function validateFrenzyMageLife(s: SliceState): boolean {
   if (open > 1 || prepared > 1 || open && prepared || (l.activeCase !== null) !== (open === 1) || l.reflected && resolved !== 3 || prepared && (s.world.city !== 'BACKLUND' || s.activeEvent || s.combat)) return false;
   replay.activeCase = l.activeCase; replay.reflected = l.reflected; replay.volunteer.willing = l.volunteer.willing;
   if (stableStringify(replay) !== stableStringify(l) || !open && cleanupBlock(s) !== null) return false;
-  return !promoted(s) || s.progression.acting === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[ABILITY] ?? 0) === mastery;
+  const inherited=s.progression.pathwayId==='black-emperor'&&s.progression.sequence===2;
+  return !(promoted(s)||inherited) || (inherited?s.entropyDuke.frenzyMageActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[ABILITY] ?? 0) === mastery;
 }
+
+export function validateFrenzyMageLife(s: SliceState): boolean { try { return s.entropyDuke?.life?.source != null ? validateEntropyDukeSourceFrenzyMageLife(s) : validateFrenzyMageLifeOriginal(s); } catch { return false; } }

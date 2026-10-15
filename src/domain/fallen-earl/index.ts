@@ -1,3 +1,4 @@
+import { ENTROPY_DUKE_ABILITY_IDS } from '../entropy-duke/types.js';
 import {FRENZY_MAGE_ABILITY_IDS} from '../frenzy-mage/types.js';
 import { isFallenEarl } from './combat.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -42,7 +43,7 @@ export function createFallenEarlState(): FallenEarlState {
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export { isFallenEarl } from './combat.js';
-const hasFallenEarlHistory=(s:SliceState)=>s.progression.pathwayId==='black-emperor'&&[4,3].includes(s.progression.sequence!);
+const hasFallenEarlHistory=(s:SliceState)=>s.progression.pathwayId==='black-emperor'&&[4,3,2].includes(s.progression.sequence!);
 const isMentorDisorder = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.lawyer.discovered && s.lawyer.guidanceKnown && s.barbarian.formulaKnown && s.briber.formulaKnown && s.corruptionBaron.guidanceKnown && s.mentorDisorder.guidanceKnown && s.mentorDisorder.promotionWeek !== null && (isMentorDisorder(s) || hasFallenEarlHistory(s));
 const potionPrice = (bottle: FallenEarlBottle) => FALLEN_EARL_PRICES.potion - (bottle.labourSteps === FALLEN_EARL_LABOUR_STEPS ? FALLEN_EARL_PRICES.labourCredit : 0);
@@ -187,7 +188,7 @@ export function applyFallenEarlCommand(s: SliceState, command: FallenEarlCommand
 
 export function projectFallenEarl(s: SliceState): FallenEarlProjection {
   const actions: FallenEarlAction[] = [], available = knownChannel(s), promoted = hasFallenEarlHistory(s);
-  const acting = promoted ? (s.progression.sequence===3?s.frenzyMage.fallenEarlActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.frenzyMage.fallenEarlActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: FallenEarlAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -265,7 +266,7 @@ function validateFallenEarlStateRecord(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.mentorDisorder.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.mentorDisorderActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS, ...BRIBER_ABILITY_IDS, ...CORRUPTION_BARON_ABILITY_IDS, ...MENTOR_DISORDER_ABILITY_IDS, ...FALLEN_EARL_ABILITY_IDS,...(s.progression.sequence===3?FRENZY_MAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS, ...BRIBER_ABILITY_IDS, ...CORRUPTION_BARON_ABILITY_IDS, ...MENTOR_DISORDER_ABILITY_IDS, ...FALLEN_EARL_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?FRENZY_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===2?ENTROPY_DUKE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.mentorDisorderActingAtPromotion !== null || FALLEN_EARL_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   // First validate every record shape, so a later batch cannot dereference malformed predecessors.
   for (const [index, bottle] of state.bottles.entries()) {

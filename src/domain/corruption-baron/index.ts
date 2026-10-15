@@ -1,3 +1,4 @@
+import { ENTROPY_DUKE_ABILITY_IDS } from '../entropy-duke/types.js';
 import {FRENZY_MAGE_ABILITY_IDS} from '../frenzy-mage/types.js';
 import {FALLEN_EARL_ABILITY_IDS} from '../fallen-earl/types.js';
 import {MENTOR_DISORDER_ABILITY_IDS} from '../mentor-disorder/types.js';
@@ -33,7 +34,7 @@ export function createCorruptionBaronState(): CorruptionBaronState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
 const isBriber = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.lawyer.discovered && s.lawyer.guidanceKnown && s.barbarian.formulaKnown && s.briber.formulaKnown && s.briber.promotionWeek !== null && (isBriber(s) || promoted(s));
 const potionPrice = (bottle: CorruptionBaronBottle) => CORRUPTION_BARON_PRICES.potion - (bottle.labourSteps === 5 ? CORRUPTION_BARON_PRICES.labourCredit : 0);
@@ -158,7 +159,7 @@ export function applyCorruptionBaronCommand(s: SliceState, command: CorruptionBa
 
 export function projectCorruptionBaron(s: SliceState): CorruptionBaronProjection {
   const actions: CorruptionBaronAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.mentorDisorder.corruptionBaronActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.mentorDisorder.corruptionBaronActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: CorruptionBaronAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -251,7 +252,7 @@ export function validateCorruptionBaronState(s: SliceState): boolean {
   if (corruptionBaron.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!corruptionBaron.guidanceKnown || !integer(s.briber.promotionWeek, 1, s.week) || !integer(corruptionBaron.promotionWeek, firstConsumptionWeek, s.week) || corruptionBaron.briberActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS, ...BRIBER_ABILITY_IDS, ...CORRUPTION_BARON_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?MENTOR_DISORDER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?FALLEN_EARL_ABILITY_IDS:[]),...(s.progression.sequence===3?FRENZY_MAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS, ...BRIBER_ABILITY_IDS, ...CORRUPTION_BARON_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?MENTOR_DISORDER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?FALLEN_EARL_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?FRENZY_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===2?ENTROPY_DUKE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (corruptionBaron.promotionWeek !== null || corruptionBaron.briberActingAtPromotion !== null || CORRUPTION_BARON_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (corruptionBaron.reflected || Object.values(corruptionBaron.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

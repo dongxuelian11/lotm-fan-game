@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.182.0",
+  "version": "0.183.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -191,6 +191,21 @@
       "name": "lotm_release_0.182.0_fate_prophet_finance_test_inputs_2026-10-15.tar.gz",
       "bytes": 3150779,
       "sha256": "b3bf1f5d1b95f08aaa6ff7a86570e827b564f853976a8a60b199c42bb1178cf2"
+    },
+    {
+      "name": "lotm_release_0.183.0_entropy_duke_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 11767761,
+      "sha256": "f9ad981b2e6e450711c418c651a724b8476c89540a56041c1328e782036c6bd9"
+    },
+    {
+      "name": "lotm_release_0.183.0_entropy_duke_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 10836458,
+      "sha256": "8cf1b853c7d4a8c6d7ee6443d422deb4a38e951c206c07d9dd5696fdcb6e6510"
+    },
+    {
+      "name": "lotm_release_0.183.0_entropy_duke_finance_test_inputs_2026-10-15.tar.gz",
+      "bytes": 1383685,
+      "sha256": "9dc3af7c9e51dbc84a2e3c7fced507e1b514eb52c344bf367fa5608552328e52"
     }
   ],
   "fileEntries": [
@@ -3438,6 +3453,501 @@
       "path": "tests/fixtures/elder-v01790/summary.json",
       "bytes": 3140,
       "sha256": "5f7a738b3b3de7fbba0cff3a19ac69c2d738204a83cfb8e08d2ac04a20496ae7"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundaries.index.json",
+      "bytes": 6887,
+      "sha256": "c5aa3932012cac6cdca31b583e71c5278b96092c756bcd0db9b8a0e8d92aad40"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-buy-entropy-duke-potion-1.json",
+      "bytes": 1790436,
+      "sha256": "1f4f21b1244c25b379add3e6bad69f9a07f99bac99c2c8f374695292e29bab04"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-buy-entropy-duke-potion-2.json",
+      "bytes": 1906274,
+      "sha256": "cd33cdf945c84fde7b42a7e59760b570c2e6ca94763907a88f9ee58287bf63bc"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-buy-entropy-duke-potion-3.json",
+      "bytes": 2022186,
+      "sha256": "e612fc78f53404464f39ef4e1cb4bc2e1290c9eef3880cceaca1bf1e7d0f96c5"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-buy-entropy-duke-potion-4.json",
+      "bytes": 2166648,
+      "sha256": "3aea3b703db91b6dd8017eb57528d29446af4cb502ace5385bf56e4e90a20266"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-clinic-actual-pay60.json",
+      "bytes": 1649888,
+      "sha256": "97da9d96a7341375d427ad1deeb8e11565ed5dff698314eedcbaafe0b572a312"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-clinic-real-discovery.json",
+      "bytes": 1649086,
+      "sha256": "863260304c4cb793741731c833f8f9c62cf74c6c9a2350527fd3d221600a8d4d"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-clinic-real-rest-1.json",
+      "bytes": 1649542,
+      "sha256": "cb580b20ab1a07a2ee162e39e9ffddce3757ac2683b04c267017ce26e1a4fc4e"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-clinic-real-rest-2.json",
+      "bytes": 1650163,
+      "sha256": "e5fbf840c64112eed4835a707d444933c6588b6cc2d5e9e5f52d0fe3e3ce4540"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-combat-round-1.json",
+      "bytes": 2725425,
+      "sha256": "b6ac1103f543d0c4f988eb773573844b6373b416054d22b313efa9e9f9248bae"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-combat-round-2.json",
+      "bytes": 2926359,
+      "sha256": "9bdb242b234562c530195063a8873f576fd27df2549557d181e765ac0bf696c4"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-combat-round-3.json",
+      "bytes": 3004504,
+      "sha256": "6804c51914a7a6ce72b30e97dfd71e2434281ba1517031812963942f4b787bec"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-consume-entropy-duke-potion-1.json",
+      "bytes": 1818190,
+      "sha256": "af7bad28492def19e76c77f34e638ce447c171d21e6926689866371b0fa645dd"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-consume-entropy-duke-potion-2.json",
+      "bytes": 1934028,
+      "sha256": "ec2ff4ca91564d683ea8bceb3cdc71621086f8474118525c4c2d066e6dd3fc2f"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-consume-entropy-duke-potion-3.json",
+      "bytes": 2049940,
+      "sha256": "687be3320d3c9ed0c1b8b6b82d7ebf60e5d5aae4d6a0a94c5141f09aa418ca3d"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-consume-entropy-duke-potion-4.json",
+      "bytes": 2195142,
+      "sha256": "6855ebbf4aeb3bdf495495ed1f5727b61084aff2ee6c872ff4f5a8d592aa6b1e"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-guidance.json",
+      "bytes": 1659693,
+      "sha256": "d764e3b4d18125c984b4c7a0529ff1eb94a2b61dec583a74194283389d139118"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-independent-optional-fight.json",
+      "bytes": 2561292,
+      "sha256": "bb07240121603b58de6dd99f10dbbc1710e6408fda449bf0f97b3f28f6975c9f"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-action_amplification-4-actual.json",
+      "bytes": 2354832,
+      "sha256": "064d04be6f0233b61c4ded6e75cf2d785c1c12258e68022d28744b637ba92f60"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-actual-preparation.json",
+      "bytes": 2343375,
+      "sha256": "165d04d6368c377a8f934a4c817efa1bae8d142ea7ef3d5dff06c44cac9d2757"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-check_originals-1-actual.json",
+      "bytes": 2347824,
+      "sha256": "b50d797d7faf0039eb82a0e4913f4be3e33f42dec5a7b1c74eccc1384d9af083"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-consent_darian-2-actual.json",
+      "bytes": 2349747,
+      "sha256": "c9e4797a05190adcf4e8b26e5226947ed6db1f693d84f455f228ed08dd673b4c"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-effect_prolongation-5-actual.json",
+      "bytes": 2359196,
+      "sha256": "f477215fc42c57a3700d50f74985a3252194ce9802a4ea5374d90c9b675fe464"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-honest-report.json",
+      "bytes": 2379057,
+      "sha256": "211befc5f6c10a36c033c7af2c485507e93affd81ff3276c0bcabe8673f5584e"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-inspect-14-actual.json",
+      "bytes": 2375608,
+      "sha256": "9665ae0073057dcb9322b9c9acf93a06af87e273dc1e00523fff5e204a2365d3"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-leave-15-actual.json",
+      "bytes": 2377273,
+      "sha256": "11ee567419c2b9f9e05537efd83bbd0b34a628644e607d0b24fd713314e3559f"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-observe-original-room.json",
+      "bytes": 2340264,
+      "sha256": "ba8cf1bde8093ddc9d6535e56f433c2caf8da4ff6868da85d9be94af1af36f95"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-read_result-9-actual.json",
+      "bytes": 2366741,
+      "sha256": "bccf33772c23cf19f56be927205289cce6a61a8c669aa2190006a3b132863745"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-return_objects-12-actual.json",
+      "bytes": 2371888,
+      "sha256": "f866fc20275739d709a45a9788fae27acf15761351508ab286aeda3d8f941db7"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-stop_input-6-actual.json",
+      "bytes": 2361939,
+      "sha256": "ca8359a0977539972e84e047978b6c55b40c17c476dcc69adc7778881f70d109"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-take_ball-3-actual.json",
+      "bytes": 2351565,
+      "sha256": "f6fac56a3844e11d4b355196284ba790044aaa2d13ea5f101f6cf5fa64b0dfda"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-take_result-10-actual.json",
+      "bytes": 2368443,
+      "sha256": "50f2ada09f02cbee65428edf1aed76a315638259a6729affd72d6818b00776e3"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-wait_flight-7-actual.json",
+      "bytes": 2363401,
+      "sha256": "fa601308a2c5566e421a15c4e9cd375632b2d795cd4c8dcdc084ef15c7469142"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-walk-0-actual.json",
+      "bytes": 2345888,
+      "sha256": "f55eb658c042455a3c1089d9f1fac655b4b49d32cfa7333651fa1c843b979fd6"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-walk-11-actual.json",
+      "bytes": 2370062,
+      "sha256": "bed963d50d941bc07c59ed8c2b2d5eddc9f7d2267562d0a345406d1170c97600"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-walk-13-actual.json",
+      "bytes": 2373838,
+      "sha256": "35364bcb4c56db8c8f82a733a53af6e70ef125b17d3468f5c08ad7fa41651bd8"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-lasting-flight-walk-8-actual.json",
+      "bytes": 2364937,
+      "sha256": "82aee78a0830d838f64460870da0393bfa014e33cdcbd17472ded5e5a1701a52"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-action_amplification-4-actual.json",
+      "bytes": 2283719,
+      "sha256": "e6d0a132a0e3bdac62d7efbf573050a3d0e6657f8dd031bd6b2a965f93ba258e"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-actual-preparation.json",
+      "bytes": 2272251,
+      "sha256": "364d8886a92d95b2141f379feaf8b783f93512322d28088401609afb2e5b4a6a"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-check_originals-1-actual.json",
+      "bytes": 2276705,
+      "sha256": "542b547e775072628dc09af190f8bcbaee325a4447d2e69f1abebf3e55cf1ea3"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-consent_darian-2-actual.json",
+      "bytes": 2278630,
+      "sha256": "34aebee9a6073b7e6ffefbf5a394fa452133ca4629faffd36dce8c51ec2d3c11"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-honest-report.json",
+      "bytes": 2301894,
+      "sha256": "fa8aab54811687cd728d1615f2ad96924ede7c9e36e1ce9f84a7bff3e494977d"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-inspect-12-actual.json",
+      "bytes": 2298673,
+      "sha256": "5fc9e1070ecc70c7945fabf6c997b66dfba9dab08f7448f9b8bb17dac0457a33"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-leave-13-actual.json",
+      "bytes": 2300242,
+      "sha256": "d7b70f4ea21cda20c9b6637c099f89f21cc19c5d33c567211a6303b56ce30fed"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-observe-original-room.json",
+      "bytes": 2235936,
+      "sha256": "eafa31f5fa1e34c5f07b3b7d0f627eb0069eb1377a366c160f0a95fcf46d61d0"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-read_result-7-actual.json",
+      "bytes": 2289794,
+      "sha256": "7d2139ca5a55f7e696f97b51247ef5ef5c105e12ebb20227dae8e918811f0650"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-return_objects-10-actual.json",
+      "bytes": 2294947,
+      "sha256": "c51e6f297014f50165df7215aade80333365812ae3a2e353e55161bed6222c05"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-take_ball-3-actual.json",
+      "bytes": 2280450,
+      "sha256": "152c29f19ccca991ebc6e7f775e5e5811cf235fe1c56eaf4b45bc38c457d24dc"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-take_result-8-actual.json",
+      "bytes": 2291498,
+      "sha256": "00de1a5ba64d18875acf4875285551a124c804e2e11e6cf2b97cac5be2fd9355"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-wait_flight-5-actual.json",
+      "bytes": 2286618,
+      "sha256": "892d0a1613394b16ad9740ab745a65071d6f7316315c8fc044dbdfcdd0e58412"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-walk-0-actual.json",
+      "bytes": 2274767,
+      "sha256": "644181f7299f30312682331da43d120d71aabd5ed22679347dea47a712b66256"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-walk-11-actual.json",
+      "bytes": 2296899,
+      "sha256": "4712c259e80ae428e0c83fb02d8eb0e2814d62f6c0bd46b912441a74a3db49e3"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-walk-6-actual.json",
+      "bytes": 2287988,
+      "sha256": "98cf15edf5512abf98b5690e155566321436cd05cf60b5973449d470b2aa4f08"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-measured-throw-walk-9-actual.json",
+      "bytes": 2293119,
+      "sha256": "b1df9b5a0040d238028d44c633eb40d619cab84a2f308a1f2586a0c7bb8a11a1"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 3018855,
+      "sha256": "6f274322a49d882364a020fd6ae224d3f326d6be5550c51aab2e4a2978d88836"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1688070,
+      "sha256": "665b6c4e86d998c1230a1b41832e194e815b977b114fa0018acee5c516cb7367"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1702564,
+      "sha256": "d2eef2ea7ffdead192f43272dcbc2096fbdf21dad5155bc1a6e53f5ae9d9a8b8"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1674700,
+      "sha256": "37d01de290b7d03a6f0f07b57c2c0d3341d5cf983076d853cfcfa5f157612606"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-prepare-entropy-duke-potion-1.json",
+      "bytes": 1804026,
+      "sha256": "fa4c2160927e854d2145ee588ad72683dc262e8fb4c053e7f810cf55c95dc106"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-prepare-entropy-duke-potion-2.json",
+      "bytes": 1919864,
+      "sha256": "959c425d4336ffa754648cd2fc369506c0f57bd8961ed4cdc72fdffc3354ba5f"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-prepare-entropy-duke-potion-3.json",
+      "bytes": 2035776,
+      "sha256": "a5e1f6da54510f82391acfa9bfdb338a385e0844f3e677f61c1782425675cf02"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-prepare-entropy-duke-potion-4.json",
+      "bytes": 2180242,
+      "sha256": "e44bda739e4c8e87a93b4a658e3d3f5f15795471a10bee02174ffa5e4661b6a6"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-real-combat-preparation.json",
+      "bytes": 2441475,
+      "sha256": "a3dc98c8a43e50efdf9576ff562f14d0211728421b4d8850b00dc8975622ce79"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-receive-next-week-supply-4.json",
+      "bytes": 2080155,
+      "sha256": "702ad05798c3923f50412f7d3ae4cc8dd181dfcdc70f6567c4db96f2e7cf1cb3"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-request-supply-after-3-actual-failures.json",
+      "bytes": 2064876,
+      "sha256": "5f3be4e29307bb9c0879abfdbe31f93a9bce0920f1306bcdade77449786bcc9b"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-same-darian-and-guide-ordinary-clearance.json",
+      "bytes": 2517015,
+      "sha256": "007fd835ed09f61888a1be83bde92f7e261245ba92e86ebcfaf97585e096a2d6"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-three-cases-reflected.json",
+      "bytes": 2380692,
+      "sha256": "3f8cfa8136289415b2c016e892555ae6d1ea98dd624bcbbb4083ce992db248c1"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-action_amplification-4-actual.json",
+      "bytes": 2318313,
+      "sha256": "880c4fba29e8d26c8e071c5f727ec4ca11fecc1158a6981578b1ba1588752493"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-actual-preparation.json",
+      "bytes": 2306815,
+      "sha256": "88568b49efea26a2ffe6067ea5e5f1185066a6bf07c9894aec31359668642c7c"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-check_originals-1-actual.json",
+      "bytes": 2311279,
+      "sha256": "c286c14c0bcab23974a511da50615a511ed90a80c38c2fc3c3f3182b8e83d803"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-consent_darian-2-actual.json",
+      "bytes": 2313209,
+      "sha256": "bda7c03d99c8ea77cda1fabfa5cd8146f9abcc6e088e12877d3a8e499d9822f6"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-honest-report.json",
+      "bytes": 2338470,
+      "sha256": "2764225c7e21e87d979a82bd632b44c9b56bf09355ff572300caba6a4576d42f"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-inspect-13-actual.json",
+      "bytes": 2335245,
+      "sha256": "0a7321ee54b09522674afa462ec1012eee4b34087d046d8880e140d88bc7a667"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-leave-14-actual.json",
+      "bytes": 2336817,
+      "sha256": "77e21edd137c3d6fcef84fbc9e3776d47bc3635f43e88d4b887b4d8edc4393b7"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-observe-original-room.json",
+      "bytes": 2303695,
+      "sha256": "1748ee1399ca17a077dc77f1cb4ff4a53f0686b10bf0bf63fb2da1d2704b62f6"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-read_result-8-actual.json",
+      "bytes": 2326346,
+      "sha256": "30d82172a8863ba4c7b4be9a524925a4ddb34a552fd880404ce4a3e753c7ea54"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-return_objects-11-actual.json",
+      "bytes": 2331511,
+      "sha256": "4f4d58072a3a1a0c4285b1efbf783576eba46dbd9c5756710ac37afb2ad7442b"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-take_ball-3-actual.json",
+      "bytes": 2315034,
+      "sha256": "08965ce7b835617ed792920cf7e42ce7eac8ac9d12bb5ea59705a227cf71f418"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-take_result-9-actual.json",
+      "bytes": 2328054,
+      "sha256": "fda0a11deb002b0d33104b0eb57e9b4eae00e77fa8fe94550df21e749da04655"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-wait_flight-6-actual.json",
+      "bytes": 2323024,
+      "sha256": "4255c7da09da0f30906b959c1c25164ae1f95cf6cad05aaba10592fc9909da7a"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-walk-0-actual.json",
+      "bytes": 2309337,
+      "sha256": "ffd19bdcd0d280326f26798bd2b656c8120288fa73451de26904ef7706e362ed"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-walk-10-actual.json",
+      "bytes": 2329679,
+      "sha256": "65ba4af839a00a6f3e5ffddcae4b1b26a78bb11975f07b93c0257196bf060623"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-walk-12-actual.json",
+      "bytes": 2333467,
+      "sha256": "0e2a0d0e5c385c6c1aa3b4921f611faef09f677fb6008373808c76368f2dbc3a"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-walk-7-actual.json",
+      "bytes": 2324536,
+      "sha256": "04d5c2859ea317b9b7d28396e34a5edab127d292ce500fca21398e6501504af1"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/boundary-withdrawn-flight-withdraw_permission-5-actual.json",
+      "bytes": 2321558,
+      "sha256": "dafd11b0b699abf8b34177f8a43f0a3718fac279e0b861e0a26f0ac70dea5466"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/directed/directed.index.json",
+      "bytes": 423,
+      "sha256": "7193154f6cfde727177091f4cb2e929052acbdb44b0a5ab497906655823f45e8"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/directed/zero-ap-fourth-missed-payment-suspension.json",
+      "bytes": 2199400,
+      "sha256": "6cd79bb52762a7ba5551701e2f652a32f4fee20e4446be6818dfda75b0d65f03"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/directed/zero-ap-paid-bill-and-advance.json",
+      "bytes": 2204592,
+      "sha256": "25182ab4947554a90597f9cdb0b1a1fbbe585589519a35691712459261e3801c"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/directed/zero-ap-second-missed-payment-notice.json",
+      "bytes": 2199397,
+      "sha256": "3f6146d82bda44dd4f41da9d71e4647a8a92e6e0c1695e68e60443f325aa1b26"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/directed/zero-ap-suspended-shortfall-new-debt.json",
+      "bytes": 2204081,
+      "sha256": "c72f68df4ffc7da7ca46a1b83d8ca2d12226d0ac50812465ef40e0d8445d83aa"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/directed/zero-ap-unpaid-bill-interruption.json",
+      "bytes": 2203911,
+      "sha256": "35b27c6eac3f08fcc14c014bdaf7a1b4c4a63285a27b6049f04d911c03886163"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/natural.json",
+      "bytes": 2926106,
+      "sha256": "3dbb2166121b85a02883455a5604df7c44a50ce6102d7dd65d5c9720b4ed32f1"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/snapshot-combatStart.json",
+      "bytes": 1294206,
+      "sha256": "409d810370ad6647a9fabeb008ac801f7e645b044126f7e3b7eb2ae015a708a0"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/snapshot-combatTerminal.json",
+      "bytes": 1509286,
+      "sha256": "36b19969789b37d38c031172f687d3a8767d37bbc1220c2f4a968a5b231bf9a9"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/snapshot-departure.json",
+      "bytes": 824316,
+      "sha256": "84968a5b76a03cf289f588a90dfc0413d514f7ada4f66f08bf67a2512c6e21ef"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/snapshot-practiced.json",
+      "bytes": 1190672,
+      "sha256": "5faf6e23281e39b922854ccf6a6b067316fe7e6ed87a1dd22321cab68208cc57"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/snapshot-promoted.json",
+      "bytes": 1101546,
+      "sha256": "b54225630152a22bdcbd5eca6b2a175daf09c823048e5250dca98f246ff8fcac"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/snapshot-treated.json",
+      "bytes": 825153,
+      "sha256": "ff565e396fa76518bade27e07f54c8ee0caebdedb92e483b4770f2e0987a6da6"
+    },
+    {
+      "path": "tests/fixtures/entropy-duke-v01830/summary.json",
+      "bytes": 11856,
+      "sha256": "abd7ddbb8760520f8bd5ddee879a8c1e21745d11db9dce62a1a75856d3b0be2a"
     },
     {
       "path": "tests/fixtures/faceless-v0730/natural.json",

@@ -193,7 +193,7 @@ export function mentorDisorderActions(s: SliceState): MentorDisorderAction[] {
   return out;
 }
 export function mentorDisorderCases(s: SliceState): MentorDisorderProjection['cases'] {
-  if (!active(s)&&!(s.progression.pathwayId==='black-emperor'&&(s.progression.sequence===4||s.progression.sequence===3))) return [];
+  if (!active(s)&&!(s.progression.pathwayId==='black-emperor'&&(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))) return [];
   return CASES.map(p => {
     const r = s.mentorDisorder.cases[p.id]!;
     const closed = r.attemptWeek !== null && !r.contactOpen ? p.id === 'paired-trays' ? '本次两枚原筹已经按编号实际收回原红、蓝分格。' : p.id === 'willing-crossing' ? '本次影响已停止，赛恩已经沿原路实际走回原起点，原标记收回原盒，有限同意已结束。' : '同一已写原纸已经亲手交付伊芙，失败文字也保留。' : '';
@@ -242,7 +242,7 @@ export function validateMentorDisorderLife(s: SliceState): boolean {
   if (f.route !== (route.contactOpen ? 'MARKED' : route.status === 'PREPARED' ? 'READY' : route.closes > 0 || route.withdrawals > 0 ? 'FREE' : 'READY')) return false;
   if (f.note !== (note.contactOpen ? 'WRITTEN' : note.attemptWeek !== null ? 'HANDED_OVER' : 'BLANK')) return false;
   if (typeof m.reflected !== 'boolean' || s.seer.completedSources.filter(source => source === 'mentor-disorder-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (s.progression.pathwayId==='black-emperor' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)) && ((s.progression.sequence===4||s.progression.sequence===3)?s.fallenEarl.mentorDisorderActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (s.progression.pathwayId==='black-emperor' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)) && ((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?s.fallenEarl.mentorDisorderActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && m.reflected) return false;
   return true;
 }

@@ -1,3 +1,4 @@
+import { ENTROPY_DUKE_COUNT_WHEEL, entropyDukeAbilityWheel } from '../../src/domain/entropy-duke/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
@@ -135,9 +136,13 @@ describe('Lawyer S9 exact G profile and strict dispatch', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(20);
   });
 
-  it('leaves unimplemented Black Emperor sequences ordinary and preserves all Wheel and Chained profiles', () => {
+  it('dispatches opened S2 separately, leaves ordinary characters ordinary and preserves Wheel and Chained profiles', () => {
     const state = fixture();
-    for (const sequence of [2, null] as const) {
+    state.progression.sequence = 2;
+    expect(isLawyer(state)).toBe(false); expect(currentLawyerCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(ENTROPY_DUKE_COUNT_WHEEL);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(entropyDukeAbilityWheel(state, 'CONTROL'));
+    for (const sequence of [null] as const) {
       state.progression.sequence = sequence;
       expect(isLawyer(state)).toBe(false); expect(currentLawyerCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);

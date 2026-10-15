@@ -1,3 +1,4 @@
+import { ENTROPY_DUKE_ABILITY_IDS } from '../entropy-duke/types.js';
 import {FRENZY_MAGE_ABILITY_IDS} from '../frenzy-mage/types.js';
 import {FALLEN_EARL_ABILITY_IDS} from '../fallen-earl/types.js';
 import {MENTOR_DISORDER_ABILITY_IDS} from '../mentor-disorder/types.js';
@@ -40,7 +41,7 @@ export function createBarbarianState(): BarbarianState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isLawyer = (s: SliceState) => s.progression.pathwayId === 'black-emperor' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.lawyer.discovered && s.lawyer.guidanceKnown && (isLawyer(s) || promoted(s));
 const materialPrice = (batch: BarbarianBatch) => BARBARIAN_PRICES.auxiliaryMaterials + (batch.labourSteps === BARBARIAN_LABOUR_STEPS ? 0 : BARBARIAN_PRICES.mainMaterials);
@@ -288,7 +289,7 @@ export function validateBarbarianState(s: SliceState): boolean {
   if (barbarian.formulaKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!barbarian.formulaKnown || !integer(s.progression.promotionWeek, 1, s.week) || !integer(barbarian.promotionWeek, firstConsumptionWeek, s.week) || barbarian.lawyerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?BRIBER_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?CORRUPTION_BARON_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?MENTOR_DISORDER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?FALLEN_EARL_ABILITY_IDS:[]),...(s.progression.sequence===3?FRENZY_MAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))))?BRIBER_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?CORRUPTION_BARON_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?MENTOR_DISORDER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?FALLEN_EARL_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?FRENZY_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===2?ENTROPY_DUKE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (barbarian.promotionWeek !== null || barbarian.lawyerActingAtPromotion !== null || BARBARIAN_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (barbarian.reflected || Object.values(barbarian.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

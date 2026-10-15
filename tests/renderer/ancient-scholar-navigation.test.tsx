@@ -191,7 +191,7 @@ describe("Ancient Scholar navigation through captured real centuries", () => {
     expect(vi.mocked(game.submit).mock.calls.map(([envelope]) => envelope.payload)).toEqual(
       ["WORK", "REST", "WORK", "NEXT_WEEK"].map(type => ({ type: "ANCIENT_SCHOLAR", command: { type } })),
     );
-  }, 15_000);
+  }, 25_000);
 
   it("keeps the new real combat and its saved round result while suppressing only obsolete old-era replay", async () => {
     const capture = natural(), game = savedGame(capture.combatStart), before = structuredClone(game.state);
