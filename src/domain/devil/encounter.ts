@@ -41,7 +41,7 @@ export function createDevilEncounterState(): DevilEncounterState {
     powerUses: { ARC_BOLT: 0, WARD: 0 }, emotion: 'STRONG', seedPlanted: false, lastSeedRound: null, staggerReady: false,
     seedAttempts: 0, catalysisAttempts: 0, composeUses: 0, terminal: null };
 }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && [4,3].includes(s.progression.sequence!);
+const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && [4,3,2].includes(s.progression.sequence!);
 const reported = (s: SliceState) => Object.values(s.devil.life.cases).some(c => c.status === 'RESOLVED');
 const noEffects = (s: SliceState) => !s.devil.encounter.seedPlanted && !s.devil.encounter.staggerReady;
 function practiceClosed(s: SliceState): boolean {

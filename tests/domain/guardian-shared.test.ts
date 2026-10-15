@@ -24,7 +24,7 @@ describe('Guardian real public chain',()=>{
   expect(c.combatStart.combat.encounterId).toBe('GUARDIAN_DISPUTE');expect(c.final.world.carrierAlive).toBe(c.combatStart.world.carrierAlive);
  });
  it('migrates0.106 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/dream-stealer-v01060/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(176);
+  const old=JSON.parse(readFileSync('tests/fixtures/dream-stealer-v01060/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

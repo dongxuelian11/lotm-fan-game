@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.179.0",
+  "version": "0.180.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -171,6 +171,11 @@
       "name": "lotm_release_0.179.0_elder_test_inputs_2026-10-15.tar.gz",
       "bytes": 14867589,
       "sha256": "eaab007c3f3ddb9f5a79d803e479cd96b66f516bd8aa8b0014c42561e853a729"
+    },
+    {
+      "name": "lotm_release_0.180.0_blood_duke_test_inputs_2026-10-15.tar.gz",
+      "bytes": 16485179,
+      "sha256": "a6f3b6229358e53b9ce8bbf903dab3d42b4fa961f2b3fb414469c087e9a09398"
     }
   ],
   "fileEntries": [
@@ -8288,6 +8293,361 @@
       "path": "tests/fixtures/elder-v01790/summary.json",
       "bytes": 3140,
       "sha256": "5f7a738b3b3de7fbba0cff3a19ac69c2d738204a83cfb8e08d2ac04a20496ae7"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundaries.index.json",
+      "bytes": 5341,
+      "sha256": "f19ea4eb6efce3c1ee8584ce9cc3fc084b1d8c310dcd2015f745558ec1ff0473"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-actual-preparation.json",
+      "bytes": 1780968,
+      "sha256": "370cbbbc80bca6e5df32b609591349cf5eecd9d36cfed92e822234d2565b196a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-confirm_emotion-actual.json",
+      "bytes": 1795915,
+      "sha256": "586c199d69cf3dc79c4614e33cf858c8a185b9ce760018c1c75853202c4a5277"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-consent_nora-actual.json",
+      "bytes": 1785126,
+      "sha256": "f6fb8738b2b01ab81cb632e1d308b52f952ca629df7a5892371dc2e269e43a51"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-emotion_interference-actual.json",
+      "bytes": 1798519,
+      "sha256": "960f04d9987acf059815e8cbe3c60e9d4d083186647a4c3157fc2cf3d62edc47"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-end_focus-actual.json",
+      "bytes": 1802715,
+      "sha256": "5bce28e1e56a1ae380767bd83f8db1e11942b10cd6f411b6e749ed7eb3ef8c67"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-honest-report.json",
+      "bytes": 1812101,
+      "sha256": "125ee71b5cdd8f1599d9fbf45837b5f210d8fff04b6ad88139bf0477d0ec2068"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-inspect-actual.json",
+      "bytes": 1808978,
+      "sha256": "d0c1a405cb3bc71af7ccae871f8e94e4bb8d5c2bcb99b6ffecfbebc70c89c7c9"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-leave-actual.json",
+      "bytes": 1810494,
+      "sha256": "4d01772c0e4c020cbed986dddf79c0ecc9226e3731f4e1dc47ef29c3ce0b877a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-observe-original-room.json",
+      "bytes": 1777894,
+      "sha256": "d51e08bcf788609d6a8791d401b12d18b20081d7b556507ee4fc8c02c0bfcb58"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-perform_operation-actual.json",
+      "bytes": 1800998,
+      "sha256": "8b39df5e2b7cb5a7bcce59c24a8a2779dd855e3007457fde4b55ea7d34eb3021"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-read_note-actual.json",
+      "bytes": 1790219,
+      "sha256": "87ad0a83797e4a0d85984891e5d8ab400102f85b370706898ef64298d475b451"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-rehearse_bell-actual.json",
+      "bytes": 1792214,
+      "sha256": "dd27a6187b175b8ead10442a3d0fbac8636b730a95969d5502ff90a288ea5179"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-return_card-actual.json",
+      "bytes": 1805693,
+      "sha256": "8ababb6dcf825a19183cfea0a46f2336f09f1625fdbb8ff95ff6b4544a8aa19d"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-take_card-actual.json",
+      "bytes": 1786868,
+      "sha256": "8a47c669cdaefb28c066b26348b99ebb110d5ee8846877933a1e68e6be169952"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-wait_6-actual.json",
+      "bytes": 1804207,
+      "sha256": "a0ddb963591b5311fb86066ce4ef2a91622a4d1a334906af53d537e720ab8b25"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-buy-blood-duke-potion-1.json",
+      "bytes": 1608712,
+      "sha256": "f77e196ce3acc218445a2671def173950d04a2a4466c0ed69a4c26888bc38bbb"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-buy-blood-duke-potion-2.json",
+      "bytes": 1675146,
+      "sha256": "898dc09946d0e5855e508ba1f833d6c3606962c5b7094910023e011f36d2113b"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-1.json",
+      "bytes": 1998648,
+      "sha256": "bdffc900f51268203f825f3eee0dff260dd89344f688ab4f81530838606e1e58"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-2.json",
+      "bytes": 2116922,
+      "sha256": "2790e475ec2d48654167925645982b592dfc525abb13b725195aa5ed7c01856f"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-3.json",
+      "bytes": 2155835,
+      "sha256": "902466f877588d35b41bd3eb087f25c33b3347f0ac72884cf6961daa057bd688"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-consume-blood-duke-potion-1.json",
+      "bytes": 1624106,
+      "sha256": "1f980065c8472d276535925e5c874072c8cf01d7f5dd54570c53b83ce873de5a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-consume-blood-duke-potion-2.json",
+      "bytes": 1691032,
+      "sha256": "2b1d9af88ee615f0c1d139334ac849e05ac253cb6c3b46f1967d6d8bf5d59728"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-actual-preparation.json",
+      "bytes": 1747065,
+      "sha256": "010606fc707a77f33b5d5a45a4ef1dfd435dca8a5c630abaec24e0557fcfcc24"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-consent_nora-actual.json",
+      "bytes": 1751223,
+      "sha256": "d11dfe8f94c4661b3f16bc1a8201907dd91d5734455bcbf4f7f9acbb17992364"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-end_focus-actual.json",
+      "bytes": 1766612,
+      "sha256": "febe44616711fade051974039f8069a81e6322aca4d3c5539d8ecdc77b268bec"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-honest-report.json",
+      "bytes": 1776100,
+      "sha256": "ea5694ba43e2b508fa61777c4d01a09fa2459985f67ab94b6e28d943a41d5ae1"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-inspect-actual.json",
+      "bytes": 1772975,
+      "sha256": "8938ac94333de0a4cc7719d06166a7295052428f101f86c4c0c53e29290ef217"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-leave-actual.json",
+      "bytes": 1774492,
+      "sha256": "b80ed8b7251336a492b142c4b13963deafaa07697151e04e354120f3c440c165"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-notice_impulse-actual.json",
+      "bytes": 1759941,
+      "sha256": "a9b36dab2c4f499b62a8e1da514a229b1ea4111c1f96fe6d1f1af2fba06eaa26"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-observe-original-room.json",
+      "bytes": 1720082,
+      "sha256": "03843b15a39ac4acd46c0a620fd4aac8fa59a99240d30c53e8dca518ff4b2715"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-perform_operation-actual.json",
+      "bytes": 1764883,
+      "sha256": "3f6c958bae6e2d4ede5027991118dbcaae014d0b78e458fbe160ea856aed8f03"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-read_note-actual.json",
+      "bytes": 1756316,
+      "sha256": "fd6c9a189e9e4e076722a90d1ff9bf9510330b5c76f684de0ed3a58309c7476a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-return_card-actual.json",
+      "bytes": 1769759,
+      "sha256": "a762c33affa1efa5f2bdc8186fe6c74680da425c349df9ad95ff4fabdcc6ec7e"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-self_restraint-actual.json",
+      "bytes": 1762487,
+      "sha256": "76abe5140bb4897866f55beca118d3ef81ade1012a61b444ea4b402adac585cb"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-take_card-actual.json",
+      "bytes": 1752965,
+      "sha256": "affa6f4addb8e98cb8c492d13184412327d732a1415bcc261ecd6f6da507317b"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-wait_6-actual.json",
+      "bytes": 1768223,
+      "sha256": "20b0aa515215e4581c39e1f28b40f3bcae282d592481a723e420c17920eec5d6"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-guidance.json",
+      "bytes": 1530112,
+      "sha256": "cdf63c81e04f13306c24f3cbb8dddcf708c5fca004937de8091cae8d2a1d717e"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-independent-optional-fight.json",
+      "bytes": 1900587,
+      "sha256": "c70c552a69a5d8a8c059784497fcece462fd1680ac3d08d8d988ecf00051c7ba"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1546206,
+      "sha256": "10e45e4827fc894caf0e2afd136a253bcc7f5ea7ff92eb3fce24ba9365add85a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1554230,
+      "sha256": "d0ec069b9c492b5b9989bb3113085c46922bf55de7435cbcdc0f57e707551b71"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1539115,
+      "sha256": "a238cea7c159e152a3ef3c227ce7beece2a3f27e66c3e483cdcf3b86b96566dc"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-prepare-blood-duke-potion-1.json",
+      "bytes": 1616126,
+      "sha256": "8fb3d6066cdeb33318e62f96d395c7ff60e92fcddc4fd3690e992a03ad0a2c3e"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-prepare-blood-duke-potion-2.json",
+      "bytes": 1682558,
+      "sha256": "aa0f3ce5575bb5567a3f49c542b9189b08701c42cacae03e6bef1c10844d51ba"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-real-combat-preparation.json",
+      "bytes": 1860387,
+      "sha256": "c9c82f892d21d1cf68d955d75220da06334a9bea7e99b106f41c83e06e152e2c"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-same-nora-ordinary-clearance.json",
+      "bytes": 1874122,
+      "sha256": "a8b97fa3ef8fed5f3310e6a13578a99dbe3747b0b31f0b38e25e871d1ba248f2"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-three-cases-reflected.json",
+      "bytes": 1856926,
+      "sha256": "d34524ef8c8dfd342ff3d86d6617e22ff69b9a7995e7dc574a15153a9316c0d9"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-actual-preparation.json",
+      "bytes": 1816992,
+      "sha256": "ee885e04fc32286099f4fea22266a5c565c47029357080a005ce9514080a346a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-confirm_emotion-actual.json",
+      "bytes": 1832024,
+      "sha256": "c373c3755ec1a63eeba490f366b3c98e921f2dc1329db835ba48f4bed5a844ea"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-consent_nora-actual.json",
+      "bytes": 1821175,
+      "sha256": "45b6c570d1add70d7cfd147ee937c789b8928b0898eb2257c923c24e188759e9"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-emotion_interference-actual.json",
+      "bytes": 1839900,
+      "sha256": "ab30b3b61557caeee76e4ad1ce6c59a9b776ce86cbaa2939731538e3fa5589d3"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-end_focus-actual.json",
+      "bytes": 1842195,
+      "sha256": "86cbbc202c6d68649e9d6c893d67637b5b597af25084536e623f303f57f1edf1"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-honest-report.json",
+      "bytes": 1855320,
+      "sha256": "bfdb990cbaf476acc5970775669baea8b403dedb2e035743a3b054211078c6ac"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-inspect-actual.json",
+      "bytes": 1851941,
+      "sha256": "93351643fb39a2b8be349674d0c345e7da5d96066812593c222ba11f2691d5ea"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-leave-actual.json",
+      "bytes": 1853571,
+      "sha256": "14176780f4e795c445a888f7f5c243069098aa30aa82cd8f9e979b4e67ec57b9"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-manual_operation-actual.json",
+      "bytes": 1845071,
+      "sha256": "042f9dec20db07ba644d2c741d6e9ee45d1f62522ce14126b558969d370c514d"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-notice_impulse-actual.json",
+      "bytes": 1834000,
+      "sha256": "63fb04ee504272f65f2ba2afe9d533a53a94171773a8d1c16799f50e7b936386"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-observe-original-room.json",
+      "bytes": 1813902,
+      "sha256": "2a5a2c0ea3ba8367e4667775540467a12bcffba99e1671ca34690e448133bf7d"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-read_note-actual.json",
+      "bytes": 1826298,
+      "sha256": "62c48d66a10c789b427a1ea7afefcf080d7a0b7f5678eadaa8f27b0f3bcad769"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-rehearse_bell-actual.json",
+      "bytes": 1828303,
+      "sha256": "c60574a311c5c163159f30ceb89dacf93f5e7c5fb0beb8acdf915c434f5a78ec"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-return_card-actual.json",
+      "bytes": 1848646,
+      "sha256": "02f9b8214785979b9ff7dca8e2526327727840923d9db1cff85287ec69058df8"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-self_restraint-actual.json",
+      "bytes": 1836659,
+      "sha256": "eab2a91f2646671a215b5f392eff6a20ef48b631201e38f18157754a18fbecc6"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-take_card-actual.json",
+      "bytes": 1822927,
+      "sha256": "e4260f7cd1eadc3c6f9a17bc30df17812899bca7b773a1b7365a77ec4879a70c"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-wait_6-actual.json",
+      "bytes": 1843548,
+      "sha256": "d486d34e0e82c5cc80318061eb0029b6f1ad5c406246b0716930bd6a0b8d5189"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-withdraw_permission-actual.json",
+      "bytes": 1846881,
+      "sha256": "a9869bbf5664856597fe9a953bf2562b3eda056a0a44131876efdfd336d8c721"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/natural.json",
+      "bytes": 2423212,
+      "sha256": "7762560089c03487c1dd4432fd367998d4874c165e3cce8d012d200d56222363"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/snapshot-combatStart.json",
+      "bytes": 957202,
+      "sha256": "59a20be0bfded0ab5fe5f964e7dcd2c70615df4ea7e0b53995eaa48a33f45578"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/snapshot-departure.json",
+      "bytes": 762030,
+      "sha256": "9b8778947c7a39979135a3e1ff6e775d0761fe3c8fa0212ac14385c0c907a087"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/snapshot-practiced.json",
+      "bytes": 928782,
+      "sha256": "1fa569f969372d7ea68fbf661d91cdcdf6105a40b2d9bbfb04de0279a8fb57d4"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/snapshot-promoted.json",
+      "bytes": 847825,
+      "sha256": "f839a97c2814f50b2fadf8003e707977428aea57d28e2c5d001f0bd665046de7"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/summary.json",
+      "bytes": 3307,
+      "sha256": "e8ae52bde6aa83bb1ea99d1cf1512cffe72854d1212b0044ee15a52befe8bfb2"
     }
   ]
 }

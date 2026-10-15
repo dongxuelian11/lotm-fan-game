@@ -1,3 +1,4 @@
+import { BLOOD_DUKE_ABILITY_IDS } from '../blood-duke/types.js';
 import {BLATHERER_ABILITY_IDS} from '../blatherer/types.js';
 import {DEVIL_ABILITY_IDS} from '../devil/types.js';
 import {DESIRE_APOSTLE_ABILITY_IDS} from '../desire-apostle/types.js';
@@ -34,7 +35,7 @@ export function createDemonState(): DemonState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
 const isSerialKiller = (s: SliceState) => s.progression.pathwayId === 'abyss' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.criminal.discovered && s.criminal.guidanceKnown && s.unwinged.guidanceKnown && s.serialKiller.guidanceKnown && s.serialKiller.promotionWeek !== null && (isSerialKiller(s) || promoted(s));
 const potionPrice = (bottle: DemonBottle) => DEMON_PRICES.potion - (bottle.labourSteps === 5 ? DEMON_PRICES.labourCredit : 0);
@@ -158,7 +159,7 @@ export function applyDemonCommand(s: SliceState, command: DemonAcquisitionComman
 
 export function projectDemon(s: SliceState): DemonProjection {
   const actions: DemonAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.desireApostle.demonActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.desireApostle.demonActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: DemonAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -251,7 +252,7 @@ export function validateDemonState(s: SliceState): boolean {
   if (demon.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!demon.guidanceKnown || !integer(s.serialKiller.promotionWeek, 1, s.week) || !integer(demon.promotionWeek, firstConsumptionWeek, s.week) || demon.serialKillerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS, ...SERIAL_KILLER_ABILITY_IDS, ...DEMON_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?DESIRE_APOSTLE_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?DEVIL_ABILITY_IDS:[]),...(s.progression.sequence===3?BLATHERER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS, ...SERIAL_KILLER_ABILITY_IDS, ...DEMON_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?DESIRE_APOSTLE_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?DEVIL_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?BLATHERER_ABILITY_IDS:[]),...(s.progression.sequence===2?BLOOD_DUKE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (demon.promotionWeek !== null || demon.serialKillerActingAtPromotion !== null || DEMON_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (demon.reflected || Object.values(demon.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

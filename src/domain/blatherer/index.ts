@@ -1,3 +1,4 @@
+import { BLOOD_DUKE_ABILITY_IDS } from '../blood-duke/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -30,7 +31,8 @@ export function createBlathererState(): BlathererState {
     preparations: [], preparedWeek: null, life: createBlathererLifeState(), encounter: createBlathererEncounterState() };
 }
 export const isBlatherer = (s: SliceState) => s.progression.pathwayId === 'abyss' && s.progression.sequence === 3;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'abyss' && [4, 3].includes(s.progression.sequence ?? 0)
+const hasBlathererHistory = (s: SliceState) => s.progression.pathwayId === 'abyss' && [3, 2].includes(s.progression.sequence ?? 0);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'abyss' && [4, 3, 2].includes(s.progression.sequence ?? 0)
   && s.criminal.discovered && s.criminal.guidanceKnown && s.unwinged.guidanceKnown && s.serialKiller.guidanceKnown
   && s.demon.guidanceKnown && s.desireApostle.guidanceKnown && s.devil.guidanceKnown && s.devil.promotionWeek !== null;
 export const hasBlathererOldPractice = (s: SliceState): boolean => criminalInside(s) || unwingedInside(s) || serialKillerInside(s)
@@ -43,7 +45,7 @@ export const hasBlathererOldPractice = (s: SliceState): boolean => criminalInsid
   || s.desireApostle.encounter.seedPlanted || s.desireApostle.encounter.staggerReady
   || s.devil.encounter.seedPlanted || s.devil.encounter.staggerReady;
 export const hasBlathererRitualLock = (s: SliceState): boolean => s.blatherer.preparedWeek !== null;
-export const hasBlathererLock = (s: SliceState): boolean => hasBlathererRitualLock(s) || hasBlathererLifeLock(s) || hasBlathererEncounterLock(s);
+export const hasBlathererLock = (s: SliceState): boolean => !(s.progression.pathwayId === 'abyss' && s.progression.sequence === 2 && s.bloodDuke?.promotionWeek != null) && (hasBlathererRitualLock(s) || hasBlathererLifeLock(s) || hasBlathererEncounterLock(s));
 const bottleNumber = (b: Pick<BlathererBottle, 'id'>) => Number(b.id.slice('blatherer-potion-'.length));
 const potionPrice = (b: BlathererBottle) => BLATHERER_PRICES.potion - (b.labourSteps === BLATHERER_LABOUR_STEPS ? BLATHERER_PRICES.labourCredit : 0);
 const devilWeeks = (s: SliceState) => Math.max(0, (s.blatherer.promotionWeek ?? s.week) - (s.devil.promotionWeek ?? s.week));
@@ -75,7 +77,7 @@ export function blathererAcquisitionBlock(s: SliceState, command: BlathererAcqui
   if (hasBlathererOldPractice(s) || hasBlathererLifeLock(s) || hasBlathererEncounterLock(s)) return '先实际结束旧接触、演练、恶魔身体与火焰和原种子效果，归还原物并收束旧准备和当前实践；旧人物、伤势、良知变化与能力记录保留，旧许可不代替新案同意。';
   if (s.world.city !== 'BACKLUND') return '须沿实际行程回到贝克兰德原旧货库旁BL3-QUIET-ROOM独立安静房间。';
   if (!knownChannel(s)) return '实际成为魔鬼并保留原指导渠道后，才能了解呓语者之路。';
-  if (isBlatherer(s)) return '已经真实晋升呓语者3，不能重复准备或服药；未服原瓶保留。';
+  if (hasBlathererHistory(s)) return '已经真实晋升呓语者3，不能重复准备或服药；未服原瓶保留。';
   const state = s.blatherer;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
@@ -170,7 +172,7 @@ export function applyBlathererCommand(s: SliceState, command: BlathererCommand, 
 }
 
 export function projectBlatherer(s: SliceState): BlathererProjection {
-  const state = s.blatherer, available = knownChannel(s), promoted = isBlatherer(s), actions: BlathererAction[] = [];
+  const state = s.blatherer, available = knownChannel(s), promoted = hasBlathererHistory(s), actions: BlathererAction[] = [];
   const add = (id: string, label: string, cost: string, command: BlathererAcquisitionCommand) => { const reason = blathererAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-blatherer-guidance', '听取呓语者成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -188,6 +190,7 @@ export function projectBlatherer(s: SliceState): BlathererProjection {
       }
     }
   }
+  const acting = promoted ? (s.progression.sequence === 2 ? s.bloodDuke.blathererActingAtPromotion ?? 0 : s.progression.acting) : 0;
   const allActions: BlathererAction[] = available ? [...actions, ...blathererLifeActions(s), ...blathererEncounterActions(s)] : [];
   const preferred = allActions.find(action => action.enabled && action.command.type !== 'LEAVE_PREPARATION') ?? allActions.find(action => action.enabled);
   const chance = computeCheckChance({ baseAbility: s.character.coreStats.will, difficulty: 30, modifiers: [] });
@@ -199,7 +202,7 @@ export function projectBlatherer(s: SliceState): BlathererProjection {
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 呓语者成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为魔鬼' : '排异，仍为魔鬼'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? BLATHERER_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? BLATHERER_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `魔鬼消化${state.devilActingAtPromotion}/100留存；呓语者扮演${s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功；和平100不保证原著安全消化，不恢复原有良知或清除紧绷。` : available ? `魔鬼需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${devilWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完魔鬼之路。',
+    acting, digestion: promoted ? `魔鬼消化${state.devilActingAtPromotion}/100留存；呓语者扮演${acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功；和平100不保证原著安全消化，不恢复原有良知或清除紧绷。` : available ? `魔鬼需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${devilWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完魔鬼之路。',
     pollution: s.seer.pollution, risk: available ? BLATHERER_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     inheritedTools: available ? `原节目${s.devil.life.stage.programId}仍由${s.devil.life.stage.programHolder}持有；原邀请${s.devil.life.invitation.id}由${s.devil.life.invitation.holder}保管；原记录纸${s.devil.life.account.id}由${s.devil.life.account.holder}保管。旧账册与旧记录纸保持原归属，新BL3-CARD、BL3-BELL、BL3-NOTE各为独立原物，不复制、传送或借晋升发放。` : '',
@@ -221,7 +224,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.blatherer;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'devilActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as BlathererState, promoted = isBlatherer(s), firstWeek = s.devil.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + BLATHERER_MIN_DEVIL_WEEKS;
+  const state = raw as unknown as BlathererState, promoted = hasBlathererHistory(s), firstWeek = s.devil.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + BLATHERER_MIN_DEVIL_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !BLATHERER_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
@@ -229,7 +232,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasBlathererOldPractice(s) || hasBlathererLifeLock(s) || hasBlathererEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.devil.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.devilActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS, ...SERIAL_KILLER_ABILITY_IDS, ...DEMON_ABILITY_IDS, ...DESIRE_APOSTLE_ABILITY_IDS, ...DEVIL_ABILITY_IDS, ...BLATHERER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS, ...SERIAL_KILLER_ABILITY_IDS, ...DEMON_ABILITY_IDS, ...DESIRE_APOSTLE_ABILITY_IDS, ...DEVIL_ABILITY_IDS, ...BLATHERER_ABILITY_IDS, ...(s.progression.sequence === 2 ? BLOOD_DUKE_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.devilActingAtPromotion !== null || BLATHERER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

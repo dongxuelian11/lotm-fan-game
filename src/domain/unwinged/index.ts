@@ -1,3 +1,4 @@
+import { BLOOD_DUKE_ABILITY_IDS } from '../blood-duke/types.js';
 import {BLATHERER_ABILITY_IDS} from '../blatherer/types.js';
 import {DEVIL_ABILITY_IDS} from '../devil/types.js';
 import {DESIRE_APOSTLE_ABILITY_IDS} from '../desire-apostle/types.js';
@@ -30,7 +31,7 @@ export function createUnwingedState(): UnwingedState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isCriminal = (s: SliceState) => s.progression.pathwayId === 'abyss' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.criminal.discovered && s.criminal.guidanceKnown && (isCriminal(s) || promoted(s));
 const potionPrice = (bottle: UnwingedBottle) => UNWINGED_PRICES.potion - (bottle.labourSteps === 3 ? UNWINGED_PRICES.labourCredit : 0);
@@ -248,7 +249,7 @@ export function validateUnwingedState(s: SliceState): boolean {
   if (unwinged.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!unwinged.guidanceKnown || !unwinged.conscienceLost || !integer(s.progression.promotionWeek, 5, s.week) || !integer(unwinged.promotionWeek, firstConsumptionWeek, s.week) || unwinged.criminalActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?SERIAL_KILLER_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?DEMON_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?DESIRE_APOSTLE_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?DEVIL_ABILITY_IDS:[]),...(s.progression.sequence===3?BLATHERER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))))?SERIAL_KILLER_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?DEMON_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?DESIRE_APOSTLE_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?DEVIL_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?BLATHERER_ABILITY_IDS:[]),...(s.progression.sequence===2?BLOOD_DUKE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (unwinged.conscienceLost || unwinged.promotionWeek !== null || unwinged.criminalActingAtPromotion !== null || UNWINGED_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (unwinged.reflected || Object.values(unwinged.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.urgeOpen || value.restraints !== 0)) return false;

@@ -74,7 +74,7 @@ describe('Reader actual documents, bounded conclusions and original first-case r
     const { schemaVersion: oldSchema, contentVersion: oldContent, ...prior } = old;
     expectPriorFields(next,old);
     expect([oldSchema, oldContent]).toEqual([21, 'nightmare-life-v21']);
-    expect([schemaVersion,contentVersion]).toEqual([176,'elder-v176']);
+    expect([schemaVersion,contentVersion]).toEqual([177,'blood-duke-v177']);
     expect(reader).toEqual(createReaderState());
     assertValidSliceState(next);
     expect(migrateSliceState(next)).toEqual(next);

@@ -56,7 +56,7 @@ describe('FrenzyMage public continuation with the same originals and no new inve
   }, 30_000);
   it('migrates W115 without changing original resources, six roots, corpse history or next RNG', () => {
     const old = original().final, bytes = JSON.stringify(old), s = migrateSliceState(old);
-    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176'); expect(s.frenzyMage).toEqual(createFrenzyMageState());
+    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177'); expect(s.frenzyMage).toEqual(createFrenzyMageState());
     expect(s).toMatchObject({ week: 115, status: 'ACTIVE', health: 70, mind: 100, spirituality: 116, cash: 300, actionsRemaining: 2, progression: { sequence: 4, acting: 100 }, random: { seed: 'lawyer-natural-v063', cursor: 184 } });
     expect(s.character.coreStats).toEqual({ physique: 27, perception: 21, will: 23, knowledge: 21 }); expect(s.fallenEarl.promotionWeek).toBe(108);
     expect(s.briber.gifts).toHaveLength(15); expect(s.briber.gifts.slice(0, 10).every(g => g.location === 'GIVEN')).toBe(true);

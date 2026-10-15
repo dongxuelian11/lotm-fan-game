@@ -60,7 +60,7 @@ const stageValidators = { validateReaderState, validateReasonerState, validateDe
 describe('Wisdom Angel original423 living prefix, migration167 and shared runtime', () => {
   it('migrates the genuine survivor with every original field intact and no free medical treatment', () => {
     const original = readObjectEntry<SliceState>(insightScholarPeacefulFixturePath, 'final'), bytes = JSON.stringify(original), s = migrateSliceState(original);
-    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176');
+    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177');
     for (const key of Object.keys(original)) if (!['schemaVersion', 'contentVersion'].includes(key)) {
       const expected = (original as unknown as Record<string, unknown>)[key], actual = (s as unknown as Record<string, unknown>)[key];
       // Existing migrations may append defaults inside another stage, but cannot rewrite any old value.

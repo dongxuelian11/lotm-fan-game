@@ -47,6 +47,7 @@ export function createBlathererEncounterState(): BlathererEncounterState {
 }
 export const createBlathererEncounter = createBlathererEncounterState;
 const stage = (s: SliceState) => s.progression.pathwayId === 'abyss' && s.progression.sequence === 3;
+const hasStageHistory = (s: SliceState) => s.progression.pathwayId === 'abyss' && [3, 2].includes(s.progression.sequence ?? 0);
 const same = (a: unknown, b: unknown) => stableStringify(a) === stableStringify(b);
 const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
 export function validateBlathererEncounterCommand(v: unknown): v is BlathererEncounterCommand {
@@ -131,7 +132,7 @@ export function blathererEncounterActions(s: SliceState): BlathererEncounterActi
 }
 export function projectBlathererEncounter(s: SliceState): BlathererEncounterProjection {
   const e = s.blatherer.encounter;
-  if (!stage(s)) return { title: '尚未开放的呓语者遭遇', story: '', status: e.status, inside: false, scene: null, enemy: null, whisperReady: false, residualSeconds: 0, actions: [], facts: [] };
+  if (!hasStageHistory(s)) return { title: '尚未开放的呓语者遭遇', story: '', status: e.status, inside: false, scene: null, enemy: null, whisperReady: false, residualSeconds: 0, actions: [], facts: [] };
   return { title: '原净空院与独立的埃德里克·凯尔', story: BLATHERER_ENCOUNTER_STORY, status: e.status, inside: hasBlathererEncounterLock(s), scene: structuredClone(e.scene),
     enemy: { id: BLATHERER_TARGET_ID, name: '埃德里克·凯尔', age: 48, source: 'ORIGINAL_LIMITED_G', sequence: 4, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, weaponId: 'BL3-EDRIC-ROD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses }, breathUses: e.breathUses }, whisperReady: e.whisperReady, residualSeconds: e.residualSeconds, actions: blathererEncounterActions(s),
@@ -156,7 +157,7 @@ export function validateBlathererEncounter(s: SliceState): boolean {
       e.enemySpirituality !== 120 - BLATHERER_POWERS.reduce((n, p) => n + e.powerUses[p.id] * p.cost, 0) || [e.approachWeek, e.attemptWeek].some(w => w !== null && !integer(w, 1, s.week))) return false;
     if (e.startHistoryIndex === null && s.combatHistory.some(h => h.blathererOutcome)) return false;
     if (e.status === 'AVAILABLE') return same(e, initial) && s.combat?.encounterId !== 'BLATHERER_COURT';
-    if (!stage(s) || !s.blatherer.guidanceKnown || s.blatherer.promotionWeek === null || e.approachWeek === null || e.approachWeek < s.blatherer.promotionWeek) return false;
+    if (!hasStageHistory(s) || !s.blatherer.guidanceKnown || s.blatherer.promotionWeek === null || e.approachWeek === null || e.approachWeek < s.blatherer.promotionWeek) return false;
     if (e.startHistoryIndex === null) return ['READY', 'RESOLVED'].includes(e.status) && e.attemptWeek === null && e.terminal === null &&
       (e.status === 'READY' ? e.scene.playerPosition === 'COURT' && e.scene.ordinaryWalkedMetres === 0 && e.scene.targetListening : e.scene.playerPosition === 'EXIT' && e.scene.ordinaryWalkedMetres === 4 && !e.scene.targetListening) &&
       same({ ...e, status: initial.status, approachWeek: null, scene: { ...e.scene, targetListening: true, clearanceConfirmed: false, playerPosition: 'COURT', ordinaryWalkedMetres: 0 } }, initial) && s.combat?.encounterId !== 'BLATHERER_COURT';

@@ -36,7 +36,7 @@ describe('Knowledge Mentor S2 paid acquisition and exact seventeen-plus-two inhe
     const legacy = readObjectEntry<Record<string, unknown>>('tests/fixtures/discerner-v01660/natural.json', 'final');
     expect(legacy.schemaVersion).toBe(163); expect(legacy).not.toHaveProperty('knowledgeMentor');
     const bytes = JSON.stringify(legacy), s = migrateSliceState(legacy); assertValidSliceState(s);
-    expect(s.knowledgeMentor).toEqual(createKnowledgeMentorState()); expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176');
+    expect(s.knowledgeMentor).toEqual(createKnowledgeMentorState()); expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177');
     for (const [key, value] of Object.entries(legacy)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key], key).toEqual(value);
     expect(JSON.stringify(legacy)).toBe(bytes);
     expect(() => migrateSliceState({ ...legacy, knowledgeMentor: createKnowledgeMentorState() })).toThrow();

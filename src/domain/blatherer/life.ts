@@ -1,3 +1,4 @@
+import { reconstructBloodDukeOriginalRoot } from '../blood-duke/life.js';
 import type { PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
 import { isValidGameDate } from '../game-calendar.js';
@@ -36,7 +37,7 @@ export interface BlathererCaseState {
 export interface BlathererLifeState {
   siteId: 'BL3-QUIET-ROOM'; introducedWeek: number | null; introducedDate: PublicGameDate | null; activeCase: BlathererCaseId | null;
   playerLocation: BlathererLocation; playerTravelMetres: number; clockSeconds: number;
-  volunteer: { id: 'BL3-NORA'; name: '诺拉·温特'; age: 46; alive: true; willing: boolean; location: 'A' };
+  volunteer: { id: 'BL3-NORA'; name: '诺拉·温特'; age: 46; alive: true; willing: boolean; location: 'A' | 'START' | 'OUTSIDE' };
   guide: { id: 'ROAN'; name: '罗安·费里'; location: 'OUTSIDE' | 'START' | 'B'; travelMetres: number; moves: BlathererGuideMovement[] };
   card: { id: 'BL3-CARD'; owner: 'BL3-NORA'; quantity: 1; location: 'NORA' | 'PLAYER'; travelMetres: number };
   bell: { id: 'BL3-BELL'; quantity: 1; location: 'B' };
@@ -93,7 +94,7 @@ function cleanupBlock(s: SliceState): string | null {
   if (l.card.location === 'PLAYER') return '须在A当面归还同一BL3-CARD，不能带走、复制或远程归还。';
   return l.playerLocation !== 'START' ? '本人须从B实走4米回A，再4米回START；关闭不代办实际退出。' : null;
 }
-export const hasBlathererLifeLock = (s: SliceState): boolean => s.blatherer.life.activeCase !== null || Object.values(s.blatherer.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+export const hasBlathererLifeLock = (s: SliceState): boolean => !(s.progression.pathwayId === 'abyss' && s.progression.sequence === 2 && s.bloodDuke?.promotionWeek != null) && (s.blatherer.life.activeCase !== null || Object.values(s.blatherer.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null);
 const evidenceComplete = (a: BlathererAttempt) => a.cardRead && a.bellRead;
 function sceneReason(s: SliceState, id: BlathererCaseId, type: SceneType): string | null {
   const l = s.blatherer.life, a = l.cases[id].attempts.at(-1)!, at = l.playerLocation;
@@ -253,7 +254,7 @@ export function projectBlathererLife(s: SliceState): BlathererLifeProjection {
     nextStep: next ? `下一步：${next.label}（${next.cost}）。` : l.reflected ? '三份真实报告与反思完成；原物、拒绝、失败成本和旧风险保留，可继续普通生活。' : '先晋升或完成当前真实条件。',
     facts: [
       `同一本体在${l.playerLocation}，累计普通步行${l.playerTravelMetres}米，原时钟${l.clockSeconds}秒（含实际战斗）。START0米、A4米、B8米；A↔B4米、A↔START4米，不能从B直接退出。`,
-      `原成年诺拉·温特/${l.volunteer.id}/46岁一直在A，${a ? `本案当前许可${a.consent}，当前声输入${a.voiceActive ? '尚未明确停止' : '已停止或未开始'}，残余${a.residualSeconds}秒` : '新案必须当面取得独立当前许可'}；本人可拒绝或撤回，检定不授予服从。`,
+      `原成年诺拉·温特/${l.volunteer.id}/46岁现位于${l.volunteer.location}，${a ? `本案当前许可${a.consent}，当前声输入${a.voiceActive ? '尚未明确停止' : '已停止或未开始'}，残余${a.residualSeconds}秒` : '新案必须当面取得独立当前许可'}；本人可拒绝或撤回，检定不授予服从。`,
       `同一${l.card.id}归诺拉，现由${l.card.location === 'NORA' ? '她本人' : '玩家临时'}持有，随身累计${l.card.travelMetres}米；邀请案原卡始终留她手里。原${l.bell.id}与${l.note.id}留在B，旧魔鬼纸张不改装。`,
       `原罗安·费里在${l.guide.location}，实际步行${l.guide.travelMetres}米。B距A4米，属于G6米听距；室外位于−4米、距A8米，必须真正走出听距。熟人不免疫。`,
       a?.outcome ?? '尚未形成当前真实结果；不会提前给出能力成功或当事人接受。',
@@ -263,7 +264,21 @@ export function projectBlathererLife(s: SliceState): BlathererLifeProjection {
 }
 
 /** Replay every finite original-object, listener, consent, cost, movement and residual event. */
-export function validateBlathererLife(s: SliceState): boolean { try { return validateLife(s); } catch { return false; } }
+export function validateBlathererLifeOriginal(s: SliceState): boolean { try { return validateLife(s); } catch { return false; } }
+/** New S2 movements must replay back to the same closed S3 source before its old history is validated. */
+export function blathererHistoricalState(s: SliceState): SliceState | null {
+  if (s.progression.pathwayId !== 'abyss' || s.progression.sequence !== 2) return s;
+  if (s.bloodDuke?.blathererActingAtPromotion !== 100 || !integer(s.bloodDuke?.promotionWeek, s.blatherer.promotionWeek ?? s.week, s.week)) return null;
+  const original = reconstructBloodDukeOriginalRoot(s);
+  if (!original || original.activeCase !== null || !original.reflected || original.playerLocation !== 'START' || original.card.location !== 'NORA' || original.volunteer.location !== 'A') return null;
+  return { ...s, week: s.bloodDuke.promotionWeek!, activeEvent: null, combat: null,
+    progression: { ...s.progression, sequence: 3, acting: s.bloodDuke.blathererActingAtPromotion },
+    blatherer: { ...s.blatherer, life: original } };
+}
+export function validateBlathererLife(s: SliceState): boolean { try {
+  const historical = blathererHistoricalState(s);
+  return historical !== null && validateBlathererLifeOriginal(historical);
+} catch { return false; } }
 function validateLife(s: SliceState): boolean {
   const l = s.blatherer?.life, initial = createBlathererLifeState(), promotion = s.blatherer?.promotionWeek;
   if (!record(l) || !shape(l, Object.keys(initial)) || !record(l.cases) || !shape(l.cases, BLATHERER_CASE_IDS)) return false;

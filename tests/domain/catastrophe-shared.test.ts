@@ -37,7 +37,7 @@ const stageValidators = { validateSailorState, validateRagerState, validateNavig
 describe('Catastrophe original492 living prefix, migration168 and shared runtime', () => {
   it('migrates the actual W121 survivor without changing original bodies, wounds, fields or random state', () => {
     const original = readObjectEntry<SliceState>(seaKingFixturePath, 'final'), bytes = JSON.stringify(original), s = migrateSliceState(original);
-    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176');
+    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177');
     for (const key of Object.keys(original)) if (!['schemaVersion', 'contentVersion'].includes(key)) {
       const expected = (original as unknown as Record<string, unknown>)[key], actual = (s as unknown as Record<string, unknown>)[key];
       // Earlier migrations may append defaults, never overwrite any existing value.

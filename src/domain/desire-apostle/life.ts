@@ -185,7 +185,7 @@ export function desireApostleActions(s: SliceState): DesireApostleAction[] {
 }
 
 export function desireApostleCases(s: SliceState): DesireApostleProjection['cases'] {
-  if (!active(s)&&!(s.progression.pathwayId==='abyss'&&(s.progression.sequence===4||s.progression.sequence===3))) return [];
+  if (!active(s)&&!(s.progression.pathwayId==='abyss'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))) return [];
   return CASES.map(p => {
     const r = s.desireApostle.cases[p.id]!, pending = p.id === 'eager-rehearsal' && r.contactOpen && s.desireApostle.practice.seed === 'PLANTED';
     const result = pending ? '本次种子已成功埋下，尚无催化效果与奖励。仍须当前强烈情绪、另2灵性，可0额外行动催化；也可0行动停止并实际等过有限窗口。' : ['EXAMINED', 'RESOLVED'].includes(r.status) ? resultText(s, p.id) + (r.contactOpen ? '尚须实际结束接触与原物交接。' : '本次接触与原物交接已实际结束。') : r.attemptWeek !== null ? '上次没有形成可报告结果，已付成本与真实记录保留；先实际收束，下一真实周再准备。' : r.withdrawals ? '准备已取消，未开始新的接触。' : null;
@@ -249,7 +249,7 @@ export function validateDesireApostleLife(s: SliceState): boolean {
   if (eager.contactOpen && eager.method === 'ORDINARY' && f.seed !== 'NONE') return false;
   if (f.seed === 'SPENT' && (eager.attemptWeek === null || eager.contactOpen && eager.method !== 'ABILITY')) return false;
   if (s.seer.completedSources.filter(x => x === 'desire-apostle-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (s.progression.pathwayId==='abyss' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)) && ((s.progression.sequence===4||s.progression.sequence===3)?s.devil.desireApostleActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (s.progression.pathwayId==='abyss' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) && ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.devil.desireApostleActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (Object.values(m.cases).some(r => r.status !== 'AVAILABLE') || f.emotion !== 'CALM' || f.seed !== 'NONE' || f.pauseObserved || f.ledger !== 'GUIDE' || f.note !== 'BLANK' || m.reflected)) return false;
   return true;
 }

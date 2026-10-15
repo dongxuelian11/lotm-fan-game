@@ -36,7 +36,7 @@ const active = (s: SliceState) => s.progression.pathwayId === 'abyss' && s.progr
 function blocked(s: SliceState, c: DemonActivityCommand): string | null {
   if (c.type === 'ENCOUNTER_TALK' || c.type === 'ENCOUNTER_FIGHT') return blockDemonEncounter(s, c);
   if (s.status !== 'ACTIVE') return '当前周目已结束。';
-  if (!active(s)&&!(s.progression.pathwayId==='abyss'&&(s.progression.sequence===4||s.progression.sequence===3)&&c.type==='COMPOSE')) return '先完成恶魔晋升。';
+  if (!active(s)&&!(s.progression.pathwayId==='abyss'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))&&c.type==='COMPOSE')) return '先完成恶魔晋升。';
   const m = s.demon, r = 'caseId' in c ? m.cases[c.caseId] : null;
   if (c.type === 'CLOSE') return r?.contactOpen ? null : '没有尚待实际结束的本次接触。';
   if (demonInside(s)) return '先0行动实际结束本次接触、恢复正常身体或用原盖熄灭火焰。';
@@ -166,7 +166,7 @@ export function demonActions(s: SliceState): DemonAction[] {
   return out;
 }
 export function demonCases(s: SliceState): DemonProjection['cases'] {
-  if (!active(s) && !(s.progression.pathwayId==='abyss'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) return [];
+  if (!active(s) && !(s.progression.pathwayId==='abyss'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))) return [];
   return CASES.map(p => {
     const r = s.demon.cases[p.id]!;
     let result: string | null = null;
@@ -223,7 +223,7 @@ export function validateDemonLife(s: SliceState): boolean {
   if (t.verified !== (lane.outcome === 'LANE_VERIFIED') || t.noticed !== (lane.method === 'ABILITY' && ['EXAMINED', 'RESOLVED'].includes(lane.status))) return false;
   if (t.verified && (lane.contactOpen || lane.closes < 1) || t.avoided && !t.verified) return false;
   if (s.seer.completedSources.filter(x => x === 'demon-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if ((active(s)||(s.progression.pathwayId==='abyss'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) && ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.desireApostle.demonActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if ((active(s)||(s.progression.pathwayId==='abyss'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))) && ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.desireApostle.demonActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (m.strain !== 0 || m.practice.body !== 'NORMAL' || m.practice.flame !== 'NONE' || Object.values(t).some(Boolean) || open !== 0 || prepared !== 0 || resolved !== 0 || m.reflected)) return false;
   return true;
 }

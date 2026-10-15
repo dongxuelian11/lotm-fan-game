@@ -44,7 +44,7 @@ describe('Deceit Mentor complete natural Error prefix and actual public continua
 
   it('migrates the complete living W92 state without healing or changing original history or next RNG', () => {
     const prior = original(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(176); expect(state.contentVersion).toBe('elder-v176');
+    expect(state.schemaVersion).toBe(177); expect(state.contentVersion).toBe('blood-duke-v177');
     expect(state.deceitMentor).toEqual(createDeceitMentorState());
     expect(state).toMatchObject({ week: 92, health: 100, mind: 100, spirituality: 114, cash: 570, actionsRemaining: 3, progression: { sequence: 4, acting: 100 } });
     expect(state.parasite.promotionWeek).toBe(82); expectOriginals(state, prior.final);

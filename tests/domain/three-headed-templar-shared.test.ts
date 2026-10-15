@@ -52,7 +52,7 @@ describe('Three Headed Templar actual public continuation from preserved Black K
   }, 30_000);
   it('migrates the actual W90 save without changing resources, original roots or next RNG', () => {
     const old = original().final, bytes = JSON.stringify(old), s = migrateSliceState(old);
-    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176'); expect(s.threeHeadedTemplar).toEqual(createThreeHeadedTemplarState());
+    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177'); expect(s.threeHeadedTemplar).toEqual(createThreeHeadedTemplarState());
     expect(s).toMatchObject({ week: 90, status: 'ACTIVE', health: 90, mind: 100, spirituality: 115, cash: 920, actionsRemaining: 3, progression: { sequence: 4, acting: 100 }, random: { seed: 'secret-supplicant-natural-v051', cursor: 222 } });
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key]).toEqual(value);
     expectOriginals(s, old); expect(JSON.stringify(old)).toBe(bytes); expect(migrateSliceState(s)).toEqual(s); assertValidSliceState(s);

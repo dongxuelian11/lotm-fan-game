@@ -49,7 +49,7 @@ describe('Spirit Warlock actual shared route',()=>{
  it('migrates the exact 0.99 original save without changing any prior pathway or original object',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/crimson-scholar-v0990/natural.json','utf8')).final;
   const after=migrateSliceState(old);assertValidSliceState(after);
-  expect(after.schemaVersion).toBe(176);expect(after.spiritWarlock.promotionWeek).toBeNull();
+  expect(after.schemaVersion).toBe(177);expect(after.spiritWarlock.promotionWeek).toBeNull();
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);
   expect(migrateSliceState(after)).toEqual(after);
  });

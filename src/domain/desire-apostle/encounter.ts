@@ -123,7 +123,7 @@ export function validateDesireApostleEncounter(s: SliceState): boolean {
       (e.attemptWeek !== null && (!Number.isSafeInteger(e.attemptWeek) || e.attemptWeek < 1 || e.attemptWeek > s.week))) return false;
   const pristine = e.emotion === 'CALM' && e.lastSeedRound === null && noEffects(s);
   const initial = e.status === 'AVAILABLE' && e.startHistoryIndex === null && e.attemptWeek === null && pristine;
-  const promoted = s.progression.pathwayId === 'abyss' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+  const promoted = s.progression.pathwayId === 'abyss' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
   if (!promoted) return initial && rewards === 0 && c?.encounterId !== 'DESIRE_APOSTLE_DISPUTE';
   if (!initial && (!reportsComplete(s) || s.desireApostle.promotionWeek === null || e.attemptWeek === null ||
       e.attemptWeek < s.desireApostle.promotionWeek)) return false;

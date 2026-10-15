@@ -22,7 +22,7 @@ describe('Winner real public chain',()=>{
   expect(projectSliceState(s).winner.abilities.filter(a=>a.id.startsWith('wheel.s5.')).map(a=>a.id)).toEqual(['wheel.s5.luck-reserve','wheel.s5.ill-fortune']);
  });
  it('migrates0.112 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/wraith-v01120/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(176);
+  const old=JSON.parse(readFileSync('tests/fixtures/wraith-v01120/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

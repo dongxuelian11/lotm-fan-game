@@ -57,7 +57,7 @@ describe('Blatherer3 original bottles and bounded G preparation', () => {
     for (const pathwayId of ['diviner', 'hunter', 'audience', 'paragon', 'moon', 'darkness', 'white-tower', 'tyrant', 'death', 'sun', 'door', 'warrior', 'error', 'demoness', 'hanged-man', 'hermit', 'chained', 'wheel', 'black-emperor', 'justiciar', 'mother'] as const) {
       const s = devil(); s.progression.pathwayId = pathwayId; expect(projectBlatherer(s).discovered).toBe(false); reject(s, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 2, 1, 0]) { const s = devil(); s.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectBlatherer(s).discovered).toBe(false); }
+    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const s = devil(); s.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectBlatherer(s).discovered).toBe(false); }
     const s = devil(); s.devil.promotionWeek = null; reject(s, { type: 'LEARN_GUIDANCE' });
   });
   it('charges500 and one action without turning the unknown recipe, ritual or high-level information into facts', () => {

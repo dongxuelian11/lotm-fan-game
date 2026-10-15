@@ -54,7 +54,7 @@ export interface DevilLifeProjection {
 const record = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x);
 const shape = (x: object, keys: readonly string[]) => Object.keys(x).length === keys.length && keys.every(k => Object.hasOwn(x, k));
 const integer = (x: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): x is number => Number.isSafeInteger(x) && (x as number) >= min && (x as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && [4,3].includes(s.progression.sequence!);
+const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && [4,3,2].includes(s.progression.sequence!);
 const success = (tier: string) => tier === 'SUCCESS' || tier === 'GREAT_SUCCESS';
 const last = (r: DevilCaseState) => r.attempts.at(-1);
 const completed = (r: DevilCaseState) => r.status === 'EXAMINED' || r.status === 'RESOLVED';
@@ -332,6 +332,6 @@ export function validateDevilLife(s: SliceState): boolean {
     if (!a.writings.length && (a.claim !== null || a.claims.length !== 0 || a.corrections !== 0) || a.claim !== null && a.claims.at(-1) !== a.claim || account.status === 'RESOLVED' && !a.accepted) return false;
     if (s.seer.completedSources.filter(x => x === 'devil-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3) return false;
     if (hasDevilLifeLock(s) && (s.world.city !== 'BACKLUND' || s.status !== 'ACTIVE' || !!s.activeEvent || !!s.combat)) return false;
-    return !promoted(s) || (s.progression.sequence===3?s.blatherer.devilActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25;
+    return !promoted(s) || ((s.progression.sequence===3||s.progression.sequence===2)?s.blatherer.devilActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25;
   } catch { return false; }
 }

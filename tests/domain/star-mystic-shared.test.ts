@@ -23,7 +23,7 @@ describe('StarMystic real public chain',()=>{
   const p=projectSliceState(s);expect(p.starMystic.abilities.filter(a=>a.id.startsWith('hermit.s5.')).map(a=>a.id)).toEqual(['hermit.s5.mystic-sight','hermit.s5.star-cage']);
  });
  it('migrates0.108 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/pain-v01080/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(176);
+  const old=JSON.parse(readFileSync('tests/fixtures/pain-v01080/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

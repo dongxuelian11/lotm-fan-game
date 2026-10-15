@@ -1,3 +1,4 @@
+import { BLOOD_DUKE_ABILITY_IDS } from '../blood-duke/types.js';
 import {BLATHERER_ABILITY_IDS} from '../blatherer/types.js';
 import {DEVIL_ABILITY_IDS} from '../devil/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -39,7 +40,7 @@ export function createDesireApostleState(): DesireApostleState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
 const isDemon = (s: SliceState) => s.progression.pathwayId === 'abyss' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.criminal.discovered && s.criminal.guidanceKnown && s.unwinged.guidanceKnown && s.serialKiller.guidanceKnown && s.demon.guidanceKnown && s.demon.promotionWeek !== null && (isDemon(s) || promoted(s));
 const potionPrice = (bottle: DesireApostleBottle) => DESIRE_APOSTLE_PRICES.potion - (bottle.labourSteps === 5 ? DESIRE_APOSTLE_PRICES.labourCredit : 0);
@@ -166,7 +167,7 @@ export function applyDesireApostleCommand(s: SliceState, command: DesireApostleA
 
 export function projectDesireApostle(s: SliceState): DesireApostleProjection {
   const actions: DesireApostleAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3)?s.devil.desireApostleActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.devil.desireApostleActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: DesireApostleAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -251,7 +252,7 @@ export function validateDesireApostleState(s: SliceState): boolean {
   if (desireApostle.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!desireApostle.guidanceKnown || !integer(s.demon.promotionWeek, 1, s.week) || !integer(desireApostle.promotionWeek, firstConsumptionWeek, s.week) || desireApostle.demonActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS, ...SERIAL_KILLER_ABILITY_IDS, ...DEMON_ABILITY_IDS, ...DESIRE_APOSTLE_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3)?DEVIL_ABILITY_IDS:[]),...(s.progression.sequence===3?BLATHERER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS, ...SERIAL_KILLER_ABILITY_IDS, ...DEMON_ABILITY_IDS, ...DESIRE_APOSTLE_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?DEVIL_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?BLATHERER_ABILITY_IDS:[]),...(s.progression.sequence===2?BLOOD_DUKE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (desireApostle.promotionWeek !== null || desireApostle.demonActingAtPromotion !== null || DESIRE_APOSTLE_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (Object.entries(freshDesireApostlePractice()).some(([key, value]) => desireApostle.practice[key as keyof DesireApostlePractice] !== value)) return false;

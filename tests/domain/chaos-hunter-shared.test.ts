@@ -45,7 +45,7 @@ describe('ChaosHunter public continuation with the same originals and no new inv
   }, 30_000);
   it('migrates W89 without changing original resources, six roots, original Rowan history or next RNG', () => {
     const old = original().final, bytes = JSON.stringify(old), s = migrateSliceState(old);
-    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176'); expect(s.chaosHunter).toEqual(createChaosHunterState());
+    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177'); expect(s.chaosHunter).toEqual(createChaosHunterState());
     expect(s).toMatchObject({ week: 89, status: 'ACTIVE', health: 50, mind: 100, spirituality: 117, cash: 400, actionsRemaining: 2, progression: { sequence: 4, acting: 100 }, random: { seed: 'arbiter-natural-v066', cursor: 269 } });
     expect(s.character.coreStats).toEqual({ physique: 28, perception: 23, will: 23, knowledge: 19 }); expect(s.imperativeMage.promotionWeek).toBe(82);
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key]).toEqual(value);

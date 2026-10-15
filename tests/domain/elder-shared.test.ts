@@ -37,7 +37,7 @@ describe('Elder actual natural continuation and shared-source invariants', () =>
     expect(readObjectEntry<string[]>(`${ROOT}/summary.json`, 'boundaries')).toHaveLength(53); expect(Object.keys(readObjectEntry<Record<string, string>>(NATURAL, 'snapshots'))).toHaveLength(6);
     expect(readObjectEntry(NATURAL, 'provenance')).toEqual({ kind: 'SAME_SEED_PUBLIC_NATURAL_PREFIX', source: OLD, sourceSha256: await sha256(OLD), newRandomChanges: false });
     expect(readObjectEntry(NATURAL, 'stage')).toBe('NATURAL_ELDER_PUBLIC_CONTINUATION'); expect(readObjectEntry(NATURAL, 'pendingIntent')).toBeNull(); expect(readObjectEntry(NATURAL, 'error')).toBeNull();
-    expect(readObjectEntry(NATURAL, 'initial')).toEqual(migrateSliceState(readObjectEntry(OLD, 'initial')));
+    expect(migrateSliceState(readObjectEntry(NATURAL, 'initial'))).toEqual(migrateSliceState(readObjectEntry(OLD, 'initial')));
     expect(all.at(-1)).toEqual({ type: 'ACTION', action: 'WORK' });
     expect(final().random).toEqual({ seed: 'secret-supplicant-natural-v051', cursor: 353 });
   });
@@ -138,8 +138,8 @@ describe('Elder actual natural continuation and shared-source invariants', () =>
   it('migrates the real schema175 Sage save without rewriting it and rejects injected Elder history or restored spirit deficits', () => {
     const legacy = readObjectEntry<Record<string, unknown>>('tests/fixtures/sage-v01780/natural.json', 'final'), bytes = JSON.stringify(legacy);
     expect(legacy.schemaVersion).toBe(175); expect('elder' in legacy).toBe(false);
-    const migrated = migrateSliceState(legacy); expect(migrated.schemaVersion).toBe(176); expect(migrated.contentVersion).toBe('elder-v176'); expect(migrated.elder).toEqual(createElderState());
-    expect({ ...migrated, schemaVersion: legacy.schemaVersion, contentVersion: legacy.contentVersion, elder: undefined }).toEqual({ ...legacy, elder: undefined }); expect(JSON.stringify(legacy)).toBe(bytes);
+    const migrated = migrateSliceState(legacy); expect(migrated.schemaVersion).toBe(177); expect(migrated.contentVersion).toBe('blood-duke-v177'); expect(migrated.elder).toEqual(createElderState());
+    expect({ ...migrated, schemaVersion: legacy.schemaVersion, contentVersion: legacy.contentVersion, elder: undefined, bloodDuke: undefined }).toEqual({ ...legacy, elder: undefined, bloodDuke: undefined }); expect(JSON.stringify(legacy)).toBe(bytes);
     expect(() => migrateSliceState({ ...legacy, elder: createElderState() })).toThrow(/Unexpected Elder/);
     const altered = final(); altered.threeHeadedTemplar.life.spirits['THT3-HELENA'].integrity = 100; expect(() => assertValidSliceState(altered)).toThrow();
     const freeSpirit = final(); freeSpirit.threeHeadedTemplar.life.spirits['THT3-ROLAND'].spirituality = 27; expect(() => assertValidSliceState(freeSpirit)).toThrow();

@@ -43,7 +43,7 @@ describe('Gatekeeper actual shared route',()=>{
  });
  it('migrates 0.103 without changing any prior original facts',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/priest-of-light-v01030/natural.json','utf8')).final;
-  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(176);
+  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);
   expect(migrateSliceState(after)).toEqual(after);
  });

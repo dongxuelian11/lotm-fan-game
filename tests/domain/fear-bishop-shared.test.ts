@@ -49,7 +49,7 @@ describe('Fear Bishop original public route and shared runtime', () => {
 
   it('migrates the genuineW75 state to143 without changing the female body, dead Bram or original Leaf', () => {
     const prior = old(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(176); expect(state.contentVersion).toBe('elder-v176');
+    expect(state.schemaVersion).toBe(177); expect(state.contentVersion).toBe('blood-duke-v177');
     expect(state.fearBishop.promotionWeek).toBeNull(); expect(state.fearBishop.nightwatcherActingAtPromotion).toBeNull();
     for (const key of Object.keys(prior.final)) if (!['schemaVersion', 'contentVersion'].includes(key)) {
       expect((state as unknown as Record<string, unknown>)[key]).toEqual((prior.final as unknown as Record<string, unknown>)[key]);

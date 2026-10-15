@@ -1,3 +1,4 @@
+import { BLOOD_DUKE_ABILITY_IDS } from '../blood-duke/types.js';
 import {BLATHERER_ABILITY_IDS} from '../blatherer/types.js';
 import {DEVIL_ABILITY_IDS} from '../devil/types.js';
 import {DESIRE_APOSTLE_ABILITY_IDS} from '../desire-apostle/types.js';
@@ -30,7 +31,7 @@ export function createSerialKillerState(): SerialKillerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'abyss' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isUnwinged = (s: SliceState) => s.progression.pathwayId === 'abyss' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.criminal.discovered && s.criminal.guidanceKnown && s.unwinged.guidanceKnown && s.unwinged.conscienceLost === true && (isUnwinged(s) || promoted(s));
 const potionPrice = (bottle: SerialKillerBottle) => SERIAL_KILLER_PRICES.potion - (bottle.labourSteps === 4 ? SERIAL_KILLER_PRICES.labourCredit : 0);
@@ -194,8 +195,8 @@ export function projectSerialKiller(s: SliceState): SerialKillerProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? SERIAL_KILLER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?s.demon.serialKillerActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?'连环杀手魔药已消化，原仪式与有限调查经历保留。':isPromoted ? `折翼天使消化成果${s.serialKiller.unwingedActingAtPromotion}/100已保留；连环杀手扮演${s.progression.acting}/100，能力掌握分别记录；良知丧失仍保留，本作G学习与约束不保证原著无害消化。`
+    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.demon.serialKillerActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?'连环杀手魔药已消化，原仪式与有限调查经历保留。':isPromoted ? `折翼天使消化成果${s.serialKiller.unwingedActingAtPromotion}/100已保留；连环杀手扮演${s.progression.acting}/100，能力掌握分别记录；良知丧失仍保留，本作G学习与约束不保证原著无害消化。`
       : available ? `服药前需完成折翼天使消化（${s.progression.acting}/100），并在晋升折翼天使后度过8整周（${unwingedWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完折翼天使之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${SERIAL_KILLER_CONSUMPTION_RISK}` : '成为折翼天使后，可向原导师了解下一序列。',
@@ -247,7 +248,7 @@ export function validateSerialKillerState(s: SliceState): boolean {
   if (serialKiller.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!serialKiller.guidanceKnown || !integer(s.unwinged.promotionWeek, 1, s.week) || !integer(serialKiller.promotionWeek, firstConsumptionWeek, s.week) || serialKiller.unwingedActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS, ...SERIAL_KILLER_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?DEMON_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?DESIRE_APOSTLE_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?DEVIL_ABILITY_IDS:[]),...(s.progression.sequence===3?BLATHERER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CRIMINAL_ABILITY_IDS, ...UNWINGED_ABILITY_IDS, ...SERIAL_KILLER_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?DEMON_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?DESIRE_APOSTLE_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?DEVIL_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?BLATHERER_ABILITY_IDS:[]),...(s.progression.sequence===2?BLOOD_DUKE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (serialKiller.promotionWeek !== null || serialKiller.unwingedActingAtPromotion !== null || SERIAL_KILLER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (serialKiller.reflected || Object.values(serialKiller.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closures !== 0 || value.overclaims !== 0)) return false;

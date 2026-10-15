@@ -79,7 +79,7 @@ describe('Midnight Poet actual public acquisition, poetry and growth route', () 
     const { schemaVersion: oldSchema, contentVersion: oldContent, ...prior } = old;
     expectPriorFields(next,old);
     expect([oldSchema, oldContent]).toEqual([19, 'sleepless-life-v19']);
-    expect([schemaVersion, contentVersion]).toEqual([176,'elder-v176']);
+    expect([schemaVersion, contentVersion]).toEqual([177,'blood-duke-v177']);
     expect(midnight).toEqual(createMidnightState());
     assertValidSliceState(next);
     expect(migrateSliceState(next)).toEqual(next);
