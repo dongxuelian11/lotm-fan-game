@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.192.0 阶段版
+# 诡秘之主同人游戏 · 0.193.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜与阅读者已有有限序列1基础；其余15条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者与水手已有有限序列1基础；其余14条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -115,6 +115,8 @@ node --expose-gc scripts/play/entropy-duke-save.mjs --key directed --source-dire
 
 ## 当前验证与限制
 
+193增量：水手新增有限序列1雷神。原599条和平活档继续，三次药败后真实补货、第四瓶晋升，原小湾引导与护持各有一次实际应用。可选战10轮玩家死亡，原602条死亡分支保留。旧原物、正常收束与真实代价详见[雷神阶段记录](docs/THUNDER_GOD_PLAYABLE_STAGE.md)。
+
 191增量：黑夜新增有限序列1厄难骑士。沿原518条和平活档继续，第三瓶成功晋升；同一原盒接取与校准轻触中，两项新技巧各实际应用一次，撤回许可后仍可普通收束。可选新敌交战九轮后玩家死亡，保留实际伤势、资源和死亡终档。详见[厄难骑士阶段记录](docs/MISFORTUNE_KNIGHT_PLAYABLE_STAGE.md)。
 
 190增量：月亮新增有限序列1美神。原572条活档同种子继续，七次魔药失败后第八瓶成功；身体变化在晋升前单独说明确认。原流灯亲自完成两米搬运并消耗真实精力，遮挡和撤回会关闭未用窗口；两轮可选战斗后对手投降，玩家无伤沿原路离开并工作。详见[美神阶段记录](docs/BEAUTY_GODDESS_PLAYABLE_STAGE.md)。
@@ -213,3 +215,14 @@ npx vitest run tests/domain/misfortune-knight-acquisition.test.ts tests/domain/m
 npm run build:main
 node --expose-gc scripts/play/misfortune-knight-save.mjs --expected-boundaries 80
 ```
+
+### 雷神阶段专项恢复与检查
+
+```sh
+npm run fixtures:restore -- --only-prefix catastrophe-v01710 --only-prefix thunder-god-v01930
+npx vitest run tests/domain/thunder-god-acquisition.test.ts tests/domain/thunder-god-life.test.ts tests/domain/thunder-god-combat.test.ts tests/domain/thunder-god-inheritance.test.ts tests/domain/thunder-god-shared.test.ts tests/domain/thunder-god-natural.test.ts tests/renderer/thunder-god-panel.test.tsx tests/renderer/thunder-god-source.test.tsx tests/renderer/thunder-god-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/thunder-god-save.mjs --expected-boundaries 222
+```
+
+这些输入保留原599条活分支、原602条死亡记录以及本次820条独立死亡分支。可选战斗失败仍为终档；输入恢复只用于验证，不改变玩家存档。

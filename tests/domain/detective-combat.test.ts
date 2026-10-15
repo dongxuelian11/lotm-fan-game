@@ -10,6 +10,7 @@ import { DETECTIVE_COUNT_WHEEL, createDetectiveRoundObservations, currentDetecti
 import { REASONER_COUNT_WHEEL, REASONER_ORDINARY_TARGET, consumeReasonerInterference,
   currentReasonerCombatSource, reasonerAbilityWheel, whiteTowerKnowledgeChance } from '../../src/domain/reasoner/combat.js';
 import { READER_COUNT_WHEEL, readerAbilityWheel } from '../../src/domain/reader/combat.js';
+import { ALL_KNOWING_EYE_COUNT_WHEEL, allKnowingEyeAbilityWheel } from '../../src/domain/all-knowing-eye/combat.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 
@@ -116,11 +117,20 @@ describe('Detective S7 confirmed White Tower V3 profile', () => {
     state.progression.sequence = 9;
     expect(playerCountWheel(state)).toEqual(READER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, null)).toEqual(readerAbilityWheel(null));
-    for (const [pathwayId, sequence] of [[null, null], ['white-tower', 1], ['moon', 9]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['moon', 9]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isDetective(state)).toBe(false); expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
     }
+  });
+
+  it('delegates White Tower S1 to All-Knowing Eye without exposing older combat sources', () => {
+    const state = fixture(); state.progression.sequence = 1;
+    expect(isDetective(state)).toBe(false);
+    expect(currentDetectiveCombatSource(state)).toBeNull(); expect(currentReasonerCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(ALL_KNOWING_EYE_COUNT_WHEEL);
+    expect(playerCountWheel(state)).toHaveLength(6);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(allKnowingEyeAbilityWheel(state, 'CONTROL'));
   });
 });
 

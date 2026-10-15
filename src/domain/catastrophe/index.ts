@@ -1,3 +1,4 @@
+import { THUNDER_GOD_ABILITY_IDS } from '../thunder-god/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -35,9 +36,9 @@ export function createCatastropheState(): CatastropheState {
 /** Historical membership never broadens the exact current-stage action guards. */
 export const isCatastrophe = (s: SliceState) => s.progression.pathwayId === 'tyrant' && s.progression.sequence === 2;
 export const isCatastropheAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'tyrant' && s.progression.sequence === 3;
-export const hasCatastropheHistory = (s: SliceState) => isCatastrophe(s) && s.catastrophe.promotionWeek !== null;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'tyrant' && [3, 2].includes(s.progression.sequence ?? 0) && s.sailor.discovered && s.seaKing.guidanceKnown && s.seaKing.promotionWeek !== null;
-export const hasCatastropheLock = (s: SliceState): boolean => s.catastrophe.preparedWeek !== null || hasCatastropheLifeLock(s) || hasCatastropheEncounterLock(s);
+export const hasCatastropheHistory = (s: SliceState) => (isCatastrophe(s)||(s.progression.pathwayId==='tyrant'&&s.progression.sequence===1)) && s.catastrophe.promotionWeek !== null;
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'tyrant' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.sailor.discovered && s.seaKing.guidanceKnown && s.seaKing.promotionWeek !== null;
+export const hasCatastropheLock = (s: SliceState): boolean => s.progression.pathwayId==='tyrant' && [3,2].includes(s.progression.sequence??0) && (s.catastrophe.preparedWeek !== null || hasCatastropheLifeLock(s) || hasCatastropheEncounterLock(s));
 const bottleNumber = (b: Pick<CatastropheBottle, 'id'>) => Number(b.id.slice('catastrophe-potion-'.length));
 const potionPrice = (b: CatastropheBottle) => CATASTROPHE_PRICES.potion - (b.labourSteps === CATASTROPHE_LABOUR_STEPS ? CATASTROPHE_PRICES.labourCredit : 0);
 const seaKingWeeks = (s: SliceState) => Math.max(0, (s.catastrophe.promotionWeek ?? s.week) - (s.seaKing.promotionWeek ?? s.week));
@@ -178,7 +179,7 @@ export function applyCatastropheCommand(s: SliceState, command: CatastropheComma
 }
 
 export function projectCatastrophe(s: SliceState): CatastropheProjection {
-  const state = s.catastrophe, available = knownChannel(s), promoted = isCatastrophe(s), actions: CatastropheAction[] = [];
+  const state = s.catastrophe, available = knownChannel(s), promoted = hasCatastropheHistory(s), actions: CatastropheAction[] = [];
   const add = (id: string, label: string, cost: string, command: CatastropheAcquisitionCommand) => {
     const reason = catastropheAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -203,7 +204,7 @@ export function projectCatastrophe(s: SliceState): CatastropheProjection {
     title: promoted ? '天灾 · 暴君序列2' : '天灾之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${CATASTROPHE_FORMULA_STATUS}${CATASTROPHE_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或本瓶五项真实劳动后800便士；现有全部失败耗尽才可花1行动申请，跨真实周到货仍须逐瓶实际付费。` : '',
-    actions: available ? [...actions, ...(promoted ? [...catastropheLifeActions(s), ...catastropheEncounterActions(s)] : [])] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...(promoted ? [...catastropheLifeActions(s), ...catastropheEncounterActions(s)] : [])] : [],
     bottles: available ? state.bottles.map(b => ({
       id: b.id, title: `第${bottleNumber(b)}瓶 · 天灾独立成品魔药`,
       source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`,
@@ -213,8 +214,8 @@ export function projectCatastrophe(s: SliceState): CatastropheProjection {
     preparations: available ? CATASTROPHE_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [],
     preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? CATASTROPHE_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0,
-    digestion: promoted ? `海王消化${state.seaKingActingAtPromotion}/100留存；天灾扮演${s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖。旧三案与旧反思不重复记为本阶经历。` : available ? `海王需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${seaKingWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完海王之路。',
+    acting: promoted ? (s.progression.sequence===1?s.thunderGod.catastropheActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `海王消化${state.seaKingActingAtPromotion}/100留存；天灾扮演${s.progression.sequence===1?s.thunderGod.catastropheActingAtPromotion:s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖。旧三案与旧反思不重复记为本阶经历。` : available ? `海王需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${seaKingWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完海王之路。',
     pollution: s.seer.pollution, risk: available ? CATASTROPHE_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -239,7 +240,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.catastrophe;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'seaKingActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as CatastropheState, promoted = isCatastrophe(s), acquisitionStage = isCatastropheAcquisitionStage(s);
+  const state = raw as unknown as CatastropheState, promoted = hasCatastropheHistory(s), acquisitionStage = isCatastropheAcquisitionStage(s);
   const firstWeek = s.seaKing.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + CATASTROPHE_MIN_SEA_KING_WEEKS, lastAcquisitionWeek = state.promotionWeek ?? s.week;
   if (state.guidanceKnown && (!knownChannel(s) || !integer(s.seaKing.promotionWeek, 1, s.week))) return false;
   if (acquisitionStage && (!shape(s.progression.mastery, INHERITED_ABILITY_IDS) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500)))) return false;
@@ -249,7 +250,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || !acquisitionStage || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || s.status !== 'ACTIVE' || s.health <= 20 || s.mind <= 40 || s.world.city !== 'BACKLUND' || s.activeEvent !== null || s.combat !== null || hasCatastropheOldSceneLock(s) || hasCatastropheLifeLock(s) || hasCatastropheEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.seaKing.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.seaKingActingAtPromotion !== 100 || state.preparedWeek !== null || state.resupply.requestedWeek !== null || !hasPreparations(s) || hasCatastropheOldSceneLock(s)) return false;
-    if (!shape(s.progression.mastery, [...INHERITED_ABILITY_IDS, ...CATASTROPHE_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?THUNDER_GOD_ABILITY_IDS:[]), ...INHERITED_ABILITY_IDS, ...CATASTROPHE_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.seaKingActingAtPromotion !== null || CATASTROPHE_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

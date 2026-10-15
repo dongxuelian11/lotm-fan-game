@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.192.0",
+  "version": "0.193.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -301,6 +301,26 @@
       "name": "lotm_release_0.192.0_all_knowing_eye_test_inputs_3_2026-10-15.tar.gz",
       "bytes": 1991773,
       "sha256": "9c5435893f480df6347dcbdaa059e0ca5cdda235b742c4df1c1ce544d93d7048"
+    },
+    {
+      "name": "lotm_release_0.193.0_thunder_god_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17886513,
+      "sha256": "8ca81db8cdec142315b35ed1082842993aa74aaeea185fe1efda5ef24d4fd342"
+    },
+    {
+      "name": "lotm_release_0.193.0_thunder_god_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 17625823,
+      "sha256": "28b8924b5858b7f7cfeb260875df47a1f5a7536b5db0849a6d323a3634014b42"
+    },
+    {
+      "name": "lotm_release_0.193.0_thunder_god_test_inputs_3_2026-10-15.tar.gz",
+      "bytes": 17878201,
+      "sha256": "7d9ae00fc212b0b378e42e87a0ce630336a634b177fa920a1e840a4cf086c9bb"
+    },
+    {
+      "name": "lotm_release_0.193.0_thunder_god_test_inputs_4_2026-10-15.tar.gz",
+      "bytes": 11904977,
+      "sha256": "7d34256bfec28d3ced76f70d85954ffec500c22f234dfd87e78435aac792b23e"
     }
   ],
   "fileEntries": [
@@ -12768,6 +12788,1176 @@
       "path": "tests/fixtures/three-headed-templar-v01550/natural.json",
       "bytes": 6044168,
       "sha256": "3d3aa4c81b678666e0ed99553b09edd924c029d98c81c84ed927c34420e7671d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundaries.index.json",
+      "bytes": 17821,
+      "sha256": "7191a16c5a5c55e0dd3ac9e6d370a4cd7cbf30edf43d2a272dac9304cdfb51be"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual-consumption-thunder-god-potion-1.json",
+      "bytes": 2024817,
+      "sha256": "92dc5ab34c138735a444d3a10e703aa813956a15370cccd22c409988c63c0b19"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual-consumption-thunder-god-potion-2.json",
+      "bytes": 2107127,
+      "sha256": "8651ff59528e007e0c5972ae60c677c454eaa2a6aa1107de7ab71c93f909ccc5"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual-consumption-thunder-god-potion-3.json",
+      "bytes": 2188375,
+      "sha256": "6c121903e30507e55f077d40aa75ccdb0094d4038832f1466635eb075f723520"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual-consumption-thunder-god-potion-4.json",
+      "bytes": 2290842,
+      "sha256": "1be5a2cdafe52eb2a61bf63e4408908bb68f74753e10b75a19f27a2943e412e5"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual-later-week-new-supply-3.json",
+      "bytes": 2208568,
+      "sha256": "b83b58738132f495c43f0de18f2149dc0def3916eb945c22bbc7a30d0d7c3183"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual-preparation-LOCATE_TARGET.json",
+      "bytes": 1931532,
+      "sha256": "fc2ed6b6e38552c985a528ec92472587cc87c90471297b9d8fdbeb11c56fa769"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual-preparation-MARK_RETURN.json",
+      "bytes": 1941342,
+      "sha256": "2dbf3bda21886059fccee06491aa617e6c1b850dea13e95bed56b35f960ac5eb"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 1922899,
+      "sha256": "3897f0fc411b92facb0ce65e5465376eb6f10e6db64208b4df8e1d1427b024d1"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual1100p-buy-thunder-god-potion-1.json",
+      "bytes": 2005953,
+      "sha256": "354197fbc86312fb192bc24d46acfdc84f5fdb2fd8c6c2c5dcf81a6bf9f4dd93"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual1100p-buy-thunder-god-potion-2.json",
+      "bytes": 2088257,
+      "sha256": "19028732c4ba48156d8e0c3c7067511c53b2406df34b287b793ae50ef10bc340"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual1100p-buy-thunder-god-potion-3.json",
+      "bytes": 2169511,
+      "sha256": "039836e3c3c0d52ee21f6786ab792a17f1f8f07062a50a16c1057b16fd540960"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual1100p-buy-thunder-god-potion-4.json",
+      "bytes": 2271479,
+      "sha256": "46869cdac50d8da86c9ba5827446f9b9b8eccc6686452df076a7b889184af741"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual150p-current-week-preparation-thunder-god-potion-1.json",
+      "bytes": 2015051,
+      "sha256": "e625178321d658fefbdbfe90117406a0e377c88da301bfdbeb8b71831263758f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual150p-current-week-preparation-thunder-god-potion-2.json",
+      "bytes": 2097357,
+      "sha256": "7032541bdf085bda6c6fa9101a634b8c0c446a3289279df8ce289d3edb1e5ddc"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual150p-current-week-preparation-thunder-god-potion-3.json",
+      "bytes": 2178609,
+      "sha256": "253bb39eb0291ecddcc6258f54e152d8909cfb27a5a425fa8531bbf22c174ce9"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual150p-current-week-preparation-thunder-god-potion-4.json",
+      "bytes": 2280581,
+      "sha256": "6f50366bbd52a96f78b112271b6612d69a5317da0e7d9ffa9fa064de110c7ceb"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual20p1AP-unique-personal-pad.json",
+      "bytes": 2306747,
+      "sha256": "2aefbb2d1de0571464fa763b641f874b9cbef9a6c8cd4d42bc675f6fa34ed75d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual40p1AP-unique-original-target.json",
+      "bytes": 2302308,
+      "sha256": "3cb3e399dc44da682563ac29ae04c6e329f8bbe91bf0aa44300d19122e6e7941"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual4metre-dry-platform-arrival-and-oren-name-exchange.json",
+      "bytes": 2835677,
+      "sha256": "ee10115372e5760d3c7641a7d7bbdc17de108c6c2c2895478432814b2f06950c"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-actual500p-guidance-and-frozen-eight-root-source.json",
+      "bytes": 1861138,
+      "sha256": "070aa8ed076aae8c8c4baad8bcf2918007571da5cfaac51eb1df89f16ee892b3"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-1.json",
+      "bytes": 3233883,
+      "sha256": "4aab840e1721dac7a45c2d991c27379f3ae5849c2dcb99eee046d5df5540be47"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-10.json",
+      "bytes": 3752802,
+      "sha256": "80b17f7f7017e3ba3150418350c2346ded29ff1d63110da7a0fb8bf66790a37f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-2.json",
+      "bytes": 3348332,
+      "sha256": "e9694f9783fdd1f74150a5cda2ab4333ffd46a3f152211865f0c95577242c84d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-3.json",
+      "bytes": 3392257,
+      "sha256": "92e439bf6a2a8e6cab542d1fef8b640421b496cb59a9cf945836de5b8fd9c774"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-4.json",
+      "bytes": 3434067,
+      "sha256": "f0b3ca2e9e15921aed28bf8294c1fb40828c4db55342c518de31351a19fcb1b4"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-5.json",
+      "bytes": 3501187,
+      "sha256": "312e31b39453e03ee231f94ae9deb50c0a00b62988c683696338eb01275112f7"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-6.json",
+      "bytes": 3565865,
+      "sha256": "fcbeaa4b2d0b4713dd1d10f709b9ca4aa2627a56ee63b6978aee6c5541ac5ad5"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-7.json",
+      "bytes": 3590213,
+      "sha256": "a4764b5b4a5c83e5339a4e93cbfadd539e21b1b5a00bcdd24deaa3872bae7f05"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-8.json",
+      "bytes": 3673401,
+      "sha256": "0d6bd9ec3347b363a5f74f4bcf0a96f09b779759256ec99620eff2f83a92bf96"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-combat-round-9.json",
+      "bytes": 3747985,
+      "sha256": "1199065847031ab78cc52c92fb109443c2830ee4718c52a6bc98d1acc12146af"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-event-LIFE-BILL-01-PAY_PART-2.json",
+      "bytes": 1982688,
+      "sha256": "bc40508689e55bc6efce5d2dfe3419bff80480854c18d173032374395aac8f4b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-event-LIFE-BILL-01-PAY_PART.json",
+      "bytes": 1954914,
+      "sha256": "bcba4bc7fb412a38ecbf1a8a782a404fa57cc1604a37879db9d5d555ab398f03"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-exact-original599-command-living-source.json",
+      "bytes": 1802372,
+      "sha256": "aca61e39224793b6079ae0f2094d68336906b4bcf735530186690c37c75ebd86"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-fixed-all-policy-before-fight.json",
+      "bytes": 3103164,
+      "sha256": "747c115baa808af461ef2ee960f629b6a8f37127882ba261fedba8f80c2631f6"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-independent-optional-oren-fight.json",
+      "bytes": 3125929,
+      "sha256": "80fde206c447233ee72ccdc27b9ecb1bfa8c057dc23ec3e7190641c8231c397b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-actual-six-metre-step-back.json",
+      "bytes": 2352222,
+      "sha256": "80acec0615f5ecc972255b2bcde10794092f6c65cfabf7c3996b4aa7d9d1466f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-actual-twelve-metre-route-exit-and-keeper-return.json",
+      "bytes": 2379985,
+      "sha256": "22256d5b4b588bc5454977e06de95e28750452c1519a4f5cc7d7f2b91e94db24"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-actual-walk-to-twelve-metres-and-place-same-original-target.json",
+      "bytes": 2348055,
+      "sha256": "ff7fbb310a67855f8781cc6edae0147b748c2dc1d578b3d25a9666197bdab36e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-actual10p1AP-fresh-finn-invitation.json",
+      "bytes": 2317688,
+      "sha256": "3cfdf71d19c19a40892352600146876cf9b7f0fcaa420cbb63c7df0b5bf3212b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-contact-at-same-original-exit-no-invented-travel.json",
+      "bytes": 2312223,
+      "sha256": "4a96c83ed4ca3eb7d18468ed3bee58da65c262089a2c99597d0388ca57008e6a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-current-originals-and-bodily-cost-explained.json",
+      "bytes": 2322924,
+      "sha256": "90a81b8b1d0dcc6370aa4c220a29548f99a75694ea73ef99cd63e278e2d8217b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-end-current-contact-and-finn-actually-leaves.json",
+      "bytes": 2384144,
+      "sha256": "666dc0a174ef2a81a986df411a312accf0631a186b4701c28f3b11dece71ce18"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-fresh-ability-consent.json",
+      "bytes": 2335398,
+      "sha256": "fff52311e5e47c7b9fb0a1fa819faf1e7e3f50116931171a084a9e8aeed4c62b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-fresh-owner-consent.json",
+      "bytes": 2327057,
+      "sha256": "c48565e95e1159f6d7909ee2fdc045484e3b75261f639cc2dbbde2e0a0d2a244"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-fresh-technician-consent.json",
+      "bytes": 2331221,
+      "sha256": "5029cf3408a9a8058949300aeb7731cbf397400b9fcd26f189a5f99edd2be501"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-honest-actual-result-and-cost-report.json",
+      "bytes": 2388342,
+      "sha256": "ae2c0d8c0119ca2d756b301501e27aab7dace6cf00ca32c6027f3304f57a96e3"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-keeper-and-finn-actually-walk-outside-target-line.json",
+      "bytes": 2356388,
+      "sha256": "c79d50df2d07e1c53b40c36a20ad148c030ae55f17018810314ebb3eb8e58be4"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-locate-same-original-target-and-current-version.json",
+      "bytes": 2360581,
+      "sha256": "50b794bccea74120363b506c7252e1316067ae62b14d2d04c8fa0a6ee129c38a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-one-paid-guided-thunder-attempt.json",
+      "bytes": 2365779,
+      "sha256": "01e05049187909d64ea2e9805fa99548da47da0eac63749977a5e32a65fd30cd"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-ordinary-return-and-actual-one-keeper-energy.json",
+      "bytes": 2339684,
+      "sha256": "789ceb285f5ce8d976f1557d2deb65ed0e0d410d03e8410e6d25662794429655"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-player-and-finn-actual-six-metre-entry.json",
+      "bytes": 2343918,
+      "sha256": "16d4919c9f2917c66265c00adf398e29a27a2447755de7f08cdd02d5349b4b28"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-same-original-target-returned-to-pack.json",
+      "bytes": 2376084,
+      "sha256": "77f1258bcb836afb9df73681a3b5f427d8fbe93c41d0463e3a2250d88e32967b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-separate-actual-will-check-and-original-target-hit-or-miss.json",
+      "bytes": 2371600,
+      "sha256": "9c84e23f7eedd82333f991787dc49ba1f05b469196e8b0face1cb6fbcf5ec92b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-located-target-source-costs-and-ordinary-alternative.json",
+      "bytes": 2298164,
+      "sha256": "19ac80b51693aa08afdd110560a7bc83055d8edba9f74e57973db518103af031"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-actual-six-metre-step-back.json",
+      "bytes": 2519109,
+      "sha256": "fff71265d817f1ce767d6f7430361bd194d660deee8767608769e10b079600d9"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-actual-twelve-metre-route-exit-and-keeper-return.json",
+      "bytes": 2558321,
+      "sha256": "b2e9bd4a094dc2f5462b0ff89b5689f18981462b3465efbc3a825ffbd3d20710"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-actual-walk-to-twelve-metres-and-place-same-original-target.json",
+      "bytes": 2514941,
+      "sha256": "06065409f36822df9e15f1856213ebb2d9b351b7f00ae5e564cd2684abb014bf"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-actual10p1AP-fresh-finn-invitation.json",
+      "bytes": 2484561,
+      "sha256": "9df7f97a23118f05eb19420f1caa2acc98c36b977f92f0760a4ba6307e2f0e73"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-contact-at-same-original-exit-no-invented-travel.json",
+      "bytes": 2479096,
+      "sha256": "fa166c3b0f9d7f557b9f89f01590f67ee8160dbd9775d3a69a1d9384e308f775"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-current-keeper-withdrawal.json",
+      "bytes": 2541494,
+      "sha256": "91b9cc7fcfb1bc55d9b240ca79662bc897941d8282f0519817056b1245cd9239"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-current-originals-and-bodily-cost-explained.json",
+      "bytes": 2489799,
+      "sha256": "9da7b46a84f4ef7723a0f80a714fb0d2c21fcf6734aeed2bf295642b56548867"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-end-current-contact-and-finn-actually-leaves.json",
+      "bytes": 2562609,
+      "sha256": "0a675e085128eeaba2957e807d090d01605c17b20a26f07d6a3825ea86f6d4f4"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-finn-actually-closes-original-hood-and-changes-version.json",
+      "bytes": 2537628,
+      "sha256": "e23b887c1bc5a04bbdf838d1a63b60395a16e198683e974c87bd4eeb6f8140d3"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-fresh-ability-consent.json",
+      "bytes": 2502279,
+      "sha256": "3953ecd9af31cc7e18148e1b54c4e3a1c4bae9645915ddbbb28d9721296dbcf6"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-fresh-owner-consent.json",
+      "bytes": 2493934,
+      "sha256": "142658247a1cffc57ea0b615fbffdf15fda09073c50223a59387d12e5b706d26"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-fresh-technician-consent.json",
+      "bytes": 2498100,
+      "sha256": "9ff475cda30834e5270973c01c0c14cf0fa61c81b1673f561e28b45c3cb06f3d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-honest-actual-result-and-cost-report.json",
+      "bytes": 2567042,
+      "sha256": "9bb985b5f84720fc89893ff383133758800f2641a04962d5a902b2fc6bd3a9f1"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-keeper-and-finn-actually-walk-outside-target-line.json",
+      "bytes": 2523276,
+      "sha256": "a1fbba42d189bcb0cca2c5fe6761d96bb00e0ea5b9e359400ec83efef3a1a749"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-locate-same-original-target-and-current-version.json",
+      "bytes": 2527469,
+      "sha256": "594f8803bffdae78982a03dc1f6c880b391271955f974939835337e812f4a810"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-one-paid-guided-thunder-attempt.json",
+      "bytes": 2532670,
+      "sha256": "f07176dd7a9fd9b3dce340ff121229dee02b827ae98e9eaebbe38f448f1de12c"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-ordinary-real-walk-and-open-same-hood.json",
+      "bytes": 2549901,
+      "sha256": "d972281703ee52912a51a3a98a0fda2be3569ba5bfad89ad5e27d6b5b94db254"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-ordinary-retrieve-same-original-to-player-pack.json",
+      "bytes": 2554070,
+      "sha256": "67669285263d0329f38a8186d6687bef335d6211af5de78a7925e386b53c2bba"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-ordinary-return-and-actual-one-keeper-energy.json",
+      "bytes": 2506567,
+      "sha256": "c1e41a9f4ce23f67c91d7ea78f6e9c8822c3aafab8b59b432d8fb5629d648439"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-ordinary-stop-after-withdrawal.json",
+      "bytes": 2545669,
+      "sha256": "fa5a662f1b6a6fef5d05ac08861e04e8cbc536af7b2551a29f74a17118492699"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-player-and-finn-actual-six-metre-entry.json",
+      "bytes": 2510803,
+      "sha256": "9792b21fdf397688ec5bd41ca63a9a9478298b75b2a66b693755ec9de2d9b09e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-obscured-return-source-costs-and-ordinary-alternative.json",
+      "bytes": 2473914,
+      "sha256": "b784d488e591f3a244a60e827788af7e972b64950f1c58935fe9ba45b37c4484"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-actual-declared-impact-with-current-guard.json",
+      "bytes": 2452483,
+      "sha256": "db0ad04877cc024cf63d013df54b55e72bfa94d7c1ebd8769c6890577841f7d1"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-actual-twelve-metre-route-exit-and-keeper-return.json",
+      "bytes": 2460808,
+      "sha256": "e4f6c3cea66ea22756f5988524299ee63c92a28f343e5faba63fd72a4526041d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-actual-walk-to-twelve-metres-and-wear-original-pad.json",
+      "bytes": 2433430,
+      "sha256": "d0cd889a6737208243cf72080e7df9363e8c979d6ae73715487739a5d436b38b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-actual10p1AP-fresh-finn-invitation.json",
+      "bytes": 2403049,
+      "sha256": "7d526549eb7750882671dcab6e2c5dd27d92af12199556dac6d067298745bcc0"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-contact-at-same-original-exit-no-invented-travel.json",
+      "bytes": 2397584,
+      "sha256": "31fea18c05faeb210dc6f3ad79327e9a6b3ac7739470197d1e6260e9c966df9d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-current-originals-and-bodily-cost-explained.json",
+      "bytes": 2408287,
+      "sha256": "d359eee67240407753dbe69da6625d07ae683c5af12ebc1c466579084fb48273"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-declare-one-personal-impact-pad10-and-unprotected-health5.json",
+      "bytes": 2441851,
+      "sha256": "b2cd83affcbc9956e7c6d73cdb1d7d941951918476dfe5a67e7eee6ea77d1276"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-end-current-contact-and-finn-actually-leaves.json",
+      "bytes": 2465102,
+      "sha256": "9bd58fa4c6b8713c867d34524b2a3e2f6aa168ca28e6f61edcd0b84d7020ab55"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-fresh-ability-consent.json",
+      "bytes": 2420767,
+      "sha256": "7a394bbc8bdef532e2f5adfcf33ba4b9e65968182d56356a81b44a6a3b6b1692"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-fresh-owner-consent.json",
+      "bytes": 2412422,
+      "sha256": "b1f396bf95f9edb7b7f1b1cbd18288f1cdff5f9d4339d9b3187821cbeb3ca138"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-fresh-technician-consent.json",
+      "bytes": 2416588,
+      "sha256": "d3e690e9edd36ce65a883be1aa33896d033d496f4403a0303df5455bd296e835"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-honest-actual-result-and-cost-report.json",
+      "bytes": 2469532,
+      "sha256": "47d25332aaa0f614379dd9a4a193e4bbd340c7808f37347ebfa01642be4bb90e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-keeper-and-finn-actually-walk-outside-impact-line.json",
+      "bytes": 2437638,
+      "sha256": "1d1dee000b05543f81e35ba6873ffa4a241295d605f90909fdd874d58617e9a9"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-one-paid-guard-attempt.json",
+      "bytes": 2447071,
+      "sha256": "57030fb0324714f2d845d5c4e3bbd871ed701e9e2d07a4558a3234fd212f31c2"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-ordinary-return-and-actual-one-keeper-energy.json",
+      "bytes": 2425055,
+      "sha256": "844917c07e7d38cdde2307dcd0ce9163d24a2ccaabe062688304ad5017beff9b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-player-and-finn-actual-six-metre-entry.json",
+      "bytes": 2429291,
+      "sha256": "a5bc4d23673077a131fed1462d237f78508de477d6d372df6a9bd84f83ff3597"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-same-original-pad-returned-to-pack.json",
+      "bytes": 2456729,
+      "sha256": "35f9a56d65d30c65ec86c750a8c7fc0c11218fbd97da79e00daa8949f23515fd"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-personal-impact-source-costs-and-ordinary-alternative.json",
+      "bytes": 2392721,
+      "sha256": "8627478593869d2bb1def789861fc461ba86406bb1ae602484346e982d7eba77"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-request-real-supply-after-3-failures.json",
+      "bytes": 2197998,
+      "sha256": "c18b21622d6d3e36f59803bc2ea69d87400688a91358942aab04a57ed5acefd9"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-600-action.json",
+      "bytes": 1802814,
+      "sha256": "8961e7879f624943f353df81d240ac635d90eb56d4466d9870b5dee5fae77789"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-612-action.json",
+      "bytes": 1992116,
+      "sha256": "2847a58b5226cd0980c3693fcf28e698dd2d47b751bcc93092b3a60c3c6ba313"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-613-action.json",
+      "bytes": 1992685,
+      "sha256": "d2e86b6122579cb0ecf950e82ef08415c329a368138d2d4c190d8d5bd1267e3b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-614-action.json",
+      "bytes": 1993433,
+      "sha256": "c875c1fb937e7db89a37030dcdcdde7bf9f2dac2be3685d0dc251d81db9e621f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-615-action.json",
+      "bytes": 1993655,
+      "sha256": "b22eb7544bfd664f5c35130626bd2868178518cb54cd90e93ff48d9c1941a89f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-616-action.json",
+      "bytes": 1994101,
+      "sha256": "95973b3d28a860fc72ccc2a17e8104f145d34f9e1af4e426cc7031939a23450e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-617-action.json",
+      "bytes": 1994542,
+      "sha256": "a1a41f6f55d3b85029a908c62abe7ae72005f1b6f0c557518d58c03b6d8ce8be"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-618-action.json",
+      "bytes": 1994763,
+      "sha256": "328a79ba0d95aa303772514b58c78909f8ea8e2c3ba8f9e8e84ad6634c414361"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-619-action.json",
+      "bytes": 1995209,
+      "sha256": "86d97ae16c75cf788edd8d82e611b62c5c6b4f65954ab3e707637b7e74b92be7"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-620-action.json",
+      "bytes": 1995650,
+      "sha256": "e6cdfe7db1101bc2b40c4f799b99284ddcdd26f4aec0016f559241ed4d5d430c"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-621-action.json",
+      "bytes": 1995871,
+      "sha256": "36adf36fc05fdda1899b0cbd2f507e047c80b02b1af5a4b4f1f7817be610fd5b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-622-action.json",
+      "bytes": 1996316,
+      "sha256": "b7a749739d2de3f8136c981c40854b3bc2f53b95499b0d45d06d39377ba23763"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-623-action.json",
+      "bytes": 1996756,
+      "sha256": "6c202bd1423f70b2bca332659628debf7286a77044cd793ff55b50ac2ae0f200"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-624-action.json",
+      "bytes": 1996977,
+      "sha256": "888e2e59d87b4dd8e0e52ee102d43d2a93783578bb7451afe1478f7c2b4ea47b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-625-action.json",
+      "bytes": 1997423,
+      "sha256": "f0223994b4ebada8f2d4231db52c65b104db587548aed4c74cc1d12fdeed6500"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-626-action.json",
+      "bytes": 1997864,
+      "sha256": "f6056e3e96a87e2e12ed5a9400dbe28ac0293d0a6d946b94791905ebafa3aa24"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-627-action.json",
+      "bytes": 1998085,
+      "sha256": "6893c9abf4a0721bed1fc9a2287dbfefbb3a1384fd26cbb8365c199100569f5f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-628-action.json",
+      "bytes": 1998532,
+      "sha256": "9649a746acb4ece30ef6ac713d6ca28c2a8108050a85a0aa689455c5cbbdd1c1"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-629-action.json",
+      "bytes": 1998975,
+      "sha256": "19f91573f8016e0dc010f0fcd0728ed7a3e6d2fb320a65ba0db5ad0f4507b20e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-630-action.json",
+      "bytes": 1999197,
+      "sha256": "59473691cf4e3180c39dcaebde31e6a9e184d5f3d33c42abf5c97f21811fc0ce"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-631-action.json",
+      "bytes": 1999642,
+      "sha256": "c5d7fe356d3ed43a8166dff01404ae15d579ab42bad660e2eead55547f576c3c"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-632-action.json",
+      "bytes": 2000083,
+      "sha256": "a53e7a1e785a9b0b3ec7168a7d4bdf581c19a388d9c583cc9a8a4177610893ea"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-633-action.json",
+      "bytes": 2000305,
+      "sha256": "498ca7259dd67b7733cd85ee6f8588f9e934d2576f4436afe2fb0ed01d65602e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-634-action.json",
+      "bytes": 2000751,
+      "sha256": "c01ee92177a61efafab1bba897cfc111785da5cf617adfb4c9f77030dbd92801"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-635-action.json",
+      "bytes": 2001192,
+      "sha256": "9ab635f3cc271d38813338a7f7a79533b07dd9ccc7b8d7666e94ad4f9131569a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-644-action.json",
+      "bytes": 2074981,
+      "sha256": "820dac2ff073f4748e93b69ae5b8102a08a89c4641d078227b8094f3f46ee772"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-645-action.json",
+      "bytes": 2075243,
+      "sha256": "83a10aa40695f71b08af5a60f2a09a80e60031bf65e690dd7848d5ffb55ae0b2"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-646-action.json",
+      "bytes": 2075684,
+      "sha256": "5b07a7ba8151e7929c2d44b69422f178327a840f3b5c6babb58cedb8f28539de"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-647-action.json",
+      "bytes": 2075902,
+      "sha256": "5ecd5a4119a64d5e48e1f6744b944e8665ace16565292d25799c4b54f68df159"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-648-action.json",
+      "bytes": 2076347,
+      "sha256": "8ed5f98f31e51fc31f64c74c2a084889fcce1e254f967d3f03655bc13f481099"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-649-action.json",
+      "bytes": 2076790,
+      "sha256": "efd240ee1b1cfb2c1e71a248dbba06a23b6033d663cc8b81638aba8b06621e2b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-650-action.json",
+      "bytes": 2077011,
+      "sha256": "69f39e5ff79d1cbd361a86cbb4b08acf4761f0f2100a3f9b126d6b7a5ee0aa47"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-651-action.json",
+      "bytes": 2077459,
+      "sha256": "8ff806c82ddbf54fa4afce4bb794da8da433b1aa51776b45f05e484002db259a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-652-action.json",
+      "bytes": 2077903,
+      "sha256": "de88ed0f8fe35a3795900ddf56ce5967c2841171a2556c0ca678146affe0cbd5"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-653-action.json",
+      "bytes": 2078126,
+      "sha256": "dcff2f9c0d76e7a2b9c56cc653c4ac48d66f55a79208d6a24c487a36ae86779c"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-654-action.json",
+      "bytes": 2078577,
+      "sha256": "bbe788f9b2a4207d99b1a0dfda8ea98418e6de215daceb68abfb8d158447a236"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-655-action.json",
+      "bytes": 2079023,
+      "sha256": "5170bf41439e12426dead768ff69f7c0655b37b3e7f9603ef44988b043083ff7"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-656-action.json",
+      "bytes": 2079246,
+      "sha256": "7a6a7203ad4e2a1f88f0e2a360872d812853c3bdda400b0faf03b3deac5ae39a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-657-action.json",
+      "bytes": 2079696,
+      "sha256": "904dc12c9fe08ee757f160987e64e54110d0108e950e6ecd5b01bd6376707beb"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-658-action.json",
+      "bytes": 2080141,
+      "sha256": "ee184fd04b82fd1ab9e9610b3dcc63c9d95a6946117e52876f56a71a7b497784"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-659-action.json",
+      "bytes": 2080364,
+      "sha256": "4fe33849c91092ce7e79808a70cc869740750c869fb8c1063994cd14bbbaf82c"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-660-action.json",
+      "bytes": 2080814,
+      "sha256": "564cbeb3212d03a4dbbe8e7c4435904efb91ab2111af4d05bbff7347bba24cf8"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-661-action.json",
+      "bytes": 2081260,
+      "sha256": "41b2f03ebdf8239ad50e7f227e73cdedbf5a112860eadbf5caaa65b80d6a059e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-662-action.json",
+      "bytes": 2081484,
+      "sha256": "7068db35570f0ed197a623eda01c77538ad0ac3796de7592a04d7548a6c13f54"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-663-action.json",
+      "bytes": 2081933,
+      "sha256": "537d74e9af552d72bb54adad4ccde568bb836cd15c8e6d65682bfd409bf31df0"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-664-action.json",
+      "bytes": 2082377,
+      "sha256": "c0acd6945f92a138cb83ab4b4db740fe2fb8822e07f5248a6c4fd6fa865aa180"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-665-action.json",
+      "bytes": 2082600,
+      "sha256": "f1540cc7ab9e8a1bb8da4676e887e6a9a27fdce472dfa68f4b969692de3b2c25"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-666-action.json",
+      "bytes": 2083050,
+      "sha256": "ef478d3a7a6af60d6e0d020c4c39ee6badfdd0d09cd89e4253449dd8b911ed07"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-667-action.json",
+      "bytes": 2083495,
+      "sha256": "59214eb0583a57743e28035bca84a7493eec52129f47a219692bf2016ef18df2"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-676-action.json",
+      "bytes": 2157332,
+      "sha256": "3e3af4027cebf13a920f13420254358879e87af1705eb6c9f34b224eab541204"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-677-action.json",
+      "bytes": 2157598,
+      "sha256": "3f36d5b5dd3152bacf2c67aa8af6f12dd4cf9e6dd501c663bb69d6884c8cc326"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-678-action.json",
+      "bytes": 2158043,
+      "sha256": "af1e4c432bd02cc092ae756c2841af321625bd5fa89a424dea30afcb9d2fd130"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-679-action.json",
+      "bytes": 2158263,
+      "sha256": "099a9083cc242f180f40706e5d788bc0832d80e31dde8aa8cd19624b358b82fe"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-680-action.json",
+      "bytes": 2158711,
+      "sha256": "1d763f05b36e04cf0bf58399a9a0d52dd1246770e425474b4f2cdd83b0fd762a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-681-action.json",
+      "bytes": 2159157,
+      "sha256": "360b6c0262e5bc2a0bab3cb273398740820f6baa7ed75aff059bf2949605d50b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-682-action.json",
+      "bytes": 2159380,
+      "sha256": "3ed7c54dcab055c481bab63e84c8a86d7a364d2e57b70f3e5f6d6d82e2687f89"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-683-action.json",
+      "bytes": 2159831,
+      "sha256": "8ef3c1ec57d99cddf07dd0163b2a714654dab6b9f4ffd79a33a930a7765ec19f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-684-action.json",
+      "bytes": 2160277,
+      "sha256": "13d9b1b13950e37e6898a61b4522c41ee32ebd02319fe54ffa744df53c15515e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-685-action.json",
+      "bytes": 2160500,
+      "sha256": "ba856fa4ac6886b71c408798b0281f811393c11bd12266b8ddd2dda8f3f9d2dd"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-686-action.json",
+      "bytes": 2160950,
+      "sha256": "c4098d3bc77ea2d10d65608869a5b9a7738b1217182ddfff3a47da19588768b5"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-687-action.json",
+      "bytes": 2161395,
+      "sha256": "61e8c105ce245f42f3ec47886a0134f83b848dec08c37ca56358e28b123403da"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-688-action.json",
+      "bytes": 2161618,
+      "sha256": "193d2ce65f01be785f4c4d456a5526005219d29a7676892464a74838befc6469"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-689-action.json",
+      "bytes": 2162068,
+      "sha256": "858c7143166d95a932779ed19f72fd21925a0fc81d7ad13b3a8702c016ab08c7"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-690-action.json",
+      "bytes": 2162514,
+      "sha256": "19166b21cea01d5b4acfc8b222d5dfba673887b311716547e6b6a894b881f81b"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-691-action.json",
+      "bytes": 2162738,
+      "sha256": "64fac15c844a540cd287d9f6fb05a9201ce867fc225e598efec1fcd81bcbb533"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-692-action.json",
+      "bytes": 2163186,
+      "sha256": "4ee8e659d6654e53f630a150404a7f772383f1b26376f51046d23fc83b6eef7a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-693-action.json",
+      "bytes": 2163630,
+      "sha256": "c46768b3d06d273eab4e5679ca7bba4f86fc451e514e030b7ef15ca5c9afa219"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-694-action.json",
+      "bytes": 2163854,
+      "sha256": "b19888736a32133044918d4d72080c3b8d3fbe5481a2bd0423ad85353cbe584a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-695-action.json",
+      "bytes": 2164304,
+      "sha256": "8ecacd38dfad8ca190c7ddfdede5eb8d5fc98f3c248aa6955bebef26a6afed15"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-696-action.json",
+      "bytes": 2164749,
+      "sha256": "4834f54138b8dc5deac15bb6db5fb64280ebeac5cccabce69e7a59225c8d6621"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-700-action.json",
+      "bytes": 2193336,
+      "sha256": "fa52cf2374539fabdaee8852866abbde40284192ec852b2fb50fa551ee85cc3e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-701-action.json",
+      "bytes": 2193278,
+      "sha256": "6d721f6e2376085b77026c8a9373fbed5b005ee8a2413d27cdf5f02a4303f708"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-703-action.json",
+      "bytes": 2202741,
+      "sha256": "7bc19a40f3acbcb4def34d087731533631d4a9d67886b3dc1c9350803feccd4f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-710-action.json",
+      "bytes": 2259736,
+      "sha256": "8fdfd5d2a61ca0cf46c8ee55e36ae8a6053943d47418998c550ccce6183097b1"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-711-action.json",
+      "bytes": 2260003,
+      "sha256": "1eadf6998b0ea47decc7cd84a20ae57be53f624515b47117f18ad9f00f4928f5"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-712-action.json",
+      "bytes": 2260226,
+      "sha256": "65f08bb4be32ec1e3e60dbddd646b12d5258020667ce1266a647651198d8eca7"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-713-action.json",
+      "bytes": 2260677,
+      "sha256": "2c7f699562eac15dc85bcd3040be86846a91b64f1b8ba766e396325dc39f421a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-714-action.json",
+      "bytes": 2261123,
+      "sha256": "9ef5cb909f7feab3b0087f2bafc7a22669da9ddd69f7625e59ab55461b7d9f96"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-715-action.json",
+      "bytes": 2261346,
+      "sha256": "bda1e3a0d53a67e1eaf3e55d3ec767892ca844709e20189ca12a718827a57537"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-716-action.json",
+      "bytes": 2261796,
+      "sha256": "4b871dc2a26015cfe7f35076f4cced28948d8ab00f80b5e5e60ee6acd224619e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-717-action.json",
+      "bytes": 2262241,
+      "sha256": "1575d1f0db3e7d00ef7da7c48129bc6f1f4fc049700aa27de9b2c6efded69d8d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-718-action.json",
+      "bytes": 2262464,
+      "sha256": "d0c4fbb2f6e475c89c39f9b819cb99f41a6557e203660f0b6d5d4d9a822ad07d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-719-action.json",
+      "bytes": 2262914,
+      "sha256": "92dfe4fa2bef74cf1de24d03e3f2c162b7c5d98a9bd46fd4151f6d702a7a1671"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-720-action.json",
+      "bytes": 2263359,
+      "sha256": "882895d7203cc1473c61d4a8698654546269d5ba3ba509ad010addf766b44380"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-721-action.json",
+      "bytes": 2263582,
+      "sha256": "d10c24b6c1eb78f0ac96a48e73198542484cd6cc5a53621aa7e74fe5396553be"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-722-action.json",
+      "bytes": 2264031,
+      "sha256": "af6a7a76af391fbe752f91f5dff0de63c9c038673b46a67c7dba1f58d6df829f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-723-action.json",
+      "bytes": 2264475,
+      "sha256": "59a6f376e77ec7b1394dfc25f33e1f54ccbce7a59ddd7250916c7b4e4ad7d971"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-724-action.json",
+      "bytes": 2264698,
+      "sha256": "7063a653c1e9e2a71b6b9e1d1f1c354e727690cd2f461e12f3c63eec52ada883"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-725-action.json",
+      "bytes": 2265149,
+      "sha256": "66ade69c7608966dcc80af87898561c8a6a61391ec2a4ea3301a0544c2c4d182"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-726-action.json",
+      "bytes": 2265596,
+      "sha256": "0f1888fb7a2b9e798b1ec643b18302f8e157913ccdcd055655fd396a4a9d4efe"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-727-action.json",
+      "bytes": 2265820,
+      "sha256": "07893543240387f04ceefaa3786ae6166101f01434c87c20a0add5e0f56f87b4"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-728-action.json",
+      "bytes": 2266270,
+      "sha256": "7c1e5b361ca540679d864b358cd980aca93c2ff7dcde76069d6edd3937f97599"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-729-action.json",
+      "bytes": 2266715,
+      "sha256": "1017ce8596ad18c7753c2353d6a8c5e17c6c3cc5975409366a6366e5b9acac9f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-734-action.json",
+      "bytes": 2299887,
+      "sha256": "efd0207a49e85357d4508f7d542e910dcdcbb23254f4bfaa663bffb99b3d7d41"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-737-action.json",
+      "bytes": 2308992,
+      "sha256": "8dfca4ca6d81b979449d43c52a8e99089f3e8d20eae1d780706aab445b2b3707"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-738-action.json",
+      "bytes": 2309214,
+      "sha256": "7bc6891167a7da074a06806eac40bb8592512f79429ba71bd987efe25672ab12"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-739-action.json",
+      "bytes": 2309664,
+      "sha256": "54fe66d17661ec24a1512af49052b0b5a985c2a2ca7465695001872755154909"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-759-action.json",
+      "bytes": 2395027,
+      "sha256": "bcc2664091b7426177f434c8bf2548e4514cea89fabe1078d7e174ad549e7f3d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-760-action.json",
+      "bytes": 2395251,
+      "sha256": "e839873775f337261125eba87f48fc0ec3843b7f3333002387b5d8893698a621"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-779-action.json",
+      "bytes": 2476218,
+      "sha256": "9cd02d490deb725de3375f401dad2d68ebe96df9b954b443150bbc7b3e3955e2"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-780-action.json",
+      "bytes": 2476539,
+      "sha256": "db44735357c4e4a5326287614037b2207c9c0c8f6a35aa69e584cb1482035913"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-781-action.json",
+      "bytes": 2476763,
+      "sha256": "5b462a5b8c87d31f8ee05f1b8ec3e97bced56926864fc0283de3e846e29eefd5"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-804-action.json",
+      "bytes": 2573711,
+      "sha256": "dfe266b360000a0981b9e0f578fa9c1022e39ebaec78efbcf3a260c88fd83977"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-805-action.json",
+      "bytes": 2574039,
+      "sha256": "547d35bb648de38535ec5d9a530a0da110cc3a9ccbc0b56913640fca78e96c21"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-806-action.json",
+      "bytes": 2574263,
+      "sha256": "62c748166f02d398419db97af69dd0997deb90f8067500d4c3212c2865ca81af"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-step-807-action.json",
+      "bytes": 2574714,
+      "sha256": "590b0c05f415becb436cae50b56ca063085c07d84553876927ca47d43feebe7a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-three-honest-actual-reports-reflected.json",
+      "bytes": 2571385,
+      "sha256": "45f8e77d9e558cd64d3cc95be72adf5575245b1996da4dac952e86076eaa9333"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-1-actual-labour-2.json",
+      "bytes": 1959651,
+      "sha256": "85c1e8509ded818e61fb30d98ba3fac133d1fa9b01aeda3760b70db0cb419f18"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-1-actual-labour-3.json",
+      "bytes": 1968801,
+      "sha256": "8a931abb29153dc1753a88c6127b9b043c1ef5e39ec97d83b2d710a8e4b1365f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-1-actual-labour-4.json",
+      "bytes": 1977854,
+      "sha256": "f6ffa22efd90102e15a30ba413becb2c185e631d2033ec3f3a6f2515f19511f1"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-1-actual-labour-5.json",
+      "bytes": 1987578,
+      "sha256": "23d4bd253c59d89253a1ddbddde896369973ccd015dee394ec2569961483060d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-1-actual-labour.json",
+      "bytes": 1950437,
+      "sha256": "6bd3addf799f9468017b1bd455b3e24ec6b43bc5aeb0e27adc0041e2b3d90065"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-2-actual-labour-2.json",
+      "bytes": 2043076,
+      "sha256": "0762d61c19da9163efb5be9ed5be25e8a6f7daad29bfe373675ef7a8b43da814"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-2-actual-labour-3.json",
+      "bytes": 2052224,
+      "sha256": "22fa7ccc3f5dbfa72b7ab8760d2c0dbe138eb4bf93162227261c539c4e3e8c3c"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-2-actual-labour-4.json",
+      "bytes": 2061243,
+      "sha256": "6171889271337381bda5c6c10cce87394c463a272bbb2f7740b36d63dbf25b42"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-2-actual-labour-5.json",
+      "bytes": 2070443,
+      "sha256": "3d2b62c73112703b6909e8b8757bad4af10e1cf034ceeb0ca97b2fb1b698f1f8"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-2-actual-labour.json",
+      "bytes": 2034207,
+      "sha256": "648b8afb01f6d50a9c68fde996fcc9bcfbd84620856d0857f70546e61d07200f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-3-actual-labour-2.json",
+      "bytes": 2125404,
+      "sha256": "9d5464cd77907f9333819856085d6425794dc6f951522a2b8ae947fbb90cd546"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-3-actual-labour-3.json",
+      "bytes": 2134560,
+      "sha256": "c96002331c12cba8eac11277b895c597c8d34fb442523b979fcb396262844db7"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-3-actual-labour-4.json",
+      "bytes": 2143587,
+      "sha256": "aef03b42119cbe353172b37ef2a595cc3e6ba4c7bc4dde6fa38c51692735829f"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-3-actual-labour-5.json",
+      "bytes": 2152792,
+      "sha256": "7667835542935a34c5b11e335e5ff97e5cf48480bc98ac8df75a3c66f496325a"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-3-actual-labour.json",
+      "bytes": 2116525,
+      "sha256": "c8972fa2835010fb6f2b5ec7243c6bdb50a5cf3fa1986f46e5a9f13c585c0a13"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-4-actual-labour-2.json",
+      "bytes": 2227754,
+      "sha256": "d789c1fa7b73bdc2c35218f59a5ce098f8922f71977ac482ea0f0873fe2a4841"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-4-actual-labour-3.json",
+      "bytes": 2236779,
+      "sha256": "0f80e1ea0d525a3dc7a31e71b4a4bdb974d7bccdf4bd146129b009ead0af2080"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-4-actual-labour-4.json",
+      "bytes": 2245990,
+      "sha256": "e64034beff21b876d764fec6ea9213f6a9c65e59afeb47186553f27af345df1e"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-4-actual-labour-5.json",
+      "bytes": 2255149,
+      "sha256": "77974b44cc7961264520334f40e0b0f23a889e4924966fc493fbf0b880bc81aa"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/boundary-thunder-god-potion-4-actual-labour.json",
+      "bytes": 2218742,
+      "sha256": "b2a5fc053b84491015c2c3b4f38a51237f8c37177fd72f1007d882eafe1ed0b0"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/capture-integrity.json",
+      "bytes": 26359,
+      "sha256": "0c18db6fec2c4a7284be687c2aad3729465cd0efaa4329fd5da17b852c5ea7b9"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/natural.json",
+      "bytes": 5303731,
+      "sha256": "d682e3656fa4f8fb70f09e38b71355c50b4657c5ab7263201afa3c97b2c3f8b1"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/snapshot-actualTerminal.json",
+      "bytes": 1879805,
+      "sha256": "cdcfa3b5ef8963a315e0e831188067dd47d12438f2b0bcea6ad392fb79751618"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/snapshot-combatStart.json",
+      "bytes": 1570863,
+      "sha256": "153943c7062063de6846de487c85a39a45493f9e9beaafcb816b7f351c381de6"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/snapshot-combatTerminal.json",
+      "bytes": 1879805,
+      "sha256": "cdcfa3b5ef8963a315e0e831188067dd47d12438f2b0bcea6ad392fb79751618"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/snapshot-departure.json",
+      "bytes": 901308,
+      "sha256": "e807f6bed3475a6348d861530bfea5494de7662f74503f645f884a89528f4148"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/snapshot-practiced.json",
+      "bytes": 1286701,
+      "sha256": "594c46a7a588221ab8c50c6595087fe2890ea31943562924c68431a06c80b60d"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/snapshot-promoted.json",
+      "bytes": 1148187,
+      "sha256": "cf624e8dd91914a7123c16313376a1af96f61cdd2f36ab77defab100f1e9e2cb"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 1287480,
+      "sha256": "758071549f805ae1cc6a2f15623b38b90a178df2d5f841ba8deba387dbc8d3ec"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/source-prefix.json",
+      "bytes": 39043,
+      "sha256": "a41070c01d3bda26f4988547f047db096a4dd1fffd5e0ee5e66f3c7bbd69bbbd"
+    },
+    {
+      "path": "tests/fixtures/thunder-god-v01930/summary.json",
+      "bytes": 167073,
+      "sha256": "25da575fb718db8f4dcc31679c45965e8c5a90297b6263f33ea631f41b24673f"
     },
     {
       "path": "tests/fixtures/town-v0100/natural.json",

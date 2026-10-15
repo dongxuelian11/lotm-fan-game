@@ -6,7 +6,7 @@ This directory ships every fixture archive part. `manifest.json` records the exa
 
 - Node.js 18 or newer; no npm packages or external tar executable are needed.
 - A filesystem that supports hard links for atomic, no-overwrite installation. Ordinary Linux and macOS local filesystems support this.
-- Enough free space for the selected uncompressed fixtures. A complete restore is approximately 3.7 GB; compressed download size is much smaller. The manifest is the source of truth for exact sizes.
+- Enough free space for the selected uncompressed fixtures. A complete restore is approximately 7.7 GB; compressed download size is much smaller. The manifest is the source of truth for exact sizes.
 
 Run commands from the repository root. Keep all archive parts, the manifest, and the restore script together in `test-inputs/`.
 

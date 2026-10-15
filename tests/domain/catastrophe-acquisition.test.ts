@@ -64,7 +64,10 @@ describe('Catastrophe S2 independent acquisition and exact inherited source boun
     const other = createCatastropheState(); other.bottles[0]!.labourSteps = 5; other.life.site.water.bayUnits = 0;
     expect(s.catastrophe.bottles[0]!.labourSteps).toBe(0); expect(s.catastrophe.life.site.water.bayUnits).toBe(20);
     expect(validateCatastropheState(s)).toBe(true);
-    for (const sequence of [9, 8, 7, 6, 5, 4, 1, 0]) {
+    const forgedS1=seaKing(); forgedS1.progression.sequence=1;
+    expect(projectCatastrophe(forgedS1).actions).toEqual([]); reject(forgedS1, {type:'LEARN_GUIDANCE'});
+    expect(()=>assertValidSliceState(forgedS1)).toThrow();
+    for (const sequence of [9, 8, 7, 6, 5, 4, 0]) {
       const t = seaKing(); t.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>;
       expect(projectCatastrophe(t).discovered).toBe(false); reject(t, { type: 'LEARN_GUIDANCE' });
     }

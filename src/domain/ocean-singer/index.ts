@@ -1,3 +1,4 @@
+import { THUNDER_GOD_ABILITY_IDS } from '../thunder-god/types.js';
 import { CATASTROPHE_ABILITY_IDS } from '../catastrophe/types.js';
 import {SEA_KING_ABILITY_IDS} from '../sea-king/types.js';
 import {CATACLYSM_PRIEST_ABILITY_IDS} from '../cataclysm-priest/types.js';
@@ -37,7 +38,7 @@ export function createOceanSingerState(): OceanSingerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'tyrant' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'tyrant' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isWindBlessed = (s: SliceState) => s.progression.pathwayId === 'tyrant' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.sailor.discovered && s.sailor.guidanceKnown && s.rager.guidanceKnown && s.navigator.guidanceKnown && s.windBlessed.guidanceKnown && s.windBlessed.promotionWeek !== null && (isWindBlessed(s) || promoted(s));
 const potionPrice = (bottle: OceanSingerBottle) => OCEAN_SINGER_PRICES.potion - (bottle.labourSteps === 5 ? OCEAN_SINGER_PRICES.labourCredit : 0);
@@ -211,7 +212,7 @@ export function applyOceanSingerCommand(s: SliceState, command: OceanSingerAcqui
 
 export function projectOceanSinger(s: SliceState): OceanSingerProjection {
   const actions: OceanSingerAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.cataclysmPriest.oceanSingerActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?s.cataclysmPriest.oceanSingerActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: OceanSingerAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -306,7 +307,7 @@ export function validateOceanSingerState(s: SliceState): boolean {
   if (oceanSinger.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!oceanSinger.guidanceKnown || !integer(s.windBlessed.promotionWeek, 1, s.week) || !integer(oceanSinger.promotionWeek, firstConsumptionWeek, s.week) || oceanSinger.windBlessedActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS, ...NAVIGATOR_ABILITY_IDS, ...WIND_BLESSED_ABILITY_IDS, ...OCEAN_SINGER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?CATACLYSM_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?SEA_KING_ABILITY_IDS:[]),...(s.progression.sequence===2?CATASTROPHE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?THUNDER_GOD_ABILITY_IDS:[]),...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS, ...NAVIGATOR_ABILITY_IDS, ...WIND_BLESSED_ABILITY_IDS, ...OCEAN_SINGER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?CATACLYSM_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?SEA_KING_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?CATASTROPHE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (oceanSinger.promotionWeek !== null || oceanSinger.windBlessedActingAtPromotion !== null || OCEAN_SINGER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (oceanSinger.practice.allyPosition !== 'NEAR' || oceanSinger.practice.songOpen || oceanSinger.practice.allyAffected || oceanSinger.practice.songChecks !== 0 || oceanSinger.practice.lightningMarks !== 0 || oceanSinger.practice.tideObservedWeek !== null || oceanSinger.practice.tideVerified) return false;

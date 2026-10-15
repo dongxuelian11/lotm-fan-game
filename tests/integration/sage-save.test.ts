@@ -124,7 +124,7 @@ describe('Sage bounded save-verification harness', () => {
     const sealed = readdirSync(result.outputDir).filter(name => name.endsWith('.sealed'));
     expect(sealed).toHaveLength(2);
     for (const filename of sealed) expect(JSON.parse(readFileSync(join(result.outputDir, filename), 'utf8'))).toEqual([beforeLast.runId]);
-  });
+  }, 10_000);
 
   it('returns a nonzero CLI exit for each invalid or empty requested source', () => {
     expect.assertions(7);

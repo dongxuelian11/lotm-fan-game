@@ -60,7 +60,10 @@ describe('Sea King S3 original bottles and explicitly G professional preparation
       const other = structuredClone(s); other.progression.pathwayId = pathwayId;
       expect(projectSeaKing(other).discovered).toBe(false); expect(projectSeaKing(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectSeaKing(other).discovered).toBe(false); }
+    const forgedS1=cataclysmPriest(); forgedS1.progression.sequence=1;
+    expect(projectSeaKing(forgedS1).actions).toEqual([]); reject(forgedS1, {type:'LEARN_GUIDANCE'});
+    expect(()=>assertValidSliceState(forgedS1)).toThrow();
+    for (const sequence of [9, 8, 7, 6, 5, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectSeaKing(other).discovered).toBe(false); }
   });
   it('charges500 and one action while separating verifiedS3 from unknown full recipe and rite', () => {
     const s = cataclysmPriest(), old = structuredClone([s.sailor, s.rager, s.navigator, s.windBlessed, s.oceanSinger, s.cataclysmPriest]);

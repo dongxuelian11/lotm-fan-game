@@ -1,3 +1,4 @@
+import { THUNDER_GOD_ABILITY_IDS } from '../thunder-god/types.js';
 import { CATASTROPHE_ABILITY_IDS } from '../catastrophe/types.js';
 import {SEA_KING_ABILITY_IDS} from '../sea-king/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -36,7 +37,7 @@ export function createCataclysmPriestState(): CataclysmPriestState {
 }
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isCataclysmPriest = (s: SliceState) => s.progression.pathwayId === 'tyrant' && s.progression.sequence === 4;
-const hasCataclysmPriestHistory = (s:SliceState) => isCataclysmPriest(s)||(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===3||s.progression.sequence===2));
+const hasCataclysmPriestHistory = (s:SliceState) => isCataclysmPriest(s)||(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)));
 const isOceanSinger = (s: SliceState) => s.progression.pathwayId === 'tyrant' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.sailor.discovered && s.sailor.guidanceKnown && s.rager.guidanceKnown && s.navigator.guidanceKnown && s.windBlessed.guidanceKnown && s.oceanSinger.guidanceKnown && s.oceanSinger.promotionWeek !== null && (isOceanSinger(s) || hasCataclysmPriestHistory(s));
 const numberOf = (b: Pick<CataclysmPriestBottle, 'id'>) => Number(b.id.slice('cataclysm-priest-potion-'.length));
@@ -129,10 +130,10 @@ export function projectCataclysmPriest(s: SliceState): CataclysmPriestProjection
   const chance = computeCheckChance({ baseAbility: s.character.coreStats.will, difficulty: 28, modifiers: [] });
   return {
     title: promoted ? '灾难主祭 · 序列4' : '灾难主祭之路', discovered: available, guidanceKnown: known, promoted, formulaKnown: false, formula: [],
-    actions: available && ![3, 2].includes(s.progression.sequence ?? 0) ? [...actions, ...cataclysmPriestRitualActions(s), ...cataclysmPriestLifeActions(s), ...cataclysmPriestEncounterActions(s)] : [],
+    actions: available && ![3, 2, 1].includes(s.progression.sequence ?? 0) ? [...actions, ...cataclysmPriestRitualActions(s), ...cataclysmPriestLifeActions(s), ...cataclysmPriestEncounterActions(s)] : [],
     bottles: known ? state.bottles.map(b => { const v = state.ritual.visits.find(v => v.id === b.ritualId); return { id: b.id, title: `第${numberOf(b)}瓶 · 独立灾难主祭成品`, source: b.source + (v ? ` 第${b.consumedWeek}周于${v.siteId}/${v.id}服用，原包${v.kit.id}已耗。` : ''), status: b.status === 'SUPPLIER' ? '原供应方持有，未交付' : b.status === 'PLAYER' ? '你实际持有，未服用' : `原瓶已耗 · 原始药效${b.outcome} · ${v?.finishedSuccess ? '撑至结束后已完成晋升' : v && ['DRUNK', 'FIRST_WAVE'].includes(v.phase) ? '仍在真实海潮中，药效暂定，尚未晋升' : '本场未完成晋升'}`, chance, command: { type: 'CONSUME' as const, bottleId: b.id, confirmed: true as const } }; }) : [],
     abilities: promoted ? CATACLYSM_PRIEST_ABILITIES.filter(a => Object.hasOwn(s.progression.mastery, a.id)).map(a => ({ ...a, mastery: s.progression.mastery[a.id]! })) : [],
-    acting: promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.seaKing.cataclysmPriestActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `海洋歌者消化${state.oceanSingerActingAtPromotion}/100与旧掌握保留，灾难主祭${(s.progression.sequence===3||s.progression.sequence===2)?s.seaKing.cataclysmPriestActingAtPromotion:s.progression.acting}/100。` : available ? `海洋歌者需消化100（当前${s.progression.acting}/100），满12整周（${oceanSingerWeeks(s)}/12）；服药成功仍须在本场撑至结束。` : '先完成海洋歌者之路。',
+    acting: promoted ? ((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.seaKing.cataclysmPriestActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `海洋歌者消化${state.oceanSingerActingAtPromotion}/100与旧掌握保留，灾难主祭${(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.seaKing.cataclysmPriestActingAtPromotion:s.progression.acting}/100。` : available ? `海洋歌者需消化100（当前${s.progression.acting}/100），满12整周（${oceanSingerWeeks(s)}/12）；服药成功仍须在本场撑至结束。` : '先完成海洋歌者之路。',
     pollution: s.seer.pollution, risk: known ? CATACLYSM_PRIEST_CONSUMPTION_RISK : '先通过艾洛了解本阶真实风险。', supplies: known ? `供应方${state.bottles.filter(b => b.status === 'SUPPLIER').length}原瓶；你持有${state.bottles.filter(b => b.status === 'PLAYER').length}未用原瓶；后续已实到${state.resupply.deliveries}批。${state.resupply.requestedWeek === null ? '' : `第${state.resupply.requestedWeek}周申请，下一真实周起实到。`}原瓶、新场地、原包与真实仪式分别记账。` : '',
     ...(available ? { story: CATACLYSM_PRIEST_FORMULA_STATUS + CATACLYSM_PRIEST_RITUAL_SOURCE + CATACLYSM_PRIEST_SOURCE_STATUS } : {}),
     ritual: projectCataclysmPriestRitual(s), life: projectCataclysmPriestLife(s), encounter: projectCataclysmPriestEncounter(s), insideCase: hasCataclysmPriestRitualLock(s) || hasCataclysmPriestLifeLock(s) || hasCataclysmPriestEncounterLock(s),
@@ -160,7 +161,7 @@ function validateState(s: SliceState): boolean {
   const state = raw as unknown as CataclysmPriestState, promoted = hasCataclysmPriestHistory(s), latest = state.promotionWeek ?? s.week;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
-    if (!state.guidanceKnown || !integer(state.promotionWeek, earliest, s.week) || state.oceanSingerActingAtPromotion !== 100 || !shape(s.progression.mastery, [...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS, ...NAVIGATOR_ABILITY_IDS, ...WIND_BLESSED_ABILITY_IDS, ...OCEAN_SINGER_ABILITY_IDS, ...CATACLYSM_PRIEST_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?SEA_KING_ABILITY_IDS:[]),...(s.progression.sequence===2?CATASTROPHE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(n => integer(n, 0, 500))) return false;
+    if (!state.guidanceKnown || !integer(state.promotionWeek, earliest, s.week) || state.oceanSingerActingAtPromotion !== 100 || !shape(s.progression.mastery, [...(s.progression.sequence===1?THUNDER_GOD_ABILITY_IDS:[]),...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS, ...NAVIGATOR_ABILITY_IDS, ...WIND_BLESSED_ABILITY_IDS, ...OCEAN_SINGER_ABILITY_IDS, ...CATACLYSM_PRIEST_ABILITY_IDS,...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?SEA_KING_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?CATASTROPHE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(n => integer(n, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.oceanSingerActingAtPromotion !== null || CATACLYSM_PRIEST_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   for (const [i, b] of state.bottles.entries()) if (!record(b) || !shape(b, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'status', 'outcome', 'ritualId', 'ritualWindowWeek']) || b.id !== `cataclysm-priest-potion-${i + 1}` || typeof b.source !== 'string' || !integer(b.labourSteps, 0, 5)) return false;
   if (!validateCataclysmPriestRitualState(s) || !validateCataclysmPriestLife(s) || !validateCataclysmPriestEncounter(s)) return false;

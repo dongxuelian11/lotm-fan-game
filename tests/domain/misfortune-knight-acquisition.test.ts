@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { assertValidSliceState, createSliceRun } from '../../src/domain/slice/index.js';
 import { validateConcealmentServantState } from '../../src/domain/concealment-servant/index.js';
@@ -39,7 +40,7 @@ describe('Misfortune Knight source boundary: raw evidence is separate from migra
   }, 60_000);
   it('explicitly migrates current entry and preserves all eight roots, eighteen skills and five zeros', () => {
     const raw = readObjectEntry<SliceState>(concealmentServantBranchPath, 'beforeLast'), s = originalConcealmentServant();
-    expect(s).toMatchObject({ schemaVersion: 188, contentVersion: 'misfortune-knight-v188', status: 'ACTIVE', revision: 519 });
+    expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION, status: 'ACTIVE', revision: 519 });
     expect(s.misfortuneKnight).toEqual(createMisfortuneKnightState()); expect(originalDarknessRoots(s)).toEqual(originalDarknessRoots(raw));
     expect(s.character).toEqual(raw.character); expect(s.progression).toEqual(raw.progression); expect(s.combatHistory).toEqual(raw.combatHistory);
     expect(Object.keys(s.progression.mastery)).toEqual([...MISFORTUNE_KNIGHT_INHERITED_ABILITY_IDS]); expect(Object.values(s.progression.mastery).filter(n => n === 0)).toHaveLength(5);

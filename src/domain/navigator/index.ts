@@ -1,3 +1,4 @@
+import { THUNDER_GOD_ABILITY_IDS } from '../thunder-god/types.js';
 import { CATASTROPHE_ABILITY_IDS } from '../catastrophe/types.js';
 import {SEA_KING_ABILITY_IDS} from '../sea-king/types.js';
 import {CATACLYSM_PRIEST_ABILITY_IDS} from '../cataclysm-priest/types.js';
@@ -31,7 +32,7 @@ export function createNavigatorState(): NavigatorState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'tyrant' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'tyrant' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const isRager = (s: SliceState) => s.progression.pathwayId === 'tyrant' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.sailor.discovered && s.sailor.guidanceKnown && s.rager.guidanceKnown && (isRager(s) || promoted(s));
 const potionPrice = (bottle: NavigatorBottle) => NAVIGATOR_PRICES.potion - (bottle.labourSteps === 4 ? NAVIGATOR_PRICES.labourCredit : 0);
@@ -192,8 +193,8 @@ export function projectNavigator(s: SliceState): NavigatorProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? NAVIGATOR_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.windBlessed.navigatorActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'航海家魔药已消化，原航向与水域经历保留。':isPromoted ? `暴怒之民消化成果${s.navigator.ragerActingAtPromotion}/100已保留；航海家扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?s.windBlessed.navigatorActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?'航海家魔药已消化，原航向与水域经历保留。':isPromoted ? `暴怒之民消化成果${s.navigator.ragerActingAtPromotion}/100已保留；航海家扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成暴怒之民消化（${s.progression.acting}/100），并在晋升暴怒之民后度过8整周（${ragerWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完暴怒之民之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${NAVIGATOR_CONSUMPTION_RISK}` : '成为暴怒之民后，可向原导师了解下一序列。',
@@ -246,7 +247,7 @@ export function validateNavigatorState(s: SliceState): boolean {
   if (navigator.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!navigator.guidanceKnown || !integer(s.rager.promotionWeek, 9, s.week) || !integer(navigator.promotionWeek, firstConsumptionWeek, s.week) || navigator.ragerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS, ...NAVIGATOR_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?WIND_BLESSED_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?OCEAN_SINGER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?CATACLYSM_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?SEA_KING_ABILITY_IDS:[]),...(s.progression.sequence===2?CATASTROPHE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?THUNDER_GOD_ABILITY_IDS:[]),...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS, ...NAVIGATOR_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?WIND_BLESSED_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?OCEAN_SINGER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?CATACLYSM_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?SEA_KING_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?CATASTROPHE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (navigator.promotionWeek !== null || navigator.ragerActingAtPromotion !== null || NAVIGATOR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (navigator.reflected || Object.values(navigator.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.planId !== null || value.mistakes !== 0 || value.withdrawals !== 0)) return false;

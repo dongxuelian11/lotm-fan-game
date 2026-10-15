@@ -1,3 +1,4 @@
+import { THUNDER_GOD_ABILITY_IDS } from '../thunder-god/types.js';
 import { CATASTROPHE_ABILITY_IDS } from '../catastrophe/types.js';
 import {SEA_KING_ABILITY_IDS} from '../sea-king/types.js';
 import {CATACLYSM_PRIEST_ABILITY_IDS} from '../cataclysm-priest/types.js';
@@ -31,7 +32,7 @@ export function createRagerState(): RagerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'tyrant' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'tyrant' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const isSailor = (s: SliceState) => s.progression.pathwayId === 'tyrant' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.sailor.discovered && s.sailor.guidanceKnown && (isSailor(s) || promoted(s));
 const potionPrice = (bottle: RagerBottle) => RAGER_PRICES.potion - (bottle.labourSteps === 3 ? RAGER_PRICES.labourCredit : 0);
@@ -192,8 +193,8 @@ export function projectRager(s: SliceState): RagerProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? RAGER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?(s.navigator.ragerActingAtPromotion??100):s.progression.acting) : 0,
-    digestion: isPromoted ? `水手消化成果${s.rager.sailorActingAtPromotion}/100已保留；暴怒之民扮演${(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.navigator.ragerActingAtPromotion:s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?(s.navigator.ragerActingAtPromotion??100):s.progression.acting) : 0,
+    digestion: isPromoted ? `水手消化成果${s.rager.sailorActingAtPromotion}/100已保留；暴怒之民扮演${(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?s.navigator.ragerActingAtPromotion:s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成水手消化（${s.progression.acting}/100），并在首次晋升水手后度过4整周（${sailorWeeks(s)}/4）。用药指导与原瓶可以提前准备。` : '先走完水手之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应三次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${RAGER_CONSUMPTION_RISK}` : '成为水手后，可向原导师了解下一序列。',
@@ -243,7 +244,7 @@ export function validateRagerState(s: SliceState): boolean {
   if (rager.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!rager.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(rager.promotionWeek, firstConsumptionWeek, s.week) || rager.sailorActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?NAVIGATOR_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?WIND_BLESSED_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?OCEAN_SINGER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?CATACLYSM_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?SEA_KING_ABILITY_IDS:[]),...(s.progression.sequence===2?CATASTROPHE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?THUNDER_GOD_ABILITY_IDS:[]),...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?NAVIGATOR_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?WIND_BLESSED_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?OCEAN_SINGER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?CATACLYSM_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?SEA_KING_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?CATASTROPHE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (rager.promotionWeek !== null || rager.sailorActingAtPromotion !== null || RAGER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (rager.reflected || Object.values(rager.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.bystandersCleared || value.damage || value.withdrawals !== 0)) return false;

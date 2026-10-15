@@ -1,3 +1,4 @@
+import { THUNDER_GOD_ABILITY_IDS } from '../thunder-god/types.js';
 import { CATASTROPHE_ABILITY_IDS } from '../catastrophe/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
@@ -29,8 +30,8 @@ export function createSeaKingState(): SeaKingState {
     preparations: [], preparedWeek: null, life: createSeaKingLifeState(), encounter: createSeaKingEncounterState() };
 }
 export const isSeaKing = (s: SliceState) => s.progression.pathwayId === 'tyrant' && s.progression.sequence === 3;
-export const hasSeaKingHistory = (s: SliceState) => s.progression.pathwayId === 'tyrant' && [3, 2].includes(s.progression.sequence ?? 0);
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'tyrant' && [4, 3, 2].includes(s.progression.sequence ?? 0) && s.sailor.discovered && s.cataclysmPriest.guidanceKnown && s.cataclysmPriest.promotionWeek !== null;
+export const hasSeaKingHistory = (s: SliceState) => s.progression.pathwayId === 'tyrant' && [3, 2, 1].includes(s.progression.sequence ?? 0);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'tyrant' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.sailor.discovered && s.cataclysmPriest.guidanceKnown && s.cataclysmPriest.promotionWeek !== null;
 export const hasSeaKingLock = (s: SliceState): boolean => s.seaKing.preparedWeek !== null || hasSeaKingLifeLock(s) || hasSeaKingEncounterLock(s);
 const bottleNumber = (b: Pick<SeaKingBottle, 'id'>) => Number(b.id.slice('sea-king-potion-'.length));
 const potionPrice = (b: SeaKingBottle) => SEA_KING_PRICES.potion - (b.labourSteps === SEA_KING_LABOUR_STEPS ? SEA_KING_PRICES.labourCredit : 0);
@@ -164,7 +165,7 @@ export function applySeaKingCommand(s: SliceState, command: SeaKingCommand, ctx:
 
 export function projectSeaKing(s: SliceState): SeaKingProjection {
   const state = s.seaKing, available = knownChannel(s), promoted = hasSeaKingHistory(s), actions: SeaKingAction[] = [];
-  const acting = promoted ? (s.progression.sequence === 2 ? s.catastrophe.seaKingActingAtPromotion ?? 100 : s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence === 2||s.progression.sequence===1) ? s.catastrophe.seaKingActingAtPromotion ?? 100 : s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: SeaKingAcquisitionCommand) => { const reason = seaKingAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-sea-king-guidance', '听取海王成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -187,7 +188,7 @@ export function projectSeaKing(s: SliceState): SeaKingProjection {
     title: '海王·暴君序列3（有限海域G）', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${SEA_KING_FORMULA_STATUS}${SEA_KING_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...seaKingLifeActions(s), ...seaKingEncounterActions(s)] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...seaKingLifeActions(s), ...seaKingEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 海王成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为灾难主祭' : '排异，仍为灾难主祭'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? SEA_KING_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? SEA_KING_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
@@ -224,7 +225,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasSeaKingLifeLock(s) || hasSeaKingEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.cataclysmPriest.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.cataclysmPriestActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS, ...NAVIGATOR_ABILITY_IDS, ...WIND_BLESSED_ABILITY_IDS, ...OCEAN_SINGER_ABILITY_IDS, ...CATACLYSM_PRIEST_ABILITY_IDS, ...SEA_KING_ABILITY_IDS, ...(s.progression.sequence === 2 ? CATASTROPHE_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?THUNDER_GOD_ABILITY_IDS:[]),...SAILOR_ABILITY_IDS, ...RAGER_ABILITY_IDS, ...NAVIGATOR_ABILITY_IDS, ...WIND_BLESSED_ABILITY_IDS, ...OCEAN_SINGER_ABILITY_IDS, ...CATACLYSM_PRIEST_ABILITY_IDS, ...SEA_KING_ABILITY_IDS, ...((s.progression.sequence === 2||s.progression.sequence===1) ? CATASTROPHE_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.cataclysmPriestActingAtPromotion !== null || SEA_KING_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {
