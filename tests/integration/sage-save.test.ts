@@ -76,7 +76,8 @@ describe('Sage bounded save-verification harness', () => {
     expect(result.boundaryBytes).toBe(statSync(files[0]!).size + 2 * statSync(files[1]!).size);
     expect(result.provenance).toHaveLength(1);
     for (const [n, path] of files.entries()) {
-      expect(readFileSync(path)).toEqual(original[n]);
+      // Native byte equality checks length and contents without expanding each byte into object entries.
+      expect(readFileSync(path).equals(original[n]!)).toBe(true);
       expect(fileEvidence(path)).toEqual({ bytes: original[n]!.length, sha256: createHash('sha256').update(original[n]!).digest('hex') });
     }
     expect(new Set(result.checks.map((row: { database: string }) => row.database)).size).toBe(1);

@@ -59,7 +59,8 @@ describe("durable file flush handles", () => {
     io.rejectReadOnly = rejectReadOnly;
     const file = path(), store = open(file), initial = create(store);
     expect(existsSync(`${file}.bak`)).toBe(true);
-    expect(readFileSync(`${file}.bak`)).toEqual(readFileSync(file));
+    // Native byte equality checks length and contents without expanding each byte into object entries.
+    expect(readFileSync(`${file}.bak`).equals(readFileSync(file))).toBe(true);
     close(store); writeFileSync(file, "corrupt original database");
     const recovered = open(file);
     expect(unwrap(recovered.getBootstrap()).activeState).toEqual(initial.state);
