@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "诡秘之主同人游戏运行时架构基线",
+    "locale": "zh-CN",
+    "output": "runtime-architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/dongxuelian11/lotm-fan-game",
+      "revision": "24ec3ddfa9bde1665aa48a794793414211021f80"
+    },
+    "views": [
+      {
+        "id": "browser_review",
+        "label": "浏览器审查链",
+        "focus": ["player", "renderer", "public_seam", "browser_adapter", "game_core", "checked_content", "resolution"],
+        "note": "浏览器内存 Adapter 只用于玩法与布局审查；刷新可重置。"
+      },
+      {
+        "id": "desktop_authority",
+        "label": "桌面权威链",
+        "focus": ["player", "renderer", "public_seam", "electron_adapter", "sqlite_store", "game_core"],
+        "note": "Electron 套壳后由 Main/SQLite 承担事务、回执与恢复权威。"
+      },
+      {
+        "id": "trust_seam",
+        "label": "公开信任面",
+        "focus": ["renderer", "public_seam", "game_core", "optional_ai"],
+        "note": "Renderer 与可选本地 AI 只能接触引擎已确定且玩家可知的公开事实。"
+      }
+    ],
+    "viewBox": [1560, 800]
+  },
+  "components": [
+    {
+      "id": "player",
+      "type": "external",
+      "label": "玩家",
+      "pos": [20, 330],
+      "size": [130, 72]
+    },
+    {
+      "id": "renderer",
+      "type": "frontend",
+      "label": "React Renderer",
+      "pos": [240, 330],
+      "size": [160, 84],
+      "sources": [
+        { "path": "src/renderer/App.tsx", "line": 389, "label": "页面状态与意图" },
+        { "path": "src/renderer/main.tsx", "line": 1, "label": "Renderer 入口" }
+      ]
+    },
+    {
+      "id": "public_seam",
+      "type": "security",
+      "label": "Public Contract Seam",
+      "pos": [520, 330],
+      "size": [180, 88],
+      "sources": [
+        { "path": "src/shared/contracts.ts", "line": 385, "end_line": 405, "label": "公开合同与 Bridge" },
+        { "path": "src/renderer/bridge-bootstrap.ts", "line": 1, "end_line": 18, "label": "Adapter 选择" }
+      ]
+    },
+    {
+      "id": "browser_adapter",
+      "type": "backend",
+      "label": "Browser Memory Adapter",
+      "pos": [800, 155],
+      "size": [180, 84],
+      "sources": [
+        { "path": "src/simulation/browser-bridge.ts", "line": 75, "end_line": 225, "label": "内存 Bridge" }
+      ]
+    },
+    {
+      "id": "electron_adapter",
+      "type": "security",
+      "label": "Electron IPC Adapter",
+      "pos": [800, 505],
+      "size": [180, 84],
+      "sources": [
+        { "path": "src/main/preload.ts", "line": 1, "end_line": 18, "label": "窄 preload Bridge" },
+        { "path": "src/main/ipc.ts", "line": 41, "end_line": 125, "label": "可信发送方与路由" }
+      ]
+    },
+    {
+      "id": "game_core",
+      "type": "backend",
+      "label": "Deterministic Game Core",
+      "pos": [1060, 330],
+      "size": [190, 92],
+      "sources": [
+        { "path": "src/domain/action-resolution.ts", "line": 585, "end_line": 791, "label": "行动与事件结算" },
+        { "path": "src/domain/fixture.ts", "line": 134, "end_line": 319, "label": "角色状态与兼容路径" },
+        { "path": "src/simulation/event-engine.ts", "line": 55, "end_line": 147, "label": "事件选择与队列" }
+      ]
+    },
+    {
+      "id": "checked_content",
+      "type": "database",
+      "label": "Checked Content Pack",
+      "pos": [1060, 100],
+      "size": [190, 86],
+      "sources": [
+        { "path": "src/content/r2-catalogue.ts", "line": 41, "end_line": 442, "label": "创建名册与候选" },
+        { "path": "src/content/r2-validation.ts", "line": 432, "end_line": 640, "label": "目录与意图准入" },
+        { "path": "src/content/ba2-events.ts", "line": 12, "end_line": 507, "label": "测试事件包" }
+      ]
+    },
+    {
+      "id": "resolution",
+      "type": "backend",
+      "label": "Resolution Modules",
+      "pos": [1360, 330],
+      "size": [170, 86],
+      "sources": [
+        { "path": "src/resolution/normal-check.ts", "line": 1, "label": "统一普通判定" },
+        { "path": "src/resolution/deterministic-random.ts", "line": 1, "label": "确定性随机流" },
+        { "path": "src/resolution/action-budget.ts", "line": 1, "label": "行动次数预算" }
+      ]
+    },
+    {
+      "id": "sqlite_store",
+      "type": "database",
+      "label": "SQLite Authority Adapter",
+      "pos": [1060, 555],
+      "size": [190, 88],
+      "sources": [
+        { "path": "src/persistence/sqlite-store.ts", "line": 649, "end_line": 715, "label": "窄外部 Interface" },
+        { "path": "src/persistence/sqlite-store.ts", "line": 878, "end_line": 1054, "label": "事务提交与回执" }
+      ]
+    },
+    {
+      "id": "optional_ai",
+      "type": "external",
+      "label": "可选本地 AI",
+      "pos": [1360, 610],
+      "size": [170, 86]
+    }
+  ],
+  "connections": [
+    { "id": "player_renderer", "from": "player", "to": "renderer", "label": "操作与可见反馈", "variant": "emphasis" },
+    { "id": "renderer_public", "from": "renderer", "to": "public_seam", "label": "类型化意图 / 公开投影", "variant": "security" },
+    { "id": "public_browser", "from": "public_seam", "to": "browser_adapter", "label": "BROWSER_REVIEW", "variant": "dashed" },
+    { "id": "public_electron", "from": "public_seam", "to": "electron_adapter", "label": "ELECTRON_WRAP", "variant": "security" },
+    { "id": "browser_core", "from": "browser_adapter", "to": "game_core", "label": "内存提交 / 确定性重放", "variant": "dashed" },
+    { "id": "electron_sqlite", "from": "electron_adapter", "to": "sqlite_store", "label": "可信 IPC / 事务调用", "variant": "security", "labelAt": [1020, 690] },
+    { "id": "sqlite_core", "from": "sqlite_store", "to": "game_core", "label": "已校验意图 / 持久化回执", "variant": "emphasis" },
+    { "id": "content_core", "from": "checked_content", "to": "game_core", "label": "受校验内容与候选值", "labelAt": [1155, 210] },
+    { "id": "core_resolution", "from": "game_core", "to": "resolution", "label": "判定与动作级随机" },
+    { "id": "core_ai", "from": "game_core", "to": "optional_ai", "label": "仅公开事实的可选措辞", "variant": "dashed" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "不可漂移的不变量",
+      "items": [
+        "Renderer 不接触 Node、SQLite、隐藏事实或模型证据",
+        "所有状态变化经类型化意图、单事务回执与版本校验",
+        "规则使用动作级可记录随机流；生产路径禁止 Math.random()"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "阶段真值与变更门禁",
+      "items": [
+        "浏览器 Adapter 可重置；SQLite 桌面权威、可选本地 AI 与正式内容运行时尚未接回或实现",
+        "未更新并通过 Archify showcase 校验，不得冻结下一施工轮",
+        "图是架构合同的可视化镜像，不替代 Ledger、轮次合同或玩家验收"
+      ]
+    }
+  ]
+}

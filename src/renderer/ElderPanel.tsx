@@ -1,0 +1,36 @@
+import { useEffect, useRef, useState } from 'react';
+import type { ElderAction, ElderCommand, ElderProjection } from '../domain/elder/types';
+import './seer-styles.css';
+
+const ACQUISITION = new Set(['LEARN_GUIDANCE','REQUEST_SUPPLY','RECEIVE_SUPPLY','PREPARE_TASK','POTION_WORK','BUY_POTION','PREPARE_PROMOTION','LEAVE_PREPARATION','CONSUME']);
+const ENCOUNTER = new Set(['PREPARE_ENCOUNTER','ENCOUNTER_TALK','ENCOUNTER_FIGHT','LEAVE_ENCOUNTER']);
+const METHODS: Record<string,string> = {SIGNAL:'原灵示意',BRIEF_WARD:'短暂护持',LOW_GLOW:'微光照明',STEADY_HOLD:'稳固支撑',SCREEN:'有限遮护'};
+const STATUS: Record<string,string> = { AVAILABLE:'尚未接触',OBSERVED:'已观察',PREPARED:'已准备',ACTIVE:'尚未收束',EXAMINED:'待报告',RESOLVED:'已收束' };
+export interface ElderPanelProps { value:ElderProjection; busy:boolean; blocked?:boolean; error?:string|null; onCommand:(command:ElderCommand)=>void; onClose?:()=>void }
+export function ElderPanel({value,busy,blocked=false,error=null,onCommand,onClose}:ElderPanelProps) {
+ const [goal,setGoal]=useState<string|null>(null),[confirmation,setConfirmation]=useState<{id:string;facts:string}|null>(null);
+ const submitted=useRef<string|null>(null),submittedFacts=useRef<string|null>(null),heading=useRef<HTMLHeadingElement>(null);
+ const [pending,setPending]=useState(false), facts=JSON.stringify(value), locked=busy||blocked||error!==null||pending||value.resources?.health===0;
+ const {life,encounter}=value;
+ const selectedCase=life.cases.find(c=>c.id===life.activeCase)??life.cases.find(c=>c.id===goal)??life.cases.find(c=>c.status!=='RESOLVED')??life.cases[0];
+ const selectedBottle=value.bottles.find(b=>b.id===goal)??value.bottles.find(b=>value.actions.some(a=>a.enabled&&'bottleId'in a.command&&a.command.bottleId===b.id))??value.bottles[0];
+ const inEncounter=encounter.inside||goal==='encounter';
+ const entries=value.actions.filter(a=>inEncounter?ENCOUNTER.has(a.command.type):value.promoted?!ACQUISITION.has(a.command.type)&&!ENCOUNTER.has(a.command.type)&&(!('caseId'in a.command)||a.command.caseId===selectedCase?.id):ACQUISITION.has(a.command.type)&&(!('bottleId'in a.command)||a.command.bottleId===selectedBottle?.id));
+ const next=entries.find(a=>a.id===value.preferredActionId)??entries.find(a=>a.enabled)??entries[0];
+ const live=confirmation?.facts===facts?value.actions.find(a=>a.id===confirmation.id):undefined;
+ useEffect(()=>{heading.current?.focus();},[]);
+ useEffect(()=>{if(!busy&&error===null&&submittedFacts.current!==null&&submittedFacts.current!==facts){submitted.current=null;submittedFacts.current=null;setPending(false);setConfirmation(null);setGoal(null);}else if(error!==null||confirmation&&confirmation.facts!==facts){setConfirmation(null);}},[facts,busy,error,confirmation]);
+ function choose(a:ElderAction){if(locked||confirmation||!a.enabled)return;setConfirmation({id:a.id,facts});}
+ function submit(a:ElderAction){if(locked||submitted.current||!a.enabled)return;submitted.current=a.id;submittedFacts.current=facts;setPending(true);onCommand(a.command);}
+ function resources(){const r=value.resources;return r&&<section aria-label="秽语长老当前资源"><h3>当前身体与资源</h3><p>健康{r.health}/{r.maxHealth} · 精神{r.mind}/{r.maxMind} · 灵性{r.spirituality}/{r.maxSpirituality} · 排异{value.pollution}</p><p>{r.cash} · 本周行动{r.actionsRemaining}</p><p>原伤继续生效。停止作用、收回原灵与晋升不会免费治疗本人，也不会恢复原灵的完整度或灵性。</p></section>;}
+ function action(a:ElderAction){return <div key={a.id} className="seer-action"><button className="slice-choice" disabled={locked||confirmation!==null||!a.enabled} onClick={()=>choose(a)}><strong>{a.label}</strong><span className="slice-modifiers">{a.cost}</span></button>{a.reason&&<p className="seer-action-reason">{a.reason}</p>}</div>;}
+ return <section className="seer-panel" aria-label="秽语长老成长"><h2 ref={heading} tabIndex={-1}>{value.title}</h2><p className="seer-next"><strong>下一步：</strong>{value.nextStep}</p>{error&&<p role="alert">{error}。请用页面的重试操作处理同一次保存，勿再次提交。</p>}{resources()}
+  {!value.insideCase&&onClose&&<button className="slice-button quiet" disabled={locked} onClick={onClose}>返回普通生活</button>}
+  <nav aria-label="秽语长老目标">{value.promoted? <>{life.cases.map(c=><button key={c.id} className="slice-button quiet" disabled={locked||value.insideCase} onClick={()=>setGoal(c.id)}>{c.title} · {STATUS[c.status]??c.status}</button>)}<button className="slice-button quiet" disabled={locked||value.insideCase} onClick={()=>setGoal('encounter')}>可选原庭院交战</button></>:value.bottles.map(b=><button key={b.id} className="slice-button quiet" disabled={locked||value.insideCase} onClick={()=>setGoal(b.id)}>{b.title} · {b.status}</button>)}</nav>
+  {!value.promoted?<><p>{value.supplies}</p><p>{value.risk}</p>{selectedBottle&&<section aria-label="独立原药瓶"><h3>{selectedBottle.title}</h3><p>{selectedBottle.source}</p><p>{selectedBottle.status} · 当前成功率{selectedBottle.chance}%</p></section>}<ul>{value.preparations.map(p=><li key={p.taskId}>{p.title}：{p.completedWeek===null?'尚未完成':`第${p.completedWeek}周已完成`}</li>)}</ul><p>当周服药场地准备：{value.preparedWeek===null?'未完成':`第${value.preparedWeek}周已支付，取消不退款`}。可选择继续停留三首圣堂。</p></>:inEncounter?<section aria-label="秽语长老原庭院冲突"><h3>{encounter.title}</h3><p>{encounter.story}</p><p>{encounter.facts.join(" ")}</p></section>:<section aria-label="秽语长老原场事务"><h3>{selectedCase?.title??life.title}</h3><p>{selectedCase?.story??life.story}</p><p>{life.environment}</p><ul>{life.facts.map((fact,i)=><li key={i}>{fact}</li>)}</ul><p>{life.nextStep}</p><h4>两位实际原灵</h4><ul>{life.spirits.map(sp=><li key={sp.id}>{sp.name}：灵性{sp.spirituality}，完整度{sp.integrity}，{sp.location==='INTERNAL'?'当前收在体内':sp.location==='DISSIPATED'?'已经消散':sp.location==='RELEASED'?'已经永久释放':'在原场实际位置'}；{sp.interrupted?'目前受中断影响':'没有当前中断'}。已选方法：{sp.selectedAbilities.map(method=>METHODS[method]??method).join('、')}。</li>)}</ul>{life.currentAttempt&&<p>本次实际消耗{life.currentAttempt.spiritualitySpent}本人灵性、{life.currentAttempt.mindSpent}精神、{life.currentAttempt.spiritSpiritualitySpent}原灵灵性、{life.currentAttempt.spiritIntegrityLost}原灵完整度；实际应用{life.currentAttempt.appliedAbilityIds.length}项，已移动{life.currentAttempt.playerTravelMetres}米。{life.currentAttempt.itemsReturned?'原耗材已归还。':'原耗材尚未归还。'}</p>}</section>}
+  {next&&<section aria-label="当前主要操作"><h3>当前操作</h3>{action(next)}</section>}
+  {entries.filter(a=>a!==next).length>0&&<details><summary>其他操作、普通替代与退出</summary>{entries.filter(a=>a!==next).map(action)}</details>}
+  <details><summary>能力、消化与继承经历</summary><p>{value.digestion}</p><p>{value.inheritedTools}</p><ul>{value.inheritedHistory.map((x,i)=><li key={i}>{x}</li>)}</ul>{value.abilities.map(a=><section key={a.id}><h3>{a.label} · 掌握{a.mastery}</h3><p>{a.description}</p></section>)}</details>
+  {confirmation&&<section role="dialog" aria-modal="true" aria-label="秽语长老操作确认"><h3>{live?.label??'现场已变化'}</h3><p>{live?.cost}</p><p>{value.risk}</p>{live?.command.type==='CONSUME'&&<p>确认饮用所选原瓶。成功与失败均实际耗尽这一瓶及本次准备；失败保留已付代价。</p>}{resources()}<button className="slice-button quiet" disabled={pending||busy} onClick={()=>setConfirmation(null)}>取消，返回查看</button><button className="slice-button" disabled={locked||!live?.enabled} onClick={()=>{if(live)submit(live);}}>{live?.command.type==='CONSUME'?'确认服用这一药瓶':'确认执行这一次操作'}</button><p>取消不提交。关闭页面不能替代实际停止、交还原物和步行离场。</p></section>}
+ </section>;
+}
