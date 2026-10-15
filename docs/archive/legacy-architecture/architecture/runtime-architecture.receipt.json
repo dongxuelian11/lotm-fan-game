@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-01T20:57:09+08:00",
+  "tool": {
+    "name": "archify",
+    "version": "2.16.0",
+    "source": "https://github.com/tt-a1i/archify",
+    "ref": "v2.16.0"
+  },
+  "diagram_type": "architecture",
+  "source": "docs/architecture/runtime.archify.json",
+  "artifact": "docs/architecture/runtime-architecture.html",
+  "repository_evidence": {
+    "verified": true,
+    "repository": "https://github.com/dongxuelian11/lotm-fan-game",
+    "revision": "24ec3ddfa9bde1665aa48a794793414211021f80",
+    "references": 18
+  },
+  "specification": {
+    "sha256": "1392f8820aa2f8eb52e02feb62056f98b7be87a5c71f7604f60317ace2d4763f",
+    "bytes": 7140
+  },
+  "delivered_artifact": {
+    "sha256": "70ed7f30be2d6e0ef4ad6c5623b99babf898065017b26391139f3b8635b29e19",
+    "bytes": 718678
+  },
+  "validation": {
+    "profile": "showcase",
+    "checks_passed": 9,
+    "check_count": 9,
+    "errors": 0,
+    "warnings": 0
+  },
+  "browser_evidence": {
+    "status": "pass",
+    "runtime": "Microsoft Edge Chromium",
+    "viewports": [
+      "1440x900",
+      "1600x1000",
+      "1920x1080",
+      "2048x1320"
+    ],
+    "overflow_x": false,
+    "overflow_y": false,
+    "readability": "pass",
+    "viewer_chrome": "pass"
+  },
+  "visual_review": {
+    "status": "passed",
+    "inspected": [
+      "1440x900 light",
+      "2048x1320 dark"
+    ],
+    "correction_rounds": 1,
+    "note": "No visible node overlap, route collision, clipping, illegible labels, or unbalanced empty band was observed."
+  },
+  "truth_ceiling": {
+    "product_implementation": "NOT_AUTHORIZED_BY_DIAGRAM",
+    "player_acceptance": "NOT_PROVEN_BY_DIAGRAM",
+    "package": "NOT_RUN",
+    "release": "NOT_RUN"
+  }
+}
