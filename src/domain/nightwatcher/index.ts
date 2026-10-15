@@ -1,3 +1,4 @@
+import { MISFORTUNE_KNIGHT_ABILITY_IDS } from '../misfortune-knight/types.js';
 import { CONCEALMENT_SERVANT_ABILITY_IDS } from '../concealment-servant/types.js';
 import {FEAR_BISHOP_ABILITY_IDS} from '../fear-bishop/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -45,7 +46,7 @@ export function createNightwatcherState(): NightwatcherState {
 }
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isNightwatcher = (s: SliceState) => s.progression.pathwayId === 'darkness' && s.progression.sequence === 4;
-const hasNightwatcherHistory = (s:SliceState) => s.progression.pathwayId === 'darkness' && [4, 3, 2].includes(s.progression.sequence ?? 0);
+const hasNightwatcherHistory = (s:SliceState) => s.progression.pathwayId === 'darkness' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0);
 const isSpiritWarlock = (s: SliceState) => s.progression.pathwayId === 'darkness' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.sleepless.discovered && s.sleepless.guidanceKnown && s.midnight.guidanceKnown && s.nightmare.guidanceKnown && s.soother.guidanceKnown && s.spiritWarlock.guidanceKnown && s.spiritWarlock.promotionWeek !== null && (isSpiritWarlock(s) || hasNightwatcherHistory(s));
 const bottleNumber = (bottle: Pick<NightwatcherBottle, 'id'>) => Number(bottle.id.slice('nightwatcher-potion-'.length));
@@ -180,15 +181,15 @@ export function projectNightwatcher(s: SliceState): NightwatcherProjection {
   const chance = computeCheckChance({ baseAbility: s.character.coreStats.will, difficulty: 28, modifiers: [] });
   return {
     title: promoted ? '守夜人 · 序列4' : '守夜人之路', discovered: available, guidanceKnown: known, promoted,
-    formulaKnown: false, formula: [], actions: available && ![3, 2].includes(s.progression.sequence ?? 0) ? [...actions, ...nightwatcherRitualActions(s), ...nightwatcherLifeActions(s), ...nightwatcherEncounterActions(s)] : [],
+    formulaKnown: false, formula: [], actions: available && ![3, 2, 1].includes(s.progression.sequence ?? 0) ? [...actions, ...nightwatcherRitualActions(s), ...nightwatcherLifeActions(s), ...nightwatcherEncounterActions(s)] : [],
     bottles: known ? state.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 独立守夜人成品`, source: `${bottle.source}${bottle.ritualId ? `第${bottle.ritualWindowWeek}周在原厅预约${bottle.ritualId}专业准备窗口服用；本次原包与原瓶均耗尽。` : ''}`,
       status: bottle.status === 'SUPPLIER' ? '原供应方持有，未交付' : bottle.status === 'PLAYER' ? '你实际持有，尚未服用' : `原瓶已耗尽 · ${bottle.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : bottle.outcome === 'SUCCESS' ? '成功晋升' : bottle.outcome === 'GREAT_FAILURE' ? '严重排异，仍为灵巫' : '排异，仍为灵巫'}`,
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: promoted ? NIGHTWATCHER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: promoted ? ([3, 2].includes(s.progression.sequence ?? 0)?s.fearBishop.nightwatcherActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: promoted ? `灵巫消化${state.spiritWarlockActingAtPromotion}/100与原掌握保留；守夜人扮演${[3, 2].includes(s.progression.sequence ?? 0)?s.fearBishop.nightwatcherActingAtPromotion:s.progression.acting}/100。` : available ? `灵巫消化需100（当前${s.progression.acting}/100），晋升后满12整周（${spiritWarlockWeeks(s)}/12）；当前专业准备与原封装包须另行完成，可选择保持灵巫。` : '先完成灵巫之路。',
+    acting: promoted ? ([3, 2, 1].includes(s.progression.sequence ?? 0)?s.fearBishop.nightwatcherActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `灵巫消化${state.spiritWarlockActingAtPromotion}/100与原掌握保留；守夜人扮演${[3, 2, 1].includes(s.progression.sequence ?? 0)?s.fearBishop.nightwatcherActingAtPromotion:s.progression.acting}/100。` : available ? `灵巫消化需100（当前${s.progression.acting}/100），晋升后满12整周（${spiritWarlockWeeks(s)}/12）；当前专业准备与原封装包须另行完成，可选择保持灵巫。` : '先完成灵巫之路。',
     pollution: s.seer.pollution, risk: known ? NIGHTWATCHER_CONSUMPTION_RISK : '先通过原导师了解守夜人成品来源与实际仪式风险。',
     supplies: known ? `供应方持有${state.bottles.filter(bottle => bottle.status === 'SUPPLIER').length}瓶，你持有未用原瓶${state.bottles.filter(bottle => bottle.status === 'PLAYER').length}瓶。${state.resupply.requestedWeek === null ? `后续实际到货${state.resupply.deliveries}批。` : `第${state.resupply.requestedWeek}周申请，下一真实周起实际到货。`}成品配方仍未知，原瓶、付费预约与专业准备分别结算，旧仪式不能代替。` : '',
     ...(available ? { story: `${NIGHTWATCHER_FORMULA_STATUS}${NIGHTWATCHER_RITUAL_SOURCE}${NIGHTWATCHER_SOURCE_STATUS}` } : {}),
@@ -227,7 +228,7 @@ function validateState(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.spiritWarlock.promotionWeek, 1, s.week) || !integer(state.promotionWeek, earliestConsumption, s.week) || state.spiritWarlockActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS, ...NIGHTMARE_ABILITY_IDS, ...SOOTHER_ABILITY_IDS, ...SPIRIT_WARLOCK_ABILITY_IDS, ...NIGHTWATCHER_ABILITY_IDS,...([3, 2].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...(s.progression.sequence === 2 ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?MISFORTUNE_KNIGHT_ABILITY_IDS:[]),...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS, ...NIGHTMARE_ABILITY_IDS, ...SOOTHER_ABILITY_IDS, ...SPIRIT_WARLOCK_ABILITY_IDS, ...NIGHTWATCHER_ABILITY_IDS,...([3, 2, 1].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.spiritWarlockActingAtPromotion !== null || NIGHTWATCHER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   for (const [index, bottle] of state.bottles.entries()) {
     if (!record(bottle) || !shape(bottle, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'status', 'outcome', 'ritualId', 'ritualWindowWeek']) || bottle.id !== `nightwatcher-potion-${index + 1}` || typeof bottle.source !== 'string' || !integer(bottle.labourSteps, 0, 5)) return false;

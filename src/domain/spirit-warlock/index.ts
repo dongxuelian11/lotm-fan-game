@@ -1,3 +1,4 @@
+import { MISFORTUNE_KNIGHT_ABILITY_IDS } from '../misfortune-knight/types.js';
 import { CONCEALMENT_SERVANT_ABILITY_IDS } from '../concealment-servant/types.js';
 import {FEAR_BISHOP_ABILITY_IDS} from '../fear-bishop/types.js';
 import {NIGHTWATCHER_ABILITY_IDS} from '../nightwatcher/types.js';
@@ -36,7 +37,7 @@ export function createSpiritWarlockState(): SpiritWarlockState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'darkness' && (s.progression.sequence === 5||([4, 3, 2].includes(s.progression.sequence ?? 0)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'darkness' && (s.progression.sequence === 5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)));
 const isSoother = (s: SliceState) => s.progression.pathwayId === 'darkness' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.sleepless.discovered && s.sleepless.guidanceKnown && s.midnight.guidanceKnown && s.nightmare.guidanceKnown && s.soother.guidanceKnown && s.soother.promotionWeek !== null && (isSoother(s) || promoted(s));
 const potionPrice = (bottle: SpiritWarlockBottle) => SPIRIT_WARLOCK_PRICES.potion - (bottle.labourSteps === 5 ? SPIRIT_WARLOCK_PRICES.labourCredit : 0);
@@ -161,7 +162,7 @@ export function applySpiritWarlockCommand(s: SliceState, command: SpiritWarlockA
 
 export function projectSpiritWarlock(s: SliceState): SpiritWarlockProjection {
   const actions: SpiritWarlockAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? (([4, 3, 2].includes(s.progression.sequence ?? 0))?s.nightwatcher.spiritWarlockActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? (([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?s.nightwatcher.spiritWarlockActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: SpiritWarlockAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -244,7 +245,7 @@ export function validateSpiritWarlockState(s: SliceState): boolean {
   if (spiritWarlock.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!spiritWarlock.guidanceKnown || !integer(s.soother.promotionWeek, 1, s.week) || !integer(spiritWarlock.promotionWeek, firstConsumptionWeek, s.week) || spiritWarlock.sootherActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS, ...NIGHTMARE_ABILITY_IDS, ...SOOTHER_ABILITY_IDS, ...SPIRIT_WARLOCK_ABILITY_IDS,...(([4, 3, 2].includes(s.progression.sequence ?? 0))?NIGHTWATCHER_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...(s.progression.sequence === 2 ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?MISFORTUNE_KNIGHT_ABILITY_IDS:[]),...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS, ...NIGHTMARE_ABILITY_IDS, ...SOOTHER_ABILITY_IDS, ...SPIRIT_WARLOCK_ABILITY_IDS,...(([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?NIGHTWATCHER_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (spiritWarlock.promotionWeek !== null || spiritWarlock.sootherActingAtPromotion !== null || SPIRIT_WARLOCK_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (spiritWarlock.practice.note !== 'TABLE' || spiritWarlock.practice.dreamOpen || spiritWarlock.practice.deliveries !== 0 || spiritWarlock.practice.returns !== 0 || spiritWarlock.practice.coordinationChecks !== 0) return false;

@@ -1,3 +1,4 @@
+import { MISFORTUNE_KNIGHT_ABILITY_IDS } from '../misfortune-knight/types.js';
 import { CONCEALMENT_SERVANT_ABILITY_IDS } from '../concealment-servant/types.js';
 import {FEAR_BISHOP_ABILITY_IDS} from '../fear-bishop/types.js';
 import {NIGHTWATCHER_ABILITY_IDS} from '../nightwatcher/types.js';
@@ -36,7 +37,7 @@ function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Err
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const shape = (value: Record<string, unknown>, fields: readonly string[]) => Object.keys(value).sort().join('|') === [...fields].sort().join('|');
 const integer = (value: unknown, min: number, max = Number.MAX_SAFE_INTEGER) => Number.isSafeInteger(value) && (value as number) >= min && (value as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'darkness' && (s.progression.sequence === 9||s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'darkness' && (s.progression.sequence === 9||s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))));
 const potionPrice = (bottle: SleeplessBottle) => SLEEPLESS_PRICES.potion - (bottle.labourSteps === 2 ? SLEEPLESS_PRICES.labourCredit : 0);
 const bottleNumber = (bottle: SleeplessBottle) => Number(bottle.id.slice('sleepless-potion-'.length));
 const ordinaryWeeks = (s: SliceState) => Math.min(4, Math.max(0, (s.progression.promotionWeek ?? s.week) - 1));
@@ -249,7 +250,7 @@ export function validateSleeplessState(s: SliceState): boolean {
   const sleepless = raw as unknown as SleeplessState, isPromoted = promoted(s);
   if (s.progression.pathwayId === 'darkness' && !isPromoted) return false;
   if (isPromoted) {
-    if (!sleepless.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...SLEEPLESS_ABILITY_IDS,...(s.progression.sequence!==9?MIDNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))))?NIGHTMARE_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?SOOTHER_ABILITY_IDS:[]),...((s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?SPIRIT_WARLOCK_ABILITY_IDS:[]),...(([4, 3, 2].includes(s.progression.sequence ?? 0))?NIGHTWATCHER_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...(s.progression.sequence === 2 ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!sleepless.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...(s.progression.sequence===1?MISFORTUNE_KNIGHT_ABILITY_IDS:[]),...SLEEPLESS_ABILITY_IDS,...(s.progression.sequence!==9?MIDNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))))?NIGHTMARE_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?SOOTHER_ABILITY_IDS:[]),...((s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?SPIRIT_WARLOCK_ABILITY_IDS:[]),...(([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?NIGHTWATCHER_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (SLEEPLESS_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id)) || sleepless.reflected
     || Object.values(sleepless.watches).some(watch => watch.status !== 'AVAILABLE' || watch.attemptWeek !== null || watch.method !== null)
     || sleepless.encounter.status !== 'AVAILABLE' || sleepless.encounter.observed || sleepless.encounter.night

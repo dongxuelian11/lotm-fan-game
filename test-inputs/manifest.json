@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.190.0",
+  "version": "0.191.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -276,6 +276,16 @@
       "name": "lotm_release_0.190.0_beauty_goddess_test_inputs_3_2026-10-15.tar.gz",
       "bytes": 10283093,
       "sha256": "9c3880bf69d3387994def8e0675e6799c0a9ec5e596ff97b86d3f2157202c78a"
+    },
+    {
+      "name": "lotm_release_0.191.0_misfortune_knight_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17668269,
+      "sha256": "802f7b693e3ca9f4f1d4f0f217b734a7cf39fc29d8a62984076684c681e2ac43"
+    },
+    {
+      "name": "lotm_release_0.191.0_misfortune_knight_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 6731097,
+      "sha256": "f22552abfb04af0d8d625bc9ba627be6a358317a41137ceb63b6b61adb88858a"
     }
   ],
   "fileEntries": [
@@ -8503,6 +8513,451 @@
       "path": "tests/fixtures/miracle-worker-v01640/natural.json",
       "bytes": 2695551,
       "sha256": "b0f779155538139cafc19ad6ec89a364e7abd8b0df2709a38325659bf58423b8"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundaries.index.json",
+      "bytes": 7019,
+      "sha256": "6f9b2521428a93c75cf8742788acf02c505f182a37a0856adaaef250dc10abf6"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-actual-paid40p-independent-battle-plate.json",
+      "bytes": 2441122,
+      "sha256": "e5e0ec01a9a5bd54563c1efbb850157e1dcb83cfe43df5db259397c322f26027"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-actual4metre-arrival-and-alden-name-exchange.json",
+      "bytes": 2736364,
+      "sha256": "e526e44ccaa813816296e6dc94d008891f190c52e2e1479a3bf7a43b49f78730"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-buy-misfortune-knight-potion-1.json",
+      "bytes": 1910919,
+      "sha256": "623a03da45d24fc687a2101244fce90dfca4dfa3065afc05072cb5248e5fc980"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-buy-misfortune-knight-potion-2.json",
+      "bytes": 1990037,
+      "sha256": "667d0759e76565f9bd80998af63d3ed964916b0b07a28ebae4da21811d90fa8c"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-buy-misfortune-knight-potion-3.json",
+      "bytes": 2070246,
+      "sha256": "7037184a8a9ec74dc8ca7f2802c367d590d444820e047c9ff0f7628bd41e18eb"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-1.json",
+      "bytes": 3150164,
+      "sha256": "1de449b3d23a7c8addd540e813810fe68d197d53d903ceeac0f94c68cb8bdc1d"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-2.json",
+      "bytes": 3256773,
+      "sha256": "eb19d0cc61952723c2c6d95eb36fb34f9e4d42576f563a024cdd9a9d6b5ddcc1"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-3.json",
+      "bytes": 3295869,
+      "sha256": "54647400f33c5d18c534c24a2370d9e9feb91e49a4817a54fdb2c284fdd76487"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-4.json",
+      "bytes": 3341968,
+      "sha256": "610e40a0d3bb95e2eb73cef2b2186bb0d2ec61c7d3ef2fe223b00869e906a1b8"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-5.json",
+      "bytes": 3418061,
+      "sha256": "f058aacb388f2c28a8a0e5c7c7fbe7a51f076c49edd50b2f95d91f66158f075b"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-6.json",
+      "bytes": 3503818,
+      "sha256": "fbcf5ed78ddd7fef3e81ea728f72a492408f8a988913a5be46280179425782af"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-7.json",
+      "bytes": 3572247,
+      "sha256": "14d636b365557d4a9ac7129eb1029ba7cd803418778c835764770bc5fc4ad9be"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-8.json",
+      "bytes": 3620815,
+      "sha256": "25106e851a4a5f727a90acf8c711c24309fce21877041de842ea7737d707c73f"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-combat-round-9.json",
+      "bytes": 3650187,
+      "sha256": "e0ffe8d29782fe92745e89364e999ea56249d642444da2b0f8e48f4e8e26475d"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-consume-misfortune-knight-potion-1.json",
+      "bytes": 1929273,
+      "sha256": "03a94f81638439e1a80d8512c6ba956931a6c3936324a79b87b8ae1b177b162c"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-consume-misfortune-knight-potion-2.json",
+      "bytes": 2008385,
+      "sha256": "fc37bba230773d413c4f689a28cfb6c3eb436e722ee8fec751c76a1eb052e89d"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-consume-misfortune-knight-potion-3.json",
+      "bytes": 2090244,
+      "sha256": "7ce0ef0620aa41ceb6c6a53b1ca0dd35432c6d6caba4ce149a6e5ce6b3fb11fa"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-fixed-all-policy-before-fight.json",
+      "bytes": 3031448,
+      "sha256": "36eb661cbfd375cdd9af18e4e1b0fd487441eb127026aaf6d4fcc00178f61cb2"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-guidance.json",
+      "bytes": 1780947,
+      "sha256": "01c3e45c88fb8fdcc0c5bf1f81d50a548a3705ba322da3d0c04f110c6ec1596a"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-independent-optional-fight.json",
+      "bytes": 3053275,
+      "sha256": "9cdc8903c137cd49082a110f2a8549ef2ec992732a6d5a5fdadbe2ce45c5d463"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-actual-independent-catch.json",
+      "bytes": 2163427,
+      "sha256": "86f6fbdc6b07ed725024ccfd7c1443babaa912ea29d76b72a1774a5a911a5627"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-actual-original-tool-setup.json",
+      "bytes": 2137867,
+      "sha256": "5c3255cee33ee9c5498fcc3ea18f4f2b3f579eaa0ef0a11515e4be1797a01fab"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-actual-pending-original-box.json",
+      "bytes": 2150031,
+      "sha256": "f5b6650f2b25255dd8bc285ebc1053dc2126874db4c53551c732ec7be080a2a0"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-actual40metre-return.json",
+      "bytes": 2181367,
+      "sha256": "0e033751797052d9fde08cccb331a435df3f11b24a24a2fe2c08d2a6b45050f7"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-actual40metre-walk.json",
+      "bytes": 2113419,
+      "sha256": "a1f7b310ebd623b1c1dea0d5fd675d841154a134045213ba0d2fafd9bdde3b1d"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-consent-OWNER.json",
+      "bytes": 2119492,
+      "sha256": "9b4515dfe54e31e6d6cdfa465c255d84b5d36553f4820f755c4b95f198eded7a"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-consent-SELF_POWER.json",
+      "bytes": 2131740,
+      "sha256": "2c54dcb6149ec3b86443912e5086f1325a1e807a50e60cd2f28ce859e87571f5"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-consent-TECHNICIAN.json",
+      "bytes": 2125622,
+      "sha256": "65dfbea09be87bd0f68c7f1cce72b9fee702b24c741143990c94cae4aaceacef"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-fresh-paid-invitation.json",
+      "bytes": 2107251,
+      "sha256": "ca6bad670a6d031043e6e1c2f5315a4f2b37228887f4b2b6b5d2bbdd0fb3199b"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-honest-report.json",
+      "bytes": 2187503,
+      "sha256": "0645f62c5e7faf19ef965d965650ebd307caedf8752a3f9c2f74b3860fc36fbb"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-observe-original.json",
+      "bytes": 2099930,
+      "sha256": "66d6f51d6d2af64c070c5da8aa6f7ab4a68aea3397286699ca81557d7d951d9a"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-paid-guided-mishap-attempt.json",
+      "bytes": 2156605,
+      "sha256": "c0b5ba9a09fba2ceb54184f227129014ba290ac3979cf678b0926b495e5b381b"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-same-original-box-returned.json",
+      "bytes": 2169468,
+      "sha256": "12fa7bedf7e4a1ce16a38a5b0e9bd6a88156f06786e5a5dcad84c82d8518c35e"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-same-original-box.json",
+      "bytes": 2143973,
+      "sha256": "eb49798563c368a3b91f7be2adb1fc1642051e0d11012a95f47ba03078da17fe"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-pending-parcel-same-tray-and-tools-returned.json",
+      "bytes": 2175289,
+      "sha256": "a14d6bf4f267fc4514d58b577fb410b98587f3d9fec858163a1fd480c1e7c0f7"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-actual-light-impact.json",
+      "bytes": 2264292,
+      "sha256": "b9c7d7dabdbb55f484dacc425867ea24ef4b58e9e415dc71b7849fb221b33551"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-actual-original-tool-setup.json",
+      "bytes": 2232946,
+      "sha256": "7eb393eb6a3d4010a2a50fbba9026a09e5df8bebf388f7105446aa808658f6ac"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-actual-unreleased-calibration-weight.json",
+      "bytes": 2251243,
+      "sha256": "5cafdee3d71eeb33d3b30182f101dc50b9fc3908aad7f14ebac034a17421ccc0"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-actual40metre-return.json",
+      "bytes": 2288251,
+      "sha256": "f82bee8289c9b9d70a9df5a770358583cb8a279e7d241bf306a7d522833b0c70"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-actual40metre-walk.json",
+      "bytes": 2208459,
+      "sha256": "6878c9178fe8f3e97d031e2b6a8d22d1440141b8e3f5bbd178141458d47a5ee2"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-consent-OWNER.json",
+      "bytes": 2214541,
+      "sha256": "108c1cf093dfa5bc63eed7ff1fa849282070a55f10a2a0e9bb73ca7842ec911b"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-consent-SELF_POWER.json",
+      "bytes": 2226809,
+      "sha256": "0ddca85b601cd49cbfbf4f93a8edda00968bf55ccbcc5cfd9caa63411bef48f7"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-consent-TECHNICIAN.json",
+      "bytes": 2220681,
+      "sha256": "2707c7113539f1de4da0db75b699869f05987d740dd228ca7bde1f7561049456"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-fresh-paid-invitation.json",
+      "bytes": 2202278,
+      "sha256": "c366ecfde294263d57eb439fe586a425a08c76602a01949ae69c081ca5a37c3a"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-honest-report.json",
+      "bytes": 2294396,
+      "sha256": "b733c15bec9fdac17c1df269ea975ccfc30c091c35d2bd838e504ac560493ba9"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-observe-original.json",
+      "bytes": 2194260,
+      "sha256": "1d86d92293c8b153f03dc73bdabaa9aefa9a3b7ff8a4792ea51c5b400b1f7660"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-paid-guard-and-real-wear.json",
+      "bytes": 2257889,
+      "sha256": "ac407c358754dbfeeb183fae238e61aa44ab42178d9e16c45159de27d0772e55"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-same-finite-wood-plate.json",
+      "bytes": 2245151,
+      "sha256": "7711499e4a2ed0c7e9f1734ff2fb6117e4ed3f38bc4598e9575f0e35c420da13"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-same-original-box-returned.json",
+      "bytes": 2270067,
+      "sha256": "3953e59ad970998c67def7db25e870106f8ff34a9352f910e58dee1d6d4a5222"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-same-original-box.json",
+      "bytes": 2239062,
+      "sha256": "94083d1dfafe13b2acec4db360cec019cb5b4ac29b8354680929aba737f8e75a"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-same-tray-and-tools-returned.json",
+      "bytes": 2282183,
+      "sha256": "659eb33c75b359a9efc7bc33bf4fdaa4b592cca00ac8b108a1debbe5cace7095"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-personal-dark-guard-same-worn-plate-returned.json",
+      "bytes": 2276083,
+      "sha256": "e03833b4e22382e1c39ef578267c3826416adb1b948c51bf99af76950cd12bf6"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1839827,
+      "sha256": "29579b1489f7a103d5d6b58f1cff238cc72980794f85b0c8f987bd72a3552c5b"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1849149,
+      "sha256": "cb4aa7440aa5df472556e384c91f3641e9c14816e1a84a864b7a20960b258a03"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1831621,
+      "sha256": "0bfb105f70bb20c5449639aa7a5855deaf63af3fe025da76d467ee7493f163e0"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-prepare-misfortune-knight-potion-1.json",
+      "bytes": 1919749,
+      "sha256": "55cc8dd3fe1fba63ff11554c543836438a1910ac5450c447ebbe7f26a6bb0b20"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-prepare-misfortune-knight-potion-2.json",
+      "bytes": 1998865,
+      "sha256": "2f0b3c6829da4d8dbe039b0aa06a96850827cdf0048785ecbfa6cb3b8facc259"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-prepare-misfortune-knight-potion-3.json",
+      "bytes": 2079078,
+      "sha256": "aedffde80685970314a415d93449bbc11a3de8463c1b479f332f67dc7eb85a16"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-three-honest-reports-reflected.json",
+      "bytes": 2431880,
+      "sha256": "6e5889192d3a0c697640fc0bc1fadd680c7b8526088a11d8f920b602cf34b79f"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-actual-original-door-obstruction.json",
+      "bytes": 2371023,
+      "sha256": "a73d24c777b0b161bf2abfc8c660357d7aed4293446eccb62cf8bf6958a86b89"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-actual-original-tool-setup.json",
+      "bytes": 2339736,
+      "sha256": "465898efc864fccde6824ba542409e85f04d48d29fefcd714ef2f114e043312f"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-actual-unreleased-calibration-weight.json",
+      "bytes": 2358033,
+      "sha256": "17ac857458effb047ce208c5433ec45bd4f943e67b17c81f7bd640f755a090ec"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-actual-unreleased-weight-stop.json",
+      "bytes": 2382945,
+      "sha256": "5d5c11f3b0685b23c752f1882c7e7c73f4e3028bde5bf65a7fa70952adc6b7f2"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-actual40metre-return.json",
+      "bytes": 2419420,
+      "sha256": "8aac25f9f5e00ac6f33e12df5eb91406cc5752a27fd3f2232325a419b37f09b1"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-actual40metre-walk.json",
+      "bytes": 2315249,
+      "sha256": "1b61336c69b0b0b7ecf05483df4f9dcbb68612ff489319f7832c94fb202158e3"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-consent-OWNER.json",
+      "bytes": 2321331,
+      "sha256": "c1c2bb77310ec4b2f589305505bf0c15049d78c2da37a0ead34c6be9ad9b694d"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-consent-SELF_POWER.json",
+      "bytes": 2333599,
+      "sha256": "432b54349a8f4da3692219c0bfae32126d75fa3717adbc2f204dbbbbc9a0f3e8"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-consent-TECHNICIAN.json",
+      "bytes": 2327471,
+      "sha256": "3908f948ba44fefbe53113b8fd86c0dc33daafd59c9b775451929546f4e123f5"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-current-owner-withdrawal.json",
+      "bytes": 2376860,
+      "sha256": "e40d164fa4c90d0ffbe31066f1398735a249ad5bf8d0a5b03adefcd1719e1051"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-fresh-paid-invitation.json",
+      "bytes": 2309073,
+      "sha256": "03d55469f32aece28302da857b284fb348f6a1b2eb876174b2bde3a3bd8bd8a5"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-honest-report.json",
+      "bytes": 2425555,
+      "sha256": "461f7b4f5e7518123b516473c34bfeea8e6f1b3ff1b6065476d355b4624ec99e"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-observe-original.json",
+      "bytes": 2301109,
+      "sha256": "4dc931c4ada4d0c887d48861e20abb855f70c4a1aed936464175a2c3a46b8a82"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-ordinary-clear-original-door.json",
+      "bytes": 2388984,
+      "sha256": "02b2b5ffce40e104a0de714db9b7210bc76de4d6ca37ff16937c878258bfc258"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-ordinary-safe-handling-after-withdrawal.json",
+      "bytes": 2395112,
+      "sha256": "fe4cd33fce47de37c6bc5c43f96c19d1015bbdd3a7f7c065e0505d31b7e2075f"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-paid-guard-and-real-wear.json",
+      "bytes": 2364673,
+      "sha256": "e2b1365d7b718fbd49995aeca72bf65747a498402f8dc50e10a37007fba06492"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-same-finite-wood-plate.json",
+      "bytes": 2351941,
+      "sha256": "5eb2fb7e85344a129689cf97ec4e3e54daf342b725c0b992711d7e417ff7110e"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-same-original-box-returned.json",
+      "bytes": 2401227,
+      "sha256": "10981eca0ec2fc132f347b4b96f8db58dd3693bfcd711d34cde8220b9dd15011"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-same-original-box.json",
+      "bytes": 2345852,
+      "sha256": "70e88c7a47b264a8a033249cf5dd1e91712326fa40a38cc0045e9ff8fda3cd73"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-same-tray-and-tools-returned.json",
+      "bytes": 2413347,
+      "sha256": "4b312eaedcb6c5b5374cfeaeeb76f856ae58c093f9197fbafee48eefce1efea1"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/boundary-withdrawn-path-same-worn-plate-returned.json",
+      "bytes": 2407247,
+      "sha256": "10bc08dc47bdd217e04cf00b5afd7d81cafbfd1a449fa6b9feee9938f5d9fd2a"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/natural.json",
+      "bytes": 3329692,
+      "sha256": "597112414e673dbb446dd17d860bd88541ca5007f6310d552c41f96b12462ae8"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/snapshot-actualTerminal.json",
+      "bytes": 1828766,
+      "sha256": "349ca0f6d3c714cebb197fe3306537de7751b929751eaf98488b11336bc88e4e"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/snapshot-combatStart.json",
+      "bytes": 1534308,
+      "sha256": "b221d1064e417d02c8ef635836c3d6dfc3b3d8d4035c1d95d9cd74e054bad677"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/snapshot-combatTerminal.json",
+      "bytes": 1828766,
+      "sha256": "349ca0f6d3c714cebb197fe3306537de7751b929751eaf98488b11336bc88e4e"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/snapshot-departure.json",
+      "bytes": 866686,
+      "sha256": "fe7bc20f58f46ef6ae681520f9df468f38681cafa1c09bdf79ccfe73d089308a"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/snapshot-practiced.json",
+      "bytes": 1217515,
+      "sha256": "470d3ae9700186d8488b27663a9c64060053a011cd57bed3a5054a275bf7b6ee"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/snapshot-promoted.json",
+      "bytes": 1048417,
+      "sha256": "a46b07451336cec86c4308bbf318ed86f0c0a38133a13e227a76b8a03ce638eb"
+    },
+    {
+      "path": "tests/fixtures/misfortune-knight-v01910/summary.json",
+      "bytes": 6899,
+      "sha256": "58cad8566e29b34ab498a3b1ae0dc4d825ab9272bb1af3d161387308d9c3cf13"
     },
     {
       "path": "tests/fixtures/misfortune-mage-v01350/boundaries.json",

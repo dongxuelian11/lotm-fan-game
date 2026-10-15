@@ -1,3 +1,4 @@
+import { MISFORTUNE_KNIGHT_ABILITY_IDS } from '../misfortune-knight/types.js';
 import { CONCEALMENT_SERVANT_ABILITY_IDS } from '../concealment-servant/types.js';
 import {FEAR_BISHOP_ABILITY_IDS} from '../fear-bishop/types.js';
 import {NIGHTWATCHER_ABILITY_IDS} from '../nightwatcher/types.js';
@@ -32,7 +33,7 @@ export function createMidnightState(): MidnightState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'darkness' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'darkness' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))));
 const isSleepless = (s: SliceState) => s.progression.pathwayId === 'darkness' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.sleepless.discovered && s.sleepless.guidanceKnown && (isSleepless(s) || promoted(s));
 const potionPrice = (bottle: MidnightBottle) => MIDNIGHT_PRICES.potion - (bottle.labourSteps === 3 ? MIDNIGHT_PRICES.labourCredit : 0);
@@ -192,8 +193,8 @@ export function projectMidnight(s: SliceState): MidnightProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? MIDNIGHT_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))))?(s.nightmare.midnightActingAtPromotion??100):s.progression.acting) : 0,
-    digestion: isPromoted&&(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))))?'午夜诗人阶段已消化，保留原同意、声场与会面记录。':isPromoted ? `不眠者消化成果${s.midnight.sleeplessActingAtPromotion}/100已保留；午夜诗人扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))))?(s.nightmare.midnightActingAtPromotion??100):s.progression.acting) : 0,
+    digestion: isPromoted&&(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))))?'午夜诗人阶段已消化，保留原同意、声场与会面记录。':isPromoted ? `不眠者消化成果${s.midnight.sleeplessActingAtPromotion}/100已保留；午夜诗人扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成不眠者消化（${s.progression.acting}/100），并在首次晋升不眠者后度过4整周（${sleeplessWeeks(s)}/4）。用药指导与原瓶可以提前准备。` : '先走完不眠者之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应三次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${MIDNIGHT_CONSUMPTION_RISK}` : '成为不眠者后，可向原导师了解下一序列。',
@@ -245,7 +246,7 @@ export function validateMidnightState(s: SliceState): boolean {
   if (midnight.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!midnight.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(midnight.promotionWeek, firstConsumptionWeek, s.week) || midnight.sleeplessActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0))))?NIGHTMARE_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?SOOTHER_ABILITY_IDS:[]),...((s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?SPIRIT_WARLOCK_ABILITY_IDS:[]),...(([4, 3, 2].includes(s.progression.sequence ?? 0))?NIGHTWATCHER_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...(s.progression.sequence === 2 ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?MISFORTUNE_KNIGHT_ABILITY_IDS:[]),...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0))))?NIGHTMARE_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?SOOTHER_ABILITY_IDS:[]),...((s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?SPIRIT_WARLOCK_ABILITY_IDS:[]),...(([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?NIGHTWATCHER_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (midnight.promotionWeek !== null || midnight.sleeplessActingAtPromotion !== null || MIDNIGHT_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (midnight.reflected || Object.values(midnight.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null)

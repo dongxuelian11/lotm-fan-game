@@ -61,7 +61,8 @@ describe('Fear Bishop S3 original bottles and explicitly G professional preparat
       const other = structuredClone(s); other.progression.pathwayId = pathwayId;
       expect(projectFearBishop(other).discovered).toBe(false); expect(projectFearBishop(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectFearBishop(other).discovered).toBe(false); }
+    for (const sequence of [9, 8, 7, 6, 5, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectFearBishop(other).discovered).toBe(false); }
+    const forgedS1 = nightwatcher(); forgedS1.progression.sequence = 1; expect(() => assertValidSliceState(forgedS1)).toThrow(TypeError); reject(forgedS1, { type: 'LEARN_GUIDANCE' });
   });
   it('charges500 and one action without inventing a canonical formula, rite or unverified canonical ability', () => {
     const s = nightwatcher(), old = structuredClone([s.sleepless, s.midnight, s.nightmare, s.soother, s.spiritWarlock, s.nightwatcher]);

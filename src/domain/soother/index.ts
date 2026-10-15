@@ -1,3 +1,4 @@
+import { MISFORTUNE_KNIGHT_ABILITY_IDS } from '../misfortune-knight/types.js';
 import { CONCEALMENT_SERVANT_ABILITY_IDS } from '../concealment-servant/types.js';
 import {FEAR_BISHOP_ABILITY_IDS} from '../fear-bishop/types.js';
 import {NIGHTWATCHER_ABILITY_IDS} from '../nightwatcher/types.js';
@@ -33,7 +34,7 @@ export function createSootherState(): SootherState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'darkness' && (s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'darkness' && (s.progression.sequence===6||s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)));
 const isNightmare = (s: SliceState) => s.progression.pathwayId === 'darkness' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.sleepless.discovered && s.sleepless.guidanceKnown && s.midnight.guidanceKnown && s.nightmare.guidanceKnown && s.nightmare.promotionWeek !== null && (isNightmare(s) || promoted(s));
 const potionPrice = (bottle: SootherBottle) => SOOTHER_PRICES.potion - (bottle.labourSteps === 5 ? SOOTHER_PRICES.labourCredit : 0);
@@ -157,7 +158,7 @@ export function applySootherCommand(s: SliceState, command: SootherAcquisitionCo
 
 export function projectSoother(s: SliceState): SootherProjection {
   const actions: SootherAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?s.spiritWarlock.sootherActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?s.spiritWarlock.sootherActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: SootherAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -197,7 +198,7 @@ export function projectSoother(s: SliceState): SootherProjection {
     })) : [],
     abilities: isPromoted ? SOOTHER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: (s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?'安魂师魔药已消化；原安抚、核实与真实结束记录保留。':isPromoted ? `梦魇消化成果${s.soother.nightmareActingAtPromotion}/100已保留；安魂师扮演${acting}/100，能力掌握分别记录。`
+    digestion: (s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?'安魂师魔药已消化；原安抚、核实与真实结束记录保留。':isPromoted ? `梦魇消化成果${s.soother.nightmareActingAtPromotion}/100已保留；安魂师扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成梦魇消化（${s.progression.acting}/100），并在晋升梦魇后度过12整周（${nightmareWeeks(s)}/12）。用药指导与原瓶可以提前准备。` : '先走完梦魇之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应五次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${SOOTHER_CONSUMPTION_RISK}` : '成为梦魇后，可向原导师了解下一序列。',
@@ -248,7 +249,7 @@ export function validateSootherState(s: SliceState): boolean {
   if (soother.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!soother.guidanceKnown || !integer(s.nightmare.promotionWeek, 1, s.week) || !integer(soother.promotionWeek, firstConsumptionWeek, s.week) || soother.nightmareActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS, ...NIGHTMARE_ABILITY_IDS, ...SOOTHER_ABILITY_IDS,...((s.progression.sequence===5||([4, 3, 2].includes(s.progression.sequence ?? 0)))?SPIRIT_WARLOCK_ABILITY_IDS:[]),...(([4, 3, 2].includes(s.progression.sequence ?? 0))?NIGHTWATCHER_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...(s.progression.sequence === 2 ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?MISFORTUNE_KNIGHT_ABILITY_IDS:[]),...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS, ...NIGHTMARE_ABILITY_IDS, ...SOOTHER_ABILITY_IDS,...((s.progression.sequence===5||([4, 3, 2, 1].includes(s.progression.sequence ?? 0)))?SPIRIT_WARLOCK_ABILITY_IDS:[]),...(([4, 3, 2, 1].includes(s.progression.sequence ?? 0))?NIGHTWATCHER_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0) ? FEAR_BISHOP_ABILITY_IDS : []),...((s.progression.sequence === 2||s.progression.sequence===1) ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (soother.promotionWeek !== null || soother.nightmareActingAtPromotion !== null || SOOTHER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (soother.reflected || Object.values(soother.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0 || value.notes.length !== 0 || value.revised)) return false;

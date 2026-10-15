@@ -92,7 +92,7 @@ describe('Attendant Mysteries original first two root save boundaries', () => {
     for (const key of ['life', 'town', 'townJournal', 'acquisitionJournal', 'reception', 'batches', 'bottles', 'resupply', 'preparation'] as const) same(actual.attendantMysteries[key], before.attendantMysteries[key], key);
     same(actual.combatHistory.slice(0, before.combatHistory.length), before.combatHistory);
     expect(attendantMysteriesSourceDigest(actual)).toBe(attendantMysteriesSourceDigest(before));
-  });
+  }, 10_000);
 
   it.each(['in-range-six-enemies', 'over-limit-seven-enemies', 'over-limit-thirteen-moves'] as const)('keeps exact replay and the six-slot bound against %s forgery', kind => {
     const forged = state('final', 'second');

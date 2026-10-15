@@ -1,3 +1,4 @@
+import { MISFORTUNE_KNIGHT_ABILITY_IDS } from '../misfortune-knight/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -27,8 +28,8 @@ export function createFearBishopState(): FearBishopState {
     preparations: [], preparedWeek: null, life: createFearBishopLifeState(), encounter: createFearBishopEncounterState() };
 }
 export const isFearBishop = (s: SliceState) => s.progression.pathwayId === 'darkness' && s.progression.sequence === 3;
-const hasFearBishopHistory = (s: SliceState) => s.progression.pathwayId === 'darkness' && [3, 2].includes(s.progression.sequence ?? 0);
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'darkness' && [4, 3, 2].includes(s.progression.sequence ?? 0) && s.sleepless.discovered && s.nightwatcher.guidanceKnown && s.nightwatcher.promotionWeek !== null;
+const hasFearBishopHistory = (s: SliceState) => s.progression.pathwayId === 'darkness' && [3, 2, 1].includes(s.progression.sequence ?? 0);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'darkness' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.sleepless.discovered && s.nightwatcher.guidanceKnown && s.nightwatcher.promotionWeek !== null;
 export const hasFearBishopLock = (s: SliceState): boolean => s.fearBishop.preparedWeek !== null || hasFearBishopLifeLock(s) || hasFearBishopEncounterLock(s);
 const bottleNumber = (b: Pick<FearBishopBottle, 'id'>) => Number(b.id.slice('fear-bishop-potion-'.length));
 const potionPrice = (b: FearBishopBottle) => FEAR_BISHOP_PRICES.potion - (b.labourSteps === FEAR_BISHOP_LABOUR_STEPS ? FEAR_BISHOP_PRICES.labourCredit : 0);
@@ -163,7 +164,7 @@ export function applyFearBishopCommand(s: SliceState, command: FearBishopCommand
 
 export function projectFearBishop(s: SliceState): FearBishopProjection {
   const state = s.fearBishop, available = knownChannel(s), promoted = hasFearBishopHistory(s), actions: FearBishopAction[] = [];
-  const acting = promoted ? (s.progression.sequence === 2 ? s.concealmentServant.fearBishopActingAtPromotion ?? 0 : s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence === 2||s.progression.sequence===1) ? s.concealmentServant.fearBishopActingAtPromotion ?? 0 : s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: FearBishopAcquisitionCommand) => { const reason = fearBishopAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-fear-bishop-guidance', '听取恐惧主教成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -186,7 +187,7 @@ export function projectFearBishop(s: SliceState): FearBishopProjection {
     title: promoted ? '恐惧主教 · 序列3' : '恐惧主教之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${FEAR_BISHOP_FORMULA_STATUS}${FEAR_BISHOP_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...fearBishopLifeActions(s), ...fearBishopEncounterActions(s)] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...fearBishopLifeActions(s), ...fearBishopEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 恐惧主教成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为守夜人' : '排异，仍为守夜人'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? FEAR_BISHOP_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? FEAR_BISHOP_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
@@ -215,7 +216,7 @@ function validateState(s: SliceState): boolean {
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'nightwatcherActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
   const state = raw as unknown as FearBishopState, promoted = hasFearBishopHistory(s), firstWeek = s.nightwatcher.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + FEAR_BISHOP_MIN_NIGHTWATCHER_WEEKS;
-  if (s.progression.pathwayId === 'darkness' && s.progression.sequence === 2 && s.concealmentServant.fearBishopActingAtPromotion !== 100) return false;
+  if (s.progression.pathwayId === 'darkness' && (s.progression.sequence === 2||s.progression.sequence===1) && s.concealmentServant.fearBishopActingAtPromotion !== 100) return false;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !FEAR_BISHOP_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
@@ -223,7 +224,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasFearBishopLifeLock(s) || hasFearBishopEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.nightwatcher.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.nightwatcherActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS, ...NIGHTMARE_ABILITY_IDS, ...SOOTHER_ABILITY_IDS, ...SPIRIT_WARLOCK_ABILITY_IDS, ...NIGHTWATCHER_ABILITY_IDS, ...FEAR_BISHOP_ABILITY_IDS, ...(s.progression.sequence === 2 ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?MISFORTUNE_KNIGHT_ABILITY_IDS:[]),...SLEEPLESS_ABILITY_IDS, ...MIDNIGHT_ABILITY_IDS, ...NIGHTMARE_ABILITY_IDS, ...SOOTHER_ABILITY_IDS, ...SPIRIT_WARLOCK_ABILITY_IDS, ...NIGHTWATCHER_ABILITY_IDS, ...FEAR_BISHOP_ABILITY_IDS, ...((s.progression.sequence === 2||s.progression.sequence===1) ? CONCEALMENT_SERVANT_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.nightwatcherActingAtPromotion !== null || FEAR_BISHOP_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

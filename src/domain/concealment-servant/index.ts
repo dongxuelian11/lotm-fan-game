@@ -1,3 +1,4 @@
+import { MISFORTUNE_KNIGHT_ABILITY_IDS } from '../misfortune-knight/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -33,9 +34,9 @@ export function createConcealmentServantState(): ConcealmentServantState {
 /** Historical membership never broadens the exact current-stage action guards. */
 export const isConcealmentServant = (s: SliceState) => s.progression.pathwayId === 'darkness' && s.progression.sequence === 2;
 export const isConcealmentServantAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'darkness' && s.progression.sequence === 3;
-export const hasConcealmentServantHistory = (s: SliceState) => isConcealmentServant(s) && s.concealmentServant.promotionWeek !== null;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'darkness' && [3, 2].includes(s.progression.sequence ?? 0) && s.sleepless.discovered && s.fearBishop.guidanceKnown && s.fearBishop.promotionWeek !== null;
-export const hasConcealmentServantLock = (s: SliceState): boolean => s.concealmentServant.preparedWeek !== null || hasConcealmentServantLifeLock(s) || hasConcealmentServantEncounterLock(s);
+export const hasConcealmentServantHistory = (s: SliceState) => (isConcealmentServant(s)||(s.progression.pathwayId==='darkness'&&s.progression.sequence===1)) && s.concealmentServant.promotionWeek !== null;
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'darkness' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.sleepless.discovered && s.fearBishop.guidanceKnown && s.fearBishop.promotionWeek !== null;
+export const hasConcealmentServantLock = (s: SliceState): boolean => s.progression.pathwayId === 'darkness' && (s.progression.sequence === 3 || s.progression.sequence === 2) && (s.concealmentServant.preparedWeek !== null || hasConcealmentServantLifeLock(s) || hasConcealmentServantEncounterLock(s));
 const bottleNumber = (b: Pick<ConcealmentServantBottle, 'id'>) => Number(b.id.slice('concealment-servant-potion-'.length));
 const potionPrice = (b: ConcealmentServantBottle) => CONCEALMENT_SERVANT_PRICES.potion - (b.labourSteps === CONCEALMENT_SERVANT_LABOUR_STEPS ? CONCEALMENT_SERVANT_PRICES.labourCredit : 0);
 const fearBishopWeeks = (s: SliceState) => Math.max(0, (s.concealmentServant.promotionWeek ?? s.week) - (s.fearBishop.promotionWeek ?? s.week));
@@ -176,7 +177,7 @@ export function applyConcealmentServantCommand(s: SliceState, command: Concealme
 }
 
 export function projectConcealmentServant(s: SliceState): ConcealmentServantProjection {
-  const state = s.concealmentServant, available = knownChannel(s), promoted = isConcealmentServant(s), actions: ConcealmentServantAction[] = [];
+  const state = s.concealmentServant, available = knownChannel(s), promoted = hasConcealmentServantHistory(s), actions: ConcealmentServantAction[] = [];
   const add = (id: string, label: string, cost: string, command: ConcealmentServantAcquisitionCommand) => {
     const reason = concealmentServantAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -201,7 +202,7 @@ export function projectConcealmentServant(s: SliceState): ConcealmentServantProj
     title: promoted ? '隐秘之仆 · 序列2候选G' : '隐秘之仆之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${CONCEALMENT_SERVANT_FORMULA_STATUS}${CONCEALMENT_SERVANT_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或本瓶五项真实劳动后800便士；现有全部失败耗尽才可花1行动申请，跨真实周到货仍须逐瓶实际付费。` : '',
-    actions: available ? [...actions, ...(promoted ? [...concealmentServantLifeActions(s), ...concealmentServantEncounterActions(s)] : [])] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...(promoted ? [...concealmentServantLifeActions(s), ...concealmentServantEncounterActions(s)] : [])] : [],
     bottles: available ? state.bottles.map(b => ({
       id: b.id, title: `第${bottleNumber(b)}瓶 · 隐秘之仆独立成品魔药`,
       source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`,
@@ -211,8 +212,8 @@ export function projectConcealmentServant(s: SliceState): ConcealmentServantProj
     preparations: available ? CONCEALMENT_SERVANT_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [],
     preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? CONCEALMENT_SERVANT_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0,
-    digestion: promoted ? `恐惧主教消化${state.fearBishopActingAtPromotion}/100留存；隐秘之仆扮演${s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖掌握。旧三案与旧反思不重复记为本阶经历。` : available ? `恐惧主教需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${fearBishopWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完恐惧主教之路。',
+    acting: promoted ? (s.progression.sequence===1?s.misfortuneKnight.concealmentServantActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `恐惧主教消化${state.fearBishopActingAtPromotion}/100留存；隐秘之仆扮演${s.progression.sequence===1?s.misfortuneKnight.concealmentServantActingAtPromotion:s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖掌握。旧三案与旧反思不重复记为本阶经历。` : available ? `恐惧主教需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${fearBishopWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完恐惧主教之路。',
     pollution: s.seer.pollution, risk: available ? CONCEALMENT_SERVANT_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -238,7 +239,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.concealmentServant;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'fearBishopActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as ConcealmentServantState, promoted = isConcealmentServant(s), acquisitionStage = isConcealmentServantAcquisitionStage(s);
+  const state = raw as unknown as ConcealmentServantState, promoted = hasConcealmentServantHistory(s), acquisitionStage = isConcealmentServantAcquisitionStage(s);
   const firstWeek = s.fearBishop.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + CONCEALMENT_SERVANT_MIN_FEAR_BISHOP_WEEKS, lastAcquisitionWeek = state.promotionWeek ?? s.week;
   if (state.guidanceKnown && (!knownChannel(s) || !integer(s.fearBishop.promotionWeek, 1, s.week))) return false;
   if (acquisitionStage && (!shape(s.progression.mastery, INHERITED_ABILITY_IDS) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500)))) return false;
@@ -248,7 +249,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || !acquisitionStage || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || s.status !== 'ACTIVE' || s.health <= 20 || s.mind <= 40 || s.world.city !== 'BACKLUND' || s.activeEvent !== null || s.combat !== null || oldSceneOpen(s) || hasConcealmentServantLifeLock(s) || hasConcealmentServantEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.fearBishop.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.fearBishopActingAtPromotion !== 100 || state.preparedWeek !== null || state.resupply.requestedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...INHERITED_ABILITY_IDS, ...CONCEALMENT_SERVANT_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?MISFORTUNE_KNIGHT_ABILITY_IDS:[]), ...INHERITED_ABILITY_IDS, ...CONCEALMENT_SERVANT_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.fearBishopActingAtPromotion !== null || CONCEALMENT_SERVANT_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

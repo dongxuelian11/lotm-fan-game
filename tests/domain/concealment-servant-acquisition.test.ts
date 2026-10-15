@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
-import { createSliceRun } from '../../src/domain/slice/index.js';
+import { createSliceRun, assertValidSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import type { SeerContext } from '../../src/domain/seer/index.js';
@@ -51,16 +51,17 @@ describe('Concealment Servant S2 independent acquisition and source boundaries',
     expect(Object.keys(old.progression.mastery)).toHaveLength(16); expect(s.fearBishop).toEqual(old.fearBishop);
     expect(validateConcealmentServantState(s)).toBe(true); expect(projectConcealmentServant(s).digestion).toContain('8/12');
   });
-  it('creates isolated initial originals and hides the source outside current S3/S2 history', () => {
+  it('creates isolated initial originals and hides the source outside implemented Darkness history', () => {
     const s = createSliceRun('concealment-hidden', sliceDefaultCreationSelection, 'concealment-hidden');
     expect(projectConcealmentServant(s)).toMatchObject({ discovered: false, guidanceKnown: false, promoted: false, formulaKnown: false, formula: [], actions: [], bottles: [], abilities: [], resources: null });
     expect(projectConcealmentServant(s).story).toBeUndefined(); reject(s, { type: 'LEARN_GUIDANCE' });
     const other = createConcealmentServantState(); other.bottles[0]!.labourSteps = 5;
     expect(s.concealmentServant.bottles[0]!.labourSteps).toBe(0); expect(validateConcealmentServantState(s)).toBe(true);
-    for (const sequence of [9, 8, 7, 6, 5, 4, 1, 0]) {
+    for (const sequence of [9, 8, 7, 6, 5, 4, 0]) {
       const t = fearBishop(); t.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>;
       expect(projectConcealmentServant(t).discovered).toBe(false); reject(t, { type: 'LEARN_GUIDANCE' });
     }
+    const forgedS1 = fearBishop(); forgedS1.progression.sequence = 1; expect(() => assertValidSliceState(forgedS1)).toThrow(TypeError); reject(forgedS1, { type: 'LEARN_GUIDANCE' });
     const t = fearBishop(); t.progression.pathwayId = 'diviner'; expect(projectConcealmentServant(t).discovered).toBe(false); reject(t, { type: 'LEARN_GUIDANCE' });
   });
   it('separates high-confidence name inference, verified direction, unknown formula and original G numbers', () => {
