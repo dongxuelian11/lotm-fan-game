@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.193.0 阶段版
+# 诡秘之主同人游戏 · 0.194.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者与水手已有有限序列1基础；其余14条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手与太阳已有有限序列1基础；其余13条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -115,6 +115,8 @@ node --expose-gc scripts/play/entropy-duke-save.mjs --key directed --source-dire
 
 ## 当前验证与限制
 
+194增量：太阳新增有限序列1纯白天使。原729条活档实际诊疗休养后同种子续至853条，首瓶晋升；净光一次实际清除原残留，温光未应用的零掌握如实保留。独立可选战一轮对手投降，玩家无伤沿原路退出再工作。127个命名保存边界、125种不同转换已完整通过SQLite专项。原物耗损、失效窗口及验证范围详见[纯白天使阶段记录](docs/PURE_WHITE_ANGEL_PLAYABLE_STAGE.md)。
+
 193增量：水手新增有限序列1雷神。原599条和平活档继续，三次药败后真实补货、第四瓶晋升，原小湾引导与护持各有一次实际应用。可选战10轮玩家死亡，原602条死亡分支保留。旧原物、正常收束与真实代价详见[雷神阶段记录](docs/THUNDER_GOD_PLAYABLE_STAGE.md)。
 
 191增量：黑夜新增有限序列1厄难骑士。沿原518条和平活档继续，第三瓶成功晋升；同一原盒接取与校准轻触中，两项新技巧各实际应用一次，撤回许可后仍可普通收束。可选新敌交战九轮后玩家死亡，保留实际伤势、资源和死亡终档。详见[厄难骑士阶段记录](docs/MISFORTUNE_KNIGHT_PLAYABLE_STAGE.md)。
@@ -226,3 +228,13 @@ node --expose-gc scripts/play/thunder-god-save.mjs --expected-boundaries 222
 ```
 
 这些输入保留原599条活分支、原602条死亡记录以及本次820条独立死亡分支。可选战斗失败仍为终档；输入恢复只用于验证，不改变玩家存档。
+
+纯白天使专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix light-seeker-v01720 --only-prefix pure-white-angel-v01940
+npm run typecheck
+npx vitest run tests/domain/pure-white-angel-acquisition.test.ts tests/domain/pure-white-angel-life.test.ts tests/domain/pure-white-angel-combat.test.ts tests/domain/pure-white-angel-inheritance.test.ts tests/domain/pure-white-angel-shared.test.ts tests/domain/pure-white-angel-natural.test.ts tests/domain/pure-white-angel-save.test.ts tests/renderer/pure-white-angel-panel.test.tsx tests/renderer/pure-white-angel-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/pure-white-angel-save.mjs --expected-boundaries 127
+```

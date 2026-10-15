@@ -1,3 +1,4 @@
+import { PURE_WHITE_ANGEL_ABILITY_IDS } from '../pure-white-angel/types.js';
 import { LIGHT_SEEKER_ABILITY_IDS } from '../light-seeker/types.js';
 import {JUSTICE_MENTOR_ABILITY_IDS} from '../justice-mentor/types.js';
 import {UNSHADOWED_ABILITY_IDS} from '../unshadowed/types.js';
@@ -44,7 +45,7 @@ export function createNotaryState(): NotaryState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'sun' && (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'sun' && (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isSunpriest = (s: SliceState) => s.progression.pathwayId === 'sun' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.bard.discovered && s.bard.guidanceKnown && s.lightprayer.guidanceKnown && s.sunpriest.formulaKnown && (isSunpriest(s) || promoted(s));
 const materialPrice = (batch: NotaryBatch) => NOTARY_PRICES.auxiliaryMaterials + (batch.labourSteps === NOTARY_LABOUR_STEPS ? 0 : NOTARY_PRICES.mainMaterials);
@@ -231,8 +232,8 @@ export function projectNotary(s: SliceState): NotaryProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? NOTARY_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.priestOfLight.notaryActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'公证人魔药已消化；原契约、本人签名与实际原尺归还记录保留。':isPromoted ? `太阳神官消化成果${s.notary.sunpriestActingAtPromotion}/100已保留；公证人扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?s.priestOfLight.notaryActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?'公证人魔药已消化；原契约、本人签名与实际原尺归还记录保留。':isPromoted ? `太阳神官消化成果${s.notary.sunpriestActingAtPromotion}/100已保留；公证人扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成太阳神官消化（${s.progression.acting}/100），并在太阳神官晋升后度过12整周（${sunpriestWeeks(s)}/12）。配方与材料可以提前准备。` : '先走完太阳神官之路。',
     pollution: s.seer.pollution,
     cases: isPromoted ? notaryCases(s) : [], insideCase: notaryInside(s), environment: NOTARY_ENVIRONMENT,
@@ -271,7 +272,7 @@ export function validNotaryState(s: SliceState): boolean {
   if (f.formulaKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!f.formulaKnown || !integer(s.sunpriest.promotionWeek, 1, s.week) || !integer(f.promotionWeek, firstConsumptionWeek, s.week) || f.sunpriestActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...BARD_ABILITY_IDS, ...LIGHTPRAYER_ABILITY_IDS, ...SUNPRIEST_ABILITY_IDS, ...NOTARY_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?PRIEST_OF_LIGHT_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?UNSHADOWED_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?JUSTICE_MENTOR_ABILITY_IDS:[]),...(s.progression.sequence===2?LIGHT_SEEKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PURE_WHITE_ANGEL_ABILITY_IDS:[]),...BARD_ABILITY_IDS, ...LIGHTPRAYER_ABILITY_IDS, ...SUNPRIEST_ABILITY_IDS, ...NOTARY_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?PRIEST_OF_LIGHT_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?UNSHADOWED_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?JUSTICE_MENTOR_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?LIGHT_SEEKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
     if (f.encounter.attemptWeek !== null && f.encounter.attemptWeek < f.promotionWeek) return false;
   } else {
     if (f.reflected || !record(f.cases) || Object.values(f.cases).some(r => !record(r) || r.status !== 'AVAILABLE' || r.attemptWeek !== null || r.method !== null || r.outcome !== 'NONE' || r.withdrawals !== 0 || r.contactOpen || r.closes !== 0 || r.notes !== 0 || r.revised)) return false;

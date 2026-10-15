@@ -1,3 +1,4 @@
+import { PURE_WHITE_ANGEL_ABILITY_IDS } from '../pure-white-angel/types.js';
 import { LIGHT_SEEKER_ABILITY_IDS } from '../light-seeker/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
@@ -29,8 +30,8 @@ export function createJusticeMentorState(): JusticeMentorState {
     preparations: [], preparedWeek: null, life: createJusticeMentorLifeState(), encounter: createJusticeMentorEncounterState() };
 }
 export const isJusticeMentor = (s: SliceState) => s.progression.pathwayId === 'sun' && s.progression.sequence === 3;
-export const hasJusticeMentorHistory = (s: SliceState) => s.progression.pathwayId === 'sun' && [3, 2].includes(s.progression.sequence ?? 0);
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'sun' && [4, 3, 2].includes(s.progression.sequence ?? 0) && s.bard.discovered && s.unshadowed.formulaKnown && s.unshadowed.promotionWeek !== null;
+export const hasJusticeMentorHistory = (s: SliceState) => s.progression.pathwayId === 'sun' && [3, 2, 1].includes(s.progression.sequence ?? 0);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'sun' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.bard.discovered && s.unshadowed.formulaKnown && s.unshadowed.promotionWeek !== null;
 export const hasJusticeMentorLock = (s: SliceState): boolean => s.justiceMentor.preparedWeek !== null || hasJusticeMentorLifeLock(s) || hasJusticeMentorEncounterLock(s);
 const bottleNumber = (b: Pick<JusticeMentorBottle, 'id'>) => Number(b.id.slice('justice-mentor-potion-'.length));
 const potionPrice = (b: JusticeMentorBottle) => JUSTICE_MENTOR_PRICES.potion - (b.labourSteps === JUSTICE_MENTOR_LABOUR_STEPS ? JUSTICE_MENTOR_PRICES.labourCredit : 0);
@@ -164,7 +165,7 @@ export function applyJusticeMentorCommand(s: SliceState, command: JusticeMentorC
 
 export function projectJusticeMentor(s: SliceState): JusticeMentorProjection {
   const state = s.justiceMentor, available = knownChannel(s), promoted = hasJusticeMentorHistory(s), actions: JusticeMentorAction[] = [];
-  const acting = promoted ? (s.progression.sequence === 2 ? s.lightSeeker.justiceMentorActingAtPromotion ?? 100 : s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence === 2||s.progression.sequence===1) ? s.lightSeeker.justiceMentorActingAtPromotion ?? 100 : s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: JusticeMentorAcquisitionCommand) => { const reason = justiceMentorAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-justice-mentor-guidance', '听取正义导师成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -187,7 +188,7 @@ export function projectJusticeMentor(s: SliceState): JusticeMentorProjection {
     title: '正义导师·太阳序列3（合作与核实G）', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${JUSTICE_MENTOR_FORMULA_STATUS}${JUSTICE_MENTOR_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...justiceMentorLifeActions(s), ...justiceMentorEncounterActions(s)] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...justiceMentorLifeActions(s), ...justiceMentorEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 正义导师成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为无暗者' : '排异，仍为无暗者'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? JUSTICE_MENTOR_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? JUSTICE_MENTOR_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
@@ -197,7 +198,7 @@ export function projectJusticeMentor(s: SliceState): JusticeMentorProjection {
     currentGender: s.character.gender,
     inheritedHistory: available ? [
       `无暗者第${s.unshadowed.promotionWeek}周真实晋升；${promoted ? `原消化${state.unshadowedActingAtPromotion}/100留存` : `当前消化${s.progression.acting}/100`}。`,
-      s.progression.sequence === 2 ? '歌颂者至正义导师的旧能力、掌握、原瓶与真实经历保留。正义导师消化100已经留存；已回输的原情感、原人物与原物仍按各自的真实结果保存，旧实践与旧遭遇只供回看。' : '歌颂者至无暗者的全部原ID、掌握、原瓶、同一原情感与回输记录、原人物原物及真实后果保留。正义导师3名称有原文依据，两项新增玩法与全部定量为本作G；下一逐光者2仅作者卷末总结名称已核，本阶段不开放。身体性别不改变，没有善恶雷达、强制契约或法律身份。',
+      (s.progression.sequence === 2||s.progression.sequence===1) ? '歌颂者至正义导师的旧能力、掌握、原瓶与真实经历保留。正义导师消化100已经留存；已回输的原情感、原人物与原物仍按各自的真实结果保存，旧实践与旧遭遇只供回看。' : '歌颂者至无暗者的全部原ID、掌握、原瓶、同一原情感与回输记录、原人物原物及真实后果保留。正义导师3名称有原文依据，两项新增玩法与全部定量为本作G；下一逐光者2仅作者卷末总结名称已核，本阶段不开放。身体性别不改变，没有善恶雷达、强制契约或法律身份。',
       `原奥尔登${s.unshadowed.life.ally.id}：${s.unshadowed.life.ally.alive ? '仍活着' : '已死亡'}，仍在${s.unshadowed.life.ally.location}，真实退出/返回${s.unshadowed.life.ally.moves}/${s.unshadowed.life.ally.returns}次；旧同意不代替新案许可。`,
       `原特性${s.unshadowed.life.characteristic.id}数量${s.unshadowed.life.characteristic.quantity}、归${s.unshadowed.life.characteristic.owner}，污染${s.unshadowed.life.characteristic.contamination}；原盒${s.unshadowed.life.characteristic.boxId}封存状态${s.unshadowed.life.characteristic.containment}。`,
       `原石板${s.unshadowed.life.tile.id}保留${s.unshadowed.life.tile.scorchMarks}处焦痕、已实际冷却${s.unshadowed.life.tile.coolingSeconds}秒，当前${s.unshadowed.life.tile.heat}；原门${s.unshadowed.life.room.doorId}仍为普通通路，曾实际出入${s.unshadowed.life.room.stepsOut}/${s.unshadowed.life.room.stepsIn}次。`,
@@ -225,7 +226,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasJusticeMentorLifeLock(s) || hasJusticeMentorEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.unshadowed.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.unshadowedActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...BARD_ABILITY_IDS, ...LIGHTPRAYER_ABILITY_IDS, ...SUNPRIEST_ABILITY_IDS, ...NOTARY_ABILITY_IDS, ...PRIEST_OF_LIGHT_ABILITY_IDS, ...UNSHADOWED_ABILITY_IDS, ...JUSTICE_MENTOR_ABILITY_IDS, ...(s.progression.sequence === 2 ? LIGHT_SEEKER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PURE_WHITE_ANGEL_ABILITY_IDS:[]),...BARD_ABILITY_IDS, ...LIGHTPRAYER_ABILITY_IDS, ...SUNPRIEST_ABILITY_IDS, ...NOTARY_ABILITY_IDS, ...PRIEST_OF_LIGHT_ABILITY_IDS, ...UNSHADOWED_ABILITY_IDS, ...JUSTICE_MENTOR_ABILITY_IDS, ...((s.progression.sequence === 2||s.progression.sequence===1) ? LIGHT_SEEKER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.unshadowedActingAtPromotion !== null || JUSTICE_MENTOR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

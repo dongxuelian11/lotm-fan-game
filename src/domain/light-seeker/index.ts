@@ -1,3 +1,4 @@
+import { PURE_WHITE_ANGEL_ABILITY_IDS } from '../pure-white-angel/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -36,9 +37,9 @@ export function createLightSeekerState(): LightSeekerState {
 /** Historical membership never broadens the exact current-stage action guards. */
 export const isLightSeeker = (s: SliceState) => s.progression.pathwayId === 'sun' && s.progression.sequence === 2;
 export const isLightSeekerAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'sun' && s.progression.sequence === 3;
-export const hasLightSeekerHistory = (s: SliceState) => isLightSeeker(s) && s.lightSeeker.promotionWeek !== null;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'sun' && [3, 2].includes(s.progression.sequence ?? 0) && s.bard.discovered && s.justiceMentor.guidanceKnown && s.justiceMentor.promotionWeek !== null;
-export const hasLightSeekerLock = (s: SliceState): boolean => s.lightSeeker.preparedWeek !== null || hasLightSeekerLifeLock(s) || hasLightSeekerEncounterLock(s);
+export const hasLightSeekerHistory = (s: SliceState) => (isLightSeeker(s)||(s.progression.pathwayId==='sun'&&s.progression.sequence===1)) && s.lightSeeker.promotionWeek !== null;
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'sun' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.bard.discovered && s.justiceMentor.guidanceKnown && s.justiceMentor.promotionWeek !== null;
+export const hasLightSeekerLock = (s: SliceState): boolean => s.progression.pathwayId==='sun' && [3,2].includes(s.progression.sequence??0) && (s.lightSeeker.preparedWeek !== null || hasLightSeekerLifeLock(s) || hasLightSeekerEncounterLock(s));
 const bottleNumber = (b: Pick<LightSeekerBottle, 'id'>) => Number(b.id.slice('light-seeker-potion-'.length));
 const potionPrice = (b: LightSeekerBottle) => LIGHT_SEEKER_PRICES.potion - (b.labourSteps === LIGHT_SEEKER_LABOUR_STEPS ? LIGHT_SEEKER_PRICES.labourCredit : 0);
 const justiceMentorWeeks = (s: SliceState) => Math.max(0, (s.lightSeeker.promotionWeek ?? s.week) - (s.justiceMentor.promotionWeek ?? s.week));
@@ -178,7 +179,7 @@ export function applyLightSeekerCommand(s: SliceState, command: LightSeekerComma
 }
 
 export function projectLightSeeker(s: SliceState): LightSeekerProjection {
-  const state = s.lightSeeker, available = knownChannel(s), promoted = isLightSeeker(s), actions: LightSeekerAction[] = [];
+  const state = s.lightSeeker, available = knownChannel(s), promoted = hasLightSeekerHistory(s), actions: LightSeekerAction[] = [];
   const add = (id: string, label: string, cost: string, command: LightSeekerAcquisitionCommand) => {
     const reason = lightSeekerAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -203,7 +204,7 @@ export function projectLightSeeker(s: SliceState): LightSeekerProjection {
     title: promoted ? '逐光者 · 太阳序列2' : '逐光者之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${LIGHT_SEEKER_FORMULA_STATUS}${LIGHT_SEEKER_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或本瓶五项真实劳动后800便士；现有全部失败耗尽才可花1行动申请，跨真实周到货仍须逐瓶实际付费。` : '',
-    actions: available ? [...actions, ...(promoted ? [...lightSeekerLifeActions(s), ...lightSeekerEncounterActions(s)] : [])] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...(promoted ? [...lightSeekerLifeActions(s), ...lightSeekerEncounterActions(s)] : [])] : [],
     bottles: available ? state.bottles.map(b => ({
       id: b.id, title: `第${bottleNumber(b)}瓶 · 逐光者独立成品魔药`,
       source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`,
@@ -213,8 +214,8 @@ export function projectLightSeeker(s: SliceState): LightSeekerProjection {
     preparations: available ? LIGHT_SEEKER_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [],
     preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? LIGHT_SEEKER_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0,
-    digestion: promoted ? `正义导师消化${state.justiceMentorActingAtPromotion}/100留存；逐光者扮演${s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖。旧三案与旧反思不重复记为本阶经历。` : available ? `正义导师需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${justiceMentorWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完正义导师之路。',
+    acting: promoted ? (s.progression.sequence===1?s.pureWhiteAngel.lightSeekerActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `正义导师消化${state.justiceMentorActingAtPromotion}/100留存；逐光者扮演${s.progression.sequence===1?s.pureWhiteAngel.lightSeekerActingAtPromotion:s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖。旧三案与旧反思不重复记为本阶经历。` : available ? `正义导师需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${justiceMentorWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完正义导师之路。',
     pollution: s.seer.pollution, risk: available ? LIGHT_SEEKER_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -241,7 +242,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.lightSeeker;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'justiceMentorActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as LightSeekerState, promoted = isLightSeeker(s), acquisitionStage = isLightSeekerAcquisitionStage(s);
+  const state = raw as unknown as LightSeekerState, promoted = hasLightSeekerHistory(s), acquisitionStage = isLightSeekerAcquisitionStage(s);
   const firstWeek = s.justiceMentor.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + LIGHT_SEEKER_MIN_JUSTICE_MENTOR_WEEKS, lastAcquisitionWeek = state.promotionWeek ?? s.week;
   if (state.guidanceKnown && (!knownChannel(s) || !integer(s.justiceMentor.promotionWeek, 1, s.week))) return false;
   if (acquisitionStage && (!shape(s.progression.mastery, INHERITED_ABILITY_IDS) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500)))) return false;
@@ -251,7 +252,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || !acquisitionStage || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || s.status !== 'ACTIVE' || s.health <= 20 || s.mind <= 40 || s.world.city !== 'BACKLUND' || s.activeEvent !== null || s.combat !== null || hasLightSeekerOldSceneLock(s) || hasLightSeekerLifeLock(s) || hasLightSeekerEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.justiceMentor.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.justiceMentorActingAtPromotion !== 100 || state.preparedWeek !== null || state.resupply.requestedWeek !== null || !hasPreparations(s) || hasLightSeekerOldSceneLock(s)) return false;
-    if (!shape(s.progression.mastery, [...INHERITED_ABILITY_IDS, ...LIGHT_SEEKER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PURE_WHITE_ANGEL_ABILITY_IDS:[]), ...INHERITED_ABILITY_IDS, ...LIGHT_SEEKER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.justiceMentorActingAtPromotion !== null || LIGHT_SEEKER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

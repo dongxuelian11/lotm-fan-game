@@ -1,3 +1,4 @@
+import { PURE_WHITE_ANGEL_ABILITY_IDS } from '../pure-white-angel/types.js';
 import { LIGHT_SEEKER_ABILITY_IDS } from '../light-seeker/types.js';
 import {JUSTICE_MENTOR_ABILITY_IDS} from '../justice-mentor/types.js';
 import {UNSHADOWED_ABILITY_IDS} from '../unshadowed/types.js';
@@ -47,7 +48,7 @@ export function createPriestOfLightState(): PriestOfLightState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'sun' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'sun' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isNotary = (s: SliceState) => s.progression.pathwayId === 'sun' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.bard.discovered && s.bard.guidanceKnown && s.lightprayer.guidanceKnown && s.sunpriest.formulaKnown && s.notary.formulaKnown && s.notary.promotionWeek !== null && (isNotary(s) || promoted(s));
 const materialPrice = (batch: PriestOfLightBatch) => PRIEST_OF_LIGHT_PRICES.auxiliaryMaterials + (batch.labourSteps === PRIEST_OF_LIGHT_LABOUR_STEPS ? 0 : PRIEST_OF_LIGHT_PRICES.mainMaterials);
@@ -297,8 +298,8 @@ export function projectPriestOfLight(s: SliceState): PriestOfLightProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? PRIEST_OF_LIGHT_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.unshadowed.priestOfLightActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?'光之祭司魔药已消化；原冰、原灯与旧善后结果保留，能力掌握仍按实际使用记录。':isPromoted ? `公证人消化成果${s.priestOfLight.notaryActingAtPromotion}/100已保留；光之祭司扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?s.unshadowed.priestOfLightActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?'光之祭司魔药已消化；原冰、原灯与旧善后结果保留，能力掌握仍按实际使用记录。':isPromoted ? `公证人消化成果${s.priestOfLight.notaryActingAtPromotion}/100已保留；光之祭司扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成公证人消化（${s.progression.acting}/100），并在公证人晋升后度过12整周（${notaryWeeks(s)}/12）。配方与材料可以提前准备。` : '先走完公证人之路。',
     pollution: s.seer.pollution,
     cases: [], insideCase: priestOfLightInside(s), environment: '',
@@ -346,7 +347,7 @@ export function validPriestOfLightState(s: SliceState): boolean {
   if (f.formulaKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!f.formulaKnown || !integer(s.notary.promotionWeek, 1, s.week) || !integer(f.promotionWeek, firstConsumptionWeek, s.week) || f.notaryActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...BARD_ABILITY_IDS, ...LIGHTPRAYER_ABILITY_IDS, ...SUNPRIEST_ABILITY_IDS, ...NOTARY_ABILITY_IDS, ...PRIEST_OF_LIGHT_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?UNSHADOWED_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?JUSTICE_MENTOR_ABILITY_IDS:[]),...(s.progression.sequence===2?LIGHT_SEEKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PURE_WHITE_ANGEL_ABILITY_IDS:[]),...BARD_ABILITY_IDS, ...LIGHTPRAYER_ABILITY_IDS, ...SUNPRIEST_ABILITY_IDS, ...NOTARY_ABILITY_IDS, ...PRIEST_OF_LIGHT_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?UNSHADOWED_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?JUSTICE_MENTOR_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?LIGHT_SEEKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
     if (f.encounter.attemptWeek !== null && f.encounter.attemptWeek < f.promotionWeek) return false;
   } else {
     if (f.promotionWeek !== null || f.notaryActingAtPromotion !== null || PRIEST_OF_LIGHT_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;

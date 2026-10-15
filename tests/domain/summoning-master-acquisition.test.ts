@@ -60,9 +60,9 @@ describe('Summoning Master S3 original bottles and explicitly G professional pre
       const other = structuredClone(s); other.progression.pathwayId = pathwayId;
       expect(projectSummoningMaster(other).discovered).toBe(false); expect(projectSummoningMaster(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectSummoningMaster(other).discovered).toBe(false); }
+    for (const sequence of [9, 8, 7, 6, 5, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectSummoningMaster(other).discovered).toBe(false); }
   });
-  it('keeps S2 as read-only inherited S3 history without reopening acquisition', () => { const s=witchKing();s.progression.sequence=2;expect(projectSummoningMaster(s).discovered).toBe(true);expect(projectSummoningMaster(s).actions).toEqual([]);reject(s,{type:'LEARN_GUIDANCE'}); });
+  it.each([2, 1] as const)('keeps S%s as read-only inherited S3 history without reopening acquisition', (sequence) => { const s=witchKing();s.progression.sequence=sequence;expect(projectSummoningMaster(s).discovered).toBe(true);expect(projectSummoningMaster(s).actions).toEqual([]);reject(s,{type:'LEARN_GUIDANCE'}); });
   it('charges500 and one action without inventing a canonical formula, rite or unverified canonical ability', () => {
     const s = witchKing(), old = structuredClone([s.apothecary, s.tamer, s.vampire, s.potionProfessor, s.crimsonScholar, s.witchKing]);
     apply(s, { type: 'LEARN_GUIDANCE' });

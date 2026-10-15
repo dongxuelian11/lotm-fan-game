@@ -10,6 +10,7 @@ import { hasUnshadowedRitualLock, validateUnshadowedRitualState } from '../../sr
 import { applyJusticeMentorAcquisition, applyJusticeMentorCommand, createJusticeMentorState, hasJusticeMentorLock, isJusticeMentorAcquisitionCommand, projectJusticeMentor, validateJusticeMentorCommand, validateJusticeMentorState, justiceMentorAcquisitionBlock } from '../../src/domain/justice-mentor/index.js';
 import { JUSTICE_MENTOR_CONSUMPTION_RISK, JUSTICE_MENTOR_FORMULA_STATUS, JUSTICE_MENTOR_PRICES, JUSTICE_MENTOR_SOURCE_STATUS } from '../../src/domain/justice-mentor/content.js';
 import { JUSTICE_MENTOR_ABILITY_IDS, JUSTICE_MENTOR_PREPARATION_IDS, type JusticeMentorAcquisitionCommand } from '../../src/domain/justice-mentor/types.js';
+import { readObjectEntry } from '../helpers/read-object-entry.js';
 
 /** Genuine 440-command unshadowed-v01250 end-state; later time/resources are explicit unit setup, never natural-play evidence. */
 function unshadowed(): SliceState {
@@ -60,7 +61,31 @@ describe('Justice Mentor S3 original bottles and explicitly G professional prepa
       const other = structuredClone(s); other.progression.pathwayId = pathwayId;
       expect(projectJusticeMentor(other).discovered).toBe(false); expect(projectJusticeMentor(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectJusticeMentor(other).discovered).toBe(false); }
+    for (const sequence of [9, 8, 7, 6, 5, 0]) {
+      const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>;
+      expect(projectJusticeMentor(other).discovered).toBe(false); expect(projectJusticeMentor(other).actions).toEqual([]);
+      reject(other, { type: 'LEARN_GUIDANCE' });
+    }
+  });
+  it('keeps genuine Sun S1 Justice Mentor history read-only without reopening old actions', () => {
+    const s = migrateSliceState(readObjectEntry<unknown>('tests/fixtures/pure-white-angel-v01940/natural.json', 'final'));
+    assertValidSliceState(s);
+    expect(s.progression).toMatchObject({ pathwayId: 'sun', sequence: 1 });
+    const before = structuredClone(s), view = projectJusticeMentor(s);
+    expect(view).toMatchObject({ discovered: true, promoted: true, guidanceKnown: true, acting: 100, actions: [] });
+    expect(view.bottles.map(bottle => bottle.id)).toEqual(s.justiceMentor.bottles.map(bottle => bottle.id));
+    expect(view.abilities.map(ability => ability.id)).toEqual(JUSTICE_MENTOR_ABILITY_IDS);
+    expect(s.justiceMentor).toEqual(s.pureWhiteAngel.sourceHistory!.justiceMentor);
+    expect(s).toEqual(before);
+    for (const command of [
+      { type: 'LEARN_GUIDANCE' }, { type: 'PREPARE_PROMOTION' },
+      { type: 'BUY_POTION', bottleId: s.justiceMentor.bottles[0]!.id }, dose(s),
+    ] as const) reject(s, command);
+    for (const command of [{ type: 'REFLECT' }, { type: 'ENCOUNTER_TALK' }, { type: 'ENCOUNTER_FIGHT' }] as const) {
+      const c = context(s);
+      expect(() => applyJusticeMentorCommand(s, command, c)).toThrow(); expect(s).toEqual(before);
+      expect(c.check).not.toHaveBeenCalled(); expect(c.roll).not.toHaveBeenCalled();
+    }
   });
   it('charges500 and one action while separating verifiedS3 from unknown full recipe and rite', () => {
     const s = unshadowed(), old = structuredClone([s.bard, s.lightprayer, s.sunpriest, s.notary, s.priestOfLight, s.unshadowed]);

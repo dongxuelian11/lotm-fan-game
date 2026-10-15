@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
-import { createSliceRun } from '../../src/domain/slice/index.js';
+import { assertValidSliceState, createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import type { SeerContext } from '../../src/domain/seer/index.js';
@@ -61,13 +61,43 @@ describe('LightSeeker S2 independent acquisition and exact inherited source boun
     const other = createLightSeekerState(); other.bottles[0]!.labourSteps = 5; other.life.site.lamp.oil = 0;
     expect(s.lightSeeker.bottles[0]!.labourSteps).toBe(0); expect(s.lightSeeker.life.site.lamp.oil).toBe(3);
     expect(validateLightSeekerState(s)).toBe(true);
-    for (const sequence of [9, 8, 7, 6, 5, 4, 1, 0]) {
+    for (const sequence of [9, 8, 7, 6, 5, 4, 0]) {
       const t = justiceMentor(); t.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>;
-      expect(projectLightSeeker(t).discovered).toBe(false); reject(t, { type: 'LEARN_GUIDANCE' });
+      expect(projectLightSeeker(t).discovered).toBe(false); expect(projectLightSeeker(t).actions).toEqual([]);
+      reject(t, { type: 'LEARN_GUIDANCE' });
     }
     for (const pathwayId of ['diviner', 'hunter', 'audience', 'paragon', 'moon', 'darkness', 'white-tower', 'tyrant', 'death', 'door', 'error', 'warrior', 'demoness', 'hermit', 'hanged-man', 'abyss', 'chained', 'wheel', 'black-emperor', 'justiciar', 'mother'] as const) {
       const t = justiceMentor(); t.progression.pathwayId = pathwayId;
-      expect(projectLightSeeker(t).discovered, pathwayId).toBe(false); reject(t, { type: 'LEARN_GUIDANCE' });
+      expect(projectLightSeeker(t).discovered, pathwayId).toBe(false); expect(projectLightSeeker(t).actions).toEqual([]);
+      reject(t, { type: 'LEARN_GUIDANCE' });
+    }
+  });
+  it('keeps genuine Sun S1 LightSeeker history read-only without reopening old actions', () => {
+    const s = migrateSliceState(readObjectEntry<unknown>('tests/fixtures/pure-white-angel-v01940/natural.json', 'final'));
+    assertValidSliceState(s);
+    expect(s.progression).toMatchObject({ pathwayId: 'sun', sequence: 1 });
+    expect(hasLightSeekerHistory(s)).toBe(true); expect(isLightSeeker(s)).toBe(false);
+    expect(isLightSeekerAcquisitionStage(s)).toBe(false);
+    const before = structuredClone(s), view = projectLightSeeker(s);
+    expect(view).toMatchObject({ discovered: true, promoted: true, guidanceKnown: true, acting: 100, actions: [] });
+    expect(view.bottles.map(bottle => bottle.id)).toEqual(s.lightSeeker.bottles.map(bottle => bottle.id));
+    expect(view.abilities.map(ability => ability.id)).toEqual(LIGHT_SEEKER_ABILITY_IDS);
+    // New S1 practice legitimately changes the same live gallery; only its
+    // frozen source snapshot represents the original S2 site history.
+    const history = structuredClone(s.lightSeeker);
+    history.life.site = structuredClone(s.pureWhiteAngel.sourceHistory!.lightSeeker.life.site);
+    expect(history).toEqual(s.pureWhiteAngel.sourceHistory!.lightSeeker);
+    expect(s.lightSeeker.life.site).toEqual(before.lightSeeker.life.site);
+    expect(s.pureWhiteAngel.sourceHistory).toEqual(before.pureWhiteAngel.sourceHistory);
+    expect(s).toEqual(before);
+    for (const command of [
+      { type: 'LEARN_GUIDANCE' }, { type: 'PREPARE_PROMOTION' },
+      { type: 'BUY_POTION', bottleId: s.lightSeeker.bottles[0]!.id }, dose(s),
+    ] as const) reject(s, command);
+    for (const command of [{ type: 'REFLECT' }, { type: 'ENCOUNTER_TALK' }, { type: 'ENCOUNTER_FIGHT' }] as const) {
+      const c = context(s);
+      expect(() => applyLightSeekerCommand(s, command, c)).toThrow(); expect(s).toEqual(before);
+      expect(c.check).not.toHaveBeenCalled(); expect(c.roll).not.toHaveBeenCalled(); expect(c.note).not.toHaveBeenCalled();
     }
   });
   it('charges real guidance and preserves original scene and real costs', () => {

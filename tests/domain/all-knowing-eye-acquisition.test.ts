@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { assertValidSliceState, createSliceRun } from '../../src/domain/slice/index.js';
@@ -44,7 +45,7 @@ describe('All-Knowing Eye original source: raw evidence is separate from migrati
   }, 60_000);
   it('explicitly migrates all historical inputs and preserves eight roots,19 skills and five zeros', () => {
     const raw = readObjectEntry<SliceState>(wisdomAngelBranchPath, 'beforeLast'), s = originalWisdomAngel();
-    expect(s).toMatchObject({ schemaVersion: 189, contentVersion: 'all-knowing-eye-v189', status: 'ACTIVE', revision: 538 });
+    expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION, status: 'ACTIVE', revision: 538 });
     expect(s.allKnowingEye).toEqual(createAllKnowingEyeState()); expect(originalReaderRoots(s)).toEqual(originalReaderRoots(raw));
     expect(s.character).toEqual(raw.character); expect(s.progression).toEqual(raw.progression); expect(s.combatHistory).toEqual(raw.combatHistory);
     expect(Object.keys(s.progression.mastery)).toEqual([...ALL_KNOWING_EYE_INHERITED_ABILITY_IDS]); expect(Object.values(s.progression.mastery).filter(n => n === 0)).toHaveLength(5);

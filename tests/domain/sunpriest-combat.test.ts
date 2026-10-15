@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { PURE_WHITE_ANGEL_COUNT_WHEEL, pureWhiteAngelAbilityWheel } from '../../src/domain/pure-white-angel/combat.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { ORDINARY_COUNT_WHEEL, ordinaryAbilityWheel, playerAbilityWheel, playerCountWheel,
@@ -135,7 +136,11 @@ describe('Sunpriest S7 confirmed Sun D-profile', () => {
     expect(isSunpriest(state)).toBe(false); expect(isBard(state)).toBe(true);
     expect(playerCountWheel(state)).toEqual(BARD_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'ATTACK')).toEqual(bardAbilityWheel('ATTACK'));
-    for (const [pathwayId, sequence] of [[null, null], ['sun', 1], ['moon', 9], ['paragon', 9]] as const) {
+    state.progression.pathwayId = 'sun'; state.progression.sequence = 1;
+    expect(isSunpriest(state)).toBe(false); expect(isBard(state)).toBe(false);
+    expect(playerCountWheel(state)).toEqual(PURE_WHITE_ANGEL_COUNT_WHEEL);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(pureWhiteAngelAbilityWheel(state, 'CONTROL'));
+    for (const [pathwayId, sequence] of [[null, null], ['sun', 0], ['moon', 9], ['paragon', 9]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isSunpriest(state)).toBe(false);
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);

@@ -1,3 +1,4 @@
+import { PURE_WHITE_ANGEL_ABILITY_IDS } from '../pure-white-angel/types.js';
 import { LIGHT_SEEKER_ABILITY_IDS } from '../light-seeker/types.js';
 import {JUSTICE_MENTOR_ABILITY_IDS} from '../justice-mentor/types.js';
 import {UNSHADOWED_ABILITY_IDS} from '../unshadowed/types.js';
@@ -31,7 +32,7 @@ export function createLightprayerState(): LightprayerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'sun' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'sun' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const isBard = (s: SliceState) => s.progression.pathwayId === 'sun' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.bard.discovered && s.bard.guidanceKnown && (isBard(s) || promoted(s));
 const potionPrice = (bottle: LightprayerBottle) => LIGHTPRAYER_PRICES.potion - (bottle.labourSteps === 3 ? LIGHTPRAYER_PRICES.labourCredit : 0);
@@ -192,8 +193,8 @@ export function projectLightprayer(s: SliceState): LightprayerProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? LIGHTPRAYER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?(s.sunpriest.lightprayerActingAtPromotion??100):s.progression.acting) : 0,
-    digestion: isPromoted ? `歌颂者消化成果${s.lightprayer.bardActingAtPromotion}/100已保留；祈光人扮演${(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?(s.sunpriest.lightprayerActingAtPromotion??100):s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?(s.sunpriest.lightprayerActingAtPromotion??100):s.progression.acting) : 0,
+    digestion: isPromoted ? `歌颂者消化成果${s.lightprayer.bardActingAtPromotion}/100已保留；祈光人扮演${(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?(s.sunpriest.lightprayerActingAtPromotion??100):s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成歌颂者消化（${s.progression.acting}/100），并在首次晋升歌颂者后度过4整周（${bardWeeks(s)}/4）。用药指导与原瓶可以提前准备。` : '先走完歌颂者之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应三次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${LIGHTPRAYER_CONSUMPTION_RISK}` : '成为歌颂者后，可向原导师了解下一序列。',
@@ -243,7 +244,7 @@ export function validateLightprayerState(s: SliceState): boolean {
   if (lightprayer.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!lightprayer.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(lightprayer.promotionWeek, firstConsumptionWeek, s.week) || lightprayer.bardActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...BARD_ABILITY_IDS, ...LIGHTPRAYER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?SUNPRIEST_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?NOTARY_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?PRIEST_OF_LIGHT_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?UNSHADOWED_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?JUSTICE_MENTOR_ABILITY_IDS:[]),...(s.progression.sequence===2?LIGHT_SEEKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PURE_WHITE_ANGEL_ABILITY_IDS:[]),...BARD_ABILITY_IDS, ...LIGHTPRAYER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?SUNPRIEST_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?NOTARY_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?PRIEST_OF_LIGHT_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?UNSHADOWED_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?JUSTICE_MENTOR_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?LIGHT_SEEKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (lightprayer.promotionWeek !== null || lightprayer.bardActingAtPromotion !== null || LIGHTPRAYER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (lightprayer.reflected || Object.values(lightprayer.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0)) return false;
