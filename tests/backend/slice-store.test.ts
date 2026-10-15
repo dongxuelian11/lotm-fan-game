@@ -201,7 +201,8 @@ describe("slice canonical storage", () => {
     db.close();
     const before = readFileSync(file);
     expect(() => open(file)).toThrow(NewerSliceSaveError);
-    expect(readFileSync(file)).toEqual(before);
+    // Native byte equality checks length and contents without expanding each byte into object entries.
+    expect(readFileSync(file).equals(before)).toBe(true);
   });
   it("migrates the explicit v1 storage schema without changing domain or random state", () => {
     const file = path(),
