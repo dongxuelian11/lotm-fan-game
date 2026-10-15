@@ -1,0 +1,31 @@
+// Optional cloud QA: actual production main entry, UI clicks, quit and relaunch.
+const { _electron: electron } = require('/opt/codex/cua_node/lib/node_modules/playwright');
+const assert = require('node:assert/strict');
+const { mkdtempSync } = require('node:fs');
+const { tmpdir } = require('node:os');
+const { join, resolve } = require('node:path');
+(async () => {
+  const userData = mkdtempSync(join(tmpdir(), 'lotm-production-ui-'));
+  const launch = () => electron.launch({ executablePath: require('electron'), args: [resolve(process.env.LOTM_APP_PATH || '.')], env: { ...process.env, LOTM_TEST_USER_DATA: userData } });
+  let app = await launch();
+  let page = await app.firstWindow();
+  await page.getByRole('button', { name: /新建角色/ }).click();
+  for(let i=0; i<5; i++) await page.getByRole('button', {name: '下一步'}).click();
+  await page.getByRole('button', {name: '确认，开始生活'}).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByRole('button').last().click();
+  await page.getByRole('button', {name: /工作，1行动/}).click();
+  const before = await page.evaluate(async () => { const r=await window.sliceGame.getBootstrap(); if(!r.ok) throw Error(r.error.message); return r.value.activeState; });
+  assert.equal(before.actionsRemaining, 2);
+  await page.screenshot({path: 'output/slice-ui/desktop-production-1600.png'});
+  await app.close();
+  app = await launch(); page = await app.firstWindow();
+  await page.getByRole('button', {name: /继续游戏/}).click();
+  await page.getByRole('button', {name: /生活进行中/}).click();
+  await page.getByRole('heading', {name: '人物卷宗'}).waitFor();
+  const after = await page.evaluate(async () => (await window.sliceGame.getBootstrap()).value.activeState);
+  assert.deepEqual(after,before);
+  assert(!await page.getByText('浏览器试玩：刷新页面会重置进度。', {exact:true}).count());
+  await app.close();
+  console.log('PRODUCTION_MAIN_UI_RESTART_PASS');
+})().catch(e=>{console.error(e);process.exit(1)});

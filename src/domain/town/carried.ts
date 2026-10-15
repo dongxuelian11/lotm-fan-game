@@ -1,0 +1,45 @@
+import {tamerFeedItems} from '../tamer/animals.js';
+import type {SliceState} from '../slice/types.js';
+import type {TownProjection} from './types.js';
+/** Read-only summaries of existing originals; this never creates another inventory. */
+export function appendPathwayItems(s:SliceState,p:TownProjection):void{
+ if(s.lucky.cases['loose-receipt']?.contactOpen)p.items.push({id:'LU7-RECEIPT-01',label:'艾妲的原收据',quantity:1,description:'只获准本次核对，须实际放回原柜台，不能出售或当作战利品。',owner:'BORROWED',location:'HAND',equipped:false});
+ if(s.prisoner.cases['jammed-shutter']?.holding)p.items.push({id:'PR9-STOP-01',label:'借用的原木撑',quantity:1,description:'所有人哈伦·维斯，只借本次撑窗，须0行动当面交还；不是战斗装备，不能出售。',owner:'BORROWED',location:'HAND',equipped:false});
+ if(s.assassin.draft.custodian==='PLAYER')p.items.push({id:s.assassin.draft.id,label:'受托取回的原夹纸',quantity:1,description:'所有人仍是诺艾拉·温瑟，未拆开或出售。实际返程后到她本人面前交还。',owner:'BORROWED',location:'HAND',equipped:false});
+ if(s.warrior.practiceClub.custodian==='PLAYER')p.items.push({id:s.warrior.practiceClub.id,label:'借用的原训练短棍',quantity:1,description:`所有人仍为${s.warrior.practiceClub.owner}，未赠与或出售。${s.status==='DEAD'?'原棍留本人遗体手中。':'当前实际持握，须在战士成长中沿原路交还。'}`,owner:'BORROWED',location:'HAND',equipped:s.status!=='DEAD'});
+ if(s.notary.contract.tool==='PLAYER')p.items.push({id:'NT6-MEASURE-1',label:'米菈的原量尺',quantity:1,description:'只借本次核对，仍属原教堂工房；须实际放回原桌，不是武器或战利品。',owner:'BORROWED',location:'HAND',equipped:false});
+ const add=(id:string,label:string,quantity:number,description:string)=>{if(quantity>0)p.items.push({id,label,quantity,description,owner:'PLAYER',location:'BAG',equipped:false});};
+ for(const x of s.witchKing.life.papers)if(x.status!=='CONSUMED')add(x.id,x.status==='PREPARED'?'已准备的同一月亮原纸':'未准备的月亮原纸',1,`${x.source}；第${x.purchasedWeek}周购买，${x.status==='PREPARED'?'已实际准备、下次J槽可使用':'尚未准备，不会自动替身'}。使用即耗，不复制。`);
+ for(const x of s.alchemist.life.creations)if(x.location==='PLAYER')add(x.id,x.kind==='MESSENGER_BOX'?'本人亲手制造的原小轮盒':'本人亲手制造的原护架',1,`${x.source}。储能${x.charge}/3，耐久${x.durability}/100；同一原件，不因打开行囊复制或补充。`);
+ for(const [label,module] of [['诡法师',s.bizarroSorcerer],['光之祭司',s.priestOfLight],['秘偶大师',s.marionettist],['欢愉魔女',s.pleasure],['公证人',s.notary],['无面人',s.faceless],['贿赂者',s.briber],['野蛮人',s.barbarian],['女巫',s.witch],['戏法大师',s.trickmaster],['太阳神官',s.sunpriest],['魔术师',s.magician],['占卜家',s.seer],['小丑',s.clown],['观众',s.audience],['读心者',s.mindreader]] as const){
+  for(const batch of module.batches)if(batch.acquired&&!batch.brewed)add(batch.id,`${label}原材料包`,1,`${batch.materials.map(m=>`${m.name}${m.quantity}${m.unit}`).join('、')}。原批${batch.id}；到非凡成长中调配，未消耗前继续保留。`);
+  for(const bottle of module.bottles)if(bottle.status==='PREPARED')add(bottle.id,`${label}魔药原瓶`,1,`第${bottle.brewedWeek}周用原批${bottle.batchId}调配；尚未服用。到非凡成长中独立确认，打开行囊不会自动服药。`);
+ }
+ for(const [label,module] of [['秽语长老',s.elder],['贤者',s.sage],['抬棺人',s.coffinBearer],['混乱猎手',s.chaosHunter],['狂乱法师',s.frenzyMage],['候选混乱行者',s.chaosWalker],['沉默门徒',s.silentDisciple],['呓语者',s.blatherer],['三首圣堂',s.threeHeadedTemplar],['预言大师',s.prophecyMaster],['不老魔女',s.unagingDemoness],['古代炼金师',s.ancientAlchemist],['律令法师',s.imperativeMage],['堕落伯爵',s.fallenEarl],['厄运法师',s.misfortuneMage],['木偶',s.puppet],['魔鬼',s.devil],['黑骑士',s.blackKnight],['神秘学家',s.mystic],['绝望魔女',s.despair],['猎魔者',s.demonHunter],['寄生者',s.parasite],['秘法师',s.secretsSorcerer],['不死者',s.undying],['无暗者',s.unshadowed],['灾难主祭',s.cataclysmPriest],['预言家',s.prophet],['守夜人',s.nightwatcher],['巫王',s.witchKing],['炼金术士',s.alchemist],['铁血骑士',s.ironBloodKnight],['德鲁伊',s.druid],['惩戒骑士',s.punishmentKnight],['混乱导师',s.mentorDisorder],['赢家',s.winner],['怨魂',s.wraith],['欲望使徒',s.desireApostle],['牧羊人',s.shepherd],['星象师',s.starMystic],['痛苦魔女',s.pain],['守护者',s.guardian],['窃梦家',s.dreamStealer],['旅行家',s.traveler],['看门人',s.gatekeeper],['海洋歌者',s.oceanSinger],['秘术导师',s.mysticismMagister],['灵巫',s.spiritWarlock],['深红学者',s.crimsonScholar],['天文学家',s.astronomer],['梦境行者',s.dreamwalker],['收割者',s.reaper],['生物学家',s.biologist],['法官',s.judge],['腐化男爵',s.corruptionBaron],['灾祸教士',s.calamityPriest],['活尸',s.zombie],['恶魔',s.demon],['蔷薇主教',s.roseBishop],['卷轴教授',s.scrollProfessor],['黎明骑士',s.dawnPaladin],['盗火人',s.fireThief],['记录官',s.recorder],['死灵导师',s.spiritGuide],['风眷者',s.windBlessed],['博学者',s.polymath],['安魂师',s.soother],['魔药教授',s.potionProfessor],['工匠',s.artisan],['催眠师',s.hypnotist],['阴谋家',s.conspirator],['丰收祭司',s.harvestpriest],['医师',s.physician],['耕种者',s.cultivator],['审讯者',s.interrogator],['治安官',s.sheriff],['仲裁人',s.arbiter],['律师',s.lawyer],['幸运者',s.lucky],['机器',s.machine],['怪物',s.monster],['狼人',s.werewolf],['疯子',s.madman],['囚犯',s.prisoner],['连环杀手',s.serialKiller],['折翼天使',s.unwinged],['罪犯',s.criminal],['隐修士',s.shadowAscetic],['倾听者',s.listener],['秘祈人',s.secretSupplicant],['巫师',s.wizard],['格斗学者',s.combatScholar],['窥秘人',s.pryer],['教唆者',s.instigator],['刺客',s.assassin],['武器大师',s.weaponmaster],['格斗家',s.gladiator],['战士',s.warrior],['解密学者',s.cryptologist],['诈骗师',s.swindler],['偷盗者',s.marauder],['占星人',s.astrologer],['学徒',s.apprentice],['通灵者',s.spiritmedium],['掘墓人',s.gravedigger],['收尸人',s.corpsecollector],['祈光人',s.lightprayer],['歌颂者',s.bard],['航海家',s.navigator],['暴怒之民',s.rager],['水手',s.sailor],['守知者',s.detective],['推理学员',s.reasoner],['阅读者',s.reader],['梦魇',s.nightmare],['午夜诗人',s.midnight],['不眠者',s.sleepless],['吸血鬼',s.vampire],['鉴定师',s.appraiser],['心理医生',s.psychologist],['纵火家',s.pyromaniac],['驯兽师',s.tamer],['药师',s.apothecary],['考古学家',s.archaeologist],['通识者',s.savant],['猎人',s.hunter],['挑衅者',s.provoker]] as const)for(const bottle of module.bottles)if(bottle.status==='PLAYER')add(bottle.id,`${label}魔药原瓶`,1,`${bottle.source}；尚未服用，到非凡成长中独立确认。`);
+ for(const batch of s.manipulator.batches){for(const item of batch.materials)if(item.holder==='PLAYER')add(item.id,item.name,item.quantity,item.source);for(const tear of batch.tears)if(tear.holder==='PLAYER')add(tear.id,'不同原人物的自愿泪水原滴',1,`第${tear.collectedWeek}周${tear.donorId}在${tear.eventId}自愿提供，属于原批${batch.id}。`);}
+ for(const bottle of s.manipulator.bottles)if(bottle.status==='PLAYER')add(bottle.id,'操纵师魔药原瓶',1,`第${bottle.brewedWeek}周消耗原批${bottle.batchId}的真实材料与七滴不同来源泪水制成；尚未服用。`);
+ if(s.bizarroSorcerer.promotionWeek!==null){const l=s.bizarroSorcerer.life;add(l.practice.carrier.id,'原小携笼',1,`同一原小笼由本人实际携带；原鼠${l.mouse.status}、所在${l.mouse.location}，原1克纸签所在${l.practice.tag.holder}。小鼠不承担人类负载或武器，笼中身体不自动布置到战场。`);}
+ for(const packet of s.roseBishop.reserve.packets)if(packet.status==='HELD')add(packet.id,'原封非人类来源补给',1,`第${packet.acquiredWeek}周实际购买的本作G封装动物供给，服用后原件消耗，仅补有限储备，不直接治疗。`);
+ if(s.starMystic.practice.lenses!=='SUPPLIER')add('SM5-LENS-1','原厚眼镜',1,s.starMystic.practice.lenses==='WORN'?'实际戴着，收束额外视觉。':'实际拿在手中，须收束后戴回。');
+ for(const material of s.scrollProfessor.workshop.materials)if(material.status==='HELD')add(material.id,'卷轴工房原灵材份额',1,`第${material.acquiredWeek}周真实购入，每份只能刻制一次；本作封装虚构灵材。`);
+ for(const scroll of s.scrollProfessor.workshop.scrolls)if(scroll.status==='HELD')add(scroll.id,scroll.kind==='IMPACT'?'自制原冲力卷轴':'自制原短护卷轴',1,`第${scroll.createdWeek}周由原材料${scroll.materialId}实际刻制，刻录掌握${scroll.inscriptionMastery}；${scroll.authorized?'已明确允许匹配战斗槽消耗一次':'未授权自动用于战斗'}。`);
+ for(const item of tamerFeedItems(s))add(item.id,item.label,item.quantity,'由原饲养者交付、只适用于这一只动物的原饲料；实际训练后减少。');
+ for(const bottle of s.potionProfessor.laboratory.potions)if(bottle.status==='PLAYER')add(bottle.id,`魔药教授辅助药剂 · ${bottle.kind}`,1,bottle.source+'；原瓶使用后实际耗尽，不自动用于战斗。');
+ add('potion-professor-materials','封装虚构灵性材料',s.potionProfessor.laboratory.materials,'本次教学材料包实际交付，每份只调配一次，不提供现实配方。');
+ add('vampire-blood-supply','成年自愿来源原封饮食',s.vampire.blood.held,'实际取得的本作G供给，与辅助药剂分开。');
+ if(s.artisan.workshop.lamp?.location==='PLAYER')add(s.artisan.workshop.lamp.id,'自制原微光灯片',1,`本人按已知图纸与实际灵性材料制成，仅有限照明，剩余${s.artisan.workshop.lamp.charges}次，不是战斗装备。`);
+ for(const gift of s.briber.gifts)if(gift.location==='PLAYER')add(gift.id,'已购原木筹',1,'本人真实购买的独立原小物，给出后留在实际去向，不自动退回或额外复制。');
+ add('physician-dressings','医师已购原敷料',s.physician.clinic.dressings,'真实购入的本作普通照护材料，使用后实际减少，不是魔药原料。');
+ add('harvestpriest-yield','伊芙原畦赠与的有限收获',s.harvestpriest.plot.produce,'本次原畦经过实际照护和等待后的有限3份作物，交出部分不回流。');
+ add('cultivator-harvest','本人原箱收获的叶菜',s.cultivator.garden.produce,'实际播种与跨周照护后收取，交出部分不会恢复；本场普通作物，不是魔药材料。');
+ add('witch-powder','已购虚构术式粉剂',s.witch.tools.powderHeld,'原工具包实际交付；有限术式用后消耗，不是现实粉剂配方。');
+ add('witch-mirrors','原小镜',s.witch.tools.mirrorsHeld,s.witch.tools.mirrorPrepared?'其中一面已明确备给替身，成功触发后碎裂。':'原工具包实际交付，须明确准备后才用于战斗替身。');
+ add('sunpriest-holy-water','本次制备的圣水原瓶',s.sunpriest.holyWater.held,'由本人在原社区见证下以本次原清水与原瓶实际制备；仅用于本作有限隔离案，使用后消耗。');
+ add('apothecary-healing','药师外伤护理剂',s.apothecary.clinic.healing,'本人以诊所虚构封装药基制备的游戏药剂；使用后实际消耗，不是现实配方。');
+ add('apothecary-calming','药师安神剂',s.apothecary.clinic.calming,'本人实际制备的虚构药剂；仅用于已查看的配合护理情境，不是心智控制。');
+ add('apothecary-materials','诊所封装药基',s.apothecary.clinic.materials,'有来源的虚构游戏耗材，每份只能制备一次；不是魔药主材或现实配药说明。');
+ add('magician-figurines','已剪制纸人',s.magician.figurinesHeld,'由随身原纸逐张剪制；战斗替身使用后实际消耗。');
+ add('magician-oil','原封灯油份额',s.magician.lantern.oilHeld,'购买的有限灯油，备灯时消耗；点燃不会创造另一份油。');
+ add('clown-carried-paper','小丑随身纸张',s.clown.paperSheets,'原有已购买纸张；纸飞刀实际消耗后同步减少。');
+ add('hunter-carried-trap','猎人未部署陷阱材料',s.hunter.trapHeld,'原有已购买材料；在已知场景部署后不再算随身持有，消耗不会自动补回。');
+}
