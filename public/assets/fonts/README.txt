@@ -1,0 +1,2 @@
+Slice Sans SC is an OFL-1.1 subset of Noto Sans CJK SC regular/bold, drawn from Debian-installed Noto CJK. It includes every character in the playable application source at import time, plus Latin-1, general punctuation, CJK punctuation and full-width characters. Other player-name glyphs use local Noto Sans CJK SC, Microsoft YaHei or system sans. Original project: https://github.com/notofonts/noto-cjk
+The font family was renamed after subsetting. No network font request is needed. See OFL.txt.
