@@ -325,7 +325,7 @@ describe('Lucky shared consequences, retreat, old-profile isolation and replay',
   });
 
   it('leaves Monster, Machine and ordinary wheels, draws, source guards and budgets isolated', () => {
-    for (const sequence of [9, 8, 2, null] as const) {
+    for (const sequence of [9, 8, 1, null] as const) {
       const state = fixture(); state.progression.sequence = sequence;
       state.progression.mastery[passive] = 500;
       expect(isLucky(state)).toBe(false); expect(currentLuckyCombatSource(state)).toBeNull();

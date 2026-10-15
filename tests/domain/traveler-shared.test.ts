@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -29,7 +30,7 @@ describe('Traveler real public chain',()=>{
  });
  it('preserves original first-case carrier independently of Belan',()=>{const c=read('traveler-stage-natural');expect(c.combatStart.combat.encounterId).toBe('TRAVELER_DISPUTE');expect(c.final.world.carrierAlive).toBe(c.combatStart.world.carrierAlive);});
  it('migrates 0.104 preserving every prior field',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/gatekeeper-v01040/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
+  const old=JSON.parse(readFileSync('tests/fixtures/gatekeeper-v01040/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

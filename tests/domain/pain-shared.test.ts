@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -24,7 +25,7 @@ describe('Pain real public chain',()=>{
   const p=projectSliceState(s);expect(p.pain.abilities.filter(a=>a.id.startsWith('assassin.s5.')).map(a=>a.id)).toEqual(['assassin.s5.disease']);
  });
  it('migrates0.107 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/guardian-v01070/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
+  const old=JSON.parse(readFileSync('tests/fixtures/guardian-v01070/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

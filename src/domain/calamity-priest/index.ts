@@ -1,3 +1,4 @@
+import { FATE_PROPHET_ABILITY_IDS } from '../fate-prophet/types.js';
 import {CHAOS_WALKER_ABILITY_IDS} from '../chaos-walker/types.js';
 import {MISFORTUNE_MAGE_ABILITY_IDS} from '../misfortune-mage/types.js';
 import {WINNER_ABILITY_IDS} from '../winner/types.js';
@@ -33,7 +34,7 @@ export function createCalamityPriestState(): CalamityPriestState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'wheel' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'wheel' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
 const isLucky = (s: SliceState) => s.progression.pathwayId === 'wheel' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.monster.discovered && s.monster.guidanceKnown && s.machine.guidanceKnown && s.lucky.guidanceKnown && s.lucky.promotionWeek !== null && (isLucky(s) || promoted(s));
 const potionPrice = (bottle: CalamityPriestBottle) => CALAMITY_PRIEST_PRICES.potion - (bottle.labourSteps === 5 ? CALAMITY_PRIEST_PRICES.labourCredit : 0);
@@ -158,7 +159,7 @@ export function applyCalamityPriestCommand(s: SliceState, command: CalamityPries
 
 export function projectCalamityPriest(s: SliceState): CalamityPriestProjection {
   const actions: CalamityPriestAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.winner.calamityPriestActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.winner.calamityPriestActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: CalamityPriestAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -250,7 +251,7 @@ export function validateCalamityPriestState(s: SliceState): boolean {
   if (calamityPriest.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!calamityPriest.guidanceKnown || !integer(s.lucky.promotionWeek, 1, s.week) || !integer(calamityPriest.promotionWeek, firstConsumptionWeek, s.week) || calamityPriest.luckyActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...MONSTER_ABILITY_IDS, ...MACHINE_ABILITY_IDS, ...LUCKY_ABILITY_IDS, ...CALAMITY_PRIEST_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?WINNER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?MISFORTUNE_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===3?CHAOS_WALKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...MONSTER_ABILITY_IDS, ...MACHINE_ABILITY_IDS, ...LUCKY_ABILITY_IDS, ...CALAMITY_PRIEST_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?WINNER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?MISFORTUNE_MAGE_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?CHAOS_WALKER_ABILITY_IDS:[]),...(s.progression.sequence===2?FATE_PROPHET_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (calamityPriest.promotionWeek !== null || calamityPriest.luckyActingAtPromotion !== null || CALAMITY_PRIEST_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (calamityPriest.reflected || Object.values(calamityPriest.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -36,7 +37,7 @@ describe('Knowledge Mentor S2 paid acquisition and exact seventeen-plus-two inhe
     const legacy = readObjectEntry<Record<string, unknown>>('tests/fixtures/discerner-v01660/natural.json', 'final');
     expect(legacy.schemaVersion).toBe(163); expect(legacy).not.toHaveProperty('knowledgeMentor');
     const bytes = JSON.stringify(legacy), s = migrateSliceState(legacy); assertValidSliceState(s);
-    expect(s.knowledgeMentor).toEqual(createKnowledgeMentorState()); expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177');
+    expect(s.knowledgeMentor).toEqual(createKnowledgeMentorState()); expect(s.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(s.contentVersion).toBe(CURRENT_CONTENT_VERSION);
     for (const [key, value] of Object.entries(legacy)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key], key).toEqual(value);
     expect(JSON.stringify(legacy)).toBe(bytes);
     expect(() => migrateSliceState({ ...legacy, knowledgeMentor: createKnowledgeMentorState() })).toThrow();

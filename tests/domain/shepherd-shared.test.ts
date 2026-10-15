@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -28,7 +29,7 @@ describe('Shepherd real public chain',()=>{
   expect(()=>applySliceIntent(s,{type:'COMBAT_ROUND',stance:'CONTROL',shepherdSpiritId:'SH5-CEDRIC-1'})).toThrow();expect(s).toEqual(before);
  });
  it('migrates0.109 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/star-mystic-v01090/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
+  const old=JSON.parse(readFileSync('tests/fixtures/star-mystic-v01090/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

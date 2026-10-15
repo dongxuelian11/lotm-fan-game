@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { applySliceIntent, assertValidSliceState, createSliceRun, projectSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
@@ -35,7 +36,7 @@ describe('Ancient Evil inherited Chained originals and immutable history', () =>
     let replay = createSliceRun(old.runId, creation, seed);
     for (const command of commands) replay = applySliceIntent(replay, command);
     const s = originalSilentDisciple(); expect(replay).toEqual(s); preservedOldRecords(s, old);
-    expect(s).toMatchObject({ schemaVersion: 178, contentVersion: 'ancient-evil-v178', revision: 508, week: 119, status: 'ACTIVE', health: 100, mind: 99, spirituality: 116, cash: 360, actionsRemaining: 3,
+    expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION, revision: 508, week: 119, status: 'ACTIVE', health: 100, mind: 99, spirituality: 116, cash: 360, actionsRemaining: 3,
       progression: { pathwayId: 'chained', sequence: 3, acting: 100 }, random: { seed: 'prisoner-natural-v057', cursor: 206 }, injuryRisk: 0 });
     expect(s.injuries).toEqual([{ id: 'prisoner-rebuild-natural:combat:1:PLAYER:406:0', severity: 'HEAVY', acquiredRevision: 406, treatedRevision: null }]);
     expect(s.silentDisciple.promotionWeek).toBe(110); expect(s.silentDisciple.life.moon.status).toBe('RESOLVED');

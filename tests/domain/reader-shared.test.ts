@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
@@ -74,7 +75,7 @@ describe('Reader actual documents, bounded conclusions and original first-case r
     const { schemaVersion: oldSchema, contentVersion: oldContent, ...prior } = old;
     expectPriorFields(next,old);
     expect([oldSchema, oldContent]).toEqual([21, 'nightmare-life-v21']);
-    expect([schemaVersion,contentVersion]).toEqual([177,'blood-duke-v177']);
+    expect([schemaVersion,contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
     expect(reader).toEqual(createReaderState());
     assertValidSliceState(next);
     expect(migrateSliceState(next)).toEqual(next);

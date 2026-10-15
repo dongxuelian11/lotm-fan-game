@@ -1,3 +1,5 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { describe, expect, it } from 'vitest';
 import { applySliceIntent, assertValidSliceState } from '../../src/domain/slice/index.js';
 import { resolveSageCombatRound } from '../../src/domain/slice/sage-combat.js';
@@ -138,7 +140,13 @@ it('reports actual BODY follow-up application in the unchanged natural round2 wi
   const boundary: { beforeLast: SliceState; lastIntent: Parameters<typeof applySliceIntent>[1]; final: SliceState } = JSON.parse(readFileSync('tests/fixtures/sage-v01780/first-run-round2.json', 'utf8'));
   // This is the unchanged first-run raw boundary, retained separately from current
   // valid saves. Reapply exactly its recorded command and original random stream.
-  const sourceBytes = JSON.stringify(boundary), actual = applySliceIntent(boundary.beforeLast, boundary.lastIntent);
+  const sourceBytes = JSON.stringify(boundary), migratedBefore = migrateSliceState(boundary.beforeLast);
+  const actual = applySliceIntent(migratedBefore, boundary.lastIntent);
+  // The historical final retains its known follow-up-reporting defect and must stay invalid.
+  expect(() => migrateSliceState(boundary.final)).toThrow();
+  for (const key of ['elder', 'bloodDuke', 'ancientEvil', 'fateProphet'] as const) {
+    expect(actual[key]).toEqual(migratedBefore[key]);
+  }
   const round = actual.combatHistory.at(-1)!, followups = round.sageOutcome!.playerActions.filter(a => a.id === 'BODY_FOLLOWUP');
   expect(followups).toHaveLength(1); expect(followups[0]).toMatchObject({ applied: true, threatens: true, paidCost: 0 });
   expect(followups[0]!.appliedAmount).toBeCloseTo(13.53807, 10); expect(followups[0]!.appliedAmount).toBe(followups[0]!.selfGain);
@@ -148,7 +156,8 @@ it('reports actual BODY follow-up application in the unchanged natural round2 wi
     if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([key]) => !((value as { id?: string }).id === 'BODY_FOLLOWUP' && ['applied', 'appliedAmount'].includes(key))).map(([key, v]) => [key, omitFollowupReporting(v)]));
     return value;
   };
-  expect(omitFollowupReporting(actual)).toEqual(omitFollowupReporting(boundary.final));
+  const expected = { ...migratedBefore, ...boundary.final, schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION };
+  expect(omitFollowupReporting(actual)).toEqual(omitFollowupReporting(expected));
   expect(JSON.stringify(boundary)).toBe(sourceBytes); assertValidSliceState(actual); expect(validateSageCombatRound(round)).toBe(true);
   const falselyUnapplied = structuredClone(round); const a = falselyUnapplied.sageOutcome!.playerActions.find(a => a.id === 'BODY_FOLLOWUP')!;
   a.applied = false; a.appliedAmount = 0; expect(validateSageCombatRound(falselyUnapplied)).toBe(false);

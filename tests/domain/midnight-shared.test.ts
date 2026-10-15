@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { SLICE_LIFE } from '../../src/content/slice-events.js';
@@ -79,7 +80,7 @@ describe('Midnight Poet actual public acquisition, poetry and growth route', () 
     const { schemaVersion: oldSchema, contentVersion: oldContent, ...prior } = old;
     expectPriorFields(next,old);
     expect([oldSchema, oldContent]).toEqual([19, 'sleepless-life-v19']);
-    expect([schemaVersion, contentVersion]).toEqual([177,'blood-duke-v177']);
+    expect([schemaVersion, contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
     expect(midnight).toEqual(createMidnightState());
     assertValidSliceState(next);
     expect(migrateSliceState(next)).toEqual(next);

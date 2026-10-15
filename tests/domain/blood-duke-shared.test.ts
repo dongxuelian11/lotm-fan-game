@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { createHash } from 'node:crypto';
 import { createReadStream, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -16,17 +17,17 @@ const originalPath = 'tests/fixtures/blatherer-v01560/natural.json';
 const originalSha256 = '796a7efabb26d5db70a24eeb509d7bbe2d80aa33e864f2ff45eba65016abaf7b';
 const roots = ['criminal', 'unwinged', 'serialKiller', 'demon', 'desireApostle', 'devil', 'blatherer'] as const;
 const entry = <T>(key: string): T => readObjectEntry<T>(naturalPath, key);
-const prefix = (): SliceState => entry<SliceState>('prefixFinal');
-const final = (): SliceState => entry<SliceState>('final');
+const prefix = (): SliceState => migrateSliceState(entry<unknown>('prefixFinal'));
+const final = (): SliceState => migrateSliceState(entry<unknown>('final'));
 const snapshot = (name: 'promoted' | 'practiced' | 'combatStart' | 'departure'): SliceState =>
-  JSON.parse(readFileSync(`${directory}/snapshot-${name}.json`, 'utf8')) as SliceState;
+  migrateSliceState(JSON.parse(readFileSync(`${directory}/snapshot-${name}.json`, 'utf8')));
 
 function boundary(name: string) {
   const path = `${directory}/boundary-${name}.json`;
   return {
-    beforeLast: readObjectEntry<SliceState>(path, 'beforeLast'),
+    beforeLast: migrateSliceState(readObjectEntry<unknown>(path, 'beforeLast')),
     lastIntent: readObjectEntry<SliceIntent>(path, 'lastIntent'),
-    final: readObjectEntry<SliceState>(path, 'final'),
+    final: migrateSliceState(readObjectEntry<unknown>(path, 'final')),
   };
 }
 
@@ -162,7 +163,7 @@ describe('Blood Duke actual saved public continuation', () => {
   it('loads both actual dead endings without revival and rejects new commands without modifying their stored states', () => {
     for (const raw of [readObjectEntry<SliceState>(originalPath, 'final'), final()]) {
       const input = JSON.stringify(raw), s = migrateSliceState(raw), saved = JSON.stringify(s);
-      expect(s).toMatchObject({ schemaVersion: 177, contentVersion: 'blood-duke-v177', status: 'DEAD', health: 0, ending: { kind: 'DEATH' } });
+      expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION, status: 'DEAD', health: 0, ending: { kind: 'DEATH' } });
       for (const key of [...roots, 'random', 'progression', 'combatHistory', 'week', 'cash', 'mind', 'spirituality'] as const) expect(s[key]).toEqual(raw[key]);
       const commands: SliceIntent[] = [
         { type: 'BLOOD_DUKE', command: { type: 'LEARN_GUIDANCE' } },

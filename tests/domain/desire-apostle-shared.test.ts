@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -22,7 +23,7 @@ describe('Desire Apostle real public chain',()=>{
   expect(projectSliceState(s).desireApostle.abilities.filter(a=>a.id.startsWith('abyss.s5.')).map(a=>a.id)).toEqual(['abyss.s5.emotion-seed','abyss.s5.catalysis']);
  });
  it('migrates0.110 without rewriting prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/shepherd-v01100/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
+  const old=JSON.parse(readFileSync('tests/fixtures/shepherd-v01100/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

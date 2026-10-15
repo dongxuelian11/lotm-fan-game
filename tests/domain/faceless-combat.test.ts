@@ -1,9 +1,10 @@
+import { BLOOD_DUKE_COUNT_WHEEL, bloodDukeAbilityWheel } from '../../src/domain/blood-duke/combat.js';
 import { ANCIENT_SCHOLAR_COUNT_WHEEL, currentAncientScholarCombatSource } from '../../src/domain/ancient-scholar/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import {
-  ORDINARY_COUNT_WHEEL, ordinaryAbilityWheel, playerAbilityWheel, playerCountWheel, resolveSliceCombatRound,
+  playerAbilityWheel, playerCountWheel, resolveSliceCombatRound,
 } from '../../src/domain/slice/combat.js';
 import { CLOWN_COUNT_WHEEL, clownAbilityWheel } from '../../src/domain/clown/combat.js';
 import { SEER_COUNT_WHEEL, seerAbilityWheel } from '../../src/domain/seer/combat.js';
@@ -251,8 +252,8 @@ describe('Faceless S6 inherits the finite Magician combat profile', () => {
       const before = structuredClone(state);
       expect(isMagician(state)).toBe(false);
       const withoutMagician = structuredClone(state); withoutMagician.magician = createMagicianState();
-      expect(playerCountWheel(state)).toEqual(sequence === 3 ? ANCIENT_SCHOLAR_COUNT_WHEEL : sequence === 2 ? ORDINARY_COUNT_WHEEL : playerCountWheel(withoutMagician));
-      if (sequence === 2) expect(playerAbilityWheel(state, 'ATTACK')).toEqual(ordinaryAbilityWheel(false, 'ATTACK'));
+      expect(playerCountWheel(state)).toEqual(sequence === 3 ? ANCIENT_SCHOLAR_COUNT_WHEEL : sequence === 2 ? BLOOD_DUKE_COUNT_WHEEL : playerCountWheel(withoutMagician));
+      if (sequence === 2) expect(playerAbilityWheel(state, 'ATTACK')).toEqual(bloodDukeAbilityWheel(state, 'ATTACK'));
       expect(playerCountWheel(state)).toEqual(playerCountWheel(withoutMagician));
       expect(currentAncientScholarCombatSource(state)).toBeNull();
       expect(currentMagicianFireSource(state)).toBeNull();

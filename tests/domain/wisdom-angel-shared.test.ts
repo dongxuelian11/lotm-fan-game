@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { createSliceRun, applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
@@ -60,7 +61,7 @@ const stageValidators = { validateReaderState, validateReasonerState, validateDe
 describe('Wisdom Angel original423 living prefix, migration167 and shared runtime', () => {
   it('migrates the genuine survivor with every original field intact and no free medical treatment', () => {
     const original = readObjectEntry<SliceState>(insightScholarPeacefulFixturePath, 'final'), bytes = JSON.stringify(original), s = migrateSliceState(original);
-    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177');
+    expect(s.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(s.contentVersion).toBe(CURRENT_CONTENT_VERSION);
     for (const key of Object.keys(original)) if (!['schemaVersion', 'contentVersion'].includes(key)) {
       const expected = (original as unknown as Record<string, unknown>)[key], actual = (s as unknown as Record<string, unknown>)[key];
       // Existing migrations may append defaults inside another stage, but cannot rewrite any old value.

@@ -134,7 +134,7 @@ describe('Monster S9 exact G profile and strict dispatch', () => {
 
   it('leaves unimplemented Wheel sequences ordinary and preserves all Chained profiles', () => {
     const state = fixture();
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, null] as const) {
       state.progression.sequence = sequence;
       expect(isMonster(state)).toBe(false); expect(currentMonsterCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);

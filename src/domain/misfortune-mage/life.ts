@@ -307,7 +307,7 @@ export function misfortuneMageLifeActions(s: SliceState): MisfortuneMageLifeActi
 export function projectMisfortuneMageLife(s: SliceState): MisfortuneMageLifeProjection {
   const l = s.misfortuneMage.life, oldLuck = s.winner.luck;
   const luck: MisfortuneMageLifeProjection['luck'] = { ...oldLuck, capacity: 3, summary: `唯一赢家原幸运账：现存${oldLuck.stored}/3，累计积累${oldLuck.accumulated}、实际支出${oldLuck.spent}；最近实际积运${oldLuck.lastAccumulateWeek === null ? '无' : `W${oldLuck.lastAccumulateWeek}`}。新实践与战斗继续同一原账，不另建幸运池、不自动回满。` };
-  if (!(s.progression.pathwayId==='wheel'&&[4,3].includes(s.progression.sequence!))) return { cases: [], insideCase: false, environment: '', practice: null, luck };
+  if (!(s.progression.pathwayId==='wheel'&&[4,3,2].includes(s.progression.sequence!))) return { cases: [], insideCase: false, environment: '', practice: null, luck };
   return {
     insideCase: hasMisfortuneMageLifeLock(s), environment: MISFORTUNE_MAGE_LIFE_ENVIRONMENT, luck,
     cases: CASES.map(p => {
@@ -385,7 +385,7 @@ export function validateMisfortuneMageLife(s: SliceState): boolean {
       week = a.week; accumulated = a.accumulatedAfter; spent = a.spentAtTime;
     }
     if (br.attempts.reduce((sum, a) => sum + a.luckSpent, 0) > luck.spent) return false;
-    if (s.seer.completedSources.filter(x => x === 'misfortune-mage-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3 || (active(s)||s.progression.pathwayId==='wheel'&&s.progression.sequence===3) && (s.progression.sequence===3?s.chaosWalker.misfortuneMageActingAtPromotion:s.progression.acting) !== resolved * 25 + Number(l.reflected) * 25) return false;
+    if (s.seer.completedSources.filter(x => x === 'misfortune-mage-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3 || (active(s)||s.progression.pathwayId==='wheel'&&(s.progression.sequence===3||s.progression.sequence===2)) && ((s.progression.sequence===3||s.progression.sequence===2)?s.chaosWalker.misfortuneMageActingAtPromotion:s.progression.acting) !== resolved * 25 + Number(l.reflected) * 25) return false;
     if (hasMisfortuneMageLifeLock(s) && (!active(s) || s.world.city !== 'BACKLUND' || s.status !== 'ACTIVE' || s.activeEvent || s.combat || oldOpen(s))) return false;
     return true;
   } catch { return false; }

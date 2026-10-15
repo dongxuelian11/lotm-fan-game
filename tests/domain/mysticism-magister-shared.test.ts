@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -46,7 +47,7 @@ describe('Mysticism Magister actual shared route',()=>{
  });
  it('migrates exact 0.100 originals without changing prior objects and histories',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/spirit-warlock-v01000/natural.json','utf8')).final;
-  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
+  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);
   expect(migrateSliceState(after)).toEqual(after);
  });

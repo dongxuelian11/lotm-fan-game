@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createSliceRun,applySliceIntent,assertValidSliceState,projectSliceState,validateSlicePayload} from '../../src/domain/slice/index.js';
@@ -12,7 +13,7 @@ describe('continuing an actual surviving first case',()=>{
   for(const key of Object.keys(previous))if(!Object.hasOwn(old,key)){expect(previous[key],key).toEqual(defaults[key]);delete previous[key];}
   expect(s.seer.resupply).toEqual({requestedWeek:null,deliveries:0});expect(s.seer.practice).toEqual(fresh.seer.practice);
   delete (previous.seer as Record<string,unknown>).resupply;delete (previous.seer as Record<string,unknown>).practice;
-  expect([s.schemaVersion,s.contentVersion]).toEqual([177,'blood-duke-v177']);
+  expect([s.schemaVersion,s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
   previous.schemaVersion=old.schemaVersion;previous.contentVersion=old.contentVersion;
   expect(previous).toEqual(old);expect(JSON.stringify(old)).toBe(bytes);expect(migrateSliceState(s)).toEqual(s);assertValidSliceState(s);
  });

@@ -187,7 +187,7 @@ export function winnerActions(s: SliceState): WinnerAction[] {
   return out;
 }
 export function winnerCases(s: SliceState): WinnerProjection['cases'] {
-  if (!active(s)&&!(s.progression.pathwayId==='wheel'&&(s.progression.sequence===4||s.progression.sequence===3))) return [];
+  if (!active(s)&&!(s.progression.pathwayId==='wheel'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))) return [];
   return CASES.map(p => {
     const r = s.winner.cases[p.id]!;
     const closed = r.attemptWeek !== null && !r.contactOpen ? '本次原木筹、原环已经实际归还，或已写原纸已经亲手交付；接触已结束。' : '';
@@ -240,7 +240,7 @@ export function validateWinnerLife(s: SliceState): boolean {
   if (f.ring !== (ring.contactOpen ? 'MAT' : 'OWNER')) return false;
   if (f.note !== (note.contactOpen ? 'WRITTEN' : note.attemptWeek !== null ? 'HANDED_OVER' : 'BLANK')) return false;
   if (typeof m.reflected !== 'boolean' || s.seer.completedSources.filter(source => source === 'winner-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (s.progression.pathwayId==='wheel' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)) && ((s.progression.sequence===4||s.progression.sequence===3)?s.misfortuneMage.winnerActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (s.progression.pathwayId==='wheel' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) && ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.misfortuneMage.winnerActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && m.reflected) return false;
   return true;
 }

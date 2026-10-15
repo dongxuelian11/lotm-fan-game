@@ -70,7 +70,7 @@ describe('Machine S8 exact profile and inherited Monster dispatch', () => {
     expect(isMachine(state)).toBe(false); expect(currentMachineCombatSource(state)).toBeNull();
     expect(playerCountWheel(state)).toEqual(MONSTER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'ATTACK')).toEqual(monsterAbilityWheel('ATTACK', state));
-    state.progression.sequence = 2;
+    state.progression.sequence = 1;
     expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
   });

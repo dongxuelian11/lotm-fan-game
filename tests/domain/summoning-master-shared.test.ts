@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { createSliceRun, applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
@@ -52,7 +53,7 @@ describe('Summoning Master original public route and shared runtime', () => {
 
   it('migrates the genuineW92 state tocurrent schema165 without changing the female body, injured Dorian or original stock', () => {
     const prior = old(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(177); expect(state.contentVersion).toBe('blood-duke-v177');
+    expect(state.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(state.contentVersion).toBe(CURRENT_CONTENT_VERSION);
     expect(state.summoningMaster.promotionWeek).toBeNull(); expect(state.summoningMaster.witchKingActingAtPromotion).toBeNull();
     for (const key of Object.keys(prior.final)) if (!['schemaVersion', 'contentVersion'].includes(key)) {
       expect((state as unknown as Record<string, unknown>)[key]).toEqual((prior.final as unknown as Record<string, unknown>)[key]);

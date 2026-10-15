@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { readFileSync, existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
@@ -53,7 +54,7 @@ describe('Wanderer explicitly directed S4 prefix followed by actual public conti
 
   it('migrates the actual W92 result without healing, rewriting old sources or retroactively making it natural', () => {
     const prior = original(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(177); expect(state.contentVersion).toBe('blood-duke-v177');
+    expect(state.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(state.contentVersion).toBe(CURRENT_CONTENT_VERSION);
     expect(state.wanderer).toEqual(createWandererState());
     expect(state).toMatchObject({ week: 92, health: 40, mind: 100, spirituality: 120, cash: 560, actionsRemaining: 3, progression: { sequence: 4, acting: 100 } });
     expect(state.secretsSorcerer.promotionWeek).toBe(80); expectOriginals(state, prior.final);

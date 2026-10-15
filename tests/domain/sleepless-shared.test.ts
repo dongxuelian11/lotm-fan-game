@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
@@ -61,7 +62,7 @@ describe('Sleepless actual public watch and growth route', () => {
     const { schemaVersion: oldSchema, contentVersion: oldContent, ...prior } = old;
     expectPriorFields(next,old);
     expect([oldSchema, oldContent]).toEqual([18, 'vampire-life-v18']);
-    expect([schemaVersion, contentVersion]).toEqual([177,'blood-duke-v177']);
+    expect([schemaVersion, contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
     expect(sleepless).toEqual(createSleeplessState());
     assertValidSliceState(next);
     expect(migrateSliceState(next)).toEqual(next);

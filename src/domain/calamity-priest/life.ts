@@ -136,7 +136,7 @@ export function calamityPriestActions(s: SliceState): CalamityPriestAction[] {
   return out;
 }
 export function calamityPriestCases(s: SliceState): CalamityPriestProjection['cases'] {
-  if (!active(s) && !(s.progression.pathwayId==='wheel'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) return [];
+  if (!active(s) && !(s.progression.pathwayId==='wheel'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))) return [];
   return CASES.map(p => {
     const r = s.calamityPriest.cases[p.id]!;
     let result: string | null = r.status === 'RESOLVED' ? p.result : r.status === 'EXAMINED' ? r.contactOpen ? '已取得本次有限结果，但当前接触仍在；先实际稳固原物，或停止并等候短效结束。' : p.result : r.attemptWeek !== null ? '上次未形成可报告结果；成本保留，接触须先收束，下一真实周可重新准备。' : r.withdrawals ? '尚未实施的准备已经取消；若支好原小板，已经实际收妥，没有新能力消耗。' : null;
@@ -185,7 +185,7 @@ export function validateCalamityPriestLife(s: SliceState): boolean {
   if (m.practice.contact === 'RELEASED' && (focus.attemptWeek === null || focus.closes < 1)) return false;
   if (focus.method === 'ABILITY' && focus.attemptWeek !== null && !focus.contactOpen && focus.status !== 'PREPARED' && m.practice.contact !== 'RELEASED') return false;
   if (s.seer.completedSources.filter(x => x === 'calamity-priest-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if ((active(s)||(s.progression.pathwayId==='wheel'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) && ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.winner.calamityPriestActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if ((active(s)||(s.progression.pathwayId==='wheel'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))) && ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.winner.calamityPriestActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (m.practice.hazard !== 'UNASSESSED' || m.practice.board !== 'RESTING' || m.practice.contact !== 'NONE' || open !== 0 || prepared !== 0 || resolved !== 0 || m.reflected)) return false;
   return true;
 }

@@ -1,3 +1,6 @@
+import { createAncientEvilState } from '../../src/domain/ancient-evil/index.js';
+import { createFateProphetState } from '../../src/domain/fate-prophet/index.js';
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
@@ -138,8 +141,9 @@ describe('Elder actual natural continuation and shared-source invariants', () =>
   it('migrates the real schema175 Sage save without rewriting it and rejects injected Elder history or restored spirit deficits', () => {
     const legacy = readObjectEntry<Record<string, unknown>>('tests/fixtures/sage-v01780/natural.json', 'final'), bytes = JSON.stringify(legacy);
     expect(legacy.schemaVersion).toBe(175); expect('elder' in legacy).toBe(false);
-    const migrated = migrateSliceState(legacy); expect(migrated.schemaVersion).toBe(177); expect(migrated.contentVersion).toBe('blood-duke-v177'); expect(migrated.elder).toEqual(createElderState());
-    expect({ ...migrated, schemaVersion: legacy.schemaVersion, contentVersion: legacy.contentVersion, elder: undefined, bloodDuke: undefined }).toEqual({ ...legacy, elder: undefined, bloodDuke: undefined }); expect(JSON.stringify(legacy)).toBe(bytes);
+    const migrated = migrateSliceState(legacy); expect(migrated.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(migrated.contentVersion).toBe(CURRENT_CONTENT_VERSION); expect(migrated.elder).toEqual(createElderState());
+    expect(migrated.ancientEvil).toEqual(createAncientEvilState()); expect(migrated.fateProphet).toEqual(createFateProphetState());
+    expect({ ...migrated, schemaVersion: legacy.schemaVersion, contentVersion: legacy.contentVersion, elder: undefined, bloodDuke: undefined, ancientEvil: undefined, fateProphet: undefined }).toEqual({ ...legacy, elder: undefined, bloodDuke: undefined, ancientEvil: undefined, fateProphet: undefined }); expect(JSON.stringify(legacy)).toBe(bytes);
     expect(() => migrateSliceState({ ...legacy, elder: createElderState() })).toThrow(/Unexpected Elder/);
     const altered = final(); altered.threeHeadedTemplar.life.spirits['THT3-HELENA'].integrity = 100; expect(() => assertValidSliceState(altered)).toThrow();
     const freeSpirit = final(); freeSpirit.threeHeadedTemplar.life.spirits['THT3-ROLAND'].spirituality = 27; expect(() => assertValidSliceState(freeSpirit)).toThrow();

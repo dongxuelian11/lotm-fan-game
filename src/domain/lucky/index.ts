@@ -1,3 +1,4 @@
+import { FATE_PROPHET_ABILITY_IDS } from '../fate-prophet/types.js';
 import {CHAOS_WALKER_ABILITY_IDS} from '../chaos-walker/types.js';
 import {MISFORTUNE_MAGE_ABILITY_IDS} from '../misfortune-mage/types.js';
 import {WINNER_ABILITY_IDS} from '../winner/types.js';
@@ -30,7 +31,7 @@ export function createLuckyState(): LuckyState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'wheel' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'wheel' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isMachine = (s: SliceState) => s.progression.pathwayId === 'wheel' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.monster.discovered && s.monster.guidanceKnown && s.machine.guidanceKnown && (isMachine(s) || promoted(s));
 const potionPrice = (bottle: LuckyBottle) => LUCKY_PRICES.potion - (bottle.labourSteps === 4 ? LUCKY_PRICES.labourCredit : 0);
@@ -156,7 +157,7 @@ export function applyLuckyCommand(s: SliceState, command: LuckyAcquisitionComman
 
 export function projectLucky(s: SliceState): LuckyProjection {
   const actions: LuckyAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?s.calamityPriest.luckyActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.calamityPriest.luckyActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: LuckyAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -196,7 +197,7 @@ export function projectLucky(s: SliceState): LuckyProjection {
     })) : [],
     abilities: isPromoted ? LUCKY_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?'旧幸运者被动幸运与报告保留；赢家新储备另行积攒，不把旧被动抽取等同可用库存。':s.progression.sequence===6?'幸运者魔药已消化，原被动幸运和有限报告继续保留；不形成幸运池。':isPromoted ? `机器消化成果${s.lucky.machineActingAtPromotion}/100已保留；幸运者扮演${acting}/100，能力掌握分别记录。`
+    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'旧幸运者被动幸运与报告保留；赢家新储备另行积攒，不把旧被动抽取等同可用库存。':s.progression.sequence===6?'幸运者魔药已消化，原被动幸运和有限报告继续保留；不形成幸运池。':isPromoted ? `机器消化成果${s.lucky.machineActingAtPromotion}/100已保留；幸运者扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成机器消化（${s.progression.acting}/100），并在晋升机器后度过8整周（${machineWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完机器之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${LUCKY_CONSUMPTION_RISK}` : '成为机器后，可向原导师了解下一序列。',
@@ -249,7 +250,7 @@ export function validateLuckyState(s: SliceState): boolean {
   if (lucky.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!lucky.guidanceKnown || !integer(s.machine.promotionWeek, 1, s.week) || !integer(lucky.promotionWeek, firstConsumptionWeek, s.week) || lucky.machineActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...MONSTER_ABILITY_IDS, ...MACHINE_ABILITY_IDS, ...LUCKY_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?CALAMITY_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?WINNER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?MISFORTUNE_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===3?CHAOS_WALKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...MONSTER_ABILITY_IDS, ...MACHINE_ABILITY_IDS, ...LUCKY_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?CALAMITY_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?WINNER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?MISFORTUNE_MAGE_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?CHAOS_WALKER_ABILITY_IDS:[]),...(s.progression.sequence===2?FATE_PROPHET_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (lucky.promotionWeek !== null || lucky.machineActingAtPromotion !== null || LUCKY_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (lucky.reflected || Object.values(lucky.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0 || value.luckRoll !== null)) return false;

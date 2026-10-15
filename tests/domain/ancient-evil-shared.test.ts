@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { createHash } from 'node:crypto';
 import { createReadStream, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -19,10 +20,10 @@ const originalPath = 'tests/fixtures/silent-disciple-v01570/natural.json';
 const originalSha256 = '04448ba6461db51279b9bdd6ed3736e76d1d9016067e04578ee7885ad8fdf1b9';
 const roots = ['prisoner', 'madman', 'werewolf', 'zombie', 'wraith', 'puppet'] as const;
 const entry = <T>(key: string): T => readObjectEntry<T>(naturalPath, key);
-const prefix = (): SliceState => entry<SliceState>('prefixFinal');
-const final = (): SliceState => entry<SliceState>('final');
+const prefix = (): SliceState => migrateSliceState(entry<unknown>('prefixFinal'));
+const final = (): SliceState => migrateSliceState(entry<unknown>('final'));
 const snapshot = (name: 'departure' | 'treated' | 'promoted' | 'practiced' | 'combatStart' | 'combatTerminal'): SliceState =>
-  JSON.parse(readFileSync(`${directory}/snapshot-${name}.json`, 'utf8')) as SliceState;
+  migrateSliceState(JSON.parse(readFileSync(`${directory}/snapshot-${name}.json`, 'utf8')));
 const boundaryIndex = (): Record<string, string> => JSON.parse(readFileSync(`${directory}/boundaries.index.json`, 'utf8'));
 
 // Only one indexed boundary is materialized at a time. Never parse the complete
@@ -31,7 +32,7 @@ function boundary(name: string) {
   const file = boundaryIndex()[name];
   expect(file, name).toBe(`boundary-${name}.json`);
   const path = `${directory}/${file}`;
-  return { beforeLast: readObjectEntry<SliceState>(path, 'beforeLast'), lastIntent: readObjectEntry<SliceIntent>(path, 'lastIntent'), final: readObjectEntry<SliceState>(path, 'final') };
+  return { beforeLast: migrateSliceState(readObjectEntry<unknown>(path, 'beforeLast')), lastIntent: readObjectEntry<SliceIntent>(path, 'lastIntent'), final: migrateSliceState(readObjectEntry<unknown>(path, 'final')) };
 }
 
 function expectOriginalHistory(s: SliceState, old: SliceState) {
@@ -66,7 +67,7 @@ describe('Ancient Evil actual saved public continuation', () => {
     expect(entry('stage')).toBe('NATURAL_ANCIENT_EVIL_PUBLIC_CONTINUATION'); expect(entry('error')).toBeNull(); expect(entry('pendingIntent')).toBeNull();
     const s = prefix(), raw = readObjectEntry<SliceState>(originalPath, 'final');
     expect(s).toEqual(migrateSliceState(raw)); expect(s).toEqual(snapshot('departure'));
-    expect(s).toMatchObject({ schemaVersion: 178, contentVersion: 'ancient-evil-v178', revision: 508, week: 119, status: 'ACTIVE', health: 100,
+    expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION, revision: 508, week: 119, status: 'ACTIVE', health: 100,
       mind: 99, spirituality: 116, cash: 360, actionsRemaining: 3, random: { seed: 'prisoner-natural-v057', cursor: 206 }, progression: { sequence: 3, acting: 100 } });
     expect(s.ancientEvil).toEqual(createAncientEvilState()); expect(s.combatHistory).toHaveLength(13); assertValidSliceState(s);
   });
@@ -293,7 +294,7 @@ describe('Ancient Evil actual saved public continuation', () => {
   it('migrates the living original and current actual enemy-death history idempotently without restoring resources, history or an opponent', () => {
     for (const raw of [readObjectEntry<SliceState>(originalPath, 'final'), final()]) {
       const input = JSON.stringify(raw), s = migrateSliceState(raw);
-      expect(s).toMatchObject({ schemaVersion: 178, contentVersion: 'ancient-evil-v178', status: 'ACTIVE' });
+      expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION, status: 'ACTIVE' });
       for (const key of [...roots, 'silentDisciple', 'random', 'progression', 'combatHistory', 'week', 'date', 'cash', 'mind', 'health', 'spirituality', 'injuries', 'injuryRisk'] as const) expect(s[key]).toEqual(raw[key]);
       expect(JSON.stringify(raw)).toBe(input); expect(migrateSliceState(s)).toEqual(s); assertValidSliceState(s);
     }

@@ -1,3 +1,4 @@
+import { validateFateProphetSourceChaosWalkerLife } from '../fate-prophet/life.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -40,8 +41,8 @@ export interface ChaosWalkerAccumulation { week: number; actionCost: 1; storedBe
 export interface ChaosWalkerLifeState {
   siteId: 'CW3-MECHANICAL-WORKSHOP'; introducedWeek: number | null; introducedDate: PublicGameDate | null; activeCase: ChaosWalkerCaseId | null;
   playerLocation: ChaosWalkerLocation; playerTravelMetres: number; guideTravelMetres: number; clockSeconds: number;
-  guide: { id: 'GUIDE'; name: string; location: 'START' | 'A' };
-  volunteer: { id: 'CW3-VERA'; name: '薇拉·霍尔'; age: 39; alive: true; willing: boolean; location: 'A'; health: 100; mind: 100; spirituality: 100; injuries: [] };
+  guide: { id: 'GUIDE'; name: string; location: 'START' | 'A' | 'OUTSIDE' };
+  volunteer: { id: 'CW3-VERA'; name: '薇拉·霍尔'; age: 39; alive: true; willing: boolean; location: 'A' | 'OUTSIDE'; health: 100; mind: 100; spirituality: 100; injuries: [] };
   cart: { id: 'CW3-CART'; owner: 'GUIDE'; quantity: 1; location: 'A' | 'B' | 'C'; control: 'GUIDE' | 'PLAYER'; releases: number; returns: number };
   parcel: { id: 'CW3-PARCEL'; owner: 'GUIDE'; quantity: 1; massGrams: 400; sealed: true; location: 'CW3-CART' };
   stops: { id: 'CW3-STOP-B' | 'CW3-STOP-C'; location: 'B' | 'C'; padded: true }[];
@@ -104,7 +105,7 @@ function cleanupBlock(s: SliceState): string | null {
   if (l.cart.location !== 'A' || l.cart.control !== 'GUIDE' || l.disc.control !== 'GUIDE' || l.tags.some(t => t.location !== 'POUCH')) return '须本人走到真实原物，原车推回A、原签放回同袋、原盘交回控制，不能远程归还。';
   return l.playerLocation !== 'START' || l.guide.location !== 'START' ? '须沿原路普通返回START，本人和导师都不能瞬移。' : null;
 }
-export const hasChaosWalkerLifeLock = (s: SliceState): boolean => s.chaosWalker.life.activeCase !== null || Object.values(s.chaosWalker.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+export const hasChaosWalkerLifeLock = (s: SliceState): boolean => promoted(s) && (s.chaosWalker.life.activeCase !== null || Object.values(s.chaosWalker.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null);
 function sceneReason(s: SliceState, id: ChaosWalkerCaseId, type: SceneType | 'CONFIRM_LIMITED'): string | null {
   const l = s.chaosWalker.life, a = l.cases[id].attempts.at(-1)!, at = l.playerLocation;
   if (type === 'STOP_INPUT') return a.abilityTier !== null && !a.stopped ? null : '没有尚未停止的本次真实能力尝试。';
@@ -175,7 +176,7 @@ function move(s: SliceState, a: ChaosWalkerAttempt, to: ChaosWalkerLocation, mod
   a.playerMoves.push(movement); l.playerLocation = to; a.playerTravelMetres += 4; l.playerTravelMetres += 4; elapse(s, a, 4);
   if (mode === 'PUSH') { a.objectMoves.push({ ...movement, itemIds: [...itemIds] }); l.cart.location = 'A'; }
 }
-function guideMove(s: SliceState, a: ChaosWalkerAttempt, to: 'A' | 'START') { const l = s.chaosWalker.life; a.guideMoves.push({ from: l.guide.location, to, mode: 'WALK', metres: 4, seconds: 4, itemIds: [] }); l.guide.location = to; l.guideTravelMetres += 4; }
+function guideMove(s: SliceState, a: ChaosWalkerAttempt, to: 'A' | 'START') { const l = s.chaosWalker.life; if (l.guide.location === 'OUTSIDE') throw new Error('原导师已在外间，不能重开旧练习。'); a.guideMoves.push({ from: l.guide.location, to, mode: 'WALK', metres: 4, seconds: 4, itemIds: [] }); l.guide.location = to; l.guideTravelMetres += 4; }
 function startAttempt(s: SliceState, id: ChaosWalkerCaseId) { const l = s.chaosWalker.life, r = l.cases[id]; r.status = 'ACTIVE'; r.contactOpen = true; r.attempts.push(freshAttempt(s, r.method!)); l.activeCase = id; }
 function evidence(a: ChaosWalkerAttempt, sourceId: string, text: string) { a.evidence.push({ sourceId, text, atSecond: a.elapsedSeconds }); }
 function pay(s: SliceState, a: ChaosWalkerAttempt) { s.actionsRemaining--; a.resolutionPaid = true; a.resolutionActions = 1; }
@@ -273,13 +274,13 @@ export function projectChaosWalkerLife(s: SliceState): ChaosWalkerLifeProjection
   const next = actions.find(v => v.enabled && !['WITHDRAW', 'ORDINARY_CHECK', 'WAIT_EFFECT', 'STOP_INPUT', 'ACCUMULATE', 'CONFIRM_LIMITED'].includes(v.command.type)) ?? actions.find(v => v.enabled);
   const summary = `本人${l.playerLocation}，普通步行${l.playerTravelMetres}米，原时钟${l.clockSeconds}秒；唯一旧幸运${s.winner.luck.stored}/3，累计积累${s.winner.luck.accumulated}、实际支出${s.winner.luck.spent}。`;
   return { ...structuredClone(l), title: '混乱行者 · 有限的未发生分支', story: CHAOS_WALKER_LIFE_STORY, summary, environment: CHAOS_WALKER_LIFE_ENVIRONMENT, inside, insideCase: inside, currentAttempt: a ? structuredClone(a) : null, luck: { ...s.winner.luck, capacity: 3 }, actions,
-    nextStep: next ? `下一步：${next.label}（${next.cost}）。` : '本阶段真实报告完成，可继续普通生活。', facts: [summary, `原车${l.cart.id}在${l.cart.location}、控制${l.cart.control}；唯一密封400克${l.parcel.id}一直在同一车内；B/C两原软挡在各自4米支路。`, `39岁原成年薇拉${l.volunteer.id}在A，健康/精神/灵性均100；同一原袋${l.pouch.id}始终归她，原签${l.tags.map(t => `${t.id}:${t.location}`).join('、')}。`, `原盘${l.disc.id}始终在A，指针${l.disc.pointer ?? '尚未转动'}、控制${l.disc.control}；原记录${l.record.id}与原预测${l.forecast.id}在B，须本人实走亲读。`, `原导师${l.guide.name}现在${l.guide.location}，已实际步行${l.guideTravelMetres}米，交接不会召唤异地原主。`, a ? `知识20检定${a.abilityTier ?? '尚未施术'}；待用修正${a.pendingRemainingSeconds}秒，实际应用${a.modifierApplied ? '是' : '否'}，当前许可${a.consent}；后续原事件${a.eventDraws}次，抽数${a.branchRoll ?? '未发生'}，阈值${a.branchChance ?? '未发生'}%，真实结果${a.branchResult ?? '未发生'}。` : '检定成功仅能待用；独立机械事件才决定真实分支，取消与过期不退费也不给掌握。', a?.outcome ?? '没有保证未来、重抽或第二幸运池。'],
+    nextStep: next ? `下一步：${next.label}（${next.cost}）。` : '本阶段真实报告完成，可继续普通生活。', facts: [summary, `原车${l.cart.id}在${l.cart.location}、控制${l.cart.control}；唯一密封400克${l.parcel.id}一直在同一车内；B/C两原软挡在各自4米支路。`, `39岁原成年薇拉${l.volunteer.id}在${l.volunteer.location}，健康/精神/灵性均100；同一原袋${l.pouch.id}始终归她，原签${l.tags.map(t => `${t.id}:${t.location}`).join('、')}。`, `原盘${l.disc.id}始终在A，指针${l.disc.pointer ?? '尚未转动'}、控制${l.disc.control}；原记录${l.record.id}与原预测${l.forecast.id}在B，须本人实走亲读。`, `原导师${l.guide.name}现在${l.guide.location}，已实际步行${l.guideTravelMetres}米，交接不会召唤异地原主。`, a ? `知识20检定${a.abilityTier ?? '尚未施术'}；待用修正${a.pendingRemainingSeconds}秒，实际应用${a.modifierApplied ? '是' : '否'}，当前许可${a.consent}；后续原事件${a.eventDraws}次，抽数${a.branchRoll ?? '未发生'}，阈值${a.branchChance ?? '未发生'}%，真实结果${a.branchResult ?? '未发生'}。` : '检定成功仅能待用；独立机械事件才决定真实分支，取消与过期不退费也不给掌握。', a?.outcome ?? '没有保证未来、重抽或第二幸运池。'],
     cases: CASES.map(spec => { const r = l.cases[spec.id]; return { id: spec.id, title: spec.title, story: spec.story, observations: r.status === 'AVAILABLE' ? [] : [spec.story], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.attempts[0]?.outcome ?? null, contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: structuredClone(r.attempts) }; }) };
 }
 
 const validLuck = (v: unknown): v is WinnerLuck => record(v) && shape(v, ['stored', 'lastAccumulateWeek', 'accumulated', 'spent']) && integer(v.stored, 0, 3) && integer(v.accumulated) && integer(v.spent) && v.accumulated - v.spent === v.stored && (v.lastAccumulateWeek === null || integer(v.lastAccumulateWeek, 1));
 /** Replays separate checks/events and every original movement; never trusts an outcome or cost label. */
-export function validateChaosWalkerLife(s: SliceState): boolean {
+export function validateChaosWalkerLifeOriginal(s: SliceState): boolean {
   const l = s.chaosWalker.life, initial = createChaosWalkerLifeState(), promotion = s.chaosWalker.promotionWeek;
   if (!record(l) || !shape(l, Object.keys(initial)) || !record(l.cases) || !shape(l.cases, CHAOS_WALKER_CASE_IDS) || !record(l.volunteer) || typeof l.volunteer.willing !== 'boolean' || !Array.isArray(l.accumulations) || !integer(l.clockSeconds) || !validLuck(s.winner.luck)) return false;
   let previousWeek = 0, previousAccumulated = 0, previousSpent = 0;
@@ -331,5 +332,11 @@ export function validateChaosWalkerLife(s: SliceState): boolean {
   if (open > 1 || prepared > 1 || open && prepared || (l.activeCase !== null) !== (open === 1) || l.reflected && resolved !== 3 || prepared && (s.world.city !== 'BACKLUND' || s.activeEvent || s.combat)) return false;
   replay.activeCase = l.activeCase; replay.reflected = l.reflected; replay.volunteer.willing = l.volunteer.willing;
   if (stableStringify(replay) !== stableStringify(l) || !open && cleanupBlock(s) !== null) return false;
-  return !promoted(s) || s.progression.acting === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[BUFFER] ?? 0) === bufferMastery && (s.progression.mastery[IMPEDIMENT] ?? 0) === impedimentMastery;
+  const inherited = s.progression.pathwayId === 'wheel' && s.progression.sequence === 2;
+  const acting = inherited ? s.fateProphet?.chaosWalkerActingAtPromotion : s.progression.acting;
+  return !(promoted(s) || inherited) || acting === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[BUFFER] ?? 0) === bufferMastery && (s.progression.mastery[IMPEDIMENT] ?? 0) === impedimentMastery;
+}
+
+export function validateChaosWalkerLife(s: SliceState): boolean {
+  try { return s.fateProphet?.life?.source != null ? validateFateProphetSourceChaosWalkerLife(s) : validateChaosWalkerLifeOriginal(s); } catch { return false; }
 }

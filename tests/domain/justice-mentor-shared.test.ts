@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { readFileSync, existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { createSliceRun, applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
@@ -40,7 +41,7 @@ describe('Justice Mentor verifiedS3 original public route and shared runtime', (
 
   it('migrates the genuineW111 state to146 without altering original bodies, objects, emotion return or RNG', () => {
     const prior = original(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(177); expect(state.contentVersion).toBe('blood-duke-v177');
+    expect(state.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(state.contentVersion).toBe(CURRENT_CONTENT_VERSION);
     expect(state.justiceMentor.promotionWeek).toBeNull(); expect(state.justiceMentor.unshadowedActingAtPromotion).toBeNull();
     for (const key of Object.keys(prior.final)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((state as unknown as Record<string, unknown>)[key]).toEqual(key === 'longChapter' ? { ...prior.final.longChapter, handoff: null } : (prior.final as unknown as Record<string, unknown>)[key]);
     expect(state).toMatchObject({ week: 111, health: 100, mind: 100, spirituality: 110, cash: 160, actionsRemaining: 1, character: { age: 26, gender: 'FEMALE', coreStats: { physique: 28, perception: 24, will: 27, knowledge: 22 } } });

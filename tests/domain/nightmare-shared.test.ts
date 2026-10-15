@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { SLICE_LIFE } from '../../src/content/slice-events.js';
@@ -95,7 +96,7 @@ describe('Nightmare actual public acquisition, dream records and waking verifica
     const { schemaVersion: oldSchema, contentVersion: oldContent, ...prior } = old;
     expectPriorFields(next,old);
     expect([oldSchema, oldContent]).toEqual([20, 'midnight-life-v20']);
-    expect([schemaVersion, contentVersion]).toEqual([177,'blood-duke-v177']);
+    expect([schemaVersion, contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
     expect(nightmare).toEqual(createNightmareState());
     assertValidSliceState(next);
     expect(migrateSliceState(next)).toEqual(next);

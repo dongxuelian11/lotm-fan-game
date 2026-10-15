@@ -128,7 +128,7 @@ export function misfortuneMageEncounterActions(s: SliceState) {
   });
 }
 export function projectMisfortuneMageEncounter(s: SliceState): MisfortuneMageEncounterProjection {
-  if (!(s.progression.pathwayId==='wheel'&&[4,3].includes(s.progression.sequence!))) return { encounter: null };
+  if (!(s.progression.pathwayId==='wheel'&&[4,3,2].includes(s.progression.sequence!))) return { encounter: null };
   const e = s.misfortuneMage.encounter;
   return { encounter: { ...structuredClone(e), name: '费里斯·洛恩（原创成年非凡者，G）', story: MISFORTUNE_MAGE_ENCOUNTER_STORY, sequence: 5,
     originalExit: '原报时铺独立净空后院的开放普通出口', pursuit: false, distanceMetres: 2, noBystanders: true,

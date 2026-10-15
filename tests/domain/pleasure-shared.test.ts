@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -44,6 +45,6 @@ describe('Pleasure original shared route',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/dawn-paladin-v0850/natural.json','utf8')).final,current=migrateSliceState(old);
   expect(current.pleasure.promotionWeek).toBeNull();
   const{pleasure:_,schemaVersion:__,contentVersion:___,...facts}=current;
-  const{schemaVersion:____,contentVersion:_____,...prior}=old;for(const key of Object.keys(prior))expect((facts as unknown as Record<string,unknown>)[key]).toEqual(prior[key]);expect(current.schemaVersion).toBe(177);
+  const{schemaVersion:____,contentVersion:_____,...prior}=old;for(const key of Object.keys(prior))expect((facts as unknown as Record<string,unknown>)[key]).toEqual(prior[key]);expect(current.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
  });
 });

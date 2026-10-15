@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -22,7 +23,7 @@ function originals(s: SliceState, before = original().final) {
 describe('Silver Knight full untouched340-command prefix and actual continuation', () => {
   it('migrates W93 without refilling, resetting old originals or consuming RNG', () => {
     const prior = original(), bytes = JSON.stringify(prior.final), s = migrateSliceState(prior.final);
-    expect(prior.commands).toHaveLength(340); expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177'); expect(s.silverKnight).toEqual(createSilverKnightState());
+    expect(prior.commands).toHaveLength(340); expect(s.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(s.contentVersion).toBe(CURRENT_CONTENT_VERSION); expect(s.silverKnight).toEqual(createSilverKnightState());
     expect(s).toMatchObject({ week: 93, status: 'ACTIVE', health: 100, mind: 100, spirituality: 112, cash: 490, actionsRemaining: 1, progression: { pathwayId: 'warrior', sequence: 4, acting: 100 } });
     for (const [key, value] of Object.entries(prior.final)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key]).toEqual(value);
     originals(s); expect(s.random).toEqual(prior.final.random); expect(JSON.stringify(prior.final)).toBe(bytes); expect(migrateSliceState(s)).toEqual(s); assertValidSliceState(s);

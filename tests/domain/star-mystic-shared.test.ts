@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -23,7 +24,7 @@ describe('StarMystic real public chain',()=>{
   const p=projectSliceState(s);expect(p.starMystic.abilities.filter(a=>a.id.startsWith('hermit.s5.')).map(a=>a.id)).toEqual(['hermit.s5.mystic-sight','hermit.s5.star-cage']);
  });
  it('migrates0.108 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/pain-v01080/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(177);
+  const old=JSON.parse(readFileSync('tests/fixtures/pain-v01080/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

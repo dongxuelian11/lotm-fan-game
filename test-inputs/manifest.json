@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.181.0",
+  "version": "0.182.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -181,6 +181,16 @@
       "name": "lotm_release_0.181.0_ancient_evil_test_inputs_2026-10-15.tar.gz",
       "bytes": 17808668,
       "sha256": "55235f5bdecdb938dee5f9eed9b26b4925b52e13ef8769bd7bcd3f3b112a324d"
+    },
+    {
+      "name": "lotm_release_0.182.0_fate_prophet_test_inputs_2026-10-15.tar.gz",
+      "bytes": 17764470,
+      "sha256": "3292e926be2fc174198383c5a5492e299f8839c882e03c70ea97bdd32e17614f"
+    },
+    {
+      "name": "lotm_release_0.182.0_fate_prophet_finance_test_inputs_2026-10-15.tar.gz",
+      "bytes": 3150779,
+      "sha256": "b3bf1f5d1b95f08aaa6ff7a86570e827b564f853976a8a60b199c42bb1178cf2"
     }
   ],
   "fileEntries": [
@@ -248,6 +258,376 @@
       "path": "tests/fixtures/ancient-alchemist-v01380/natural.json",
       "bytes": 3261748,
       "sha256": "80ea3fb3999c9ec22bd5e2752c797c7659d85f2faf7f3fe1d90cd6b36ff5bd8e"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundaries.index.json",
+      "bytes": 5103,
+      "sha256": "f4fd28cc1faf1082ac37bff597ad24a1ae382dbb7bdaf77699bdae311720e464"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-buy-ancient-evil-potion-1.json",
+      "bytes": 1717371,
+      "sha256": "3b2418ea9a8a3107e80f1a2288dc6da170aaf523cf228acf1645ddfce8b6d915"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-buy-ancient-evil-potion-2.json",
+      "bytes": 1786478,
+      "sha256": "c010087d7c636537fd0630c934d2b385be42ca91a4bb6c5709e03336f6d6f8ef"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-actual-pay60.json",
+      "bytes": 1630841,
+      "sha256": "68fe730f59d1dc908345e89d2c82eb9356acb99450bc9cb1d42df2bb666bbac1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-discovery.json",
+      "bytes": 1630032,
+      "sha256": "22cda6674c0c0be82ddc7ec18212b9118e8bc18f6af04e647a4d8ea1018b59d7"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-rest-1.json",
+      "bytes": 1630491,
+      "sha256": "04b85552f15df40e08e12954abcaa4869dede7b8a269c256fff44a8e20d3c940"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-rest-2.json",
+      "bytes": 1631228,
+      "sha256": "7ed79d33966dd921f21afadb51b541245aa9dd9951cc885c1296471af3951fd5"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-combat-round-1.json",
+      "bytes": 2141477,
+      "sha256": "fca9a4148e67a95928edaf3dae4a827cc4619dbaf2f17f16e7b0a050df212333"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-consume-ancient-evil-potion-1.json",
+      "bytes": 1733449,
+      "sha256": "9b97d1da3da085429f6d4dfc10da3bb6cf3ff81ccbf36ab87433570193fc6036"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-consume-ancient-evil-potion-2.json",
+      "bytes": 1803026,
+      "sha256": "b708aa73d6bacb71c3d30c0c7591e860916efd03ab44fcb9b58081c74393c940"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-guidance.json",
+      "bytes": 1639004,
+      "sha256": "f023219b614ba27d0de920ad838b77d449898b7551530aa04ecff9e8ab240d63"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-independent-optional-fight.json",
+      "bytes": 2037670,
+      "sha256": "345604f53d4995f32a24fd7f7f924c77fc77cb3fa37a36cce685004e7742394f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-actual-preparation.json",
+      "bytes": 1865228,
+      "sha256": "c772418533a08887d64adec475340cd01139cecbd8180d11efe4299b5c1cd4c7"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-compare_identity-actual.json",
+      "bytes": 1883533,
+      "sha256": "7030bb510b0493f076ecbded291162cfe271b63c8e2294308cda8f013fcc1e2b"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-consent_elsa-actual.json",
+      "bytes": 1873250,
+      "sha256": "5bf8e6cde249fb3bc8131309dc1a28e5f2dfad504fe3a84cab68c2ff49a7cbc0"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-enduring_transfiguration-actual.json",
+      "bytes": 1875974,
+      "sha256": "20799a1f7c423c87174018aef7134a0fd4a2c7d92de3801aadcd7c56172633bd"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-honest-report.json",
+      "bytes": 1893778,
+      "sha256": "33a6cce6678be29634fd22006a23e84f0c534c5bcbad84f21213f95d9b8616c6"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-inspect-actual.json",
+      "bytes": 1890617,
+      "sha256": "737a29c6c60b095e3cf28368bca3a80cb94da89b41740a8d340706b1177a672f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-leave-actual.json",
+      "bytes": 1892159,
+      "sha256": "4ad2d6693d6bf5d9fc4c7e8ca65d922cd1822b21b84cf4526cdccdded10c7ec5"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-manual_operation-actual.json",
+      "bytes": 1885398,
+      "sha256": "a78c44f1e33ae810c9ee8e833f175392d33231b410309a9aade3c672919b8f4e"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-observe-original-room.json",
+      "bytes": 1835194,
+      "sha256": "db259f865cb3a760bd6174a86c74e780fe3dc4b6cd40e35f533ca9bbf9d242dc"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-read_identity-actual.json",
+      "bytes": 1869501,
+      "sha256": "11735d4a7f96cfb7bdd179b79734796a4fd5c0897e9b5dea722aa16f0c27c535"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-read_note-actual.json",
+      "bytes": 1879977,
+      "sha256": "cfe91f5ac0b562cd32046404f035fcc12ff3586afc97110ef1f44dd8a91c3337"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-return_items-actual.json",
+      "bytes": 1887263,
+      "sha256": "3e0e52416cc68ec083d7b6277d07501b296f6f906dc145ea14cb334afee1bdd3"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-store_items-actual.json",
+      "bytes": 1871384,
+      "sha256": "06b52d7213178246256bbe6ab7352afcfe00e5c183e7ad48d75ffb337e5ef6d1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-walk-actual.json",
+      "bytes": 1867678,
+      "sha256": "079591d3509aa2896919ae969ffd2ca2fd4d47e36b0c08fa133c32fbbbd559bc"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 2226330,
+      "sha256": "6348ebc808bce741a06ca077653b77e47a7d5e1e07aad0080fc4c88dcf42587e"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-actual-preparation.json",
+      "bytes": 1934228,
+      "sha256": "9a39dc74ffa17fc8f5920f18c8eaec9f9ed56930dd8fd44b0188809fbb1a46e6"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-compare_identity-actual.json",
+      "bytes": 1955316,
+      "sha256": "1d042483aa21e619f7d26b8ae46acaae2d28e19e6a5ebf1e231b500d6765aeea"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-consent_elsa-actual.json",
+      "bytes": 1942267,
+      "sha256": "2fe3dd1294df5c1883b2d79f43233219f7a573ad348920cfa5f8b95517d4107a"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-curse_guidance-actual.json",
+      "bytes": 1958139,
+      "sha256": "4ed1b8f507d8cd847af32fd50cb8863818d05eef113613cfea19075d3ef5fa31"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-enduring_transfiguration-actual.json",
+      "bytes": 1945458,
+      "sha256": "105a2cf1f214aad65e1f75df7634413e10a930f730b5418651466167b3da828f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-honest-report.json",
+      "bytes": 1967381,
+      "sha256": "d9f10e14232cf43b95a2175269a4372d2d3bcecf97da6c06be4f21db7b5e5eda"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-inspect-actual.json",
+      "bytes": 1963982,
+      "sha256": "bcb38018d5ddd654a1778bb0f1c3df4a4d4833d0fc686c7536840230212358fb"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-leave-actual.json",
+      "bytes": 1965638,
+      "sha256": "084e1712df9d8ffeba67740dda4d94f6dc0244885e72db1394e46610232ae452"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-observe-original-room.json",
+      "bytes": 1931040,
+      "sha256": "4d4f9ffd05ccb5a6a7aec55a9cfa1068814ae4359928d391021b2a7165fa2c1d"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-read_identity-actual.json",
+      "bytes": 1938510,
+      "sha256": "7f2a8b15d23ee606d5681ccabc8def4eab209843f5ce25d8dd9ff553c0c42168"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-read_note-actual.json",
+      "bytes": 1951718,
+      "sha256": "34d088b8d3caf2cf15120e76a1804fe70cfc0c7bcfc028f19a09fd9138dce724"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-return_items-actual.json",
+      "bytes": 1960777,
+      "sha256": "afd9f6fde110f9fb65692f42e3b4b9f2fa439af918e366c97b9c99ea48422417"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-stop_input-actual.json",
+      "bytes": 1948415,
+      "sha256": "4fdbb83497998d651dad2e8f9c4a06c7162103a3aab814fe73f43956bf10729c"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-store_items-actual.json",
+      "bytes": 1940397,
+      "sha256": "1111dd748463b5613431b76489c5056353613a98fb2caf573b21cc84ab2744ec"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-walk-actual.json",
+      "bytes": 1936683,
+      "sha256": "98ad0e669c262e5a904ba768eeedda768e6e5cd04461c45357d4c74ea451ee23"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1655959,
+      "sha256": "030ab785804a03405786fd40d7e2917f248bc75549c1d59d2b208a2ede86822e"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1664648,
+      "sha256": "2bbde2f28f966ed234d67c37414f01a293f305babdc752e87ef0f6930a0405cf"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1648154,
+      "sha256": "e90e4af624b31301dd15ac61fd77445ce4594acac507db060d0ab46c9b238328"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-prepare-ancient-evil-potion-1.json",
+      "bytes": 1725123,
+      "sha256": "ff5b93a5e8881f726cde1bb18f0736462c88d83b2d10606583572d14214b4400"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-prepare-ancient-evil-potion-2.json",
+      "bytes": 1794228,
+      "sha256": "9371a05836ce673057a2af0708799526786b94c4e46295c18bea0936204ec6ec"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-real-combat-preparation.json",
+      "bytes": 1984772,
+      "sha256": "4d73be13991de12e08e0c2850afd4be63b7aeee6b4e5f381abc1addec7d7f397"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-actual-preparation.json",
+      "bytes": 1898736,
+      "sha256": "1780da06c94ed0cfaadbab2426da40f8aeb1f2f5fa7057005d5fb38e820e05d1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-compare_identity-actual.json",
+      "bytes": 1918990,
+      "sha256": "e1c0f68988c7e1d9930021751bb36f3344033123e1eab0e09ae7b4e753c50334"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-consent_elsa-actual.json",
+      "bytes": 1906758,
+      "sha256": "a7732552e43f4c2d1b78ded58aa64e7ddfe23a187a9fe97c86e330e8e7e38df4"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-enduring_transfiguration-actual.json",
+      "bytes": 1909512,
+      "sha256": "f31c959361c0acb11ae85af9357202e286fe047a4058bedc0faafdf211ea1e7c"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-honest-report.json",
+      "bytes": 1929251,
+      "sha256": "61b351ff7b79ab8690b342f311c933ef6a45ffde8c1058ac20a8ffdd4d8410e4"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-inspect-actual.json",
+      "bytes": 1926082,
+      "sha256": "52587801ab0fcaaede792290a00f4eaef0a7a34b3ebfc426c7177521193fb5e9"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-leave-actual.json",
+      "bytes": 1927627,
+      "sha256": "277b10948cd814662a7eb0ba30dbd4d9ecf594c011f68991501acee99da78345"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-manual_operation-actual.json",
+      "bytes": 1920857,
+      "sha256": "a4ffa34f07bc5b731781a3c434cc95f61536cbc858da3c2255346b9637fa8eaa"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-observe-original-room.json",
+      "bytes": 1895560,
+      "sha256": "678f36bc5e0c80b9ab13ca76836b873033dacd8be8c29ea696164fa31036b90d"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-read_identity-actual.json",
+      "bytes": 1903009,
+      "sha256": "dce043bc4fd14cc0441e3101715812dd220ca3ca7d52f536827bf8445db760fb"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-read_note-actual.json",
+      "bytes": 1915429,
+      "sha256": "161a7fdda9d453bdea01775822db14e680588ef07b996f0df5271f8ac9605af4"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-return_items-actual.json",
+      "bytes": 1922724,
+      "sha256": "35d6c1cce8107e35f9f076560db723f974105efb4a394fa7443b24f97e0c86e3"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-store_items-actual.json",
+      "bytes": 1904892,
+      "sha256": "1f89f74d78f03f243f1c22eab3818793666f0a040adbbe3b70d89f33dc0ff2f0"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-walk-actual.json",
+      "bytes": 1901186,
+      "sha256": "24b4040e1ee320be1459c5ff76079455d4236c6b55ce7ca2e064a0248d497eb1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-withdraw_permission-actual.json",
+      "bytes": 1912095,
+      "sha256": "b62ffd338b28a38ad2b429fcc77c80fb2a112c5fb2f40b9636526fd40e68924d"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-same-elsa-and-guide-ordinary-clearance.json",
+      "bytes": 2004311,
+      "sha256": "8635cdb971b63d3c40daeb611a522599d2f2f8fc3b02ea5f2ef498831b62f2be"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-three-cases-reflected.json",
+      "bytes": 1968976,
+      "sha256": "c43b941880239942eafc2f78ae33a0da3c31aa12a3100ad1817b602d3497c4bf"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-three-new-original-blocks.json",
+      "bytes": 1975368,
+      "sha256": "ed8d7f9e12909e391e86cf1ab005adc9d348b4cd67d3d2537ce4cd91c29bc88f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/natural.json",
+      "bytes": 2509703,
+      "sha256": "f005b8f8aa0b9d82f14919fbf668a56c4f5a63e1284be94c6f7155b94472c96f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-combatStart.json",
+      "bytes": 1028348,
+      "sha256": "223b7b3c03123ef82cce0adb8518dd0d4c2eded4677728108a20808611ae6d22"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-combatTerminal.json",
+      "bytes": 1113050,
+      "sha256": "6a5014565d96c8bbf98b41eb2a50bbb96e793b73bbd80d1f173e566eb1b24d7a"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-departure.json",
+      "bytes": 814789,
+      "sha256": "619d9f1b5b1490a070e064b1d50ab7c346d8aad84a0ac5e1429c08f348fa2163"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-practiced.json",
+      "bytes": 984807,
+      "sha256": "ffc32d3769b4d5560c0947db393958a8f27f39c504bb58d6606466a02d5c2b85"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-promoted.json",
+      "bytes": 903898,
+      "sha256": "b670c281796e6750b2edb01763c40efde3e022524d06350c2839dbfeb36a08a9"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-treated.json",
+      "bytes": 815743,
+      "sha256": "dff2363cfa6f9904d4258b199ab4c52a53bf6d3bbe8735b15a38e6d2ea3bd1f1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/summary.json",
+      "bytes": 3275,
+      "sha256": "7d6ad93150fa23adb6929dc4e3637a5fec299e1985ce33f467efc70e8ee17997"
     },
     {
       "path": "tests/fixtures/ancient-scholar-v01400/boundaries.json",
@@ -413,6 +793,361 @@
       "path": "tests/fixtures/blatherer-v01560/natural.json",
       "bytes": 5673821,
       "sha256": "796a7efabb26d5db70a24eeb509d7bbe2d80aa33e864f2ff45eba65016abaf7b"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundaries.index.json",
+      "bytes": 5341,
+      "sha256": "f19ea4eb6efce3c1ee8584ce9cc3fc084b1d8c310dcd2015f745558ec1ff0473"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-actual-preparation.json",
+      "bytes": 1780968,
+      "sha256": "370cbbbc80bca6e5df32b609591349cf5eecd9d36cfed92e822234d2565b196a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-confirm_emotion-actual.json",
+      "bytes": 1795915,
+      "sha256": "586c199d69cf3dc79c4614e33cf858c8a185b9ce760018c1c75853202c4a5277"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-consent_nora-actual.json",
+      "bytes": 1785126,
+      "sha256": "f6fb8738b2b01ab81cb632e1d308b52f952ca629df7a5892371dc2e269e43a51"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-emotion_interference-actual.json",
+      "bytes": 1798519,
+      "sha256": "960f04d9987acf059815e8cbe3c60e9d4d083186647a4c3157fc2cf3d62edc47"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-end_focus-actual.json",
+      "bytes": 1802715,
+      "sha256": "5bce28e1e56a1ae380767bd83f8db1e11942b10cd6f411b6e749ed7eb3ef8c67"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-honest-report.json",
+      "bytes": 1812101,
+      "sha256": "125ee71b5cdd8f1599d9fbf45837b5f210d8fff04b6ad88139bf0477d0ec2068"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-inspect-actual.json",
+      "bytes": 1808978,
+      "sha256": "d0c1a405cb3bc71af7ccae871f8e94e4bb8d5c2bcb99b6ffecfbebc70c89c7c9"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-leave-actual.json",
+      "bytes": 1810494,
+      "sha256": "4d01772c0e4c020cbed986dddf79c0ecc9226e3731f4e1dc47ef29c3ce0b877a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-observe-original-room.json",
+      "bytes": 1777894,
+      "sha256": "d51e08bcf788609d6a8791d401b12d18b20081d7b556507ee4fc8c02c0bfcb58"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-perform_operation-actual.json",
+      "bytes": 1800998,
+      "sha256": "8b39df5e2b7cb5a7bcce59c24a8a2779dd855e3007457fde4b55ea7d34eb3021"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-read_note-actual.json",
+      "bytes": 1790219,
+      "sha256": "87ad0a83797e4a0d85984891e5d8ab400102f85b370706898ef64298d475b451"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-rehearse_bell-actual.json",
+      "bytes": 1792214,
+      "sha256": "dd27a6187b175b8ead10442a3d0fbac8636b730a95969d5502ff90a288ea5179"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-return_card-actual.json",
+      "bytes": 1805693,
+      "sha256": "8ababb6dcf825a19183cfea0a46f2336f09f1625fdbb8ff95ff6b4544a8aa19d"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-take_card-actual.json",
+      "bytes": 1786868,
+      "sha256": "8a47c669cdaefb28c066b26348b99ebb110d5ee8846877933a1e68e6be169952"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-wait_6-actual.json",
+      "bytes": 1804207,
+      "sha256": "a0ddb963591b5311fb86066ce4ef2a91622a4d1a334906af53d537e720ab8b25"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-buy-blood-duke-potion-1.json",
+      "bytes": 1608712,
+      "sha256": "f77e196ce3acc218445a2671def173950d04a2a4466c0ed69a4c26888bc38bbb"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-buy-blood-duke-potion-2.json",
+      "bytes": 1675146,
+      "sha256": "898dc09946d0e5855e508ba1f833d6c3606962c5b7094910023e011f36d2113b"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-1.json",
+      "bytes": 1998648,
+      "sha256": "bdffc900f51268203f825f3eee0dff260dd89344f688ab4f81530838606e1e58"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-2.json",
+      "bytes": 2116922,
+      "sha256": "2790e475ec2d48654167925645982b592dfc525abb13b725195aa5ed7c01856f"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-3.json",
+      "bytes": 2155835,
+      "sha256": "902466f877588d35b41bd3eb087f25c33b3347f0ac72884cf6961daa057bd688"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-consume-blood-duke-potion-1.json",
+      "bytes": 1624106,
+      "sha256": "1f980065c8472d276535925e5c874072c8cf01d7f5dd54570c53b83ce873de5a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-consume-blood-duke-potion-2.json",
+      "bytes": 1691032,
+      "sha256": "2b1d9af88ee615f0c1d139334ac849e05ac253cb6c3b46f1967d6d8bf5d59728"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-actual-preparation.json",
+      "bytes": 1747065,
+      "sha256": "010606fc707a77f33b5d5a45a4ef1dfd435dca8a5c630abaec24e0557fcfcc24"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-consent_nora-actual.json",
+      "bytes": 1751223,
+      "sha256": "d11dfe8f94c4661b3f16bc1a8201907dd91d5734455bcbf4f7f9acbb17992364"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-end_focus-actual.json",
+      "bytes": 1766612,
+      "sha256": "febe44616711fade051974039f8069a81e6322aca4d3c5539d8ecdc77b268bec"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-honest-report.json",
+      "bytes": 1776100,
+      "sha256": "ea5694ba43e2b508fa61777c4d01a09fa2459985f67ab94b6e28d943a41d5ae1"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-inspect-actual.json",
+      "bytes": 1772975,
+      "sha256": "8938ac94333de0a4cc7719d06166a7295052428f101f86c4c0c53e29290ef217"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-leave-actual.json",
+      "bytes": 1774492,
+      "sha256": "b80ed8b7251336a492b142c4b13963deafaa07697151e04e354120f3c440c165"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-notice_impulse-actual.json",
+      "bytes": 1759941,
+      "sha256": "a9b36dab2c4f499b62a8e1da514a229b1ea4111c1f96fe6d1f1af2fba06eaa26"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-observe-original-room.json",
+      "bytes": 1720082,
+      "sha256": "03843b15a39ac4acd46c0a620fd4aac8fa59a99240d30c53e8dca518ff4b2715"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-perform_operation-actual.json",
+      "bytes": 1764883,
+      "sha256": "3f6c958bae6e2d4ede5027991118dbcaae014d0b78e458fbe160ea856aed8f03"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-read_note-actual.json",
+      "bytes": 1756316,
+      "sha256": "fd6c9a189e9e4e076722a90d1ff9bf9510330b5c76f684de0ed3a58309c7476a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-return_card-actual.json",
+      "bytes": 1769759,
+      "sha256": "a762c33affa1efa5f2bdc8186fe6c74680da425c349df9ad95ff4fabdcc6ec7e"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-self_restraint-actual.json",
+      "bytes": 1762487,
+      "sha256": "76abe5140bb4897866f55beca118d3ef81ade1012a61b444ea4b402adac585cb"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-take_card-actual.json",
+      "bytes": 1752965,
+      "sha256": "affa6f4addb8e98cb8c492d13184412327d732a1415bcc261ecd6f6da507317b"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-wait_6-actual.json",
+      "bytes": 1768223,
+      "sha256": "20b0aa515215e4581c39e1f28b40f3bcae282d592481a723e420c17920eec5d6"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-guidance.json",
+      "bytes": 1530112,
+      "sha256": "cdf63c81e04f13306c24f3cbb8dddcf708c5fca004937de8091cae8d2a1d717e"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-independent-optional-fight.json",
+      "bytes": 1900587,
+      "sha256": "c70c552a69a5d8a8c059784497fcece462fd1680ac3d08d8d988ecf00051c7ba"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1546206,
+      "sha256": "10e45e4827fc894caf0e2afd136a253bcc7f5ea7ff92eb3fce24ba9365add85a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1554230,
+      "sha256": "d0ec069b9c492b5b9989bb3113085c46922bf55de7435cbcdc0f57e707551b71"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1539115,
+      "sha256": "a238cea7c159e152a3ef3c227ce7beece2a3f27e66c3e483cdcf3b86b96566dc"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-prepare-blood-duke-potion-1.json",
+      "bytes": 1616126,
+      "sha256": "8fb3d6066cdeb33318e62f96d395c7ff60e92fcddc4fd3690e992a03ad0a2c3e"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-prepare-blood-duke-potion-2.json",
+      "bytes": 1682558,
+      "sha256": "aa0f3ce5575bb5567a3f49c542b9189b08701c42cacae03e6bef1c10844d51ba"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-real-combat-preparation.json",
+      "bytes": 1860387,
+      "sha256": "c9c82f892d21d1cf68d955d75220da06334a9bea7e99b106f41c83e06e152e2c"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-same-nora-ordinary-clearance.json",
+      "bytes": 1874122,
+      "sha256": "a8b97fa3ef8fed5f3310e6a13578a99dbe3747b0b31f0b38e25e871d1ba248f2"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-three-cases-reflected.json",
+      "bytes": 1856926,
+      "sha256": "d34524ef8c8dfd342ff3d86d6617e22ff69b9a7995e7dc574a15153a9316c0d9"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-actual-preparation.json",
+      "bytes": 1816992,
+      "sha256": "ee885e04fc32286099f4fea22266a5c565c47029357080a005ce9514080a346a"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-confirm_emotion-actual.json",
+      "bytes": 1832024,
+      "sha256": "c373c3755ec1a63eeba490f366b3c98e921f2dc1329db835ba48f4bed5a844ea"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-consent_nora-actual.json",
+      "bytes": 1821175,
+      "sha256": "45b6c570d1add70d7cfd147ee937c789b8928b0898eb2257c923c24e188759e9"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-emotion_interference-actual.json",
+      "bytes": 1839900,
+      "sha256": "ab30b3b61557caeee76e4ad1ce6c59a9b776ce86cbaa2939731538e3fa5589d3"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-end_focus-actual.json",
+      "bytes": 1842195,
+      "sha256": "86cbbc202c6d68649e9d6c893d67637b5b597af25084536e623f303f57f1edf1"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-honest-report.json",
+      "bytes": 1855320,
+      "sha256": "bfdb990cbaf476acc5970775669baea8b403dedb2e035743a3b054211078c6ac"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-inspect-actual.json",
+      "bytes": 1851941,
+      "sha256": "93351643fb39a2b8be349674d0c345e7da5d96066812593c222ba11f2691d5ea"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-leave-actual.json",
+      "bytes": 1853571,
+      "sha256": "14176780f4e795c445a888f7f5c243069098aa30aa82cd8f9e979b4e67ec57b9"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-manual_operation-actual.json",
+      "bytes": 1845071,
+      "sha256": "042f9dec20db07ba644d2c741d6e9ee45d1f62522ce14126b558969d370c514d"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-notice_impulse-actual.json",
+      "bytes": 1834000,
+      "sha256": "63fb04ee504272f65f2ba2afe9d533a53a94171773a8d1c16799f50e7b936386"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-observe-original-room.json",
+      "bytes": 1813902,
+      "sha256": "2a5a2c0ea3ba8367e4667775540467a12bcffba99e1671ca34690e448133bf7d"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-read_note-actual.json",
+      "bytes": 1826298,
+      "sha256": "62c48d66a10c789b427a1ea7afefcf080d7a0b7f5678eadaa8f27b0f3bcad769"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-rehearse_bell-actual.json",
+      "bytes": 1828303,
+      "sha256": "c60574a311c5c163159f30ceb89dacf93f5e7c5fb0beb8acdf915c434f5a78ec"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-return_card-actual.json",
+      "bytes": 1848646,
+      "sha256": "02f9b8214785979b9ff7dca8e2526327727840923d9db1cff85287ec69058df8"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-self_restraint-actual.json",
+      "bytes": 1836659,
+      "sha256": "eab2a91f2646671a215b5f392eff6a20ef48b631201e38f18157754a18fbecc6"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-take_card-actual.json",
+      "bytes": 1822927,
+      "sha256": "e4260f7cd1eadc3c6f9a17bc30df17812899bca7b773a1b7365a77ec4879a70c"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-wait_6-actual.json",
+      "bytes": 1843548,
+      "sha256": "d486d34e0e82c5cc80318061eb0029b6f1ad5c406246b0716930bd6a0b8d5189"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-withdraw_permission-actual.json",
+      "bytes": 1846881,
+      "sha256": "a9869bbf5664856597fe9a953bf2562b3eda056a0a44131876efdfd336d8c721"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/natural.json",
+      "bytes": 2423212,
+      "sha256": "7762560089c03487c1dd4432fd367998d4874c165e3cce8d012d200d56222363"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/snapshot-combatStart.json",
+      "bytes": 957202,
+      "sha256": "59a20be0bfded0ab5fe5f964e7dcd2c70615df4ea7e0b53995eaa48a33f45578"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/snapshot-departure.json",
+      "bytes": 762030,
+      "sha256": "9b8778947c7a39979135a3e1ff6e775d0761fe3c8fa0212ac14385c0c907a087"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/snapshot-practiced.json",
+      "bytes": 928782,
+      "sha256": "1fa569f969372d7ea68fbf661d91cdcdf6105a40b2d9bbfb04de0279a8fb57d4"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/snapshot-promoted.json",
+      "bytes": 847825,
+      "sha256": "f839a97c2814f50b2fadf8003e707977428aea57d28e2c5d001f0bd665046de7"
+    },
+    {
+      "path": "tests/fixtures/blood-duke-v01800/summary.json",
+      "bytes": 3307,
+      "sha256": "e8ae52bde6aa83bb1ea99d1cf1512cffe72854d1212b0044ee15a52befe8bfb2"
     },
     {
       "path": "tests/fixtures/briber-v0650/boundaries.json",
@@ -2395,6 +3130,316 @@
       "sha256": "8eb7f9df8396e151c9779173be51af3cb58685bd92dc80269d55ec5713d47e1e"
     },
     {
+      "path": "tests/fixtures/elder-v01790/boundaries.index.json",
+      "bytes": 4387,
+      "sha256": "5ea128173e80af2e192f5a2e5d65919784b0cfc36fabbd9f24cb95bac4fc8174"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-buy-elder-potion-1.json",
+      "bytes": 2051058,
+      "sha256": "d1643c3ffa3d5d248f0519492fd2550fd746fd8052ff4fed6afff5bfc60d9b3a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-clinic-actual-discovery.json",
+      "bytes": 1960232,
+      "sha256": "613c68b51af2efdb16329bab56227899499eafbee1039dc36b52674fbf4299ff"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-clinic-actual-pay60.json",
+      "bytes": 1961053,
+      "sha256": "9350c815b9204a63cc2c26bd89b907e43c74dabe85ed1ca1693ca768c11d16ef"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-clinic-invitation-actual-rest.json",
+      "bytes": 1960696,
+      "sha256": "ad51166224df9d74c0af30061081a4bcf6327691c0e3012eaeb63ee35fec3d72"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-combat-round-1.json",
+      "bytes": 2481981,
+      "sha256": "0e3713becd973ce99283ef9500f72d5e71fa0a998b2f52de2ba298d7b3961dd2"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-combat-round-2.json",
+      "bytes": 2660464,
+      "sha256": "23a7b3237743fb73a0a86946a84c4a7f4907b26ba685324b0856afe80ca063ef"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-combat-round-3.json",
+      "bytes": 2697695,
+      "sha256": "97a44c211b5200b373f899dbd3a64a8d76303e7f62cbe2dfe7ce8d19c2efa2d9"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-consume-elder-potion-1.json",
+      "bytes": 2068514,
+      "sha256": "8119d5232c3a9c4e1ba3e5c8c30a9a8d080efd95a83dad2eea81b8da8c22f5e3"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-guidance.json",
+      "bytes": 1968939,
+      "sha256": "ec4b3acc8f14a79286704c4f5d0dce452ffaf5812cc1445387c8ab2f33991a87"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-independent-optional-fight.json",
+      "bytes": 2337936,
+      "sha256": "25fcc054537de7539e5ab08e1999b9d1561478393bbb160c3b962d3c620f0bc0"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-actual-contact-closed.json",
+      "bytes": 2271705,
+      "sha256": "3a4ebc3f4a1b67165d2fa5ad3bb6b601b9b1d1fed057f99e6229c8a38eae09b4"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-actual-effects-stopped.json",
+      "bytes": 2257177,
+      "sha256": "1698659a04aad4b5daaf0fd76948bd51dc843adba4dc2e3af1544f97916ee42b"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-current-owner-consent.json",
+      "bytes": 2230874,
+      "sha256": "a08cd43393a9071eb18fa561be8f16725b0ce9775797d6126c621078e50c408c"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-honest-report.json",
+      "bytes": 2273672,
+      "sha256": "73a3b2473cbbd03f83ed0ff4af1329b28938c0d00c4235708fad61a2c6cf5251"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-observe.json",
+      "bytes": 2228218,
+      "sha256": "f8f257ce184b2fa32e46b2ff5f9b0bd928e4808714345d853f863f4091629cec"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-ordinary-fallback.json",
+      "bytes": 2258916,
+      "sha256": "94fefde559815f11227b3072c94a8f1c88315a133b99d8d1dff5a9df97e28f8b"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-paid-materials.json",
+      "bytes": 2233611,
+      "sha256": "371f4b977a4c31bf9874f4f9798baae998baaf739fa92db0c50855924079ae19"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-same-card-returned.json",
+      "bytes": 2264479,
+      "sha256": "af4552fedec5d17ea48143bd66be6316e0726e42c234d6428c0601b11890212c"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-same-original-card.json",
+      "bytes": 2238005,
+      "sha256": "0d109b30f4bb9e1b2f990bf16e054b61b7564c905a4298518c84d783bcf0ad0d"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-single-natural-chorus-attempt.json",
+      "bytes": 2252108,
+      "sha256": "5f0908b11f37191bc41025b98089ffce76398735e749c1b2bd7791346d761560"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-single-natural-whisper-attempt.json",
+      "bytes": 2246139,
+      "sha256": "d6eb2b725252c6b015d283287cdb8d9b2c257f251a7670dada2fbb5ef4451f39"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-spent-original-materials-returned.json",
+      "bytes": 2268164,
+      "sha256": "57cb2be137a69e1c0736a2cc4a4f757687261ddf1d6b8c8d2b0ec3c36229d393"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 2679972,
+      "sha256": "d3c3073b0b47b7a02707261025da325289ca27b2ef967f220609ffbfdbbf00d0"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1988135,
+      "sha256": "fafc78c39a9b0269ac09748863d6cdf8b7273d41d9ae1b0d9463fa616cb95d8a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1996590,
+      "sha256": "89f496f176c818975578737568403c810c42190a7cb8bfc66280b319b2a32f84"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1979051,
+      "sha256": "7d31e70ad065f62faff0645230276f3c0fde79075284cf2045031af8ab9c80cf"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-prepare-elder-potion-1.json",
+      "bytes": 2059285,
+      "sha256": "7d8f0f0ef907ae0e738ab1aa16af70f8e4f0ca2ec8f70cc911b8af375f3e650c"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-real-combat-preparation.json",
+      "bytes": 2279333,
+      "sha256": "b3f05d949fb7c7b1809e6eab6040378bbc77fa8449465c90c7f7aec240987a19"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-same-mara-ordinary-clearance.json",
+      "bytes": 2299039,
+      "sha256": "e83598ac4cc027ea6c0e85fa85ee0888f3a8434475cb1b4661dc66f4f0ca08b2"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-contact-closed.json",
+      "bytes": 2179856,
+      "sha256": "895cc1dfb42e08f1f817256eb082352f72c0097aefed8b132208edc52460ec33"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-effects-stopped.json",
+      "bytes": 2167291,
+      "sha256": "c2e458ee5612d3d99dc85b8214be4f7f9ec24f6820afce49375688b92a114fdc"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-short-window-operation.json",
+      "bytes": 2165525,
+      "sha256": "962f500a4b2d0e78557a9eca4f18815cb3a6af8a0f55b0ea8437043dd9c076cf"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-current-owner-consent.json",
+      "bytes": 2147900,
+      "sha256": "c418ec490f97f41a318acdeeaa530810078177e7400a349fa3433ab8e2befd02"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-honest-report.json",
+      "bytes": 2181632,
+      "sha256": "15376cdb24b5c9fdb0f9cc5c6cb69fa8ce2a314ecfdb9a55594da3b9c05407c3"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-observe.json",
+      "bytes": 2109658,
+      "sha256": "275147ed217a625a7879aea5ee66d29036fdb45414a522942357015bf4225f99"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-paid-materials.json",
+      "bytes": 2150625,
+      "sha256": "628d6dd94291b6f1ce58cf2b0c8c5fda8b35d3bf971653e83fa327abd57e86c0"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-same-card-returned.json",
+      "bytes": 2172715,
+      "sha256": "18b18c3de4d9402987a279c5d185da38c93a15184f2654ed897103ec25ee4fa3"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-same-original-card.json",
+      "bytes": 2154999,
+      "sha256": "ffd2a8b52010ed23b291cad50e522f46309c6634f4b25a5775c391763b529ac4"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-single-natural-whisper-attempt.json",
+      "bytes": 2163095,
+      "sha256": "1babcb5cad1449ae87d8f0520e19e7abf10066ed9103bb9988152d0b0d3c4dda"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-spent-original-materials-returned.json",
+      "bytes": 2176384,
+      "sha256": "789bb19f0101da9d92d03764e717c7aba226c00a6149baca938114a2c4605da9"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-contact-closed.json",
+      "bytes": 2224430,
+      "sha256": "a88fb2188bfb38f7f4f8ebb65bbe46b0f9da415cae83d9e399746d277bde1b79"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-effects-stopped.json",
+      "bytes": 2211926,
+      "sha256": "293663559bf5252f4f846f73921a5a9cf3f8811624c919146175a671f180e422"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-short-window-operation.json",
+      "bytes": 2210136,
+      "sha256": "02524c4e88269eb16e5e2ed86421a5bb8f09741def1ad8acff096d56e319d942"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-current-owner-consent.json",
+      "bytes": 2186285,
+      "sha256": "b2259597e259ab7b714398cab2fc1f4615fd1375f8cde67aeb73bb80901b4dbc"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-honest-report.json",
+      "bytes": 2226205,
+      "sha256": "060f03ae6f95a7607f255c179500efa18056c547089fb7ed6ac815dc068af30a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-observe.json",
+      "bytes": 2183636,
+      "sha256": "e00042450659945ae390de65ff0edb1673f51ff9df03e2f61d600da18f879b93"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-paid-materials.json",
+      "bytes": 2189010,
+      "sha256": "c647549159d7f0dcdb177ef5096f066b7fcc8acbe5216ff36d66fc9c3d992206"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-same-card-returned.json",
+      "bytes": 2217288,
+      "sha256": "fe23aaf994e4968cea8e807f74f4161aac4d5038e92b0727341500d88cc9d842"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-same-original-card.json",
+      "bytes": 2193384,
+      "sha256": "ec202167046ddc608bb8c406f5dc3e5b92d1deccd29de7b083b07d78aad0d1d7"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-single-natural-chorus-attempt.json",
+      "bytes": 2204601,
+      "sha256": "de1c409a9996da0f53b4045af0a0cbef4ad739109948e0c01f7b479a866acbed"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-spent-original-materials-returned.json",
+      "bytes": 2220957,
+      "sha256": "0acf1926c99976549feeb18208c516859063a65d2553657886947f76e09559b0"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-three-cases-reflected.json",
+      "bytes": 2275545,
+      "sha256": "6f0435acd28533d46b3c1c77c21044bb38d65c20221a44829c901233b507723a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-treated-original-wounds-subsequent-rest.json",
+      "bytes": 1961377,
+      "sha256": "d7d213a2bd6ea945ed4e925cedf48ec41d4c066bae5877df4eef1e1f3980b2eb"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/natural.json",
+      "bytes": 1916246,
+      "sha256": "06a23ce47295f72e78428f19d2559d6aab833dc978c58ce560f564c0e1d37b3a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-combatStart.json",
+      "bytes": 1179277,
+      "sha256": "5ba43709718bb6a1be0b7e5b4215d6f5be70857ed463f67706fbec08f8501268"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-combatTerminal.json",
+      "bytes": 1339856,
+      "sha256": "2238493fde4bd0dba15b98d0ec6b0d49e9e031e7ee47bc399f4982538040a2fa"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-departure.json",
+      "bytes": 979889,
+      "sha256": "cbf3deda1c463d25eb336e097c7b4776207dfbdc8836328b7a00d975e73517ce"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-originalInjuriesRecovered.json",
+      "bytes": 980992,
+      "sha256": "6685fe078840acde0f3e6f1cc426d6d75227247a2f5481430d305134a4d49a25"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-practiced.json",
+      "bytes": 1138148,
+      "sha256": "486350ffbb8c2203daf877c3bdba8391a2665702d1abff7c2e8a18c8073acc09"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-promoted.json",
+      "bytes": 1036743,
+      "sha256": "ffeda4fe86b09cb8c6023d8e25bd3ad117d9969697e2226c8070904f40487d04"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/summary.json",
+      "bytes": 3140,
+      "sha256": "5f7a738b3b3de7fbba0cff3a19ac69c2d738204a83cfb8e08d2ac04a20496ae7"
+    },
+    {
       "path": "tests/fixtures/faceless-v0730/natural.json",
       "bytes": 1160991,
       "sha256": "a89848c94b3dbb9321e9b5b16151bcfdaf79095201c1fd39dd5a92fad3deed18"
@@ -2408,6 +3453,431 @@
       "path": "tests/fixtures/fallen-earl-v01360/natural.json",
       "bytes": 3272837,
       "sha256": "bae30402d3cd4f6c3b287edadef34e1f766133fe5a764f5f484a8f38072c3f4c"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundaries.index.json",
+      "bytes": 4849,
+      "sha256": "69f91b6ed289c767b8688f1b9f903ad6496941990463476ab6d7330b7146d48c"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-buy-fate-prophet-potion-1.json",
+      "bytes": 1738296,
+      "sha256": "e6e12cf63e40e33007b7b305c390edfd77bead08e0265134f25ef15819945053"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-buy-fate-prophet-potion-2.json",
+      "bytes": 1812272,
+      "sha256": "44ba592b111a3d002550ad70704b59dcf84769f0f59e01498b9f48b420166de8"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-buy-fate-prophet-potion-3.json",
+      "bytes": 1887423,
+      "sha256": "6e2e2a12af5581705d809335f6c7618974662269ea675c765fd85339ff6a032e"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-actual-preparation.json",
+      "bytes": 1980757,
+      "sha256": "5c0fa2bfb0db1244f24ed17063cb44a827215116b6384e6b4c8192013aeb6a61"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-consent_vera-actual.json",
+      "bytes": 1984051,
+      "sha256": "95a6ad07e9f7156bceb6400474f1c23df1f33d685daab8b599604cb17c58525d"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-event_foresight-actual.json",
+      "bytes": 1987131,
+      "sha256": "dde43127ecbaa3dbb4e7bb5599a50055ed979656088b948a9f32fd194923ce7e"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-honest-report.json",
+      "bytes": 2004959,
+      "sha256": "8f8e3b7f70335807f134e663fd3f34fca286437358473c4052f48db9e29c6b7e"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-inspect-actual.json",
+      "bytes": 2001222,
+      "sha256": "dd92401ef639f131e27559751edf744ca410a5c887ef5dd8b646d8d083b6f84a"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-leave-actual.json",
+      "bytes": 2003045,
+      "sha256": "f7d11191265d2f95aeb47375df9d6fef2dfb90aa68df0fa09ad77bbfe1e3ca3f"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-observe-original-room.json",
+      "bytes": 1975649,
+      "sha256": "bf7f4877c26fc72708b3759da8c259e4cfaecb200760e9cb2df6f4abafafc131"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-real-luck-accumulation.json",
+      "bytes": 1942325,
+      "sha256": "a57f7127057aef810c26361e33a1fc73ee6ff9b9e9415fb1b8179ef57e204bd5"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-release_cart-actual.json",
+      "bytes": 1990195,
+      "sha256": "72b6762bcf6a22a0c23a5df15da7f452359544b2fc11ae23ba94c4b0d0e38d83"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-return_cart-actual.json",
+      "bytes": 1994841,
+      "sha256": "80b3e2726b130f1d677dcf8866fa2b26b3c28825869495cfe20b3a8aa69a353d"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-return_object-actual.json",
+      "bytes": 1997148,
+      "sha256": "d4cdc0c3f9f97bb97b26dd1c991a093acfd0b689608247be5d4c77acbcba91ab"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-cart-omen-walk-actual.json",
+      "bytes": 1992417,
+      "sha256": "c66006489735d7da98ddff1285f871e942f036cc0e126720a890f610f1588284"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-actual-preparation.json",
+      "bytes": 2011036,
+      "sha256": "01717bbc21a0002628e3250e201997be3a7a1fc013870fc2192c37e508196dc8"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-consent_vera-actual.json",
+      "bytes": 2014261,
+      "sha256": "ec744f6e2c823a7ec9115a8ae61e4d3922979cc1a5a5ae7e893819987d6c74f6"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-event_foresight-actual.json",
+      "bytes": 2017373,
+      "sha256": "8e1843c1df8ce61640bbaca0c3ad2720ffd4eb9d4e983a8be7c047608e6dda74"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-honest-report.json",
+      "bytes": 2039758,
+      "sha256": "18d46d400420c7825e4f451b318a9cbf4d0ba91b353cb5fa77b303688f98547b"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-inspect-actual.json",
+      "bytes": 2036002,
+      "sha256": "e470621c083bbfa78a408f108fbd3b1580b5a5b44994f0338558734b58f202d5"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-leave-actual.json",
+      "bytes": 2037836,
+      "sha256": "08af46f06acce34364e10b8bc4e1f1bdd8f1ad5884b89321bff01a85066691a3"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-manual_inspection-actual.json",
+      "bytes": 2022509,
+      "sha256": "06ba8aa2dd67b4dde8442d6ae5dc693a9145a16457e1048398709599c5189d32"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-observe-original-room.json",
+      "bytes": 2007114,
+      "sha256": "c76ab5383500241be72e9030d6f11ba22020715a13d01af3b6f7c20b0af7dc1c"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-release_cart-actual.json",
+      "bytes": 2024790,
+      "sha256": "07313b2a3e7448b16a5e06f5b52cfa5ab0c87b428dc0934d92b1a1a537897620"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-return_cart-actual.json",
+      "bytes": 2029559,
+      "sha256": "1d55dcb31d5904897bee7fe02e45c676ce0ba464a36ff72026cdc7d40c9817f1"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-return_object-actual.json",
+      "bytes": 2031894,
+      "sha256": "fc0e69710c3133d3ec6158d2fe2f54f023f73866397e4c1c2d10b096fa03ccbd"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-walk-actual.json",
+      "bytes": 2027131,
+      "sha256": "2de90ada7f354a8826282ecd314cd3726c92f238d18d371a2611fd8de11c32ff"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-changed-condition-withdraw_permission-actual.json",
+      "bytes": 2020414,
+      "sha256": "877f21df04b8dc49c1a2f6a9f6ab58e0781e2fe4b19ef0e5f30a671412de4c60"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-clinic-actual-pay60.json",
+      "bytes": 1649776,
+      "sha256": "06bf88156b5ad1ae1b715e1a20593e5d6a5fadb397af06567f16da46a60c5e4f"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-clinic-real-discovery.json",
+      "bytes": 1648978,
+      "sha256": "ebee62ea8e17f5fe0ea46999a93bb0c588c20dff75a268dd49b6ca275faaa45b"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-clinic-real-rest-1.json",
+      "bytes": 1649431,
+      "sha256": "f3d99da41c65ed24f6ffb338a6367275ff343c227921be4ff80229b076dc5de1"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-clinic-real-rest-2.json",
+      "bytes": 1650117,
+      "sha256": "ce859f540fc80309976c0bca2d0b99e6076601356ca49e97637ad3acda39211a"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-clinic-real-rest-3.json",
+      "bytes": 1650372,
+      "sha256": "3436a72f161eece1a8f49ebe16e262a44a2ea50b9ca6116eb53f2719ef28d51f"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-combat-round-1.json",
+      "bytes": 2416465,
+      "sha256": "73a073c15db81d22ad164f068e349ce1637d95104ceb100c8f136222b2836aa4"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-combat-round-2.json",
+      "bytes": 2606289,
+      "sha256": "27acb00dc7f9c40788e86c0dfed771b17d2029ad308be31ee7fa41d1aeddbe33"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-combat-round-3.json",
+      "bytes": 2657396,
+      "sha256": "fcc1978f59c6994fabab86ca547d90d531512790945554efa893d0436abb8ab0"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-consume-fate-prophet-potion-1.json",
+      "bytes": 1755366,
+      "sha256": "2471020815c3c2a2669f3155b4d60b57af81f0b1a03d3f3cb6dea019e191d00f"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-consume-fate-prophet-potion-2.json",
+      "bytes": 1829336,
+      "sha256": "0f61f9b819cfa71e587d65b2172ca201f174b6fefe8ab6afb725428b65f1ec56"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-consume-fate-prophet-potion-3.json",
+      "bytes": 1904981,
+      "sha256": "d4324e62948cb01e8c357031be09c221eea77ee8e1811543bdf0f7f4aeedf3fd"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-actual-preparation.json",
+      "bytes": 2045794,
+      "sha256": "eedf44b02dd421d85d03d9386713e5ee9176a082b7718680be4e844ebed536a2"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-consent_vera-actual.json",
+      "bytes": 2048990,
+      "sha256": "9156c876100ac44ebd40c77d1070f74d3b9e923dd255b896b16d0fcb82f5c218"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-event_foresight-actual.json",
+      "bytes": 2051985,
+      "sha256": "d1154f5556b27abea2d4568a7698a3e031631b1b191e70130067203635328500"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-hazard_adjustment-actual.json",
+      "bytes": 2055715,
+      "sha256": "aa6e7b7461fddb20dfc47fe08b487a8ba29b41222547d17707c0081a2ce96cd0"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-honest-report.json",
+      "bytes": 2075151,
+      "sha256": "0297a490dbc29d0c23a55edda3b80be35d9c93f38ab275622af398f1298fd74e"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-inspect-actual.json",
+      "bytes": 2071003,
+      "sha256": "e171882dfb4ddcc3d9ca1282ff7eac48f2a1b8d6fb211d68cc1280f327e0b700"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-leave-actual.json",
+      "bytes": 2073028,
+      "sha256": "d78ddf3f7e7367d0b5cd12c4cb6f164f26c5a10a0c00833503782465ad566637"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-observe-original-room.json",
+      "bytes": 2041900,
+      "sha256": "17db45d4941e0d0a5ab58f461d50394b6a2e2f22ce59e331b94e459bcbbcd009"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-read_record-actual.json",
+      "bytes": 2062662,
+      "sha256": "dc75477b3311a6521ab728ed5cdfd4c35262c54e2797d290b2da2c0afde991a4"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-return_object-actual.json",
+      "bytes": 2066903,
+      "sha256": "7da0c74099b12dea21a97b86357f06a613d547b84a9670965992c6d84aa357e8"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-spin_disc-actual.json",
+      "bytes": 2058440,
+      "sha256": "ee199d05ee56df3c4d0895d5f57487b9ca6d224fbcc6bb12470be2a6cb803399"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-finite-disc-walk-actual.json",
+      "bytes": 2060438,
+      "sha256": "e46dfe70223ac4648cbd07a284ec4603632b5884007ecb47a18639a00441df96"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-guidance.json",
+      "bytes": 1656901,
+      "sha256": "6ca8ab68cbd9adff645a488a1bcb1e8c1039859f4f2b318ee3e39760b6f1e200"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-independent-optional-fight.json",
+      "bytes": 2263913,
+      "sha256": "76dfaaaf92b38e0c5948fdbb0149924ec5788431e5f1c4bdbece8ae4584547d2"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 2648793,
+      "sha256": "4abf4c517a0fe4a6eca37c260f3c041485615c9d32326bcc04db41a0145e2ec8"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1676131,
+      "sha256": "2f8f0ffb2cd755f59d9bead4e0333213c1c40ab0ba288f12a688a70487c197eb"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1684697,
+      "sha256": "04faf7c86e935afbf91496359dd3b2265d7c286625705eee19a1c292c21cfa6d"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1666959,
+      "sha256": "8a837362cecde3d539ea3e8a1d1ffc4998da0e9da55fdea6aa2455d501099009"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-prepare-fate-prophet-potion-1.json",
+      "bytes": 1746544,
+      "sha256": "fa767bc9ae5a065359748ab63c222f7bb47d42de24c3509bbafbbdd09be6b2e6"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-prepare-fate-prophet-potion-2.json",
+      "bytes": 1820518,
+      "sha256": "d48a4353b1e41acdf3fab0f8bc73a6b7c104a5925e4fa200308341fc1cc92d50"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-prepare-fate-prophet-potion-3.json",
+      "bytes": 1895675,
+      "sha256": "73e369370890177788e52c47a77081676128b20802984788ee696450c9e35c6e"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-real-combat-luck-accumulation.json",
+      "bytes": 2080674,
+      "sha256": "d336e75c9b38bb39f94cdecea98febd81023adf2c2da5698400b54644a6c597c"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-real-combat-preparation.json",
+      "bytes": 2145103,
+      "sha256": "0f46f59ed953179e6b680bf639c3cc4332033602c078984714784ff7a44121fd"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-same-vera-and-guide-ordinary-clearance.json",
+      "bytes": 2224936,
+      "sha256": "8413223cdc488294eaca82192573b9d78e42da98e928d307549cc9fb2d3797fc"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/boundary-three-cases-reflected.json",
+      "bytes": 2077128,
+      "sha256": "435c338af94be869e1e0dfb1818278e330b276489b6393b9c84667c6201883f4"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/changed-lifestyle-charges-the-original-week-tier.json",
+      "bytes": 2137519,
+      "sha256": "f44a86d4d011cd992e733338d5cec15fd3e35cb25bf2064bf74947fa95cb0610"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/contractual-repayment-advances-with-remaining-debt.json",
+      "bytes": 2138778,
+      "sha256": "6f6190532c2dfea8f630fcdfe6b90b9d215c2d43b0960c33be1c3bfee222512a"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/directed.index.json",
+      "bytes": 1172,
+      "sha256": "44069e6026966fbb5014a09506ebd405ca65b23875dcf819b39621beab49457c"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/fourth-missed-payment-opens-suspended-settlement.json",
+      "bytes": 2138650,
+      "sha256": "d207302b02794f516aedd2f913f17fd4fc396336d7ca704b9534d19c7953a503"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/last-contractual-repayment-clears-credit.json",
+      "bytes": 2138937,
+      "sha256": "731c5b64d7609b780f0b2027c36e8c0bc6231a4326917a80c98aed443d249cd4"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/natural.json",
+      "bytes": 2735900,
+      "sha256": "52688eebc9ef8bf3d548195aa174b1f04a517adcce5d2fc6a3bef57a901f86cb"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/new-debt-is-not-prematurely-collected.json",
+      "bytes": 2138636,
+      "sha256": "ed2e6132a23580832894597bbf7b2bdbef01617c37ec6265aeb9aaa5568b95b5"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/normal-insufficient-cash-opens-bill-without-deductions.json",
+      "bytes": 2138426,
+      "sha256": "c482ea8c82956090f805d07f1380c98a7d5370573d6e912205fcd2ecb4946e21"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/notice-insufficient-cash-opens-bill-without-deductions.json",
+      "bytes": 2138426,
+      "sha256": "1f5327fbb2e34b5e0cdeb2ac1730b7058073897f6c88b27f159ba086fd4ff478"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/paid-debt-free-boundary-advances-unchanged.json",
+      "bytes": 2137564,
+      "sha256": "54e960f8228a0346c39469635a7f2c2cbe0dab337a87126576351f860e34cf51"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/same-week-actions-retain-original-debt.json",
+      "bytes": 2138376,
+      "sha256": "c72ef24359a270a2e72582187ad5f0402d36fec99df3d858f57ef8edc31e5b7e"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/second-missed-payment-opens-notice-before-advance.json",
+      "bytes": 2138647,
+      "sha256": "6bbc429d47029c23ca3de16d0bc569cd27a6022764155652659bef561f7799c7"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/snapshot-combatStart.json",
+      "bytes": 1143159,
+      "sha256": "e1f3a697b28a9fe1b6e54c80b201dc3ced09fd112912ce22255c0a7dd3356561"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/snapshot-combatTerminal.json",
+      "bytes": 1324306,
+      "sha256": "566c2169aefb09e600b2040405aacbccc4b797adf5dcb77b4a24921d695c1d1c"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/snapshot-departure.json",
+      "bytes": 824262,
+      "sha256": "8df38f45493d13f6049be5cfe7cf8395973e451dbeaeab2f3a281757351499e7"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/snapshot-practiced.json",
+      "bytes": 1038980,
+      "sha256": "1c244b789bbcb0685143674c89b726444db5983ac556010a3ad296fc483bdabc"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/snapshot-promoted.json",
+      "bytes": 954999,
+      "sha256": "ee4f24e7f454ea3d0db4027915ba9c963a127dd8b552d51339a5bea494c6c1de"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/snapshot-treated.json",
+      "bytes": 825138,
+      "sha256": "265b647b6947a69a618fecd1932b7f4bba2dba1d8bb6bb59a97c2989a7d016f7"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/summary.json",
+      "bytes": 3315,
+      "sha256": "7879891f049ed0442ba7bf8bf386b52ee90d6a03e4d1d41eaf7cef46a29a487f"
+    },
+    {
+      "path": "tests/fixtures/fate-prophet-v01820/suspended-insufficient-cash-records-actual-shortfall-and-advances.json",
+      "bytes": 2138759,
+      "sha256": "5fed8c076350b4f5d3b95350c247f2bb5820d62eb1edad631a55f9a2f96b839d"
     },
     {
       "path": "tests/fixtures/fate-trojan-v01750/actual-promotion.json",
@@ -7988,1041 +9458,6 @@
       "path": "tests/fixtures/zombie-v0900/natural.json",
       "bytes": 1652689,
       "sha256": "e2da75d46550ba57a199329e073b504cf258eefa343d3c86b1f34bf4f9c1ca46"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundaries.index.json",
-      "bytes": 4387,
-      "sha256": "5ea128173e80af2e192f5a2e5d65919784b0cfc36fabbd9f24cb95bac4fc8174"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-buy-elder-potion-1.json",
-      "bytes": 2051058,
-      "sha256": "d1643c3ffa3d5d248f0519492fd2550fd746fd8052ff4fed6afff5bfc60d9b3a"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-clinic-actual-discovery.json",
-      "bytes": 1960232,
-      "sha256": "613c68b51af2efdb16329bab56227899499eafbee1039dc36b52674fbf4299ff"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-clinic-actual-pay60.json",
-      "bytes": 1961053,
-      "sha256": "9350c815b9204a63cc2c26bd89b907e43c74dabe85ed1ca1693ca768c11d16ef"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-clinic-invitation-actual-rest.json",
-      "bytes": 1960696,
-      "sha256": "ad51166224df9d74c0af30061081a4bcf6327691c0e3012eaeb63ee35fec3d72"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-combat-round-1.json",
-      "bytes": 2481981,
-      "sha256": "0e3713becd973ce99283ef9500f72d5e71fa0a998b2f52de2ba298d7b3961dd2"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-combat-round-2.json",
-      "bytes": 2660464,
-      "sha256": "23a7b3237743fb73a0a86946a84c4a7f4907b26ba685324b0856afe80ca063ef"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-combat-round-3.json",
-      "bytes": 2697695,
-      "sha256": "97a44c211b5200b373f899dbd3a64a8d76303e7f62cbe2dfe7ce8d19c2efa2d9"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-consume-elder-potion-1.json",
-      "bytes": 2068514,
-      "sha256": "8119d5232c3a9c4e1ba3e5c8c30a9a8d080efd95a83dad2eea81b8da8c22f5e3"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-guidance.json",
-      "bytes": 1968939,
-      "sha256": "ec4b3acc8f14a79286704c4f5d0dce452ffaf5812cc1445387c8ab2f33991a87"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-independent-optional-fight.json",
-      "bytes": 2337936,
-      "sha256": "25fcc054537de7539e5ab08e1999b9d1561478393bbb160c3b962d3c620f0bc0"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-actual-contact-closed.json",
-      "bytes": 2271705,
-      "sha256": "3a4ebc3f4a1b67165d2fa5ad3bb6b601b9b1d1fed057f99e6229c8a38eae09b4"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-actual-effects-stopped.json",
-      "bytes": 2257177,
-      "sha256": "1698659a04aad4b5daaf0fd76948bd51dc843adba4dc2e3af1544f97916ee42b"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-current-owner-consent.json",
-      "bytes": 2230874,
-      "sha256": "a08cd43393a9071eb18fa561be8f16725b0ce9775797d6126c621078e50c408c"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-honest-report.json",
-      "bytes": 2273672,
-      "sha256": "73a3b2473cbbd03f83ed0ff4af1329b28938c0d00c4235708fad61a2c6cf5251"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-observe.json",
-      "bytes": 2228218,
-      "sha256": "f8f257ce184b2fa32e46b2ff5f9b0bd928e4808714345d853f863f4091629cec"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-ordinary-fallback.json",
-      "bytes": 2258916,
-      "sha256": "94fefde559815f11227b3072c94a8f1c88315a133b99d8d1dff5a9df97e28f8b"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-paid-materials.json",
-      "bytes": 2233611,
-      "sha256": "371f4b977a4c31bf9874f4f9798baae998baaf739fa92db0c50855924079ae19"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-same-card-returned.json",
-      "bytes": 2264479,
-      "sha256": "af4552fedec5d17ea48143bd66be6316e0726e42c234d6428c0601b11890212c"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-same-original-card.json",
-      "bytes": 2238005,
-      "sha256": "0d109b30f4bb9e1b2f990bf16e054b61b7564c905a4298518c84d783bcf0ad0d"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-single-natural-chorus-attempt.json",
-      "bytes": 2252108,
-      "sha256": "5f0908b11f37191bc41025b98089ffce76398735e749c1b2bd7791346d761560"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-single-natural-whisper-attempt.json",
-      "bytes": 2246139,
-      "sha256": "d6eb2b725252c6b015d283287cdb8d9b2c257f251a7670dada2fbb5ef4451f39"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-spent-original-materials-returned.json",
-      "bytes": 2268164,
-      "sha256": "57cb2be137a69e1c0736a2cc4a4f757687261ddf1d6b8c8d2b0ec3c36229d393"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-ordinary-life-after-actual-exit.json",
-      "bytes": 2679972,
-      "sha256": "d3c3073b0b47b7a02707261025da325289ca27b2ef967f220609ffbfdbbf00d0"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-preparation-CHECK_LIMITS.json",
-      "bytes": 1988135,
-      "sha256": "fafc78c39a9b0269ac09748863d6cdf8b7273d41d9ae1b0d9463fa616cb95d8a"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-preparation-MARK_EXIT.json",
-      "bytes": 1996590,
-      "sha256": "89f496f176c818975578737568403c810c42190a7cb8bfc66280b319b2a32f84"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-preparation-REVIEW_RECORDS.json",
-      "bytes": 1979051,
-      "sha256": "7d31e70ad065f62faff0645230276f3c0fde79075284cf2045031af8ab9c80cf"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-prepare-elder-potion-1.json",
-      "bytes": 2059285,
-      "sha256": "7d8f0f0ef907ae0e738ab1aa16af70f8e4f0ca2ec8f70cc911b8af375f3e650c"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-real-combat-preparation.json",
-      "bytes": 2279333,
-      "sha256": "b3f05d949fb7c7b1809e6eab6040378bbc77fa8449465c90c7f7aec240987a19"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-same-mara-ordinary-clearance.json",
-      "bytes": 2299039,
-      "sha256": "e83598ac4cc027ea6c0e85fa85ee0888f3a8434475cb1b4661dc66f4f0ca08b2"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-contact-closed.json",
-      "bytes": 2179856,
-      "sha256": "895cc1dfb42e08f1f817256eb082352f72c0097aefed8b132208edc52460ec33"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-effects-stopped.json",
-      "bytes": 2167291,
-      "sha256": "c2e458ee5612d3d99dc85b8214be4f7f9ec24f6820afce49375688b92a114fdc"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-short-window-operation.json",
-      "bytes": 2165525,
-      "sha256": "962f500a4b2d0e78557a9eca4f18815cb3a6af8a0f55b0ea8437043dd9c076cf"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-current-owner-consent.json",
-      "bytes": 2147900,
-      "sha256": "c418ec490f97f41a318acdeeaa530810078177e7400a349fa3433ab8e2befd02"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-honest-report.json",
-      "bytes": 2181632,
-      "sha256": "15376cdb24b5c9fdb0f9cc5c6cb69fa8ce2a314ecfdb9a55594da3b9c05407c3"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-observe.json",
-      "bytes": 2109658,
-      "sha256": "275147ed217a625a7879aea5ee66d29036fdb45414a522942357015bf4225f99"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-paid-materials.json",
-      "bytes": 2150625,
-      "sha256": "628d6dd94291b6f1ce58cf2b0c8c5fda8b35d3bf971653e83fa327abd57e86c0"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-same-card-returned.json",
-      "bytes": 2172715,
-      "sha256": "18b18c3de4d9402987a279c5d185da38c93a15184f2654ed897103ec25ee4fa3"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-same-original-card.json",
-      "bytes": 2154999,
-      "sha256": "ffd2a8b52010ed23b291cad50e522f46309c6634f4b25a5775c391763b529ac4"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-single-natural-whisper-attempt.json",
-      "bytes": 2163095,
-      "sha256": "1babcb5cad1449ae87d8f0520e19e7abf10066ed9103bb9988152d0b0d3c4dda"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-spent-original-materials-returned.json",
-      "bytes": 2176384,
-      "sha256": "789bb19f0101da9d92d03764e717c7aba226c00a6149baca938114a2c4605da9"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-contact-closed.json",
-      "bytes": 2224430,
-      "sha256": "a88fb2188bfb38f7f4f8ebb65bbe46b0f9da415cae83d9e399746d277bde1b79"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-effects-stopped.json",
-      "bytes": 2211926,
-      "sha256": "293663559bf5252f4f846f73921a5a9cf3f8811624c919146175a671f180e422"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-short-window-operation.json",
-      "bytes": 2210136,
-      "sha256": "02524c4e88269eb16e5e2ed86421a5bb8f09741def1ad8acff096d56e319d942"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-current-owner-consent.json",
-      "bytes": 2186285,
-      "sha256": "b2259597e259ab7b714398cab2fc1f4615fd1375f8cde67aeb73bb80901b4dbc"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-honest-report.json",
-      "bytes": 2226205,
-      "sha256": "060f03ae6f95a7607f255c179500efa18056c547089fb7ed6ac815dc068af30a"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-observe.json",
-      "bytes": 2183636,
-      "sha256": "e00042450659945ae390de65ff0edb1673f51ff9df03e2f61d600da18f879b93"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-paid-materials.json",
-      "bytes": 2189010,
-      "sha256": "c647549159d7f0dcdb177ef5096f066b7fcc8acbe5216ff36d66fc9c3d992206"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-same-card-returned.json",
-      "bytes": 2217288,
-      "sha256": "fe23aaf994e4968cea8e807f74f4161aac4d5038e92b0727341500d88cc9d842"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-same-original-card.json",
-      "bytes": 2193384,
-      "sha256": "ec202167046ddc608bb8c406f5dc3e5b92d1deccd29de7b083b07d78aad0d1d7"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-single-natural-chorus-attempt.json",
-      "bytes": 2204601,
-      "sha256": "de1c409a9996da0f53b4045af0a0cbef4ad739109948e0c01f7b479a866acbed"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-spent-original-materials-returned.json",
-      "bytes": 2220957,
-      "sha256": "0acf1926c99976549feeb18208c516859063a65d2553657886947f76e09559b0"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-three-cases-reflected.json",
-      "bytes": 2275545,
-      "sha256": "6f0435acd28533d46b3c1c77c21044bb38d65c20221a44829c901233b507723a"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/boundary-treated-original-wounds-subsequent-rest.json",
-      "bytes": 1961377,
-      "sha256": "d7d213a2bd6ea945ed4e925cedf48ec41d4c066bae5877df4eef1e1f3980b2eb"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/natural.json",
-      "bytes": 1916246,
-      "sha256": "06a23ce47295f72e78428f19d2559d6aab833dc978c58ce560f564c0e1d37b3a"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/snapshot-combatStart.json",
-      "bytes": 1179277,
-      "sha256": "5ba43709718bb6a1be0b7e5b4215d6f5be70857ed463f67706fbec08f8501268"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/snapshot-combatTerminal.json",
-      "bytes": 1339856,
-      "sha256": "2238493fde4bd0dba15b98d0ec6b0d49e9e031e7ee47bc399f4982538040a2fa"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/snapshot-departure.json",
-      "bytes": 979889,
-      "sha256": "cbf3deda1c463d25eb336e097c7b4776207dfbdc8836328b7a00d975e73517ce"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/snapshot-originalInjuriesRecovered.json",
-      "bytes": 980992,
-      "sha256": "6685fe078840acde0f3e6f1cc426d6d75227247a2f5481430d305134a4d49a25"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/snapshot-practiced.json",
-      "bytes": 1138148,
-      "sha256": "486350ffbb8c2203daf877c3bdba8391a2665702d1abff7c2e8a18c8073acc09"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/snapshot-promoted.json",
-      "bytes": 1036743,
-      "sha256": "ffeda4fe86b09cb8c6023d8e25bd3ad117d9969697e2226c8070904f40487d04"
-    },
-    {
-      "path": "tests/fixtures/elder-v01790/summary.json",
-      "bytes": 3140,
-      "sha256": "5f7a738b3b3de7fbba0cff3a19ac69c2d738204a83cfb8e08d2ac04a20496ae7"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundaries.index.json",
-      "bytes": 5341,
-      "sha256": "f19ea4eb6efce3c1ee8584ce9cc3fc084b1d8c310dcd2015f745558ec1ff0473"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-actual-preparation.json",
-      "bytes": 1780968,
-      "sha256": "370cbbbc80bca6e5df32b609591349cf5eecd9d36cfed92e822234d2565b196a"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-confirm_emotion-actual.json",
-      "bytes": 1795915,
-      "sha256": "586c199d69cf3dc79c4614e33cf858c8a185b9ce760018c1c75853202c4a5277"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-consent_nora-actual.json",
-      "bytes": 1785126,
-      "sha256": "f6fb8738b2b01ab81cb632e1d308b52f952ca629df7a5892371dc2e269e43a51"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-emotion_interference-actual.json",
-      "bytes": 1798519,
-      "sha256": "960f04d9987acf059815e8cbe3c60e9d4d083186647a4c3157fc2cf3d62edc47"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-end_focus-actual.json",
-      "bytes": 1802715,
-      "sha256": "5bce28e1e56a1ae380767bd83f8db1e11942b10cd6f411b6e749ed7eb3ef8c67"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-honest-report.json",
-      "bytes": 1812101,
-      "sha256": "125ee71b5cdd8f1599d9fbf45837b5f210d8fff04b6ad88139bf0477d0ec2068"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-inspect-actual.json",
-      "bytes": 1808978,
-      "sha256": "d0c1a405cb3bc71af7ccae871f8e94e4bb8d5c2bcb99b6ffecfbebc70c89c7c9"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-leave-actual.json",
-      "bytes": 1810494,
-      "sha256": "4d01772c0e4c020cbed986dddf79c0ecc9226e3731f4e1dc47ef29c3ce0b877a"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-observe-original-room.json",
-      "bytes": 1777894,
-      "sha256": "d51e08bcf788609d6a8791d401b12d18b20081d7b556507ee4fc8c02c0bfcb58"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-perform_operation-actual.json",
-      "bytes": 1800998,
-      "sha256": "8b39df5e2b7cb5a7bcce59c24a8a2779dd855e3007457fde4b55ea7d34eb3021"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-read_note-actual.json",
-      "bytes": 1790219,
-      "sha256": "87ad0a83797e4a0d85984891e5d8ab400102f85b370706898ef64298d475b451"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-rehearse_bell-actual.json",
-      "bytes": 1792214,
-      "sha256": "dd27a6187b175b8ead10442a3d0fbac8636b730a95969d5502ff90a288ea5179"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-return_card-actual.json",
-      "bytes": 1805693,
-      "sha256": "8ababb6dcf825a19183cfea0a46f2336f09f1625fdbb8ff95ff6b4544a8aa19d"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-take_card-actual.json",
-      "bytes": 1786868,
-      "sha256": "8a47c669cdaefb28c066b26348b99ebb110d5ee8846877933a1e68e6be169952"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-bell-hesitation-wait_6-actual.json",
-      "bytes": 1804207,
-      "sha256": "a0ddb963591b5311fb86066ce4ef2a91622a4d1a334906af53d537e720ab8b25"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-buy-blood-duke-potion-1.json",
-      "bytes": 1608712,
-      "sha256": "f77e196ce3acc218445a2671def173950d04a2a4466c0ed69a4c26888bc38bbb"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-buy-blood-duke-potion-2.json",
-      "bytes": 1675146,
-      "sha256": "898dc09946d0e5855e508ba1f833d6c3606962c5b7094910023e011f36d2113b"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-1.json",
-      "bytes": 1998648,
-      "sha256": "bdffc900f51268203f825f3eee0dff260dd89344f688ab4f81530838606e1e58"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-2.json",
-      "bytes": 2116922,
-      "sha256": "2790e475ec2d48654167925645982b592dfc525abb13b725195aa5ed7c01856f"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-combat-round-3.json",
-      "bytes": 2155835,
-      "sha256": "902466f877588d35b41bd3eb087f25c33b3347f0ac72884cf6961daa057bd688"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-consume-blood-duke-potion-1.json",
-      "bytes": 1624106,
-      "sha256": "1f980065c8472d276535925e5c874072c8cf01d7f5dd54570c53b83ce873de5a"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-consume-blood-duke-potion-2.json",
-      "bytes": 1691032,
-      "sha256": "2b1d9af88ee615f0c1d139334ac849e05ac253cb6c3b46f1967d6d8bf5d59728"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-actual-preparation.json",
-      "bytes": 1747065,
-      "sha256": "010606fc707a77f33b5d5a45a4ef1dfd435dca8a5c630abaec24e0557fcfcc24"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-consent_nora-actual.json",
-      "bytes": 1751223,
-      "sha256": "d11dfe8f94c4661b3f16bc1a8201907dd91d5734455bcbf4f7f9acbb17992364"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-end_focus-actual.json",
-      "bytes": 1766612,
-      "sha256": "febe44616711fade051974039f8069a81e6322aca4d3c5539d8ecdc77b268bec"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-honest-report.json",
-      "bytes": 1776100,
-      "sha256": "ea5694ba43e2b508fa61777c4d01a09fa2459985f67ab94b6e28d943a41d5ae1"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-inspect-actual.json",
-      "bytes": 1772975,
-      "sha256": "8938ac94333de0a4cc7719d06166a7295052428f101f86c4c0c53e29290ef217"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-leave-actual.json",
-      "bytes": 1774492,
-      "sha256": "b80ed8b7251336a492b142c4b13963deafaa07697151e04e354120f3c440c165"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-notice_impulse-actual.json",
-      "bytes": 1759941,
-      "sha256": "a9b36dab2c4f499b62a8e1da514a229b1ea4111c1f96fe6d1f1af2fba06eaa26"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-observe-original-room.json",
-      "bytes": 1720082,
-      "sha256": "03843b15a39ac4acd46c0a620fd4aac8fa59a99240d30c53e8dca518ff4b2715"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-perform_operation-actual.json",
-      "bytes": 1764883,
-      "sha256": "3f6c958bae6e2d4ede5027991118dbcaae014d0b78e458fbe160ea856aed8f03"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-read_note-actual.json",
-      "bytes": 1756316,
-      "sha256": "fd6c9a189e9e4e076722a90d1ff9bf9510330b5c76f684de0ed3a58309c7476a"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-return_card-actual.json",
-      "bytes": 1769759,
-      "sha256": "a762c33affa1efa5f2bdc8186fe6c74680da425c349df9ad95ff4fabdcc6ec7e"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-self_restraint-actual.json",
-      "bytes": 1762487,
-      "sha256": "76abe5140bb4897866f55beca118d3ef81ade1012a61b444ea4b402adac585cb"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-take_card-actual.json",
-      "bytes": 1752965,
-      "sha256": "affa6f4addb8e98cb8c492d13184412327d732a1415bcc261ecd6f6da507317b"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-door-restraint-wait_6-actual.json",
-      "bytes": 1768223,
-      "sha256": "20b0aa515215e4581c39e1f28b40f3bcae282d592481a723e420c17920eec5d6"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-guidance.json",
-      "bytes": 1530112,
-      "sha256": "cdf63c81e04f13306c24f3cbb8dddcf708c5fca004937de8091cae8d2a1d717e"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-independent-optional-fight.json",
-      "bytes": 1900587,
-      "sha256": "c70c552a69a5d8a8c059784497fcece462fd1680ac3d08d8d988ecf00051c7ba"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-CHECK_LIMITS.json",
-      "bytes": 1546206,
-      "sha256": "10e45e4827fc894caf0e2afd136a253bcc7f5ea7ff92eb3fce24ba9365add85a"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-MARK_EXIT.json",
-      "bytes": 1554230,
-      "sha256": "d0ec069b9c492b5b9989bb3113085c46922bf55de7435cbcdc0f57e707551b71"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-preparation-REVIEW_RECORDS.json",
-      "bytes": 1539115,
-      "sha256": "a238cea7c159e152a3ef3c227ce7beece2a3f27e66c3e483cdcf3b86b96566dc"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-prepare-blood-duke-potion-1.json",
-      "bytes": 1616126,
-      "sha256": "8fb3d6066cdeb33318e62f96d395c7ff60e92fcddc4fd3690e992a03ad0a2c3e"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-prepare-blood-duke-potion-2.json",
-      "bytes": 1682558,
-      "sha256": "aa0f3ce5575bb5567a3f49c542b9189b08701c42cacae03e6bef1c10844d51ba"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-real-combat-preparation.json",
-      "bytes": 1860387,
-      "sha256": "c9c82f892d21d1cf68d955d75220da06334a9bea7e99b106f41c83e06e152e2c"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-same-nora-ordinary-clearance.json",
-      "bytes": 1874122,
-      "sha256": "a8b97fa3ef8fed5f3310e6a13578a99dbe3747b0b31f0b38e25e871d1ba248f2"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-three-cases-reflected.json",
-      "bytes": 1856926,
-      "sha256": "d34524ef8c8dfd342ff3d86d6617e22ff69b9a7995e7dc574a15153a9316c0d9"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-actual-preparation.json",
-      "bytes": 1816992,
-      "sha256": "ee885e04fc32286099f4fea22266a5c565c47029357080a005ce9514080a346a"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-confirm_emotion-actual.json",
-      "bytes": 1832024,
-      "sha256": "c373c3755ec1a63eeba490f366b3c98e921f2dc1329db835ba48f4bed5a844ea"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-consent_nora-actual.json",
-      "bytes": 1821175,
-      "sha256": "45b6c570d1add70d7cfd147ee937c789b8928b0898eb2257c923c24e188759e9"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-emotion_interference-actual.json",
-      "bytes": 1839900,
-      "sha256": "ab30b3b61557caeee76e4ad1ce6c59a9b776ce86cbaa2939731538e3fa5589d3"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-end_focus-actual.json",
-      "bytes": 1842195,
-      "sha256": "86cbbc202c6d68649e9d6c893d67637b5b597af25084536e623f303f57f1edf1"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-honest-report.json",
-      "bytes": 1855320,
-      "sha256": "bfdb990cbaf476acc5970775669baea8b403dedb2e035743a3b054211078c6ac"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-inspect-actual.json",
-      "bytes": 1851941,
-      "sha256": "93351643fb39a2b8be349674d0c345e7da5d96066812593c222ba11f2691d5ea"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-leave-actual.json",
-      "bytes": 1853571,
-      "sha256": "14176780f4e795c445a888f7f5c243069098aa30aa82cd8f9e979b4e67ec57b9"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-manual_operation-actual.json",
-      "bytes": 1845071,
-      "sha256": "042f9dec20db07ba644d2c741d6e9ee45d1f62522ce14126b558969d370c514d"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-notice_impulse-actual.json",
-      "bytes": 1834000,
-      "sha256": "63fb04ee504272f65f2ba2afe9d533a53a94171773a8d1c16799f50e7b936386"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-observe-original-room.json",
-      "bytes": 1813902,
-      "sha256": "2a5a2c0ea3ba8367e4667775540467a12bcffba99e1671ca34690e448133bf7d"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-read_note-actual.json",
-      "bytes": 1826298,
-      "sha256": "62c48d66a10c789b427a1ea7afefcf080d7a0b7f5678eadaa8f27b0f3bcad769"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-rehearse_bell-actual.json",
-      "bytes": 1828303,
-      "sha256": "c60574a311c5c163159f30ceb89dacf93f5e7c5fb0beb8acdf915c434f5a78ec"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-return_card-actual.json",
-      "bytes": 1848646,
-      "sha256": "02f9b8214785979b9ff7dca8e2526327727840923d9db1cff85287ec69058df8"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-self_restraint-actual.json",
-      "bytes": 1836659,
-      "sha256": "eab2a91f2646671a215b5f392eff6a20ef48b631201e38f18157754a18fbecc6"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-take_card-actual.json",
-      "bytes": 1822927,
-      "sha256": "e4260f7cd1eadc3c6f9a17bc30df17812899bca7b773a1b7365a77ec4879a70c"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-wait_6-actual.json",
-      "bytes": 1843548,
-      "sha256": "d486d34e0e82c5cc80318061eb0029b6f1ad5c406246b0716930bd6a0b8d5189"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/boundary-withdrawn-rehearsal-withdraw_permission-actual.json",
-      "bytes": 1846881,
-      "sha256": "a9869bbf5664856597fe9a953bf2562b3eda056a0a44131876efdfd336d8c721"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/natural.json",
-      "bytes": 2423212,
-      "sha256": "7762560089c03487c1dd4432fd367998d4874c165e3cce8d012d200d56222363"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/snapshot-combatStart.json",
-      "bytes": 957202,
-      "sha256": "59a20be0bfded0ab5fe5f964e7dcd2c70615df4ea7e0b53995eaa48a33f45578"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/snapshot-departure.json",
-      "bytes": 762030,
-      "sha256": "9b8778947c7a39979135a3e1ff6e775d0761fe3c8fa0212ac14385c0c907a087"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/snapshot-practiced.json",
-      "bytes": 928782,
-      "sha256": "1fa569f969372d7ea68fbf661d91cdcdf6105a40b2d9bbfb04de0279a8fb57d4"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/snapshot-promoted.json",
-      "bytes": 847825,
-      "sha256": "f839a97c2814f50b2fadf8003e707977428aea57d28e2c5d001f0bd665046de7"
-    },
-    {
-      "path": "tests/fixtures/blood-duke-v01800/summary.json",
-      "bytes": 3307,
-      "sha256": "e8ae52bde6aa83bb1ea99d1cf1512cffe72854d1212b0044ee15a52befe8bfb2"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundaries.index.json",
-      "bytes": 5103,
-      "sha256": "f4fd28cc1faf1082ac37bff597ad24a1ae382dbb7bdaf77699bdae311720e464"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-buy-ancient-evil-potion-1.json",
-      "bytes": 1717371,
-      "sha256": "3b2418ea9a8a3107e80f1a2288dc6da170aaf523cf228acf1645ddfce8b6d915"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-buy-ancient-evil-potion-2.json",
-      "bytes": 1786478,
-      "sha256": "c010087d7c636537fd0630c934d2b385be42ca91a4bb6c5709e03336f6d6f8ef"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-actual-pay60.json",
-      "bytes": 1630841,
-      "sha256": "68fe730f59d1dc908345e89d2c82eb9356acb99450bc9cb1d42df2bb666bbac1"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-discovery.json",
-      "bytes": 1630032,
-      "sha256": "22cda6674c0c0be82ddc7ec18212b9118e8bc18f6af04e647a4d8ea1018b59d7"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-rest-1.json",
-      "bytes": 1630491,
-      "sha256": "04b85552f15df40e08e12954abcaa4869dede7b8a269c256fff44a8e20d3c940"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-rest-2.json",
-      "bytes": 1631228,
-      "sha256": "7ed79d33966dd921f21afadb51b541245aa9dd9951cc885c1296471af3951fd5"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-combat-round-1.json",
-      "bytes": 2141477,
-      "sha256": "fca9a4148e67a95928edaf3dae4a827cc4619dbaf2f17f16e7b0a050df212333"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-consume-ancient-evil-potion-1.json",
-      "bytes": 1733449,
-      "sha256": "9b97d1da3da085429f6d4dfc10da3bb6cf3ff81ccbf36ab87433570193fc6036"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-consume-ancient-evil-potion-2.json",
-      "bytes": 1803026,
-      "sha256": "b708aa73d6bacb71c3d30c0c7591e860916efd03ab44fcb9b58081c74393c940"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-guidance.json",
-      "bytes": 1639004,
-      "sha256": "f023219b614ba27d0de920ad838b77d449898b7551530aa04ecff9e8ab240d63"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-independent-optional-fight.json",
-      "bytes": 2037670,
-      "sha256": "345604f53d4995f32a24fd7f7f924c77fc77cb3fa37a36cce685004e7742394f"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-actual-preparation.json",
-      "bytes": 1865228,
-      "sha256": "c772418533a08887d64adec475340cd01139cecbd8180d11efe4299b5c1cd4c7"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-compare_identity-actual.json",
-      "bytes": 1883533,
-      "sha256": "7030bb510b0493f076ecbded291162cfe271b63c8e2294308cda8f013fcc1e2b"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-consent_elsa-actual.json",
-      "bytes": 1873250,
-      "sha256": "5bf8e6cde249fb3bc8131309dc1a28e5f2dfad504fe3a84cab68c2ff49a7cbc0"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-enduring_transfiguration-actual.json",
-      "bytes": 1875974,
-      "sha256": "20799a1f7c423c87174018aef7134a0fd4a2c7d92de3801aadcd7c56172633bd"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-honest-report.json",
-      "bytes": 1893778,
-      "sha256": "33a6cce6678be29634fd22006a23e84f0c534c5bcbad84f21213f95d9b8616c6"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-inspect-actual.json",
-      "bytes": 1890617,
-      "sha256": "737a29c6c60b095e3cf28368bca3a80cb94da89b41740a8d340706b1177a672f"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-leave-actual.json",
-      "bytes": 1892159,
-      "sha256": "4ad2d6693d6bf5d9fc4c7e8ca65d922cd1822b21b84cf4526cdccdded10c7ec5"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-manual_operation-actual.json",
-      "bytes": 1885398,
-      "sha256": "a78c44f1e33ae810c9ee8e833f175392d33231b410309a9aade3c672919b8f4e"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-observe-original-room.json",
-      "bytes": 1835194,
-      "sha256": "db259f865cb3a760bd6174a86c74e780fe3dc4b6cd40e35f533ca9bbf9d242dc"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-read_identity-actual.json",
-      "bytes": 1869501,
-      "sha256": "11735d4a7f96cfb7bdd179b79734796a4fd5c0897e9b5dea722aa16f0c27c535"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-read_note-actual.json",
-      "bytes": 1879977,
-      "sha256": "cfe91f5ac0b562cd32046404f035fcc12ff3586afc97110ef1f44dd8a91c3337"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-return_items-actual.json",
-      "bytes": 1887263,
-      "sha256": "3e0e52416cc68ec083d7b6277d07501b296f6f906dc145ea14cb334afee1bdd3"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-store_items-actual.json",
-      "bytes": 1871384,
-      "sha256": "06b52d7213178246256bbe6ab7352afcfe00e5c183e7ad48d75ffb337e5ef6d1"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-walk-actual.json",
-      "bytes": 1867678,
-      "sha256": "079591d3509aa2896919ae969ffd2ca2fd4d47e36b0c08fa133c32fbbbd559bc"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-ordinary-life-after-actual-exit.json",
-      "bytes": 2226330,
-      "sha256": "6348ebc808bce741a06ca077653b77e47a7d5e1e07aad0080fc4c88dcf42587e"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-actual-preparation.json",
-      "bytes": 1934228,
-      "sha256": "9a39dc74ffa17fc8f5920f18c8eaec9f9ed56930dd8fd44b0188809fbb1a46e6"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-compare_identity-actual.json",
-      "bytes": 1955316,
-      "sha256": "1d042483aa21e619f7d26b8ae46acaae2d28e19e6a5ebf1e231b500d6765aeea"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-consent_elsa-actual.json",
-      "bytes": 1942267,
-      "sha256": "2fe3dd1294df5c1883b2d79f43233219f7a573ad348920cfa5f8b95517d4107a"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-curse_guidance-actual.json",
-      "bytes": 1958139,
-      "sha256": "4ed1b8f507d8cd847af32fd50cb8863818d05eef113613cfea19075d3ef5fa31"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-enduring_transfiguration-actual.json",
-      "bytes": 1945458,
-      "sha256": "105a2cf1f214aad65e1f75df7634413e10a930f730b5418651466167b3da828f"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-honest-report.json",
-      "bytes": 1967381,
-      "sha256": "d9f10e14232cf43b95a2175269a4372d2d3bcecf97da6c06be4f21db7b5e5eda"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-inspect-actual.json",
-      "bytes": 1963982,
-      "sha256": "bcb38018d5ddd654a1778bb0f1c3df4a4d4833d0fc686c7536840230212358fb"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-leave-actual.json",
-      "bytes": 1965638,
-      "sha256": "084e1712df9d8ffeba67740dda4d94f6dc0244885e72db1394e46610232ae452"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-observe-original-room.json",
-      "bytes": 1931040,
-      "sha256": "4d4f9ffd05ccb5a6a7aec55a9cfa1068814ae4359928d391021b2a7165fa2c1d"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-read_identity-actual.json",
-      "bytes": 1938510,
-      "sha256": "7f2a8b15d23ee606d5681ccabc8def4eab209843f5ce25d8dd9ff553c0c42168"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-read_note-actual.json",
-      "bytes": 1951718,
-      "sha256": "34d088b8d3caf2cf15120e76a1804fe70cfc0c7bcfc028f19a09fd9138dce724"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-return_items-actual.json",
-      "bytes": 1960777,
-      "sha256": "afd9f6fde110f9fb65692f42e3b4b9f2fa439af918e366c97b9c99ea48422417"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-stop_input-actual.json",
-      "bytes": 1948415,
-      "sha256": "4fdbb83497998d651dad2e8f9c4a06c7162103a3aab814fe73f43956bf10729c"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-store_items-actual.json",
-      "bytes": 1940397,
-      "sha256": "1111dd748463b5613431b76489c5056353613a98fb2caf573b21cc84ab2744ec"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-walk-actual.json",
-      "bytes": 1936683,
-      "sha256": "98ad0e669c262e5a904ba768eeedda768e6e5cd04461c45357d4c74ea451ee23"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-CHECK_LIMITS.json",
-      "bytes": 1655959,
-      "sha256": "030ab785804a03405786fd40d7e2917f248bc75549c1d59d2b208a2ede86822e"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-MARK_EXIT.json",
-      "bytes": 1664648,
-      "sha256": "2bbde2f28f966ed234d67c37414f01a293f305babdc752e87ef0f6930a0405cf"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-REVIEW_RECORDS.json",
-      "bytes": 1648154,
-      "sha256": "e90e4af624b31301dd15ac61fd77445ce4594acac507db060d0ab46c9b238328"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-prepare-ancient-evil-potion-1.json",
-      "bytes": 1725123,
-      "sha256": "ff5b93a5e8881f726cde1bb18f0736462c88d83b2d10606583572d14214b4400"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-prepare-ancient-evil-potion-2.json",
-      "bytes": 1794228,
-      "sha256": "9371a05836ce673057a2af0708799526786b94c4e46295c18bea0936204ec6ec"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-real-combat-preparation.json",
-      "bytes": 1984772,
-      "sha256": "4d73be13991de12e08e0c2850afd4be63b7aeee6b4e5f381abc1addec7d7f397"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-actual-preparation.json",
-      "bytes": 1898736,
-      "sha256": "1780da06c94ed0cfaadbab2426da40f8aeb1f2f5fa7057005d5fb38e820e05d1"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-compare_identity-actual.json",
-      "bytes": 1918990,
-      "sha256": "e1c0f68988c7e1d9930021751bb36f3344033123e1eab0e09ae7b4e753c50334"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-consent_elsa-actual.json",
-      "bytes": 1906758,
-      "sha256": "a7732552e43f4c2d1b78ded58aa64e7ddfe23a187a9fe97c86e330e8e7e38df4"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-enduring_transfiguration-actual.json",
-      "bytes": 1909512,
-      "sha256": "f31c959361c0acb11ae85af9357202e286fe047a4058bedc0faafdf211ea1e7c"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-honest-report.json",
-      "bytes": 1929251,
-      "sha256": "61b351ff7b79ab8690b342f311c933ef6a45ffde8c1058ac20a8ffdd4d8410e4"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-inspect-actual.json",
-      "bytes": 1926082,
-      "sha256": "52587801ab0fcaaede792290a00f4eaef0a7a34b3ebfc426c7177521193fb5e9"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-leave-actual.json",
-      "bytes": 1927627,
-      "sha256": "277b10948cd814662a7eb0ba30dbd4d9ecf594c011f68991501acee99da78345"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-manual_operation-actual.json",
-      "bytes": 1920857,
-      "sha256": "a4ffa34f07bc5b731781a3c434cc95f61536cbc858da3c2255346b9637fa8eaa"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-observe-original-room.json",
-      "bytes": 1895560,
-      "sha256": "678f36bc5e0c80b9ab13ca76836b873033dacd8be8c29ea696164fa31036b90d"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-read_identity-actual.json",
-      "bytes": 1903009,
-      "sha256": "dce043bc4fd14cc0441e3101715812dd220ca3ca7d52f536827bf8445db760fb"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-read_note-actual.json",
-      "bytes": 1915429,
-      "sha256": "161a7fdda9d453bdea01775822db14e680588ef07b996f0df5271f8ac9605af4"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-return_items-actual.json",
-      "bytes": 1922724,
-      "sha256": "35d6c1cce8107e35f9f076560db723f974105efb4a394fa7443b24f97e0c86e3"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-store_items-actual.json",
-      "bytes": 1904892,
-      "sha256": "1f89f74d78f03f243f1c22eab3818793666f0a040adbbe3b70d89f33dc0ff2f0"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-walk-actual.json",
-      "bytes": 1901186,
-      "sha256": "24b4040e1ee320be1459c5ff76079455d4236c6b55ce7ca2e064a0248d497eb1"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-withdraw_permission-actual.json",
-      "bytes": 1912095,
-      "sha256": "b62ffd338b28a38ad2b429fcc77c80fb2a112c5fb2f40b9636526fd40e68924d"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-same-elsa-and-guide-ordinary-clearance.json",
-      "bytes": 2004311,
-      "sha256": "8635cdb971b63d3c40daeb611a522599d2f2f8fc3b02ea5f2ef498831b62f2be"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-three-cases-reflected.json",
-      "bytes": 1968976,
-      "sha256": "c43b941880239942eafc2f78ae33a0da3c31aa12a3100ad1817b602d3497c4bf"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/boundary-three-new-original-blocks.json",
-      "bytes": 1975368,
-      "sha256": "ed8d7f9e12909e391e86cf1ab005adc9d348b4cd67d3d2537ce4cd91c29bc88f"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/natural.json",
-      "bytes": 2509703,
-      "sha256": "f005b8f8aa0b9d82f14919fbf668a56c4f5a63e1284be94c6f7155b94472c96f"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/snapshot-combatStart.json",
-      "bytes": 1028348,
-      "sha256": "223b7b3c03123ef82cce0adb8518dd0d4c2eded4677728108a20808611ae6d22"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/snapshot-combatTerminal.json",
-      "bytes": 1113050,
-      "sha256": "6a5014565d96c8bbf98b41eb2a50bbb96e793b73bbd80d1f173e566eb1b24d7a"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/snapshot-departure.json",
-      "bytes": 814789,
-      "sha256": "619d9f1b5b1490a070e064b1d50ab7c346d8aad84a0ac5e1429c08f348fa2163"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/snapshot-practiced.json",
-      "bytes": 984807,
-      "sha256": "ffc32d3769b4d5560c0947db393958a8f27f39c504bb58d6606466a02d5c2b85"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/snapshot-promoted.json",
-      "bytes": 903898,
-      "sha256": "b670c281796e6750b2edb01763c40efde3e022524d06350c2839dbfeb36a08a9"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/snapshot-treated.json",
-      "bytes": 815743,
-      "sha256": "dff2363cfa6f9904d4258b199ab4c52a53bf6d3bbe8735b15a38e6d2ea3bd1f1"
-    },
-    {
-      "path": "tests/fixtures/ancient-evil-v01810/summary.json",
-      "bytes": 3275,
-      "sha256": "7d6ad93150fa23adb6929dc4e3637a5fec299e1985ce33f467efc70e8ee17997"
     }
   ]
 }

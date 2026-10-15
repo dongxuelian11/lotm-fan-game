@@ -1,3 +1,4 @@
+import { FATE_PROPHET_ABILITY_IDS } from '../fate-prophet/types.js';
 import {CHAOS_WALKER_ABILITY_IDS} from '../chaos-walker/types.js';
 import {MISFORTUNE_MAGE_ABILITY_IDS} from '../misfortune-mage/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -39,7 +40,7 @@ export function createWinnerState(): WinnerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'wheel' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'wheel' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
 const isCalamityPriest = (s: SliceState) => s.progression.pathwayId === 'wheel' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.monster.discovered && s.monster.guidanceKnown && s.machine.guidanceKnown && s.lucky.guidanceKnown && s.calamityPriest.guidanceKnown && s.calamityPriest.promotionWeek !== null && (isCalamityPriest(s) || promoted(s));
 const potionPrice = (bottle: WinnerBottle) => WINNER_PRICES.potion - (bottle.labourSteps === 5 ? WINNER_PRICES.labourCredit : 0);
@@ -167,7 +168,7 @@ export function applyWinnerCommand(s: SliceState, command: WinnerAcquisitionComm
 
 export function projectWinner(s: SliceState): WinnerProjection {
   const actions: WinnerAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3)?s.misfortuneMage.winnerActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.misfortuneMage.winnerActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: WinnerAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -254,7 +255,7 @@ export function validateWinnerState(s: SliceState): boolean {
   if (isPromoted) {
     if (inheritedContactOpen(s)) return false;
     if (!winner.guidanceKnown || !integer(s.calamityPriest.promotionWeek, 1, s.week) || !integer(winner.promotionWeek, firstConsumptionWeek, s.week) || winner.calamityPriestActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...MONSTER_ABILITY_IDS, ...MACHINE_ABILITY_IDS, ...LUCKY_ABILITY_IDS, ...CALAMITY_PRIEST_ABILITY_IDS, ...WINNER_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3)?MISFORTUNE_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===3?CHAOS_WALKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...MONSTER_ABILITY_IDS, ...MACHINE_ABILITY_IDS, ...LUCKY_ABILITY_IDS, ...CALAMITY_PRIEST_ABILITY_IDS, ...WINNER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?MISFORTUNE_MAGE_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?CHAOS_WALKER_ABILITY_IDS:[]),...(s.progression.sequence===2?FATE_PROPHET_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (winner.luck.stored !== 0 || winner.luck.lastAccumulateWeek !== null || winner.luck.accumulated !== 0 || winner.luck.spent !== 0) return false;
     if (winner.promotionWeek !== null || winner.calamityPriestActingAtPromotion !== null || WINNER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;

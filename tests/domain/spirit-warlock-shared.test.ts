@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,expect,it} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -49,7 +50,7 @@ describe('Spirit Warlock actual shared route',()=>{
  it('migrates the exact 0.99 original save without changing any prior pathway or original object',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/crimson-scholar-v0990/natural.json','utf8')).final;
   const after=migrateSliceState(old);assertValidSliceState(after);
-  expect(after.schemaVersion).toBe(177);expect(after.spiritWarlock.promotionWeek).toBeNull();
+  expect(after.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);expect(after.spiritWarlock.promotionWeek).toBeNull();
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);
   expect(migrateSliceState(after)).toEqual(after);
  });

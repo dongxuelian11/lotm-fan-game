@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -41,7 +42,7 @@ describe('Life Giver S2 original paid acquisition and nineteen-plus-two inherita
     const old = readObjectEntry<Record<string, unknown>>('tests/fixtures/knowledge-mentor-v01670/natural.json', 'final');
     expect(old.schemaVersion).toBe(164); expect(old).not.toHaveProperty('lifeGiver');
     const bytes = JSON.stringify(old), s = migrateSliceState(old); assertValidSliceState(s);
-    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177'); expect(s.lifeGiver).toEqual(createLifeGiverState());
+    expect(s.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(s.contentVersion).toBe(CURRENT_CONTENT_VERSION); expect(s.lifeGiver).toEqual(createLifeGiverState());
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key], key).toEqual(value);
     expect(JSON.stringify(old)).toBe(bytes); expect(() => migrateSliceState({ ...old, lifeGiver: createLifeGiverState() })).toThrow();
   });

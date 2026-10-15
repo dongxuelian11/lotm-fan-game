@@ -140,7 +140,7 @@ export function chaosWalkerEncounterActions(s: SliceState): ChaosWalkerEncounter
 }
 export function projectChaosWalkerEncounter(s: SliceState): ChaosWalkerEncounterProjection {
   const e = s.chaosWalker.encounter, publicState = { status: e.status, pendingKind: e.pendingKind, composureReady: e.composureReady, luck: { ...s.winner.luck, capacity: 3 as const } };
-  if (!promoted(s)) return { ...publicState, title: '尚未开放的混乱行者遭遇', story: '', inside: false, scene: null, enemy: null, actions: [], facts: [] };
+  if (!(s.progression.pathwayId === 'wheel' && [3, 2].includes(s.progression.sequence ?? 0))) return { ...publicState, title: '尚未开放的混乱行者遭遇', story: '', inside: false, scene: null, enemy: null, actions: [], facts: [] };
   return { ...publicState, title: '原净空院与加雷斯·默瑟', story: CHAOS_WALKER_ENCOUNTER_STORY, inside: hasChaosWalkerEncounterLock(s), scene: structuredClone(e.scene),
     enemy: { id: CHAOS_WALKER_TARGET_ID, name: '加雷斯·默瑟', age: 46, source: 'ORIGINAL_LIMITED_G', sequence: 4, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus,
       weaponId: 'CW3-GARETH-ROD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } }, actions: chaosWalkerEncounterActions(s),

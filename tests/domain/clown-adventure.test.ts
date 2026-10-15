@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createSliceRun,applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -16,7 +17,7 @@ describe('Clown real shared checkpoints',()=>{
   expect(Object.keys(s).sort()).toEqual(Object.keys(fresh).sort());
   for(const key of Object.keys(back))if(!Object.hasOwn(old.final,key)){expect(back[key],key).toEqual(defaults[key]);delete back[key];}
   expect(s.seer.resupply).toEqual({requestedWeek:null,deliveries:0});delete (back.seer as Record<string,unknown>).resupply;
-  expect([s.schemaVersion,s.contentVersion]).toEqual([177,'blood-duke-v177']);
+  expect([s.schemaVersion,s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
   back.schemaVersion=old.final.schemaVersion;back.contentVersion=old.final.contentVersion;
   expect(back).toEqual(old.final);expect(JSON.stringify(old.final)).toBe(bytes);
   expect(migrateSliceState(s)).toEqual(s);assertValidSliceState(s);

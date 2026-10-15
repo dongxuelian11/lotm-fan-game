@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -17,7 +18,7 @@ describe('Elder acquisition: actual 500-command natural S3 source and explicitly
     const s = originalTemplarFinal(), raw = readObjectEntry<SliceState>(templarNaturalPath, 'final');
     expect(readObjectEntry<{ kind: string; newRandomChanges: boolean }>(templarNaturalPath, 'provenance')).toMatchObject({ kind: 'SAME_SEED_PUBLIC_NATURAL_PREFIX', newRandomChanges: false });
     expect(readObjectEntry<SliceIntent[]>(templarNaturalPath, 'commands')).toHaveLength(500);
-    expect(s).toMatchObject({ schemaVersion: 177, week: 124, health: 40, mind: 96, spirituality: 120, cash: 600, actionsRemaining: 3, injuryRisk: 3, random: { seed: 'secret-supplicant-natural-v051', cursor: 313 }, progression: { sequence: 3, acting: 100 }, character: { gender: 'FEMALE' } });
+    expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, week: 124, health: 40, mind: 96, spirituality: 120, cash: 600, actionsRemaining: 3, injuryRisk: 3, random: { seed: 'secret-supplicant-natural-v051', cursor: 313 }, progression: { sequence: 3, acting: 100 }, character: { gender: 'FEMALE' } });
     expect(s.injuries.map(i => [i.severity, i.treatedRevision])).toEqual([['HEAVY', null], ['LIGHT', null], ['LIGHT', null], ['LIGHT', null]]);
     for (const key of hangedManLegacyKeys) expect(s[key]).toEqual(raw[key]);
     expect(s.threeHeadedTemplar.promotionWeek).toBe(113);

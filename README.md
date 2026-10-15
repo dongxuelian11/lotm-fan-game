@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.181.0 阶段版
+# 诡秘之主同人游戏 · 0.182.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径包含9→3有限可玩切片，18条接至有限序列2。余下4条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径包含9→3有限可玩切片，19条接至有限序列2。余下3条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -18,7 +18,7 @@ npm start
 
 ## 测试输入
 
-所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以35个完整文件tar.gz包保存在test-inputs，总压缩约583MB；清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
+所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以38个完整文件tar.gz包保存在test-inputs，总压缩约622MB；清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
 
 ```sh
 npm run typecheck
@@ -26,7 +26,7 @@ npm run test:smoke
 npm run test:fixture-restore
 ```
 
-运行全部历史测试前恢复完整输入（需额外约4.2GB空间）：
+运行全部历史测试前恢复完整输入（需额外约4.5GB空间）：
 
 ```sh
 npm run fixtures:restore
@@ -90,7 +90,20 @@ npm run build:main
 node --expose-gc scripts/play/ancient-evil-save.mjs --expected-boundaries 65
 ```
 
+先知专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix chaos-walker-v01580 --only-prefix fate-prophet-v01820
+npx vitest run tests/domain/fate-prophet-acquisition.test.ts tests/domain/fate-prophet-life.test.ts tests/domain/fate-prophet-combat.test.ts tests/domain/fate-prophet-inheritance.test.ts tests/domain/fate-prophet-shared.test.ts tests/renderer/fate-prophet-panel.test.tsx tests/renderer/fate-prophet-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/fate-prophet-save.mjs --expected-boundaries 64
+node --expose-gc scripts/play/fate-prophet-save.mjs --key directed --expected-boundaries 11 --tag finance-directed
+```
+
 ## 当前验证与限制
+
+182增量验证：新增领域124项、界面44项、64个唯一自然SQLite边界与11个定向财务边界通过。完整551条命运之轮原活档继续至703条，第三瓶晋先知，新对手三轮投降，玩家存活并回到普通工作。修复真实零行动战斗终局与公共账单/还款衔接，保持原费用、随机与伤势；合法欠款和信用提示也有实际保存复验。新增85个输入在独立目录恢复并核验。完整严格类型、生产构建、48烟测、6保存辅助和32恢复/CI工具检查通过。本阶段未重跑整日历史全量验收；相关旧格式断言和Windows CI问题已按受影响范围完成121文件1775项去重复验；新远端矩阵仍以实际终值为准。
+
 
 177验收时，主工程与干净发布树完整严格类型检查、生产构建均通过。其最终影响范围488个测试文件、8608个断言通过，覆盖全部296个界面文件；其余495个未改测试保留基线通过记录。干净发布树60个历史输入相关文件、466断言，以及48项烟测、17项恢复工具测试通过。全部范围、两项整文件运行限制和未验证内容见[验收报告](docs/RELEASE_ACCEPTANCE.md)。
 

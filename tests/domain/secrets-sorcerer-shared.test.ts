@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createSliceRun,applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index.js';
@@ -32,7 +33,7 @@ describe('Secrets Sorcerer original hostile target, seal and real space route',(
   const b=read('record-save-boundary'),before=b.beforeLast as SliceState,s=b.final as SliceState;expect(s.recorder.demonstrations).toHaveLength(before.recorder.demonstrations.length+1);expect(s.progression.acting).toBe(before.progression.acting);expect(s.recorder.records.length).toBeGreaterThanOrEqual(before.recorder.records.length);expect(s.recorder.records.length).toBeLessThanOrEqual(before.recorder.records.length+1);
  });
  it('migrates prior0.126 full terminal retaining every old field',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/undying-v01260/natural.json','utf8')).final,s=migrateSliceState(old);for(const k of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(k))expect((s as any)[k]).toEqual(old[k]);expect(s.schemaVersion).toBe(177);expect(s.secretsSorcerer.promotionWeek).toBeNull();expect(migrateSliceState(s)).toEqual(s);
+  const old=JSON.parse(readFileSync('tests/fixtures/undying-v01260/natural.json','utf8')).final,s=migrateSliceState(old);for(const k of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(k))expect((s as any)[k]).toEqual(old[k]);expect(s.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);expect(s.secretsSorcerer.promotionWeek).toBeNull();expect(migrateSliceState(s)).toEqual(s);
  });
 });
 

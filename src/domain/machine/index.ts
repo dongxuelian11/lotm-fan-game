@@ -1,3 +1,4 @@
+import { FATE_PROPHET_ABILITY_IDS } from '../fate-prophet/types.js';
 import {CHAOS_WALKER_ABILITY_IDS} from '../chaos-walker/types.js';
 import {MISFORTUNE_MAGE_ABILITY_IDS} from '../misfortune-mage/types.js';
 import {WINNER_ABILITY_IDS} from '../winner/types.js';
@@ -30,7 +31,7 @@ export function createMachineState(): MachineState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'wheel' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'wheel' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isMonster = (s: SliceState) => s.progression.pathwayId === 'wheel' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.monster.discovered && s.monster.guidanceKnown && (isMonster(s) || promoted(s));
 const potionPrice = (bottle: MachineBottle) => MACHINE_PRICES.potion - (bottle.labourSteps === 3 ? MACHINE_PRICES.labourCredit : 0);
@@ -246,7 +247,7 @@ export function validateMachineState(s: SliceState): boolean {
   if (machine.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!machine.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(machine.promotionWeek, firstConsumptionWeek, s.week) || machine.monsterActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...MONSTER_ABILITY_IDS, ...MACHINE_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?LUCKY_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?CALAMITY_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?WINNER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?MISFORTUNE_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===3?CHAOS_WALKER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...MONSTER_ABILITY_IDS, ...MACHINE_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))))?LUCKY_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?CALAMITY_PRIEST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?WINNER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?MISFORTUNE_MAGE_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?CHAOS_WALKER_ABILITY_IDS:[]),...(s.progression.sequence===2?FATE_PROPHET_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (machine.promotionWeek !== null || machine.monsterActingAtPromotion !== null || MACHINE_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (machine.reflected || Object.values(machine.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -16,7 +17,7 @@ describe('BloodDuke acquisition: actual 583-command natural S3 source and explic
   it('replays exactly583 original commands and preserves fourteen skills, seven paid histories and the distinct DEAD ending', () => {
     const s = originalBlathererPrefix();
     expect(readObjectEntry<SliceIntent[]>(blathererNaturalPath, 'commands')).toHaveLength(592);
-    expect(s).toMatchObject({ schemaVersion: 177, week: 154, health: 100, mind: 100, spirituality: 120, cash: 500, actionsRemaining: 3, injuryRisk: 0, random: { seed: 'criminal-natural-v054', cursor: 106 }, progression: { sequence: 3, acting: 100 } });
+    expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, week: 154, health: 100, mind: 100, spirituality: 120, cash: 500, actionsRemaining: 3, injuryRisk: 0, random: { seed: 'criminal-natural-v054', cursor: 106 }, progression: { sequence: 3, acting: 100 } });
     expect(s.character.coreStats).toEqual({ physique: 29, perception: 23, will: 21, knowledge: 23 });
     expect(s.injuries).toEqual([]); expect(s.blatherer.promotionWeek).toBe(146);
     expect(s.blatherer.encounter).toMatchObject({ status: 'AVAILABLE', enemyHealth: 100, enemyMind: 100, enemySpirituality: 120 });

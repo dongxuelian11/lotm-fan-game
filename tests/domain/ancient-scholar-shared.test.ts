@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {readFileSync} from 'node:fs';
 import {describe,it,expect} from 'vitest';
 import {applySliceIntent,assertValidSliceState,createSliceRun,projectSliceState} from '../../src/domain/slice/index.js';
@@ -30,7 +31,7 @@ describe('Ancient scholar actual public route and inherited original facts',()=>
  });
  it('migrates original 137 save without inventing isolation and exposes present plus inherited abilities',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/long-chapter-v01390/natural.json','utf8')).final,bytes=JSON.stringify(old),current=migrateSliceState(old);
-  expect(current.schemaVersion).toBe(177);expect(current.ancientScholar.ritual.visits).toEqual([]);
+  expect(current.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);expect(current.ancientScholar.ritual.visits).toEqual([]);
   expect(old.longChapter).not.toHaveProperty('handoff');
   const {handoff,...preservedLongChapter}=current.longChapter;
   expect(handoff).toBeNull();expect(preservedLongChapter).toEqual(old.longChapter);expect(JSON.stringify(old)).toBe(bytes);

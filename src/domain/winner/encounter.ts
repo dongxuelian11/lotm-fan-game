@@ -110,7 +110,7 @@ export function validateWinnerEncounter(s: SliceState): boolean {
       (e.attemptWeek !== null && (!Number.isSafeInteger(e.attemptWeek) || e.attemptWeek < 1 || e.attemptWeek > s.week))) return false;
   const pristine = e.lastLuckRound === null && !e.staggerReady;
   const initial = e.status === 'AVAILABLE' && e.startHistoryIndex === null && e.attemptWeek === null && pristine;
-  const promoted = s.progression.pathwayId === 'wheel' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+  const promoted = s.progression.pathwayId === 'wheel' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
   if (!promoted) return initial && rewards === 0 && c?.encounterId !== 'WINNER_DISPUTE';
   if (!initial && (!reportsComplete(s) || s.winner.promotionWeek === null || e.attemptWeek === null || e.attemptWeek < s.winner.promotionWeek)) return false;
   if (rewards && (e.status !== 'RESOLVED' || e.startHistoryIndex === null)) return false;

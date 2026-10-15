@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { describe, expect, it } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -16,7 +17,7 @@ describe('AncientEvil acquisition: actual complete507-command S3 source and expl
   it('migrates the exact living source with17 skills, seven paid histories, untreated injury and old Calder surrender', () => {
     const original = readObjectEntry<SliceState>(silentDiscipleNaturalPath, 'final'), s = originalSilentDisciple();
     expect(readObjectEntry<SliceIntent[]>(silentDiscipleNaturalPath, 'commands')).toHaveLength(507);
-    expect(s).toMatchObject({ schemaVersion: 178, week: 119, revision: 508, status: 'ACTIVE', health: 100, mind: 99, spirituality: 116, cash: 360, actionsRemaining: 3, injuryRisk: 0, random: { seed: 'prisoner-natural-v057', cursor: 206 }, progression: { sequence: 3, acting: 100, promotionWeek: 6 } });
+    expect(s).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, week: 119, revision: 508, status: 'ACTIVE', health: 100, mind: 99, spirituality: 116, cash: 360, actionsRemaining: 3, injuryRisk: 0, random: { seed: 'prisoner-natural-v057', cursor: 206 }, progression: { sequence: 3, acting: 100, promotionWeek: 6 } });
     expect(s.character.coreStats).toEqual({ physique: 29, perception: 23, will: 23, knowledge: 19 });
     expect(s.injuries).toEqual([{ id: 'prisoner-rebuild-natural:combat:1:PLAYER:406:0', severity: 'HEAVY', acquiredRevision: 406, treatedRevision: null }]);
     expect(s.silentDisciple.promotionWeek).toBe(110); expect(oldChainedRoots(s)).toEqual(oldChainedRoots(original));

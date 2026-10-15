@@ -1,3 +1,4 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { applySliceIntent, assertValidSliceState, createSliceRun, projectSliceState } from '../../src/domain/slice/index.js';
@@ -71,7 +72,7 @@ describe('Prophecy Master actual public continuation from preserved Mystic histo
   }, 30_000);
   it('migrates the real W108 state without changing resources, old roots, original knowledge or the next RNG', () => {
     const old = original().final, bytes = JSON.stringify(old), s = migrateSliceState(old);
-    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177'); expect(s.prophecyMaster).toEqual(createProphecyMasterState());
+    expect(s.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(s.contentVersion).toBe(CURRENT_CONTENT_VERSION); expect(s.prophecyMaster).toEqual(createProphecyMasterState());
     expect(s).toMatchObject({ week: 108, status: 'ACTIVE', health: 100, mind: 100, spirituality: 112, cash: 750, actionsRemaining: 2, progression: { sequence: 4, acting: 100 }, random: { seed: 'pryer-natural-v048', cursor: 238 } });
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key]).toEqual(value);
     expectOriginals(s, old); expect(JSON.stringify(old)).toBe(bytes); expect(migrateSliceState(s)).toEqual(s); assertValidSliceState(s);
