@@ -64,7 +64,9 @@ function decode(raw: unknown): StoredSlice {
   return value;
 }
 function flush(path: string): void {
-  const fd = openSync(path, "r");
+  // Windows FlushFileBuffers requires a writable handle. r+ preserves all bytes.
+  // https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers
+  const fd = openSync(path, "r+");
   try {
     fsyncSync(fd);
   } finally {
