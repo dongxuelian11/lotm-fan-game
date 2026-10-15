@@ -1,3 +1,4 @@
+import { ANCIENT_EVIL_ABILITY_IDS } from '../ancient-evil/types.js';
 import {SILENT_DISCIPLE_ABILITY_IDS} from '../silent-disciple/types.js';
 import {PUPPET_ABILITY_IDS} from '../puppet/types.js';
 import {WRAITH_ABILITY_IDS} from '../wraith/types.js';
@@ -31,7 +32,7 @@ export function createWerewolfState(): WerewolfState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && [7, 6, 5, 4, 3, 2].includes(s.progression.sequence!);
 const isMadman = (s: SliceState) => s.progression.pathwayId === 'chained' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.prisoner.discovered && s.prisoner.guidanceKnown && s.madman.guidanceKnown && (isMadman(s) || promoted(s));
 const potionPrice = (bottle: WerewolfBottle) => WEREWOLF_PRICES.potion - (bottle.labourSteps === 4 ? WEREWOLF_PRICES.labourCredit : 0);
@@ -185,7 +186,7 @@ export function projectWerewolf(s: SliceState): WerewolfProjection {
     title: isPromoted ? '狼人 · 序列7' : '狼人之路', discovered: available,
     guidanceKnown: available && s.werewolf.guidanceKnown, promoted: isPromoted, formulaKnown: false, formula: [],
     cases: [], environment: '', insideCase: Object.values(s.werewolf.cases).some(value => value.sceneOpen) || s.werewolf.moon.pendingWeek !== null,
-    moon: { pending: s.werewolf.moon.pendingWeek !== null, summary: (s.progression.sequence===4||s.progression.sequence===3)?'旧狼人记录保留，当前木偶4具体原诅咒未核；仅执行木偶页另行明确的有限G公告，不叠加旧发作。':s.progression.sequence===5?'旧狼人月相记录保留。当前适用怨魂虚弱，不叠加旧狼人或活尸诅咒。':s.progression.sequence===6?'旧狼人月相记录保留。当前适用活尸的新诅咒，请在活尸面板查看；不重复施加狼人发作。':available ? `狼人满月诅咒不能靠节制或消化消除。${nextMoon ? `下一场已登记告示：第${nextMoon.week}周「${nextMoon.title}」，来源：${nextMoon.source}。` : '本阶段八场已登记告示已过；后续月相事件尚未展开，不代表诅咒消失。'}这是提前公示的有限本作G事件，不是原著月历，不按四周自动推算。` : '', history: s.werewolf.moon.history.map(entry => ({ ...entry })) },
+    moon: { pending: s.werewolf.moon.pendingWeek !== null, summary: s.progression.sequence === 2 ? '旧狼人月相记录完整保留；当前古代邪物的具体月圆规则仍未知。晋升不消除诅咒，也不重复施加旧阶段发作。' : (s.progression.sequence===4||[3, 2].includes(s.progression.sequence!))?'旧狼人记录保留，当前木偶4具体原诅咒未核；仅执行木偶页另行明确的有限G公告，不叠加旧发作。':s.progression.sequence===5?'旧狼人月相记录保留。当前适用怨魂虚弱，不叠加旧狼人或活尸诅咒。':s.progression.sequence===6?'旧狼人月相记录保留。当前适用活尸的新诅咒，请在活尸面板查看；不重复施加狼人发作。':available ? `狼人满月诅咒不能靠节制或消化消除。${nextMoon ? `下一场已登记告示：第${nextMoon.week}周「${nextMoon.title}」，来源：${nextMoon.source}。` : '本阶段八场已登记告示已过；后续月相事件尚未展开，不代表诅咒消失。'}这是提前公示的有限本作G事件，不是原著月历，不按四周自动推算。` : '', history: s.werewolf.moon.history.map(entry => ({ ...entry })) },
     ...(available ? { story: WEREWOLF_SOURCE_STATUS } : {}),
     supplies: available ? `${WEREWOLF_FORMULA_STATUS}供应方剩余${remaining}瓶，你持有未服原瓶${held}瓶。${s.werewolf.resupply.requestedWeek === null ? `已实际接收后续供给${s.werewolf.resupply.deliveries}批。` : `第${s.werewolf.resupply.requestedWeek}周提出请求，第${s.werewolf.resupply.requestedWeek + 1}周起可以收货。`}` : '',
     actions,
@@ -198,8 +199,8 @@ export function projectWerewolf(s: SliceState): WerewolfProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? WEREWOLF_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?s.zombie.werewolfActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?'狼人魔药已消化，原现场与月相记录保留；活尸新诅咒取代旧诅咒。':isPromoted ? `疯子消化成果${s.werewolf.madmanActingAtPromotion}/100已保留；狼人扮演${s.progression.acting}/100，能力掌握分别记录；狼人身体变化与满月诅咒仍保留，本作G节制与不伤害他人的成长不保证免除诅咒。`
+    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!))))?s.zombie.werewolfActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!))))?'狼人魔药已消化，原现场与月相记录保留；活尸新诅咒取代旧诅咒。':isPromoted ? `疯子消化成果${s.werewolf.madmanActingAtPromotion}/100已保留；狼人扮演${s.progression.acting}/100，能力掌握分别记录；狼人身体变化与满月诅咒仍保留，本作G节制与不伤害他人的成长不保证免除诅咒。`
       : available ? `服药前需完成疯子消化（${s.progression.acting}/100），并在晋升疯子后度过8整周（${madmanWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完疯子之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${WEREWOLF_CONSUMPTION_RISK}` : '成为疯子后，可向原导师了解下一序列。',
@@ -261,7 +262,7 @@ export function validateWerewolfState(s: SliceState): boolean {
   if (werewolf.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!werewolf.guidanceKnown || !integer(s.madman.promotionWeek, 1, s.week) || !integer(werewolf.promotionWeek, firstConsumptionWeek, s.week) || werewolf.madmanActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...MADMAN_ABILITY_IDS, ...WEREWOLF_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?ZOMBIE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?WRAITH_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?PUPPET_ABILITY_IDS:[]),...(s.progression.sequence===3?SILENT_DISCIPLE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...([8, 7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? MADMAN_ABILITY_IDS : []), ...([7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? WEREWOLF_ABILITY_IDS : []), ...([6, 5, 4, 3, 2].includes(s.progression.sequence!) ? ZOMBIE_ABILITY_IDS : []), ...([5, 4, 3, 2].includes(s.progression.sequence!) ? WRAITH_ABILITY_IDS : []), ...([4, 3, 2].includes(s.progression.sequence!) ? PUPPET_ABILITY_IDS : []), ...([3, 2].includes(s.progression.sequence!) ? SILENT_DISCIPLE_ABILITY_IDS : []), ...(s.progression.sequence === 2 ? ANCIENT_EVIL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (werewolf.moon.history.length !== 0 || werewolf.moon.pendingWeek !== null) return false;
     if (werewolf.promotionWeek !== null || werewolf.madmanActingAtPromotion !== null || WEREWOLF_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;

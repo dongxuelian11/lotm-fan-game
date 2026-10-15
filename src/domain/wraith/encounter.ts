@@ -112,7 +112,7 @@ export function validateWraithEncounter(s: SliceState): boolean {
       (e.attemptWeek !== null && (!Number.isSafeInteger(e.attemptWeek) || e.attemptWeek < 1 || e.attemptWeek > s.week))) return false;
   const pristine = e.lastPossessionRound === null && !e.staggerReady;
   const initial = e.status === 'AVAILABLE' && e.startHistoryIndex === null && e.attemptWeek === null && pristine;
-  const promoted = s.progression.pathwayId === 'chained' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+  const promoted = s.progression.pathwayId === 'chained' && (s.progression.sequence===5||(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!)));
   if (!promoted) return initial && rewards === 0 && c?.encounterId !== 'WRAITH_DISPUTE';
   if (!initial && (!reportsComplete(s) || s.wraith.promotionWeek === null || e.attemptWeek === null ||
       e.attemptWeek < s.wraith.promotionWeek)) return false;

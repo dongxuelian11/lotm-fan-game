@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import {
-  SHARD_COUNT, BATCH_SIZE, ISOLATED_TESTS, assertTestPath, discoverTestFiles,
+  SHARD_COUNT, BATCH_SIZE, DEFAULT_NODE_OPTIONS, ISOLATED_TESTS, assertTestPath, discoverTestFiles,
   assertCoverage, createPlan, verifyBatchReport, runShard,
 } from './test-ci-batches.mjs';
 
@@ -217,4 +217,25 @@ test('CLI propagates a real child process failure instead of claiming incomplete
   assert.equal(result.status, 1);
   assert.match(result.stderr, /Vitest batch 1 failed: exit 1/);
   assert.match(result.stdout, /0\/7 files passed/);
+});
+
+
+test('uses the bounded integration heap default and preserves explicit caller options', t => {
+  const root = fixture(t);
+  const original = process.env.NODE_OPTIONS;
+  try {
+    for (const requested of [undefined, '--max-old-space-size=2048 --trace-warnings']) {
+      if (requested === undefined) delete process.env.NODE_OPTIONS; else process.env.NODE_OPTIONS = requested;
+      const values = [];
+      runShard({ repo: root, shard: 1, log() {}, execute(command, args, options) {
+        values.push(options.env.NODE_OPTIONS);
+        return fakeSuccess(command, args, options);
+      } });
+      assert.equal(DEFAULT_NODE_OPTIONS, '--max-old-space-size=768');
+      assert.ok(values.length > 0);
+      assert.ok(values.every(value => value === (requested ?? DEFAULT_NODE_OPTIONS)));
+    }
+  } finally {
+    if (original === undefined) delete process.env.NODE_OPTIONS; else process.env.NODE_OPTIONS = original;
+  }
 });

@@ -9,6 +9,8 @@ import { spawnSync } from 'node:child_process';
 const defaultRepo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const SHARD_COUNT = 4;
 export const BATCH_SIZE = 5;
+// Keep the single-worker batch bounded; compare large files as bytes, not object keys.
+export const DEFAULT_NODE_OPTIONS = '--max-old-space-size=768';
 export const ISOLATED_TESTS = Object.freeze([
   'tests/domain/catastrophe-shared.test.ts',
   'tests/domain/wisdom-angel-life.test.ts',
@@ -118,7 +120,7 @@ export function runShard({ shard, repo = defaultRepo, execute = spawnSync, log =
         path.join(repo, 'node_modules/vitest/vitest.mjs'), 'run', ...files,
         '--maxWorkers=1', '--no-file-parallelism', '--reporter=default', '--reporter=json',
         `--outputFile=${reportPath}`,
-      ], { cwd: repo, stdio: 'inherit', env: { ...process.env, NODE_OPTIONS: process.env.NODE_OPTIONS || '--max-old-space-size=768' } });
+      ], { cwd: repo, stdio: 'inherit', env: { ...process.env, NODE_OPTIONS: process.env.NODE_OPTIONS || DEFAULT_NODE_OPTIONS } });
       if (result.error || result.status !== 0 || result.signal != null) {
         throw new Error(`Vitest batch ${batchNumber} failed: ${result.error?.message ?? result.signal ?? `exit ${result.status}`}`);
       }

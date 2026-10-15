@@ -1,3 +1,4 @@
+import { ANCIENT_EVIL_ABILITY_IDS } from '../ancient-evil/types.js';
 import {SILENT_DISCIPLE_ABILITY_IDS} from '../silent-disciple/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
@@ -43,7 +44,7 @@ export function createPuppetState(): PuppetState {
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isPuppet = (s: SliceState) => s.progression.pathwayId === 'chained' && s.progression.sequence === 4;
-const hasPuppetHistory=(s:SliceState)=>s.progression.pathwayId==='chained'&&[4,3].includes(s.progression.sequence!);
+const hasPuppetHistory=(s:SliceState)=>s.progression.pathwayId==='chained'&&[4, 3, 2].includes(s.progression.sequence!);
 const isWraith = (s: SliceState) => s.progression.pathwayId === 'chained' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.prisoner.discovered && s.prisoner.guidanceKnown && s.madman.guidanceKnown && s.werewolf.guidanceKnown && s.zombie.guidanceKnown && s.wraith.guidanceKnown && s.wraith.promotionWeek !== null && (isWraith(s) || hasPuppetHistory(s));
 const potionPrice = (bottle: PuppetBottle) => PUPPET_PRICES.potion - (bottle.labourSteps === PUPPET_LABOUR_STEPS ? PUPPET_PRICES.labourCredit : 0);
@@ -189,7 +190,7 @@ export function applyPuppetCommand(s: SliceState, command: PuppetCommand, c: See
 
 export function projectPuppet(s: SliceState): PuppetProjection {
   const actions: PuppetAction[] = [], available = knownChannel(s), promoted = hasPuppetHistory(s);
-  const acting = promoted ? (s.progression.sequence===3?s.silentDisciple.puppetActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = promoted ? ([3, 2].includes(s.progression.sequence!)?s.silentDisciple.puppetActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: PuppetAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -267,7 +268,7 @@ function validatePuppetStateRecord(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.wraith.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.wraithActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...MADMAN_ABILITY_IDS, ...WEREWOLF_ABILITY_IDS, ...ZOMBIE_ABILITY_IDS, ...WRAITH_ABILITY_IDS, ...PUPPET_ABILITY_IDS,...(s.progression.sequence===3?SILENT_DISCIPLE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...([8, 7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? MADMAN_ABILITY_IDS : []), ...([7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? WEREWOLF_ABILITY_IDS : []), ...([6, 5, 4, 3, 2].includes(s.progression.sequence!) ? ZOMBIE_ABILITY_IDS : []), ...([5, 4, 3, 2].includes(s.progression.sequence!) ? WRAITH_ABILITY_IDS : []), ...([4, 3, 2].includes(s.progression.sequence!) ? PUPPET_ABILITY_IDS : []), ...([3, 2].includes(s.progression.sequence!) ? SILENT_DISCIPLE_ABILITY_IDS : []), ...(s.progression.sequence === 2 ? ANCIENT_EVIL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.wraithActingAtPromotion !== null || PUPPET_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   // First validate every record shape, so a later batch cannot dereference malformed predecessors.
   for (const [index, bottle] of state.bottles.entries()) {

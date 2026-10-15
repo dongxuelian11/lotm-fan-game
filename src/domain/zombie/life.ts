@@ -155,7 +155,7 @@ export function zombieActions(s: SliceState): ZombieAction[] {
   return out;
 }
 export function zombieCases(s: SliceState): ZombieProjection['cases'] {
-  if (!active(s) && !(s.progression.pathwayId==='chained'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) return [];
+  if (!active(s) && !(s.progression.pathwayId==='chained'&&(s.progression.sequence===5||(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!))))) return [];
   return CASES.map(p => {
     const r = s.zombie.cases[p.id]!;
     let result: string | null = r.status === 'RESOLVED' ? p.result : r.status === 'EXAMINED' ? r.contactOpen ? '已取得本次有限结果，但当前接触仍在；先实际卸力、融冰收妥或解除请求。' : p.result : r.attemptWeek !== null ? '上次未形成可报告结果；成本保留，接触须先收束，下一真实周可重新准备。' : r.withdrawals ? '尚未实施的准备已经取消，没有开始新的能力消耗。' : null;
@@ -208,7 +208,7 @@ export function validateZombieLife(s: SliceState): boolean {
     if (r.attemptWeek === null && m.practice[field] !== initial) return false;
   }
   if (s.seer.completedSources.filter(x => x === 'zombie-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if ((active(s)||(s.progression.pathwayId==='chained'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) && ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.wraith.zombieActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if ((active(s)||(s.progression.pathwayId==='chained'&&(s.progression.sequence===5||(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!))))) && ((s.progression.sequence===5||(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!)))?s.wraith.zombieActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (m.practice.body !== 'NORMAL' || m.practice.cold !== 'NONE' || m.practice.spirit !== 'ABSENT' || m.moon.pendingWeek !== null || m.moon.history.length !== 0 || open !== 0 || prepared !== 0 || resolved !== 0 || m.reflected)) return false;
   return true;
 }

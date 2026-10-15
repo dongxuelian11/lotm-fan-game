@@ -223,7 +223,7 @@ export function wraithActions(s: SliceState): WraithAction[] {
 }
 
 export function wraithCases(s: SliceState): WraithProjection['cases'] {
-  if (!active(s)&&!(s.progression.pathwayId==='chained'&&(s.progression.sequence===4||s.progression.sequence===3))) return [];
+  if (!active(s)&&!(s.progression.pathwayId==='chained'&&(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!)))) return [];
   return CASES.map(p => {
     const r = s.wraith.cases[p.id]!;
     const closed = r.attemptWeek !== null && !r.contactOpen ? '本次已经实际返回、退出或亲手交付，原接触已结束。' : '';
@@ -285,7 +285,7 @@ export function validateWraithLife(s: SliceState): boolean {
   if (f.flag !== (signal.contactOpen && (signal.method === 'ORDINARY' || possessed) ? 'RAISED' : 'TABLE')) return false;
   if (f.note !== (note.contactOpen ? 'WRITTEN' : note.attemptWeek !== null ? 'HANDED_OVER' : 'BLANK')) return false;
   if (typeof m.reflected !== 'boolean' || s.seer.completedSources.filter(source => source === 'wraith-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (s.progression.pathwayId==='chained' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)) && ((s.progression.sequence===4||s.progression.sequence===3)?s.puppet.wraithActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (s.progression.pathwayId==='chained' && (s.progression.sequence===5||(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!))) && ((s.progression.sequence===4||[3, 2].includes(s.progression.sequence!))?s.puppet.wraithActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (m.moon.pendingWeek !== null || m.moon.history.length !== 0 || m.reflected)) return false;
   return true;
 }

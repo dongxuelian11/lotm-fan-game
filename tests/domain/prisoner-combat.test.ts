@@ -154,7 +154,7 @@ describe('Prisoner S9 exact G physical profile', () => {
 
   it('does not unlock later Chained powers or change neighboring original profiles', () => {
     const state = fixture();
-    for (const [pathwayId, sequence] of [[null, null], ['chained', 2]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['chained', 1]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isPrisoner(state)).toBe(false); expect(currentPrisonerCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);

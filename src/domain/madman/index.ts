@@ -1,3 +1,4 @@
+import { ANCIENT_EVIL_ABILITY_IDS } from '../ancient-evil/types.js';
 import {SILENT_DISCIPLE_ABILITY_IDS} from '../silent-disciple/types.js';
 import {PUPPET_ABILITY_IDS} from '../puppet/types.js';
 import {WRAITH_ABILITY_IDS} from '../wraith/types.js';
@@ -30,7 +31,7 @@ export function createMadmanState(): MadmanState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && [8, 7, 6, 5, 4, 3, 2].includes(s.progression.sequence!);
 const isPrisoner = (s: SliceState) => s.progression.pathwayId === 'chained' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.prisoner.discovered && s.prisoner.guidanceKnown && (isPrisoner(s) || promoted(s));
 const potionPrice = (bottle: MadmanBottle) => MADMAN_PRICES.potion - (bottle.labourSteps === 3 ? MADMAN_PRICES.labourCredit : 0);
@@ -246,7 +247,7 @@ export function validateMadmanState(s: SliceState): boolean {
   if (madman.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!madman.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(madman.promotionWeek, firstConsumptionWeek, s.week) || madman.prisonerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...MADMAN_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?WEREWOLF_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?ZOMBIE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?WRAITH_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?PUPPET_ABILITY_IDS:[]),...(s.progression.sequence===3?SILENT_DISCIPLE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...([8, 7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? MADMAN_ABILITY_IDS : []), ...([7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? WEREWOLF_ABILITY_IDS : []), ...([6, 5, 4, 3, 2].includes(s.progression.sequence!) ? ZOMBIE_ABILITY_IDS : []), ...([5, 4, 3, 2].includes(s.progression.sequence!) ? WRAITH_ABILITY_IDS : []), ...([4, 3, 2].includes(s.progression.sequence!) ? PUPPET_ABILITY_IDS : []), ...([3, 2].includes(s.progression.sequence!) ? SILENT_DISCIPLE_ABILITY_IDS : []), ...(s.progression.sequence === 2 ? ANCIENT_EVIL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (madman.promotionWeek !== null || madman.prisonerActingAtPromotion !== null || MADMAN_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (madman.reflected || Object.values(madman.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.burstOpen || value.stops !== 0 || value.burstUses !== 0)) return false;

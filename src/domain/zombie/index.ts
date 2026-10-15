@@ -1,3 +1,4 @@
+import { ANCIENT_EVIL_ABILITY_IDS } from '../ancient-evil/types.js';
 import {SILENT_DISCIPLE_ABILITY_IDS} from '../silent-disciple/types.js';
 import {PUPPET_ABILITY_IDS} from '../puppet/types.js';
 import {WRAITH_ABILITY_IDS} from '../wraith/types.js';
@@ -35,7 +36,7 @@ export function createZombieState(): ZombieState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && [6, 5, 4, 3, 2].includes(s.progression.sequence!);
 const isWerewolf = (s: SliceState) => s.progression.pathwayId === 'chained' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.prisoner.discovered && s.prisoner.guidanceKnown && s.madman.guidanceKnown && s.werewolf.guidanceKnown && s.werewolf.promotionWeek !== null && (isWerewolf(s) || promoted(s));
 const potionPrice = (bottle: ZombieBottle) => ZOMBIE_PRICES.potion - (bottle.labourSteps === 5 ? ZOMBIE_PRICES.labourCredit : 0);
@@ -160,7 +161,8 @@ export function applyZombieCommand(s: SliceState, command: ZombieAcquisitionComm
 }
 
 function zombieMoonSummary(s: SliceState): string {
-  if((s.progression.sequence===4||s.progression.sequence===3))return '旧活尸月相与剧痛处置完整保留。当前木偶4具体诅咒未核；只执行当前页面有限G公告，不叠收旧诅咒。';
+  if (s.progression.sequence === 2) return '旧活尸月相与剧痛处置记录完整保留；当前古代邪物的具体月圆规则仍未知。晋升不消除诅咒，也不重复施加旧阶段发作。';
+  if((s.progression.sequence===4||[3, 2].includes(s.progression.sequence!)))return '旧活尸月相与剧痛处置完整保留。当前木偶4具体诅咒未核；只执行当前页面有限G公告，不叠收旧诅咒。';
   if(s.progression.sequence===5)return "旧活尸月相与剧痛处置记录保留；当前适用怨魂月圆虚弱，请在怨魂面板查看。同一场不重复，不叠加旧狼人或活尸诅咒。";
   const next = WEREWOLF_MOON_EVENTS.find(event => event.week >= s.week && !s.werewolf.moon.history.some(entry => entry.week === event.week) && !s.zombie.moon.history.some(entry => entry.week === event.week));
   return `活尸节制满月冲动会承受剧痛，本次发作期间不能战斗；不能用普通替代食物、消化或节制保证治愈诅咒。${next ? `下一场提前公示：第${next.week}周「${next.title}」，来源：${next.source}。` : '已登记有限事件之后的月相尚未展开，不代表诅咒消失。'}沿用原八场G月相告示，不按每四周推算；旧狼人记录保留，同一场不重复结算。`;
@@ -168,7 +170,7 @@ function zombieMoonSummary(s: SliceState): string {
 
 export function projectZombie(s: SliceState): ZombieProjection {
   const actions: ZombieAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.wraith.zombieActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||[3, 2].includes(s.progression.sequence!)))?s.wraith.zombieActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: ZombieAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -263,7 +265,7 @@ export function validateZombieState(s: SliceState): boolean {
   if (zombie.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!zombie.guidanceKnown || !integer(s.werewolf.promotionWeek, 1, s.week) || !integer(zombie.promotionWeek, firstConsumptionWeek, s.week) || zombie.werewolfActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...MADMAN_ABILITY_IDS, ...WEREWOLF_ABILITY_IDS, ...ZOMBIE_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?WRAITH_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?PUPPET_ABILITY_IDS:[]),...(s.progression.sequence===3?SILENT_DISCIPLE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...([8, 7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? MADMAN_ABILITY_IDS : []), ...([7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? WEREWOLF_ABILITY_IDS : []), ...([6, 5, 4, 3, 2].includes(s.progression.sequence!) ? ZOMBIE_ABILITY_IDS : []), ...([5, 4, 3, 2].includes(s.progression.sequence!) ? WRAITH_ABILITY_IDS : []), ...([4, 3, 2].includes(s.progression.sequence!) ? PUPPET_ABILITY_IDS : []), ...([3, 2].includes(s.progression.sequence!) ? SILENT_DISCIPLE_ABILITY_IDS : []), ...(s.progression.sequence === 2 ? ANCIENT_EVIL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (zombie.promotionWeek !== null || zombie.werewolfActingAtPromotion !== null || ZOMBIE_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (zombie.reflected || Object.values(zombie.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

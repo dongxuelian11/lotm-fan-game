@@ -43,7 +43,7 @@ describe('SilentDisciple actual public continuation from preserved Puppet histor
   }, 30_000);
   it('migrates W103 without changing resources, original six roots or next RNG', () => {
     const old = original().final, bytes = JSON.stringify(old), s = migrateSliceState(old);
-    expect(s.schemaVersion).toBe(177); expect(s.contentVersion).toBe('blood-duke-v177'); expect(s.silentDisciple).toEqual(createSilentDiscipleState());
+    expect(s.schemaVersion).toBe(178); expect(s.contentVersion).toBe('ancient-evil-v178'); expect(s.silentDisciple).toEqual(createSilentDiscipleState());
     expect(s).toMatchObject({ week: 103, status: 'ACTIVE', health: 70, mind: 100, spirituality: 115, cash: 900, actionsRemaining: 2, progression: { sequence: 4, acting: 100 }, random: { seed: 'prisoner-natural-v057', cursor: 192 } });
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key]).toEqual(value);
     expectOriginals(s, old); expect(JSON.stringify(old)).toBe(bytes); expect(migrateSliceState(s)).toEqual(s); assertValidSliceState(s);

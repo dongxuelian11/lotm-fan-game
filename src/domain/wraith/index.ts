@@ -1,3 +1,4 @@
+import { ANCIENT_EVIL_ABILITY_IDS } from '../ancient-evil/types.js';
 import {SILENT_DISCIPLE_ABILITY_IDS} from '../silent-disciple/types.js';
 import {PUPPET_ABILITY_IDS} from '../puppet/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -41,7 +42,7 @@ export function createWraithState(): WraithState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && [5, 4, 3, 2].includes(s.progression.sequence!);
 const isZombie = (s: SliceState) => s.progression.pathwayId === 'chained' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.prisoner.discovered && s.prisoner.guidanceKnown && s.madman.guidanceKnown && s.werewolf.guidanceKnown && s.zombie.guidanceKnown && s.zombie.promotionWeek !== null && (isZombie(s) || promoted(s));
 const potionPrice = (bottle: WraithBottle) => WRAITH_PRICES.potion - (bottle.labourSteps === 5 ? WRAITH_PRICES.labourCredit : 0);
@@ -170,7 +171,8 @@ export function applyWraithCommand(s: SliceState, command: WraithAcquisitionComm
 }
 
 function wraithMoonSummary(s: SliceState): string {
-  if((s.progression.sequence===4||s.progression.sequence===3))return '旧怨魂月相与处置记录保留；木偶4具体原著诅咒未核，不能沿用5吸灵条款。当前仅执行木偶页明示的有限G公告。';
+  if (s.progression.sequence === 2) return '旧怨魂月相与处置记录完整保留；当前古代邪物的具体月圆规则仍未知。晋升不消除诅咒，也不重复施加旧阶段发作。';
+  if((s.progression.sequence===4||[3, 2].includes(s.progression.sequence!)))return '旧怨魂月相与处置记录保留；木偶4具体原著诅咒未核，不能沿用5吸灵条款。当前仅执行木偶页明示的有限G公告。';
   const next = WEREWOLF_MOON_EVENTS.find(event => event.week >= s.week
     && !s.werewolf.moon.history.some(entry => entry.week === event.week)
     && !s.zombie.moon.history.some(entry => entry.week === event.week)
@@ -180,7 +182,7 @@ function wraithMoonSummary(s: SliceState): string {
 
 export function projectWraith(s: SliceState): WraithProjection {
   const actions: WraithAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3)?s.puppet.wraithActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||[3, 2].includes(s.progression.sequence!))?s.puppet.wraithActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: WraithAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -270,7 +272,7 @@ export function validateWraithState(s: SliceState): boolean {
   if (isPromoted) {
     if (inheritedContactOpen(s)) return false;
     if (!wraith.guidanceKnown || !integer(s.zombie.promotionWeek, 1, s.week) || !integer(wraith.promotionWeek, firstConsumptionWeek, s.week) || wraith.zombieActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...MADMAN_ABILITY_IDS, ...WEREWOLF_ABILITY_IDS, ...ZOMBIE_ABILITY_IDS, ...WRAITH_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3)?PUPPET_ABILITY_IDS:[]),...(s.progression.sequence===3?SILENT_DISCIPLE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...([8, 7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? MADMAN_ABILITY_IDS : []), ...([7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? WEREWOLF_ABILITY_IDS : []), ...([6, 5, 4, 3, 2].includes(s.progression.sequence!) ? ZOMBIE_ABILITY_IDS : []), ...([5, 4, 3, 2].includes(s.progression.sequence!) ? WRAITH_ABILITY_IDS : []), ...([4, 3, 2].includes(s.progression.sequence!) ? PUPPET_ABILITY_IDS : []), ...([3, 2].includes(s.progression.sequence!) ? SILENT_DISCIPLE_ABILITY_IDS : []), ...(s.progression.sequence === 2 ? ANCIENT_EVIL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (wraith.moon.pendingWeek !== null || wraith.moon.history.length !== 0) return false;
     if (wraith.promotionWeek !== null || wraith.zombieActingAtPromotion !== null || WRAITH_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;

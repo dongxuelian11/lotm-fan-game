@@ -135,7 +135,7 @@ describe('Werewolf S7 exact G profile and strict dispatch', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(45);
   });
 
-  it('keeps earlier profiles and unimplemented S2 separate', () => {
+  it('keeps earlier profiles and unimplemented S1 separate', () => {
     const state = fixture(); state.progression.sequence = 8;
     expect(currentWerewolfCombatSource(state)).toBeNull(); expect(isMadman(state)).toBe(true);
     expect(playerCountWheel(state)).toEqual(MADMAN_COUNT_WHEEL);
@@ -143,7 +143,7 @@ describe('Werewolf S7 exact G profile and strict dispatch', () => {
     state.progression.sequence = 9;
     expect(playerCountWheel(state)).toEqual(PRISONER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(prisonerAbilityWheel('CONTROL', state));
-    state.progression.sequence = 2;
+    state.progression.sequence = 1;
     expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
   });

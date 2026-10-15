@@ -1,7 +1,7 @@
 import { stableStringify } from '../canonical.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceInjury, SliceState } from '../slice/types.js';
-import { hasSilentDiscipleOldPractice, hasSilentDiscipleRitualLock } from './index.js';
+import { hasAncientEvilContinuation, hasSilentDiscipleHistory, hasSilentDiscipleOldPractice, hasSilentDiscipleRitualLock } from './index.js';
 import { advanceSilentDiscipleLifeClock, hasSilentDiscipleLifeLock } from './life.js';
 import { silentDiscipleActionCount, silentDiscipleEnemyActionCount, validateSilentDiscipleBlocks, validateSilentDiscipleRoundOutcome, validSilentDiscipleCombatScene, type SilentDiscipleRoundOutcome } from './combat.js';
 
@@ -68,7 +68,7 @@ const noEffects = (e: SilentDiscipleEncounterState) => e.form === 'HUMAN' && e.e
 function practiceClosed(s: SliceState): boolean {
   return !hasSilentDiscipleRitualLock(s) && !hasSilentDiscipleOldPractice(s) && !hasSilentDiscipleLifeLock(s) && !Object.values(s.silentDisciple.life.cases).some(c => c.status === 'PREPARED');
 }
-export const hasSilentDiscipleEncounterLock = (s: SliceState): boolean => ['READY', 'FIGHTING'].includes(s.silentDisciple.encounter.status) || !noEffects(s.silentDisciple.encounter);
+export const hasSilentDiscipleEncounterLock = (s: SliceState): boolean => !hasAncientEvilContinuation(s) && (['READY', 'FIGHTING'].includes(s.silentDisciple.encounter.status) || !noEffects(s.silentDisciple.encounter));
 export const isInsideSilentDiscipleEncounter = hasSilentDiscipleEncounterLock;
 export function validateSilentDiscipleEncounterCommand(v: unknown): v is SilentDiscipleEncounterCommand {
   return !!v && typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 1 && ['BUY_BLOCKS', 'ENCOUNTER_TALK', 'ENCOUNTER_FIGHT', 'LEAVE_ENCOUNTER'].includes(String((v as { type: unknown }).type));
@@ -153,7 +153,7 @@ export function silentDiscipleEncounterActions(s: SliceState): SilentDiscipleEnc
 export function projectSilentDiscipleEncounter(s: SliceState): SilentDiscipleEncounterProjection {
   const e = s.silentDisciple.encounter;
   const publicState = { status: e.status, blocksPurchased: e.blocksPurchased, blocks: structuredClone(e.blocks), form: e.form, link: e.link, linkRound: e.linkRound, enemyFormUntilSeconds: e.enemyFormUntilSeconds };
-  if (!promoted(s)) return { ...publicState, title: '尚未开放的沉默门徒遭遇', story: '', inside: false, scene: null, enemy: null, actions: [], facts: [] };
+  if (!hasSilentDiscipleHistory(s)) return { ...publicState, title: '尚未开放的沉默门徒遭遇', story: '', inside: false, scene: null, enemy: null, actions: [], facts: [] };
   return { ...publicState, title: '原净空院与卡尔德·里德', story: SILENT_DISCIPLE_ENCOUNTER_STORY, inside: hasSilentDiscipleEncounterLock(s), scene: structuredClone(e.scene),
     enemy: { id: SILENT_DISCIPLE_TARGET_ID, name: '卡尔德·里德', age: 47, source: 'ORIGINAL_LIMITED_G', sequence: 4, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, form: e.enemyForm, weaponId: 'SD3-CALDER-ROD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } }, actions: silentDiscipleEncounterActions(s),

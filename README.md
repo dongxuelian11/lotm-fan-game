@@ -1,12 +1,12 @@
-# 诡秘之主同人游戏 · 0.180.0 阶段版
+# 诡秘之主同人游戏 · 0.181.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径包含9→3有限可玩切片，17条接至有限序列2。余下5条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径包含9→3有限可玩切片，18条接至有限序列2。余下4条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
-需要Node.js24.15–24.x、npm及图形桌面。npm ci会安装锁定依赖；Electron44在首次启动时按需下载桌面运行时，因此首次启动也需要网络。可提前执行 `npx --no-install install-electron` 准备运行时。当前云环境没有进行可见窗口或Windows实机验证。
+需要Node.js24.15–24.x、npm及图形桌面。npm ci会安装锁定依赖；Electron44在首次启动时按需下载桌面运行时，因此首次启动也需要网络。可提前执行 `npx --no-install install-electron` 准备运行时。当前云环境没有进行可见窗口验证；Windows GitHub Actions 执行严格类型、烟测和存档回归，桌面实机体验尚未验证。
 
 ```sh
 npm ci
@@ -14,7 +14,7 @@ npm run build
 npm start
 ```
 
-浏览器开发界面可运行 `npm run dev:renderer`。Electron桌面开发使用 `npm run dev`。浏览器内存试玩不是正式持久存档；桌面版通过SQLite保存。Windows和可见Electron窗口尚未实机验证，不将Linux构建通过等同Windows运行通过。
+浏览器开发界面可运行 `npm run dev:renderer`。Electron桌面开发使用 `npm run dev`。浏览器内存试玩不是正式持久存档；桌面版通过SQLite保存。Windows桌面和可见Electron窗口尚未实机验证，GitHub Actions 自动检查不代替桌面试玩。
 
 ## 测试输入
 
@@ -81,6 +81,15 @@ npm run build:main
 node --expose-gc scripts/play/blood-duke-save.mjs --expected-boundaries 64
 ```
 
+古代邪物专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix silent-disciple-v01570 --only-prefix ancient-evil-v01810
+npx vitest run tests/domain/ancient-evil-acquisition.test.ts tests/domain/ancient-evil-life.test.ts tests/domain/ancient-evil-combat.test.ts tests/domain/ancient-evil-inheritance.test.ts tests/domain/ancient-evil-shared.test.ts tests/renderer/ancient-evil-panel.test.tsx tests/renderer/ancient-evil-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/ancient-evil-save.mjs --expected-boundaries 65
+```
+
 ## 当前验证与限制
 
 177验收时，主工程与干净发布树完整严格类型检查、生产构建均通过。其最终影响范围488个测试文件、8608个断言通过，覆盖全部296个界面文件；其余495个未改测试保留基线通过记录。干净发布树60个历史输入相关文件、466断言，以及48项烟测、17项恢复工具测试通过。全部范围、两项整文件运行限制和未验证内容见[验收报告](docs/RELEASE_ACCEPTANCE.md)。
@@ -90,6 +99,8 @@ node --expose-gc scripts/play/blood-duke-save.mjs --expected-boundaries 64
 179增量验证：新增领域82项、界面17项、保存工具6项及53个唯一SQLite边界通过；旧秘祈链24文件441项覆盖后，对失败的过时断言逐项修正并复验。完整严格类型、48项烟测、17项恢复工具、14项CI分片工具与生产构建通过。新增输入包62个文件在独立目录实际恢复并校验。本阶段没有重新运行整个历史测试集。
 
 180增量验证：获取/生活/继承/战斗及实档共享87项、界面30项、64个唯一SQLite边界、共享保存辅助6项通过；旧深渊链25文件508项和相邻4文件126项完成相关复验。完整严格类型、48项烟测、17项恢复工具、14项CI分片工具和构建通过。新增71个原始输入实际独立恢复。原592条死亡记录保留，从同seed583条活分叉续行至724条；第一瓶失败、第二瓶晋升，第三轮真实身体后果死亡。最终冻结代码逐条重放全部724命令与64边界完全一致，详见[鲜血大公阶段记录](docs/BLOOD_DUKE_PLAYABLE_STAGE.md)。
+
+181增量验证：新增领域103项、界面32项、65个唯一SQLite边界通过；旧被缚者链25文件561项及旧界面9文件143项完成相关复验。完整严格类型、48项烟测、6项共享保存工具、32项恢复/CI工具及构建通过，全部74个新增原始输入已在独立目录恢复并核hash。同seed507条原活档续至642条，真实诊疗原重伤、第二瓶晋升、第三生活案两能力实际成功；可选战首轮新敌死亡，玩家普通离场后继续工作。详见[古代邪物阶段记录](docs/ANCIENT_EVIL_PLAYABLE_STAGE.md)。
 
 本版仍有构建大分块警告；可见Electron窗口、Windows实机及全路线自然通关尚未验证。门与银骑士部分高阶使用定向起点。178贤者阶段沿原507条公开命令继续到651条：亲自停止原灾难，第二瓶晋升，两次实际信息通道往返；筛读失败后通过普通核对完成生活事务，战斗第5轮撤退后保留两处重伤并回到生活。阶段记录见[贤者](docs/SAGE_PLAYABLE_STAGE.md)。177阶段原585条公开命令及54命名/50唯一SQLite转换证据见[阶段记录](docs/CALAMITY_DEMONESS_PLAYABLE_STAGE.md)。
 

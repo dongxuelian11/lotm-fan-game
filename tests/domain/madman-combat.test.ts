@@ -155,7 +155,7 @@ describe('Madman S8 exact G profile and round dispatch', () => {
     state.progression.pathwayId = 'tyrant'; state.progression.sequence = 8;
     expect(playerCountWheel(state)).toEqual(RAGER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ragerAbilityWheel('CONTROL'));
-    for (const [pathwayId, sequence] of [[null, null], ['chained', 2]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['chained', 1]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isMadman(state)).toBe(false); expect(currentMadmanCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);

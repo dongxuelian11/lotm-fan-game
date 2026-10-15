@@ -311,7 +311,7 @@ export function projectPuppetLife(s: SliceState): PuppetLifeProjection {
     history: l.moon.history.map(h => `${h.id} 原公告W${h.announcedWeek}，实际W${h.week}${h.deferred ? '延后处理同一场' : ''}；${h.method === 'GUARDED' ? '原哈伦守望' : '留在原地独处'}，真实等待${h.waitedHours}小时G，精神实耗${h.mentalCost}；不吞魂、不叠加旧诅咒、不治疗。`),
     waitedHours: l.moon.waitedHours, rule: PUPPET_MOON_RULE,
   };
-  if (!(s.progression.pathwayId==='chained'&&[4,3].includes(s.progression.sequence!))) return { cases: [], insideCase: false, environment: '', practice: null, moon };
+  if (!(s.progression.pathwayId==='chained'&&[4, 3, 2].includes(s.progression.sequence!))) return { cases: [], insideCase: false, environment: '', practice: null, moon };
   return {
     insideCase: hasPuppetLifeLock(s), environment: PUPPET_LIFE_ENVIRONMENT, moon,
     cases: CASES.map(p => {
@@ -387,7 +387,7 @@ export function validatePuppetLife(s: SliceState): boolean {
     if (link.state !== expectedLink || link.contactDistanceMetres !== lr.attempts.filter(a => a.method === 'ABILITY').length * 2 || link.consentWithdrawals !== lr.attempts.filter(a => a.consentWithdrawn).length || link.releases !== lr.attempts.filter(a => a.method === 'ABILITY' && a.success).length - Number(link.state === 'LINKED')) return false;
     if (lr.contactOpen && link.consented !== !la?.consentWithdrawn || lr.status === 'PREPARED' && !link.consented || !lr.contactOpen && lr.attempts.length > 0 && lr.status !== 'PREPARED' && link.consented || lr.status === 'AVAILABLE' && link.consented) return false;
     if (!record(note) || !shape(note, ['id', 'holder', 'writings', 'handovers']) || note.id !== 'PU4-NOTE-1' || note.holder !== (lr.contactOpen ? 'PLAYER' : 'GUIDE') || !Array.isArray(note.writings) || note.writings.length !== lr.attempts.length || note.writings.some(x => typeof x !== 'string' || !x.includes('PU4-NOTE-1') || !x.includes('没有测试伤害')) || note.handovers !== lr.closes) return false;
-    if (s.seer.completedSources.filter(x => x === 'puppet-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3 || (active(s)||s.progression.pathwayId==='chained'&&s.progression.sequence===3) && (s.progression.sequence===3?s.silentDisciple.puppetActingAtPromotion:s.progression.acting) !== resolved * 25 + Number(l.reflected) * 25) return false;
+    if (s.seer.completedSources.filter(x => x === 'puppet-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3 || (active(s)||s.progression.pathwayId==='chained'&&[3, 2].includes(s.progression.sequence!)) && ([3, 2].includes(s.progression.sequence!)?s.silentDisciple.puppetActingAtPromotion:s.progression.acting) !== resolved * 25 + Number(l.reflected) * 25) return false;
     const moon = l.moon;
     if (!record(moon) || !shape(moon, ['notices', 'pendingId', 'history', 'waitedHours']) || !Array.isArray(moon.notices) || moon.notices.length !== 2 || !Array.isArray(moon.history) || moon.history.length > 2) return false;
     for (const [index, n] of moon.notices.entries()) if (!record(n) || !shape(n, ['id', 'week']) || n.id !== `PU4-MOON-${index + 1}` || n.week !== start + (index === 0 ? 3 : 8)) return false;

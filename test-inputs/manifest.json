@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.180.0",
+  "version": "0.181.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -176,6 +176,11 @@
       "name": "lotm_release_0.180.0_blood_duke_test_inputs_2026-10-15.tar.gz",
       "bytes": 16485179,
       "sha256": "a6f3b6229358e53b9ce8bbf903dab3d42b4fa961f2b3fb414469c087e9a09398"
+    },
+    {
+      "name": "lotm_release_0.181.0_ancient_evil_test_inputs_2026-10-15.tar.gz",
+      "bytes": 17808668,
+      "sha256": "55235f5bdecdb938dee5f9eed9b26b4925b52e13ef8769bd7bcd3f3b112a324d"
     }
   ],
   "fileEntries": [
@@ -8648,6 +8653,376 @@
       "path": "tests/fixtures/blood-duke-v01800/summary.json",
       "bytes": 3307,
       "sha256": "e8ae52bde6aa83bb1ea99d1cf1512cffe72854d1212b0044ee15a52befe8bfb2"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundaries.index.json",
+      "bytes": 5103,
+      "sha256": "f4fd28cc1faf1082ac37bff597ad24a1ae382dbb7bdaf77699bdae311720e464"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-buy-ancient-evil-potion-1.json",
+      "bytes": 1717371,
+      "sha256": "3b2418ea9a8a3107e80f1a2288dc6da170aaf523cf228acf1645ddfce8b6d915"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-buy-ancient-evil-potion-2.json",
+      "bytes": 1786478,
+      "sha256": "c010087d7c636537fd0630c934d2b385be42ca91a4bb6c5709e03336f6d6f8ef"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-actual-pay60.json",
+      "bytes": 1630841,
+      "sha256": "68fe730f59d1dc908345e89d2c82eb9356acb99450bc9cb1d42df2bb666bbac1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-discovery.json",
+      "bytes": 1630032,
+      "sha256": "22cda6674c0c0be82ddc7ec18212b9118e8bc18f6af04e647a4d8ea1018b59d7"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-rest-1.json",
+      "bytes": 1630491,
+      "sha256": "04b85552f15df40e08e12954abcaa4869dede7b8a269c256fff44a8e20d3c940"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-clinic-real-rest-2.json",
+      "bytes": 1631228,
+      "sha256": "7ed79d33966dd921f21afadb51b541245aa9dd9951cc885c1296471af3951fd5"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-combat-round-1.json",
+      "bytes": 2141477,
+      "sha256": "fca9a4148e67a95928edaf3dae4a827cc4619dbaf2f17f16e7b0a050df212333"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-consume-ancient-evil-potion-1.json",
+      "bytes": 1733449,
+      "sha256": "9b97d1da3da085429f6d4dfc10da3bb6cf3ff81ccbf36ab87433570193fc6036"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-consume-ancient-evil-potion-2.json",
+      "bytes": 1803026,
+      "sha256": "b708aa73d6bacb71c3d30c0c7591e860916efd03ab44fcb9b58081c74393c940"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-guidance.json",
+      "bytes": 1639004,
+      "sha256": "f023219b614ba27d0de920ad838b77d449898b7551530aa04ecff9e8ab240d63"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-independent-optional-fight.json",
+      "bytes": 2037670,
+      "sha256": "345604f53d4995f32a24fd7f7f924c77fc77cb3fa37a36cce685004e7742394f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-actual-preparation.json",
+      "bytes": 1865228,
+      "sha256": "c772418533a08887d64adec475340cd01139cecbd8180d11efe4299b5c1cd4c7"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-compare_identity-actual.json",
+      "bytes": 1883533,
+      "sha256": "7030bb510b0493f076ecbded291162cfe271b63c8e2294308cda8f013fcc1e2b"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-consent_elsa-actual.json",
+      "bytes": 1873250,
+      "sha256": "5bf8e6cde249fb3bc8131309dc1a28e5f2dfad504fe3a84cab68c2ff49a7cbc0"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-enduring_transfiguration-actual.json",
+      "bytes": 1875974,
+      "sha256": "20799a1f7c423c87174018aef7134a0fd4a2c7d92de3801aadcd7c56172633bd"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-honest-report.json",
+      "bytes": 1893778,
+      "sha256": "33a6cce6678be29634fd22006a23e84f0c534c5bcbad84f21213f95d9b8616c6"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-inspect-actual.json",
+      "bytes": 1890617,
+      "sha256": "737a29c6c60b095e3cf28368bca3a80cb94da89b41740a8d340706b1177a672f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-leave-actual.json",
+      "bytes": 1892159,
+      "sha256": "4ad2d6693d6bf5d9fc4c7e8ca65d922cd1822b21b84cf4526cdccdded10c7ec5"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-manual_operation-actual.json",
+      "bytes": 1885398,
+      "sha256": "a78c44f1e33ae810c9ee8e833f175392d33231b410309a9aade3c672919b8f4e"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-observe-original-room.json",
+      "bytes": 1835194,
+      "sha256": "db259f865cb3a760bd6174a86c74e780fe3dc4b6cd40e35f533ca9bbf9d242dc"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-read_identity-actual.json",
+      "bytes": 1869501,
+      "sha256": "11735d4a7f96cfb7bdd179b79734796a4fd5c0897e9b5dea722aa16f0c27c535"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-read_note-actual.json",
+      "bytes": 1879977,
+      "sha256": "cfe91f5ac0b562cd32046404f035fcc12ff3586afc97110ef1f44dd8a91c3337"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-return_items-actual.json",
+      "bytes": 1887263,
+      "sha256": "3e0e52416cc68ec083d7b6277d07501b296f6f906dc145ea14cb334afee1bdd3"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-store_items-actual.json",
+      "bytes": 1871384,
+      "sha256": "06b52d7213178246256bbe6ab7352afcfe00e5c183e7ad48d75ffb337e5ef6d1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-lasting-form-walk-actual.json",
+      "bytes": 1867678,
+      "sha256": "079591d3509aa2896919ae969ffd2ca2fd4d47e36b0c08fa133c32fbbbd559bc"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 2226330,
+      "sha256": "6348ebc808bce741a06ca077653b77e47a7d5e1e07aad0080fc4c88dcf42587e"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-actual-preparation.json",
+      "bytes": 1934228,
+      "sha256": "9a39dc74ffa17fc8f5920f18c8eaec9f9ed56930dd8fd44b0188809fbb1a46e6"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-compare_identity-actual.json",
+      "bytes": 1955316,
+      "sha256": "1d042483aa21e619f7d26b8ae46acaae2d28e19e6a5ebf1e231b500d6765aeea"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-consent_elsa-actual.json",
+      "bytes": 1942267,
+      "sha256": "2fe3dd1294df5c1883b2d79f43233219f7a573ad348920cfa5f8b95517d4107a"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-curse_guidance-actual.json",
+      "bytes": 1958139,
+      "sha256": "4ed1b8f507d8cd847af32fd50cb8863818d05eef113613cfea19075d3ef5fa31"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-enduring_transfiguration-actual.json",
+      "bytes": 1945458,
+      "sha256": "105a2cf1f214aad65e1f75df7634413e10a930f730b5418651466167b3da828f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-honest-report.json",
+      "bytes": 1967381,
+      "sha256": "d9f10e14232cf43b95a2175269a4372d2d3bcecf97da6c06be4f21db7b5e5eda"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-inspect-actual.json",
+      "bytes": 1963982,
+      "sha256": "bcb38018d5ddd654a1778bb0f1c3df4a4d4833d0fc686c7536840230212358fb"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-leave-actual.json",
+      "bytes": 1965638,
+      "sha256": "084e1712df9d8ffeba67740dda4d94f6dc0244885e72db1394e46610232ae452"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-observe-original-room.json",
+      "bytes": 1931040,
+      "sha256": "4d4f9ffd05ccb5a6a7aec55a9cfa1068814ae4359928d391021b2a7165fa2c1d"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-read_identity-actual.json",
+      "bytes": 1938510,
+      "sha256": "7f2a8b15d23ee606d5681ccabc8def4eab209843f5ce25d8dd9ff553c0c42168"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-read_note-actual.json",
+      "bytes": 1951718,
+      "sha256": "34d088b8d3caf2cf15120e76a1804fe70cfc0c7bcfc028f19a09fd9138dce724"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-return_items-actual.json",
+      "bytes": 1960777,
+      "sha256": "afd9f6fde110f9fb65692f42e3b4b9f2fa439af918e366c97b9c99ea48422417"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-stop_input-actual.json",
+      "bytes": 1948415,
+      "sha256": "4fdbb83497998d651dad2e8f9c4a06c7162103a3aab814fe73f43956bf10729c"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-store_items-actual.json",
+      "bytes": 1940397,
+      "sha256": "1111dd748463b5613431b76489c5056353613a98fb2caf573b21cc84ab2744ec"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-original-link-walk-actual.json",
+      "bytes": 1936683,
+      "sha256": "98ad0e669c262e5a904ba768eeedda768e6e5cd04461c45357d4c74ea451ee23"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1655959,
+      "sha256": "030ab785804a03405786fd40d7e2917f248bc75549c1d59d2b208a2ede86822e"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1664648,
+      "sha256": "2bbde2f28f966ed234d67c37414f01a293f305babdc752e87ef0f6930a0405cf"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1648154,
+      "sha256": "e90e4af624b31301dd15ac61fd77445ce4594acac507db060d0ab46c9b238328"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-prepare-ancient-evil-potion-1.json",
+      "bytes": 1725123,
+      "sha256": "ff5b93a5e8881f726cde1bb18f0736462c88d83b2d10606583572d14214b4400"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-prepare-ancient-evil-potion-2.json",
+      "bytes": 1794228,
+      "sha256": "9371a05836ce673057a2af0708799526786b94c4e46295c18bea0936204ec6ec"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-real-combat-preparation.json",
+      "bytes": 1984772,
+      "sha256": "4d73be13991de12e08e0c2850afd4be63b7aeee6b4e5f381abc1addec7d7f397"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-actual-preparation.json",
+      "bytes": 1898736,
+      "sha256": "1780da06c94ed0cfaadbab2426da40f8aeb1f2f5fa7057005d5fb38e820e05d1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-compare_identity-actual.json",
+      "bytes": 1918990,
+      "sha256": "e1c0f68988c7e1d9930021751bb36f3344033123e1eab0e09ae7b4e753c50334"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-consent_elsa-actual.json",
+      "bytes": 1906758,
+      "sha256": "a7732552e43f4c2d1b78ded58aa64e7ddfe23a187a9fe97c86e330e8e7e38df4"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-enduring_transfiguration-actual.json",
+      "bytes": 1909512,
+      "sha256": "f31c959361c0acb11ae85af9357202e286fe047a4058bedc0faafdf211ea1e7c"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-honest-report.json",
+      "bytes": 1929251,
+      "sha256": "61b351ff7b79ab8690b342f311c933ef6a45ffde8c1058ac20a8ffdd4d8410e4"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-inspect-actual.json",
+      "bytes": 1926082,
+      "sha256": "52587801ab0fcaaede792290a00f4eaef0a7a34b3ebfc426c7177521193fb5e9"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-leave-actual.json",
+      "bytes": 1927627,
+      "sha256": "277b10948cd814662a7eb0ba30dbd4d9ecf594c011f68991501acee99da78345"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-manual_operation-actual.json",
+      "bytes": 1920857,
+      "sha256": "a4ffa34f07bc5b731781a3c434cc95f61536cbc858da3c2255346b9637fa8eaa"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-observe-original-room.json",
+      "bytes": 1895560,
+      "sha256": "678f36bc5e0c80b9ab13ca76836b873033dacd8be8c29ea696164fa31036b90d"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-read_identity-actual.json",
+      "bytes": 1903009,
+      "sha256": "dce043bc4fd14cc0441e3101715812dd220ca3ca7d52f536827bf8445db760fb"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-read_note-actual.json",
+      "bytes": 1915429,
+      "sha256": "161a7fdda9d453bdea01775822db14e680588ef07b996f0df5271f8ac9605af4"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-return_items-actual.json",
+      "bytes": 1922724,
+      "sha256": "35d6c1cce8107e35f9f076560db723f974105efb4a394fa7443b24f97e0c86e3"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-store_items-actual.json",
+      "bytes": 1904892,
+      "sha256": "1f89f74d78f03f243f1c22eab3818793666f0a040adbbe3b70d89f33dc0ff2f0"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-walk-actual.json",
+      "bytes": 1901186,
+      "sha256": "24b4040e1ee320be1459c5ff76079455d4236c6b55ce7ca2e064a0248d497eb1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-revoked-form-withdraw_permission-actual.json",
+      "bytes": 1912095,
+      "sha256": "b62ffd338b28a38ad2b429fcc77c80fb2a112c5fb2f40b9636526fd40e68924d"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-same-elsa-and-guide-ordinary-clearance.json",
+      "bytes": 2004311,
+      "sha256": "8635cdb971b63d3c40daeb611a522599d2f2f8fc3b02ea5f2ef498831b62f2be"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-three-cases-reflected.json",
+      "bytes": 1968976,
+      "sha256": "c43b941880239942eafc2f78ae33a0da3c31aa12a3100ad1817b602d3497c4bf"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/boundary-three-new-original-blocks.json",
+      "bytes": 1975368,
+      "sha256": "ed8d7f9e12909e391e86cf1ab005adc9d348b4cd67d3d2537ce4cd91c29bc88f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/natural.json",
+      "bytes": 2509703,
+      "sha256": "f005b8f8aa0b9d82f14919fbf668a56c4f5a63e1284be94c6f7155b94472c96f"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-combatStart.json",
+      "bytes": 1028348,
+      "sha256": "223b7b3c03123ef82cce0adb8518dd0d4c2eded4677728108a20808611ae6d22"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-combatTerminal.json",
+      "bytes": 1113050,
+      "sha256": "6a5014565d96c8bbf98b41eb2a50bbb96e793b73bbd80d1f173e566eb1b24d7a"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-departure.json",
+      "bytes": 814789,
+      "sha256": "619d9f1b5b1490a070e064b1d50ab7c346d8aad84a0ac5e1429c08f348fa2163"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-practiced.json",
+      "bytes": 984807,
+      "sha256": "ffc32d3769b4d5560c0947db393958a8f27f39c504bb58d6606466a02d5c2b85"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-promoted.json",
+      "bytes": 903898,
+      "sha256": "b670c281796e6750b2edb01763c40efde3e022524d06350c2839dbfeb36a08a9"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/snapshot-treated.json",
+      "bytes": 815743,
+      "sha256": "dff2363cfa6f9904d4258b199ab4c52a53bf6d3bbe8735b15a38e6d2ea3bd1f1"
+    },
+    {
+      "path": "tests/fixtures/ancient-evil-v01810/summary.json",
+      "bytes": 3275,
+      "sha256": "7d6ad93150fa23adb6929dc4e3637a5fec299e1985ce33f467efc70e8ee17997"
     }
   ]
 }

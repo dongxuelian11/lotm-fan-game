@@ -1,3 +1,4 @@
+import { ANCIENT_EVIL_ABILITY_IDS } from '../ancient-evil/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -29,7 +30,9 @@ export function createSilentDiscipleState(): SilentDiscipleState {
     preparations: [], preparedWeek: null, life: createSilentDiscipleLifeState(), encounter: createSilentDiscipleEncounterState() };
 }
 export const isSilentDisciple = (s: SliceState) => s.progression.pathwayId === 'chained' && s.progression.sequence === 3;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'chained' && [4, 3].includes(s.progression.sequence ?? 0)
+export const hasAncientEvilContinuation = (s: SliceState): boolean => s.progression.pathwayId === 'chained' && s.progression.sequence === 2 && integer(s.ancientEvil?.promotionWeek, 1, s.week);
+export const hasSilentDiscipleHistory = (s: SliceState): boolean => isSilentDisciple(s) || hasAncientEvilContinuation(s);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'chained' && ([4, 3].includes(s.progression.sequence ?? 0) || hasAncientEvilContinuation(s))
   && s.prisoner.discovered && s.prisoner.guidanceKnown && s.madman.guidanceKnown && s.werewolf.guidanceKnown
   && s.zombie.guidanceKnown && s.wraith.guidanceKnown && s.puppet.guidanceKnown && s.puppet.promotionWeek !== null;
 /** Old records are never reset. Every actual open body, contact, object and moon must first be closed in its own stage. */
@@ -43,7 +46,7 @@ export const hasSilentDiscipleOldPractice = (s: SliceState): boolean => prisoner
   || Object.values(s.puppet.life.cases).some(value => value.status === 'PREPARED')
   || s.zombie.encounter.status === 'FIGHTING' || s.wraith.encounter.status === 'FIGHTING' || s.wraith.encounter.staggerReady
   || s.puppet.encounter.form !== 'HUMAN' || s.puppet.encounter.link !== 'NONE';
-export const hasSilentDiscipleRitualLock = (s: SliceState): boolean => s.silentDisciple.preparedWeek !== null;
+export const hasSilentDiscipleRitualLock = (s: SliceState): boolean => !hasAncientEvilContinuation(s) && s.silentDisciple.preparedWeek !== null;
 export const hasSilentDiscipleLock = (s: SliceState): boolean => hasSilentDiscipleRitualLock(s) || hasSilentDiscipleLifeLock(s) || hasSilentDiscipleEncounterLock(s);
 const bottleNumber = (b: Pick<SilentDiscipleBottle, 'id'>) => Number(b.id.slice('silent-disciple-potion-'.length));
 const potionPrice = (b: SilentDiscipleBottle) => SILENT_DISCIPLE_PRICES.potion - (b.labourSteps === SILENT_DISCIPLE_LABOUR_STEPS ? SILENT_DISCIPLE_PRICES.labourCredit : 0);
@@ -76,7 +79,7 @@ export function silentDiscipleAcquisitionBlock(s: SliceState, command: SilentDis
   if (hasSilentDiscipleOldPractice(s) || hasSilentDiscipleLifeLock(s) || hasSilentDiscipleEncounterLock(s)) return '先实际结束旧接触、演练、身体形态、附身、诅咒联系和旧月相事件，归还原物并收束旧准备和当前实践；旧人物、伤势与能力记录保留，旧许可不代替新案同意。';
   if (s.world.city !== 'BACKLUND') return '须沿实际行程回到贝克兰德原旧工坊旁SD3-QUIET-ROOM独立安静房间。';
   if (!knownChannel(s)) return '实际成为木偶并保留原指导渠道后，才能了解沉默门徒之路。';
-  if (isSilentDisciple(s)) return '已经真实晋升沉默门徒3，不能重复准备或服药；未服原瓶保留。';
+  if (s.progression.sequence !== 4) return '已经真实晋升沉默门徒3，不能重复准备或服药；未服原瓶保留。';
   const state = s.silentDisciple;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
@@ -171,7 +174,8 @@ export function applySilentDiscipleCommand(s: SliceState, command: SilentDiscipl
 }
 
 export function projectSilentDisciple(s: SliceState): SilentDiscipleProjection {
-  const state = s.silentDisciple, available = knownChannel(s), promoted = isSilentDisciple(s), actions: SilentDiscipleAction[] = [];
+  const state = s.silentDisciple, available = knownChannel(s), promoted = hasSilentDiscipleHistory(s), actions: SilentDiscipleAction[] = [];
+  const acting = promoted ? (isSilentDisciple(s) ? s.progression.acting : s.ancientEvil.silentDiscipleActingAtPromotion ?? 0) : 0;
   const add = (id: string, label: string, cost: string, command: SilentDiscipleAcquisitionCommand) => { const reason = silentDiscipleAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-silent-disciple-guidance', '听取沉默门徒成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -200,7 +204,7 @@ export function projectSilentDisciple(s: SliceState): SilentDiscipleProjection {
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 沉默门徒成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为木偶' : '排异，仍为木偶'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? SILENT_DISCIPLE_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? SILENT_DISCIPLE_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `木偶消化${state.puppetActingAtPromotion}/100留存；沉默门徒扮演${s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功；和平100不保证原著安全消化或消除诅咒。` : available ? `木偶需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${puppetWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完木偶之路。',
+    acting, digestion: promoted ? `木偶消化${state.puppetActingAtPromotion}/100留存；沉默门徒扮演${acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功；和平100不保证原著安全消化或消除诅咒。` : available ? `木偶需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${puppetWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完木偶之路。',
     pollution: s.seer.pollution, risk: available ? SILENT_DISCIPLE_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     inheritedTools: available ? `原木片${s.puppet.life.token.id}仍属${s.puppet.life.token.owner}，在${s.puppet.life.token.position}；原记录纸${s.puppet.life.note.id}由${s.puppet.life.note.holder}保管。旧木块${s.puppet.encounter.blocks.map(b => `${b.id}:${b.status}/${b.location}`).join('、') || '尚未购买'}保持原位置。WF5-FLAG-1与WF5-NOTE-1按旧记录保留；新SD3-CLOTHES、SD3-BAG、SD3-TRAY与SD3-NOTE各为独立原物，不复制、传送或借晋升发放。` : '',
@@ -223,7 +227,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.silentDisciple;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'puppetActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as SilentDiscipleState, promoted = isSilentDisciple(s), firstWeek = s.puppet.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + SILENT_DISCIPLE_MIN_PUPPET_WEEKS;
+  const state = raw as unknown as SilentDiscipleState, promoted = hasSilentDiscipleHistory(s), firstWeek = s.puppet.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + SILENT_DISCIPLE_MIN_PUPPET_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !SILENT_DISCIPLE_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
@@ -231,7 +235,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasSilentDiscipleOldPractice(s) || hasSilentDiscipleLifeLock(s) || hasSilentDiscipleEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.puppet.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.puppetActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...MADMAN_ABILITY_IDS, ...WEREWOLF_ABILITY_IDS, ...ZOMBIE_ABILITY_IDS, ...WRAITH_ABILITY_IDS, ...PUPPET_ABILITY_IDS, ...SILENT_DISCIPLE_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...MADMAN_ABILITY_IDS, ...WEREWOLF_ABILITY_IDS, ...ZOMBIE_ABILITY_IDS, ...WRAITH_ABILITY_IDS, ...PUPPET_ABILITY_IDS, ...SILENT_DISCIPLE_ABILITY_IDS, ...(s.progression.sequence === 2 ? ANCIENT_EVIL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.puppetActingAtPromotion !== null || SILENT_DISCIPLE_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

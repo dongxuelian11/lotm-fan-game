@@ -1,3 +1,4 @@
+import { ANCIENT_EVIL_ABILITY_IDS } from '../ancient-evil/types.js';
 import {SILENT_DISCIPLE_ABILITY_IDS} from '../silent-disciple/types.js';
 import {PUPPET_ABILITY_IDS} from '../puppet/types.js';
 import {WRAITH_ABILITY_IDS} from '../wraith/types.js';
@@ -34,7 +35,7 @@ function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Err
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const shape = (value: Record<string, unknown>, fields: readonly string[]) => Object.keys(value).sort().join('|') === [...fields].sort().join('|');
 const integer = (value: unknown, min: number, max = Number.MAX_SAFE_INTEGER) => Number.isSafeInteger(value) && (value as number) >= min && (value as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && (s.progression.sequence === 9||s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'chained' && [9, 8, 7, 6, 5, 4, 3, 2].includes(s.progression.sequence!);
 const potionPrice = (bottle: PrisonerBottle) => PRISONER_PRICES.potion - (bottle.labourSteps === 2 ? PRISONER_PRICES.labourCredit : 0);
 const bottleNumber = (bottle: PrisonerBottle) => Number(bottle.id.slice('prisoner-potion-'.length));
 const ordinaryWeeks = (s: SliceState) => Math.min(4, Math.max(0, (s.progression.promotionWeek ?? s.week) - 1));
@@ -252,7 +253,7 @@ export function validatePrisonerState(s: SliceState): boolean {
   const prisoner = raw as unknown as PrisonerState, isPromoted = promoted(s);
   if (s.progression.pathwayId === 'chained' && !isPromoted) return false;
   if (isPromoted) {
-    if (!prisoner.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...PRISONER_ABILITY_IDS,...([8,7,6,5,4,3].includes(s.progression.sequence!)?MADMAN_ABILITY_IDS:[]),...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?WEREWOLF_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?ZOMBIE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?WRAITH_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?PUPPET_ABILITY_IDS:[]),...(s.progression.sequence===3?SILENT_DISCIPLE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!prisoner.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...PRISONER_ABILITY_IDS, ...([8, 7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? MADMAN_ABILITY_IDS : []), ...([7, 6, 5, 4, 3, 2].includes(s.progression.sequence!) ? WEREWOLF_ABILITY_IDS : []), ...([6, 5, 4, 3, 2].includes(s.progression.sequence!) ? ZOMBIE_ABILITY_IDS : []), ...([5, 4, 3, 2].includes(s.progression.sequence!) ? WRAITH_ABILITY_IDS : []), ...([4, 3, 2].includes(s.progression.sequence!) ? PUPPET_ABILITY_IDS : []), ...([3, 2].includes(s.progression.sequence!) ? SILENT_DISCIPLE_ABILITY_IDS : []), ...(s.progression.sequence === 2 ? ANCIENT_EVIL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (PRISONER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id)) || prisoner.reflected
     || Object.values(prisoner.cases).some(caseState => caseState.status !== 'AVAILABLE' || caseState.attemptWeek !== null || caseState.withdrawals !== 0 || caseState.method !== null || caseState.outcome !== 'NONE' || caseState.holding || caseState.returns !== 0)) return false;
   let successes = 0;

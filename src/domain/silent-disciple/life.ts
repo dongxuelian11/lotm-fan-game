@@ -1,9 +1,10 @@
+import { validateAncientEvilSourceSilentDiscipleLife } from '../ancient-evil/life.js';
 import type { PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
 import { isValidGameDate } from '../game-calendar.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceState } from '../slice/types.js';
-import { hasSilentDiscipleOldPractice, hasSilentDiscipleRitualLock } from './index.js';
+import { hasAncientEvilContinuation, hasSilentDiscipleOldPractice, hasSilentDiscipleRitualLock } from './index.js';
 
 export const SILENT_DISCIPLE_CASE_IDS = ['original-body', 'revoked-form', 'measured-link'] as const;
 export type SilentDiscipleCaseId = typeof SILENT_DISCIPLE_CASE_IDS[number];
@@ -40,8 +41,8 @@ export interface SilentDiscipleMoonState {
 export interface SilentDiscipleLifeState {
   siteId: 'SD3-QUIET-ROOM'; introducedWeek: number | null; introducedDate: PublicGameDate | null; activeCase: SilentDiscipleCaseId | null;
   playerLocation: SilentDiscipleLocation; playerTravelMetres: number; clockSeconds: number;
-  volunteer: { id: 'SD3-ELSA'; name: '埃尔莎·莫尔'; age: 43; alive: true; willing: boolean; location: 'A'; bodyId: 'SD3-ELSA'; form: 'HUMAN' | 'RABBIT'; health: 100; mind: 100; spirituality: 100; injuries: [] };
-  guide: { id: 'HARLAN'; name: '哈伦·维斯'; location: 'START' };
+  volunteer: { id: 'SD3-ELSA'; name: '埃尔莎·莫尔'; age: 43; alive: true; willing: boolean; location: 'A' | 'START' | 'OUTSIDE'; bodyId: 'SD3-ELSA'; form: 'HUMAN' | 'RABBIT'; health: 100; mind: 100; spirituality: 100; injuries: [] };
+  guide: { id: 'HARLAN'; name: '哈伦·维斯'; location: 'START' | 'OUTSIDE' };
   clothing: { id: 'SD3-CLOTHES'; owner: 'SD3-ELSA'; quantity: 1; location: 'ELSA' | 'TRAY'; worn: boolean };
   bag: { id: 'SD3-BAG'; owner: 'SD3-ELSA'; quantity: 1; location: 'ELSA' | 'TRAY' };
   tray: { id: 'SD3-TRAY'; location: 'A'; privacy: 'PRIVATE' };
@@ -103,7 +104,7 @@ function cleanupBlock(s: SliceState): string | null {
   if (l.clothing.location !== 'ELSA' || !l.clothing.worn || l.bag.location !== 'ELSA') return '须本人在A待同一身体复原后RETURN_ITEMS，私下穿回原衣并归还原包。';
   return l.playerLocation !== 'START' ? '须本人从B走4米返A，再走4米回START，不能传送或假报退出。' : null;
 }
-export const hasSilentDiscipleLifeLock = (s: SliceState): boolean => ['ANNOUNCED', 'RESTING'].includes(s.silentDisciple.life.moon.status) || s.silentDisciple.life.activeCase !== null || Object.values(s.silentDisciple.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+export const hasSilentDiscipleLifeLock = (s: SliceState): boolean => !hasAncientEvilContinuation(s) && (['ANNOUNCED', 'RESTING'].includes(s.silentDisciple.life.moon.status) || s.silentDisciple.life.activeCase !== null || Object.values(s.silentDisciple.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null);
 const evidenceComplete = (a: SilentDiscipleAttempt) => a.identityRead && a.noteRead && a.identityCompared;
 function sceneReason(s: SliceState, id: SilentDiscipleCaseId, type: SceneType): string | null {
   const l = s.silentDisciple.life, a = l.cases[id].attempts.at(-1)!, at = l.playerLocation;
@@ -279,17 +280,25 @@ export function projectSilentDiscipleLife(s: SliceState): SilentDiscipleLifeProj
     nextStep: next ? `下一步：${next.label}（${next.cost}）。` : l.reflected ? '三份真实报告与反思完成；原物、拒绝、失败成本和旧历史保留，可继续普通生活。' : '先晋升或完成当前实际条件。',
     facts: [
       `本人在${l.playerLocation}，累计普通步行${l.playerTravelMetres}米，原时钟${l.clockSeconds}秒；START0米、A4米、B8米，每案必须实际往返16米。`,
-      `原成年埃尔莎·莫尔/${l.volunteer.id}/43岁，唯一原身体${l.volunteer.bodyId}始终在A，当前${l.volunteer.form}，健康${l.volunteer.health}、精神${l.volunteer.mind}、灵性${l.volunteer.spirituality}不因变形恢复。${a ? `当前许可${a.consent}，新输入${a.inputActive ? '尚未停止' : '已停止或未开始'}。` : '每案都需新的当前许可。'}`,
+      `原成年埃尔莎·莫尔/${l.volunteer.id}/43岁，唯一原身体${l.volunteer.bodyId}现实际在${l.volunteer.location}，当前${l.volunteer.form}，健康${l.volunteer.health}、精神${l.volunteer.mind}、灵性${l.volunteer.spirituality}不因变形恢复。${a ? `当前许可${a.consent}，新输入${a.inputActive ? '尚未停止' : '已停止或未开始'}。` : '每案都需新的当前许可。'}`,
       `同一原衣${l.clothing.id}归埃尔莎，现${l.clothing.location}，${l.clothing.worn ? '实际穿着' : '尚未穿回'}；同一原包${l.bag.id}现${l.bag.location}。唯一私密托盘${l.tray.id}在A，唯一原纸${l.note.id}在B。`,
       a ? `本次实际来源${a.abilitySourceId ?? '尚未施术'}，形态剩余${a.formRemainingSeconds}秒，联系${a.linkState}/剩余${a.linkRemainingSeconds}秒；实际已等${a.waitedSeconds}秒。` : '没有免费形态、第二身体、远程物品归还或生活伤害反射。',
       a?.outcome ?? '尚未记录本案真实结果，不提前宣称成功或持续同意。',
-      '原导师哈伦在START，只按明确G程序提供现场安全准备；不会凭身份瞬间解咒。停止或撤回后，已有兔形仍须实际等待或付费解除，复原不等于穿衣。',
+      `原导师哈伦现实际在${l.guide.location}，只按明确G程序提供现场安全准备；不会凭身份瞬间解咒。停止或撤回后，已有兔形仍须实际等待或付费解除，复原不等于穿衣。`,
       `可选${l.moon.id}为当地观测所一次原创G告示：晋升+2周后亲读才产生；守望1行动60便士至多8精神/独处1行动至多18精神，两者等3600秒。当前${l.moon.status}；原著沉默门徒具体月圆规则仍未知，不叠收旧阶段月圆、不回血。`,
     ], cases: CASES.map(spec => { const r = l.cases[spec.id]; return { id: spec.id, title: spec.title, story: spec.story, observations: r.status === 'AVAILABLE' ? [] : [spec.story], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '实际付费能力成功、原身份核验与收束完成；报告对应掌握+8' : '实际普通完成或失败后补查；无能力掌握', contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: structuredClone(r.attempts) }; }) };
 }
 
 /** Rebuild every same-body change, original item, consent, source, paid cost and real second. */
-export function validateSilentDiscipleLife(s: SliceState): boolean { try { return validateLife(s); } catch { return false; } }
+export function validateSilentDiscipleLifeOriginal(s: SliceState): boolean { try { return validateLife(s); } catch { return false; } }
+/** S2 changes are accepted only by replaying the same frozen original S3 source. */
+export function validateSilentDiscipleLife(s: SliceState): boolean {
+  try {
+    return s.ancientEvil?.life?.source != null
+      ? validateAncientEvilSourceSilentDiscipleLife(s)
+      : validateSilentDiscipleLifeOriginal(s);
+  } catch { return false; }
+}
 function validMoon(s: SliceState): boolean {
   const m = s.silentDisciple.life.moon, initial = createSilentDiscipleLifeState().moon, p = s.silentDisciple.promotionWeek;
   if (!record(m) || !shape(m, Object.keys(initial))) return false;

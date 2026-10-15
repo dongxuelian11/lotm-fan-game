@@ -140,7 +140,7 @@ export function puppetEncounterActions(s: SliceState) {
   });
 }
 export function projectPuppetEncounter(s: SliceState): PuppetEncounterProjection {
-  if (!(s.progression.pathwayId==='chained'&&[4,3].includes(s.progression.sequence!))) return { encounter: null };
+  if (!(s.progression.pathwayId==='chained'&&[4, 3, 2].includes(s.progression.sequence!))) return { encounter: null };
   const e = s.puppet.encounter;
   return { encounter: { ...structuredClone(e), name: '埃德林·维尔（原创成年非凡者，G）', story: PUPPET_ENCOUNTER_STORY, sequence: 5,
     originalExit: '原独立净空工坊的开放普通出口', pursuit: false, distanceMetres: 2, noBystanders: true,
