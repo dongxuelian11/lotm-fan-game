@@ -1,0 +1,15 @@
+.hunter-panel .hunter-inventory {
+  padding: 16px 20px;
+  background: var(--slice-paper-light);
+  border: 1px solid var(--slice-line);
+}
+.hunter-panel .hunter-inventory h3 { margin: 0 0 12px; }
+.hunter-panel .hunter-story p,
+.hunter-panel .seer-risk p { white-space: pre-line; }
+.hunter-panel .hunter-abilities > .seer-fold { margin-top: 14px; }
+.hunter-panel .seer-action,
+.hunter-panel .seer-action .slice-choice { min-width: 0; overflow-wrap: anywhere; }
+.hunter-panel .seer-bottle > :only-child { grid-column: 1 / -1; }
+@media (max-width: 700px) {
+  .hunter-panel .hunter-inventory { padding: 16px; }
+}
