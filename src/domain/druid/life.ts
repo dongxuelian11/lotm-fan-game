@@ -198,7 +198,7 @@ export function druidActions(s: SliceState): DruidAction[] {
   return out;
 }
 export function druidCases(s: SliceState): DruidProjection['cases'] {
-  if (!active(s)&&!(s.progression.pathwayId==='mother'&&(s.progression.sequence===4||s.progression.sequence===3))) return [];
+  if (!active(s)&&!(s.progression.pathwayId==='mother'&&(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))) return [];
   return CASES.map(p => {
     const r = s.druid.cases[p.id]!;
     let result: string | null = null;
@@ -244,7 +244,7 @@ export function validateDruidLife(s: SliceState): boolean {
   if ((f.seedlings === 'OBSERVED') !== seedlings.contactOpen) return false;
   if (note.contactOpen ? f.note !== 'WRITTEN' : note.attemptWeek === null ? f.note !== 'BLANK' : f.note !== 'HANDED_OVER') return false;
   if (s.seer.completedSources.filter(x => x === 'druid-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (s.progression.pathwayId==='mother' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)) && ((s.progression.sequence===4||s.progression.sequence===3)?s.ancientAlchemist.druidActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (s.progression.pathwayId==='mother' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)) && ((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?s.ancientAlchemist.druidActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (open !== 0 || prepared !== 0 || resolved !== 0 || m.reflected || f.returnAttempted || f.position !== 'NEAR' || f.marker !== 'BOX' || f.seedlings !== 'RESTING' || f.note !== 'BLANK' || CASES.some(p => m.cases[p.id]!.status !== 'AVAILABLE'))) return false;
   return true;
 }

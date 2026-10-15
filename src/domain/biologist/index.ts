@@ -1,3 +1,4 @@
+import { BARREN_MATRIARCH_ABILITY_IDS } from '../barren-matriarch/types.js';
 import {COFFIN_BEARER_ABILITY_IDS} from '../coffin-bearer/types.js';
 import {ANCIENT_ALCHEMIST_ABILITY_IDS} from '../ancient-alchemist/types.js';
 import {DRUID_ABILITY_IDS} from '../druid/types.js';
@@ -34,7 +35,7 @@ export function createBiologistState(): BiologistState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'mother' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'mother' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
 const isHarvestpriest = (s: SliceState) => s.progression.pathwayId === 'mother' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.cultivator.discovered && s.cultivator.guidanceKnown && s.physician.guidanceKnown && s.harvestpriest.guidanceKnown && s.harvestpriest.promotionWeek !== null && (isHarvestpriest(s) || promoted(s));
 const potionPrice = (bottle: BiologistBottle) => BIOLOGIST_PRICES.potion - (bottle.labourSteps === 5 ? BIOLOGIST_PRICES.labourCredit : 0);
@@ -159,7 +160,7 @@ export function applyBiologistCommand(s: SliceState, command: BiologistAcquisiti
 
 export function projectBiologist(s: SliceState): BiologistProjection {
   const actions: BiologistAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.druid.biologistActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.druid.biologistActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: BiologistAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -253,7 +254,7 @@ export function validateBiologistState(s: SliceState): boolean {
   if (biologist.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!biologist.guidanceKnown || !integer(s.harvestpriest.promotionWeek, 1, s.week) || !integer(biologist.promotionWeek, firstConsumptionWeek, s.week) || biologist.harvestpriestActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS, ...HARVESTPRIEST_ABILITY_IDS, ...BIOLOGIST_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?DRUID_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?ANCIENT_ALCHEMIST_ABILITY_IDS:[]),...(s.progression.sequence===3?COFFIN_BEARER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS, ...HARVESTPRIEST_ABILITY_IDS, ...BIOLOGIST_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?DRUID_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?ANCIENT_ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?COFFIN_BEARER_ABILITY_IDS:[]),...(s.progression.sequence===2?BARREN_MATRIARCH_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (biologist.promotionWeek !== null || biologist.harvestpriestActingAtPromotion !== null || BIOLOGIST_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (biologist.reflected || Object.values(biologist.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

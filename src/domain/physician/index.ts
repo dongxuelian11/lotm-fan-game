@@ -1,3 +1,4 @@
+import { BARREN_MATRIARCH_ABILITY_IDS } from '../barren-matriarch/types.js';
 import {COFFIN_BEARER_ABILITY_IDS} from '../coffin-bearer/types.js';
 import {ANCIENT_ALCHEMIST_ABILITY_IDS} from '../ancient-alchemist/types.js';
 import {DRUID_ABILITY_IDS} from '../druid/types.js';
@@ -31,7 +32,7 @@ export function createPhysicianState(): PhysicianState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'mother' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'mother' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isCultivator = (s: SliceState) => s.progression.pathwayId === 'mother' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.cultivator.discovered && s.cultivator.guidanceKnown && (isCultivator(s) || promoted(s));
 const potionPrice = (bottle: PhysicianBottle) => PHYSICIAN_PRICES.potion - (bottle.labourSteps === 3 ? PHYSICIAN_PRICES.labourCredit : 0);
@@ -252,7 +253,7 @@ export function validatePhysicianState(s: SliceState): boolean {
   if (physician.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!physician.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(physician.promotionWeek, firstConsumptionWeek, s.week) || physician.cultivatorActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?HARVESTPRIEST_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?BIOLOGIST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?DRUID_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?ANCIENT_ALCHEMIST_ABILITY_IDS:[]),...(s.progression.sequence===3?COFFIN_BEARER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))))?HARVESTPRIEST_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?BIOLOGIST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?DRUID_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?ANCIENT_ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?COFFIN_BEARER_ABILITY_IDS:[]),...(s.progression.sequence===2?BARREN_MATRIARCH_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (physician.promotionWeek !== null || physician.cultivatorActingAtPromotion !== null || PHYSICIAN_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (physician.clinic.kitsBought !== 0 || physician.clinic.dressings !== 0 || physician.clinic.usedDressings !== 0 || physician.clinic.patientHealth !== 70 || physician.clinic.treated || physician.clinic.referred) return false;

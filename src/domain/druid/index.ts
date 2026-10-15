@@ -1,3 +1,4 @@
+import { BARREN_MATRIARCH_ABILITY_IDS } from '../barren-matriarch/types.js';
 import {COFFIN_BEARER_ABILITY_IDS} from '../coffin-bearer/types.js';
 import {ANCIENT_ALCHEMIST_ABILITY_IDS} from '../ancient-alchemist/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -36,7 +37,7 @@ export function createDruidState(): DruidState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'mother' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'mother' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
 const isBiologist = (s: SliceState) => s.progression.pathwayId === 'mother' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.cultivator.discovered && s.cultivator.guidanceKnown && s.physician.guidanceKnown && s.harvestpriest.guidanceKnown && s.biologist.guidanceKnown && s.biologist.promotionWeek !== null && (isBiologist(s) || promoted(s));
 const potionPrice = (bottle: DruidBottle) => DRUID_PRICES.potion - (bottle.labourSteps === 5 ? DRUID_PRICES.labourCredit : 0);
@@ -207,7 +208,7 @@ export function applyDruidCommand(s: SliceState, command: DruidAcquisitionComman
 
 export function projectDruid(s: SliceState): DruidProjection {
   const actions: DruidAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3)?s.ancientAlchemist.druidActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.ancientAlchemist.druidActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: DruidAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     const action: DruidAction = { id, label, cost, command, enabled: reason === null, reason };
@@ -328,7 +329,7 @@ export function validateDruidState(s: SliceState): boolean {
   if (druid.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!druid.guidanceKnown || !integer(s.biologist.promotionWeek, 1, s.week) || !integer(druid.promotionWeek, firstConsumptionWeek, s.week) || druid.biologistActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS, ...HARVESTPRIEST_ABILITY_IDS, ...BIOLOGIST_ABILITY_IDS, ...DRUID_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3)?ANCIENT_ALCHEMIST_ABILITY_IDS:[]),...(s.progression.sequence===3?COFFIN_BEARER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS, ...HARVESTPRIEST_ABILITY_IDS, ...BIOLOGIST_ABILITY_IDS, ...DRUID_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?ANCIENT_ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?COFFIN_BEARER_ABILITY_IDS:[]),...(s.progression.sequence===2?BARREN_MATRIARCH_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (druid.promotionWeek !== null || druid.biologistActingAtPromotion !== null || DRUID_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (Object.entries(freshDruidPractice()).some(([key, value]) => druid.practice[key as keyof DruidPractice] !== value)) return false;

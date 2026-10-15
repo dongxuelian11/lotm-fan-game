@@ -1,3 +1,4 @@
+import { BARREN_MATRIARCH_ABILITY_IDS } from '../barren-matriarch/types.js';
 import {COFFIN_BEARER_ABILITY_IDS} from '../coffin-bearer/types.js';
 import {ANCIENT_ALCHEMIST_ABILITY_IDS} from '../ancient-alchemist/types.js';
 import {DRUID_ABILITY_IDS} from '../druid/types.js';
@@ -31,7 +32,7 @@ export function createHarvestpriestState(): HarvestpriestState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'mother' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'mother' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isPhysician = (s: SliceState) => s.progression.pathwayId === 'mother' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.cultivator.discovered && s.cultivator.guidanceKnown && s.physician.guidanceKnown && (isPhysician(s) || promoted(s));
 const potionPrice = (bottle: HarvestpriestBottle) => HARVESTPRIEST_PRICES.potion - (bottle.labourSteps === 4 ? HARVESTPRIEST_PRICES.labourCredit : 0);
@@ -157,7 +158,7 @@ export function applyHarvestpriestCommand(s: SliceState, command: HarvestpriestA
 
 export function projectHarvestpriest(s: SliceState): HarvestpriestProjection {
   const actions: HarvestpriestAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?s.biologist.harvestpriestActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.biologist.harvestpriestActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: HarvestpriestAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -197,7 +198,7 @@ export function projectHarvestpriest(s: SliceState): HarvestpriestProjection {
     })) : [],
     abilities: isPromoted ? HARVESTPRIEST_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?'丰收祭司魔药已消化；原菜畦、实际水源与有限收获去向继续保留。':isPromoted ? `医师消化成果${s.harvestpriest.physicianActingAtPromotion}/100已保留；丰收祭司扮演${acting}/100，能力掌握分别记录。`
+    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?'丰收祭司魔药已消化；原菜畦、实际水源与有限收获去向继续保留。':isPromoted ? `医师消化成果${s.harvestpriest.physicianActingAtPromotion}/100已保留；丰收祭司扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成医师消化（${s.progression.acting}/100），并在晋升医师后度过8整周（${physicianWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完医师之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${HARVESTPRIEST_CONSUMPTION_RISK}` : '成为医师后，可向原导师了解下一序列。',
@@ -255,7 +256,7 @@ export function validateHarvestpriestState(s: SliceState): boolean {
   if (harvestpriest.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!harvestpriest.guidanceKnown || !integer(s.physician.promotionWeek, 1, s.week) || !integer(harvestpriest.promotionWeek, firstConsumptionWeek, s.week) || harvestpriest.physicianActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS, ...HARVESTPRIEST_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?BIOLOGIST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?DRUID_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?ANCIENT_ALCHEMIST_ABILITY_IDS:[]),...(s.progression.sequence===3?COFFIN_BEARER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS, ...HARVESTPRIEST_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?BIOLOGIST_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?DRUID_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?ANCIENT_ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?COFFIN_BEARER_ABILITY_IDS:[]),...(s.progression.sequence===2?BARREN_MATRIARCH_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (harvestpriest.promotionWeek !== null || harvestpriest.physicianActingAtPromotion !== null || HARVESTPRIEST_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (harvestpriest.plot.waterPacks !== 0 || harvestpriest.plot.water !== 0 || harvestpriest.plot.waterUsed !== 0 || harvestpriest.plot.careWeek !== null || harvestpriest.plot.harvestWeek !== null || harvestpriest.plot.produce !== 0 || harvestpriest.plot.delivered !== 0 || harvestpriest.plot.planRecorded) return false;

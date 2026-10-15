@@ -1,3 +1,4 @@
+import { validateBarrenMatriarchSourceCoffinBearerLife } from '../barren-matriarch/life.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -130,7 +131,16 @@ function cleanupBlock(s: SliceState): string | null {
   if (a && (!a.kitReturned || l.box.holder !== 'OWNER' || l.tag.holder !== 'OWNER' || l.pads.some(p => p.holder !== 'OWNER'))) return '先当面把原匣、原牌和全部原衬片交存艾达，不得离场瞬间归还。';
   return null;
 }
-export const hasCoffinBearerLifeLock = (s: SliceState): boolean => s.coffinBearer.life.activeCase !== null || Object.values(s.coffinBearer.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+export const hasCoffinBearerLifeLock = (s: SliceState): boolean => {
+  if(s.barrenMatriarch?.life.source != null) {
+    if(s.progression.pathwayId !== 'mother' || s.progression.sequence !== 2 || s.barrenMatriarch.promotionWeek === null || s.barrenMatriarch.coffinBearerActingAtPromotion !== 100) return true;
+    const original=s.barrenMatriarch.life.source.snapshot;
+    const inherited={...s,progression:{...s.progression,sequence:3 as const,acting:s.barrenMatriarch.coffinBearerActingAtPromotion},coffinBearer:{...s.coffinBearer,life:original}};
+    if(!validateCoffinBearerLifeOriginal(inherited)) return true;
+    return original.activeCase!==null || Object.values(original.cases).some(r=>r.status==='PREPARED') || cleanupBlock(inherited)!==null;
+  }
+  return s.coffinBearer.life.activeCase !== null || Object.values(s.coffinBearer.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+};
 function kitHeld(l: CoffinBearerLifeState, at: CoffinBearerLocation) { return l.box.holder === 'PLAYER' && l.box.location === at && l.tag.holder === 'PLAYER' && l.tag.location === at && l.pads.every(p => p.holder === 'PLAYER' && p.location === at); }
 function sceneReason(s: SliceState, id: CoffinBearerCaseId, type: SceneType | 'CONFIRM_LIMITED'): string | null {
   const l = s.coffinBearer.life, a = l.cases[id].attempts.at(-1)!, sample = sampleFor(l, id), at = l.playerLocation;
@@ -371,7 +381,7 @@ export function projectCoffinBearerLife(s: SliceState): CoffinBearerLifeProjecti
 }
 
 /** Replays every original sample, kit handoff, paid material, consent, movement and second; stored conclusions are never trusted. */
-export function validateCoffinBearerLife(s: SliceState): boolean {
+export function validateCoffinBearerLifeOriginal(s: SliceState): boolean {
   try { return validateLife(s); } catch { return false; }
 }
 function validateLife(s: SliceState): boolean {
@@ -437,5 +447,10 @@ function validateLife(s: SliceState): boolean {
   if (open > 1 || prepared > 1 || open && prepared || (l.activeCase !== null) !== (open === 1) || typeof l.reflected !== 'boolean' || l.reflected && resolved !== 3 || prepared && (s.world.city !== 'BACKLUND' || s.activeEvent || s.combat)) return false;
   replay.activeCase = l.activeCase; replay.reflected = l.reflected;
   if (!same(replay, l) || !open && cleanupBlock(s) !== null) return false;
-  return !promoted(s) || s.progression.acting === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[ABILITY] ?? 0) === mastery;
+  const inherited=s.progression.pathwayId==='mother'&&s.progression.sequence===2;
+  return !(promoted(s)||inherited) || (inherited?s.barrenMatriarch.coffinBearerActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[ABILITY] ?? 0) === mastery;
+}
+
+export function validateCoffinBearerLife(s: SliceState): boolean {
+  return s.barrenMatriarch?.life.source != null ? validateBarrenMatriarchSourceCoffinBearerLife(s) : validateCoffinBearerLifeOriginal(s);
 }

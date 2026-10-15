@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.184.0",
+  "version": "0.185.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -221,6 +221,16 @@
       "name": "lotm_release_0.184.0_balancer_finance_test_inputs_2026-10-15.tar.gz",
       "bytes": 1466239,
       "sha256": "831f10d817512b35fd54387d7e38a17a2b461e1ba58aef26d505de8403bdc8bd"
+    },
+    {
+      "name": "lotm_release_0.185.0_barren_matriarch_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17737594,
+      "sha256": "c89f4c906598278a269d42980b615572860e25ed963f0ccaef6a0d905a2fdd53"
+    },
+    {
+      "name": "lotm_release_0.185.0_barren_matriarch_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 9667919,
+      "sha256": "ea46ebbdde43822ba1ef891beee5dda405a769a177269b589c188a54e63f0ddf"
     }
   ],
   "fileEntries": [
@@ -1233,6 +1243,531 @@
       "path": "tests/fixtures/bard-v0290/shared-withdraw-save-boundary.json",
       "bytes": 129364,
       "sha256": "d5402e562d53a50fb1ba3d91c4bb4586aafc5dc0a4e1ebd229b54400368d4c47"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundaries.index.json",
+      "bytes": 7819,
+      "sha256": "cd6edb7f1be7a90c9ccee6509e59018763e848c6852637b3c33b11e0680aa01c"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-actual-preparation.json",
+      "bytes": 2133007,
+      "sha256": "42d724504af6b8b59db92934fa7d5dd3262408664e481c5d8210c79133e9ad44"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-bounded_dormancy-8-actual.json",
+      "bytes": 2157536,
+      "sha256": "7db75c7507d6b988b4180e10708c6e22c7fa5eafdd106b417033a5a6915329d2"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-check_originals-1-actual.json",
+      "bytes": 2138942,
+      "sha256": "3626a1be2157bfee72c6e787ee8b4de3451485b0c87277eb9e7f5e577786ddc5"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-check_sample-5-actual.json",
+      "bytes": 2149017,
+      "sha256": "bc707be526f706e3c7b57c019d252aca8310e65a24f5693893ecdae317593a90"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-consent_owner-2-actual.json",
+      "bytes": 2141510,
+      "sha256": "bb169017c2c662b90b5118c1fc0b33b2202eec4470b74f6236549cec2ab39ab7"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-consent_sample-6-actual.json",
+      "bytes": 2151585,
+      "sha256": "475cf51919d881f55e4ba73f62d8ab38f04c7b77070bcc13f1b94efc610396ee"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-honest-report.json",
+      "bytes": 2186455,
+      "sha256": "c04292587b63f2b506cb0aefb79846cfe874a255c3aa0d6d5b6d514c95dcddbe"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-inspect-17-actual.json",
+      "bytes": 2181679,
+      "sha256": "45cf6fde596a6b4f333879c35eef41a45a36723a4aaee73f954bec48779f3232"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-leave-18-actual.json",
+      "bytes": 2183995,
+      "sha256": "e7b8f0abbc47acaf44bb65fcd909ed39157834e072b60bf90667e7dc06e72516"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-observe-original-room.json",
+      "bytes": 2127736,
+      "sha256": "843e027601d53ce825bbd27c257fb470010a6638c3555b3c7b3b0232f293fae6"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-return_kit-15-actual.json",
+      "bytes": 2176539,
+      "sha256": "10183baee9658d0ffc1fed9d678aba3610ccb141a47d2a14a57a2ad1175a5ab4"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-return_sample-13-actual.json",
+      "bytes": 2171120,
+      "sha256": "2d67231a0b6406e18ff20862684d44bb56d7d85319770c6113c34307510d5481"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-stop-11-actual.json",
+      "bytes": 2166037,
+      "sha256": "27bf5077b2fe9ebb85b785fb13adbd3b5ca7a0042efe75652ea26cc7217d891a"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-take_kit-3-actual.json",
+      "bytes": 2143956,
+      "sha256": "e8d1b0179028c138f987946b319fa818f3f8a102f28434bcf6b251d67eef0139"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-take_sample-7-actual.json",
+      "bytes": 2154015,
+      "sha256": "a8678dd719fc783c844490f42b64b3b724d8d0ef8ef671e02b754e776db2cd6c"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-verify_transport-10-actual.json",
+      "bytes": 2163588,
+      "sha256": "eb1e6a8d3d6364c7f4938a14e192fd9267eb83aad4f0e173cdb6fea4195ffb45"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-walk-0-actual.json",
+      "bytes": 2136407,
+      "sha256": "0d59fa99f6cb90feaa81a9bde92a66856ba414a48248b20e21fa1644c1a828f3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-walk-12-actual.json",
+      "bytes": 2168483,
+      "sha256": "1b936b6fd1c4fe0ad21f421d31d7b9e1cfac7d361a63353b0abbe5ac52540f39"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-walk-14-actual.json",
+      "bytes": 2173738,
+      "sha256": "a5edd0e95eab038a366236e09011e819c1444fa459f94ed34fc53fd2a26dd64f"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-walk-16-actual.json",
+      "bytes": 2179285,
+      "sha256": "52f48b92f18bb0e203a86602f58d25ac7d55332dd676c99e35196eb8c908fc2a"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-walk-4-actual.json",
+      "bytes": 2146431,
+      "sha256": "ae582bbfa190fc998c59c210be8bd666ef7ecd4f8c1378c7fb77547c070b1ab2"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-bounded-dormancy-walk-9-actual.json",
+      "bytes": 2161071,
+      "sha256": "154db65e30c0818a74de4b82147e64cf16e421b0fc0a19ac3cd0e7382e65ef35"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-buy-barren-matriarch-potion-1.json",
+      "bytes": 1879547,
+      "sha256": "1c9e99d6e1aa1d6bee813167d98e87b86bcdf451dff25f67d5bb638fad5120f6"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-buy-barren-matriarch-potion-2.json",
+      "bytes": 1950131,
+      "sha256": "6217b3d01b6b93b8479df9a95c72c3b8f46626e215bd0d2ac8b6059326c24abe"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-buy-barren-matriarch-potion-3.json",
+      "bytes": 2021853,
+      "sha256": "bf6a10e2e91ad6e0edf585b45c4eca0fb77db10af2899a4f3b0ac25e86835c52"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-buy-single-real-root-pad.json",
+      "bytes": 2085361,
+      "sha256": "436af30bd705d132ab29c46c5d21ea83d35a3b35053b9be90c04ae88ded6f08b"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-clinic-actual-pay60.json",
+      "bytes": 1792341,
+      "sha256": "e5d66b56dc0d5ac43121bd263dc2df530563e2773f8081742e33f69aae9a53b9"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-clinic-real-discovery.json",
+      "bytes": 1791530,
+      "sha256": "61f260cc1d61a5b34d593bba753417146cb614a9ade9953782c5356749429859"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-clinic-real-rest-1.json",
+      "bytes": 1791990,
+      "sha256": "e6b38fded50c47b1a12f04270e3cf244f5598ddaf8bab31461d04225a2907226"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-clinic-real-rest-2.json",
+      "bytes": 1792679,
+      "sha256": "72692f5c574a052209b9a19c684ae2a4d5e2a20950d9faa729547af4075c939d"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-clinic-real-rest-3.json",
+      "bytes": 1793074,
+      "sha256": "d4cf6218097f2d7a71d9874888ea113cc6cdf6f6bd827895f3a1e3d5ecd1e6ff"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-clinic-real-rest-4.json",
+      "bytes": 1793028,
+      "sha256": "53308ac270053b8f243116909b13d86d412a98014cac80cc81f937e51b3e85c1"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-combat-round-1.json",
+      "bytes": 2748864,
+      "sha256": "3215522070740afdd5277cd91d03c6428e6202c1636a70b77cd79b580351669c"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-combat-round-2.json",
+      "bytes": 2930813,
+      "sha256": "bd20ab3f0c31fe055b5d2ea93a3eaf150672548311b1cbd4ba210a2d2301c88c"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-consume-barren-matriarch-potion-1.json",
+      "bytes": 1895845,
+      "sha256": "6b5a4b8699dae3b954648c158a91abda87e7be755ffe7e33021508f6e7b1b5da"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-consume-barren-matriarch-potion-2.json",
+      "bytes": 1966453,
+      "sha256": "2b2ce4c24276a254d5427b8ae9ab4d70ff0bbbd695dcb8882694fb3b468855ac"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-consume-barren-matriarch-potion-3.json",
+      "bytes": 2038945,
+      "sha256": "a98efabbb83e5f041bc39b3d21ac0ec71186bf4c274f415ac4db87cc2f01e3bc"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-actual-preparation.json",
+      "bytes": 2248148,
+      "sha256": "68c989a1447dbf949860c66ef3164c5d4c1918ede522e24638910f68953986ba"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-check_originals-1-actual.json",
+      "bytes": 2254092,
+      "sha256": "2e013b363c01be1767116668f27c62fb10931b0514340fb1929b42725d75d47b"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-check_sample-4-actual.json",
+      "bytes": 2261562,
+      "sha256": "d7369ed17bf9cfda11862de2e3bd17f2e11eec11c2c15f293a68dae9157c7e8b"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-confirm_limited-9-actual.json",
+      "bytes": 2274398,
+      "sha256": "57ac3a131ed59833deefe64c8ccc5b47ebbd0b86e8e815e1d289392a8284abaf"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-consent_owner-2-actual.json",
+      "bytes": 2256664,
+      "sha256": "87aac1fdaa3b844aaf837a6c2c1fff356577848fa1ba7098cd91f893fb0f704f"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-consent_sample-5-actual.json",
+      "bytes": 2264131,
+      "sha256": "0d2d9d69ddf59f3295ab1590e144525a4c4ee1bd9cc773162d65ff58c404c2b3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-honest-report.json",
+      "bytes": 2299669,
+      "sha256": "441fd9ed0323762c17c2110ae50d3aad273ce5aefc9a4613462f5675cf9a63a3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-inspect-16-actual.json",
+      "bytes": 2294895,
+      "sha256": "9b3565b9aeda993181345f37b1ae77d67f777a7d8665107c0691ffcc0f8ca5d4"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-leave-17-actual.json",
+      "bytes": 2297211,
+      "sha256": "16be8059be9dd80892123fd868006dca7c07efe30ba905b0e762aebed8b934fa"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-observe-original-room.json",
+      "bytes": 2243988,
+      "sha256": "0ed3e7024694bcaf35338858dfa811560bb131268dda3a9808bffa1cc61f61cb"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-ordinary_support-11-actual.json",
+      "bytes": 2281750,
+      "sha256": "daf60f3348b3420d2ebfa1420a387e908e6dd1af493f81c64462f0919d8957d3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-return_kit-14-actual.json",
+      "bytes": 2289761,
+      "sha256": "41f07bc379eddc1b90d42731d7f7e8ce257916163a07f28d4edc6f041867eb4f"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-return_sample-13-actual.json",
+      "bytes": 2286990,
+      "sha256": "0484b1ab2fa34971343e9f81e57361b6c59fd0662e4f5028548f820dfa4158e3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-root_buffer-10-actual.json",
+      "bytes": 2278069,
+      "sha256": "4f5d5ea22e4e9009c556a377c50669fe0fe2326d6bbb95541b5ddc734f209a98"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-take_kit-3-actual.json",
+      "bytes": 2259114,
+      "sha256": "2d17a1380363ba66d9e34bfda820efcf2248e4f7b0dd3e44316107a534e33c72"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-take_sample-6-actual.json",
+      "bytes": 2266576,
+      "sha256": "27b42f677df918220206b71975fc0b4b2767e14df3fa44f0e03bbdb28a3ca995"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-verify_transport-8-actual.json",
+      "bytes": 2271728,
+      "sha256": "29e8befb563afbd116882c8ebee0b2183eb7932c4ddf0d815341bb49d3fb111b"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-walk-0-actual.json",
+      "bytes": 2251553,
+      "sha256": "644c1f7657b85d552b00246d472bc600007af2190293fe18998522174b18e46b"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-walk-12-actual.json",
+      "bytes": 2284390,
+      "sha256": "a74409a8ee471c317aa8cb728506ed95b9c948ee2e115bb5cc0afc3ea3bfbf37"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-walk-15-actual.json",
+      "bytes": 2292495,
+      "sha256": "51b1f85521db11c555274e921c5f3c3170b26cd7ba451f24595282bc354fa8be"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-finite-root-buffer-walk-7-actual.json",
+      "bytes": 2269058,
+      "sha256": "2c87d07b6483ac8c41e930631225ecb0d73ca851cd2c07d70af962f12bc7093f"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-guidance.json",
+      "bytes": 1800431,
+      "sha256": "161c2826180c138f6d7a07c0c3ce283af2da2b8f2174049e6bb060bf774ddcfc"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-independent-optional-fight.json",
+      "bytes": 2545333,
+      "sha256": "c9df6ff3b79e31f556c014305f7eb274a8a8c95c2606a6dbeac5a1d97dc7313a"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 2938469,
+      "sha256": "6f63616aefc0c8aeb13bea516155fb7ede903fa24235ce199682aa31ac686ee3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1819566,
+      "sha256": "5bb0c8ef3ea3f2b374d841f5242542275364e6f15842ac11c18528d93c4c46e8"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1827696,
+      "sha256": "d8404ea50b4d89d19363a4694f7be9ac3b56e18836b289a01779f96e56983fd1"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1810508,
+      "sha256": "894aaf2176e0cf1d07f9add7e88db5585d9623f77f4c9d21d221a4af2a0397ad"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-prepare-barren-matriarch-potion-1.json",
+      "bytes": 1887327,
+      "sha256": "1353bffc15aeb0284318693e54d2f9804a4ef531417cf88a010052bb778bd2b1"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-prepare-barren-matriarch-potion-2.json",
+      "bytes": 1957909,
+      "sha256": "93753109ecdd4b17f71e5fade534bb029979f64fb442bc374811ecd370922c72"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-prepare-barren-matriarch-potion-3.json",
+      "bytes": 2029635,
+      "sha256": "bcfc50eb6e76421da1e2f393cee068a9fc0f7202b6cdb9d6b77f875c1681eb16"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-real-combat-preparation.json",
+      "bytes": 2388541,
+      "sha256": "ba90f00838ae4588c48f2d74de36ea19141035d58168a3d7489a5e84b665fc92"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-same-ada-and-lena-ordinary-clearance.json",
+      "bytes": 2494608,
+      "sha256": "c0d4d25013270e425d77c608c4195a48134214dbcc113fedccb5d232d72b6e31"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-three-cases-reflected.json",
+      "bytes": 2302176,
+      "sha256": "30eb83387430d185e8d1fbca6ccda9067b0c203c1ce95274d765c992121f0d79"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-actual-preparation.json",
+      "bytes": 2193171,
+      "sha256": "e2c3d39a0a42443af6c4ecced5972e1cea8d14724663d1ad1e6dbce6081619f4"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-bounded_dormancy-7-actual.json",
+      "bytes": 2214964,
+      "sha256": "1ef32f6e6ef8296c0e912564ac3f27d5dc1b3e05f1e4897da8987423f56a43b2"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-check_originals-1-actual.json",
+      "bytes": 2199111,
+      "sha256": "01f5e26336e6f4f27b1553559843672bcacdf2aef4bb04e27e88a2b845b97743"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-check_sample-4-actual.json",
+      "bytes": 2206573,
+      "sha256": "5ca7421c195ac47c1f2476692608eb2032474de91ca1eea427267ee1f8654790"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-consent_owner-2-actual.json",
+      "bytes": 2201681,
+      "sha256": "d5b4cdf4d9a1e692284b2e8c06f240386a1fc1984f2c9191fe2f59a761693ca0"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-consent_sample-5-actual.json",
+      "bytes": 2209138,
+      "sha256": "7a461661bef3951c43d7cd58c373592f77e50bf3e142a3d3c2a517aa6781831b"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-honest-report.json",
+      "bytes": 2241429,
+      "sha256": "854183b037641ae78f11c21e3a5591c9ab3ccadee95dcd0870f374faf1031bba"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-inspect-15-actual.json",
+      "bytes": 2236648,
+      "sha256": "ef63f976f62ae18eaad0c198aea2d61490f711e51455b2f7988778596b61b9c2"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-leave-16-actual.json",
+      "bytes": 2238967,
+      "sha256": "4d1aa53211872dc8239b01435b2b95db107648fdc9223e7aa107f7db3773a61c"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-observe-original-room.json",
+      "bytes": 2189013,
+      "sha256": "9a55f4868166d4254a5979837906a121e494644e1cdbf41b1282393c62de73f3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-return_kit-13-actual.json",
+      "bytes": 2231514,
+      "sha256": "cd5327b1a973ccce3a06f8c18c4356febeb9581d38d18d1e72a41c74444bc585"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-return_sample-12-actual.json",
+      "bytes": 2228741,
+      "sha256": "108eecc8153d1d419c03c3c44a15cec8cd9e65a9925b8f7185f8a0197033875a"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-take_kit-3-actual.json",
+      "bytes": 2204129,
+      "sha256": "828bf1686889d972c14c54421147460afb0bc82fc862b50a22d01df3f68afa35"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-take_sample-6-actual.json",
+      "bytes": 2211582,
+      "sha256": "dd6f4facc54ee34174bf4fb2981a6c89be8697e754a35b6b18388885b9913f9f"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-verify_transport-10-actual.json",
+      "bytes": 2223500,
+      "sha256": "e61883b164103ca2cd2ee81f987ad3b046947b82c709ef5c872e4026883695c3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-walk-0-actual.json",
+      "bytes": 2196574,
+      "sha256": "cbace27bfb1d1b0262582e2b1e400ec4ef88c748336a39b113f07598439c3d31"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-walk-11-actual.json",
+      "bytes": 2226143,
+      "sha256": "9376ad6f2823feb8ecdcf3485d39aa427fe45232d2b485847a45096633a37cfa"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-walk-14-actual.json",
+      "bytes": 2234250,
+      "sha256": "37282cb49c52f3c08f10fc38a8ce7a923946cae54119f079ada888626d41c2b3"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-walk-8-actual.json",
+      "bytes": 2218342,
+      "sha256": "bdc2843c2352852820cf40437d7620cd58a31991fa858bed34404a37d9194fc7"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/boundary-withdrawn-transfer-withdraw_permission-9-actual.json",
+      "bytes": 2220841,
+      "sha256": "2518ae44dcfa886d9e0d98681cf5b8c62b87f4cade81cfbc0b9591e5c3061461"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/directed/directed.index.json",
+      "bytes": 423,
+      "sha256": "7193154f6cfde727177091f4cb2e929052acbdb44b0a5ab497906655823f45e8"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/directed/zero-ap-fourth-missed-payment-suspension.json",
+      "bytes": 2465976,
+      "sha256": "0a416c1566a1cedd1ec7842b91ae93373304b235de8d254b20c02fa824fe7330"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/directed/zero-ap-paid-bill-and-advance.json",
+      "bytes": 2476187,
+      "sha256": "f99e8635bac3b5ef6f94a9c7dd816a812a4670bc9e20e86fbeb8c0beeb0bd1cf"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/directed/zero-ap-second-missed-payment-notice.json",
+      "bytes": 2465973,
+      "sha256": "152d52c7638ff13c510c7bc775bbc80ff2041b30ceb7f2b9e3a1c458a8219c4a"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/directed/zero-ap-suspended-shortfall-new-debt.json",
+      "bytes": 2475541,
+      "sha256": "2cfe7a125dc116fb39473a6e190b42f67984fede8decae9ff713cb810510e1f7"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/directed/zero-ap-unpaid-bill-interruption.json",
+      "bytes": 2475382,
+      "sha256": "1c19dd04c6af63422cd34be9e293fe783f258cc32f9c9d52270764092f91ddf6"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/natural.json",
+      "bytes": 2970012,
+      "sha256": "cd557e330303c6ce9efaf9960544f28eb8a4f9058182a1860a38f4edb7298caf"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/snapshot-combatStart.json",
+      "bytes": 1287148,
+      "sha256": "66ddf0cfae9591126409b21876a07703157611972ed7f2efb6e8ead38ab6d49f"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/snapshot-combatTerminal.json",
+      "bytes": 1469096,
+      "sha256": "7b19a9aee3d7906b40d10ff0f7d2574454f454c8ffdf6da86b87f5cc2d4858f9"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/snapshot-departure.json",
+      "bytes": 895537,
+      "sha256": "765186c8987968c6b260b67c6a8524d3d3bfe1b4b245373eec999b8db0e781da"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/snapshot-practiced.json",
+      "bytes": 1151653,
+      "sha256": "4949bef02fc1444712d441a1b69e85db2bbae6773aa1767f3a3cf5962e9d3742"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/snapshot-promoted.json",
+      "bytes": 1022076,
+      "sha256": "b37eda397fb9ab26f8e8a9f98478f226a38a1983a79fc4f9e0b5db7f63300f37"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/snapshot-treated.json",
+      "bytes": 896400,
+      "sha256": "59f003c6716686a5ae28eda9ccf77e753627da0f5147b2308538f552fa25c674"
+    },
+    {
+      "path": "tests/fixtures/barren-matriarch-v01850/summary.json",
+      "bytes": 12457,
+      "sha256": "ca42997752ce929952c6cf4353c44b992090579db884ab221d7ea14513838221"
     },
     {
       "path": "tests/fixtures/biologist-v0940/boundaries.json",

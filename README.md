@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.184.0 阶段版
+# 诡秘之主同人游戏 · 0.185.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径包含9→3有限可玩切片，21条接至有限序列2。耕种者途径的序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -115,6 +115,8 @@ node --expose-gc scripts/play/entropy-duke-save.mjs --key directed --source-dire
 
 ## 当前验证与限制
 
+185增量验证：22条途径现均有有限序列2基础。新增7文件218项、34同链文件642项、旧迁移8项和保存辅助6项通过；90个唯一自然SQLite边界及5个定向财务边界全部通过。完整严格类型、生产构建和32项恢复/CI工具通过。105个新原输入独立恢复，全部46包2148文件hash核验；1042测试文件枚举无漏重，本阶段没有全量重跑。沿原674条活档命令续至851条，真实诊疗休养后三瓶成功晋升，原活植休眠和根垫承冲各实际取得掌握8，新敌两轮重伤投降，玩家普通离场后继续工作；最终第212周ACTIVE/H100/M96/S114。初始失败日志保留，四处旧“序列2尚未开放”断言与真实175迁移测试已按当前阶段更新。详见[荒芜主母阶段记录](docs/BARREN_MATRIARCH_PLAYABLE_STAGE.md)。
+
 184增量验证：新增7文件238项、38相关文件682项、迁移26项与巫师共享17项通过；594条原seed公开续行的76个唯一自然SQLite边界及5个定向财务边界通过。完整严格类型、生产构建、32项恢复/CI工具及6项保存辅助通过。91个新增原始输入独立恢复，全部44包2043输入hash核验；CI枚举1035文件无漏重，不等于全量重跑。首瓶晋升后新敌五轮战斗中玩家受伤撤退，回到普通工作，最终第135周ACTIVE、健康60、精神96、灵性120、现金690、3行动；原轻重伤保留。有限抵御自然仅施术未实际减伤，独立定向测试覆盖其生效窗口。上版Windows三处测试阻点本版窄修并整文件复验，新远端矩阵待实际终值。详见[平衡者阶段记录](docs/BALANCER_PLAYABLE_STAGE.md)。
 
 183增量验证：新增领域及实档共享125项、界面41项，共166项通过；743条公开命令续行的84个唯一自然SQLite边界及另5个定向财务SQLite边界全部通过。同seed的555条活分支继续，原558条死亡分支保留；实际支付60便士诊疗后，前三瓶失败，第四瓶大成功晋升。生活延效与战斗增幅各获得实际掌握8，新对手第三轮投降，玩家普通离场后回到工作，最终第185周ACTIVE、健康100、精神95、灵性94、现金800便士、3行动。37个相关回归文件676项已去重通过；两项旧序列2普通盘断言按当前规则更新，所缺旧输入由原包恢复。新增99个JSON原始输入以3包归档并独立恢复核验，最终41包、1952个输入的全部hash通过。完整main/renderer严格类型和32项恢复/CI工具通过，CI枚举1028个测试文件无漏重，但枚举不等于执行全量测试。生产构建、6项保存辅助及48项烟测最终复验通过，烟测已包含于相关回归，不重复计数；详见[熵之公爵阶段记录](docs/ENTROPY_DUKE_PLAYABLE_STAGE.md)。本阶段未声称重跑全部历史测试或完成1.0。PR6远端CI已确认两项Windows单案例超时：贿赂者完整重放5075ms超过5秒、古代学者工作/休息/跨周导航16022ms超过15秒。本次仅将这两项预算分别调至10秒和25秒，保留全部原断言并完成整文件复验；古代学者7项另计，新远端矩阵仍待实际终值。
@@ -149,3 +151,15 @@ node --expose-gc scripts/play/balancer-save.mjs --key directed --source-director
 ```
 
 平衡者记录与本阶段验证见 [阶段说明](docs/BALANCER_PLAYABLE_STAGE.md)。旧死亡记录保留；本次完整续行原483条实际生还分支，诊疗后晋升并在新战斗受伤撤离。
+
+荒芜主母专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix coffin-bearer-v01610 --only-prefix balancer-v01840 --only-prefix barren-matriarch-v01850
+npx vitest run tests/domain/barren-matriarch-acquisition.test.ts tests/domain/barren-matriarch-inheritance.test.ts tests/domain/barren-matriarch-life.test.ts tests/domain/barren-matriarch-combat.test.ts tests/domain/barren-matriarch-shared.test.ts tests/renderer/barren-matriarch-panel.test.tsx tests/renderer/barren-matriarch-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/barren-matriarch-save.mjs --expected-boundaries 90
+node --expose-gc scripts/play/barren-matriarch-save.mjs --key directed --source-directory tests/fixtures/barren-matriarch-v01850/directed --expected-boundaries 5
+```
+
+新增两包保存105份原始输入；90边界重放分为六组15条，保留同一851条命令与全部断言。阶段范围与真实结果见[荒芜主母阶段记录](docs/BARREN_MATRIARCH_PLAYABLE_STAGE.md)。

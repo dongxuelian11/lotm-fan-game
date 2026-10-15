@@ -413,7 +413,7 @@ export function validateAncientAlchemistLife(s: SliceState): boolean {
       else if (g.holder !== 'GUIDE' || !integer(g.returnedWeek, g.preparedWeek, s.week) || g.segments.some(p => p.spentWeek === null || p.spentWeek > g.returnedWeek!)) return false;
       if (i > 0 && (l.guards[i - 1]!.returnedWeek === null || g.preparedWeek < l.guards[i - 1]!.returnedWeek!)) return false;
     }
-    if (l.guardReturnDistanceMetres !== 2 * l.guards.filter(g => g.holder === 'GUIDE').length || s.seer.completedSources.filter(x => x === 'ancient-alchemist-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3 || (active(s)||s.progression.pathwayId==='mother'&&s.progression.sequence===3) && (s.progression.sequence===3?s.coffinBearer.ancientAlchemistActingAtPromotion:s.progression.acting) !== resolved * 25 + Number(l.reflected) * 25) return false;
+    if (l.guardReturnDistanceMetres !== 2 * l.guards.filter(g => g.holder === 'GUIDE').length || s.seer.completedSources.filter(x => x === 'ancient-alchemist-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3 || (active(s)||s.progression.pathwayId==='mother'&&(s.progression.sequence===3||s.progression.sequence===2)) && ((s.progression.sequence===3||s.progression.sequence===2)?s.coffinBearer.ancientAlchemistActingAtPromotion:s.progression.acting) !== resolved * 25 + Number(l.reflected) * 25) return false;
     if (hasAncientAlchemistLifeLock(s) && (!active(s) || s.world.city !== 'BACKLUND' || s.status !== 'ACTIVE' || s.activeEvent || s.combat || hasDruidOpenPractice(s))) return false;
     return true;
   } catch { return false; }

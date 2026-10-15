@@ -150,7 +150,7 @@ describe('Physician S8 exact G profile and strict dispatch', () => {
     expect(currentPhysicianCombatSource(state)).toBeNull();
     state.progression.sequence = 8;
     expect(currentCultivatorCombatSource(state)).toBeNull();
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       state.progression.sequence = sequence;
       expect(isPhysician(state)).toBe(false); expect(currentPhysicianCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
@@ -198,7 +198,7 @@ describe('Physician S8 exact G profile and strict dispatch', () => {
   });
 
   it('keeps unknown sequence rounds exactly on the ordinary fallback, including actual held gear', () => {
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence; state.town.clubLocation = 'HAND';
       state.progression.mastery = { [observation]: 500, [practice]: 500, [preparation]: 500,
         'mother.s7.plant-growth': 500, 'mother.s6.hybrids': 500 };

@@ -130,7 +130,7 @@ describe('Harvest Priest S7 exact G profile and strict dispatch', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(45);
   });
 
-  it('preserves S9/S8 and unrelated S7, while unsupported Mother S6 stays ordinary', () => {
+  it('preserves S9/S8 and unrelated S7, while unopened Mother S1/S0 stay ordinary', () => {
     const state = fixture();
     expect(currentPhysicianCombatSource(state)).toBeNull(); expect(currentCultivatorCombatSource(state)).toBeNull();
     for (const [sequence, countWheel, abilityWheel] of [
@@ -141,7 +141,7 @@ describe('Harvest Priest S7 exact G profile and strict dispatch', () => {
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(abilityWheel('CONTROL', state));
       expect(isHarvestpriest(state)).toBe(false); expect(currentHarvestpriestCombatSource(state)).toBeNull();
     }
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       state.progression.sequence = sequence;
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
@@ -154,7 +154,7 @@ describe('Harvest Priest S7 exact G profile and strict dispatch', () => {
   });
 
   it('keeps unsupported sequence rounds exactly on ordinary fallback even with advanced mastery and held gear', () => {
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence; state.town.clubLocation = 'HAND';
       state.progression.mastery = { [observation]: 500, [practice]: 500, [preparation]: 500,
         'mother.s7.harvest-care': 500, 'mother.s7.plant-growth': 500, 'mother.s6.hybrids': 500 };

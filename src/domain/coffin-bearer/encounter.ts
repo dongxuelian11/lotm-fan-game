@@ -148,7 +148,7 @@ export function projectCoffinBearerEncounter(s: SliceState): CoffinBearerEncount
       'B/K不叠加或刷新；敌方非攻击与0贡献不耗护持，普通凝神不能清实体护腕。R真实恢复本人健康，不清原伤与累计风险，不改变伤势死亡盘',
       `普通离场${e.exitTravelMetres}米/${e.exitSeconds}秒；结局${e.terminal?.outcome ?? (e.status === 'RESOLVED' ? '和平离开' : '尚未结束')}；旧奥斯里克、旧护腕与六个旧职业全部状态不变`] };
 }
-export function validateCoffinBearerEncounter(s: SliceState): boolean {
+export function validateCoffinBearerEncounterOriginal(s: SliceState): boolean {
   try {
     const e = s.coffinBearer?.encounter;
     if (!e || !same(Object.keys(e).sort(), Object.keys(createCoffinBearerEncounterState()).sort()) || e.targetId !== COFFIN_BEARER_TARGET_ID || !['AVAILABLE', 'READY', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(e.status) || !validCoffinBearerCombatScene(e.scene) ||
@@ -241,4 +241,11 @@ export function validateCoffinBearerEncounter(s: SliceState): boolean {
     return ['ENEMY_DEAD', 'ENEMY_SURRENDERED'].includes(t.outcome) && e.status === 'RESOLVED' && o.playerHealthAfter > 0 && last.winner === 'PLAYER' && last.retreat === 'NONE' &&
       (t.outcome === 'ENEMY_DEAD' ? e.enemyStatus === 'DEAD' && e.enemyHealth === 0 : e.enemyStatus === 'SURRENDERED' && e.enemyHealth > 0);
   } catch { return false; }
+}
+
+export function validateCoffinBearerEncounter(s: SliceState): boolean {
+  if(s.barrenMatriarch?.life.source == null) return validateCoffinBearerEncounterOriginal(s);
+  if(s.progression.pathwayId !== 'mother' || s.progression.sequence !== 2 || s.barrenMatriarch.promotionWeek === null || s.barrenMatriarch.coffinBearerActingAtPromotion !== 100) return false;
+  const inherited={...s, progression:{...s.progression,sequence:3 as const,acting:s.barrenMatriarch.coffinBearerActingAtPromotion}, coffinBearer:{...s.coffinBearer,life:s.barrenMatriarch.life.source.snapshot}};
+  return validateCoffinBearerEncounterOriginal(inherited);
 }

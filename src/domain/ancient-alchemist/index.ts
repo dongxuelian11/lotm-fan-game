@@ -1,3 +1,4 @@
+import { BARREN_MATRIARCH_ABILITY_IDS } from '../barren-matriarch/types.js';
 import {COFFIN_BEARER_ABILITY_IDS} from '../coffin-bearer/types.js';
 import { isAncientAlchemist } from './combat.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -42,7 +43,7 @@ export function createAncientAlchemistState(): AncientAlchemistState {
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export { isAncientAlchemist } from './combat.js';
-const hasAncientAlchemistHistory=(s:SliceState)=>s.progression.pathwayId==='mother'&&[4,3].includes(s.progression.sequence!);
+const hasAncientAlchemistHistory=(s:SliceState)=>s.progression.pathwayId==='mother'&&[4,3,2].includes(s.progression.sequence!);
 const isDruid = (s: SliceState) => s.progression.pathwayId === 'mother' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.cultivator.discovered && s.cultivator.guidanceKnown && s.physician.guidanceKnown && s.harvestpriest.guidanceKnown && s.biologist.guidanceKnown && s.druid.guidanceKnown && s.druid.promotionWeek !== null && (isDruid(s) || hasAncientAlchemistHistory(s));
 const potionPrice = (bottle: AncientAlchemistBottle) => ANCIENT_ALCHEMIST_PRICES.potion - (bottle.labourSteps === ANCIENT_ALCHEMIST_LABOUR_STEPS ? ANCIENT_ALCHEMIST_PRICES.labourCredit : 0);
@@ -185,7 +186,7 @@ export function applyAncientAlchemistCommand(s: SliceState, command: AncientAlch
 
 export function projectAncientAlchemist(s: SliceState): AncientAlchemistProjection {
   const actions: AncientAlchemistAction[] = [], available = knownChannel(s), promoted = hasAncientAlchemistHistory(s);
-  const acting = promoted ? (s.progression.sequence===3?s.coffinBearer.ancientAlchemistActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.coffinBearer.ancientAlchemistActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: AncientAlchemistAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -263,7 +264,7 @@ function validateAncientAlchemistStateRecord(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.druid.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.druidActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS, ...HARVESTPRIEST_ABILITY_IDS, ...BIOLOGIST_ABILITY_IDS, ...DRUID_ABILITY_IDS, ...ANCIENT_ALCHEMIST_ABILITY_IDS,...(s.progression.sequence===3?COFFIN_BEARER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...CULTIVATOR_ABILITY_IDS, ...PHYSICIAN_ABILITY_IDS, ...HARVESTPRIEST_ABILITY_IDS, ...BIOLOGIST_ABILITY_IDS, ...DRUID_ABILITY_IDS, ...ANCIENT_ALCHEMIST_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?COFFIN_BEARER_ABILITY_IDS:[]),...(s.progression.sequence===2?BARREN_MATRIARCH_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.druidActingAtPromotion !== null || ANCIENT_ALCHEMIST_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   // First validate every record shape, so a later batch cannot dereference malformed predecessors.
   for (const [index, bottle] of state.bottles.entries()) {

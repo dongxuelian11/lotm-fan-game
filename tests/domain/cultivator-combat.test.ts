@@ -7,6 +7,7 @@ import { CULTIVATOR_COUNT_WHEEL, currentCultivatorCombatSource, drawCultivatorAb
   cultivatorAbilityWheel, cultivatorActionCount, resolveCultivatorCombatAbility,
   type CultivatorCombatSource, type CultivatorMoveId } from '../../src/domain/cultivator/combat.js';
 import * as cultivatorCombat from '../../src/domain/cultivator/combat.js';
+import { BARREN_MATRIARCH_COUNT_WHEEL, barrenMatriarchAbilityWheel } from '../../src/domain/barren-matriarch/combat.js';
 import { MONSTER_COUNT_WHEEL, monsterAbilityWheel } from '../../src/domain/monster/combat.js';
 import { MACHINE_COUNT_WHEEL, machineAbilityWheel } from '../../src/domain/machine/combat.js';
 import { LUCKY_COUNT_WHEEL, luckyAbilityWheel } from '../../src/domain/lucky/combat.js';
@@ -143,12 +144,16 @@ describe('Cultivator S9 exact G profile and strict dispatch', () => {
 
   it('leaves unimplemented Mother sequences ordinary and preserves all Wheel and Chained profiles', () => {
     const state = fixture();
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       state.progression.sequence = sequence;
       expect(isCultivator(state)).toBe(false); expect(currentCultivatorCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
     }
+    state.progression.sequence = 2;
+    expect(isCultivator(state)).toBe(false); expect(currentCultivatorCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(BARREN_MATRIARCH_COUNT_WHEEL);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(barrenMatriarchAbilityWheel(state, 'CONTROL'));
     state.progression.pathwayId = 'wheel'; state.progression.sequence = 9;
     expect(playerCountWheel(state)).toEqual(MONSTER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(monsterAbilityWheel('CONTROL', state));
@@ -187,7 +192,7 @@ describe('Cultivator S9 exact G profile and strict dispatch', () => {
   });
 
   it('keeps unknown sequence rounds exactly on the ordinary fallback, including actual held gear', () => {
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence; state.town.clubLocation = 'HAND';
       state.progression.mastery = { [observation]: 500, [practice]: 500, [preparation]: 500,
         'mother.s7.plant-growth': 500, 'mother.s6.hybrids': 500 };
