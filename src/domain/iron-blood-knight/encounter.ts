@@ -142,7 +142,7 @@ export function validateIronBloodEncounter(s: SliceState): boolean {
       !shape(enemy, ['id', 'name', 'age', 'source', 'health', 'mind', 'status', 'weaponId', 'weaponLocation']) ||
       !shape(w, ['sourceRound', 'available', 'observations', 'uses'])) return false;
   const promotion = s.ironBloodKnight.promotionWeek;
-  if (e.status !== 'AVAILABLE' && (promotion === null || s.progression.pathwayId !== 'hunter' || ![4,3,2].includes(s.progression.sequence??0) ||
+  if (e.status !== 'AVAILABLE' && (promotion === null || s.progression.pathwayId !== 'hunter' || ![4,3,2,1].includes(s.progression.sequence??0) ||
       e.approachWeek === null || e.approachWeek < promotion || e.attemptWeek !== null && e.attemptWeek < promotion)) return false;
   if (!['AVAILABLE', 'READY', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(e.status) ||
       enemy.id !== 'IB4-GARRICK' || enemy.name !== '加里克' || enemy.age !== 38 || enemy.source !== 'ORIGINAL_YARD_KEEPER' ||
@@ -156,6 +156,7 @@ export function validateIronBloodEncounter(s: SliceState): boolean {
       !integer(w.observations, Number.MAX_SAFE_INTEGER) || !integer(w.uses, w.observations) || typeof w.available !== 'boolean' ||
       (w.available ? w.sourceRound === null || !integer(w.sourceRound, s.combat?.round ?? 0) || w.sourceRound < 1 || w.observations <= w.uses : w.sourceRound !== null) ||
       [e.approachWeek, e.attemptWeek].some(n => n !== null && !integer(n, s.week))) return false;
+  if (s.progression.pathwayId === 'hunter' && s.progression.sequence === 1 && ['READY', 'FIGHTING', 'LOST'].includes(e.status)) return false;
   if (e.status === 'FIGHTING') return hasIronBloodDisputeOpponent(s) && (!w.available || s.combat!.round <= w.sourceRound! + 1);
   if (s.combat?.encounterId === 'IRON_BLOOD_DISPUTE' || e.linkedMemberIds.length || w.available) return false;
   if (e.status === 'AVAILABLE') return e.approachWeek === null && e.attemptWeek === null && e.startHistoryIndex === null && !e.companionIds.length && enemy.health === 100 && enemy.mind === 100 && enemy.status === 'RESISTING';

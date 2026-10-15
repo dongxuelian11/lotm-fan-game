@@ -29,7 +29,7 @@ function blocked(s:SliceState,c:ProvokerCommand):string|null{
  }
  return '未知实践。';
 }
-export function provokerAdventureCases(s:SliceState){return s.progression.pathwayId==='hunter'&&(s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===4||s.progression.sequence===3))?CASES.map(x=>({id:x.id,title:x.title,story:s.provoker.cases[x.id]?.status==='AVAILABLE'?x.before:x.after})):[];}
+export function provokerAdventureCases(s:SliceState){return s.progression.pathwayId==='hunter'&&(s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===1))?CASES.map(x=>({id:x.id,title:x.title,story:s.provoker.cases[x.id]?.status==='AVAILABLE'?x.before:x.after})):[];}
 export function provokerAdventureActions(s:SliceState):ProvokerAction[]{
  if(s.progression.pathwayId!=='hunter'||s.progression.sequence!==8)return [];
  const add=(id:string,label:string,cost:string,command:ProvokerCommand):ProvokerAction=>{const reason=blocked(s,command);return{id,label,cost,command,enabled:!reason,reason};};

@@ -246,7 +246,7 @@ export function warBishopLifeActions(s: SliceState): WarBishopAction[] {
 }
 export function projectWarBishopLife(s: SliceState): WarBishopLifeProjection {
   const l = s.warBishop.life;
-  const known = s.progression.pathwayId === 'hunter' && [4, 3].includes(s.progression.sequence ?? 0) && s.ironBloodKnight.promotionWeek !== null;
+  const known = s.progression.pathwayId === 'hunter' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.ironBloodKnight.promotionWeek !== null;
   if (!known) return { title: '战争主教生活实践', source: '', environment: '', insideCase: false, reflected: false, practice: { ...createWarBishopLifeState().practice, elapsedSeconds: 0 }, invitationWeeks: [], members: [], cases: [] };
   return { title: '原五人的有限协作', source: '原著支持真实所属编队的血铁联结与协同抵抗；五人规模、距离、时间、预算与三场故事均为原创G。', environment: WAR_BISHOP_LIFE_ENVIRONMENT, insideCase: hasWarBishopLifeLock(s), reflected: l.reflected,
     practice: { ...structuredClone(l.practice), elapsedSeconds: lastAttempt(s)?.elapsedSeconds ?? 0 }, invitationWeeks: WAR_BISHOP_CASE_IDS.flatMap(id => l.cases[id].attempts.map(a => a.invitedWeek)),

@@ -1,3 +1,4 @@
+import { CONQUEROR_ABILITY_IDS } from '../conqueror/types.js';
 import {WEATHER_WARLOCK_ABILITY_IDS} from '../weather-warlock/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
@@ -26,8 +27,8 @@ export function createWarBishopState(): WarBishopState {
     resupply: { requestedWeek: null, deliveries: 0 }, promotionWeek: null, ironBloodActingAtPromotion: null,
     preparations: [], preparedWeek: null, life: createWarBishopLifeState(), encounter: createWarBishopEncounterState() };
 }
-export const isWarBishop = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence === 3 || s.progression.sequence === 2);
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'hunter' && [4, 3, 2].includes(s.progression.sequence ?? 0) && s.hunter.discovered && s.ironBloodKnight.guidanceKnown && s.ironBloodKnight.promotionWeek !== null;
+export const isWarBishop = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence === 3 || (s.progression.sequence === 2 || s.progression.sequence === 1));
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'hunter' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.hunter.discovered && s.ironBloodKnight.guidanceKnown && s.ironBloodKnight.promotionWeek !== null;
 export const hasWarBishopLock = (s: SliceState): boolean => s.warBishop.preparedWeek !== null || hasWarBishopLifeLock(s) || hasWarBishopEncounterLock(s);
 const bottleNumber = (b: Pick<WarBishopBottle, 'id'>) => Number(b.id.slice('war-bishop-potion-'.length));
 const potionPrice = (b: WarBishopBottle) => WAR_BISHOP_PRICES.potion - (b.labourSteps === WAR_BISHOP_LABOUR_STEPS ? WAR_BISHOP_PRICES.labourCredit : 0);
@@ -55,6 +56,7 @@ export function validateWarBishopTeamCommand(v: unknown): v is WarBishopTeamComm
 }
 export function blockWarBishopTeamCommand(s: SliceState, command: WarBishopTeamCommand): string | null {
   if (!validateWarBishopTeamCommand(command)) return '战争主教原队伍休整命令无效。';
+  if (s.progression.sequence === 1) return '征服者阶段请通过本阶段生活入口安排原队伍休整。';
   if (!knownChannel(s)) return '实际成为铁血骑士或战争主教并保有原队伍后才能安排休整。';
   if (hasWarBishopLock(s)) return '先实际收束战争主教场地准备、实践或遭遇，再让原成员在家休整。';
   return blockIronBloodTeamCommand(s, command);
@@ -64,7 +66,7 @@ export function applyWarBishopTeamCommand(s: SliceState, command: WarBishopTeamC
   applyIronBloodTeamCommand(s, command, ctx);
 }
 export function warBishopRecoveryActions(s: SliceState): WarBishopAction[] {
-  if (!knownChannel(s)) return [];
+  if (!knownChannel(s) || s.progression.sequence === 1) return [];
   return ([['REST_TEAM', '为原队伍安排在家休整', '0行动 · 40便士 · 下一真实周才恢复'],
     ['RECOVER_TEAM', '确认原成员跨周后的有限恢复', '0行动 · 至多健康+20、精力+8 · 不复活、不自动到场']] as const).map(([type, label, cost]) => {
     const command: WarBishopTeamCommand = { type }, reason = blockWarBishopTeamCommand(s, command);
@@ -204,11 +206,11 @@ export function projectWarBishop(s: SliceState): WarBishopProjection {
     title: promoted ? '战争主教 · 序列3' : '战争主教之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${WAR_BISHOP_FORMULA_STATUS}${WAR_BISHOP_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...warBishopRecoveryActions(s), ...warBishopLifeActions(s), ...warBishopEncounterActions(s)] : [],
+    actions: available && s.progression.sequence !== 1 ? [...actions, ...warBishopRecoveryActions(s), ...warBishopLifeActions(s), ...warBishopEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 战争主教成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为铁血骑士' : '排异，仍为铁血骑士'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? WAR_BISHOP_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? WAR_BISHOP_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? (s.progression.sequence===2?s.weatherWarlock.warBishopActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `铁血骑士消化${state.ironBloodActingAtPromotion}/100留存；战争主教扮演${s.progression.sequence===2?s.weatherWarlock.warBishopActingAtPromotion:s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `铁血骑士需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${ironBloodWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完铁血骑士之路。',
+    acting: promoted ? ((s.progression.sequence===2||s.progression.sequence===1)?s.weatherWarlock.warBishopActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `铁血骑士消化${state.ironBloodActingAtPromotion}/100留存；战争主教扮演${(s.progression.sequence===2||s.progression.sequence===1)?s.weatherWarlock.warBishopActingAtPromotion:s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `铁血骑士需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${ironBloodWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完铁血骑士之路。',
     pollution: s.seer.pollution, risk: available ? WAR_BISHOP_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender, originalGender: s.ironBloodKnight.originalGender,
@@ -232,7 +234,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasWarBishopLifeLock(s) || hasWarBishopEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.ironBloodKnight.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.ironBloodActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS, ...REAPER_ABILITY_IDS, ...IRON_BLOOD_KNIGHT_ABILITY_IDS, ...WAR_BISHOP_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence === 1 ? CONQUEROR_ABILITY_IDS : []),...((s.progression.sequence===2||s.progression.sequence===1)?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS, ...REAPER_ABILITY_IDS, ...IRON_BLOOD_KNIGHT_ABILITY_IDS, ...WAR_BISHOP_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.ironBloodActingAtPromotion !== null || WAR_BISHOP_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

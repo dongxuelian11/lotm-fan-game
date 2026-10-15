@@ -1,3 +1,4 @@
+import { CONQUEROR_ABILITY_IDS } from '../conqueror/types.js';
 import {WEATHER_WARLOCK_ABILITY_IDS} from '../weather-warlock/types.js';
 import { WAR_BISHOP_ABILITY_IDS } from '../war-bishop/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -45,7 +46,7 @@ export function createIronBloodKnightState(): IronBloodKnightState {
 }
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isIronBloodKnight = (s: SliceState) => s.progression.pathwayId === 'hunter' && s.progression.sequence === 4;
-const hasIronBloodHistory = (s: SliceState) => isIronBloodKnight(s) || (s.progression.pathwayId === 'hunter' && (s.progression.sequence === 3 || s.progression.sequence === 2));
+const hasIronBloodHistory = (s: SliceState) => isIronBloodKnight(s) || (s.progression.pathwayId === 'hunter' && (s.progression.sequence === 3 || (s.progression.sequence === 2 || s.progression.sequence === 1)));
 const isReaper = (s: SliceState) => s.progression.pathwayId === 'hunter' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.hunter.discovered && s.reaper.guidanceKnown && s.reaper.promotionWeek !== null && (isReaper(s) || hasIronBloodHistory(s));
 const bottleNumber = (bottle: Pick<IronBloodKnightBottle, 'id'>) => Number(bottle.id.slice('iron-blood-knight-potion-'.length));
@@ -155,6 +156,7 @@ export function applyIronBloodKnightAcquisition(s: SliceState, command: IronBloo
 }
 
 export function applyIronBloodKnightCommand(s: SliceState, command: IronBloodKnightCommand, c: SeerContext): void {
+  rule(!(s.progression.pathwayId === 'hunter' && s.progression.sequence === 1), '征服者阶段请通过本阶段生活入口安排原队伍休整。');
   rule(validateIronBloodKnightCommand(command), '铁血骑士命令无效。');
   if (validateIronBloodKnightAcquisitionCommand(command)) return applyIronBloodKnightAcquisition(s, command, c);
   if (validateIronBloodTeamCommand(command)) return applyIronBloodTeamCommand(s, command, c);
@@ -185,7 +187,7 @@ export function projectIronBloodKnight(s: SliceState): IronBloodKnightProjection
   return {
     title: promoted ? '铁血骑士 · 序列4' : '铁血骑士之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted,
     formulaKnown: false, formula: [], team, life, encounter,
-    actions: available && s.progression.sequence!==3 ? [...actions, ...ironBloodTeamActions(s), ...ironBloodActions(s), ...ironBloodEncounterActions(s)] : [],
+    actions: available && s.progression.sequence!==3 && s.progression.sequence!==1 ? [...actions, ...ironBloodTeamActions(s), ...ironBloodActions(s), ...ironBloodEncounterActions(s)] : [],
     insideCase: hasIronBloodRite(s) || ironBloodInside(s) || isInsideIronBloodEncounter(s),
     environment: available ? '贝克兰德原货栈后的独立石院。30位有名字的成年成员平时各自回家；只有实际邀约或集合才到场。' : '',
     bottles: available ? state.bottles.map(bottle => ({
@@ -195,8 +197,8 @@ export function projectIronBloodKnight(s: SliceState): IronBloodKnightProjection
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true, acceptBodyChange: true },
     })) : [],
     abilities: promoted ? IRON_BLOOD_KNIGHT_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.warBishop.ironBloodActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: promoted ? `收割者消化成果${state.reaperActingAtPromotion}/100已保留；铁血骑士扮演${(s.progression.sequence===3||s.progression.sequence===2)?s.warBishop.ironBloodActingAtPromotion??100:s.progression.acting}/100，原能力掌握全部继承。` : available ? `收割者扮演需100（当前${s.progression.acting}/100），晋升后需12整周（${reaperWeeks(s)}/12）；真实队伍共同成长与成员当次到场还须另外满足。` : '先走完收割者之路。',
+    acting: promoted ? ((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.warBishop.ironBloodActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `收割者消化成果${state.reaperActingAtPromotion}/100已保留；铁血骑士扮演${(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.warBishop.ironBloodActingAtPromotion??100:s.progression.acting}/100，原能力掌握全部继承。` : available ? `收割者扮演需100（当前${s.progression.acting}/100），晋升后需12整周（${reaperWeeks(s)}/12）；真实队伍共同成长与成员当次到场还须另外满足。` : '先走完收割者之路。',
     pollution: s.seer.pollution,
     bodyChange: available ? IRON_BLOOD_KNIGHT_BODY_CHANGE : '', originalGender: state.originalGender, currentGender: s.character.gender,
     ...(available ? { story: `${IRON_BLOOD_KNIGHT_FORMULA_STATUS}${IRON_BLOOD_KNIGHT_RITUAL_SOURCE}${IRON_BLOOD_KNIGHT_SOURCE_STATUS}` } : {}),
@@ -238,7 +240,7 @@ function validateState(s: SliceState): boolean {
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.reaper.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.reaperActingAtPromotion !== 100 || state.originalGender === null) return false;
     if (s.character.gender !== (state.originalGender === 'FEMALE' ? 'MALE' : state.originalGender)) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS, ...REAPER_ABILITY_IDS, ...IRON_BLOOD_KNIGHT_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence === 1 ? CONQUEROR_ABILITY_IDS : []),...((s.progression.sequence===2||s.progression.sequence===1)?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS, ...REAPER_ABILITY_IDS, ...IRON_BLOOD_KNIGHT_ABILITY_IDS,...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.reaperActingAtPromotion !== null || IRON_BLOOD_KNIGHT_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id)) || state.originalGender !== null && s.character.gender !== state.originalGender) return false;
   for (const [index, bottle] of state.bottles.entries()) {
     if (!record(bottle) || !shape(bottle, ['id', 'source', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'status', 'outcome', 'ritualId', 'ritualParticipantIds', 'ritualArrivalWeek']) || bottle.id !== `iron-blood-knight-potion-${index + 1}` || typeof bottle.source !== 'string' || !integer(bottle.labourSteps, 0, 5) || !Array.isArray(bottle.ritualParticipantIds)) return false;

@@ -51,7 +51,13 @@ describe('War Bishop S3 original bottles and explicitly G professional preparati
       const other = structuredClone(s); other.progression.pathwayId = pathwayId;
       expect(projectWarBishop(other).discovered).toBe(false); expect(projectWarBishop(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectWarBishop(other).discovered).toBe(false); }
+    for (const sequence of [9, 8, 7, 6, 5, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectWarBishop(other).discovered).toBe(false); }
+  });
+  it('keeps the inherited S3 channel read-only for a hunter S1', () => {
+    const s = knight(); s.progression.sequence = 1;
+    expect(projectWarBishop(s).discovered).toBe(true);
+    expect(projectWarBishop(s).actions).toEqual([]);
+    reject(s, { type: 'LEARN_GUIDANCE' });
   });
   it('charges500 and one action without inventing a canonical formula, rite or new army', () => {
     const s = knight(), old = structuredClone([s.hunter, s.provoker, s.pyromaniac, s.conspirator, s.reaper, s.ironBloodKnight]);

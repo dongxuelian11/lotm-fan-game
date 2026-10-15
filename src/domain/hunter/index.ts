@@ -1,3 +1,4 @@
+import { CONQUEROR_ABILITY_IDS } from '../conqueror/types.js';
 import {WEATHER_WARLOCK_ABILITY_IDS} from '../weather-warlock/types.js';
 import { WAR_BISHOP_ABILITY_IDS } from '../war-bishop/types.js';
 import { IRON_BLOOD_KNIGHT_ABILITY_IDS } from '../iron-blood-knight/types.js';
@@ -31,7 +32,7 @@ export function createHunterState(): HunterState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence === 9||s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence === 9||s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const potionPrice = (bottle: HunterBottle) => HUNTER_PRICES.potion - (bottle.labourSteps === 2 ? HUNTER_PRICES.labourCredit : 0);
 const bottleNumber = (bottle: HunterBottle) => Number(bottle.id.slice('hunter-potion-'.length));
 const ordinaryWeeks = (s: SliceState) => Math.min(4, Math.max(0, (s.progression.promotionWeek ?? s.week) - 1));
@@ -39,6 +40,7 @@ const supplyExhausted = (hunter: HunterState) => hunter.bottles.length > 0 && hu
 const deliverySource = (number: number, week: number) => `${HUNTER_GUIDE}的本作G供给第${Math.ceil(number / 3)}批，第${week}周实收入库；独立封存的深红色猎人魔药，原瓶hunter-potion-${number}。导师供给为本作原创，完整配方资料待核。`;
 
 function commandBlock(s: SliceState, command: HunterAcquisitionCommand): string | null {
+  if (s.progression.pathwayId === 'hunter' && s.progression.sequence === 1) return '征服者阶段只回看旧猎人记录；请使用本阶段实际行动。';
   const actions = ['DISCOVER', 'LEARN_GUIDANCE', 'POTION_WORK', 'REQUEST_SUPPLY'].includes(command.type) ? 1 : 0;
   if (s.status !== 'ACTIVE') return '当前周目已结束。';
   if (s.activeEvent || s.combat) return '先处理当前事件或战斗。';
@@ -168,7 +170,7 @@ export function applyHunterCommand(s: SliceState, command: HunterAcquisitionComm
 export function projectHunter(s: SliceState): HunterProjection {
   const actions: HunterAction[] = [], isPromoted = promoted(s), known = s.hunter.discovered;
   const add = (id: string, label: string, cost: string, command: HunterAcquisitionCommand) => {
-    if (isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) && command.type !== 'BUY_TRAP_KIT') return;
+    if (isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))) && command.type !== 'BUY_TRAP_KIT') return;
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -196,7 +198,7 @@ export function projectHunter(s: SliceState): HunterProjection {
     title: isPromoted ? '猎人 · 序列9' : '猎人之路', discovered: known, guidanceKnown: s.hunter.guidanceKnown,
     promoted: isPromoted, formulaKnown: false, formula: [],
     supplies: known ? `${HUNTER_FORMULA_STATUS}供应方剩余${remaining}瓶，你持有未服原瓶${held}瓶。${s.hunter.resupply.requestedWeek === null ? `已实际接收后续供给${s.hunter.resupply.deliveries}批。` : `第${s.hunter.resupply.requestedWeek}周提出补给请求，第${s.hunter.resupply.requestedWeek + 1}周起可以收货。`}` : '',
-    actions,
+    actions: s.progression.sequence === 1 ? [] : actions,
     bottles: known ? s.hunter.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 深红色猎人魔药`,
       source: `${bottle.source}${bottle.acquiredWeek === null ? '尚未交付。' : `第${bottle.acquiredWeek}周交付给你；原瓶${bottle.id}。`}`,
@@ -245,7 +247,7 @@ export function validateHunterState(s: SliceState): boolean {
   if (!['AVAILABLE', 'FIGHTING', 'RESCUED', 'RETREATED', 'LOST'].includes(hunter.cargo.status) || !['RESISTING', 'SURRENDERED', 'DEAD'].includes(hunter.cargo.enemyStatus)) return false;
   if (hunter.cargo.attemptWeek !== null && !integer(hunter.cargo.attemptWeek, 1, s.week) || hunter.cargo.startHistoryIndex !== null && !integer(hunter.cargo.startHistoryIndex, 0, s.combatHistory.length)) return false;
   if (isPromoted) {
-    if (!hunter.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...(s.progression.sequence===2?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS,...(s.progression.sequence!==9?PROVOKER_ABILITIES.map(a=>a.id):[]),...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?PYROMANIAC_ABILITIES.map(a=>a.id):[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?CONSPIRATOR_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?REAPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?IRON_BLOOD_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!hunter.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...(s.progression.sequence === 1 ? CONQUEROR_ABILITY_IDS : []),...((s.progression.sequence===2||s.progression.sequence===1)?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS,...(s.progression.sequence!==9?PROVOKER_ABILITIES.map(a=>a.id):[]),...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?PYROMANIAC_ABILITIES.map(a=>a.id):[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?CONSPIRATOR_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?REAPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?IRON_BLOOD_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (HUNTER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id)) || hunter.observations.length > 0 || Object.keys(hunter.practiceAttempts).length > 0 || hunter.trapStock !== HUNTER_TRAP_STOCK || hunter.trapHeld !== 0 || hunter.trapDeployed !== 0 || hunter.trapSpent !== 0 || hunter.cargo.status !== 'AVAILABLE' || hunter.cargo.attemptWeek !== null || hunter.cargo.startHistoryIndex !== null || hunter.cargo.enemyStatus !== 'RESISTING') return false;
   let successes = 0;
   const deliveryWeeks: number[] = [];

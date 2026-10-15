@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.186.0",
+  "version": "0.187.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -241,6 +241,11 @@
       "name": "lotm_release_0.186.0_attendant_mysteries_test_inputs_2_2026-10-15.tar.gz",
       "bytes": 4764724,
       "sha256": "1968209696f969572af6aa97eedacb3399f41c36901dcd789ed542b173daee48"
+    },
+    {
+      "name": "lotm_release_0.187.0_conqueror_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 14339636,
+      "sha256": "c99ab56c49446f73ecf9d99bd8c2d6f6649d4692789417b9dd547872c0fb1293"
     }
   ],
   "fileEntries": [
@@ -3698,6 +3703,286 @@
       "path": "tests/fixtures/concealment-servant-v01690/withdrawn-consent-veil-outcome.json",
       "bytes": 1479494,
       "sha256": "1b958d89b7bd013cf8a603e5a5c5ae7905002072315f54864287609c8220215d"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundaries.index.json",
+      "bytes": 3383,
+      "sha256": "a449a7d055162c139ac9200c6e3ca0d06936adecb8241cf0a952f89182520071"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-buy-conqueror-potion-1.json",
+      "bytes": 1816866,
+      "sha256": "94d19c60830909fdc02578b27086ee92af15ddb3a96ea3e696aa868840d1e0f1"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-buy-conqueror-potion-2.json",
+      "bytes": 1901920,
+      "sha256": "b38e43d399fd3613b928d8d2b90f255fd2075b48f1daad78273e8ab08607a243"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-buy-conqueror-potion-3.json",
+      "bytes": 1986961,
+      "sha256": "729d620512eb7c05311220830b3359c102f3ed1d2030501d30cbc22fae51eab4"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-combat-round-1.json",
+      "bytes": 2477963,
+      "sha256": "f08d2b30890246f167a43570eb1092762e6bc01e1fa356b26e0b87cb30ed1c70"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-combat-round-2.json",
+      "bytes": 2551634,
+      "sha256": "3b1c6705b4467b71bd78417b0e7fec3796afd80bb7cc40ce2083b266877acced"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-combat-round-3.json",
+      "bytes": 2614894,
+      "sha256": "74383878cb7fd7bde96729273fc74fb75fd4790a587bd5a7eaec2328e65edce6"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-combat-round-4.json",
+      "bytes": 2665010,
+      "sha256": "d1b23ed92e873db44cc3b3650aefb8023647548fa8aa1490b936bae8959e9436"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-combat-round-5.json",
+      "bytes": 2705284,
+      "sha256": "765105405d4e387db35cd5fadd423a3ea6e52959d639f8f36f0bf4d84e8b75a3"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-combat-round-6.json",
+      "bytes": 2787734,
+      "sha256": "51377788fd4735efa10ba0143ead8b1a9e2bf5522850aa872da42ef95db75aa2"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-combat-round-7.json",
+      "bytes": 2845749,
+      "sha256": "c104c20eaedec0222868f5dd0d598d722a7b49b2feade10dda19895763ed11da"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-combat-round-8.json",
+      "bytes": 2859944,
+      "sha256": "e1f5f63c17519b899674a0a04c6884f7f2a1bf08dfbcd5743e2abdb61a18eb16"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-consume-conqueror-potion-1.json",
+      "bytes": 1837024,
+      "sha256": "6d88c2a3f74e765cae3182f523bbaa69372cf38aae4204faea5fe56850c4c2d6"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-consume-conqueror-potion-2.json",
+      "bytes": 1922078,
+      "sha256": "d51fc06ba11510cfea8395b4664a7550581461e462010e8e51b5c9acbbff085b"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-consume-conqueror-potion-3.json",
+      "bytes": 2024014,
+      "sha256": "871e8834eeb339a8dfd82b7b855d3fe7424a0e6788a05099f30d998fe0014fe2"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-guidance.json",
+      "bytes": 1710510,
+      "sha256": "dafd230026f3590a87b84075c8c59b3e94571a94b1a336c78827f1ae84ece143"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-independent-optional-fight.json",
+      "bytes": 2401110,
+      "sha256": "cbac9f911253f06533b292b138d9be2ecbd1cf859375b157c5c021b4adf6ef9e"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-independent-ronan-talk.json",
+      "bytes": 2244461,
+      "sha256": "3020e5f1ad12abceb6dfae0f6c92ec4920a137084417b42c826120a0841e9398"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-iron-target-actual-cooling.json",
+      "bytes": 2076770,
+      "sha256": "b793dac8b9ff562f43bcb293796000c9b0fdf4734a1b605ae87f1947f03622ed"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-iron-target-actual-single-power.json",
+      "bytes": 2074644,
+      "sha256": "203e0a3456c92ae7739ff8d66bef426a35c2da1eaa43044bb90cb7339de5b79a"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-iron-target-honest-report.json",
+      "bytes": 2080174,
+      "sha256": "a599ca38a439d4248c97915bf2357cbb9e7059ab3e1d2187a8b0980df00d1015"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-iron-target-invite-real-five.json",
+      "bytes": 2070098,
+      "sha256": "3b16d413b56eea21641537b3feef77ad7822e41dfa3793619264c456b8ca8f97"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-iron-target-observe-original.json",
+      "bytes": 2065889,
+      "sha256": "54f2d58415eba1c64ad024aaafc3d759063ba783f07d6bf5d1c4f4bfa45e9cf9"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-iron-target-return-originals-home.json",
+      "bytes": 2078377,
+      "sha256": "6769e28fc1381cd3f73442f4c38279d450af19a558e1dc89e0623dd58808da54"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-iron-target-walk-original-five-metres.json",
+      "bytes": 2072369,
+      "sha256": "d58bac48ca93abdc95a3f5c134b84df7fc316a1bdc6306a5688bb3da0c2c0cb3"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-ordinary-life-after-exit.json",
+      "bytes": 2857560,
+      "sha256": "35fb3b0d19438e088778d1199de4e8074cb3c2621d42dc3c57a8646893fbf2c2"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1738920,
+      "sha256": "27f6207655e8d4e98187adc647049fad236ec1f108905a1ce464ca3354af60b9"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1749104,
+      "sha256": "00073b51b599858376c02e81e437c34b885cb35d684f038fedf611810367f4fc"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1730046,
+      "sha256": "0ca0d6946754a8eeaac250186f4dafac8ad8efba520c5690e89cdbbda1cc23bb"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-prepare-conqueror-potion-1.json",
+      "bytes": 1826574,
+      "sha256": "b47335f246b4442c743b115ce4a8350f533adbd0f51106010c8a19b55330967a"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-prepare-conqueror-potion-2.json",
+      "bytes": 1911628,
+      "sha256": "683c653fb9aec8756dd08569387e7d3649948139b028fc17dd4ded0922ccfb30"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-prepare-conqueror-potion-3.json",
+      "bytes": 1996667,
+      "sha256": "e084a234eef53b0b5ae3273785dbc2d4555f75ce6d88e95a53778e7623c5b236"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-team-real-next-week-753.json",
+      "bytes": 2052835,
+      "sha256": "701aeae03e8de58ee0460e53aa4508e369fbaa19b1680041a2c2d8f5a5531acb"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-team-real-next-week-774.json",
+      "bytes": 2088548,
+      "sha256": "0640c382e8584e0097c87d129b515256b17bf5aca9540b164bcb0d0a829715e2"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-team-rest-paid-749.json",
+      "bytes": 2049719,
+      "sha256": "4c40a786008ab22a4badf53bc43b429516c0d2c1270aff9535fce01ca51b4e1b"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-team-rest-paid-770.json",
+      "bytes": 2085427,
+      "sha256": "32f0c986eb1d774d0279c026229690f997cd03a57ac0cf5bac6c1061a9d7d849"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-three-honest-reports-reflected.json",
+      "bytes": 2100969,
+      "sha256": "e834a85f1267e83a98b52bce60e95e114e300a5ceafccea187b0306bb7093342"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-withdrawn-permission-honest-report.json",
+      "bytes": 2098897,
+      "sha256": "5d95dd3b62699532f7cd07c983970808b4526d056c6d3180cee76eb23b92538c"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-withdrawn-permission-invite-real-five.json",
+      "bytes": 2091011,
+      "sha256": "3968de7fc9ee8db7a13aabab07149588d6e8d14314317b5f4d1eb3948385cbae"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-withdrawn-permission-observe-original.json",
+      "bytes": 2082793,
+      "sha256": "db3109cdbcf1ece5171ef1b7a0ebeea54095c8f3fde83950558fbdf601cf968e"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-withdrawn-permission-ordinary-completion.json",
+      "bytes": 2095389,
+      "sha256": "ce69df5dacee3ae6c92cc49790c23c1b8f1453899a985a89afc0d39c3c4ef629"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-withdrawn-permission-return-originals-home.json",
+      "bytes": 2097093,
+      "sha256": "747a5057bdc24445317e4b552c397988b8d02b0c66f7bf00e56969c7fffa3df3"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-withdrawn-permission-walk-original-five-metres.json",
+      "bytes": 2093358,
+      "sha256": "d91fd93e44f615f708fee4e7bdef599613c0a1c128f0211dc373c6d80f5b4f93"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-yard-cart-actual-single-power.json",
+      "bytes": 2059662,
+      "sha256": "ecc39780f433aab97c3d106ff1451802368c5a46276f350a15e51dbb432b204c"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-yard-cart-honest-report.json",
+      "bytes": 2063256,
+      "sha256": "6681fcabf099d79a0a32664d9bc1e6b2bc3d1dccebf39e85abd91d3aa9c2d590"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-yard-cart-invite-real-five.json",
+      "bytes": 2055261,
+      "sha256": "60036e5a63de9a59416d3fc984a84e561e54f7a1e73cc9ca693d2e21a3bd78cf"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-yard-cart-observe-original.json",
+      "bytes": 2047596,
+      "sha256": "8ba5c437c35558c3d3b2fd981f15ae1d85b922c53acde4d55c23a6a80db21f32"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-yard-cart-return-originals-home.json",
+      "bytes": 2061646,
+      "sha256": "3cbf010b1a10fe07fb614c1d0f236a767de155ee3b524cd1eac55ee09877d418"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/boundary-yard-cart-walk-original-five-metres.json",
+      "bytes": 2057395,
+      "sha256": "6f9b426e0ae2587721fa4abfa1cfa4f190233a13e689b3345bd199aac7af2b78"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/natural.json",
+      "bytes": 2890970,
+      "sha256": "469a6ac77052f92ac0dbd8e6ea39164592de6b4c8d8ea0405b080c1a015f7973"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/snapshot-combatStart.json",
+      "bytes": 1208215,
+      "sha256": "00d021d7e346b2b03a0d257a8c0e9baff1dc633071a9bd72e45dd2fe6f2200a7"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/snapshot-combatTerminal.json",
+      "bytes": 1428646,
+      "sha256": "3e779abac4ce68eb56591edf0e132c03581bfac87488a348b649bfa1fc1d892a"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/snapshot-departure.json",
+      "bytes": 846996,
+      "sha256": "2251609e3b132087011d8a11b00310f9e12f20dc9a3f7871c4fa7690275b1731"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/snapshot-practiced.json",
+      "bytes": 1051006,
+      "sha256": "27373704d574aa8f9711bbfe42304d3badbe00936b0d74611f6da6ab311d0b5d"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/snapshot-promoted.json",
+      "bytes": 1023177,
+      "sha256": "a1581617452d3398461d3c1a728c108b04cb1d262e5a1db8d21da53d4bf1cb7a"
+    },
+    {
+      "path": "tests/fixtures/conqueror-v01870/summary.json",
+      "bytes": 3165,
+      "sha256": "283458ce120abfd6778e79cb290132ffad4d85bf87312cb7cdc0b68e0c9770dc"
     },
     {
       "path": "tests/fixtures/conspirator-v0740/natural.json",

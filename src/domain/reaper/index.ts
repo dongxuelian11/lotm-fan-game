@@ -1,3 +1,4 @@
+import { CONQUEROR_ABILITY_IDS } from '../conqueror/types.js';
 import {WEATHER_WARLOCK_ABILITY_IDS} from '../weather-warlock/types.js';
 import { WAR_BISHOP_ABILITY_IDS } from '../war-bishop/types.js';
 import { IRON_BLOOD_KNIGHT_ABILITY_IDS } from '../iron-blood-knight/types.js';
@@ -34,7 +35,7 @@ export function createReaperState(): ReaperState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence === 5 || (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence === 5 || (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isConspirator = (s: SliceState) => s.progression.pathwayId === 'hunter' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.hunter.discovered && s.hunter.guidanceKnown && s.provoker.guidanceKnown && s.pyromaniac.guidanceKnown && s.conspirator.guidanceKnown && s.conspirator.promotionWeek !== null && (isConspirator(s) || promoted(s));
 const potionPrice = (bottle: ReaperBottle) => REAPER_PRICES.potion - (bottle.labourSteps === 5 ? REAPER_PRICES.labourCredit : 0);
@@ -159,9 +160,9 @@ export function applyReaperCommand(s: SliceState, command: ReaperAcquisitionComm
 
 export function projectReaper(s: SliceState): ReaperProjection {
   const actions: ReaperAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) ? s.ironBloodKnight.reaperActingAtPromotion ?? 100 : s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))) ? s.ironBloodKnight.reaperActingAtPromotion ?? 100 : s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: ReaperAcquisitionCommand) => {
-    if (isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) return;
+    if (isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))) return;
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -200,7 +201,7 @@ export function projectReaper(s: SliceState): ReaperProjection {
     })) : [],
     abilities: isPromoted ? REAPER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) ? '收割者魔药已消化；原弱点观察、实际窗口、原瓶与实践记录保留。' : isPromoted ? `阴谋家消化成果${s.reaper.conspiratorActingAtPromotion}/100已保留；收割者扮演${acting}/100，能力掌握分别记录。`
+    digestion: isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))) ? '收割者魔药已消化；原弱点观察、实际窗口、原瓶与实践记录保留。' : isPromoted ? `阴谋家消化成果${s.reaper.conspiratorActingAtPromotion}/100已保留；收割者扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成阴谋家消化（${s.progression.acting}/100），并在晋升阴谋家后度过12整周（${conspiratorWeeks(s)}/12）。用药指导与原瓶可以提前准备。` : '先走完阴谋家之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应五次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${REAPER_CONSUMPTION_RISK}` : '成为阴谋家后，可向原导师了解下一序列。',
@@ -243,8 +244,8 @@ export function validateReaperState(s: SliceState): boolean {
   if (reaper.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!reaper.guidanceKnown || !integer(s.conspirator.promotionWeek, 1, s.week) || !integer(reaper.promotionWeek, firstConsumptionWeek, s.week) || reaper.conspiratorActingAtPromotion !== 100) return false;
-    if ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) && (!record(s.ironBloodKnight) || !integer(s.ironBloodKnight.promotionWeek, reaper.promotionWeek!, s.week) || s.ironBloodKnight.reaperActingAtPromotion !== 100)) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS, ...REAPER_ABILITY_IDS, ...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) ? IRON_BLOOD_KNIGHT_ABILITY_IDS : []),...((s.progression.sequence===3||s.progression.sequence===2)?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))) && (!record(s.ironBloodKnight) || !integer(s.ironBloodKnight.promotionWeek, reaper.promotionWeek!, s.week) || s.ironBloodKnight.reaperActingAtPromotion !== 100)) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence === 1 ? CONQUEROR_ABILITY_IDS : []),...((s.progression.sequence===2||s.progression.sequence===1)?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS, ...REAPER_ABILITY_IDS, ...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))) ? IRON_BLOOD_KNIGHT_ABILITY_IDS : []),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (reaper.promotionWeek !== null || reaper.conspiratorActingAtPromotion !== null || REAPER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (reaper.reflected || Object.values(reaper.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0 || value.notes.length !== 0 || value.practice.attempts !== 0 || value.practice.signals !== 0 || value.practice.windowOpen || value.practice.windowUses !== 0 || value.practice.siteCleared)) return false;

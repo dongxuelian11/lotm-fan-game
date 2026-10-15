@@ -1,3 +1,4 @@
+import { CONQUEROR_ABILITY_IDS } from '../conqueror/types.js';
 import { WAR_BISHOP_ABILITY_IDS } from '../war-bishop/types.js';
 import { hasWarBishopLock } from '../war-bishop/index.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -28,7 +29,8 @@ export function createWeatherWarlockState(): WeatherWarlockState {
     preparations: [], preparedWeek: null, life: createWeatherWarlockLifeState(), encounter: createWeatherWarlockEncounterState() };
 }
 export const isWeatherWarlock = (s: SliceState) => s.progression.pathwayId === 'hunter' && s.progression.sequence === 2;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'hunter' && [3, 2].includes(s.progression.sequence ?? 0) && s.hunter.discovered && s.warBishop.guidanceKnown && s.warBishop.promotionWeek !== null;
+export const hasWeatherWarlockHistory = (s: SliceState) => isWeatherWarlock(s) || (s.progression.pathwayId === 'hunter' && s.progression.sequence === 1);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'hunter' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.hunter.discovered && s.warBishop.guidanceKnown && s.warBishop.promotionWeek !== null;
 export const hasWeatherWarlockLock = (s: SliceState): boolean => s.weatherWarlock.preparedWeek !== null || hasWeatherWarlockLifeLock(s) || hasWeatherWarlockEncounterLock(s);
 const bottleNumber = (b: Pick<WeatherWarlockBottle, 'id'>) => Number(b.id.slice('weather-warlock-potion-'.length));
 const potionPrice = (b: WeatherWarlockBottle) => WEATHER_WARLOCK_PRICES.potion - (b.labourSteps === WEATHER_WARLOCK_LABOUR_STEPS ? WEATHER_WARLOCK_PRICES.labourCredit : 0);
@@ -56,6 +58,7 @@ export function validateWeatherWarlockTeamCommand(v: unknown): v is WeatherWarlo
 }
 export function blockWeatherWarlockTeamCommand(s: SliceState, command: WeatherWarlockTeamCommand): string | null {
   if (!validateWeatherWarlockTeamCommand(command)) return '天气术士原队伍休整命令无效。';
+  if (s.progression.sequence === 1) return '征服者阶段请通过本阶段生活入口安排原队伍休整。';
   if (!knownChannel(s)) return '实际成为战争主教或天气术士并保有原队伍后才能安排休整。';
   if (hasWeatherWarlockLock(s)) return '先实际收束天气术士场地准备、实践或遭遇，再让原成员在家休整。';
   return blockIronBloodTeamCommand(s, command);
@@ -65,7 +68,7 @@ export function applyWeatherWarlockTeamCommand(s: SliceState, command: WeatherWa
   applyIronBloodTeamCommand(s, command, ctx);
 }
 export function weatherWarlockRecoveryActions(s: SliceState): WeatherWarlockAction[] {
-  if (!knownChannel(s)) return [];
+  if (!knownChannel(s) || s.progression.sequence === 1) return [];
   return ([['REST_TEAM', '为原队伍安排在家休整', '0行动 · 40便士 · 下一真实周才恢复'],
     ['RECOVER_TEAM', '确认原成员跨周后的有限恢复', '0行动 · 至多健康+20、精力+8 · 不复活、不自动到场']] as const).map(([type, label, cost]) => {
     const command: WeatherWarlockTeamCommand = { type }, reason = blockWeatherWarlockTeamCommand(s, command);
@@ -86,7 +89,7 @@ export function weatherWarlockAcquisitionBlock(s: SliceState, command: WeatherWa
       hasWeatherWarlockLifeLock(s) || hasWeatherWarlockEncounterLock(s) || s.ironBloodKnight.team.members.some(m => m.present)) return '先实际收束旧准备、形态、队伍联系与现场接触，不能同时占用原场。';
   if (s.world.city !== 'BACKLUND') return '须沿实际行程回到贝克兰德原货栈与训练院。';
   if (!knownChannel(s)) return '实际成为战争主教并保留原指导渠道后，才能了解天气术士之路。';
-  if (isWeatherWarlock(s)) return '已经真实晋升天气术士2，不能重复准备或服药；未服原瓶保留。';
+  if (hasWeatherWarlockHistory(s)) return '已经真实晋升天气术士2，不能重复准备或服药；未服原瓶保留。';
   const state = s.weatherWarlock;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
@@ -182,7 +185,7 @@ export function applyWeatherWarlockCommand(s: SliceState, command: WeatherWarloc
 }
 
 export function projectWeatherWarlock(s: SliceState): WeatherWarlockProjection {
-  const state = s.weatherWarlock, available = knownChannel(s), promoted = isWeatherWarlock(s), actions: WeatherWarlockAction[] = [];
+  const state = s.weatherWarlock, available = knownChannel(s), promoted = hasWeatherWarlockHistory(s), actions: WeatherWarlockAction[] = [];
   const add = (id: string, label: string, cost: string, command: WeatherWarlockAcquisitionCommand) => { const reason = weatherWarlockAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-weather-warlock-guidance', '听取天气术士成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -205,11 +208,11 @@ export function projectWeatherWarlock(s: SliceState): WeatherWarlockProjection {
     title: promoted ? '天气术士 · 序列2' : '天气术士之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${WEATHER_WARLOCK_FORMULA_STATUS}${WEATHER_WARLOCK_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...weatherWarlockRecoveryActions(s), ...weatherWarlockLifeActions(s), ...weatherWarlockEncounterActions(s)] : [],
+    actions: available && s.progression.sequence !== 1 ? [...actions, ...weatherWarlockRecoveryActions(s), ...weatherWarlockLifeActions(s), ...weatherWarlockEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 天气术士成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为战争主教' : '排异，仍为战争主教'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? WEATHER_WARLOCK_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? WEATHER_WARLOCK_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `战争主教消化${state.warBishopActingAtPromotion}/100留存；天气术士扮演${s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `战争主教需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${warBishopWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完战争主教之路。',
+    acting: promoted ? (s.progression.sequence === 1 ? s.conqueror.weatherWarlockActingAtPromotion ?? 100 : s.progression.acting) : 0, digestion: promoted ? `战争主教消化${state.warBishopActingAtPromotion}/100留存；天气术士扮演${s.progression.sequence === 1 ? s.conqueror.weatherWarlockActingAtPromotion : s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `战争主教需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${warBishopWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完战争主教之路。',
     pollution: s.seer.pollution, risk: available ? WEATHER_WARLOCK_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender, originalGender: s.ironBloodKnight.originalGender,
@@ -225,15 +228,16 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.weatherWarlock;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'warBishopActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as WeatherWarlockState, promoted = isWeatherWarlock(s), firstWeek = s.warBishop.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + WEATHER_WARLOCK_MIN_WAR_BISHOP_WEEKS;
+  const state = raw as unknown as WeatherWarlockState, promoted = hasWeatherWarlockHistory(s), firstWeek = s.warBishop.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + WEATHER_WARLOCK_MIN_WAR_BISHOP_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !WEATHER_WARLOCK_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
   if (!state.guidanceKnown && (state.preparations.length || state.preparedWeek !== null)) return false;
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasWeatherWarlockLifeLock(s) || hasWeatherWarlockEncounterLock(s))) return false;
+  if (s.progression.pathwayId === 'hunter' && s.progression.sequence === 1 && (s.conqueror.weatherWarlockActingAtPromotion !== 100 || hasWeatherWarlockLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.warBishop.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.warBishopActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS, ...REAPER_ABILITY_IDS, ...IRON_BLOOD_KNIGHT_ABILITY_IDS, ...WAR_BISHOP_ABILITY_IDS, ...WEATHER_WARLOCK_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence === 1 ? CONQUEROR_ABILITY_IDS : []),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS, ...REAPER_ABILITY_IDS, ...IRON_BLOOD_KNIGHT_ABILITY_IDS, ...WAR_BISHOP_ABILITY_IDS, ...WEATHER_WARLOCK_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.warBishopActingAtPromotion !== null || WEATHER_WARLOCK_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

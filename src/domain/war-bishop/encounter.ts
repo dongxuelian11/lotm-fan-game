@@ -167,7 +167,8 @@ export function validateWarBishopEncounter(s: SliceState): boolean {
         [e.approachWeek, e.invitedWeek, e.attemptWeek].some(n => n !== null && !integer(n, s.warBishop.promotionWeek ?? 0, s.week)) || e.startHistoryIndex !== null && !integer(e.startHistoryIndex, 0, s.combatHistory.length)) return false;
     if (e.companionIds.length ? e.invitedWeek === null : e.invitedWeek !== null) return false;
     if (s.warBishop.promotionWeek === null) return same(e, createWarBishopEncounterState()) && s.combat?.encounterId !== 'WAR_BISHOP_DISPUTE';
-    if (!stage(s) && !(s.progression.pathwayId==='hunter'&&s.progression.sequence===2)) return false;
+    if (!stage(s) && !(s.progression.pathwayId==='hunter'&&(s.progression.sequence===2||s.progression.sequence===1))) return false;
+    if (s.progression.sequence === 1 && ['READY', 'FIGHTING', 'LOST'].includes(e.status)) return false;
     if (e.startHistoryIndex === null) {
       if (!['AVAILABLE', 'READY', 'RESOLVED'].includes(e.status) || e.terminal !== null || e.attemptWeek !== null || e.enemyHealth !== 100 || e.enemyMind !== 100 || e.enemySpirituality !== 120 || e.enemyStatus !== 'RESISTING' || e.enemyInjuries.length || e.enemyRisk || Object.values(e.powerUses).some(n => n !== 0) || !same(e.weakness, createWarBishopEncounterState().weakness) || e.policy !== 'HOLD' || s.combat?.encounterId === 'WAR_BISHOP_DISPUTE') return false;
       if (e.status === 'AVAILABLE') return e.approachWeek === null && e.companionIds.length === 0;

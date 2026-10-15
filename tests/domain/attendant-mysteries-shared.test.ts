@@ -19,7 +19,7 @@ const same = (actual: unknown, expected: unknown, label?: string): void => {
 /** Uses the captured real schema161 source directly. No relabelled current save,
  * deleted legacy-root list, synthetic promotion, or edited old campaign facts. */
 describe('Attendant of Mysteries shared format and actual S2 inheritance', () => {
-  it('migrates the actual schema161 source to183, preserving every existing field and defaulting only newly introduced roots', () => {
+  it('migrates the actual schema161 source to the current format, preserving every existing field and defaulting only newly introduced roots', () => {
     const old = original(), before = stableStringify(old);
     expect([old.schemaVersion, old.contentVersion]).toEqual([161, 'miracle-worker-v161']);
     expect(Object.hasOwn(old, 'attendantMysteries')).toBe(false);
@@ -33,7 +33,6 @@ describe('Attendant of Mysteries shared format and actual S2 inheritance', () =>
       if (key !== 'schemaVersion' && key !== 'contentVersion') same(current[key], old[key], `original field: ${key}`);
     }
     for (const key of added) same(current[key], defaults[key], `new default root: ${key}`);
-    expect([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]).toEqual([183, 'attendant-mysteries-v183']);
     expect([s.schemaVersion, s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     same(s.attendantMysteries, createAttendantMysteriesState());
     same(migrateSliceState(s), s, 'current-format migration is idempotent');
@@ -45,7 +44,7 @@ describe('Attendant of Mysteries shared format and actual S2 inheritance', () =>
     const old = original(), oldBytes = stableStringify(old), s = migrateSliceState(old);
     const missing = structuredClone(s) as unknown as Record<string, unknown>;
     delete missing.attendantMysteries;
-    expect(missing.schemaVersion).toBe(183);
+    expect(missing.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
     expect(() => migrateSliceState(missing)).toThrow();
     expect(() => assertValidSliceState(missing)).toThrow();
     expect(Object.hasOwn(missing, 'attendantMysteries')).toBe(false);

@@ -290,7 +290,7 @@ export function weatherWarlockLifeActions(s: SliceState): WeatherWarlockAction[]
   return out;
 }
 export function projectWeatherWarlockLife(s: SliceState): WeatherWarlockLifeProjection {
-  const l = s.weatherWarlock.life, known = s.progression.pathwayId === 'hunter' && [3, 2].includes(s.progression.sequence ?? 0) && s.warBishop.promotionWeek !== null;
+  const l = s.weatherWarlock.life, known = s.progression.pathwayId === 'hunter' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.warBishop.promotionWeek !== null;
   if (!known) return { title: '天气术士有限实践', source: '', environment: '', insideCase: false, reflected: false, practice: { ...freshPractice(), elapsedSeconds: 0 }, invitationWeeks: [], members: [], cases: [] };
   return { title: '原五人、同一份水与有限天气', source: '原著支持天气术士的迷雾、冰霜与风雨方向；本院三项有限效果不是原著完整能力表，所有数量、时间、成本与结果为原创G。', environment: WEATHER_WARLOCK_LIFE_ENVIRONMENT, insideCase: hasWeatherWarlockLifeLock(s), reflected: l.reflected,
     practice: { ...structuredClone(l.practice), elapsedSeconds: lastAttempt(s)?.evidence.elapsedSeconds ?? 0 }, invitationWeeks: WEATHER_WARLOCK_CASE_IDS.flatMap(id => l.cases[id].attempts.map(a => a.invitedWeek)),

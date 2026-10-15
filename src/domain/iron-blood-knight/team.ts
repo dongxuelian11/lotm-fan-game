@@ -81,7 +81,8 @@ export function validateIronBloodTeamCommand(v: unknown): v is IronBloodTeamComm
 export const isIronBloodTeamCommand = validateIronBloodTeamCommand;
 export function blockIronBloodTeamCommand(s: SliceState, c: IronBloodTeamCommand): string | null {
   if (!validateIronBloodTeamCommand(c)) return '实际队伍命令无效。';
-  if (s.status !== 'ACTIVE' || s.progression.pathwayId !== 'hunter' || ![5, 4, 3, 2].includes(s.progression.sequence ?? 0)) return '须仍活着并在收割者或铁血骑士阶段。';
+  if (s.progression.sequence === 1 && !['REST_TEAM', 'RECOVER_TEAM'].includes(c.type)) return '征服者阶段原共同成长与仪式只保留历史。';
+  if (s.status !== 'ACTIVE' || s.progression.pathwayId !== 'hunter' || ![5, 4, 3, 2, 1].includes(s.progression.sequence ?? 0)) return '须仍活着并在收割者或铁血骑士阶段。';
   if (s.activeEvent || s.combat || s.world.city !== 'BACKLUND') return '先处理事件和战斗，并实际回到贝克兰德原石院。';
   const t = s.ironBloodKnight.team;
   if (c.type === 'LEAVE_RITE') return t.rite ? null : '没有尚在原院的仪式集合。';
@@ -190,7 +191,7 @@ export function validateIronBloodTeamState(s: SliceState): boolean {
   }
   const joinedWeeks = t.members.flatMap(m => m.joinedWeek === null ? [] : [m.joinedWeek]);
   if (t.firstJoinedWeek !== (joinedWeeks.length ? Math.min(...joinedWeeks) : null) || t.restRequestedWeek !== null && !joinedWeeks.length) return false;
-  if (joinedWeeks.length && (!s.ironBloodKnight.guidanceKnown || s.progression.pathwayId !== 'hunter' || ![5, 4, 3, 2].includes(s.progression.sequence ?? 0) || s.reaper.promotionWeek === null || joinedWeeks.some(w => w < s.reaper.promotionWeek!))) return false;
+  if (joinedWeeks.length && (!s.ironBloodKnight.guidanceKnown || s.progression.pathwayId !== 'hunter' || ![5, 4, 3, 2, 1].includes(s.progression.sequence ?? 0) || s.reaper.promotionWeek === null || joinedWeeks.some(w => w < s.reaper.promotionWeek!))) return false;
   for (const [i, g] of t.cohorts.entries()) {
     if (!record(g) || !shape(g, ['id', 'attempts']) || g.id !== IRON_BLOOD_COHORT_IDS[i] || !Array.isArray(g.attempts) || !g.attempts.every(record)) return false;
     const group = t.members.filter(m => m.cohortId === g.id), ids = group.map(m => m.id);

@@ -1,3 +1,4 @@
+import { CONQUEROR_ABILITY_IDS } from '../conqueror/types.js';
 import {WEATHER_WARLOCK_ABILITY_IDS} from '../weather-warlock/types.js';
 import { WAR_BISHOP_ABILITY_IDS } from '../war-bishop/types.js';
 import { IRON_BLOOD_KNIGHT_ABILITY_IDS } from '../iron-blood-knight/types.js';
@@ -33,7 +34,7 @@ export function createConspiratorState(): ConspiratorState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isPyromaniac = (s: SliceState) => s.progression.pathwayId === 'hunter' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.hunter.discovered && s.hunter.guidanceKnown && s.provoker.guidanceKnown && s.pyromaniac.guidanceKnown && s.pyromaniac.promotionWeek !== null && (isPyromaniac(s) || promoted(s));
 const potionPrice = (bottle: ConspiratorBottle) => CONSPIRATOR_PRICES.potion - (bottle.labourSteps === 5 ? CONSPIRATOR_PRICES.labourCredit : 0);
@@ -157,9 +158,9 @@ export function applyConspiratorCommand(s: SliceState, command: ConspiratorAcqui
 
 export function projectConspirator(s: SliceState): ConspiratorProjection {
   const actions: ConspiratorAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.reaper.conspiratorActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?s.reaper.conspiratorActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: ConspiratorAcquisitionCommand) => {
-    if (isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) return;
+    if (isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))) return;
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -198,7 +199,7 @@ export function projectConspirator(s: SliceState): ConspiratorProjection {
     })) : [],
     abilities: isPromoted ? CONSPIRATOR_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'阴谋家魔药已消化；原方案、本人拒绝与修订记录保留。':isPromoted ? `纵火家消化成果${s.conspirator.pyromaniacActingAtPromotion}/100已保留；阴谋家扮演${acting}/100，能力掌握分别记录。`
+    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?'阴谋家魔药已消化；原方案、本人拒绝与修订记录保留。':isPromoted ? `纵火家消化成果${s.conspirator.pyromaniacActingAtPromotion}/100已保留；阴谋家扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成纵火家消化（${s.progression.acting}/100），并在晋升纵火家后度过12整周（${pyromaniacWeeks(s)}/12）。用药指导与原瓶可以提前准备。` : '先走完纵火家之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应五次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${CONSPIRATOR_CONSUMPTION_RISK}` : '成为纵火家后，可向原导师了解下一序列。',
@@ -249,7 +250,7 @@ export function validateConspiratorState(s: SliceState): boolean {
   if (conspirator.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!conspirator.guidanceKnown || !integer(s.pyromaniac.promotionWeek, 1, s.week) || !integer(conspirator.promotionWeek, firstConsumptionWeek, s.week) || conspirator.pyromaniacActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?REAPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?IRON_BLOOD_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence === 1 ? CONQUEROR_ABILITY_IDS : []),...((s.progression.sequence===2||s.progression.sequence===1)?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS, ...CONSPIRATOR_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?REAPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?IRON_BLOOD_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (conspirator.promotionWeek !== null || conspirator.pyromaniacActingAtPromotion !== null || CONSPIRATOR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (conspirator.reflected || Object.values(conspirator.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0 || value.notes.length !== 0 || value.revised)) return false;

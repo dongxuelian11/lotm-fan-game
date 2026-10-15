@@ -157,7 +157,7 @@ export function reaperActions(s: SliceState): ReaperAction[] {
   return out;
 }
 export function reaperCases(s: SliceState): ReaperProjection['cases'] {
-  if (s.progression.pathwayId !== 'hunter' || (s.progression.sequence !== 5 && s.progression.sequence!==4&&s.progression.sequence!==3)) return [];
+  if (s.progression.pathwayId !== 'hunter' || (s.progression.sequence !== 5 && s.progression.sequence!==4&&s.progression.sequence!==3&&s.progression.sequence!==1)) return [];
   return CASES.map(p => {
     const r = s.reaper.cases[p.id]!;
     return {
@@ -218,7 +218,7 @@ export function validateReaperLife(s: SliceState): boolean {
   }
   if (open > 1 || prepared > 1 || windows > 1 || open && prepared || open && windows) return false;
   if (s.seer.completedSources.filter(x => x === 'reaper-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (s.progression.pathwayId === 'hunter' && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) return open === 0 && prepared === 0 && windows === 0 && s.ironBloodKnight?.reaperActingAtPromotion === resolved * 25 + (m.reflected ? 25 : 0);
+  if (s.progression.pathwayId === 'hunter' && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))) return open === 0 && prepared === 0 && windows === 0 && s.ironBloodKnight?.reaperActingAtPromotion === resolved * 25 + (m.reflected ? 25 : 0);
   if (s.progression.pathwayId === 'hunter' && s.progression.sequence === 5 && s.progression.acting !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   return true;
 }

@@ -1,3 +1,4 @@
+import { CONQUEROR_ABILITY_IDS } from '../conqueror/types.js';
 import {WEATHER_WARLOCK_ABILITY_IDS} from '../weather-warlock/types.js';
 import { WAR_BISHOP_ABILITY_IDS } from '../war-bishop/types.js';
 import { IRON_BLOOD_KNIGHT_ABILITY_IDS } from '../iron-blood-knight/types.js';
@@ -32,7 +33,7 @@ export function createPyromaniacState(): PyromaniacState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hunter' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const isProvoker = (s: SliceState) => s.progression.pathwayId === 'hunter' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.hunter.discovered && s.hunter.guidanceKnown && s.provoker.guidanceKnown && s.provoker.promotionWeek !== null && (isProvoker(s) || promoted(s));
 const potionPrice = (bottle: PyromaniacBottle) => PYROMANIAC_PRICES.potion - (bottle.labourSteps === 4 ? PYROMANIAC_PRICES.labourCredit : 0);
@@ -156,7 +157,7 @@ export function applyPyromaniacCommand(s: SliceState, command: PyromaniacAcquisi
 export function projectPyromaniac(s: SliceState): PyromaniacProjection {
   const actions: PyromaniacAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
   const add = (id: string, label: string, cost: string, command: PyromaniacAcquisitionCommand) => {
-    if (isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) return;
+    if (isPromoted && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))) return;
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -193,8 +194,8 @@ export function projectPyromaniac(s: SliceState): PyromaniacProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? PYROMANIAC_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.conspirator.pyromaniacActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'纵火家魔药已消化，原火焰实践与原瓶记录保留。':isPromoted ? `挑衅者消化成果${s.pyromaniac.provokerActingAtPromotion}/100已保留；纵火家扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?s.conspirator.pyromaniacActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?'纵火家魔药已消化，原火焰实践与原瓶记录保留。':isPromoted ? `挑衅者消化成果${s.pyromaniac.provokerActingAtPromotion}/100已保留；纵火家扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成挑衅者消化（${s.progression.acting}/100），并在晋升挑衅者后度过8整周（${provokerWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完挑衅者之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${PYROMANIAC_CONSUMPTION_RISK}` : '成为挑衅者后，可向原导师了解下一序列。',
@@ -238,7 +239,7 @@ export function validatePyromaniacState(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!state.guidanceKnown || !integer(s.provoker.promotionWeek, 11, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.provokerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?CONSPIRATOR_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?REAPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?IRON_BLOOD_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence === 1 ? CONQUEROR_ABILITY_IDS : []),...((s.progression.sequence===2||s.progression.sequence===1)?WEATHER_WARLOCK_ABILITY_IDS:[]),...HUNTER_ABILITY_IDS, ...PROVOKER_ABILITY_IDS, ...PYROMANIAC_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?CONSPIRATOR_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?REAPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?IRON_BLOOD_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?WAR_BISHOP_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (state.promotionWeek !== null || state.provokerActingAtPromotion !== null || PYROMANIAC_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (state.reflected || state.practices.length !== 0 || Object.keys(state.practiceAttempts).length !== 0) return false;

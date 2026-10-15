@@ -112,7 +112,7 @@ export function conspiratorActions(s: SliceState): ConspiratorAction[] {
   return out;
 }
 export function conspiratorCases(s: SliceState): ConspiratorProjection['cases'] {
-  if (s.progression.pathwayId !== 'hunter' || (s.progression.sequence !== 6&&s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3)) return [];
+  if (s.progression.pathwayId !== 'hunter' || (s.progression.sequence !== 6&&s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&s.progression.sequence!==1)) return [];
   return CASES.map(p => { const r = s.conspirator.cases[p.id]!; return { id: p.id, title: p.title, story: p.story, observations: r.status === 'AVAILABLE' ? [] : [...p.facts, ...r.notes], preparation: r.status === 'PREPARED' ? (r.method === 'ABILITY' ? p.ability : p.ordinary) + (r.revised ? ' ' + REVISION : '') : null, result: ['EXAMINED', 'RESOLVED'].includes(r.status) ? p.result : r.notes.includes(REFUSAL) ? REFUSAL + (r.revised ? ' 原方案已修订，仍须实际评估。' : ' 下一真实周可据新事实修订。') : r.attemptWeek !== null ? '此前核对未成，原成本和未知保留。' : r.withdrawals ? '尚未实施的准备已取消。' : null, status: r.status, contactOpen: r.contactOpen ? '本次事项仍须实际结束并退出' : '没有尚未结束的本次事项', closes: r.closes }; });
 }
 /** Fixed original evidence keeps refusal/revision persistent without a generic persuasion framework. */
@@ -144,7 +144,7 @@ export function validateConspiratorLife(s: SliceState): boolean {
   }
   if (open > 1 || prepared > 1 || open && prepared) return false;
   if (s.seer.completedSources.filter(x => x === 'conspirator-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (s.progression.pathwayId === 'hunter' && (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) return open === 0 && prepared === 0 && s.reaper.conspiratorActingAtPromotion === resolved * 25 + (m.reflected ? 25 : 0);
+  if (s.progression.pathwayId === 'hunter' && (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))) return open === 0 && prepared === 0 && s.reaper.conspiratorActingAtPromotion === resolved * 25 + (m.reflected ? 25 : 0);
   if (s.progression.pathwayId === 'hunter' && s.progression.sequence === 6 && s.progression.acting !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   return true;
 }
