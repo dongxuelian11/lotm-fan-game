@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
+import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
@@ -8,7 +9,7 @@ import type { SeerContext } from '../../src/domain/seer/index.js';
 import { resolveNormalCheck } from '../../src/resolution/normal-check.js';
 import { applyDreamWeaverAcquisition, applyDreamWeaverCommand, createDreamWeaverState, hasDreamWeaverLock, isDreamWeaverAcquisitionCommand, projectDreamWeaver, validateDreamWeaverCommand, validateDreamWeaverState, dreamWeaverAcquisitionBlock } from '../../src/domain/dream-weaver/index.js';
 import { DREAM_WEAVER_CONSUMPTION_RISK, DREAM_WEAVER_FORMULA_STATUS, DREAM_WEAVER_PRICES, DREAM_WEAVER_SOURCE_STATUS } from '../../src/domain/dream-weaver/content.js';
-import { DREAM_WEAVER_ABILITY_IDS, DREAM_WEAVER_PREPARATION_IDS, type DreamWeaverAcquisitionCommand } from '../../src/domain/dream-weaver/types.js';
+import { DREAM_WEAVER_ABILITY_IDS, DREAM_WEAVER_PREPARATION_IDS, type DreamWeaverAcquisitionCommand, type DreamWeaverCommand } from '../../src/domain/dream-weaver/types.js';
 
 /** Original living S4 end-state; extra time/resources below are explicit unit setup, never natural-play evidence. */
 function manipulator(): SliceState {
@@ -51,7 +52,32 @@ describe('Dream Weaver S3 original bottles and explicitly G professional prepara
       const other = structuredClone(s); other.progression.pathwayId = pathwayId;
       expect(projectDreamWeaver(other).discovered).toBe(false); expect(projectDreamWeaver(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectDreamWeaver(other).discovered).toBe(false); }
+    for (const sequence of [9, 8, 7, 6, 5, 0]) {
+      const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>;
+      expect(projectDreamWeaver(other).discovered).toBe(false); expect(projectDreamWeaver(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
+    }
+  });
+  it('accepts exact inherited S1 Writer history while keeping old acquisition, life and encounter actions closed', () => {
+    const s = migrateSliceState(JSON.parse(readFileSync('tests/fixtures/writer-v01880/snapshot-promoted.json', 'utf8')));
+    const original = migrateSliceState(readObjectEntry<unknown>('tests/fixtures/discerner-v01660/natural.json', 'final'));
+    expect(s.progression).toMatchObject({ pathwayId: 'audience', sequence: 1 });
+    expect(s.dreamWeaver).toEqual(original.dreamWeaver); expect(validateDreamWeaverState(s)).toBe(true);
+    expect(projectDreamWeaver(s)).toMatchObject({ discovered: true, promoted: true, acting: 100, actions: [] });
+    for (const id of DREAM_WEAVER_ABILITY_IDS) expect(s.progression.mastery[id]).toBe(original.progression.mastery[id]);
+    const commands: { command: DreamWeaverCommand; reason: string }[] = [
+      { command: { type: 'BUY_POTION', bottleId: s.dreamWeaver.bottles[1]!.id }, reason: '已经真实晋升织梦人3' },
+      { command: { type: 'PREPARE', caseId: 'two-desks', method: 'ORDINARY' }, reason: '本人须仍活着并已成为织梦人。' },
+      { command: { type: 'ENCOUNTER_FIGHT' }, reason: '须本人仍活着且有精神，并已成为织梦人3。' },
+    ];
+    for (const { command, reason } of commands) {
+      const before = structuredClone(s), c = context(s);
+      expect(validateDreamWeaverCommand(command)).toBe(true);
+      expect(() => applyDreamWeaverCommand(s, command, c)).toThrow(reason); expect(s).toEqual(before);
+      expect(c.check).not.toHaveBeenCalled(); expect(c.roll).not.toHaveBeenCalled(); expect(c.note).not.toHaveBeenCalled();
+    }
+    const unsupported = structuredClone(s); unsupported.progression.sequence = 0;
+    expect(projectDreamWeaver(unsupported)).toMatchObject({ discovered: false, promoted: false, actions: [] });
+    expect(validateDreamWeaverState(unsupported)).toBe(false); reject(unsupported, { type: 'LEARN_GUIDANCE' });
   });
   it('charges500 and one action without inventing a canonical formula, rite or independent soul', () => {
     const s = manipulator(), old = structuredClone([s.audience, s.mindreader, s.psychologist, s.hypnotist, s.dreamwalker, s.manipulator]);

@@ -127,7 +127,7 @@ export function arcaneScholarEncounterActions(s: SliceState): ArcaneScholarEncou
 }
 export function projectArcaneScholarEncounter(s: SliceState): ArcaneScholarEncounterProjection {
   const e = s.arcaneScholar.encounter;
-  if (!stage(s) && !(s.progression.pathwayId==='paragon'&&s.progression.sequence===2)) return { title: '尚未开放的奥秘学者实践', story: '', status: 'AVAILABLE', inside: false, enemy: null, actions: [], facts: [] };
+  if (!stage(s) && !(s.progression.pathwayId==='paragon'&&(s.progression.sequence===2||s.progression.sequence===1))) return { title: '尚未开放的奥秘学者实践', story: '', status: 'AVAILABLE', inside: false, enemy: null, actions: [], facts: [] };
   return { title: '科尔温的独立原工院', story: ARCANE_SCHOLAR_ENCOUNTER_STORY, status: e.status, inside: isInsideArcaneScholarEncounter(s),
     enemy: { id: e.targetId, name: '科尔温', age: 47, sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, weaponId: 'AR3-CORWIN-CLUB', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } }, actions: arcaneScholarEncounterActions(s),
@@ -151,7 +151,7 @@ export function validateArcaneScholarEncounter(s: SliceState): boolean {
         !Array.isArray(e.carriedIds) || e.carriedIds.length > 2 || new Set(e.carriedIds).size !== e.carriedIds.length || e.carriedIds.some(id => !['AL4-BOX-1', 'AL4-FRAME-1'].includes(id)) ||
         [e.approachWeek, e.attemptWeek].some(n => n !== null && !integer(n, s.arcaneScholar.promotionWeek ?? 0, s.week)) || e.startHistoryIndex !== null && !integer(e.startHistoryIndex, 0, s.combatHistory.length)) return false;
     if (s.arcaneScholar.promotionWeek === null) return same(e, createArcaneScholarEncounterState()) && s.combat?.encounterId !== 'ARCANE_SCHOLAR_DISPUTE';
-    if (!stage(s) && !(s.progression.pathwayId==='paragon'&&s.progression.sequence===2)) return false;
+    if (!stage(s) && !(s.progression.pathwayId==='paragon'&&(s.progression.sequence===2||s.progression.sequence===1))) return false;
     if (e.startHistoryIndex === null) {
       const initial = createArcaneScholarEncounterState();
       return ['AVAILABLE', 'READY', 'RESOLVED'].includes(e.status) && e.terminal === null && e.attemptWeek === null && s.combat?.encounterId !== 'ARCANE_SCHOLAR_DISPUTE' &&

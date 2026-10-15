@@ -1,3 +1,4 @@
+import { CIVILIZATION_ENLIGHTENER_ABILITY_IDS } from '../civilization-enlightener/types.js';
 import {KNOWLEDGE_MENTOR_ABILITY_IDS} from '../knowledge-mentor/types.js';
 import {ARCANE_SCHOLAR_ABILITY_IDS} from '../arcane-scholar/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -45,7 +46,7 @@ export function createAlchemistState(): AlchemistState {
 }
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isAlchemist = (s: SliceState) => s.progression.pathwayId === 'paragon' && s.progression.sequence === 4;
-const hasAlchemistHistory = (s:SliceState) => isAlchemist(s)||(s.progression.pathwayId==='paragon'&&(s.progression.sequence===3||s.progression.sequence===2));
+const hasAlchemistHistory = (s:SliceState) => isAlchemist(s)||(s.progression.pathwayId==='paragon'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)));
 const isAstronomer = (s: SliceState) => s.progression.pathwayId === 'paragon' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.savant.discovered && s.astronomer.guidanceKnown && s.astronomer.promotionWeek !== null && (isAstronomer(s) || hasAlchemistHistory(s));
 const bottleNumber = (bottle: Pick<AlchemistBottle, 'id'>) => Number(bottle.id.slice('alchemist-potion-'.length));
@@ -177,15 +178,15 @@ export function projectAlchemist(s: SliceState): AlchemistProjection {
   const chance = computeCheckChance({ baseAbility: s.character.coreStats.will, difficulty: 28, modifiers: [] });
   return {
     title: promoted ? '炼金术士 · 序列4' : '炼金术士之路', discovered: available, guidanceKnown: known, promoted,
-    formulaKnown: false, formula: [], actions: available && ![3,2].includes(s.progression.sequence??0) ? [...actions, ...alchemistRitualActions(s), ...alchemistLifeActions(s), ...alchemistEncounterActions(s)] : [],
+    formulaKnown: false, formula: [], actions: available && ![3,2,1].includes(s.progression.sequence??0) ? [...actions, ...alchemistRitualActions(s), ...alchemistLifeActions(s), ...alchemistEncounterActions(s)] : [],
     bottles: known ? state.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 独立炼金术士成品`, source: `${bottle.source}${bottle.ritualId ? `第${bottle.ritualWindowWeek}周在原研究园${bottle.ritualId}真实抽取窗口服用；损毁保留。` : ''}`,
       status: bottle.status === 'SUPPLIER' ? '原供应方持有，未交付' : bottle.status === 'PLAYER' ? '你实际持有，尚未服用' : `原瓶已耗尽 · ${bottle.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : bottle.outcome === 'SUCCESS' ? '成功晋升' : bottle.outcome === 'GREAT_FAILURE' ? '严重排异，仍为天文学家' : '排异，仍为天文学家'}`,
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: promoted ? ALCHEMIST_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.arcaneScholar.alchemistActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: promoted ? `天文学家消化${state.astronomerActingAtPromotion}/100与原掌握保留；炼金术士扮演${(s.progression.sequence===3||s.progression.sequence===2)?s.arcaneScholar.alchemistActingAtPromotion:s.progression.acting}/100。` : available ? `天文学家消化需100（当前${s.progression.acting}/100），晋升后满12整周（${astronomerWeeks(s)}/12）；真实活园投入与当前抽取窗口须另行完成，可选择保持天文学家。` : '先完成天文学家之路。',
+    acting: promoted ? ((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.arcaneScholar.alchemistActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `天文学家消化${state.astronomerActingAtPromotion}/100与原掌握保留；炼金术士扮演${(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.arcaneScholar.alchemistActingAtPromotion:s.progression.acting}/100。` : available ? `天文学家消化需100（当前${s.progression.acting}/100），晋升后满12整周（${astronomerWeeks(s)}/12）；真实活园投入与当前抽取窗口须另行完成，可选择保持天文学家。` : '先完成天文学家之路。',
     pollution: s.seer.pollution, risk: known ? ALCHEMIST_CONSUMPTION_RISK : '先通过原导师了解炼金术士成品来源与实际仪式风险。',
     supplies: known ? `供应方持有${state.bottles.filter(bottle => bottle.status === 'SUPPLIER').length}瓶，你持有未用原瓶${state.bottles.filter(bottle => bottle.status === 'PLAYER').length}瓶。${state.resupply.requestedWeek === null ? `后续实际到货${state.resupply.deliveries}批。` : `第${state.resupply.requestedWeek}周申请，下一真实周起实际到货。`}成品配方仍未知，原瓶、实际活园与抽取生命分别结算。` : '',
     ...(available ? { story: `${ALCHEMIST_FORMULA_STATUS}${ALCHEMIST_RITUAL_SOURCE}${ALCHEMIST_SOURCE_STATUS}` } : {}),
@@ -224,7 +225,7 @@ function validateState(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.astronomer.promotionWeek, 1, s.week) || !integer(state.promotionWeek, earliestConsumption, s.week) || state.astronomerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?KNOWLEDGE_MENTOR_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS, ...APPRAISER_ABILITY_IDS, ...ARTISAN_ABILITY_IDS, ...ASTRONOMER_ABILITY_IDS, ...ALCHEMIST_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?ARCANE_SCHOLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?CIVILIZATION_ENLIGHTENER_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?KNOWLEDGE_MENTOR_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS, ...APPRAISER_ABILITY_IDS, ...ARTISAN_ABILITY_IDS, ...ASTRONOMER_ABILITY_IDS, ...ALCHEMIST_ABILITY_IDS,...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?ARCANE_SCHOLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.astronomerActingAtPromotion !== null || ALCHEMIST_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   for (const [index, bottle] of state.bottles.entries()) {
     if (!record(bottle) || !shape(bottle, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'status', 'outcome', 'ritualId', 'ritualWindowWeek']) || bottle.id !== `alchemist-potion-${index + 1}` || typeof bottle.source !== 'string' || !integer(bottle.labourSteps, 0, 5)) return false;

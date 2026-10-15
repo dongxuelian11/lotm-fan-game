@@ -1,3 +1,4 @@
+import { CIVILIZATION_ENLIGHTENER_ABILITY_IDS } from '../civilization-enlightener/types.js';
 import {KNOWLEDGE_MENTOR_ABILITY_IDS} from '../knowledge-mentor/types.js';
 import {ARCANE_SCHOLAR_ABILITY_IDS} from '../arcane-scholar/types.js';
 import {ALCHEMIST_ABILITY_IDS} from '../alchemist/types.js';
@@ -34,7 +35,7 @@ export function createArtisanState(): ArtisanState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'paragon' && (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'paragon' && (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isAppraiser = (s: SliceState) => s.progression.pathwayId === 'paragon' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.savant.discovered && s.savant.guidanceKnown && s.archaeologist.guidanceKnown && s.appraiser.guidanceKnown && s.appraiser.promotionWeek !== null && (isAppraiser(s) || promoted(s));
 const potionPrice = (bottle: ArtisanBottle) => ARTISAN_PRICES.potion - (bottle.labourSteps === 5 ? ARTISAN_PRICES.labourCredit : 0);
@@ -158,7 +159,7 @@ export function applyArtisanCommand(s: SliceState, command: ArtisanAcquisitionCo
 
 export function projectArtisan(s: SliceState): ArtisanProjection {
   const actions: ArtisanAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.astronomer.artisanActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?s.astronomer.artisanActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: ArtisanAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -199,7 +200,7 @@ export function projectArtisan(s: SliceState): ArtisanProjection {
     })) : [],
     abilities: isPromoted ? ARTISAN_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'工匠魔药已消化；原图纸、材料、唯一成品与真实客户交付记录保留。':isPromoted ? `鉴定师消化成果${s.artisan.appraiserActingAtPromotion}/100已保留；工匠扮演${acting}/100，能力掌握分别记录。`
+    digestion: (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?'工匠魔药已消化；原图纸、材料、唯一成品与真实客户交付记录保留。':isPromoted ? `鉴定师消化成果${s.artisan.appraiserActingAtPromotion}/100已保留；工匠扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成鉴定师消化（${s.progression.acting}/100），并在晋升鉴定师后度过12整周（${appraiserWeeks(s)}/12）。用药指导与原瓶可以提前准备。` : '先走完鉴定师之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应五次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${ARTISAN_CONSUMPTION_RISK}` : '成为鉴定师后，可向原导师了解下一序列。',
@@ -250,7 +251,7 @@ export function validateArtisanState(s: SliceState): boolean {
   if (artisan.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!artisan.guidanceKnown || !integer(s.appraiser.promotionWeek, 1, s.week) || !integer(artisan.promotionWeek, firstConsumptionWeek, s.week) || artisan.appraiserActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?KNOWLEDGE_MENTOR_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS, ...APPRAISER_ABILITY_IDS, ...ARTISAN_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?ASTRONOMER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?ARCANE_SCHOLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?CIVILIZATION_ENLIGHTENER_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?KNOWLEDGE_MENTOR_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS, ...APPRAISER_ABILITY_IDS, ...ARTISAN_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?ASTRONOMER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?ARCANE_SCHOLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (artisan.promotionWeek !== null || artisan.appraiserActingAtPromotion !== null || ARTISAN_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (artisan.reflected || Object.values(artisan.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

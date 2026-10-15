@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.188.0 阶段版
+# 诡秘之主同人游戏 · 0.189.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人与观众已有有限序列1基础；其余19条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众与通识者已有有限序列1基础；其余18条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -180,3 +180,14 @@ npx vitest run tests/domain/writer-acquisition.test.ts tests/domain/writer-life.
 npm run build:main
 node --expose-gc scripts/play/writer-save.mjs --expected-boundaries 47
 ```
+
+文明启蒙者专项：
+
+```sh
+npm run fixtures:restore -- --only-prefix knowledge-mentor-v01670 --only-prefix civilization-enlightener-v01890
+npx vitest run tests/domain/civilization-enlightener-acquisition.test.ts tests/domain/civilization-enlightener-life.test.ts tests/domain/civilization-enlightener-combat.test.ts tests/domain/civilization-enlightener-inheritance.test.ts tests/domain/civilization-enlightener-shared.test.ts tests/domain/civilization-enlightener-natural.test.ts tests/renderer/civilization-enlightener-panel.test.tsx tests/renderer/civilization-enlightener-source.test.tsx tests/renderer/civilization-enlightener-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/civilization-enlightener-save.mjs --expected-boundaries 69
+```
+
+同一691条通识者原分支自然续行至797条：真实诊治、首瓶晋1、原护架付费修理和失败后的普通操作均保留。可选战斗第四轮撤退，玩家仍活并保留新伤。详见[文明启蒙者阶段](docs/CIVILIZATION_ENLIGHTENER_PLAYABLE_STAGE.md)。

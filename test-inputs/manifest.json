@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.188.0",
+  "version": "0.189.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -251,6 +251,16 @@
       "name": "lotm_release_0.188.0_writer_test_inputs_1_2026-10-15.tar.gz",
       "bytes": 14201766,
       "sha256": "93f735f00e7c9819f27d78b3931dd36546705986d940540ae0a99740ecb1aa42"
+    },
+    {
+      "name": "lotm_release_0.189.0_civilization_enlightener_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17778419,
+      "sha256": "35002e083abde38d9fd7ef7f3f541c6053c8ef820174b00a27ca2dff7662e8d8"
+    },
+    {
+      "name": "lotm_release_0.189.0_civilization_enlightener_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 3745964,
+      "sha256": "bbb9e03a0bb3022515fd9e6971fd7f4d122ca9f775c901943493719b6827a1ee"
     }
   ],
   "fileEntries": [
@@ -3378,6 +3388,391 @@
       "path": "tests/fixtures/chaos-walker-v01580/natural.json",
       "bytes": 5791738,
       "sha256": "eb42c6205279a77bd6c19f7ea0946181e2b6df8e31201f8ba1126fa51d928ce2"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundaries.index.json",
+      "bytes": 5787,
+      "sha256": "ff5a66aa9252423fa2f884d16dddb954b0afbfb96d61f1cf8d246e5d9c90d552"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-actual-original-90-durability.json",
+      "bytes": 2155696,
+      "sha256": "9be92f790ebd86e31f75ce94db3feaf55f9d20a3eff9b831a18b6e4a44788fa4"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-actual-original-manufacture-records.json",
+      "bytes": 2153587,
+      "sha256": "ae82990148353475512dafc6e11ddd66574828d5448a6ecd81443b7263d2af8c"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-adult-independent-single-attempt.json",
+      "bytes": 2203799,
+      "sha256": "f80ac7bf0a9b8cf07a4f1687bd8c7bc549c33e25829742c1e451d7832ccc947f"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-buy-civilization-enlightener-potion-1.json",
+      "bytes": 2110583,
+      "sha256": "2f427be44e34a0b2de5240b453973ae5466dc346d3752f2e34b45f83654ab507"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-choose-limited-powers-before-fight.json",
+      "bytes": 2709481,
+      "sha256": "306383f10e460f1443c93ad9a7a76d87a866a08678bce3ed9d2a1479399a475e"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-clinic-actual-pay60.json",
+      "bytes": 1896450,
+      "sha256": "d66fc7c0c22b0abc53d245cca155aa3b65731d366aa8436daa6eb800e7194252"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-combat-round-1.json",
+      "bytes": 2840930,
+      "sha256": "6b9e9c4cee2c73a8687fee936c7308a9f4d51c9164f348b3b87d1da622cff9df"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-combat-round-2.json",
+      "bytes": 2957830,
+      "sha256": "66f3e5961c2f99c80474fe395d6b106503c8860a7cc25b3310a45b4c5d07a196"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-combat-round-3.json",
+      "bytes": 3018054,
+      "sha256": "28ade04729dd1dcf1cfff42010732bc48c3fff0f761fb2a872b5ebc33605795a"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-combat-round-4.json",
+      "bytes": 3022338,
+      "sha256": "967d6820f8a10a28f41be77132c57eb5f341a49de129da39704559e6bb72c983"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-consume-civilization-enlightener-potion-1.json",
+      "bytes": 2129808,
+      "sha256": "d6ab69711022ab916676de6b103b6e24511ffb41b592d6322e17576f75906aa8"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-explicit-frame90-to95-no-recharge.json",
+      "bytes": 2164913,
+      "sha256": "d12c709c045f151265c2774ef5c5b2d7c621fe214e5fccef282b33bcb09a1761"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-guidance.json",
+      "bytes": 1963772,
+      "sha256": "9261a2c10ea878d8ed5261c667dea0a0b677bb4b34848bf151addd3a3509e740"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-hands-on-defect-confirmation.json",
+      "bytes": 2160758,
+      "sha256": "159bb7806010f2c8232c6dd24cd7db6dbc03debfd72e83c1e8c41779110d5f64"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-independent-adrian-name-exchange.json",
+      "bytes": 2479000,
+      "sha256": "4adda290be82abd6fa3ce3cc2bddd7b727cbcf7a7b49609d32a1b2f62accd391"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-independent-optional-fight.json",
+      "bytes": 2735465,
+      "sha256": "05f8f4a33d970977bfacf7f2948ed00cb8dbae163488031a35e9e0b26a4749d7"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json",
+      "bytes": 2996200,
+      "sha256": "70b8843550d5a79abd5250377184ab5050a80cc1b7138f2a03ead788fb3bb8ef"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-original-wound-rest-0.json",
+      "bytes": 1896055,
+      "sha256": "8c05a1bc3d74effa492fa50b073f0e40d175f6f44ce1d6edf83d370e18577be4"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-original-wound-rest-1.json",
+      "bytes": 1896676,
+      "sha256": "afd35bcd7441af2937b7fbc21c22128f03b74a747cc3dedf485ab12a8de29bcf"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-paid-finite-original-shim.json",
+      "bytes": 2162710,
+      "sha256": "505c90c9ca06c50e1b96039094ce68a117297cd42f32a2342c15417d01baf39b"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-paid-limited-defect-analysis.json",
+      "bytes": 2158308,
+      "sha256": "0f3f6f3bdf6d9fb5ae554ce297abb83110b64e7684c5e4b8340db0142a26d8b3"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-paid-one-ordinary-step-guidance.json",
+      "bytes": 2198871,
+      "sha256": "35fa0b2bbd97fe7cb9cf13ccbb1dd892b580db11fdb1b84827c37d4e2d15d1b7"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 2040759,
+      "sha256": "90fd3456b2dfc86734e1815228d2a01803497a0bd299190af031374b4faa62d3"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-preparation-MARK_EXIT.json",
+      "bytes": 2050022,
+      "sha256": "b6eaca5d748cb77323ae1e541190243a8d807977b96cb01352ece9e84321c169"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 2032660,
+      "sha256": "48116d84e4ca27d3d15961913652d46ac8c74aa7fe29f760394b84a5066d9362"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-prepare-civilization-enlightener-potion-1.json",
+      "bytes": 2119459,
+      "sha256": "6dcf8e35e96908e455d4a5bea7f1f6f2a127845a3520bf46488e8143b6f09135"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-actual-manual-demonstration.json",
+      "bytes": 2196130,
+      "sha256": "eb04c4a67b2973c5618c9b5507f1844a72b743ea420e81469df8b2d7555519a2"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-actual-participant-exit.json",
+      "bytes": 2214583,
+      "sha256": "0fde3d5232d489ae424cec16a3331bf0b0a80ad961972716ede218bbfd05f362"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-actual-two-metre-entry.json",
+      "bytes": 2191749,
+      "sha256": "ab03f1225419c6b1cfa4632d7fe25354a0c06d8f6c523f23f940cbe96a851185"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-actual-two-metre-return.json",
+      "bytes": 2210267,
+      "sha256": "63b66dfcbb479c3bd00a8b56537e3f7a72c704f0caa46db37a41d91e33de6891"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-current-ability-permission.json",
+      "bytes": 2187396,
+      "sha256": "efc6dde271dc86bce6dfea46ff529751fa119227b11951cb16a6bab07b053ae2"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-current-learning-permission.json",
+      "bytes": 2185287,
+      "sha256": "f58d05c210819fa38dc02463fdd3a99a606ee58701666c1593b4677c1fea27c4"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-fresh-invitation.json",
+      "bytes": 2182943,
+      "sha256": "72636659efb038a46200706161f7f9ff11fa52bfad9398f5011160eae1795676"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-honest-report.json",
+      "bytes": 2216902,
+      "sha256": "51b7fe1eb591f44d1e453784147da2e6765666ed5b61966decbec099796b4982"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-observe-original.json",
+      "bytes": 2178714,
+      "sha256": "7ce1b0edbb7b8af2eb69a9933fb6462e32544d80d78d4a98ee64fcb95430a799"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-ordinary-manual-stop.json",
+      "bytes": 2206253,
+      "sha256": "cd2f8b03f2af0e9526a7c9a14508815860c7f89d4e4a460c37ab8a7af38d1d3c"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-real-hand-set-load.json",
+      "bytes": 2201318,
+      "sha256": "110c1ad6b10a74a00c9c4b6d41077406d008a89930674d60994a1ce357b83040"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-same-loan-tool-returned.json",
+      "bytes": 2212347,
+      "sha256": "8e30eb6d8d875ded5464ea084759aa8ff5ac49b1d873e00a22268a80d32fb999"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-same-loan-tool.json",
+      "bytes": 2189552,
+      "sha256": "c8c6339e9622c1cbd58d9815c8e2bff37d252156c7a1e1278f8be6e6caa4cea4"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-same-originals-retrieved.json",
+      "bytes": 2208166,
+      "sha256": "7cae04a532a97634da1ee5361e3e4fa03971c6879e873dc04affab4a32de4c3a"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-taught-stop-same-two-originals.json",
+      "bytes": 2193917,
+      "sha256": "1cdc796b9a075bb155142f7088f3a752d1576e3f83349639ffb446461fae0794"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-three-honest-reports-reflected.json",
+      "bytes": 2254980,
+      "sha256": "23f5ff16ac7fd2a7ec3aa582d12ffab90ae535816d52e82f99330bb2e58e1e89"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-actual-manual-demonstration.json",
+      "bytes": 2237213,
+      "sha256": "e9f66eee8d91edf6667a0bb127e370d5a5948505857218044560dfadc2ea782e"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-actual-participant-exit.json",
+      "bytes": 2250244,
+      "sha256": "f2ff2d4d161c866a4e29c8e5b3156f3ba5267d7557ef459076cd6f5c9881053f"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-actual-two-metre-entry.json",
+      "bytes": 2232835,
+      "sha256": "90861f5ea08ecf0e731fa20c7b6da5ef43e41e85bf6c1f09cac891f34c574855"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-actual-two-metre-return.json",
+      "bytes": 2245932,
+      "sha256": "04336e81a62d10e18ca17dd79e78a9a557f74423fbf1d75ed2e9dca5a7590110"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-current-ability-permission.json",
+      "bytes": 2228350,
+      "sha256": "0d5f6769e5386d6943a3a6b4a5c84bcad89021106de58db72c88841da55152ef"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-current-learning-permission.json",
+      "bytes": 2226134,
+      "sha256": "916b58d2e867b95b52ec7d6e9ae40beb4cbe19b2f45175c6ad33ed83c4aa605e"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-fresh-invitation.json",
+      "bytes": 2223696,
+      "sha256": "8c43cc704caae2c415d65b1974380b7f20346b96d74efe383e19e14d454bd52d"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-honest-report.json",
+      "bytes": 2252581,
+      "sha256": "742a7a09607ea5e2188a10eb6fb8e8dc5ad2723b10753db48da66955b8b9a506"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-observe-original.json",
+      "bytes": 2219616,
+      "sha256": "244afc6be0ec73c255f5bf597d60a302cf7d1d752c49724b180e39786ea3fe27"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-ordinary-manual-stop.json",
+      "bytes": 2241651,
+      "sha256": "98ddf0edaf7301d7f3e450dbf62d2965127371d15f57e53d00e62b9b6ee9683d"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-real-hand-set-load.json",
+      "bytes": 2239459,
+      "sha256": "aa152472ae5ea8b26b9c3d4b51281c7df497a32043c0c6f7dc96cc1b3d2b01ef"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-same-loan-tool-returned.json",
+      "bytes": 2248014,
+      "sha256": "573a1f770fadd71ca05d14d4b8a5aa1aa45c14593c17ca5a870fd8506f8500b1"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-same-loan-tool.json",
+      "bytes": 2230505,
+      "sha256": "9061bcf93eb0a547569be881c1c89ed35868a26f6554faf384b9b9e06f687e65"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-same-originals-retrieved.json",
+      "bytes": 2243829,
+      "sha256": "00267a13d84e125b02fe5b5f9675169c6c1b715989aa84773de6350acad3d9ff"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-withdrawn-operation-same-two-originals.json",
+      "bytes": 2235084,
+      "sha256": "49a7d5a84eda38966defd5d524f8caa0376dde5c653af94a7644dc09f6bf17f4"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-actual-participant-exit.json",
+      "bytes": 2173508,
+      "sha256": "ed0fdc4c9257f502dbde690c2b6d7f2501e75065855f494495e910e9a883c4e7"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-actual-two-metre-entry.json",
+      "bytes": 2149321,
+      "sha256": "f60c1d135bea44cd37acaf0564b76597d19a2635cc139e214fd1b743476a300e"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-actual-two-metre-return.json",
+      "bytes": 2169193,
+      "sha256": "79713aa9115ede7922fb66d93d0554bd149657b4f0e602e94cbb266b84f6eb41"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-current-ability-permission.json",
+      "bytes": 2144998,
+      "sha256": "367f6b3c0aca85c77fe617a35114f358d0e6664a9c397e9ff7b871868850cf2e"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-current-learning-permission.json",
+      "bytes": 2142857,
+      "sha256": "01221ce7be7c790ef3418cd66ed92f093264bd43ccc7fe3b9211ebf1db9d41ba"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-fresh-invitation.json",
+      "bytes": 2140433,
+      "sha256": "2f61cd315ec518f486b6d33b537943be89a2f02d1eb87c4f728f825dfcc16fca"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-honest-report.json",
+      "bytes": 2175830,
+      "sha256": "8fccb704dbd8a1524183193e16e54fa0645a5640fd7bc8866183cc35ac5f3fba"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-observe-original.json",
+      "bytes": 2136820,
+      "sha256": "8c4bfa51ee6527df3eb90774b96acf3bfd4671f332de7d57d841ab3d629a58c2"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-same-loan-tool-returned.json",
+      "bytes": 2171273,
+      "sha256": "74a347bb883e2e9355ed7dea07c771a572221983ce7ea2743e422f32f88c354b"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-same-loan-tool.json",
+      "bytes": 2147124,
+      "sha256": "5e3d1269060410286901b39b0e75243056d085f308cd500397e9280905d03a34"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-same-originals-retrieved.json",
+      "bytes": 2167122,
+      "sha256": "e3deae7e4ec70197286795bbc05b5e36d7f31537b6f1f85dcf960fd8e98132c5"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/boundary-worn-bearing-same-two-originals.json",
+      "bytes": 2151488,
+      "sha256": "2429ae2ec8735c977b18db31c9b29f07f67a1e4888814a4d3bc36881ecdb5b56"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/natural.json",
+      "bytes": 3074368,
+      "sha256": "5d7a97347f8a555c91c7b1a57dc4acdebd78f3ac36414e1674d2bb5d34cc835f"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/snapshot-combatStart.json",
+      "bytes": 1376807,
+      "sha256": "1c49f7409aaa0618bef57983dd940bea65bc8831b08f3a326bebb26beb55d61d"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/snapshot-combatTerminal.json",
+      "bytes": 1497989,
+      "sha256": "9a12518c4d6fcf94d76b8adcfb7b4808cce8211c053759f2c9d74a1901fdba36"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/snapshot-departure.json",
+      "bytes": 947898,
+      "sha256": "ddb398d3e5f6137a172f18d03f11c35235fab9caa61b8c7c7c9ac2a93666d4e8"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/snapshot-practiced.json",
+      "bytes": 1128084,
+      "sha256": "6119f1144ffb421de8b20b71f9c578d9f0e855d3e088b98dc11b3b3e51c60b87"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/snapshot-promoted.json",
+      "bytes": 1067777,
+      "sha256": "2ee3665cef559a9d9dcfa2d299f4453f4b8003b2328107e594876764599ac37a"
+    },
+    {
+      "path": "tests/fixtures/civilization-enlightener-v01890/summary.json",
+      "bytes": 5449,
+      "sha256": "6cb17170d9516e9d2ac8bc492440e56247626c76b742f1f94c1764d2c6df7454"
     },
     {
       "path": "tests/fixtures/clown-v050/natural.json",

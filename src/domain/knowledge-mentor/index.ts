@@ -1,3 +1,4 @@
+import { CIVILIZATION_ENLIGHTENER_ABILITY_IDS } from '../civilization-enlightener/types.js';
 import { ARCANE_SCHOLAR_ABILITY_IDS } from '../arcane-scholar/types.js';
 import { hasArcaneScholarLock } from '../arcane-scholar/index.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -28,7 +29,8 @@ export function createKnowledgeMentorState(): KnowledgeMentorState {
     preparations: [], preparedWeek: null, life: createKnowledgeMentorLifeState(), encounter: createKnowledgeMentorEncounterState() };
 }
 export const isKnowledgeMentor = (s: SliceState) => s.progression.pathwayId === 'paragon' && s.progression.sequence === 2;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'paragon' && [3, 2].includes(s.progression.sequence ?? 0) && s.savant.discovered && s.arcaneScholar.guidanceKnown && s.arcaneScholar.promotionWeek !== null;
+const hasKnowledgeMentorHistory = (s:SliceState) => isKnowledgeMentor(s)||(s.progression.pathwayId==='paragon'&&s.progression.sequence===1);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'paragon' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.savant.discovered && s.arcaneScholar.guidanceKnown && s.arcaneScholar.promotionWeek !== null;
 export const hasKnowledgeMentorLock = (s: SliceState): boolean => s.knowledgeMentor.preparedWeek !== null || hasKnowledgeMentorLifeLock(s) || hasKnowledgeMentorEncounterLock(s);
 const bottleNumber = (b: Pick<KnowledgeMentorBottle, 'id'>) => Number(b.id.slice('knowledge-mentor-potion-'.length));
 const potionPrice = (b: KnowledgeMentorBottle) => KNOWLEDGE_MENTOR_PRICES.potion - (b.labourSteps === KNOWLEDGE_MENTOR_LABOUR_STEPS ? KNOWLEDGE_MENTOR_PRICES.labourCredit : 0);
@@ -67,7 +69,7 @@ export function knowledgeMentorAcquisitionBlock(s: SliceState, command: Knowledg
       hasKnowledgeMentorLifeLock(s) || hasKnowledgeMentorEncounterLock(s)) return '先实际收束旧研究园、原造物、原受托物与现场接触；不能同时占用原场或沿用旧同意。';
   if (s.world.city !== 'BACKLUND') return '须沿实际行程回到贝克兰德原指导室与原工作台。';
   if (!knownChannel(s)) return '实际成为奥秘学者并保留原指导渠道后，才能了解知识导师候选G之路。';
-  if (isKnowledgeMentor(s)) return '已经真实晋升知识导师候选G2，不能重复准备或服药；未服原瓶保留。';
+  if (hasKnowledgeMentorHistory(s)) return '已经真实晋升知识导师候选G2，不能重复准备或服药；未服原瓶保留。';
   const state = s.knowledgeMentor;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
@@ -162,7 +164,7 @@ export function applyKnowledgeMentorCommand(s: SliceState, command: KnowledgeMen
 }
 
 export function projectKnowledgeMentor(s: SliceState): KnowledgeMentorProjection {
-  const state = s.knowledgeMentor, available = knownChannel(s), promoted = isKnowledgeMentor(s), actions: KnowledgeMentorAction[] = [];
+  const state = s.knowledgeMentor, available = knownChannel(s), promoted = hasKnowledgeMentorHistory(s), actions: KnowledgeMentorAction[] = [];
   const add = (id: string, label: string, cost: string, command: KnowledgeMentorAcquisitionCommand) => { const reason = knowledgeMentorAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-knowledge-mentor-guidance', '听取知识导师候选G成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -185,11 +187,11 @@ export function projectKnowledgeMentor(s: SliceState): KnowledgeMentorProjection
     title: promoted ? '知识导师（候选G） · 序列2' : '知识导师候选G之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${KNOWLEDGE_MENTOR_FORMULA_STATUS}${KNOWLEDGE_MENTOR_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或对应五项真实劳动后800便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...knowledgeMentorLifeActions(s), ...knowledgeMentorEncounterActions(s)] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...knowledgeMentorLifeActions(s), ...knowledgeMentorEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 知识导师候选G成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为奥秘学者' : '排异，仍为奥秘学者'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? KNOWLEDGE_MENTOR_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? KNOWLEDGE_MENTOR_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `奥秘学者消化${state.arcaneScholarActingAtPromotion}/100留存；知识导师候选G扮演${s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `奥秘学者需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${arcaneScholarWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完奥秘学者之路。',
+    acting: promoted ? (s.progression.sequence===1?s.civilizationEnlightener.knowledgeMentorActingAtPromotion??100:s.progression.acting) : 0, digestion: promoted ? `奥秘学者消化${state.arcaneScholarActingAtPromotion}/100留存；知识导师扮演${s.progression.sequence===1?s.civilizationEnlightener.knowledgeMentorActingAtPromotion:s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `奥秘学者需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${arcaneScholarWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完奥秘学者之路。',
     pollution: s.seer.pollution, risk: available ? KNOWLEDGE_MENTOR_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -212,7 +214,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.knowledgeMentor;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'arcaneScholarActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as KnowledgeMentorState, promoted = isKnowledgeMentor(s), firstWeek = s.arcaneScholar.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + KNOWLEDGE_MENTOR_MIN_ARCANE_SCHOLAR_WEEKS;
+  const state = raw as unknown as KnowledgeMentorState, promoted = hasKnowledgeMentorHistory(s), firstWeek = s.arcaneScholar.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + KNOWLEDGE_MENTOR_MIN_ARCANE_SCHOLAR_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !KNOWLEDGE_MENTOR_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
@@ -220,7 +222,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasKnowledgeMentorLifeLock(s) || hasKnowledgeMentorEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.arcaneScholar.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.arcaneScholarActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS, ...APPRAISER_ABILITY_IDS, ...ARTISAN_ABILITY_IDS, ...ASTRONOMER_ABILITY_IDS, ...ALCHEMIST_ABILITY_IDS, ...ARCANE_SCHOLAR_ABILITY_IDS, ...KNOWLEDGE_MENTOR_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?CIVILIZATION_ENLIGHTENER_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS, ...APPRAISER_ABILITY_IDS, ...ARTISAN_ABILITY_IDS, ...ASTRONOMER_ABILITY_IDS, ...ALCHEMIST_ABILITY_IDS, ...ARCANE_SCHOLAR_ABILITY_IDS, ...KNOWLEDGE_MENTOR_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.arcaneScholarActingAtPromotion !== null || KNOWLEDGE_MENTOR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

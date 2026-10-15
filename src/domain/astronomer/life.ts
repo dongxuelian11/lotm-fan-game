@@ -154,7 +154,7 @@ export function astronomerActions(s: SliceState): AstronomerAction[] {
 }
 
 export function astronomerCases(s: SliceState): AstronomerProjection['cases'] {
-  if (s.progression.pathwayId !== 'paragon' || (s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&s.progression.sequence!==2)) return [];
+  if (s.progression.pathwayId !== 'paragon' || (s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&(s.progression.sequence!==2&&s.progression.sequence!==1))) return [];
   return CASES.map(p => {
     const r = s.astronomer.cases[p.id]!;
     const result = ['EXAMINED', 'RESOLVED'].includes(r.status) ? resultText(p, r.method!) + practiceText(s)
@@ -168,7 +168,7 @@ export function astronomerCases(s: SliceState): AstronomerProjection['cases'] {
 export function validateAstronomerLife(s: SliceState): boolean {
   const m = s.astronomer;
   if (!record(m) || !record(m.cases) || !shape(m.cases, ASTRONOMER_CASE_IDS) || !record(m.practice) || !shape(m.practice, ['instrumentOffset', 'calibratedWeek', 'observedWeek', 'measurements']) || !Array.isArray(s.seer.completedSources)) return false;
-  const f = m.practice, promoted = s.progression.pathwayId === 'paragon' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+  const f = m.practice, promoted = s.progression.pathwayId === 'paragon' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
   if (![0, 2].includes(f.instrumentOffset) || !integer(f.measurements, 0, 1)) return false;
   if (f.calibratedWeek !== null && !integer(f.calibratedWeek, m.promotionWeek ?? s.week, s.week) || f.observedWeek !== null && !integer(f.observedWeek, m.promotionWeek ?? s.week, s.week)) return false;
   let open = 0, prepared = 0, resolved = 0;
@@ -207,6 +207,6 @@ export function validateAstronomerLife(s: SliceState): boolean {
   if (typeof m.reflected !== 'boolean' || s.seer.completedSources.filter(x => x === 'astronomer-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
   if (!promoted && (m.reflected || f.instrumentOffset !== 2 || f.calibratedWeek !== null || f.observedWeek !== null || f.measurements !== 0)) return false;
   if (s.progression.pathwayId==='paragon'&&s.progression.sequence===5 && s.progression.acting !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
-  if(s.progression.pathwayId==='paragon'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) && (s.alchemist.astronomerActingAtPromotion!==100||resolved!==3||!m.reflected))return false;
+  if(s.progression.pathwayId==='paragon'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))) && (s.alchemist.astronomerActingAtPromotion!==100||resolved!==3||!m.reflected))return false;
   return true;
 }

@@ -51,7 +51,18 @@ describe('Arcane Scholar S3 original bottles and explicitly G professional prepa
       const other = structuredClone(s); other.progression.pathwayId = pathwayId;
       expect(projectArcaneScholar(other).discovered).toBe(false); expect(projectArcaneScholar(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectArcaneScholar(other).discovered).toBe(false); }
+    // S1 now retains validated Arcane Scholar history; its old commands remain closed.
+    for (const sequence of [9, 8, 7, 6, 5, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectArcaneScholar(other).discovered).toBe(false); }
+  });
+  it('keeps the actual new S1 original Arcane Scholar history while old acquisition remains closed', () => {
+    const s = migrateSliceState(JSON.parse(readFileSync('tests/fixtures/civilization-enlightener-v01890/snapshot-promoted.json', 'utf8')));
+    expect(s.progression).toMatchObject({ pathwayId: 'paragon', sequence: 1 });
+    expect(validateArcaneScholarState(s)).toBe(true);
+    expect(projectArcaneScholar(s)).toMatchObject({ discovered: true, promoted: true, actions: [] });
+    reject(s, { type: 'PREPARE_PROMOTION' });
+    const unsupported = structuredClone(s); unsupported.progression.sequence = 0;
+    expect(projectArcaneScholar(unsupported)).toMatchObject({ discovered: false, actions: [] });
+    expect(validateArcaneScholarState(unsupported)).toBe(false);
   });
   it('charges500 and one action without inventing a canonical formula, rite or unverified canonical ability', () => {
     const s = alchemist(), old = structuredClone([s.savant, s.archaeologist, s.appraiser, s.artisan, s.astronomer, s.alchemist]);

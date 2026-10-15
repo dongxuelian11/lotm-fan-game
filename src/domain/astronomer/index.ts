@@ -1,3 +1,4 @@
+import { CIVILIZATION_ENLIGHTENER_ABILITY_IDS } from '../civilization-enlightener/types.js';
 import {KNOWLEDGE_MENTOR_ABILITY_IDS} from '../knowledge-mentor/types.js';
 import {ARCANE_SCHOLAR_ABILITY_IDS} from '../arcane-scholar/types.js';
 import {ALCHEMIST_ABILITY_IDS} from '../alchemist/types.js';
@@ -35,7 +36,7 @@ export function createAstronomerState(): AstronomerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'paragon' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'paragon' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isArtisan = (s: SliceState) => s.progression.pathwayId === 'paragon' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.savant.discovered && s.savant.guidanceKnown && s.archaeologist.guidanceKnown && s.appraiser.guidanceKnown && s.artisan.guidanceKnown && s.artisan.promotionWeek !== null && (isArtisan(s) || promoted(s));
 const potionPrice = (bottle: AstronomerBottle) => ASTRONOMER_PRICES.potion - (bottle.labourSteps === 5 ? ASTRONOMER_PRICES.labourCredit : 0);
@@ -160,7 +161,7 @@ export function applyAstronomerCommand(s: SliceState, command: AstronomerAcquisi
 
 export function projectAstronomer(s: SliceState): AstronomerProjection {
   const actions: AstronomerAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.alchemist.astronomerActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?s.alchemist.astronomerActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: AstronomerAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -243,7 +244,7 @@ export function validateAstronomerState(s: SliceState): boolean {
   if (astronomer.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!astronomer.guidanceKnown || !integer(s.artisan.promotionWeek, 1, s.week) || !integer(astronomer.promotionWeek, firstConsumptionWeek, s.week) || astronomer.artisanActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?KNOWLEDGE_MENTOR_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS, ...APPRAISER_ABILITY_IDS, ...ARTISAN_ABILITY_IDS, ...ASTRONOMER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?ARCANE_SCHOLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?CIVILIZATION_ENLIGHTENER_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?KNOWLEDGE_MENTOR_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS, ...APPRAISER_ABILITY_IDS, ...ARTISAN_ABILITY_IDS, ...ASTRONOMER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?ARCANE_SCHOLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (astronomer.promotionWeek !== null || astronomer.artisanActingAtPromotion !== null || ASTRONOMER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (astronomer.practice.instrumentOffset !== 2 || astronomer.practice.calibratedWeek !== null || astronomer.practice.observedWeek !== null || astronomer.practice.measurements !== 0) return false;

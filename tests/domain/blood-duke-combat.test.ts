@@ -78,7 +78,7 @@ describe('Blood Duke actual adult encounter and deterministic physical combat', 
     expect(left.blatherer.life.volunteer.location).toBe('OUTSIDE'); expect(left.blatherer.life.clockSeconds).toBe(source.blatherer.life.clockSeconds + 16);
     expect(projectBloodDukeEncounter(left).scene?.distanceMetres).toBe(6); expect(projectBloodDukeCombat(left)).toMatchObject({ distanceMetres: 6, alliesPresent: 0 });
     expect(left.blatherer.encounter).toEqual(old); assertValidSliceState(left); rejectBloodDuke(left, { type: 'ENCOUNTER_TALK' });
-  });
+  }, 10_000); // Includes the actual 583-command prefix and all three public life cases on a cold cache.
 
   it('keeps all six old relative wheel weights, paid stance substitutions and real inherited resources', () => {
     let s = fight(); const start = structuredClone(s), wheel = bloodDukeAbilityWheel(s, null);

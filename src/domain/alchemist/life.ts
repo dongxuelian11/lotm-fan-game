@@ -49,7 +49,7 @@ export const ALCHEMIST_LIFE_STORY = '给自己制造的物品赋予一定生命�
 const record = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const shape = (v: object, keys: readonly string[]) => Object.keys(v).sort().join('|') === [...keys].sort().join('|');
 const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'paragon' && [4,3,2].includes(s.progression.sequence??0);
+const promoted = (s: SliceState) => s.progression.pathwayId === 'paragon' && [4,3,2,1].includes(s.progression.sequence??0);
 const freshCase = (): AlchemistCaseState => ({ status: 'AVAILABLE', observedWeek: null, attemptWeek: null, method: null, result: 'NONE', contactOpen: false, closes: 0, withdrawals: 0, performed: false, used: false, returned: false });
 export function createAlchemistLifeState(): AlchemistLifeState {
   return { cases: { 'messenger-box': freshCase(), 'guard-frame': freshCase(), 'maker-account': freshCase() }, creations: [],

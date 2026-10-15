@@ -181,7 +181,7 @@ export function projectKnowledgeMentorEncounter(s: SliceState): KnowledgeMentorE
   const progress = { protocolUses: e.protocolUses, protocolSuccesses: e.protocolSuccesses, calibrationUses: e.calibrationUses, calibrationSuccesses: e.calibrationSuccesses, calibrationEffects: e.calibrationEffects, totalOwnerMindSpent: e.totalOwnerMindSpent,
     carriedIds: [...e.carriedIds], carriedPlateIds: [...e.carriedPlateIds], combatPlates: plates(s).filter((p): p is KnowledgeMentorCombatPlate => !!p).map(p => structuredClone(p)),
     retrievedIds: [...e.retrievedIds], retrievedPlateIds: [...e.retrievedPlateIds], exitTravelMetres: e.exitTravelMetres, exitSeconds: e.exitSeconds };
-  if (!stage(s)) return { ...progress, title: '尚未开放的候选知识导师实践（G）', story: '', status: 'AVAILABLE', inside: false, enemy: null, actions: [], facts: [] };
+  if (!stage(s)&&!(s.progression.pathwayId==='paragon'&&s.progression.sequence===1)) return { ...progress, title: '尚未开放的候选知识导师实践（G）', story: '', status: 'AVAILABLE', inside: false, enemy: null, actions: [], facts: [] };
   return { ...progress, title: '罗温·黑尔的新独立工院（G）', story: KNOWLEDGE_MENTOR_ENCOUNTER_STORY, status: e.status, inside: isInsideKnowledgeMentorEncounter(s),
     enemy: { id: e.targetId, name: '罗温·黑尔', age: 48, sequence: 2, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, weaponId: 'KM2-ROWAN-CLUB', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } }, actions: knowledgeMentorEncounterActions(s),
@@ -211,7 +211,7 @@ export function validateKnowledgeMentorEncounter(s: SliceState): boolean {
         [e.approachWeek, e.attemptWeek].some(n => n !== null && !integer(n, s.knowledgeMentor.promotionWeek ?? 0, s.week)) || e.approachRevision !== null && !integer(e.approachRevision, 1, s.revision) ||
         e.startHistoryIndex !== null && !integer(e.startHistoryIndex, 0, s.combatHistory.length)) return false;
     if (s.knowledgeMentor.promotionWeek === null) return same(e, fresh) && s.combat?.encounterId !== 'KNOWLEDGE_MENTOR_DISPUTE';
-    if (!stage(s)) return false;
+    if (!stage(s)&&!(s.progression.pathwayId==='paragon'&&s.progression.sequence===1)) return false;
     if (e.status === 'AVAILABLE') return same(e, fresh) && s.combat?.encounterId !== 'KNOWLEDGE_MENTOR_DISPUTE';
     if (!s.knowledgeMentor.life.reflected || e.approachWeek === null || e.approachRevision === null || !same(e.carriedIds, ['AL4-BOX-1', 'AL4-FRAME-1']) || !entryTailMatches(s) ||
         e.entryCreations.length !== 2 || !same(e.entryCreations.map(x => x.id), e.carriedIds) || e.entryCreations.some(x => x.location !== 'YARD' || x.active) ||

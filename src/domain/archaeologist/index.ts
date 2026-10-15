@@ -1,3 +1,4 @@
+import { CIVILIZATION_ENLIGHTENER_ABILITY_IDS } from '../civilization-enlightener/types.js';
 import {KNOWLEDGE_MENTOR_ABILITY_IDS} from '../knowledge-mentor/types.js';
 import {ARCANE_SCHOLAR_ABILITY_IDS} from '../arcane-scholar/types.js';
 import {ALCHEMIST_ABILITY_IDS} from '../alchemist/types.js';
@@ -31,7 +32,7 @@ export function createArchaeologistState(): ArchaeologistState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'paragon' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'paragon' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const isSavant = (s: SliceState) => s.progression.pathwayId === 'paragon' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.savant.discovered && s.savant.guidanceKnown && (isSavant(s) || promoted(s));
 const potionPrice = (bottle: ArchaeologistBottle) => ARCHAEOLOGIST_PRICES.potion - (bottle.labourSteps === 3 ? ARCHAEOLOGIST_PRICES.labourCredit : 0);
@@ -191,8 +192,8 @@ export function projectArchaeologist(s: SliceState): ArchaeologistProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? ARCHAEOLOGIST_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.appraiser.archaeologistActingAtPromotion??100:s.progression.acting) : 0,
-    digestion:s.progression.pathwayId==='paragon'&&(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?'考古学家魔药已消化，原实地考察记录保留。':isPromoted ? `通识者消化成果${s.archaeologist.savantActingAtPromotion}/100已保留；考古学家扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?s.appraiser.archaeologistActingAtPromotion??100:s.progression.acting) : 0,
+    digestion:s.progression.pathwayId==='paragon'&&(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?'考古学家魔药已消化，原实地考察记录保留。':isPromoted ? `通识者消化成果${s.archaeologist.savantActingAtPromotion}/100已保留；考古学家扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成通识者消化（${s.progression.acting}/100），并在首次晋升通识者后度过6整周（${savantWeeks(s)}/6）。用药指导与原瓶可以提前准备。` : '先走完通识者之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应三次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${ARCHAEOLOGIST_CONSUMPTION_RISK}` : '成为通识者后，可向原导师了解下一序列。',
@@ -233,7 +234,7 @@ export function validateArchaeologistState(s: SliceState): boolean {
   if (archaeologist.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!archaeologist.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(archaeologist.promotionWeek, firstConsumptionWeek, s.week) || archaeologist.savantActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...(s.progression.sequence===2?KNOWLEDGE_MENTOR_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?APPRAISER_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?ARTISAN_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?ASTRONOMER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?ARCANE_SCHOLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?CIVILIZATION_ENLIGHTENER_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?KNOWLEDGE_MENTOR_ABILITY_IDS:[]),...SAVANT_ABILITY_IDS, ...ARCHAEOLOGIST_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?APPRAISER_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?ARTISAN_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?ASTRONOMER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?ALCHEMIST_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?ARCANE_SCHOLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (archaeologist.promotionWeek !== null || archaeologist.savantActingAtPromotion !== null || ARCHAEOLOGIST_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (archaeologist.reflected || Object.values(archaeologist.sites).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.approach !== null)) return false;

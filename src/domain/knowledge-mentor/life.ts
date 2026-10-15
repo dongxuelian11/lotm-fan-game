@@ -440,7 +440,7 @@ function validateLife(s: SliceState): boolean {
   if (!record(raw) || !shape(raw, Object.keys(fresh)) || !record(raw.cases) || !shape(raw.cases, KNOWLEDGE_MENTOR_CASE_IDS) || typeof raw.reflected !== 'boolean' || !Array.isArray(raw.combatPlates) || !Array.isArray(raw.recharges) || !Array.isArray(raw.originalLedger)) return false;
   const l = raw as unknown as KnowledgeMentorLifeState, promotion = s.knowledgeMentor.promotionWeek;
   if (promotion === null) return equal(l, fresh) && !s.seer.completedSources.some(v => v === 'knowledge-mentor-reflection' || v.startsWith('knowledge-mentor-case:'));
-  if (!active(s) || !integer(promotion, 1, s.week)) return false;
+  if ((!active(s)&&!(s.progression.pathwayId==='paragon'&&s.progression.sequence===1)) || !integer(promotion, 1, s.week)) return false;
   let open = 0, resolved = 0, protocolAwards = 0, calibrationAwards = 0, lastRevision = 0;
   const expectedEvents: KnowledgeMentorOriginalEvent[] = [], allRevision = new Set<number>(), plateIds = new Set<string>();
   for (const [index, id] of KNOWLEDGE_MENTOR_CASE_IDS.entries()) {
@@ -506,5 +506,5 @@ function validateLife(s: SliceState): boolean {
     previousPlateWeek = p.createdWeek; previousPlateRevision = p.createdRevision; allRevision.add(p.createdRevision);
     if (p.createdRevision === s.revision && p.createdWeek === s.week && (s.cash !== p.cashBefore - 60 || s.spirituality !== p.spiritualityBefore - 4)) return false;
   }
-  return integer(s.progression.mastery[PROTOCOL_ID], protocolAwards * 8, 500) && integer(s.progression.mastery[CALIBRATION_ID], calibrationAwards * 8, 500) && s.progression.acting >= resolved * 25 + (l.reflected ? 25 : 0);
+  return integer(s.progression.mastery[PROTOCOL_ID], protocolAwards * 8, 500) && integer(s.progression.mastery[CALIBRATION_ID], calibrationAwards * 8, 500) && (s.progression.sequence===1?s.civilizationEnlightener.knowledgeMentorActingAtPromotion??0:s.progression.acting) >= resolved * 25 + (l.reflected ? 25 : 0);
 }

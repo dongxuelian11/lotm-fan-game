@@ -291,7 +291,7 @@ function validAttempt(a: ArcaneScholarAttempt, id: ArcaneScholarCaseId, promotio
 export function validateArcaneScholarLife(s: SliceState): boolean {
   const l = s.arcaneScholar?.life, fresh = createArcaneScholarLifeState();
   if (!record(l) || !shape(l, Object.keys(fresh)) || !record(l.cases) || !shape(l.cases, ARCANE_SCHOLAR_CASE_IDS) || !record(l.note) || !record(l.load) || !Array.isArray(l.fuses) || !Array.isArray(l.recharges) || typeof l.reflected !== 'boolean' || l.workbenchId !== fresh.workbenchId || l.recyclingBoxId !== fresh.recyclingBoxId || stableStringify(l.objectIds) !== stableStringify(fresh.objectIds)) return false;
-  if (!promoted(s) && !(s.progression.pathwayId==='paragon'&&s.progression.sequence===2)) return stableStringify(l) === stableStringify(fresh);
+  if (!promoted(s) && !(s.progression.pathwayId==='paragon'&&(s.progression.sequence===2||s.progression.sequence===1))) return stableStringify(l) === stableStringify(fresh);
   const promotion = s.arcaneScholar.promotionWeek; if (promotion === null || !integer(promotion, 0, s.week)) return false;
   if (!['BENCH_START', 'BENCH_END'].includes(l.ownerNode) || l.activeCase !== null && !ARCANE_SCHOLAR_CASE_IDS.includes(l.activeCase)) return false;
   if (!shape(l.note, Object.keys(fresh.note)) || l.note.id !== 'AR3-TEST-NOTE' || l.note.owner !== 'AR3-NELL' || !['AR3-NELL', 'PLAYER', 'AL4-BOX-1'].includes(l.note.custodian) || !['OWNER', 'BENCH_START', 'BENCH_END'].includes(l.note.location) || (l.note.custodian === 'AR3-NELL') !== (l.note.location === 'OWNER')) return false;
