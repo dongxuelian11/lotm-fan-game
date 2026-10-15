@@ -1,3 +1,4 @@
+import { DIVINE_HAND_COUNT_WHEEL, divineHandAbilityWheel } from '../../src/domain/divine-hand/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
@@ -141,12 +142,16 @@ describe('Warrior S9 exact M combat profile', () => {
 
   it('keeps ordinary and neighboring original profiles untouched', () => {
     const state = fixture();
-    for (const [pathwayId, sequence] of [[null, null], ['warrior', 1], ['moon', 9], ['paragon', 9]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['warrior', 0], ['moon', 9], ['paragon', 9]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isWarrior(state)).toBe(false); expect(currentWarriorCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
     }
+    state.progression.pathwayId = 'warrior'; state.progression.sequence = 1;
+    expect(isWarrior(state)).toBe(false); expect(currentWarriorCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(DIVINE_HAND_COUNT_WHEEL);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(divineHandAbilityWheel(state, 'CONTROL'));
     state.progression.pathwayId = 'tyrant'; state.progression.sequence = 9;
     expect(playerCountWheel(state)).toEqual(SAILOR_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(sailorAbilityWheel('CONTROL'));

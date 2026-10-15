@@ -37,7 +37,7 @@ export function createGloryState(): GloryState {
 /** Current playability and historical membership are deliberately separate. */
 export const isGlory = (s: SliceState) => s.progression.pathwayId === 'warrior' && s.progression.sequence === 2;
 export const isGloryAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'warrior' && s.progression.sequence === 3;
-export const hasGloryHistory = (s: SliceState) => isGlory(s) && s.glory.promotionWeek !== null;
+export const hasGloryHistory = (s: SliceState) => (isGlory(s) || s.progression.pathwayId === 'warrior' && s.progression.sequence === 1) && s.glory.promotionWeek !== null;
 /** Each predecessor remains a real consumed original bottle at a non-future week. */
 function sourceHistory(s: SliceState): boolean {
   if (!s.warrior.discovered || !s.warrior.guidanceKnown) return false;
@@ -54,7 +54,7 @@ function sourceHistory(s: SliceState): boolean {
     s.dawnPaladin.weaponmasterActingAtPromotion === 100 && s.guardian.dawnPaladinActingAtPromotion === 100 &&
     s.demonHunter.guardianActingAtPromotion === 100 && s.silverKnight.demonHunterActingAtPromotion === 100;
 }
-const knownChannel = (s: SliceState) => (isGloryAcquisitionStage(s) || isGlory(s)) && sourceHistory(s);
+const knownChannel = (s: SliceState) => (isGloryAcquisitionStage(s) || isGlory(s) || s.progression.pathwayId === 'warrior' && s.progression.sequence === 1 && hasGloryHistory(s) && s.divineHand.promotionWeek !== null) && sourceHistory(s);
 /** These remain historical locks; none widens the exact-stage predecessor command gates. */
 export function hasGloryOldPractice(s: SliceState): boolean {
   return hasSilverKnightOldPractice(s) || hasSilverKnightRitualLock(s) || hasSilverKnightLifeLock(s) || hasSilverKnightEncounterLock(s) ||
@@ -65,7 +65,7 @@ const silverKnightReportsComplete = (s: SliceState) => s.silverKnight.life.refle
   Object.values(s.silverKnight.life.cases).length === 3 && Object.values(s.silverKnight.life.cases).every(c => c.status === 'RESOLVED' && !c.contactOpen && c.returned && c.closes === 1);
 export const hasGloryOldSceneLock = hasGloryOldPractice;
 export const hasGloryRitualLock = (s: SliceState): boolean => s.glory.preparedWeek !== null;
-export const hasGloryLock = (s: SliceState): boolean => hasGloryRitualLock(s) || hasGloryLifeLock(s) || hasGloryEncounterLock(s);
+export const hasGloryLock = (s: SliceState): boolean => s.progression.pathwayId === 'warrior' && [3, 2].includes(s.progression.sequence ?? 0) && (hasGloryRitualLock(s) || hasGloryLifeLock(s) || hasGloryEncounterLock(s));
 const bottleNumber = (b: Pick<GloryBottle, 'id'>) => Number(b.id.slice('glory-potion-'.length));
 const potionPrice = (b: GloryBottle) => GLORY_PRICES.potion - (b.labourSteps === GLORY_LABOUR_STEPS ? GLORY_PRICES.labourCredit : 0);
 const silverKnightWeeks = (s: SliceState) => Math.max(0, (s.glory.promotionWeek ?? s.week) - (s.silverKnight.promotionWeek ?? s.week));
@@ -295,7 +295,7 @@ export function applyGloryCommand(s: SliceState, command: GloryCommand, ctx: See
 }
 
 export function projectGlory(s: SliceState): GloryProjection {
-  const state = s.glory, available = knownChannel(s), promoted = isGlory(s), actions: GloryAction[] = [];
+  const state = s.glory, available = knownChannel(s), promoted = hasGloryHistory(s), actions: GloryAction[] = [];
   const add = (id: string, label: string, cost: string, command: GloryAcquisitionCommand) => { const reason = gloryAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-glory-guidance', '听取荣耀者成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -318,11 +318,11 @@ export function projectGlory(s: SliceState): GloryProjection {
     title: '荣耀者·战士序列2', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${GLORY_FORMULA_STATUS}${GLORY_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6400便士或对应五项真实劳动后900便士；全部失败耗尽才可申请真实跨周补货。` : '',
-    actions: available ? [...actions, ...gloryLifeActions(s), ...gloryEncounterActions(s)] : [],
+    actions: available && s.progression.sequence !== 1 ? [...actions, ...gloryLifeActions(s), ...gloryEncounterActions(s)] : [],
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 荣耀者成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为银骑士' : '排异，仍为银骑士'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? GLORY_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? [...GLORY_INHERITED_ABILITIES, ...GLORY_ABILITIES].map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `银骑士消化${state.silverKnightActingAtPromotion}/100留存；荣耀者扮演${s.progression.acting}/100。三项报告各25、反思25；普通完成同样可消化，掌握只计实际能力应用。` : available ? `银骑士需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${silverKnightWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完银骑士之路。',
+    acting: promoted ? (s.progression.sequence === 1 ? s.divineHand.gloryActingAtPromotion ?? 100 : s.progression.acting) : 0, digestion: promoted && s.progression.sequence === 1 ? '荣耀者消化与原修整室记录已经保留，旧操作结束，当前实践请前往神明之手修整室。' : promoted ? `银骑士消化${state.silverKnightActingAtPromotion}/100留存；荣耀者扮演${s.progression.acting}/100。三项报告各25、反思25；普通完成同样可消化，掌握只计实际能力应用。` : available ? `银骑士需消化100（当前${s.progression.acting}/100）、晋3后12整周（当前${silverKnightWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完银骑士之路。',
     pollution: s.seer.pollution, risk: available ? GLORY_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,

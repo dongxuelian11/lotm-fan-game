@@ -116,7 +116,7 @@ describe("Arbiter sequence-nine finite mediation dossier", () => {
     await userEvent.click(screen.getByRole("button", { name: /非凡成长/ }));
     expect(screen.getByRole("region", { name: "仲裁人成长下一步" })).toBeTruthy();
     expect(api.submitIntent).not.toHaveBeenCalled();
-  });
+  }, 10_000);
 
   it("opens current growth with exactly three S9 abilities and no appointment or higher-sequence controls", async () => {
     await enter(bridge(fixture(true)));

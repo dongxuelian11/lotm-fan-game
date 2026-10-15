@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.197.0",
+  "version": "0.198.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -386,6 +386,21 @@
       "name": "lotm_release_0.197.0_time_worm_test_inputs_2_2026-10-15.tar.gz",
       "bytes": 16478225,
       "sha256": "1c514cc1f683c17d96b520335b5b803cae7b09f34ce8c2ad7c2173a1495bf713"
+    },
+    {
+      "name": "lotm_release_0.198.0_divine_hand_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17682328,
+      "sha256": "a263a4e7eb2ca547040ac42ef2d885b5796833741475a7a184bfa2fa641495eb"
+    },
+    {
+      "name": "lotm_release_0.198.0_divine_hand_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 17777724,
+      "sha256": "41b29b1de41c5e61bbd8d65d54512c135322d69204d66c150530d5261c5aecd6"
+    },
+    {
+      "name": "lotm_release_0.198.0_divine_hand_test_inputs_3_2026-10-15.tar.gz",
+      "bytes": 12977459,
+      "sha256": "cfd6a7d5c03bc76df212cdc42754766774bdf775248a65267fd70135798d00ce"
     }
   ],
   "fileEntries": [
@@ -6458,6 +6473,791 @@
       "path": "tests/fixtures/discerner-v01660/natural.json",
       "bytes": 5192825,
       "sha256": "c586d61403e2077e480111365a1fc88837f2d9d8f8b1db25571e2587e35de575"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundaries.index.json",
+      "bytes": 9045,
+      "sha256": "05bbbd749f45f9fd305d63c40db7b89583044bbd088922073eaaebb37be5d432"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundaries.steps.json",
+      "bytes": 4084,
+      "sha256": "1ef1807fdde25cd895b69762b5c4098c57870fa83405557757ed6429060fb478"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-actual-independent-oscar-contact.json",
+      "bytes": 3724483,
+      "sha256": "efb34c313e35e4448b8ee2445768c763c5ad6c336e2920a81f7a19a65be565b3"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-actual-paid-outside-energy-recovery.json",
+      "bytes": 3158080,
+      "sha256": "77fa89530ea8170e424dec0fff773fdc8bf27c5960e47512a926558c6bef5c16"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-actual-rest-for-original-light-wound.json",
+      "bytes": 2157855,
+      "sha256": "948620c63ddf3a62f8448b8e201cc7207a6cc87d5175e50d371e0e4f007a89e9"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-actual1100p-buy-divine-hand-potion-1.json",
+      "bytes": 2545162,
+      "sha256": "82e07232dd7e2776d3d361ffce01532619817434d6688308f7ad7584addda187"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-actual1100p-buy-divine-hand-potion-2.json",
+      "bytes": 2633622,
+      "sha256": "e6eeed205260e613bba3a0b4d90c4513c393082a1b82cee95ba676b672e99d60"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-actual150p-current-week-prepare-divine-hand-potion-1.json",
+      "bytes": 2554884,
+      "sha256": "b08574dfe1a6705ceb164f298fb1b645df25331477845dbae8172d8cf2d4214a"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-actual150p-current-week-prepare-divine-hand-potion-2.json",
+      "bytes": 2643550,
+      "sha256": "af7262b9e64a68cff231313f621e8abb0b49e752eb6ffb30d07bf49452cafa60"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-apply_load.json",
+      "bytes": 2947517,
+      "sha256": "ff465fe01f4c8d47b0a766b35bf2ed98084de0fec503b664cc000448998fc4af"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-approach.json",
+      "bytes": 2882710,
+      "sha256": "f07e3263f051efb24e94bcbc521fe16d992ede24c030e10878c8f6841f73b6b6"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-armor_convergence.json",
+      "bytes": 2936466,
+      "sha256": "0836acf99ad3075af874f1fae9951c4f7e54f20d4614279bf6b15b10c92fe688"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-buy_load.json",
+      "bytes": 2893672,
+      "sha256": "3e423999dfc8617dc2061eb1accae4c8310e38bdc2130375a13f351c8419f5e6"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-consent-2.json",
+      "bytes": 2850786,
+      "sha256": "fbcc9c1dfaf7ab3ffa1d774af024d88a7034501b8815b2ea531596bd1e861eab"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-consent-3.json",
+      "bytes": 2861364,
+      "sha256": "558e76d500ef2f3590355f706dc207f54616ed7c2baac007525219827a66f885"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-consent-4.json",
+      "bytes": 2871934,
+      "sha256": "fb63eaec324fd702a6579dbcb72216e24991375308dd3ed3832c88d0da9a9392"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-consent.json",
+      "bytes": 2840181,
+      "sha256": "ea10c17e7db6eae05807c08748b7fcac40bf546a5782350810b133d051dd9f52"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-exit_room.json",
+      "bytes": 2968437,
+      "sha256": "16117025938b5e390afee01f1c406d55578eacd7d10d344d7b031192152e319f"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-honest-report.json",
+      "bytes": 2989615,
+      "sha256": "0ae6e446a0d279c064ca5802e523920ce03597a98a144e2458b666847ae9bbc8"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-leave.json",
+      "bytes": 2979115,
+      "sha256": "50591a41e01d193e953921d6a16e829f9bcb3a23f4710cfe2874f684e144446b"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-observe-originals.json",
+      "bytes": 2813657,
+      "sha256": "26c65d476b39b89c46555f179416731d90b11591329294fef1280b5f6b4ff907"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-paid-current-invitation.json",
+      "bytes": 2826986,
+      "sha256": "3b4d9e2e48f660d9510e3b43a51859b28322ae909336770ea8c9b54bbc292198"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-prepare_load.json",
+      "bytes": 2914746,
+      "sha256": "3d4ad18deb4525930564f41ed6903d8c17dd9f60baee1e9ac0594bd099bdcd39"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-receive_load.json",
+      "bytes": 2904320,
+      "sha256": "5566882442223958e322535c08ee4c97c3b898e3a32bc92f58e1345b42af695b"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-remove_pad.json",
+      "bytes": 2957784,
+      "sha256": "9c0099b3a1bb12183baa21ded7121ce2c3e439d671fd63359b66e63d0d4afd7a"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-armor-window-wear_pad.json",
+      "bytes": 2925249,
+      "sha256": "ad68b621d6d258b1ea87fcbca75e40b1f870460c69be6b1de26893aaea6b67ed"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-approach.json",
+      "bytes": 2735940,
+      "sha256": "0f713c93ef352e62fb2796e652ce52f1f85e492b14919ab918258223ca68dded"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-beam_stabilize.json",
+      "bytes": 2757778,
+      "sha256": "b988fce32346b44e9e87f4d5ffd91fc02a33290680c171688dd30ff6fc64236b"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-consent-2.json",
+      "bytes": 2704018,
+      "sha256": "e7c078ba0ac45310cad4009dc00ba5f99d416dcf1280a53805ab74cede4eb584"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-consent-3.json",
+      "bytes": 2714596,
+      "sha256": "d83ae41d0523f04c403fa9d0420fe8507f943b211460fcaf7e6ce16835cec34f"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-consent-4.json",
+      "bytes": 2725166,
+      "sha256": "081db1038b4c49b4e7afd16d06c72e8673c6a98227666349a5b0e7fd09757cde"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-consent.json",
+      "bytes": 2693413,
+      "sha256": "8bf3d80286662b7fa5069cb3382e689c2a2f2db3d4afb3404f7a32b9d0a2d169"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-contact_beam.json",
+      "bytes": 2746616,
+      "sha256": "a541a37a25db30bdb3d3a005ca662d645027ef71250591d284d3f96e90913abe"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-exit_room.json",
+      "bytes": 2780485,
+      "sha256": "23b299d7f01ecb82645f16573490236ea088ae5c877f0082d23bb356d5e3505d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-honest-report.json",
+      "bytes": 2801432,
+      "sha256": "f1c5b0d503460529f844ac885040b6209aaaa9bb088068b57de480acf355ce14"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-leave.json",
+      "bytes": 2790927,
+      "sha256": "ad48fe27355e6d8ed9b532472ab3c5d73234d6136d81da10d7529bb809eaba97"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-manual_inspection.json",
+      "bytes": 2769499,
+      "sha256": "fa3256dbbfd7ea24509364f1707204e4409f5487435e8a36ea1c7f4f7737c3af"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-observe-originals.json",
+      "bytes": 2666890,
+      "sha256": "fb96b294706d93ad12cba7084bf2b480bc98f5f83b32fbcae5c88a6ba719a04c"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-beam-support-paid-current-invitation.json",
+      "bytes": 2680218,
+      "sha256": "896e4f1cec6832a0a102f8cade7ea25ce2e0e0ffac08acb5a0ec838efa2b84c6"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-combat-round-1.json",
+      "bytes": 4513748,
+      "sha256": "be4325a31e20b928f9a682f5a9ffea28c584c0595d7ba75c838678fd150f79d5"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-combat-round-2.json",
+      "bytes": 4782924,
+      "sha256": "e6e5f0a49c3b5e6ee93e9fe891f7a8604e46fe0b482e00405f284384617571d7"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-combat-round-3.json",
+      "bytes": 4967461,
+      "sha256": "f668a55081bdc2f7cb41134a8c25caceffad8b9e41734fada086b902a10ed366"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-combat-round-4.json",
+      "bytes": 5025838,
+      "sha256": "55e0f47258f842f62fadd565a0d67e5ad2dfbc46949ff75e1de66b789129868d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-combat-round-5.json",
+      "bytes": 5128271,
+      "sha256": "165f8c8a7ad77db3c24960767f049368aed493efa40f95c9cd71f28a523cc085"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-combat-round-6.json",
+      "bytes": 5261362,
+      "sha256": "689310610708ffd2bb3c47b8cd00b1881767132143a905debf27b7431250b195"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-combat-round-7.json",
+      "bytes": 5305691,
+      "sha256": "42fe6a164c30c54c02c385371d3f3b2f2f03f2b9d612d592ec1141f794f69838"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-consume-divine-hand-potion-1.json",
+      "bytes": 2565280,
+      "sha256": "6fc13baf88f25088a56b7766214a57c961450ab35f98262211df05173c33e9ae"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-consume-divine-hand-potion-2.json",
+      "bytes": 2654963,
+      "sha256": "14aaa1b764aef33ad42f937a0cdb412ee322f11f1108ebee6ee48e9ce5421dbb"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-1-real-labour-2.json",
+      "bytes": 2498638,
+      "sha256": "ae208f6e78b2eb006d22c03c15e4edf87dc4e81156717c4a6181bf63e6a5fb3b"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-1-real-labour-3.json",
+      "bytes": 2508410,
+      "sha256": "553e35b0a2d2031ce677c0449973bd4b0abf143a5081eadd01cff287694c6f81"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-1-real-labour-4.json",
+      "bytes": 2518051,
+      "sha256": "c0027ebd623ba4db9311273ebd6578cddf74bab1257ffcdadd1c18bd96d6db59"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-1-real-labour-5.json",
+      "bytes": 2527871,
+      "sha256": "5741200f6ee49cac969a925a8131e252e7f3f1ea9ae1e910b2123175517a238f"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-1-real-labour.json",
+      "bytes": 2489024,
+      "sha256": "2a337e5b36e47b60e96c50f2b9b2c0e158ab9e25dbb1e29bc1c2064888079807"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-2-real-labour-2.json",
+      "bytes": 2584775,
+      "sha256": "d7869f90a2c1d1c0e866559e2d99ba8529da1039e4142e7e4b90b1c0ceabec49"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-2-real-labour-3.json",
+      "bytes": 2594541,
+      "sha256": "1b5862162e7571a98bf77999dd1acb27f0ebe160752dde5986245eed0226a99f"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-2-real-labour-4.json",
+      "bytes": 2604211,
+      "sha256": "50ff2bffbd0e7a0d4acf09f68967e69688ae5522d05d671f43ddd42ea01bed98"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-2-real-labour-5.json",
+      "bytes": 2614338,
+      "sha256": "bb1d4b7310063bd2245510d1c2d10f22f2b7a36399256d435adfc918b1b07d3d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-divine-hand-potion-2-real-labour.json",
+      "bytes": 2575297,
+      "sha256": "249fe987008d3a7c73877a001d797d33d0bfcdc9cbe6cdf6557f2b20e92c3479"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-exact-original158-living-source.json",
+      "bytes": 2157534,
+      "sha256": "5d344c88a62e6ac88da1ce5141cbe206e13e8603a7c5aae4360c3bb7b979a23d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-fixed-all-policy.json",
+      "bytes": 4295620,
+      "sha256": "cbe1ea822fa108efc40deb123f01621eda6bcda85e84d500ab9ff9cdd04b341c"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-independent-optional-fight.json",
+      "bytes": 4330567,
+      "sha256": "902f9a4f95116c772170390cbeb7fd50b4d6c6f10f56568ad38d3b63947aaa5e"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-paid500-guidance-freezes-eight-roots.json",
+      "bytes": 2307247,
+      "sha256": "cad63be1539f49e75d6413a281406f9acc611e455352387ffe2a215281617a4a"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-preparation-CHECK_RETURN.json",
+      "bytes": 2479345,
+      "sha256": "2d7132d600b33ddf49b01e1e6d1c404ef41078a571f54679eb4286dd9f370e78"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-preparation-PLAN_FINITE_LOAD.json",
+      "bytes": 2468864,
+      "sha256": "e6c2054fda099a8cb8ad341b2c85f45ad406217f2d3c967563cb497816b30615"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 2459532,
+      "sha256": "f68d7a012f9dcdfc7722bc9282468684b7c8f23ad344d4bc7fb8de3809c6ae0a"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-160-action.json",
+      "bytes": 2158347,
+      "sha256": "3ccd6eaa47a4659e9b43c71c3ab5e4c7b4f997ff22b47b744e53536642f89e41"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-161-action.json",
+      "bytes": 2158734,
+      "sha256": "a994e068758dc14e55e68bf3e5e019ed4f8bdba430fc5b366e45e25cee1133ab"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-171-action.json",
+      "bytes": 2532719,
+      "sha256": "60d2892b1aa4a875c4d86fd820129bc39403dbc784667670d6a4663fd35a9832"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-172-action.json",
+      "bytes": 2532985,
+      "sha256": "3a5f31ebb96e0679bef640aebee12a698b3e9cf162b737910f5f1d2f521c5016"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-173-action.json",
+      "bytes": 2533430,
+      "sha256": "21b41b83582adc79b90265594269f7f50933da3cd2bc3a3e0f8cf25563b06742"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-174-action.json",
+      "bytes": 2533651,
+      "sha256": "528f4de036d53df9b92a6d870a34a9314edffdb33e3091ce3d692b6114f7efc4"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-175-action.json",
+      "bytes": 2534097,
+      "sha256": "83a4f5d8d950a2b48d00acf878f68bf757acaa3979be62bc6a62f8d874a2cf45"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-176-action.json",
+      "bytes": 2534538,
+      "sha256": "483c9be4d661f07286ff5f58288dbc7a572d13b56977c57ef68ddda109361019"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-177-action.json",
+      "bytes": 2534759,
+      "sha256": "90f7daf5b5163c1117c43335336ee3d107f6966a42cad47373be8c8eff947982"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-178-action.json",
+      "bytes": 2535205,
+      "sha256": "4a1980f3d88b163da98592c38aab7d3e3b09844aff2d46a7c3e5552f29ffeb27"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-179-action.json",
+      "bytes": 2535646,
+      "sha256": "e193a9eb210beb87125599cb314d5cd1bed3286794970c9534a11dee698e81e1"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-180-action.json",
+      "bytes": 2535867,
+      "sha256": "2e1155d0497d888e1f688f26cf21e0c0db5c12ff0eb009c0a5bc0664efa1cc0e"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-181-action.json",
+      "bytes": 2536312,
+      "sha256": "9f0dc508df1f33308cdc6dbc8399ea266800c6dce64c8d3ef3d72cd82ff16b93"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-182-action.json",
+      "bytes": 2536752,
+      "sha256": "ad33c76042a77c3e0e1845f71be1243cc8b4fb1022988436c74f4a541e54dbee"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-183-action.json",
+      "bytes": 2536973,
+      "sha256": "bdb9e3bc613c54e86afdda6f3715032f2d90f6f964bc6e82c4cdb9cceaf124f5"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-184-action.json",
+      "bytes": 2537420,
+      "sha256": "aaf04db17453a55dd4aeeca942edf4593f97a9fd2f9a9090742f14969196504d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-185-action.json",
+      "bytes": 2537862,
+      "sha256": "3089b9f39390c33434f844fef3a610247d286798418b66769d4c149945ccffe6"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-186-action.json",
+      "bytes": 2538083,
+      "sha256": "e33f7f4dab522223298207cfd1bad313ae644a7e5bb4cfab7a5d3908f8d3f6d3"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-187-action.json",
+      "bytes": 2538529,
+      "sha256": "515a007816d0be265d01a5de538061652f5d02cbda167e838610e07b723e2f63"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-188-action.json",
+      "bytes": 2538971,
+      "sha256": "62ec3be29bd83d2d1c4408a697cb04ba1f14d95c1b04b93f22db7b17be7ce79f"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-189-action.json",
+      "bytes": 2539193,
+      "sha256": "2da77d07eef06a640bb63b4bb4b91cc067b77541151d889cb7dddba1c129aa18"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-190-action.json",
+      "bytes": 2539639,
+      "sha256": "6648da542103cedcd3e84e45c0133930d0511829f1b20c8ea739f521f33db306"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-191-action.json",
+      "bytes": 2540080,
+      "sha256": "f3661aca4c0dc61221428e58ed1082589f8a3f43a518497626bacdbdccb279b9"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-199-event_choice.json",
+      "bytes": 2609197,
+      "sha256": "9096b151d2b830d793d290fbc9b8be53fec4e1e9e62bd60f4deb005490be8bb5"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-201-action.json",
+      "bytes": 2619286,
+      "sha256": "e94aa63c98b11ba29a9fabbe610b85a01f151e5d3897fcef71145a392148033e"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-202-action.json",
+      "bytes": 2619860,
+      "sha256": "b51bdeba9c5ea0883f672df6caef92925dd4de54cc360ddec4823377a9e8fcb9"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-203-action.json",
+      "bytes": 2620613,
+      "sha256": "f542993dc72a98070c38cf4364e997f20e3ae84266e18526f10545ef7bc91165"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-204-action.json",
+      "bytes": 2620833,
+      "sha256": "988f019d13f052fea7f82940200627cb27d18f1cb61e102628888d0e43b69ab1"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-205-action.json",
+      "bytes": 2621282,
+      "sha256": "bd191119a35ce9289217ada55cf11a34ec47577d33df28de242105edc71a839b"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-206-action.json",
+      "bytes": 2621729,
+      "sha256": "b4faaa3047fa3235f2a993be7ef67cbfd42fb5a9607ea3f8c0f22d87475e3f0d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-207-action.json",
+      "bytes": 2621952,
+      "sha256": "5abf0dd81db1f03f6bbd305e4e919a20f59394b1c6af10c5f711502d6a67ea8a"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-208-action.json",
+      "bytes": 2622402,
+      "sha256": "5562d9ca6fbb0bcf7112309783d9b751d7919726c7e9f1e64c4f9bd6f0b76766"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-209-action.json",
+      "bytes": 2622847,
+      "sha256": "2f0fb276efc5c21d5f1fcad2d0c92661073e42189cec311541c8aa501f351025"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-210-action.json",
+      "bytes": 2623070,
+      "sha256": "8717b4f9cba1dc3d9b9f8e66216b129f901ca5a3b08ebee6cb52429e2645234d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-211-action.json",
+      "bytes": 2623519,
+      "sha256": "5a5475fd14b68647bd4402fb477d64311ed6ce583816b71b5383ae1fd0bbf087"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-212-action.json",
+      "bytes": 2623963,
+      "sha256": "5fa5230dd09df386a45cf02333a00ac9e0975cbd8d4900a4b9e7d8b6f3df4120"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-213-action.json",
+      "bytes": 2624186,
+      "sha256": "c1009ae83771c89eea899e4ea004108fec37652a3ead06f3bde6fae20923cd96"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-214-action.json",
+      "bytes": 2624637,
+      "sha256": "daf51c067df2104734dd2c7c0d044acfdb3ed8ff6dcaef500f2009640535577e"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-215-action.json",
+      "bytes": 2625083,
+      "sha256": "27eef8e1b7f1d54144d786982bbe5259b9e6cf8dafec6ddb56eff7abb3b4a91b"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-216-action.json",
+      "bytes": 2625306,
+      "sha256": "e90c423899be4c81714cbe4a0c12b42b2d80bb7b9a7c488e6e35170c7f46fdab"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-217-action.json",
+      "bytes": 2625756,
+      "sha256": "38b53c0a5f520b8bfa7928dc7439d225132033fa2256fc0f0acfd75640a51db2"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-218-action.json",
+      "bytes": 2626202,
+      "sha256": "b20b6bfdb4de92101670577c00f3126bd15b62e767cfc3e660868d2f0d01301a"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-219-action.json",
+      "bytes": 2626426,
+      "sha256": "467cd7c15cb3a299411721a8029dc2f4459c3748a34d2f1260d934739afa041f"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-220-action.json",
+      "bytes": 2626876,
+      "sha256": "f7e5af33f3aca54229512c53ae3326af09728b3d98564b8b80db859fc3316028"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-221-action.json",
+      "bytes": 2627321,
+      "sha256": "5648f3783ea02806d6057753b45f163fd47168b2529b9547fc9b8e82240515cd"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-222-action.json",
+      "bytes": 2627544,
+      "sha256": "8e1f910432e651244389cdf4ccc209db3d19bce9bb3c04ec4450dd43b8767cc3"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-223-action.json",
+      "bytes": 2627993,
+      "sha256": "36ef3fac66bc0b31ca8478c896ba43f9cfd12267d587d8178b87a9fad356c992"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-224-action.json",
+      "bytes": 2628437,
+      "sha256": "95cc38de930a522245f3312658756df7b2b9d35820b537cbd9173464ec18789d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-228-action.json",
+      "bytes": 2660824,
+      "sha256": "90094bae1c37462a9816d31323a1319bb645b3d0a20aef41afffd8f895a69e75"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-229-action.json",
+      "bytes": 2660426,
+      "sha256": "864842a779368b904295f57cd3a432f07f6d51d435dd7e18e0a3ceb5774bdbda"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-230-action.json",
+      "bytes": 2660651,
+      "sha256": "3936ab1de3712ebf10e1eb75282558f02da0e9e4f0e2a1bfd55a6db3d2d699f8"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-231-action.json",
+      "bytes": 2661103,
+      "sha256": "b93dc664f425760082127ac33c1f36a482ed52ed9b92dbd41b7d821e2eb9ce98"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-245-action.json",
+      "bytes": 2806893,
+      "sha256": "0eac9d9408c4392556d13d998ba2a9f1827f8379d729bcdc6364ccab5c07b3c4"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-246-action.json",
+      "bytes": 2807195,
+      "sha256": "5bc5bd2beb1e036951b7467963829e6dc35a6c56ffd8ee088e02ffbc838b2053"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-247-action.json",
+      "bytes": 2807419,
+      "sha256": "bd9eb7f1da7a6db87b773634ec1197e624d4f133878b03a0e316f85dd5236e3a"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-248-action.json",
+      "bytes": 2807870,
+      "sha256": "8c19dc75356a000c5629bf2e491a5b7f255de8f0aba8a2b5100fb2b6295a9961"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-266-action.json",
+      "bytes": 2995073,
+      "sha256": "2f0e28f6ae130e60e419612cd4d3633e837ba17c1a64eb84901457bee79625fe"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-267-action.json",
+      "bytes": 2995375,
+      "sha256": "bdfb141866a1cd7bc456be75c43c440e4632d9b3331f77b4ee0a66c722750dff"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-268-action.json",
+      "bytes": 2995598,
+      "sha256": "b96ea07d56f70cdf73e04e293a21919ec307e883f305a5238a5ef00f1fcf39f1"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-269-action.json",
+      "bytes": 2996050,
+      "sha256": "7833b35adc09295cf6abff0c955abe4b05457bdf6c8f2d2737482e6b516c4306"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-284-action.json",
+      "bytes": 3151597,
+      "sha256": "3acc4f920e1848569f896653c52f562fe56fde13157e2779196c5270666b8b83"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-285-action.json",
+      "bytes": 3151821,
+      "sha256": "6bbade2041ed3d9a08e5ba53a0d9822886ede421350f09acac9655e53e298411"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-step-286-action.json",
+      "bytes": 3152272,
+      "sha256": "922b542bf186ab01b15a7a1b1026b1f75928507cb0d9ebf1cfc07a2f2f02c03f"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-three-actual-honest-reports-reflected.json",
+      "bytes": 3146149,
+      "sha256": "dac0f4154737b7d126d8b33cd3a31a91e0af5620b332ea83a47273a169cd7643"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-approach.json",
+      "bytes": 3070933,
+      "sha256": "5a6c30c40b4465df348b925abb883eacb332226d97d72eb89bb8eb3516ab353e"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-beam_stabilize.json",
+      "bytes": 3092756,
+      "sha256": "4146094e83f83614fd01d540ebf75b783f6caa3da8073c4bc07cd58e471dbd63"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-consent-2.json",
+      "bytes": 3039005,
+      "sha256": "5a6e8608c261b9ea0a4b979f4f4a712100dc2b69db4ce5f10169ea7fb1fdf7a1"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-consent-3.json",
+      "bytes": 3049585,
+      "sha256": "73020dcd71ccd346c5e4fd2fe0146606b82739eaae52fae91fa1b8675985fa44"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-consent-4.json",
+      "bytes": 3060157,
+      "sha256": "e5c16b215d41dbf3ee8b521e05a872f2301701432abe94948ba6b347e770af27"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-consent.json",
+      "bytes": 3028398,
+      "sha256": "8b2efe173c711036d470e0b0da03f9c7f86e2511f1410566f0e7c34e7f0f43a9"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-contact_beam.json",
+      "bytes": 3081611,
+      "sha256": "f1366f6f0bb26ecb8618203942cba5e3b847ab3e9b27116c849c8ac20b19815d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-exit_room.json",
+      "bytes": 3114318,
+      "sha256": "448441ab79845c0c003fadfce935f5874e7923d7d6152f09ace4d5afb2738d45"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-honest-report.json",
+      "bytes": 3135503,
+      "sha256": "2f453bd07b5ff4bede2639edff6618e71bc64bbf33368536e273d0b871e4d60e"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-leave.json",
+      "bytes": 3124986,
+      "sha256": "519b612accea4322e1dfc4fb2073ea86a119263e9a2f3d1ec3573068ff4a8ec8"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-observe-originals.json",
+      "bytes": 3001850,
+      "sha256": "f12349381a2e0853be54f04d868540c9f3557707c82adc9f8f71cef451b703db"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-paid-current-invitation.json",
+      "bytes": 3015196,
+      "sha256": "6d72fd3039ae7b8b801418849779f74f4bd37244eaadde3daeffce20f54f1a49"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/boundary-withdrawn-support-withdraw_consent.json",
+      "bytes": 3103808,
+      "sha256": "e4b560c698a2e9b064f723337883314aa036a33e81d6fcbefd10a4117eeac689"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/capture-integrity.json",
+      "bytes": 16369,
+      "sha256": "5ff16c048d43634053e9d65e0a8b8a49177ec5ada61bef16f0a0115ea664fa8e"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/commands.jsonl",
+      "bytes": 546740,
+      "sha256": "5834bfc4387ea0c90c4544befdec492e7c7e7ac81c1eade71ca7c741f245e909"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/natural.json",
+      "bytes": 7285363,
+      "sha256": "0bc387a501ff6f7307e4ca518286e1e7f37bc051fa9676346241155e9cf3c595"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/public.jsonl",
+      "bytes": 977067,
+      "sha256": "42239ee473eb48c5710bb973eba9c4b44fd4ac361dc63f8d4eea27b11a9e85d8"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/snapshot-actualTerminal.json",
+      "bytes": 2667323,
+      "sha256": "8fbec07b18ed52d851fa1eb2403fc5c2ca64cb756140038cc35ec9ef1181c8cb"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/snapshot-combatStart.json",
+      "bytes": 2177625,
+      "sha256": "5a51d914ad1e4e40efa3718bf2e50da18a45904d1b83cf7c2a503ad6122c2426"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/snapshot-departure.json",
+      "bytes": 1078776,
+      "sha256": "1908adb35d936bd5651ef7cd1ca9cbeffc55e3b3568ee21ff5798741ab3a2332"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/snapshot-guidance.json",
+      "bytes": 1227756,
+      "sha256": "73564e252cded6cc6bb413b3ef858b757209200bf80a7703145416901e07c567"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/snapshot-practiced.json",
+      "bytes": 1575699,
+      "sha256": "60814a5aa32751aab373f08c4037eecfd78b1bcb1346bbea4d8ddf20ad260c27"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/snapshot-promoted.json",
+      "bytes": 1330621,
+      "sha256": "7c22ee5fcf3b3f82e928a17b88f6ff4b8fa2ede7d554ab65ef4c9b7b56084f3b"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 1581706,
+      "sha256": "eb9bc7d243a5ffd4704a0d8047c66cf27acbe69dcc447c6075e6b738d057828d"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/snapshot-sourceRecovered.json",
+      "bytes": 1079268,
+      "sha256": "61940ed575f6fd70108ebdd1aced2a00094b74f3d4159fd774e8251417a4dfe5"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/source-prefix.json",
+      "bytes": 1776422,
+      "sha256": "bc83497c6e8e37ed6fd18637fd2e317177f55d1da1b57ecd4fa18a96d2bdd959"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/summary.json",
+      "bytes": 1292759,
+      "sha256": "5aa9ea725906f9b0202d27abb16bdb584c6ec340cf9ad09d478c7d2e6eec01de"
+    },
+    {
+      "path": "tests/fixtures/divine-hand-v01980/transitions.json",
+      "bytes": 19419,
+      "sha256": "c78e857127e0497d6166b1675230eea6b3f380529d9be057c2c92160a41b5738"
     },
     {
       "path": "tests/fixtures/dream-stealer-v01060/boundaries.json",

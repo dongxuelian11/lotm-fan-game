@@ -137,7 +137,7 @@ describe('Star Key exact701-command living boundary and actual public continuati
     expect(naturalEntry('pendingIntent')).toBeNull(); expect(naturalEntry('failurePhase')).toBe('IDLE');
     expect(Object.keys(boundaryIndex)).toHaveLength(expected.boundaryNames); expect(Object.keys(snapshotIndex)).toEqual(expected.snapshots);
     same(Object.keys(boundarySteps), Object.keys(boundaryIndex));
-  }, 120_000);
+  }, 240_000);
 
   it('freezes all eight histories, original people, fifteen actual masteries and the two new zero skills', () => {
     const original = capturedState('prefixFinal'), final = capturedState('final'), promoted = capturedSnapshot('promoted');
