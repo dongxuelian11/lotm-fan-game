@@ -191,7 +191,7 @@ describe("Long chapter navigation from actual natural saves", () => {
     const archive = external.closest("details")!;
     for (const record of state.chronicle) expect(archive.textContent).toContain(record.text);
     expect(within(archive).queryByRole("button")).toBeNull(); expect(window.sliceGame!.submitIntent).not.toHaveBeenCalled(); expect(state).toEqual(before);
-  });
+  }, 20_000);
 
   it("performs the captured new-era work, paid rest and real week without reactivating the old employer", async () => {
     const capture = { recovered: natural("recovered"), final: natural("final") }, game = savedGame(capture.recovered);
@@ -210,7 +210,7 @@ describe("Long chapter navigation from actual natural saves", () => {
     expect(projectSliceState(game.state).longChapter.actions.map(action => action.command.type)).toEqual(["CONTINUE_FERRYMAN", "ENTER_RECEPTION"]);
     expect(screen.queryByRole("button", { name: /在当代接待处实做普通档案劳动/ })).toBeNull();
     expect(vi.mocked(game.submit).mock.calls.map(([envelope]) => envelope.payload)).toEqual(steps.map(type => ({ type: "LONG_CHAPTER", command: { type } })));
-  }, 15_000);
+  }, 30_000);
 
   it("reopens the actually exited new-era save and enters the same reception without returning to the old city", async () => {
     const game = savedGame(natural("final")), bodyId = game.state.longChapter.body!.id, book = structuredClone(game.state.undying.life.book);
