@@ -1,3 +1,4 @@
+import { ALL_KNOWING_EYE_ABILITY_IDS } from '../all-knowing-eye/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -34,9 +35,9 @@ export function createWisdomAngelState(): WisdomAngelState {
 /** Historical membership never broadens the exact current-stage action guards. */
 export const isWisdomAngel = (s: SliceState) => s.progression.pathwayId === 'white-tower' && s.progression.sequence === 2;
 export const isWisdomAngelAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'white-tower' && s.progression.sequence === 3;
-export const hasWisdomAngelHistory = (s: SliceState) => isWisdomAngel(s) && s.wisdomAngel.promotionWeek !== null;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'white-tower' && [3, 2].includes(s.progression.sequence ?? 0) && s.reader.discovered && s.insightScholar.guidanceKnown && s.insightScholar.promotionWeek !== null;
-export const hasWisdomAngelLock = (s: SliceState): boolean => s.wisdomAngel.preparedWeek !== null || hasWisdomAngelLifeLock(s) || hasWisdomAngelEncounterLock(s);
+export const hasWisdomAngelHistory = (s: SliceState) => (isWisdomAngel(s)||(s.progression.pathwayId==='white-tower'&&s.progression.sequence===1)) && s.wisdomAngel.promotionWeek !== null;
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'white-tower' && [3, 2, 1].includes(s.progression.sequence ?? 0) && s.reader.discovered && s.insightScholar.guidanceKnown && s.insightScholar.promotionWeek !== null;
+export const hasWisdomAngelLock = (s: SliceState): boolean => s.progression.pathwayId==='white-tower' && [3,2].includes(s.progression.sequence??0) && (s.wisdomAngel.preparedWeek !== null || hasWisdomAngelLifeLock(s) || hasWisdomAngelEncounterLock(s));
 const bottleNumber = (b: Pick<WisdomAngelBottle, 'id'>) => Number(b.id.slice('wisdom-angel-potion-'.length));
 const potionPrice = (b: WisdomAngelBottle) => WISDOM_ANGEL_PRICES.potion - (b.labourSteps === WISDOM_ANGEL_LABOUR_STEPS ? WISDOM_ANGEL_PRICES.labourCredit : 0);
 const insightScholarWeeks = (s: SliceState) => Math.max(0, (s.wisdomAngel.promotionWeek ?? s.week) - (s.insightScholar.promotionWeek ?? s.week));
@@ -185,7 +186,7 @@ export function applyWisdomAngelCommand(s: SliceState, command: WisdomAngelComma
 }
 
 export function projectWisdomAngel(s: SliceState): WisdomAngelProjection {
-  const state = s.wisdomAngel, available = knownChannel(s), promoted = isWisdomAngel(s), actions: WisdomAngelAction[] = [];
+  const state = s.wisdomAngel, available = knownChannel(s), promoted = hasWisdomAngelHistory(s), actions: WisdomAngelAction[] = [];
   const add = (id: string, label: string, cost: string, command: WisdomAngelAcquisitionCommand) => {
     const reason = wisdomAngelAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -214,7 +215,7 @@ export function projectWisdomAngel(s: SliceState): WisdomAngelProjection {
     title: promoted ? '智慧天使 · 阅读者序列2候选（G扩展）' : '智慧天使候选之路', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${WISDOM_ANGEL_FORMULA_STATUS}${WISDOM_ANGEL_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6200便士或本瓶五项真实劳动后800便士；现有全部失败耗尽才可花1行动申请，跨真实周到货仍须逐瓶实际付费。` : '',
-    actions: available ? [...actions, ...(promoted ? [...wisdomAngelLifeActions(s), ...wisdomAngelEncounterActions(s)] : [])] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...(promoted ? [...wisdomAngelLifeActions(s), ...wisdomAngelEncounterActions(s)] : [])] : [],
     bottles: available ? state.bottles.map(b => ({
       id: b.id, title: `第${bottleNumber(b)}瓶 · 智慧天使候选独立成品魔药`,
       source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`,
@@ -224,8 +225,8 @@ export function projectWisdomAngel(s: SliceState): WisdomAngelProjection {
     preparations: available ? WISDOM_ANGEL_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [],
     preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? WISDOM_ANGEL_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0,
-    digestion: promoted ? `洞悉者候选消化${state.insightScholarActingAtPromotion}/100留存；智慧天使候选扮演${s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖掌握。旧三案与旧反思不重复记为本阶经历。` : available ? `洞悉者候选需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${insightScholarWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完洞悉者候选之路。',
+    acting: promoted ? (s.progression.sequence===1?s.allKnowingEye.wisdomAngelActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `洞悉者候选消化${state.insightScholarActingAtPromotion}/100留存；智慧天使候选扮演${s.progression.sequence===1?s.allKnowingEye.wisdomAngelActingAtPromotion:s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖掌握。旧三案与旧反思不重复记为本阶经历。` : available ? `洞悉者候选需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${insightScholarWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完洞悉者候选之路。',
     pollution: s.seer.pollution, risk: available ? WISDOM_ANGEL_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -252,7 +253,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.wisdomAngel;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'insightScholarActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as WisdomAngelState, promoted = isWisdomAngel(s), acquisitionStage = isWisdomAngelAcquisitionStage(s);
+  const state = raw as unknown as WisdomAngelState, promoted = hasWisdomAngelHistory(s), acquisitionStage = isWisdomAngelAcquisitionStage(s);
   const firstWeek = s.insightScholar.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + WISDOM_ANGEL_MIN_INSIGHT_SCHOLAR_WEEKS, lastAcquisitionWeek = state.promotionWeek ?? s.week;
   if (state.guidanceKnown && (!knownChannel(s) || !integer(s.insightScholar.promotionWeek, 1, s.week))) return false;
   if (acquisitionStage && (!shape(s.progression.mastery, INHERITED_ABILITY_IDS) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500)))) return false;
@@ -262,7 +263,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || !acquisitionStage || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || s.status !== 'ACTIVE' || s.health <= 20 || s.mind <= 40 || s.world.city !== 'BACKLUND' || s.activeEvent !== null || s.combat !== null || oldSceneOpen(s) || hasWisdomAngelLifeLock(s) || hasWisdomAngelEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.insightScholar.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.insightScholarActingAtPromotion !== 100 || state.preparedWeek !== null || state.resupply.requestedWeek !== null || !hasPreparations(s) || oldSceneOpen(s)) return false;
-    if (!shape(s.progression.mastery, [...INHERITED_ABILITY_IDS, ...WISDOM_ANGEL_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?ALL_KNOWING_EYE_ABILITY_IDS:[]), ...INHERITED_ABILITY_IDS, ...WISDOM_ANGEL_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.insightScholarActingAtPromotion !== null || WISDOM_ANGEL_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

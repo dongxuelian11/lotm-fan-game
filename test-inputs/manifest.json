@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.191.0",
+  "version": "0.192.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -286,6 +286,21 @@
       "name": "lotm_release_0.191.0_misfortune_knight_test_inputs_2_2026-10-15.tar.gz",
       "bytes": 6731097,
       "sha256": "f22552abfb04af0d8d625bc9ba627be6a358317a41137ceb63b6b61adb88858a"
+    },
+    {
+      "name": "lotm_release_0.192.0_all_knowing_eye_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17651381,
+      "sha256": "daa465a4de30b6955a9b18df9ebd13a8cdc29a9c1896666493266b896b2cf20b"
+    },
+    {
+      "name": "lotm_release_0.192.0_all_knowing_eye_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 17805060,
+      "sha256": "5b8a95a844f0c5fa1ef71a9f6d50e5442b7472a6d5ca5032f748bc138dca6e5b"
+    },
+    {
+      "name": "lotm_release_0.192.0_all_knowing_eye_test_inputs_3_2026-10-15.tar.gz",
+      "bytes": 1991773,
+      "sha256": "9c5435893f480df6347dcbdaa059e0ca5cdda235b742c4df1c1ce544d93d7048"
     }
   ],
   "fileEntries": [
@@ -343,6 +358,716 @@
       "path": "tests/fixtures/alchemist-v01200/survey-boundary.json",
       "bytes": 787992,
       "sha256": "9246413918a594c2acbab8411327508b3de85d953345e7dfa89d96ff86a9caaa"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundaries.index.json",
+      "bytes": 11701,
+      "sha256": "148b7a90c0340b33da79998e2f22222180f11866514c99883933b8abb3365160"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual-consumption-all-knowing-eye-potion-1.json",
+      "bytes": 1862181,
+      "sha256": "5e6cb5957e84b2fe7f4d092ef064bed037ecc2faf3389548ca9141f65320c3a4"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual-ordinary-encounter-exit.json",
+      "bytes": 3128047,
+      "sha256": "e284b579fd2e84472497bff1f759d1b35209bd2c7fc9cf615b9d0f72da17d862"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual-paid-work-after-living-exit.json",
+      "bytes": 3124183,
+      "sha256": "736006ca98afcdbc627b7086f17b985b56a5b779d3767d0de32eb389cf3963d9"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual-preparation-MARK_RETURN.json",
+      "bytes": 1783168,
+      "sha256": "3c5462ac3da0e0bd4d3b04ca3ae4576bafa3d66f42f8836e5291750d551f72ec"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual-preparation-RECORD_CONDITIONS.json",
+      "bytes": 1773900,
+      "sha256": "e9dff4c4392e983c4a263696741741f40c2cca57bb7e1d4481386146964e6b8e"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 1765878,
+      "sha256": "c831300433c034cf30a514ee9bb7fd0515be2c3b806cc1e5901c5d4ed2150dec"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual1100p-buy-all-knowing-eye-potion-1.json",
+      "bytes": 1843724,
+      "sha256": "8052b39458c1ca668bff8998ba890ba2f5915735ed5df965bb814a0d11549604"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual150p-current-week-preparation-all-knowing-eye-potion-1.json",
+      "bytes": 1852360,
+      "sha256": "2a5605f7201dfc5db5d992781ac39cda312039ce77fbd5461061c03953780e2a"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual30p1AP-unique-nonpowered-rig.json",
+      "bytes": 1874960,
+      "sha256": "e571df7ae440ce5b804b1096e6991e0140f9dcf7832a64927c92641b2f4e2f76"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual4metre-arrival-and-edwin-name-exchange.json",
+      "bytes": 2528039,
+      "sha256": "017f4b386f3d7006a8cb94ca10d2e698b95ca677e0df934b5b2daf57f182a996"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-actual500p-guidance-and-frozen-eight-root-source.json",
+      "bytes": 1710964,
+      "sha256": "4fd14b884327dd854af7c94884cb9eaf02f2ceeeba861373434aff69fa5be2a7"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-all-knowing-eye-potion-1-actual-labour-2.json",
+      "bytes": 1800395,
+      "sha256": "9f4e21b31e059160a9f6e1898c95eaab06e02176d42db3a36ae659583a02f8c9"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-all-knowing-eye-potion-1-actual-labour-3.json",
+      "bytes": 1809097,
+      "sha256": "740daf48699ac6bedd94d4b11e5bf92bb37fd019159ea241f33c5ea648a017dc"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-all-knowing-eye-potion-1-actual-labour-4.json",
+      "bytes": 1817659,
+      "sha256": "b7e1a8bd849a1a46cae951239e4d120585758ae316a30c9214dd41eea361f2f3"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-all-knowing-eye-potion-1-actual-labour-5.json",
+      "bytes": 1826402,
+      "sha256": "fff5982f747a274a221c639f9bbbb62347ce0ddde47944fdcc309fbb7fcd315b"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-all-knowing-eye-potion-1-actual-labour.json",
+      "bytes": 1791837,
+      "sha256": "94e945faacaf5ddd11e665acaf4de6e47718561b249d3ef595c066d6fa3ac160"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-actual-direction-and-sightline-change.json",
+      "bytes": 2204953,
+      "sha256": "095dede871a2117172b8ec2746252b4926b95ea91ad1ea6fad77b44f77f36bd2"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-actual-manual-cocking.json",
+      "bytes": 2187260,
+      "sha256": "fc96857f54e1aeae79a47a7156c630bbf50b3faca4ee0d369b1e8f00c5aaf913"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-actual-walk-out-and-adults-leave.json",
+      "bytes": 2247836,
+      "sha256": "1ba5ad4a21a2e6e6f1d60edd9842252c53015cb16180a99de9c93b08e8484ddd"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-actual10p1AP-fresh-irena-invitation.json",
+      "bytes": 2126928,
+      "sha256": "b34e8c5258adceabdb20e7731a921527a9f23ef56e062faeba9fb446042a15fb"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-actual4metre-walk-to-original-entrance.json",
+      "bytes": 2120153,
+      "sha256": "26f33a5a0580c047b989e8574cc99b5aee2dda619e477e8d647b946f3f288f0b"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-current-originals-explained.json",
+      "bytes": 2133518,
+      "sha256": "e73d0450275b467ebfee714e0df7d17385e511c736040fce9f922cad339577e5"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-current-owner-withdrawal.json",
+      "bytes": 2210080,
+      "sha256": "339265fbaad35fc76d12aa072d59e3d790cd3dfaa07903ccbd3c339a2c6febc4"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-fresh-ability-consent.json",
+      "bytes": 2149629,
+      "sha256": "fb40ecbd67753418729b473644e60cb74a29406b46612e09641f96f34d9157f0"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-fresh-owner-consent.json",
+      "bytes": 2138898,
+      "sha256": "bfab5d91c5bf4f04c66a2a8eb2b55fec65d08a9aa95b6302e6f9d6f67288016a"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-fresh-technician-consent.json",
+      "bytes": 2144240,
+      "sha256": "1894963bc5ae69737ef813dec35cb23dc8e8a8eb773f7aec5709b3ef5ee6bff9"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-honest-actual-result-report.json",
+      "bytes": 2253674,
+      "sha256": "97492e758fbfedd894d81e13faa7faa1421a6c993fe945252005597aec554775"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-observe-actual-direction-and-sightline.json",
+      "bytes": 2192690,
+      "sha256": "ba59c65b75b178c7f741e19d7fd35de7b07714fbde12c0b72d90ad51dd01ef8b"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-one-paid-forecast-attempt.json",
+      "bytes": 2198941,
+      "sha256": "c02791de367e700d681aa0903c7ce8f0578546644aa8c210a234e19b41e834f5"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-ordinary-open-same-shutter.json",
+      "bytes": 2220854,
+      "sha256": "e9545767426335ba18a96f17f8944cf2459d8f11aa0f00d8982d453b38a67b9e"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-ordinary-retrieve-same-original.json",
+      "bytes": 2226264,
+      "sha256": "f142cdf691ced231d06e69b38496e801cd387eaa292a693be0b9955c92ca56e3"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-ordinary-return-agreed.json",
+      "bytes": 2155004,
+      "sha256": "73e089414b253593ffaa8e686ca242b33253efd0afaca446116d6239399c1669"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-ordinary-stop-after-withdrawal.json",
+      "bytes": 2215437,
+      "sha256": "8a9ff13bbd7d0b640e6121011e134f8159c501cb5c7d247f352561e17efebd19"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-place-owned-original-rig.json",
+      "bytes": 2181866,
+      "sha256": "698deeee351000e3240ee08aa7a858cca832cab939606e0de99a4f486c63b42d"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-reread-first-original.json",
+      "bytes": 2171092,
+      "sha256": "b8b8dce138993d5ad3bebc1b717b7ed9d3365ba666c55dc6c81237a4b1b262fe"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-reread-second-original.json",
+      "bytes": 2176495,
+      "sha256": "3f01024fc1958eabd3ee4c507acbcd20d0fa88667a2270d354ea8cf736a527a1"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-same-original-papers-returned.json",
+      "bytes": 2231693,
+      "sha256": "580a5b2c84dfeff177f775cbf3c7192e56db061d0b749d9bb8af895035a43b38"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-same-owned-rig-returned-to-player.json",
+      "bytes": 2237074,
+      "sha256": "e2f690f5b234ecacfc494b395d9bd0879e7bcf8d05a22722a3f3a3ec8f03a045"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-source-costs-and-ordinary-alternative.json",
+      "bytes": 2113910,
+      "sha256": "0d3928062a1cbb67cec239090c7baf57244fe67d3ee8ffeb93bba6c14c8a8fe5"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-take-same-two-originals.json",
+      "bytes": 2165739,
+      "sha256": "406ca6c569ddbe751bae80ad5d3d08259b5f03d163ec92da1fa6f5495f68a103"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-three-actual-original4metre-walks.json",
+      "bytes": 2160398,
+      "sha256": "511bc72ea508254d35289e89ed8b878ef891e0e60f9ab25ed65d7e9cc1cfafcf"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-changed-conditions-three-actual4metre-exits.json",
+      "bytes": 2242421,
+      "sha256": "b31eb2cfe8469016b740da7a405303887fde380442ef417426d98ee2cefef2f3"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-combat-round-1.json",
+      "bytes": 2906108,
+      "sha256": "4d43df33e156b1222e4d44581974f2ab1ca8db3b28252e4ec11cfb5157e5ef59"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-combat-round-2.json",
+      "bytes": 3037202,
+      "sha256": "c9c29b54245e1dd96d25eb9f2b1ff5cb0e0b40f9fb55700dc47da8381f39d5e9"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-combat-round-3.json",
+      "bytes": 3115852,
+      "sha256": "8dfc8be075ec41050c6b385bd12ad9f02dadcd88fd936e843dc0e84819cdf7e1"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-combat-round-4.json",
+      "bytes": 3128047,
+      "sha256": "e284b579fd2e84472497bff1f759d1b35209bd2c7fc9cf615b9d0f72da17d862"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-exact-original537-command-living-source.json",
+      "bytes": 1658784,
+      "sha256": "6cbbac4051a4445fad0a84336e536e463bc2f88e7ab06ec2b50274493f5966ab"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-fixed-all-policy-before-fight.json",
+      "bytes": 2799036,
+      "sha256": "57bdb269956bcca9cc877f1867a4155ab361c86c01875369966f7423aa6455e3"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-independent-optional-edwin-fight.json",
+      "bytes": 2821495,
+      "sha256": "f4e3e639ac80d1272991c3b30267fdac63f783959d3dad2f882b9f4f4b6c6cc4"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-actual-walk-out-and-adults-leave.json",
+      "bytes": 1972332,
+      "sha256": "9741a9ad9f57172b60e386235d589e34b319f02395df6892353c84b55fe059c3"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-actual10p1AP-fresh-irena-invitation.json",
+      "bytes": 1888412,
+      "sha256": "60234807aefb91866839c2e6ea71d60d27cd8aa0d910d458fb1d2ea7d2158c23"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-actual4metre-walk-to-original-entrance.json",
+      "bytes": 1881630,
+      "sha256": "c371a686f5eba55685ac5cbfb51c21c56f2bbf155402d932823902d8e67c73ba"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-current-originals-explained.json",
+      "bytes": 1895004,
+      "sha256": "ce3bb21ec087e2ae2cc729842271c390311392d9fa13da542a67753bdff1301e"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-fresh-ability-consent.json",
+      "bytes": 1911115,
+      "sha256": "969c29761cb7c81f42baa275138007601e03c0553517d05d75e711ebed8cd1e2"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-fresh-owner-consent.json",
+      "bytes": 1900384,
+      "sha256": "8ce88c8a1ced4068d90f9fb8dc79bced284b0ba95553ece8fdc16e6c0321f4c7"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-fresh-technician-consent.json",
+      "bytes": 1905726,
+      "sha256": "b366e002618a18096a8fc1605776a3e93c744690546ba4850f548fe8bab5f65a"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-honest-actual-result-report.json",
+      "bytes": 1978173,
+      "sha256": "9385745385eeca33bc607b3dd687e02a2f1052489397dbe88cf394f74d00e4a6"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-independent-current-verification.json",
+      "bytes": 1956174,
+      "sha256": "9ec15a76cef2f8f47961e6892dfe43e2c1f19ebef10129ab729caa3ac6cd13e0"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-observe-current-positions.json",
+      "bytes": 1943566,
+      "sha256": "e45dd10ce464afad997c92ffece800e545cdc02f4b31dbefbecf1f1eca1dc502"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-one-paid-insight-attempt.json",
+      "bytes": 1949766,
+      "sha256": "734770c9692eebaae152d91276c3811b5b2329c6f01858e67fbcf269b2fde0dd"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-ordinary-return-agreed.json",
+      "bytes": 1916490,
+      "sha256": "fce051d49123ac33c1851cb8b53c6fdfb24258497cf9094a87d16fd45ce26742"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-reread-first-original.json",
+      "bytes": 1932578,
+      "sha256": "b4ef4fbbbe6a1d6010680f4bffbfe3d5d67fff6da6323d78ae43a273c13c7443"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-reread-second-original.json",
+      "bytes": 1937981,
+      "sha256": "eb432f647830fd248c7a27581430c45f8be9f547822dac95bc1c30d00b19a664"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-same-original-papers-returned.json",
+      "bytes": 1961766,
+      "sha256": "eec98d5c0a7e467bdc8717e01f6f6732461885370954f0ebb0715515dd69051d"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-source-costs-and-ordinary-alternative.json",
+      "bytes": 1869879,
+      "sha256": "daa6313d410989430ee250550a475443b4a42230b89b8e850e28ec2519763a90"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-take-same-two-originals.json",
+      "bytes": 1927225,
+      "sha256": "bc4bbb24cd4e35a99eec7773c0e475c8b8e0d1bfd99c35ffecfd969ae7c8c8d8"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-three-actual-original4metre-walks.json",
+      "bytes": 1921884,
+      "sha256": "20a01ebbd6b6f225ea4fdf7e271bae2103663f9444e65a2b517009bfe8991b81"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-original-paper-check-three-actual4metre-exits.json",
+      "bytes": 1966910,
+      "sha256": "d66860d697878c06f43733ac8142d7baaedfd48e01826af17e117cc322d64232"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-actual-manual-cocking.json",
+      "bytes": 2057155,
+      "sha256": "f7353389b97be33dc9bee91e3fe8ce6ecf2ac5488d1fa0dd457127c71a389574"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-actual-release-and-independent-catch.json",
+      "bytes": 2075556,
+      "sha256": "74c001a272b571a86a4dcf0b89b630900eb9c20b03849e3f598de83667e1e04e"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-actual-walk-out-and-adults-leave.json",
+      "bytes": 2102442,
+      "sha256": "9a20eec749dc9e0ae10e74d4b77fce70f458627c8106327aea85949f238689cb"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-actual10p1AP-fresh-irena-invitation.json",
+      "bytes": 1996822,
+      "sha256": "bc46ce24ce3f85cbdf30fda85e00a461545b5af1531d8ab4ba9d2f11441e51a1"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-actual4metre-walk-to-original-entrance.json",
+      "bytes": 1990059,
+      "sha256": "c45e5cc98eb6391d7c6dd4ea8965662b5bef7e1823760d2e961bf6d46d87a084"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-current-originals-explained.json",
+      "bytes": 2003408,
+      "sha256": "d75a46bd7ee17bc2a5c0bc0cdf98d742e393be7dcbe5f9547c49e3947fa666a3"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-fresh-ability-consent.json",
+      "bytes": 2019519,
+      "sha256": "e453da083366074d457bca931cf57f0486384f01e2274c65ff3f39cf7ce9e996"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-fresh-owner-consent.json",
+      "bytes": 2008788,
+      "sha256": "244464d10607d7e4f51c6ac41256f4785f12cb22e735ddb57171914b7fc2f0a7"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-fresh-technician-consent.json",
+      "bytes": 2014130,
+      "sha256": "a23d02be3ded0946f3c0b5db964d6d7dc55676384ff367916815b582692e2024"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-honest-actual-result-report.json",
+      "bytes": 2108267,
+      "sha256": "6aec63008bde7288b9cfcb641b3b118f7ab63959c9b6d5fc672d790e081d14c2"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-observe-actual-direction-and-sightline.json",
+      "bytes": 2062588,
+      "sha256": "b1ebb68a82ae1f5238dca7c3aecea54e3e00c1fc611f9db59e7eb73d1bddd0b0"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-one-paid-forecast-attempt.json",
+      "bytes": 2068831,
+      "sha256": "96b4c1808da85974e37febaab855cf58f6931128c49f6e8eab238485c2b9a731"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-ordinary-return-agreed.json",
+      "bytes": 2024894,
+      "sha256": "0fb3a085370c2d3485eb09d85a8407c09b62ad6064e3fed6299a8ae9fa6cdfdb"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-place-owned-original-rig.json",
+      "bytes": 2051757,
+      "sha256": "54cad9e081ac865c81f0274329a4e236a7964809a996be1c4425c6334109c6ac"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-reread-first-original.json",
+      "bytes": 2040982,
+      "sha256": "2611b30904f91cefa499262126a152fd91246011e4b84ced527ccdce9f59b5cc"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-reread-second-original.json",
+      "bytes": 2046385,
+      "sha256": "31b0569d44dc34ac019cd88a1f8da2d473a5af91c56b30d75aeca7039fbaf85d"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-retrieve-same-original-from-actual-location.json",
+      "bytes": 2081195,
+      "sha256": "e966caf1b3fd325f492bfa200a47998eb35c5af6b91458b92664a4172ac5eb55"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-same-original-papers-returned.json",
+      "bytes": 2086299,
+      "sha256": "3776f7c3a84ffb9110c2aeb78d0c03b96fe0f4ea12f0ac9b1b35282d6de5de74"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-same-owned-rig-returned-to-player.json",
+      "bytes": 2091680,
+      "sha256": "0861760217ad89e1424ac799b22455660eb28c4854e7bdff2558f9424e06f241"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-source-costs-and-ordinary-alternative.json",
+      "bytes": 1983817,
+      "sha256": "046600b7c114b47a7f4ccdc9f85d532715051c2b9f6bfb38509d26725d6294b4"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-take-same-two-originals.json",
+      "bytes": 2035629,
+      "sha256": "81fd4f0d933e9ea2acaff1bd4ac44c673dbead820c839ce80b06373a29cfc853"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-three-actual-original4metre-walks.json",
+      "bytes": 2030288,
+      "sha256": "aa1d1d6cd8cc1f66c88ee9bc6811aee309513b91527756e8686a336e9889f1f5"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-pending-slider-three-actual4metre-exits.json",
+      "bytes": 2097027,
+      "sha256": "7bb21e2ab29489c877eb6f246538508ce2947b95257bd3dc510494d8bad80482"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-538-action.json",
+      "bytes": 1659226,
+      "sha256": "38b4a0269ea31d5cade75d4c8be470eb50ce6ad635debb190b08970469b1d4ea"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-548-action.json",
+      "bytes": 1830704,
+      "sha256": "5468b938d6839d9e514f1d77ffb6533f9095b3dba2dedf4c04c9c6cc3f48945f"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-549-action.json",
+      "bytes": 1830967,
+      "sha256": "3ea03da63d5480c1fc17b5ab629ab0ee33c99012571364c7f75cdf6d136a6d0f"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-550-action.json",
+      "bytes": 1831412,
+      "sha256": "15b6dcfae9c4d1dbf054429f00369348021714371f3581eb229352eed69d0619"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-551-action.json",
+      "bytes": 1831633,
+      "sha256": "07e86abbe28e217d0240312f5f9b79172b9ec7b41bcb195308a7df0fa29ca4e0"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-552-action.json",
+      "bytes": 1832079,
+      "sha256": "47e155b8a72b28478e64aeff4d64cae1bbf5dce89b627f84090b20f5928bdc5c"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-553-action.json",
+      "bytes": 1832520,
+      "sha256": "ed9420bbe23df64abe4343565070d1c99db774ac5f46ed94b59f3fa273a18b00"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-554-action.json",
+      "bytes": 1832741,
+      "sha256": "9d0501d8989450df740392540d683b7525cb0ed338c32bc468761cee9614b917"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-555-action.json",
+      "bytes": 1833187,
+      "sha256": "7d0e8e7cd1da45c9fed5e3a2869775bb7a527e2693c2e5e4d17d26e0a8c67097"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-556-action.json",
+      "bytes": 1833628,
+      "sha256": "9bf98bc5792948e0dc2bd31c4544e1aa589d53733288995ed2fb80ad49e71c2a"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-557-action.json",
+      "bytes": 1833849,
+      "sha256": "983642f83e23167476e01e4e73b677669a6f92217d873b6b5a002695b63f8c50"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-558-action.json",
+      "bytes": 1834293,
+      "sha256": "d026800203029e49081d599d852c97f42dd49a8ab81505f64d1786851b995426"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-559-action.json",
+      "bytes": 1834732,
+      "sha256": "ba31c0212335d34b2713f532f4072a1bb700a527e60190d925bfe685c9758d28"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-560-action.json",
+      "bytes": 1834953,
+      "sha256": "d8be3c722ba5a35b4b603ef6c41a548f19a6943967fbfa6ddfaedf7beaf60436"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-561-action.json",
+      "bytes": 1835399,
+      "sha256": "0f9204f7d6f630a364d4592e61128590915cefa4ba333b2aaef067cd10726319"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-562-action.json",
+      "bytes": 1835840,
+      "sha256": "7c4f8dab50ef2fffa11132bf5221ea8e6286e27695c862603435e5d8a06e4c78"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-563-action.json",
+      "bytes": 1836061,
+      "sha256": "616aa7e7bdc0551d908f7369cc3c77a89bc1fe760503d926828b7580b741a0dc"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-564-action.json",
+      "bytes": 1836508,
+      "sha256": "5ae08bcaa3db180204bae14e69516d8cc73785b59d616092a7d129b4c81ea40d"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-565-action.json",
+      "bytes": 1836951,
+      "sha256": "bcc80c57fcd82f60661b4431f3a294e61d1e05129d712dc653d10d6e81d67207"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-566-action.json",
+      "bytes": 1837173,
+      "sha256": "d6613324bb1e732a2a1ca001fbc48b206ad66d8e574426e756b53762a0d4a68d"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-567-action.json",
+      "bytes": 1837619,
+      "sha256": "d2a547845fdd29e78775a060b74f14ae950c5e2498d9b220ccee9b8346cbd489"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-568-action.json",
+      "bytes": 1838060,
+      "sha256": "a8b24861f76c7e493df94bc13ef0e5f28c1f4a046bb8fef0edb7c53596288e8f"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-569-action.json",
+      "bytes": 1838281,
+      "sha256": "a7aa1d615167b499f6a4a7bfe3a3ec2dde477d4aa23231d7382c6ecebe65e7d6"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-570-action.json",
+      "bytes": 1838727,
+      "sha256": "2a91baae97c095d5caf0abc1bfa56d54b4c4bdb0e4e97371e9deb7a5b9c54301"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-571-action.json",
+      "bytes": 1839168,
+      "sha256": "724a1bd7933478b71b823e3ea944c7888792d2099e492060142d4d7bf5d96f8e"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-577-action.json",
+      "bytes": 1877744,
+      "sha256": "6d03c7475b84c9656647350e2f128829669ebd6d13a2dcc6548878e32c149b4f"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-578-action.json",
+      "bytes": 1878000,
+      "sha256": "c78035c1b6e9f5854098d09d5d45e4221a0826c28c7f341453da9df222576610"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-579-action.json",
+      "bytes": 1878444,
+      "sha256": "1cdbe1e955f6b20148517e3cba2f7ed6e0486f0fab5c3aef0cf7399194b6b6b0"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-580-action.json",
+      "bytes": 1878666,
+      "sha256": "2fb78bd1e95021d7515293753decfa960bcb184b265c7c64e4252f06cd078a5d"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-600-action.json",
+      "bytes": 1986576,
+      "sha256": "0d1405b4597cc1820babcba0bab75fe0996983114902e37999e44018e2408a25"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-601-action.json",
+      "bytes": 1986874,
+      "sha256": "d1007713419dd976e1a9429b89cb5d4092f01b1eff1f76970492b26573a9e183"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-602-action.json",
+      "bytes": 1987096,
+      "sha256": "2570246821d531872a684c32a1326bad30f6143e649be69aedad8e4f60bcdfb2"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-626-action.json",
+      "bytes": 2116669,
+      "sha256": "5bd26eceb629ec9cb548169b42967f447929ec4f3908f820694970e29072ee4e"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-627-action.json",
+      "bytes": 2116968,
+      "sha256": "3d4e7dcb5e1b20bf0b5e3586556f8a34375c3f349ec958cc33b0f3ac1ae33ced"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-628-action.json",
+      "bytes": 2117190,
+      "sha256": "a0d3c93869eb491e923ba97b9693f5893052af878b8af26d069dd23fcc91074e"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-655-action.json",
+      "bytes": 2262283,
+      "sha256": "7a30421732cfe940d8abd021c6d7855be393d9fcc2f8183c345a1ac2c1030828"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-656-action.json",
+      "bytes": 2262516,
+      "sha256": "c312c20a3f95391819ee98693607031a8bffce91b9b4cf52f70790a83343d8aa"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-657-action.json",
+      "bytes": 2262738,
+      "sha256": "e1bfc38c58112d850c7f41dc7671d982f26460b363098e34f11f53ce85eb6873"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-step-658-action.json",
+      "bytes": 2263184,
+      "sha256": "cb993caeb14137cd290f3c359a02c6bd1d97356580ad7dfeeab3ba512278560d"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/boundary-three-honest-actual-reports-reflected.json",
+      "bytes": 2259426,
+      "sha256": "f421c04ebc0b8d7e5c721ee5979c84d4cd7b5aa75d9de5c9ce672c95d82d836f"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/capture-integrity.json",
+      "bytes": 16467,
+      "sha256": "8a0bdd2b56a69a98ea4b3c1680e5cafbc782b32dcbf76869b4d5cf47fc163eff"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/natural.json",
+      "bytes": 4592916,
+      "sha256": "b838bff34dbf49f3df9968bcfef684a24c184e8320f9b8e6d7a1431bfc75a58f"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/snapshot-combatStart.json",
+      "bytes": 1418682,
+      "sha256": "01eecb6fd6f9b368ec7dc5886479d831facdd9e45268b2e5155ebe995e047928"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/snapshot-combatTerminal.json",
+      "bytes": 1561971,
+      "sha256": "8570e29417347bc8a9d0cfd10d915c74fdb5a7836d85d008b538040679a37ed9"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/snapshot-departure.json",
+      "bytes": 829514,
+      "sha256": "aa7982939e178b1916ee4479b6559bb0ed2824914da1fa22cd15ea7c48421e40"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/snapshot-practiced.json",
+      "bytes": 1131034,
+      "sha256": "0459793fb5ca6df51f3b3b7fb98f1d348f77170e18928e1f03792d48b7adc39b"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/snapshot-promoted.json",
+      "bytes": 933754,
+      "sha256": "2214f2d95e4356bb27e3f0348f39544b67dbe8bff2dcd4df767553347b74e5b0"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 1131713,
+      "sha256": "5c186b4e4ac862025928835fe53e531f196652d76bf9ceb2771f02eb56bd5cad"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/source-prefix.json",
+      "bytes": 36979,
+      "sha256": "970b3f514a901a731206ec924c72f91d009b1197eab5e2137566cde497cd5b67"
+    },
+    {
+      "path": "tests/fixtures/all-knowing-eye-v01920/summary.json",
+      "bytes": 19713,
+      "sha256": "962b19966998c50963e3627dd7f84a83e3ac1d08aa1f6f1d1df950098baf9345"
     },
     {
       "path": "tests/fixtures/ancient-alchemist-v01380/boundaries.json",

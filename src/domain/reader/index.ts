@@ -1,3 +1,4 @@
+import { ALL_KNOWING_EYE_ABILITY_IDS } from '../all-knowing-eye/types.js';
 import { WISDOM_ANGEL_ABILITY_IDS } from '../wisdom-angel/types.js';
 import {INSIGHT_SCHOLAR_ABILITY_IDS} from '../insight-scholar/types.js';
 import {PROPHET_ABILITY_IDS} from '../prophet/types.js';
@@ -35,7 +36,7 @@ function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Err
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const shape = (value: Record<string, unknown>, fields: readonly string[]) => Object.keys(value).sort().join('|') === [...fields].sort().join('|');
 const integer = (value: unknown, min: number, max = Number.MAX_SAFE_INTEGER) => Number.isSafeInteger(value) && (value as number) >= min && (value as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 9||s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 9||s.progression.sequence===8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const potionPrice = (bottle: ReaderBottle) => READER_PRICES.potion - (bottle.labourSteps === 2 ? READER_PRICES.labourCredit : 0);
 const bottleNumber = (bottle: ReaderBottle) => Number(bottle.id.slice('reader-potion-'.length));
 const ordinaryWeeks = (s: SliceState) => Math.min(4, Math.max(0, (s.progression.promotionWeek ?? s.week) - 1));
@@ -205,7 +206,7 @@ export function projectReader(s: SliceState): ReaderProjection {
     promoted: isPromoted, formulaKnown: false, formula: [],
     supplies: known ? `${READER_FORMULA_STATUS}供应方剩余${remaining}瓶，你持有未服原瓶${held}瓶。${s.reader.resupply.requestedWeek === null ? `已实际接收后续供给${s.reader.resupply.deliveries}批。` : `第${s.reader.resupply.requestedWeek}周提出补给请求，第${s.reader.resupply.requestedWeek + 1}周起可以收货。`}` : '',
     ...(known ? { story: READER_SOURCE_STATUS } : {}),
-    actions: s.progression.pathwayId === 'white-tower' && s.progression.sequence === 2 ? [] : actions,
+    actions: s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 2||s.progression.sequence===1) ? [] : actions,
     bottles: known ? s.reader.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 阅读者成品魔药`,
       source: `${bottle.source}${bottle.acquiredWeek === null ? '尚未交付。' : `第${bottle.acquiredWeek}周交付给你；原瓶${bottle.id}。`}`,
@@ -217,7 +218,7 @@ export function projectReader(s: SliceState): ReaderProjection {
     abilities: isPromoted ? READER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting: isPromoted ? (s.progression.sequence!==9?(s.reasoner.readerActingAtPromotion??100):s.progression.acting) : 0,
     digestion: !isPromoted ? `普通生活已完成${ordinaryWeeks(s)}/4整周；第5周起可在导师面前服药。`
-      : (s.progression.sequence === 2 ? s.reasoner.readerActingAtPromotion === 100 : s.progression.acting >= 100) ? '阅读者魔药已消化；能力掌握仍按实际阅读、理解与步骤核实分别记录。'
+      : ((s.progression.sequence === 2||s.progression.sequence===1) ? s.reasoner.readerActingAtPromotion === 100 : s.progression.acting >= 100) ? '阅读者魔药已消化；能力掌握仍按实际阅读、理解与步骤核实分别记录。'
         : s.progression.acting === 0 ? '刚刚服药，尚未积累有效扮演经历。先阅读可访问的有限案卷，再比较来源和条件，承认资料无法证明的部分。'
           : `已留下阅读者扮演经历（${s.progression.acting}/100）；消化与能力掌握分别记录。`,
     pollution: s.seer.pollution,
@@ -244,10 +245,10 @@ export function validateReaderState(s: SliceState): boolean {
     if (caseState.attemptWeek !== null && !integer(caseState.attemptWeek, Math.max(5, s.progression.promotionWeek ?? 5), s.week)) return false;
   }
   const reader = raw as unknown as ReaderState, isPromoted = promoted(s);
-  if (isPromoted && s.progression.sequence === 2 && (!reader.reflected || Object.values(reader.cases).some(c => c.status !== 'RESOLVED'))) return false;
+  if (isPromoted && (s.progression.sequence === 2||s.progression.sequence===1) && (!reader.reflected || Object.values(reader.cases).some(c => c.status !== 'RESOLVED'))) return false;
   if (s.progression.pathwayId === 'white-tower' && !isPromoted) return false;
   if (isPromoted) {
-    if (!reader.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...READER_ABILITY_IDS,...(s.progression.sequence!==9?REASONER_ABILITY_IDS:[]),...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)))?DETECTIVE_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?POLYMATH_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?MYSTICISM_MAGISTER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?PROPHET_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!reader.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !shape(s.progression.mastery, [...(s.progression.sequence===1?ALL_KNOWING_EYE_ABILITY_IDS:[]),...READER_ABILITY_IDS,...(s.progression.sequence!==9?REASONER_ABILITY_IDS:[]),...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?DETECTIVE_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?POLYMATH_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?MYSTICISM_MAGISTER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?PROPHET_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (READER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id)) || reader.reflected
     || Object.values(reader.cases).some(caseState => caseState.status !== 'AVAILABLE' || caseState.attemptWeek !== null || caseState.mistakes !== 0 || caseState.conclusion !== null)) return false;
   let successes = 0;

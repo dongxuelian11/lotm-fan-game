@@ -1,3 +1,4 @@
+import { ALL_KNOWING_EYE_ABILITY_IDS } from '../all-knowing-eye/types.js';
 import { WISDOM_ANGEL_ABILITY_IDS } from '../wisdom-angel/types.js';
 import {INSIGHT_SCHOLAR_ABILITY_IDS} from '../insight-scholar/types.js';
 import {PROPHET_ABILITY_IDS} from '../prophet/types.js';
@@ -36,7 +37,7 @@ export function createMysticismMagisterState(): MysticismMagisterState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)));
 const isPolymath = (s: SliceState) => s.progression.pathwayId === 'white-tower' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.reader.discovered && s.reader.guidanceKnown && s.reasoner.guidanceKnown && s.detective.guidanceKnown && s.polymath.guidanceKnown && s.polymath.promotionWeek !== null && (isPolymath(s) || promoted(s));
 const potionPrice = (bottle: MysticismMagisterBottle) => MYSTICISM_MAGISTER_PRICES.potion - (bottle.labourSteps === 5 ? MYSTICISM_MAGISTER_PRICES.labourCredit : 0);
@@ -161,7 +162,7 @@ export function applyMysticismMagisterCommand(s: SliceState, command: MysticismM
 
 export function projectMysticismMagister(s: SliceState): MysticismMagisterProjection {
   const actions: MysticismMagisterAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?s.prophet.mysticismMagisterActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.prophet.mysticismMagisterActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: MysticismMagisterAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -191,7 +192,7 @@ export function projectMysticismMagister(s: SliceState): MysticismMagisterProjec
     cases: [], environment: '', insideCase: Object.values(s.mysticismMagister.cases).some(value => value.contactOpen) || s.mysticismMagister.practice.dreamOpen,
     ...(available ? { story: MYSTICISM_MAGISTER_SOURCE_STATUS } : {}),
     supplies: available ? `${MYSTICISM_MAGISTER_FORMULA_STATUS}供应方剩余${remaining}瓶，你持有未服原瓶${held}瓶。${s.mysticismMagister.resupply.requestedWeek === null ? `已实际接收后续供给${s.mysticismMagister.resupply.deliveries}批。` : `第${s.mysticismMagister.resupply.requestedWeek}周提出请求，第${s.mysticismMagister.resupply.requestedWeek + 1}周起可以收货。`}` : '',
-    actions: s.progression.pathwayId === 'white-tower' && s.progression.sequence === 2 ? [] : actions,
+    actions: s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 2||s.progression.sequence===1) ? [] : actions,
     bottles: available ? s.mysticismMagister.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 秘术导师魔药`,
       source: `${bottle.source}${bottle.acquiredWeek === null ? '尚未交付。' : `第${bottle.acquiredWeek}周交付给你；原瓶${bottle.id}。`}`,
@@ -247,7 +248,7 @@ export function validateMysticismMagisterState(s: SliceState): boolean {
   if (mysticismMagister.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!mysticismMagister.guidanceKnown || !integer(s.polymath.promotionWeek, 1, s.week) || !integer(mysticismMagister.promotionWeek, firstConsumptionWeek, s.week) || mysticismMagister.polymathActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...READER_ABILITY_IDS, ...REASONER_ABILITY_IDS, ...DETECTIVE_ABILITY_IDS, ...POLYMATH_ABILITY_IDS, ...MYSTICISM_MAGISTER_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?PROPHET_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?ALL_KNOWING_EYE_ABILITY_IDS:[]),...READER_ABILITY_IDS, ...REASONER_ABILITY_IDS, ...DETECTIVE_ABILITY_IDS, ...POLYMATH_ABILITY_IDS, ...MYSTICISM_MAGISTER_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?PROPHET_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (mysticismMagister.promotionWeek !== null || mysticismMagister.polymathActingAtPromotion !== null || MYSTICISM_MAGISTER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (mysticismMagister.practice.token !== 'OWNER' || mysticismMagister.practice.dreamOpen || mysticismMagister.practice.dreamResult !== 'NONE' || mysticismMagister.practice.dreamAttempts !== 0 || mysticismMagister.practice.kitsUsed !== 0 || mysticismMagister.practice.teachingChecks !== 0 || mysticismMagister.crafts.length !== 0 || mysticismMagister.craftAttemptWeek !== null) return false;
@@ -296,7 +297,7 @@ export function validateMysticismMagisterState(s: SliceState): boolean {
   if (mysticismMagister.resupply.requestedWeek !== null && (!mysticismMagister.guidanceKnown || isPromoted || !supplyExhausted(mysticismMagister) || mysticismMagister.bottles.some(bottle => bottle.consumedWeek! > mysticismMagister.resupply.requestedWeek!))) return false;
   if (!record(raw.encounter) || !shape(raw.encounter, ['status', 'startHistoryIndex', 'attemptWeek']) || !['AVAILABLE', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(raw.encounter.status as string)) return false;
   const e = mysticismMagister.encounter;
-  if (isPromoted && s.progression.sequence === 2 && e.status === 'FIGHTING') return false;
+  if (isPromoted && (s.progression.sequence === 2||s.progression.sequence===1) && e.status === 'FIGHTING') return false;
   if (e.startHistoryIndex !== null && !integer(e.startHistoryIndex, 0, s.combatHistory.length) || e.attemptWeek !== null && !integer(e.attemptWeek, mysticismMagister.promotionWeek ?? s.week, s.week)) return false;
   if (!isPromoted && (e.status !== 'AVAILABLE' || e.startHistoryIndex !== null || e.attemptWeek !== null)) return false;
   if (e.status !== 'AVAILABLE' && e.attemptWeek === null || e.status === 'AVAILABLE' && e.startHistoryIndex !== null) return false;

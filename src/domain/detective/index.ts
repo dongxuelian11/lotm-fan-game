@@ -1,3 +1,4 @@
+import { ALL_KNOWING_EYE_ABILITY_IDS } from '../all-knowing-eye/types.js';
 import { WISDOM_ANGEL_ABILITY_IDS } from '../wisdom-angel/types.js';
 import {INSIGHT_SCHOLAR_ABILITY_IDS} from '../insight-scholar/types.js';
 import {PROPHET_ABILITY_IDS} from '../prophet/types.js';
@@ -31,7 +32,7 @@ export function createDetectiveState(): DetectiveState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isReasoner = (s: SliceState) => s.progression.pathwayId === 'white-tower' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.reader.discovered && s.reader.guidanceKnown && s.reasoner.guidanceKnown && (isReasoner(s) || promoted(s));
 const potionPrice = (bottle: DetectiveBottle) => DETECTIVE_PRICES.potion - (bottle.labourSteps === 4 ? DETECTIVE_PRICES.labourCredit : 0);
@@ -182,7 +183,7 @@ export function projectDetective(s: SliceState): DetectiveProjection {
     cases: [], environment: '',
     ...(available ? { story: DETECTIVE_SOURCE_STATUS } : {}),
     supplies: available ? `${DETECTIVE_FORMULA_STATUS}供应方剩余${remaining}瓶，你持有未服原瓶${held}瓶。${s.detective.resupply.requestedWeek === null ? `已实际接收后续供给${s.detective.resupply.deliveries}批。` : `第${s.detective.resupply.requestedWeek}周提出请求，第${s.detective.resupply.requestedWeek + 1}周起可以收货。`}` : '',
-    actions: s.progression.pathwayId === 'white-tower' && s.progression.sequence === 2 ? [] : actions,
+    actions: s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 2||s.progression.sequence===1) ? [] : actions,
     bottles: available ? s.detective.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 守知者（侦探）魔药`,
       source: `${bottle.source}${bottle.acquiredWeek === null ? '尚未交付。' : `第${bottle.acquiredWeek}周交付给你；原瓶${bottle.id}。`}`,
@@ -192,8 +193,8 @@ export function projectDetective(s: SliceState): DetectiveProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? DETECTIVE_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?s.polymath.detectiveActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?'守知者魔药已消化，原痕迹与推理记录保留。':isPromoted ? `推理学员消化成果${s.detective.reasonerActingAtPromotion}/100已保留；守知者（侦探）扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?s.polymath.detectiveActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?'守知者魔药已消化，原痕迹与推理记录保留。':isPromoted ? `推理学员消化成果${s.detective.reasonerActingAtPromotion}/100已保留；守知者（侦探）扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成推理学员消化（${s.progression.acting}/100），并在晋升推理学员后度过8整周（${reasonerWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完推理学员之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${DETECTIVE_CONSUMPTION_RISK}` : '成为推理学员后，可向原导师了解下一序列。',
@@ -242,11 +243,11 @@ export function validateDetectiveState(s: SliceState): boolean {
     if (value.attemptWeek !== null && !integer(value.attemptWeek, firstActivityWeek, s.week)) return false;
   }
   const detective = raw as unknown as DetectiveState, isPromoted = promoted(s);
-  if (isPromoted && s.progression.sequence === 2 && (!detective.reflected || Object.values(detective.cases).some(c => c.status !== 'RESOLVED'))) return false;
+  if (isPromoted && (s.progression.sequence === 2||s.progression.sequence===1) && (!detective.reflected || Object.values(detective.cases).some(c => c.status !== 'RESOLVED'))) return false;
   if (detective.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!detective.guidanceKnown || !integer(s.reasoner.promotionWeek, 9, s.week) || !integer(detective.promotionWeek, firstConsumptionWeek, s.week) || detective.reasonerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...READER_ABILITY_IDS, ...REASONER_ABILITY_IDS, ...DETECTIVE_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?POLYMATH_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?MYSTICISM_MAGISTER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?PROPHET_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?ALL_KNOWING_EYE_ABILITY_IDS:[]),...READER_ABILITY_IDS, ...REASONER_ABILITY_IDS, ...DETECTIVE_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?POLYMATH_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?MYSTICISM_MAGISTER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?PROPHET_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (detective.promotionWeek !== null || detective.reasonerActingAtPromotion !== null || DETECTIVE_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (detective.reflected || Object.values(detective.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.plan !== null || value.conclusion !== null || value.mistakes !== 0)) return false;

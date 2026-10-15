@@ -61,7 +61,13 @@ describe('Insight Scholar candidate S3 original bottles and explicitly G profess
       const other = structuredClone(s); other.progression.pathwayId = pathwayId;
       expect(projectInsightScholar(other).discovered).toBe(false); expect(projectInsightScholar(other).actions).toEqual([]); reject(other, { type: 'LEARN_GUIDANCE' });
     }
-    for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectInsightScholar(other).discovered).toBe(false); }
+    for (const sequence of [9, 8, 7, 6, 5, 0]) { const other = structuredClone(s); other.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectInsightScholar(other).discovered).toBe(false); }
+  });
+  it('keeps S1 history read-only and rejects a forged S1 promotion', () => {
+    const s = prophet(); s.progression.sequence = 1;
+    expect(projectInsightScholar(s).discovered).toBe(true);
+    reject(s, { type: 'LEARN_GUIDANCE' });
+    expect(() => assertValidSliceState(s)).toThrow();
   });
   it('charges500 and one action while exposing the unverified name, sequence, abilities, formula and rite', () => {
     const s = prophet(), old = structuredClone([s.reader, s.reasoner, s.detective, s.polymath, s.mysticismMagister, s.prophet]);

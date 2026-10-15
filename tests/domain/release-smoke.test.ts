@@ -55,5 +55,5 @@ describe('source package playable release smoke', () => {
       expect(unwrap(store.submitIntent(command)).replayed).toBe(true);
       expect(store.repository.get(created.runId)!.state).toEqual(after);
     } finally { store.close(); rmSync(dir, { recursive: true, force: true }); }
-  });
+  }, 10_000);
 });

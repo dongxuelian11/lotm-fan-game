@@ -1,3 +1,4 @@
+import { ALL_KNOWING_EYE_ABILITY_IDS } from '../all-knowing-eye/types.js';
 import { WISDOM_ANGEL_ABILITY_IDS } from '../wisdom-angel/types.js';
 import {INSIGHT_SCHOLAR_ABILITY_IDS} from '../insight-scholar/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -45,7 +46,7 @@ export function createProphetState(): ProphetState {
 }
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isProphet = (s: SliceState) => s.progression.pathwayId === 'white-tower' && s.progression.sequence === 4;
-const hasProphetHistory = (s:SliceState) => isProphet(s)||(s.progression.pathwayId==='white-tower'&&[3, 2].includes(s.progression.sequence ?? 0));
+const hasProphetHistory = (s:SliceState) => isProphet(s)||(s.progression.pathwayId==='white-tower'&&[3, 2, 1].includes(s.progression.sequence ?? 0));
 const isMysticismMagister = (s: SliceState) => s.progression.pathwayId === 'white-tower' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.reader.discovered && s.reader.guidanceKnown && s.reasoner.guidanceKnown && s.detective.guidanceKnown && s.polymath.guidanceKnown && s.mysticismMagister.guidanceKnown && s.mysticismMagister.promotionWeek !== null && (isMysticismMagister(s) || hasProphetHistory(s));
 const bottleNumber = (bottle: Pick<ProphetBottle, 'id'>) => Number(bottle.id.slice('prophet-potion-'.length));
@@ -180,15 +181,15 @@ export function projectProphet(s: SliceState): ProphetProjection {
   const chance = computeCheckChance({ baseAbility: s.character.coreStats.will, difficulty: 28, modifiers: [] });
   return {
     title: promoted ? '预言家 · 序列4' : '预言家之路', discovered: available, guidanceKnown: known, promoted,
-    formulaKnown: false, formula: [], actions: available && ![3, 2].includes(s.progression.sequence ?? 0) ? [...actions, ...prophetRitualActions(s), ...prophetLifeActions(s), ...prophetEncounterActions(s)] : [],
+    formulaKnown: false, formula: [], actions: available && ![3, 2, 1].includes(s.progression.sequence ?? 0) ? [...actions, ...prophetRitualActions(s), ...prophetLifeActions(s), ...prophetEncounterActions(s)] : [],
     bottles: known ? state.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 独立预言家成品`, source: `${bottle.source}${bottle.ritualId ? `第${bottle.ritualWindowWeek}周在原厅预约${bottle.ritualId}专业准备窗口服用；本次原包与原瓶均耗尽。` : ''}`,
       status: bottle.status === 'SUPPLIER' ? '原供应方持有，未交付' : bottle.status === 'PLAYER' ? '你实际持有，尚未服用' : `原瓶已耗尽 · ${bottle.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : bottle.outcome === 'SUCCESS' ? '成功晋升' : bottle.outcome === 'GREAT_FAILURE' ? '严重排异，仍为秘术导师' : '排异，仍为秘术导师'}`,
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: promoted ? PROPHET_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: promoted ? ([3, 2].includes(s.progression.sequence ?? 0)?s.insightScholar.prophetActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: promoted ? `秘术导师消化${state.mysticismMagisterActingAtPromotion}/100与原掌握保留；预言家扮演${[3, 2].includes(s.progression.sequence ?? 0)?s.insightScholar.prophetActingAtPromotion:s.progression.acting}/100。` : available ? `秘术导师消化需100（当前${s.progression.acting}/100），晋升后满12整周（${mysticismMagisterWeeks(s)}/12）；当前专业准备与原封装包须另行完成，可选择保持秘术导师。` : '先完成秘术导师之路。',
+    acting: promoted ? ([3, 2, 1].includes(s.progression.sequence ?? 0)?s.insightScholar.prophetActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `秘术导师消化${state.mysticismMagisterActingAtPromotion}/100与原掌握保留；预言家扮演${[3, 2, 1].includes(s.progression.sequence ?? 0)?s.insightScholar.prophetActingAtPromotion:s.progression.acting}/100。` : available ? `秘术导师消化需100（当前${s.progression.acting}/100），晋升后满12整周（${mysticismMagisterWeeks(s)}/12）；当前专业准备与原封装包须另行完成，可选择保持秘术导师。` : '先完成秘术导师之路。',
     pollution: s.seer.pollution, risk: known ? PROPHET_CONSUMPTION_RISK : '先通过原导师了解预言家成品来源与实际仪式风险。',
     supplies: known ? `供应方持有${state.bottles.filter(bottle => bottle.status === 'SUPPLIER').length}瓶，你持有未用原瓶${state.bottles.filter(bottle => bottle.status === 'PLAYER').length}瓶。${state.resupply.requestedWeek === null ? `后续实际到货${state.resupply.deliveries}批。` : `第${state.resupply.requestedWeek}周申请，下一真实周起实际到货。`}成品配方仍未知，原瓶、付费预约与专业准备分别结算，旧仪式不能代替。` : '',
     ...(available ? { story: `${PROPHET_FORMULA_STATUS}${PROPHET_RITUAL_SOURCE}${PROPHET_SOURCE_STATUS}` } : {}),
@@ -227,7 +228,7 @@ function validateState(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.mysticismMagister.promotionWeek, 1, s.week) || !integer(state.promotionWeek, earliestConsumption, s.week) || state.mysticismMagisterActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...READER_ABILITY_IDS, ...REASONER_ABILITY_IDS, ...DETECTIVE_ABILITY_IDS, ...POLYMATH_ABILITY_IDS, ...MYSTICISM_MAGISTER_ABILITY_IDS, ...PROPHET_ABILITY_IDS,...([3, 2].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?ALL_KNOWING_EYE_ABILITY_IDS:[]),...READER_ABILITY_IDS, ...REASONER_ABILITY_IDS, ...DETECTIVE_ABILITY_IDS, ...POLYMATH_ABILITY_IDS, ...MYSTICISM_MAGISTER_ABILITY_IDS, ...PROPHET_ABILITY_IDS,...([3, 2, 1].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.mysticismMagisterActingAtPromotion !== null || PROPHET_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   for (const [index, bottle] of state.bottles.entries()) {
     if (!record(bottle) || !shape(bottle, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'status', 'outcome', 'ritualId', 'ritualWindowWeek']) || bottle.id !== `prophet-potion-${index + 1}` || typeof bottle.source !== 'string' || !integer(bottle.labourSteps, 0, 5)) return false;

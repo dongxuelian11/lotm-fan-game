@@ -1,3 +1,4 @@
+import { ALL_KNOWING_EYE_ABILITY_IDS } from '../all-knowing-eye/types.js';
 import { WISDOM_ANGEL_ABILITY_IDS } from '../wisdom-angel/types.js';
 import {INSIGHT_SCHOLAR_ABILITY_IDS} from '../insight-scholar/types.js';
 import {PROPHET_ABILITY_IDS} from '../prophet/types.js';
@@ -34,7 +35,7 @@ export function createPolymathState(): PolymathState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'white-tower' && (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'white-tower' && (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)));
 const isDetective = (s: SliceState) => s.progression.pathwayId === 'white-tower' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.reader.discovered && s.reader.guidanceKnown && s.reasoner.guidanceKnown && s.detective.guidanceKnown && s.detective.promotionWeek !== null && (isDetective(s) || promoted(s));
 const potionPrice = (bottle: PolymathBottle) => POLYMATH_PRICES.potion - (bottle.labourSteps === 5 ? POLYMATH_PRICES.labourCredit : 0);
@@ -158,7 +159,7 @@ export function applyPolymathCommand(s: SliceState, command: PolymathAcquisition
 
 export function projectPolymath(s: SliceState): PolymathProjection {
   const actions: PolymathAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?s.mysticismMagister.polymathActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?s.mysticismMagister.polymathActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: PolymathAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -188,7 +189,7 @@ export function projectPolymath(s: SliceState): PolymathProjection {
     cases: [], environment: '', insideCase: Object.values(s.polymath.cases).some(value => value.contactOpen),
     ...(available ? { story: POLYMATH_SOURCE_STATUS } : {}),
     supplies: available ? `${POLYMATH_FORMULA_STATUS}供应方剩余${remaining}瓶，你持有未服原瓶${held}瓶。${s.polymath.resupply.requestedWeek === null ? `已实际接收后续供给${s.polymath.resupply.deliveries}批。` : `第${s.polymath.resupply.requestedWeek}周提出请求，第${s.polymath.resupply.requestedWeek + 1}周起可以收货。`}` : '',
-    actions: s.progression.pathwayId === 'white-tower' && s.progression.sequence === 2 ? [] : actions,
+    actions: s.progression.pathwayId === 'white-tower' && (s.progression.sequence === 2||s.progression.sequence===1) ? [] : actions,
     bottles: available ? s.polymath.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 博学者魔药`,
       source: `${bottle.source}${bottle.acquiredWeek === null ? '尚未交付。' : `第${bottle.acquiredWeek}周交付给你；原瓶${bottle.id}。`}`,
@@ -199,7 +200,7 @@ export function projectPolymath(s: SliceState): PolymathProjection {
     })) : [],
     abilities: isPromoted ? POLYMATH_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?'博学者魔药已消化；原样本、分析、模仿与真实结束记录保留。':isPromoted ? `守知者消化成果${s.polymath.detectiveActingAtPromotion}/100已保留；博学者扮演${acting}/100，能力掌握分别记录。`
+    digestion: (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?'博学者魔药已消化；原样本、分析、模仿与真实结束记录保留。':isPromoted ? `守知者消化成果${s.polymath.detectiveActingAtPromotion}/100已保留；博学者扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成守知者消化（${s.progression.acting}/100），并在晋升守知者后度过12整周（${detectiveWeeks(s)}/12）。用药指导与原瓶可以提前准备。` : '先走完守知者之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应五次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${POLYMATH_CONSUMPTION_RISK}` : '成为守知者后，可向原导师了解下一序列。',
@@ -250,7 +251,7 @@ export function validatePolymathState(s: SliceState): boolean {
   if (polymath.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!polymath.guidanceKnown || !integer(s.detective.promotionWeek, 1, s.week) || !integer(polymath.promotionWeek, firstConsumptionWeek, s.week) || polymath.detectiveActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...READER_ABILITY_IDS, ...REASONER_ABILITY_IDS, ...DETECTIVE_ABILITY_IDS, ...POLYMATH_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?MYSTICISM_MAGISTER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?PROPHET_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?ALL_KNOWING_EYE_ABILITY_IDS:[]),...READER_ABILITY_IDS, ...REASONER_ABILITY_IDS, ...DETECTIVE_ABILITY_IDS, ...POLYMATH_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?MYSTICISM_MAGISTER_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?PROPHET_ABILITY_IDS:[]),...([3, 2, 1].includes(s.progression.sequence ?? 0)?INSIGHT_SCHOLAR_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?WISDOM_ANGEL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (polymath.promotionWeek !== null || polymath.detectiveActingAtPromotion !== null || POLYMATH_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (polymath.reflected || Object.values(polymath.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;
@@ -298,7 +299,7 @@ export function validatePolymathState(s: SliceState): boolean {
   if (polymath.resupply.requestedWeek !== null && (!polymath.guidanceKnown || isPromoted || !supplyExhausted(polymath) || polymath.bottles.some(bottle => bottle.consumedWeek! > polymath.resupply.requestedWeek!))) return false;
   if (!record(raw.encounter) || !shape(raw.encounter, ['status', 'startHistoryIndex', 'attemptWeek']) || !['AVAILABLE', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(raw.encounter.status as string)) return false;
   const e = polymath.encounter;
-  if (isPromoted && s.progression.sequence === 2 && e.status === 'FIGHTING') return false;
+  if (isPromoted && (s.progression.sequence === 2||s.progression.sequence===1) && e.status === 'FIGHTING') return false;
   if (e.startHistoryIndex !== null && !integer(e.startHistoryIndex, 0, s.combatHistory.length) || e.attemptWeek !== null && !integer(e.attemptWeek, polymath.promotionWeek ?? s.week, s.week)) return false;
   if (!isPromoted && (e.status !== 'AVAILABLE' || e.startHistoryIndex !== null || e.attemptWeek !== null)) return false;
   if (e.status !== 'AVAILABLE' && e.attemptWeek === null || e.status === 'AVAILABLE' && e.startHistoryIndex !== null) return false;

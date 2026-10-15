@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
-import { createSliceRun } from '../../src/domain/slice/index.js';
+import { createSliceRun, assertValidSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import type { SeerContext } from '../../src/domain/seer/index.js';
@@ -62,12 +62,18 @@ describe('Wisdom Angel candidate S2 independent acquisition and finite source bo
     expect(projectWisdomAngel(s).story).toBeUndefined(); reject(s, { type: 'LEARN_GUIDANCE' });
     const other = createWisdomAngelState(); other.bottles[0]!.labourSteps = 5;
     expect(s.wisdomAngel.bottles[0]!.labourSteps).toBe(0); expect(validateWisdomAngelState(s)).toBe(true);
-    for (const sequence of [9, 8, 7, 6, 5, 4, 1, 0]) {
+    for (const sequence of [9, 8, 7, 6, 5, 4, 0]) {
       const t = insightScholar(); t.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>;
       expect(projectWisdomAngel(t).discovered).toBe(false); reject(t, { type: 'LEARN_GUIDANCE' });
     }
     const t = insightScholar(); t.progression.pathwayId = 'diviner';
     expect(projectWisdomAngel(t).discovered).toBe(false); reject(t, { type: 'LEARN_GUIDANCE' });
+  });
+  it('keeps S1 history read-only and rejects a forged S1 promotion', () => {
+    const s = insightScholar(); s.progression.sequence = 1;
+    expect(projectWisdomAngel(s).discovered).toBe(true);
+    reject(s, { type: 'LEARN_GUIDANCE' });
+    expect(() => assertValidSliceState(s)).toThrow();
   });
   it('charges actual guidance while keeping both candidate names, sequence numbers and new powers explicitly unverified G', () => {
     const s = insightScholar(), prior = structuredClone(oldRoots(s)); apply(s, { type: 'LEARN_GUIDANCE' });
