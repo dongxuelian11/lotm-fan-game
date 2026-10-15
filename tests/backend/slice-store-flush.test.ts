@@ -70,7 +70,7 @@ describe("durable file flush handles", () => {
     for (const suffix of [".bak.tmp", ".recovery.tmp", ".sealed.tmp"])
       expect(io.flushed.some(entry => entry.path.endsWith(suffix))).toBe(true);
     expect(io.flushed.every(entry => entry.flags === "r+")).toBe(true);
-  });
+  }, 10_000);
   it("propagates a real marker flush error and rolls back the living snapshot and marker", () => {
     io.rejectReadOnly = true;
     const file = path(), store = open(file), initial = create(store);

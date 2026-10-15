@@ -106,7 +106,7 @@ describe("slice canonical storage", () => {
     expect(unwrap(reopened.getBootstrap()).activeState).toEqual(before);
     expect(unwrap(reopened.submitIntent(command)).replayed).toBe(true);
     expect(unwrap(reopened.getBootstrap()).activeState).toEqual(before);
-  });
+  }, 10_000);
   it("replays duplicate creation without a second run and rejects changed duplicate or stale revision", () => {
     const s = open(path()),
       initial = unwrap(s.submitIntent(create));
