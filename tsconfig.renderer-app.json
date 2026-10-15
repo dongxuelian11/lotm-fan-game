@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.renderer.json",
+  "include": [
+    "src/renderer/**/*.ts",
+    "src/renderer/**/*.tsx",
+    "src/shared/**/*.ts",
+    "vite.config.mts"
+  ],
+  "exclude": [
+    "tests"
+  ],
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.cache/lotm-renderer-app.tsbuildinfo"
+  }
+}

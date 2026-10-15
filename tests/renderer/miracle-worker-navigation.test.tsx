@@ -1,0 +1,21 @@
+/* @vitest-environment jsdom */
+import {readFileSync} from 'node:fs';
+import {cleanup,render,screen,waitFor,within,fireEvent} from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
+import {SliceApp} from '../../src/renderer/SliceApp';
+import {applySliceIntent,assertValidSliceState,projectSliceState} from '../../src/domain/slice/index';
+import {migrateSliceState} from '../../src/domain/slice/migration';
+import type {SliceState} from '../../src/domain/slice/types';
+vi.setConfig({testTimeout:30000});
+import type {SliceBridge} from '../../src/shared/slice-contracts';
+const fixture=(name:string)=>JSON.parse(readFileSync(`tests/fixtures/miracle-worker-v01640/${name}.json`,'utf8'));
+function game(input:SliceState){let state=migrateSliceState(input);assertValidSliceState(state);const submit:SliceBridge['submitIntent']=vi.fn<SliceBridge["submitIntent"]>(async e=>{if(e.payload.type==='CREATE')throw Error('existing');state=applySliceIntent(state,e.payload);assertValidSliceState(state);return{ok:true,value:{intentId:e.intentId,runId:state.runId,previousRevision:e.expectedRevision,newRevision:state.revision,committedAt:'2026-10-13T20:00:00Z',replayed:false,state:projectSliceState(state)}};});return{get state(){return state},submit};}
+async function mount(g:ReturnType<typeof game>){const state=projectSliceState(g.state);window.sliceGame={getBootstrap:vi.fn<SliceBridge["getBootstrap"]>(async()=>({ok:true,value:{mode:'browser',activeState:state,runs:[{runId:state.runId,name:state.character.name,portraitId:state.character.portraitId,week:state.week,date:state.date,status:state.status,revision:state.revision,updatedAt:'2026-10-13T20:00:00Z'}]}})),loadRun:vi.fn<SliceBridge["loadRun"]>(async()=>({ok:true,value:projectSliceState(g.state)})),submitIntent:g.submit};render(<SliceApp/>);await userEvent.click(await screen.findByRole('button',{name:/继续游戏/}));await userEvent.click(screen.getByRole('button',{name:new RegExp(state.character.name)}));await screen.findByRole('region',{name:'奇迹师'});}
+async function acknowledge(){const d=screen.queryByRole('dialog',{name:'战斗回合结果'});if(d)await userEvent.click(within(d).getByRole('button',{name:'返回生活'}));}
+beforeEach(()=>{vi.spyOn(window,'scrollTo').mockImplementation(()=>{});HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','')};HTMLDialogElement.prototype.close=function(){this.removeAttribute('open')};});
+afterEach(()=>{cleanup();delete window.sliceGame;vi.restoreAllMocks();});
+describe('MiracleWorker saved game navigation with actual natural and clearly directed records',()=>{
+ it('opens the natural fifth-bottle S2 save without exposing the three-century chamber again',async()=>{const g=game(fixture('continuation').final);await mount(g);await acknowledge();expect(screen.queryByRole('region',{name:'古代学者'})).toBeNull();expect(screen.getByRole('region',{name:'奇迹师当前处境'}).textContent).toContain('奇迹师');expect(g.submit).not.toHaveBeenCalled();expect(g.state.miracleWorker.bottles.map(b=>b.outcome)).toEqual(['FAILURE','FAILURE','FAILURE','FAILURE','SUCCESS']);});
+ it('reopens actual directed H0 pending death, cancels independently, then commits one same-body revival',async()=>{const g=game(fixture('directed-revival').pending),before=structuredClone(g.state);await mount(g);await acknowledge();const pending=screen.getByRole('region',{name:'有限复起待决选择'});expect(pending.textContent).toContain('复起');const button=within(pending).getByRole('button',{name:/在界石北侧一米处复起/});await userEvent.click(button);const dialog=screen.getByRole('dialog',{name:'消耗账本次数，在原场就近复起？'});await userEvent.click(within(dialog).getByRole('button',{name:'暂不复起，返回待决选择'}));expect(g.submit).not.toHaveBeenCalled();expect(g.state).toEqual(before);await userEvent.click(button);await userEvent.click(within(screen.getByRole('dialog',{name:'消耗账本次数，在原场就近复起？'})).getByRole('button',{name:'确认按上述成本就近复起'}));await waitFor(()=>expect(g.state.status).toBe('ACTIVE'));expect(g.submit).toHaveBeenCalledTimes(1);expect(g.state.health).toBe(30);expect(g.state.miracleWorker.revival.used).toBe(1);expect(g.state.spirituality).toBe(before.spirituality);expect(g.state.mind).toBe(before.mind);expect(g.state.combatHistory).toEqual(before.combatHistory);expect(screen.queryByRole('region',{name:'有限复起待决选择'})).toBeNull();});
+});
