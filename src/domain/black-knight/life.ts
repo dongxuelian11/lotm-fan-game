@@ -52,7 +52,7 @@ const inherited = (c: { type: string }): c is InheritedCommand => inheritedTypes
 const record = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x);
 const shape = (x: object, keys: readonly string[]) => Object.keys(x).length === keys.length && keys.every(k => Object.hasOwn(x, k));
 const integer = (x: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): x is number => Number.isSafeInteger(x) && (x as number) >= min && (x as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && [4,3].includes(s.progression.sequence!);
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && [4,3,2].includes(s.progression.sequence!);
 const last = (r: BlackKnightCaseState) => r.attempts.at(-1);
 const completed = (r: BlackKnightCaseState) => r.status === 'EXAMINED' || r.status === 'RESOLVED';
 const sourceFor = (id: BlackKnightCaseId) => `black-knight-case:${id}`;
@@ -322,6 +322,6 @@ export function validateBlackKnightLife(s: SliceState): boolean {
     if (sh.creatureLocation !== expectedLocation || spawned && sh.playerWalks < 1 || sh.status === 'LOOSE' && sh.playerNode !== 'ROOM' || (sh.status === 'ISOLATED' || sh.status === 'TAKEN_AWAY') && sh.playerNode !== 'OUTSIDE') return false;
     if ((sh.playerNode === 'ROOM' || sh.status === 'SEALED') && (open > 0 || prepared > 0) || hasBlackKnightLifeLock(s) && (s.world.city !== 'BACKLUND' || s.status !== 'ACTIVE' || !!s.activeEvent || !!s.combat)) return false;
     if (s.seer.completedSources.filter(x => x === 'black-knight-shade-spawn').length !== Number(spawned) || s.seer.completedSources.filter(x => x === 'black-knight-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3) return false;
-    return !promoted(s) || (s.progression.sequence===3?s.threeHeadedTemplar.blackKnightActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25;
+    return !promoted(s) || ((s.progression.sequence===3||s.progression.sequence===2)?s.threeHeadedTemplar.blackKnightActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25;
   } catch { return false; }
 }

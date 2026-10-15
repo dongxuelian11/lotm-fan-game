@@ -46,7 +46,7 @@ describe('Candidate ChaosWalker public continuation with the sole original luck 
   }, 30_000);
   it('migrates W87 without changing original resources, six roots or next RNG', () => {
     const old = original().final, bytes = JSON.stringify(old), s = migrateSliceState(old);
-    expect(s.schemaVersion).toBe(175); expect(s.contentVersion).toBe('sage-v175'); expect(s.chaosWalker).toEqual(createChaosWalkerState());
+    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176'); expect(s.chaosWalker).toEqual(createChaosWalkerState());
     expect(s).toMatchObject({ week: 87, status: 'ACTIVE', health: 70, mind: 100, spirituality: 113, cash: 360, actionsRemaining: 1, progression: { sequence: 4, acting: 100 }, random: { seed: 'monster-natural-v060', cursor: 153 } });
     expect(s.winner.luck).toEqual({ stored: 1, accumulated: 7, spent: 6, lastAccumulateWeek: 87 });
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key]).toEqual(value);

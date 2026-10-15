@@ -1,3 +1,4 @@
+import {createElderState} from '../../src/domain/elder/index.js';
 import { createSageState } from '../../src/domain/sage/index.js';
 import { createPlaneswalkerState } from '../../src/domain/planeswalker/index.js';
 import { createFateTrojanState } from '../../src/domain/fate-trojan/index.js';
@@ -265,13 +266,13 @@ describe('DeathConsul S2 frozen-era acquisition and seven-stage inheritance', ()
   });
   it('migrates strict169 state into the current schema by adding only fresh missing roots, without erasing an old field', () => {
     const current = fixture();
-    const { deathConsul: _newRoot, planeswalker: _planeswalker, fateTrojan: _fateTrojan, glory: _glory, calamityDemoness: _calamityDemoness, sage: _sage, ...rest } = current;
-    // Remove all six roots introduced after schema 169; keep every earlier field and the real historical fixture unchanged.
+    const { deathConsul: _newRoot, planeswalker: _planeswalker, fateTrojan: _fateTrojan, glory: _glory, calamityDemoness: _calamityDemoness, sage: _sage, elder: _elder, ...rest } = current;
+    // Remove all seven roots introduced after schema 169; keep every earlier field and the real historical fixture unchanged.
     const old = { ...rest, schemaVersion: 169, contentVersion: 'light-seeker-v169' }, before = structuredClone(old);
-    const result = migrateSliceState(old), { deathConsul, planeswalker, fateTrojan, glory, calamityDemoness, sage, ...migrated } = result;
-    expect(sage).toEqual(createSageState()); expect(old).toEqual(before); expect(deathConsul).toEqual(createDeathConsulState());
+    const result = migrateSliceState(old), { deathConsul, planeswalker, fateTrojan, glory, calamityDemoness, sage, elder, ...migrated } = result;
+    expect(elder).toEqual(createElderState()); expect(sage).toEqual(createSageState()); expect(old).toEqual(before); expect(deathConsul).toEqual(createDeathConsulState());
     expect({ planeswalker, fateTrojan, glory, calamityDemoness }).toEqual({ planeswalker: createPlaneswalkerState(), fateTrojan: createFateTrojanState(), glory: createGloryState(), calamityDemoness: createCalamityDemonessState() });
-    expect(migrated).toEqual({ ...old, schemaVersion: 175, contentVersion: 'sage-v175' });
+    expect(migrated).toEqual({ ...old, schemaVersion: 176, contentVersion: 'elder-v176' });
     expect(migrateSliceState(result)).toEqual(result); assertValidSliceState(result);
     expect(() => migrateSliceState({ ...old, deathConsul: createDeathConsulState() })).toThrow();
     expect(() => migrateSliceState({ ...old, contentVersion: 'forged' })).toThrow();

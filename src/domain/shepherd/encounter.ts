@@ -97,7 +97,7 @@ export function validateShepherdEncounter(s: SliceState): boolean {
       typeof e.blurReady !== 'boolean' ||
       (e.attemptWeek !== null && (!Number.isSafeInteger(e.attemptWeek) || e.attemptWeek < 1 || e.attemptWeek > s.week))) return false;
   const initial = e.status === 'AVAILABLE' && e.startHistoryIndex === null && e.attemptWeek === null && noEffects(s);
-  const promoted = s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 5||s.progression.sequence===4||s.progression.sequence===3);
+  const promoted = s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 5||s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2));
   if (!promoted) return initial && rewards === 0 && c?.encounterId !== 'SHEPHERD_DISPUTE';
   if (!initial && (!reportsComplete(s) || s.shepherd.promotionWeek === null || e.attemptWeek === null ||
       e.attemptWeek < s.shepherd.promotionWeek)) return false;

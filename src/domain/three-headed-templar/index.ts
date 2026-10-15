@@ -1,3 +1,4 @@
+import { ELDER_ABILITY_IDS } from '../elder/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -30,7 +31,9 @@ export function createThreeHeadedTemplarState(): ThreeHeadedTemplarState {
     preparations: [], preparedWeek: null, life: createThreeHeadedTemplarLifeState(), encounter: createThreeHeadedTemplarEncounterState() };
 }
 export const isThreeHeadedTemplar = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 3;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && [4, 3].includes(s.progression.sequence ?? 0)
+export const hasThreeHeadedTemplarHistory = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && [3, 2].includes(s.progression.sequence ?? 0);
+export const threeHeadedTemplarActing = (s: SliceState): number => s.progression.sequence === 2 ? s.elder?.threeHeadedTemplarActingAtPromotion ?? 0 : s.progression.acting;
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && [4, 3, 2].includes(s.progression.sequence ?? 0)
   && s.secretSupplicant.discovered && s.secretSupplicant.guidanceKnown && s.listener.guidanceKnown && s.shadowAscetic.guidanceKnown
   && s.roseBishop.guidanceKnown && s.shepherd.guidanceKnown && s.blackKnight.guidanceKnown && s.blackKnight.promotionWeek !== null;
 export const hasThreeHeadedTemplarOldPractice = (s: SliceState): boolean => secretSupplicantInside(s) || listenerInside(s) || shadowAsceticInside(s)
@@ -74,7 +77,7 @@ export function threeHeadedTemplarAcquisitionBlock(s: SliceState, command: Three
   if (hasThreeHeadedTemplarOldPractice(s) || hasThreeHeadedTemplarLifeLock(s) || hasThreeHeadedTemplarEncounterLock(s)) return '先实际结束旧祈仪、接触、原身体变形、原物借用与黑骑士效果，归还原物并收束旧准备和当前实践；旧人物、伤势、原灵与隔离记录保留，旧许可不代替新案同意。';
   if (s.world.city !== 'BACKLUND') return '须沿实际行程回到贝克兰德THT3-SEALED-COURT旁的独立指导场。';
   if (!knownChannel(s)) return '实际成为黑骑士并保留原指导渠道后，才能了解三首圣堂之路。';
-  if (isThreeHeadedTemplar(s)) return '已经真实晋升三首圣堂3，不能重复准备或服药；未服原瓶保留。';
+  if (hasThreeHeadedTemplarHistory(s)) return '已经真实晋升三首圣堂3，不能重复准备或服药；未服原瓶保留。';
   const state = s.threeHeadedTemplar;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
@@ -169,12 +172,12 @@ export function applyThreeHeadedTemplarCommand(s: SliceState, command: ThreeHead
 }
 
 export function projectThreeHeadedTemplar(s: SliceState): ThreeHeadedTemplarProjection {
-  const state = s.threeHeadedTemplar, available = knownChannel(s), promoted = isThreeHeadedTemplar(s), actions: ThreeHeadedTemplarAction[] = [];
+  const state = s.threeHeadedTemplar, available = knownChannel(s), promoted = hasThreeHeadedTemplarHistory(s), actions: ThreeHeadedTemplarAction[] = [];
   const add = (id: string, label: string, cost: string, command: ThreeHeadedTemplarAcquisitionCommand) => { const reason = threeHeadedTemplarAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-three-headed-templar-guidance', '听取三首圣堂成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
     else {
-      for (const task of THREE_HEADED_TEMPLAR_PREPARATIONS) if (!state.preparations.some(p => p.taskId === task.id)) add(`three-headed-templar-prepare-${task.id}`, task.title, '1行动 · 真实专业准备G', { type: 'PREPARE_TASK', taskId: task.id });
+      for (const task of THREE_HEADED_TEMPLAR_PREPARATIONS) if (!state.preparations.some(p => p.taskId === task.id)) add(`three-headed-templar-prepare-${task.id}`, task.title, '1行动 · 真实专业准备', { type: 'PREPARE_TASK', taskId: task.id });
       if (state.preparedWeek === null) add('prepare-three-headed-templar-promotion', '实际检查本次服药场地', '1行动 · 140便士 · 仅本周有效', { type: 'PREPARE_PROMOTION' });
       else add('leave-three-headed-templar-preparation', '沿原出口结束本次准备', '0行动 · 不退成本 · 未服原瓶保留', { type: 'LEAVE_PREPARATION' });
       if (state.resupply.requestedWeek !== null) add('receive-three-headed-templar-supply', '确认下一批三瓶实际到货', `0行动 · 最早第${state.resupply.requestedWeek + 1}周`, { type: 'RECEIVE_SUPPLY' });
@@ -191,14 +194,14 @@ export function projectThreeHeadedTemplar(s: SliceState): ThreeHeadedTemplarProj
   const preferred = allActions.find(action => action.enabled && action.command.type !== 'LEAVE_PREPARATION') ?? allActions.find(action => action.enabled);
   const chance = computeCheckChance({ baseAbility: s.character.coreStats.will, difficulty: 30, modifiers: [] });
   return {
-    title: '三首圣堂·倒吊人序列3（有限双灵外放G）', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
+    title: '三首圣堂·倒吊人序列3', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted, formulaKnown: false, formula: [],
     ...(available ? { story: `${THREE_HEADED_TEMPLAR_FORMULA_STATUS}${THREE_HEADED_TEMPLAR_SOURCE_STATUS}` } : {}),
     supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6400便士或对应五项真实劳动后900便士；全部失败耗尽才可申请真实跨周补货。` : '',
     actions: allActions, preferredActionId: preferred?.id ?? null, nextStep: preferred ? `下一步：${preferred.label}。${preferred.cost}。` : available ? (allActions.find(action => action.reason)?.reason ?? '当前准备与演练已收束，可继续普通生活。') : '先走完黑骑士之路。',
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 三首圣堂成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为黑骑士' : '排异，仍为黑骑士'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? THREE_HEADED_TEMPLAR_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? THREE_HEADED_TEMPLAR_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `黑骑士消化${state.blackKnightActingAtPromotion}/100留存；三首圣堂扮演${s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `黑骑士需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${blackKnightWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完黑骑士之路。',
+    acting: promoted ? threeHeadedTemplarActing(s) : 0, digestion: promoted ? `黑骑士消化${state.blackKnightActingAtPromotion}/100留存；三首圣堂扮演${threeHeadedTemplarActing(s)}/100。三项真实情境各25、反思25，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `黑骑士需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${blackKnightWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完黑骑士之路。',
     pollution: s.seer.pollution, risk: available ? THREE_HEADED_TEMPLAR_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     inheritedTools: available ? `原动物来源份额与血肉储备${s.roseBishop.reserve.points}/${s.roseBishop.reserve.max}保持，使用须实付原储备。旧原灵当前${s.shepherd.grazing.spirits.filter(spirit => spirit.status === 'GRAZED').length}位已放牧，与新源合计至多7位，每灵至多3项原已选方法。当前本人借用：${s.shepherd.grazing.activeSpiritId ?? '无'}；全局仍同时只借1灵。本切片本人仅借用旧伊芮斯的原已选技能，两位新源只供实际外放协作，未实现或暗赠新的本人借用技能库。旧低阶灵不因此升为半神，也不算作这两位外放原灵。` : '',
@@ -222,15 +225,16 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.threeHeadedTemplar;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'blackKnightActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as ThreeHeadedTemplarState, promoted = isThreeHeadedTemplar(s), firstWeek = s.blackKnight.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + THREE_HEADED_TEMPLAR_MIN_BLACK_KNIGHT_WEEKS;
+  const state = raw as unknown as ThreeHeadedTemplarState, promoted = hasThreeHeadedTemplarHistory(s), firstWeek = s.blackKnight.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + THREE_HEADED_TEMPLAR_MIN_BLACK_KNIGHT_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !THREE_HEADED_TEMPLAR_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
   if (!state.guidanceKnown && (state.preparations.length || state.preparedWeek !== null)) return false;
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasThreeHeadedTemplarOldPractice(s) || hasThreeHeadedTemplarLifeLock(s) || hasThreeHeadedTemplarEncounterLock(s))) return false;
   if (promoted) {
+    if (s.progression.sequence === 2 && (s.elder?.threeHeadedTemplarActingAtPromotion !== 100 || !integer(s.elder?.promotionWeek, state.promotionWeek ?? s.week, s.week))) return false;
     if (!state.guidanceKnown || !integer(s.blackKnight.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.blackKnightActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS, ...SHEPHERD_ABILITY_IDS, ...BLACK_KNIGHT_ABILITY_IDS, ...THREE_HEADED_TEMPLAR_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS, ...SHEPHERD_ABILITY_IDS, ...BLACK_KNIGHT_ABILITY_IDS, ...THREE_HEADED_TEMPLAR_ABILITY_IDS, ...(s.progression.sequence === 2 ? ELDER_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.blackKnightActingAtPromotion !== null || THREE_HEADED_TEMPLAR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

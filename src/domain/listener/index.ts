@@ -1,3 +1,4 @@
+import { ELDER_ABILITY_IDS } from '../elder/types.js';
 import {THREE_HEADED_TEMPLAR_ABILITY_IDS} from '../three-headed-templar/types.js';
 import {BLACK_KNIGHT_ABILITY_IDS} from '../black-knight/types.js';
 import {SHEPHERD_ABILITY_IDS} from '../shepherd/types.js';
@@ -30,7 +31,7 @@ export function createListenerState(): ListenerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isSecretSupplicant = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.secretSupplicant.discovered && s.secretSupplicant.guidanceKnown && (isSecretSupplicant(s) || promoted(s));
 const potionPrice = (bottle: ListenerBottle) => LISTENER_PRICES.potion - (bottle.labourSteps === 3 ? LISTENER_PRICES.labourCredit : 0);
@@ -247,7 +248,7 @@ export function validateListenerState(s: SliceState): boolean {
   if (listener.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!listener.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(listener.promotionWeek, firstConsumptionWeek, s.week) || listener.secretSupplicantActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?SHADOW_ASCETIC_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?ROSE_BISHOP_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?SHEPHERD_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?BLACK_KNIGHT_ABILITY_IDS:[]),...(s.progression.sequence===3?THREE_HEADED_TEMPLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))))?SHADOW_ASCETIC_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?ROSE_BISHOP_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?SHEPHERD_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?BLACK_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?THREE_HEADED_TEMPLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?ELDER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (listener.promotionWeek !== null || listener.secretSupplicantActingAtPromotion !== null || LISTENER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (listener.reflected || Object.values(listener.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.verified || value.overclaims !== 0)) return false;

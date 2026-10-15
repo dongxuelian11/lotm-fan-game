@@ -1,3 +1,4 @@
+import { reconstructElderOriginalRoot } from '../elder/life.js';
 import type { PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
 import { isValidGameDate } from '../game-calendar.js';
@@ -57,7 +58,7 @@ export interface ThreeHeadedTemplarAttempt {
 export interface ThreeHeadedTemplarCaseState { status: 'AVAILABLE' | 'OBSERVED' | 'PREPARED' | 'ACTIVE' | 'EXAMINED' | 'RESOLVED'; observedWeek: number | null; method: 'ABILITY' | 'ORDINARY' | null; result: 'NONE' | 'ABILITY' | 'ORDINARY'; contactOpen: boolean; returned: boolean; closes: number; withdrawals: number; attempts: ThreeHeadedTemplarAttempt[] }
 export interface ThreeHeadedTemplarLifeState {
   siteId: 'THT3-SEALED-COURT'; metSpiritsWeek: number | null; introducedWeek: number | null; introducedDate: PublicGameDate | null;
-  owner: { id: 'THT3-MARA'; name: '玛拉·埃尔文'; age: 51; alive: true; willing: boolean; location: 'START' };
+  owner: { id: 'THT3-MARA'; name: '玛拉·埃尔文'; age: 51; alive: true; willing: boolean; location: 'START' | 'OUTSIDE' };
   spirits: ThreeHeadedTemplarSpirits; activeCase: ThreeHeadedTemplarCaseId | null; playerLocation: ThreeHeadedTemplarLocation; playerTravelMetres: number; clockSeconds: number;
   card: { id: 'THT3-CARD'; owner: 'THT3-MARA'; quantity: 1; location: 'TABLE' | 'PLAYER'; travelMetres: number };
   leftBox: { id: 'THT3-LEFT-BOX'; location: 'A'; quantity: 1 }; rightBox: { id: 'THT3-RIGHT-BOX'; location: 'B'; quantity: 1 };
@@ -225,6 +226,8 @@ function cleanupBlock(s: SliceState): string | null {
   return getExternalThreeHeadedTemplarSpirits(s).length ? '原外放灵须逐一沿当前本地原路收回，不能免费留无限自主协作。' : null;
 }
 export function hasThreeHeadedTemplarLifeLock(s: SliceState): boolean {
+  // The same physical originals continue under Elder's own scene locks after promotion.
+  if (s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 2) return false;
   const l = s.threeHeadedTemplar.life;
   return l.activeCase !== null || Object.values(l.cases).some(c => c.status === 'PREPARED') || cleanupBlock(s) !== null;
 }
@@ -294,7 +297,7 @@ function externalizeReason(s: SliceState, id: ThreeHeadedTemplarSpiritId): strin
 }
 export function threeHeadedTemplarActivityReason(s: SliceState, c: ThreeHeadedTemplarActivityCommand): string | null {
   if (!validateThreeHeadedTemplarActivityCommand(c)) return '三首圣堂命令形状、原灵或本案无效。';
-  if (!promoted(s)) return '先实际晋升三首圣堂序列3。';
+  if (!promoted(s)) return s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 2 ? '三首圣堂经历已保留，请继续长老当前的实践。' : '先实际晋升三首圣堂序列3。';
   if (s.status !== 'ACTIVE' || s.health <= 0) return '同一本体已结束或死亡，原灵不能提供复活。';
   const l = s.threeHeadedTemplar.life, e = s.threeHeadedTemplar.encounter, a = currentAttempt(s);
   if (s.activeEvent || s.combat || e.status === 'FIGHTING') return '先处理原事件或战斗，本人不能同时处于另一现场。';
@@ -518,7 +521,7 @@ export function projectThreeHeadedTemplarLife(s: SliceState): ThreeHeadedTemplar
     nextStep: next ? `下一步：${next.label}（${next.cost}）。` : l.reflected ? '三份真实报告和反思已完成；原灵消耗与不可逆后果保留，可继续普通生活。' : '先查看本案真实来源、资源或场景条件。',
     facts: [
       `同一本人在${l.playerLocation}，累计步行${l.playerTravelMetres}米，原场景时钟${l.clockSeconds}秒（含真实战斗）。START↔A4米，A↔B4米。`,
-      `玛拉51岁/THT3-MARA在START，当前${l.owner.willing ? '愿意' : '不愿意'}；会面交接与每案许可分别实际询问。两个原封存匣一直保留，释放或消散后不得重得。`,
+      `玛拉今年51岁，现在${l.owner.location === 'START' ? '原站' : '院外'}，当前${l.owner.willing ? '愿意' : '不愿意'}；会面交接与每案许可分别实际询问。两个原封存匣一直保留，释放或消散后不得重得。`,
       `唯一原卡${l.card.id}在${l.card.location === 'TABLE' ? 'A原桌' : `本人实持/${l.playerLocation}`}，实际随身${l.card.travelMetres}米；同一左箱在A、右箱与远端原封条在B，未复制。`,
       `原灯在B为${l.lamp.on ? '亮' : '灭'}，同一原遮板${l.shutter.state}；START有连接它的同一8米机械绳，本人实际拉绳才开闭，不是瞬移或造物。`,
       `总放牧容量7；旧已放牧${s.shepherd.grazing.spirits.filter(sp => sp.status === 'GRAZED').length}位，新实际放牧${Object.values(l.spirits).filter(sp => sp.status === 'GRAZED').length}位；当前旧本人借用${s.shepherd.grazing.activeSpiritId ?? '无'}，仍互斥1。新两灵只外放已选方法，旧伊芮斯不冒充四阶外放源。`,
@@ -530,7 +533,20 @@ export function projectThreeHeadedTemplarLife(s: SliceState): ThreeHeadedTemplar
 }
 
 /** Replay actual selected sources, finite payments and each ordered scene. Never accept a refreshed spirit snapshot. */
-export function validateThreeHeadedTemplarLife(s: SliceState): boolean { try { return validateLife(s); } catch { return false; } }
+/** Elder continuation must first replay to the same actual root; only then validate its unchanged S3 baseline. */
+export function threeHeadedTemplarHistoricalState(s: SliceState): SliceState | null {
+  if (s.progression.pathwayId !== 'hanged-man' || s.progression.sequence !== 2) return s;
+  if (s.elder?.threeHeadedTemplarActingAtPromotion !== 100 || !integer(s.elder?.promotionWeek, s.threeHeadedTemplar.promotionWeek ?? s.week, s.week)) return null;
+  const original = reconstructElderOriginalRoot(s);
+  if (!original || original.activeCase !== null || !original.reflected || original.playerLocation !== 'START' || original.card.location !== 'TABLE' || original.owner.location !== 'START' || original.shutter.state !== 'CLOSED' || original.lamp.on || Object.values(original.spirits).some(sp => external(sp))) return null;
+  return { ...s, week: s.elder.promotionWeek!, activeEvent: null, combat: null,
+    progression: { ...s.progression, sequence: 3, acting: s.elder.threeHeadedTemplarActingAtPromotion },
+    threeHeadedTemplar: { ...s.threeHeadedTemplar, life: original } };
+}
+export function validateThreeHeadedTemplarLife(s: SliceState): boolean { try {
+  const historical = threeHeadedTemplarHistoricalState(s);
+  return historical !== null && validateLife(historical);
+} catch { return false; } }
 function validateLife(s: SliceState): boolean {
   const l = s.threeHeadedTemplar?.life, initial = createThreeHeadedTemplarLifeState(), promotion = s.threeHeadedTemplar?.promotionWeek;
   if (!record(l) || !shape(l, Object.keys(initial)) || !record(l.cases) || !shape(l.cases, THREE_HEADED_TEMPLAR_CASE_IDS) || !validateThreeHeadedTemplarSpiritSources(l.spirits, s.week)) return false;

@@ -1,3 +1,4 @@
+import { ELDER_ABILITY_IDS } from '../elder/types.js';
 import {THREE_HEADED_TEMPLAR_ABILITY_IDS} from '../three-headed-templar/types.js';
 import {BLACK_KNIGHT_ABILITY_IDS} from '../black-knight/types.js';
 import {SHEPHERD_ABILITY_IDS} from '../shepherd/types.js';
@@ -30,7 +31,7 @@ export function createShadowAsceticState(): ShadowAsceticState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isListener = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.secretSupplicant.discovered && s.secretSupplicant.guidanceKnown && s.listener.guidanceKnown && (isListener(s) || promoted(s));
 const potionPrice = (bottle: ShadowAsceticBottle) => SHADOW_ASCETIC_PRICES.potion - (bottle.labourSteps === 4 ? SHADOW_ASCETIC_PRICES.labourCredit : 0);
@@ -194,8 +195,8 @@ export function projectShadowAscetic(s: SliceState): ShadowAsceticProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? SHADOW_ASCETIC_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?s.roseBishop.shadowAsceticActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?'隐修士魔药已消化，原阴影与有限观察经历保留。':isPromoted ? `倾听者消化成果${s.shadowAscetic.listenerActingAtPromotion}/100已保留；隐修士扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?s.roseBishop.shadowAsceticActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?'隐修士魔药已消化，原阴影与有限观察经历保留。':isPromoted ? `倾听者消化成果${s.shadowAscetic.listenerActingAtPromotion}/100已保留；隐修士扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成倾听者消化（${s.progression.acting}/100），并在晋升倾听者后度过8整周（${listenerWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完倾听者之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${SHADOW_ASCETIC_CONSUMPTION_RISK}` : '成为倾听者后，可向原导师了解下一序列。',
@@ -246,7 +247,7 @@ export function validateShadowAsceticState(s: SliceState): boolean {
   if (shadowAscetic.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!shadowAscetic.guidanceKnown || !integer(s.listener.promotionWeek, 1, s.week) || !integer(shadowAscetic.promotionWeek, firstConsumptionWeek, s.week) || shadowAscetic.listenerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?ROSE_BISHOP_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?SHEPHERD_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?BLACK_KNIGHT_ABILITY_IDS:[]),...(s.progression.sequence===3?THREE_HEADED_TEMPLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?ROSE_BISHOP_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?SHEPHERD_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?BLACK_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?THREE_HEADED_TEMPLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?ELDER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (shadowAscetic.promotionWeek !== null || shadowAscetic.listenerActingAtPromotion !== null || SHADOW_ASCETIC_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (shadowAscetic.reflected || Object.values(shadowAscetic.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.shadowOpen || value.hidden)) return false;

@@ -39,7 +39,7 @@ export function createBlackKnightEncounterState(): BlackKnightEncounterState {
     enemyHealth: 100, enemyMind: 100, enemySpirituality: 40, enemyStatus: 'RESISTING', enemyInjuries: [], enemyRisk: 0,
     powerUses: { ARC_BOLT: 0, WARD: 0 }, shadowReady: false, bladeReady: false, wardIgnored: false, terminal: null };
 }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && [4,3].includes(s.progression.sequence!);
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && [4,3,2].includes(s.progression.sequence!);
 const reported = (s: SliceState) => Object.values(s.blackKnight.life.cases).some(c => c.status === 'RESOLVED');
 const noEffects = (s: SliceState) => !s.blackKnight.encounter.shadowReady && !s.blackKnight.encounter.bladeReady && !s.blackKnight.encounter.wardIgnored;
 function practiceClosed(s: SliceState): boolean {

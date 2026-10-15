@@ -23,7 +23,7 @@ describe('Wraith real public chain',()=>{
   expect(projectSliceState(s).wraith.abilities.filter(a=>a.id.startsWith('chained.s5.')).map(a=>a.id)).toEqual(['chained.s5.reflection-step','chained.s5.spirit-possession']);
  });
  it('migrates0.111 without rewriting prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/desire-apostle-v01110/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(175);
+  const old=JSON.parse(readFileSync('tests/fixtures/desire-apostle-v01110/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(176);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

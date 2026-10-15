@@ -45,7 +45,7 @@ describe('CoffinBearer public continuation with the same old originals and expli
   }, 30_000);
   it('migrates W130 without changing original resources, six roots, original Osric history or next RNG', () => {
     const old = original().final, bytes = JSON.stringify(old), s = migrateSliceState(old);
-    expect(s.schemaVersion).toBe(175); expect(s.contentVersion).toBe('sage-v175'); expect(s.coffinBearer).toEqual(createCoffinBearerState());
+    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176'); expect(s.coffinBearer).toEqual(createCoffinBearerState());
     expect(s).toMatchObject({ week: 130, status: 'ACTIVE', health: 90, mind: 100, spirituality: 120, cash: 225, actionsRemaining: 1, progression: { sequence: 4, acting: 100 }, random: { seed: 'cultivator-natural-v069', cursor: 136 } });
     expect(s.character.coreStats).toEqual({ physique: 26, perception: 22, will: 21, knowledge: 22 }); expect(s.ancientAlchemist.promotionWeek).toBe(119);
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key]).toEqual(value);

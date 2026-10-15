@@ -1,3 +1,4 @@
+import { ELDER_COUNT_WHEEL, elderAbilityWheel, currentElderCombatSource } from '../../src/domain/elder/combat.js';
 import { THREE_HEADED_TEMPLAR_COUNT_WHEEL, threeHeadedTemplarAbilityWheel, currentThreeHeadedTemplarCombatSource } from '../../src/domain/three-headed-templar/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -72,9 +73,10 @@ describe('Shadow Ascetic S7 synthetic profile and G budgets', () => {
     for (const [pathwayId, sequence] of [[null, null], ['hanged-man', 3], ['moon', 9], ['hanged-man', 2]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isShadowAscetic(state)).toBe(false);
-      expect(playerCountWheel(state)).toEqual(sequence === 3 ? THREE_HEADED_TEMPLAR_COUNT_WHEEL : ORDINARY_COUNT_WHEEL);
-      expect(playerAbilityWheel(state, 'CONTROL')).toEqual(sequence === 3 ? threeHeadedTemplarAbilityWheel(state, 'CONTROL') : ordinaryAbilityWheel(false, 'CONTROL'));
+      expect(playerCountWheel(state)).toEqual(sequence === 3 ? THREE_HEADED_TEMPLAR_COUNT_WHEEL : sequence === 2 ? ELDER_COUNT_WHEEL : ORDINARY_COUNT_WHEEL);
+      expect(playerAbilityWheel(state, 'CONTROL')).toEqual(sequence === 3 ? threeHeadedTemplarAbilityWheel(state, 'CONTROL') : sequence === 2 ? elderAbilityWheel(state, 'CONTROL') : ordinaryAbilityWheel(false, 'CONTROL'));
       expect(currentThreeHeadedTemplarCombatSource(state)).toBeNull();
+      expect(currentElderCombatSource(state)).toBeNull();
     }
     state.progression.pathwayId = 'hanged-man'; state.progression.sequence = 8;
     expect(isShadowAscetic(state)).toBe(false); expect(isListener(state)).toBe(true);

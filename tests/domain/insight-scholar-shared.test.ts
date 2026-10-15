@@ -53,7 +53,7 @@ describe('Insight Scholar candidate original public route and shared runtime', (
 
   it('migrates the genuineW88 state to144 without changing Harold, original objects or the original learned samples', () => {
     const prior = old(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(175); expect(state.contentVersion).toBe('sage-v175');
+    expect(state.schemaVersion).toBe(176); expect(state.contentVersion).toBe('elder-v176');
     expect(state.insightScholar.promotionWeek).toBeNull(); expect(state.insightScholar.prophetActingAtPromotion).toBeNull();
     for (const key of Object.keys(prior.final)) if (!['schemaVersion', 'contentVersion'].includes(key)) {
       expect((state as unknown as Record<string, unknown>)[key]).toEqual((prior.final as unknown as Record<string, unknown>)[key]);

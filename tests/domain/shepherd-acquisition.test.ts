@@ -149,7 +149,7 @@ describe('Shepherd S5 actual finished bottles and finite original soul sources',
     const elsewhere = taught(); elsewhere.world.city = 'ELSEWHERE'; reject(elsewhere, { type: 'BUY_POTION', bottleId: elsewhere.shepherd.bottles[0]!.id });
     const blocked = taught(); blocked.combat = { encounterId: 'FIRST_CASE', round: 1, enemyHealth: 100, enemyMind: 100, enemyInjuries: [], enemyRisk: 0, enemyStatus: 'RESISTING', lastRound: null };
     reject(blocked, { type: 'POTION_WORK', bottleId: blocked.shepherd.bottles[0]!.id });
-    const future = roseBishop(); future.progression.sequence = 2; reject(future, { type: 'LEARN_GUIDANCE' }); expect(projectShepherd(future).discovered).toBe(false);
+    const future = roseBishop(); future.progression.sequence = 1; reject(future, { type: 'LEARN_GUIDANCE' }); expect(projectShepherd(future).discovered).toBe(false);
   });
   it('rejects forged sources, snapshots, nested state, extra souls and permanent borrowed masteries without throwing', () => {
     const s = promoted();

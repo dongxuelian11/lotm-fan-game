@@ -41,7 +41,7 @@ describe('Life Giver S2 original paid acquisition and nineteen-plus-two inherita
     const old = readObjectEntry<Record<string, unknown>>('tests/fixtures/knowledge-mentor-v01670/natural.json', 'final');
     expect(old.schemaVersion).toBe(164); expect(old).not.toHaveProperty('lifeGiver');
     const bytes = JSON.stringify(old), s = migrateSliceState(old); assertValidSliceState(s);
-    expect(s.schemaVersion).toBe(175); expect(s.contentVersion).toBe('sage-v175'); expect(s.lifeGiver).toEqual(createLifeGiverState());
+    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176'); expect(s.lifeGiver).toEqual(createLifeGiverState());
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key], key).toEqual(value);
     expect(JSON.stringify(old)).toBe(bytes); expect(() => migrateSliceState({ ...old, lifeGiver: createLifeGiverState() })).toThrow();
   });

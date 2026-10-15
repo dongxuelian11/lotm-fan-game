@@ -22,7 +22,7 @@ describe('DreamStealer real public chain',()=>{
  });
  it('preserves the independent original carrier after the new Marlow scene',()=>{const c=read('dream-stealer-stage-natural');expect(c.combatStart.combat.encounterId).toBe('DREAM_STEALER_DISPUTE');expect(c.final.world.carrierAlive).toBe(c.combatStart.world.carrierAlive);});
  it('migrates0.105 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/traveler-v01050/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(175);
+  const old=JSON.parse(readFileSync('tests/fixtures/traveler-v01050/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(176);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

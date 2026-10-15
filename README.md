@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.178.0 阶段版
+# 诡秘之主同人游戏 · 0.179.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径包含9→3有限可玩切片，15条接至有限序列2。余下7条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径包含9→3有限可玩切片，16条接至有限序列2。余下6条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -18,7 +18,7 @@ npm start
 
 ## 测试输入
 
-所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以33个完整文件tar.gz包保存在test-inputs，总压缩约551MB；清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
+所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以34个完整文件tar.gz包保存在test-inputs，总压缩约566MB；清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
 
 ```sh
 npm run typecheck
@@ -63,11 +63,22 @@ npm run fixtures:restore -- --only-prefix prophecy-master-v01540 --only-prefix s
 npx vitest run tests/domain/sage-acquisition.test.ts tests/domain/sage-life.test.ts tests/domain/sage-combat.test.ts tests/domain/sage-inheritance.test.ts tests/renderer/sage-panel.test.tsx tests/renderer/sage-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
 ```
 
+秽语长老专项输入与公开续行：
+
+```sh
+npm run fixtures:restore -- --only-prefix three-headed-templar-v01550 --only-prefix elder-v01790
+npx vitest run tests/domain/elder-acquisition.test.ts tests/domain/elder-life.test.ts tests/domain/elder-combat.test.ts tests/domain/elder-inheritance.test.ts tests/domain/elder-shared.test.ts tests/renderer/elder-panel.test.tsx tests/renderer/elder-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/elder-save.mjs --expected-boundaries 53
+```
+
 ## 当前验证与限制
 
 177验收时，主工程与干净发布树完整严格类型检查、生产构建均通过。其最终影响范围488个测试文件、8608个断言通过，覆盖全部296个界面文件；其余495个未改测试保留基线通过记录。干净发布树60个历史输入相关文件、466断言，以及48项烟测、17项恢复工具测试通过。全部范围、两项整文件运行限制和未验证内容见[验收报告](docs/RELEASE_ACCEPTANCE.md)。
 
 178增量验证：领域73项、界面53项、旧窥秘链484项、保存工具6项及54个独立SQLite边界通过；完整严格类型、48项烟测、17项恢复工具测试和构建通过。此为相关范围复验，未声称重跑全部992个测试文件。
+
+179增量验证：新增领域82项、界面17项、保存工具6项及53个唯一SQLite边界通过；旧秘祈链24文件441项覆盖后，对失败的过时断言逐项修正并复验。完整严格类型、48项烟测、17项恢复工具、14项CI分片工具与生产构建通过。新增输入包62个文件在独立目录实际恢复并校验。本阶段没有重新运行整个历史测试集。
 
 本版仍有构建大分块警告；可见Electron窗口、Windows实机及全路线自然通关尚未验证。门与银骑士部分高阶使用定向起点。178贤者阶段沿原507条公开命令继续到651条：亲自停止原灾难，第二瓶晋升，两次实际信息通道往返；筛读失败后通过普通核对完成生活事务，战斗第5轮撤退后保留两处重伤并回到生活。阶段记录见[贤者](docs/SAGE_PLAYABLE_STAGE.md)。177阶段原585条公开命令及54命名/50唯一SQLite转换证据见[阶段记录](docs/CALAMITY_DEMONESS_PLAYABLE_STAGE.md)。
 

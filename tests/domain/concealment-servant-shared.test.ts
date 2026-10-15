@@ -29,7 +29,7 @@ function expectOriginalHistory(s: SliceState, old: SliceState) {
 describe('Concealment Servant original420 prefix, migration166 and shared runtime', () => {
   it('migrates the genuine W105 survivor without changing any existing field or healing its old injuries', () => {
     const original = readObjectEntry<SliceState>(fearBishopFixturePath, 'final'), bytes = JSON.stringify(original), s = migrateSliceState(original);
-    expect(s.schemaVersion).toBe(175); expect(s.contentVersion).toBe('sage-v175');
+    expect(s.schemaVersion).toBe(176); expect(s.contentVersion).toBe('elder-v176');
     for (const key of Object.keys(original)) if (!['schemaVersion', 'contentVersion'].includes(key))
       { const expected = (original as unknown as Record<string, unknown>)[key];
         const actual = (s as unknown as Record<string, unknown>)[key];

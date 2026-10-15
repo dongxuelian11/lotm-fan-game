@@ -40,7 +40,7 @@ describe('Justice Mentor verifiedS3 original public route and shared runtime', (
 
   it('migrates the genuineW111 state to146 without altering original bodies, objects, emotion return or RNG', () => {
     const prior = original(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(175); expect(state.contentVersion).toBe('sage-v175');
+    expect(state.schemaVersion).toBe(176); expect(state.contentVersion).toBe('elder-v176');
     expect(state.justiceMentor.promotionWeek).toBeNull(); expect(state.justiceMentor.unshadowedActingAtPromotion).toBeNull();
     for (const key of Object.keys(prior.final)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((state as unknown as Record<string, unknown>)[key]).toEqual(key === 'longChapter' ? { ...prior.final.longChapter, handoff: null } : (prior.final as unknown as Record<string, unknown>)[key]);
     expect(state).toMatchObject({ week: 111, health: 100, mind: 100, spirituality: 110, cash: 160, actionsRemaining: 1, character: { age: 26, gender: 'FEMALE', coreStats: { physique: 28, perception: 24, will: 27, knowledge: 22 } } });

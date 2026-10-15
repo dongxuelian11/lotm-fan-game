@@ -12,7 +12,7 @@ describe('continuing an actual surviving first case',()=>{
   for(const key of Object.keys(previous))if(!Object.hasOwn(old,key)){expect(previous[key],key).toEqual(defaults[key]);delete previous[key];}
   expect(s.seer.resupply).toEqual({requestedWeek:null,deliveries:0});expect(s.seer.practice).toEqual(fresh.seer.practice);
   delete (previous.seer as Record<string,unknown>).resupply;delete (previous.seer as Record<string,unknown>).practice;
-  expect([s.schemaVersion,s.contentVersion]).toEqual([175,'sage-v175']);
+  expect([s.schemaVersion,s.contentVersion]).toEqual([176,'elder-v176']);
   previous.schemaVersion=old.schemaVersion;previous.contentVersion=old.contentVersion;
   expect(previous).toEqual(old);expect(JSON.stringify(old)).toBe(bytes);expect(migrateSliceState(s)).toEqual(s);assertValidSliceState(s);
  });

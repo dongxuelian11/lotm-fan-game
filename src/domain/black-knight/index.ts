@@ -1,3 +1,4 @@
+import { ELDER_ABILITY_IDS } from '../elder/types.js';
 import {THREE_HEADED_TEMPLAR_ABILITY_IDS} from '../three-headed-templar/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
@@ -45,7 +46,7 @@ export function createBlackKnightState(): BlackKnightState {
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isBlackKnight = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 4;
-const hasBlackKnightHistory=(s:SliceState)=>s.progression.pathwayId==='hanged-man'&&[4,3].includes(s.progression.sequence!);
+const hasBlackKnightHistory=(s:SliceState)=>s.progression.pathwayId==='hanged-man'&&[4,3,2].includes(s.progression.sequence!);
 const isShepherd = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.secretSupplicant.discovered && s.secretSupplicant.guidanceKnown && s.listener.guidanceKnown && s.shadowAscetic.guidanceKnown && s.roseBishop.guidanceKnown && s.shepherd.guidanceKnown && s.shepherd.promotionWeek !== null && (isShepherd(s) || hasBlackKnightHistory(s));
 const potionPrice = (bottle: BlackKnightBottle) => BLACK_KNIGHT_PRICES.potion - (bottle.labourSteps === BLACK_KNIGHT_LABOUR_STEPS ? BLACK_KNIGHT_PRICES.labourCredit : 0);
@@ -189,7 +190,7 @@ export function applyBlackKnightCommand(s: SliceState, command: BlackKnightComma
 
 export function projectBlackKnight(s: SliceState): BlackKnightProjection {
   const actions: BlackKnightAction[] = [], available = knownChannel(s), promoted = hasBlackKnightHistory(s);
-  const acting = promoted ? (s.progression.sequence===3?s.threeHeadedTemplar.blackKnightActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.threeHeadedTemplar.blackKnightActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: BlackKnightAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -269,7 +270,7 @@ function validateBlackKnightStateRecord(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.shepherd.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.shepherdActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS, ...SHEPHERD_ABILITY_IDS, ...BLACK_KNIGHT_ABILITY_IDS,...(s.progression.sequence===3?THREE_HEADED_TEMPLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS, ...SHEPHERD_ABILITY_IDS, ...BLACK_KNIGHT_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?THREE_HEADED_TEMPLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?ELDER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.shepherdActingAtPromotion !== null || BLACK_KNIGHT_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   // First validate every record shape, so a later batch cannot dereference malformed predecessors.
   for (const [index, bottle] of state.bottles.entries()) {

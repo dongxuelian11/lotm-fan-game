@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.178.0",
+  "version": "0.179.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -166,6 +166,11 @@
       "name": "lotm_release_0.178.0_sage_test_inputs_2026-10-15.tar.gz",
       "bytes": 15035977,
       "sha256": "5af6d17f256d1c19fa91230c9df15583800f824fe71686f85ef186061b53aff0"
+    },
+    {
+      "name": "lotm_release_0.179.0_elder_test_inputs_2026-10-15.tar.gz",
+      "bytes": 14867589,
+      "sha256": "eaab007c3f3ddb9f5a79d803e479cd96b66f516bd8aa8b0014c42561e853a729"
     }
   ],
   "fileEntries": [
@@ -7973,6 +7978,316 @@
       "path": "tests/fixtures/zombie-v0900/natural.json",
       "bytes": 1652689,
       "sha256": "e2da75d46550ba57a199329e073b504cf258eefa343d3c86b1f34bf4f9c1ca46"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundaries.index.json",
+      "bytes": 4387,
+      "sha256": "5ea128173e80af2e192f5a2e5d65919784b0cfc36fabbd9f24cb95bac4fc8174"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-buy-elder-potion-1.json",
+      "bytes": 2051058,
+      "sha256": "d1643c3ffa3d5d248f0519492fd2550fd746fd8052ff4fed6afff5bfc60d9b3a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-clinic-actual-discovery.json",
+      "bytes": 1960232,
+      "sha256": "613c68b51af2efdb16329bab56227899499eafbee1039dc36b52674fbf4299ff"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-clinic-actual-pay60.json",
+      "bytes": 1961053,
+      "sha256": "9350c815b9204a63cc2c26bd89b907e43c74dabe85ed1ca1693ca768c11d16ef"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-clinic-invitation-actual-rest.json",
+      "bytes": 1960696,
+      "sha256": "ad51166224df9d74c0af30061081a4bcf6327691c0e3012eaeb63ee35fec3d72"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-combat-round-1.json",
+      "bytes": 2481981,
+      "sha256": "0e3713becd973ce99283ef9500f72d5e71fa0a998b2f52de2ba298d7b3961dd2"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-combat-round-2.json",
+      "bytes": 2660464,
+      "sha256": "23a7b3237743fb73a0a86946a84c4a7f4907b26ba685324b0856afe80ca063ef"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-combat-round-3.json",
+      "bytes": 2697695,
+      "sha256": "97a44c211b5200b373f899dbd3a64a8d76303e7f62cbe2dfe7ce8d19c2efa2d9"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-consume-elder-potion-1.json",
+      "bytes": 2068514,
+      "sha256": "8119d5232c3a9c4e1ba3e5c8c30a9a8d080efd95a83dad2eea81b8da8c22f5e3"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-guidance.json",
+      "bytes": 1968939,
+      "sha256": "ec4b3acc8f14a79286704c4f5d0dce452ffaf5812cc1445387c8ab2f33991a87"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-independent-optional-fight.json",
+      "bytes": 2337936,
+      "sha256": "25fcc054537de7539e5ab08e1999b9d1561478393bbb160c3b962d3c620f0bc0"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-actual-contact-closed.json",
+      "bytes": 2271705,
+      "sha256": "3a4ebc3f4a1b67165d2fa5ad3bb6b601b9b1d1fed057f99e6229c8a38eae09b4"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-actual-effects-stopped.json",
+      "bytes": 2257177,
+      "sha256": "1698659a04aad4b5daaf0fd76948bd51dc843adba4dc2e3af1544f97916ee42b"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-current-owner-consent.json",
+      "bytes": 2230874,
+      "sha256": "a08cd43393a9071eb18fa561be8f16725b0ce9775797d6126c621078e50c408c"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-honest-report.json",
+      "bytes": 2273672,
+      "sha256": "73a3b2473cbbd03f83ed0ff4af1329b28938c0d00c4235708fad61a2c6cf5251"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-observe.json",
+      "bytes": 2228218,
+      "sha256": "f8f257ce184b2fa32e46b2ff5f9b0bd928e4808714345d853f863f4091629cec"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-ordinary-fallback.json",
+      "bytes": 2258916,
+      "sha256": "94fefde559815f11227b3072c94a8f1c88315a133b99d8d1dff5a9df97e28f8b"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-paid-materials.json",
+      "bytes": 2233611,
+      "sha256": "371f4b977a4c31bf9874f4f9798baae998baaf739fa92db0c50855924079ae19"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-same-card-returned.json",
+      "bytes": 2264479,
+      "sha256": "af4552fedec5d17ea48143bd66be6316e0726e42c234d6428c0601b11890212c"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-same-original-card.json",
+      "bytes": 2238005,
+      "sha256": "0d109b30f4bb9e1b2f990bf16e054b61b7564c905a4298518c84d783bcf0ad0d"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-single-natural-chorus-attempt.json",
+      "bytes": 2252108,
+      "sha256": "5f0908b11f37191bc41025b98089ffce76398735e749c1b2bd7791346d761560"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-single-natural-whisper-attempt.json",
+      "bytes": 2246139,
+      "sha256": "d6eb2b725252c6b015d283287cdb8d9b2c257f251a7670dada2fbb5ef4451f39"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-interrupted-chorus-spent-original-materials-returned.json",
+      "bytes": 2268164,
+      "sha256": "57cb2be137a69e1c0736a2cc4a4f757687261ddf1d6b8c8d2b0ec3c36229d393"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 2679972,
+      "sha256": "d3c3073b0b47b7a02707261025da325289ca27b2ef967f220609ffbfdbbf00d0"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1988135,
+      "sha256": "fafc78c39a9b0269ac09748863d6cdf8b7273d41d9ae1b0d9463fa616cb95d8a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1996590,
+      "sha256": "89f496f176c818975578737568403c810c42190a7cb8bfc66280b319b2a32f84"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1979051,
+      "sha256": "7d31e70ad065f62faff0645230276f3c0fde79075284cf2045031af8ab9c80cf"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-prepare-elder-potion-1.json",
+      "bytes": 2059285,
+      "sha256": "7d8f0f0ef907ae0e738ab1aa16af70f8e4f0ca2ec8f70cc911b8af375f3e650c"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-real-combat-preparation.json",
+      "bytes": 2279333,
+      "sha256": "b3f05d949fb7c7b1809e6eab6040378bbc77fa8449465c90c7f7aec240987a19"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-same-mara-ordinary-clearance.json",
+      "bytes": 2299039,
+      "sha256": "e83598ac4cc027ea6c0e85fa85ee0888f3a8434475cb1b4661dc66f4f0ca08b2"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-contact-closed.json",
+      "bytes": 2179856,
+      "sha256": "895cc1dfb42e08f1f817256eb082352f72c0097aefed8b132208edc52460ec33"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-effects-stopped.json",
+      "bytes": 2167291,
+      "sha256": "c2e458ee5612d3d99dc85b8214be4f7f9ec24f6820afce49375688b92a114fdc"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-actual-short-window-operation.json",
+      "bytes": 2165525,
+      "sha256": "962f500a4b2d0e78557a9eca4f18815cb3a6af8a0f55b0ea8437043dd9c076cf"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-current-owner-consent.json",
+      "bytes": 2147900,
+      "sha256": "c418ec490f97f41a318acdeeaa530810078177e7400a349fa3433ab8e2befd02"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-honest-report.json",
+      "bytes": 2181632,
+      "sha256": "15376cdb24b5c9fdb0f9cc5c6cb69fa8ce2a314ecfdb9a55594da3b9c05407c3"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-observe.json",
+      "bytes": 2109658,
+      "sha256": "275147ed217a625a7879aea5ee66d29036fdb45414a522942357015bf4225f99"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-paid-materials.json",
+      "bytes": 2150625,
+      "sha256": "628d6dd94291b6f1ce58cf2b0c8c5fda8b35d3bf971653e83fa327abd57e86c0"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-same-card-returned.json",
+      "bytes": 2172715,
+      "sha256": "18b18c3de4d9402987a279c5d185da38c93a15184f2654ed897103ec25ee4fa3"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-same-original-card.json",
+      "bytes": 2154999,
+      "sha256": "ffd2a8b52010ed23b291cad50e522f46309c6634f4b25a5775c391763b529ac4"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-single-natural-whisper-attempt.json",
+      "bytes": 2163095,
+      "sha256": "1babcb5cad1449ae87d8f0520e19e7abf10066ed9103bb9988152d0b0d3c4dda"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-sealed-whisper-spent-original-materials-returned.json",
+      "bytes": 2176384,
+      "sha256": "789bb19f0101da9d92d03764e717c7aba226c00a6149baca938114a2c4605da9"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-contact-closed.json",
+      "bytes": 2224430,
+      "sha256": "a88fb2188bfb38f7f4f8ebb65bbe46b0f9da415cae83d9e399746d277bde1b79"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-effects-stopped.json",
+      "bytes": 2211926,
+      "sha256": "293663559bf5252f4f846f73921a5a9cf3f8811624c919146175a671f180e422"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-actual-short-window-operation.json",
+      "bytes": 2210136,
+      "sha256": "02524c4e88269eb16e5e2ed86421a5bb8f09741def1ad8acff096d56e319d942"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-current-owner-consent.json",
+      "bytes": 2186285,
+      "sha256": "b2259597e259ab7b714398cab2fc1f4615fd1375f8cde67aeb73bb80901b4dbc"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-honest-report.json",
+      "bytes": 2226205,
+      "sha256": "060f03ae6f95a7607f255c179500efa18056c547089fb7ed6ac815dc068af30a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-observe.json",
+      "bytes": 2183636,
+      "sha256": "e00042450659945ae390de65ff0edb1673f51ff9df03e2f61d600da18f879b93"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-paid-materials.json",
+      "bytes": 2189010,
+      "sha256": "c647549159d7f0dcdb177ef5096f066b7fcc8acbe5216ff36d66fc9c3d992206"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-same-card-returned.json",
+      "bytes": 2217288,
+      "sha256": "fe23aaf994e4968cea8e807f74f4161aac4d5038e92b0727341500d88cc9d842"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-same-original-card.json",
+      "bytes": 2193384,
+      "sha256": "ec202167046ddc608bb8c406f5dc3e5b92d1deccd29de7b083b07d78aad0d1d7"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-single-natural-chorus-attempt.json",
+      "bytes": 2204601,
+      "sha256": "de1c409a9996da0f53b4045af0a0cbef4ad739109948e0c01f7b479a866acbed"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-single-chorus-spent-original-materials-returned.json",
+      "bytes": 2220957,
+      "sha256": "0acf1926c99976549feeb18208c516859063a65d2553657886947f76e09559b0"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-three-cases-reflected.json",
+      "bytes": 2275545,
+      "sha256": "6f0435acd28533d46b3c1c77c21044bb38d65c20221a44829c901233b507723a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/boundary-treated-original-wounds-subsequent-rest.json",
+      "bytes": 1961377,
+      "sha256": "d7d213a2bd6ea945ed4e925cedf48ec41d4c066bae5877df4eef1e1f3980b2eb"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/natural.json",
+      "bytes": 1916246,
+      "sha256": "06a23ce47295f72e78428f19d2559d6aab833dc978c58ce560f564c0e1d37b3a"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-combatStart.json",
+      "bytes": 1179277,
+      "sha256": "5ba43709718bb6a1be0b7e5b4215d6f5be70857ed463f67706fbec08f8501268"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-combatTerminal.json",
+      "bytes": 1339856,
+      "sha256": "2238493fde4bd0dba15b98d0ec6b0d49e9e031e7ee47bc399f4982538040a2fa"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-departure.json",
+      "bytes": 979889,
+      "sha256": "cbf3deda1c463d25eb336e097c7b4776207dfbdc8836328b7a00d975e73517ce"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-originalInjuriesRecovered.json",
+      "bytes": 980992,
+      "sha256": "6685fe078840acde0f3e6f1cc426d6d75227247a2f5481430d305134a4d49a25"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-practiced.json",
+      "bytes": 1138148,
+      "sha256": "486350ffbb8c2203daf877c3bdba8391a2665702d1abff7c2e8a18c8073acc09"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/snapshot-promoted.json",
+      "bytes": 1036743,
+      "sha256": "ffeda4fe86b09cb8c6023d8e25bd3ad117d9969697e2226c8070904f40487d04"
+    },
+    {
+      "path": "tests/fixtures/elder-v01790/summary.json",
+      "bytes": 3140,
+      "sha256": "5f7a738b3b3de7fbba0cff3a19ac69c2d738204a83cfb8e08d2ac04a20496ae7"
     }
   ]
 }

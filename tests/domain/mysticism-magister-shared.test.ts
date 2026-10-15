@@ -46,7 +46,7 @@ describe('Mysticism Magister actual shared route',()=>{
  });
  it('migrates exact 0.100 originals without changing prior objects and histories',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/spirit-warlock-v01000/natural.json','utf8')).final;
-  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(175);
+  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(176);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);
   expect(migrateSliceState(after)).toEqual(after);
  });

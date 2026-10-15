@@ -1,3 +1,4 @@
+import { ELDER_ABILITY_IDS } from '../elder/types.js';
 import {THREE_HEADED_TEMPLAR_ABILITY_IDS} from '../three-headed-templar/types.js';
 import {BLACK_KNIGHT_ABILITY_IDS} from '../black-knight/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -40,7 +41,7 @@ export function createShepherdState(): ShepherdState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 5||(s.progression.sequence===4||s.progression.sequence===3));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
 const isRoseBishop = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.secretSupplicant.discovered && s.secretSupplicant.guidanceKnown && s.listener.guidanceKnown && s.shadowAscetic.guidanceKnown && s.roseBishop.guidanceKnown && s.roseBishop.promotionWeek !== null && (isRoseBishop(s) || promoted(s));
 const potionPrice = (bottle: ShepherdBottle) => SHEPHERD_PRICES.potion - (bottle.labourSteps === 5 ? SHEPHERD_PRICES.labourCredit : 0);
@@ -167,7 +168,7 @@ export function applyShepherdCommand(s: SliceState, command: ShepherdAcquisition
 
 export function projectShepherd(s: SliceState): ShepherdProjection {
   const actions: ShepherdAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3)?s.blackKnight.shepherdActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.blackKnight.shepherdActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: ShepherdAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -259,7 +260,7 @@ export function validateShepherdState(s: SliceState): boolean {
   if (shepherd.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!shepherd.guidanceKnown || !integer(s.roseBishop.promotionWeek, 1, s.week) || !integer(shepherd.promotionWeek, firstConsumptionWeek, s.week) || shepherd.roseBishopActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS, ...SHEPHERD_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3)?BLACK_KNIGHT_ABILITY_IDS:[]),...(s.progression.sequence===3?THREE_HEADED_TEMPLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS, ...SHEPHERD_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?BLACK_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?THREE_HEADED_TEMPLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?ELDER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (shepherd.promotionWeek !== null || shepherd.roseBishopActingAtPromotion !== null || SHEPHERD_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (Object.entries(freshShepherdPractice()).some(([key, value]) => shepherd.practice[key as keyof ShepherdPractice] !== value)) return false;

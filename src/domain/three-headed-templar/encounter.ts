@@ -2,7 +2,7 @@ import { stableStringify } from '../canonical.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceInjury, SliceState } from '../slice/types.js';
 import { hasThreeHeadedTemplarRitualLock, hasThreeHeadedTemplarOldPractice } from './index.js';
-import { advanceThreeHeadedTemplarLifeClock, applyThreeHeadedTemplarActivity, validateThreeHeadedTemplarSpiritSources } from './life.js';
+import { advanceThreeHeadedTemplarLifeClock, applyThreeHeadedTemplarActivity, validateThreeHeadedTemplarSpiritSources, threeHeadedTemplarHistoricalState } from './life.js';
 import { threeHeadedTemplarActionCount, threeHeadedTemplarEnemyActionCount, validateThreeHeadedTemplarRoundOutcome, validThreeHeadedTemplarCombatScene } from './combat.js';
 
 export const THREE_HEADED_TEMPLAR_TARGET_ID = 'THT3-BRAM' as const;
@@ -136,7 +136,7 @@ export function threeHeadedTemplarEncounterActions(s: SliceState): ThreeHeadedTe
 }
 export function projectThreeHeadedTemplarEncounter(s: SliceState): ThreeHeadedTemplarEncounterProjection {
   const e = s.threeHeadedTemplar.encounter;
-  if (!stage(s)) return { title: '尚未开放的三首圣堂遭遇', story: '', status: e.status, inside: false, scene: null, enemy: null, actions: [], facts: [] };
+  if (s.progression.pathwayId !== 'hanged-man' || ![3, 2].includes(s.progression.sequence ?? 0)) return { title: '尚未开放的三首圣堂遭遇', story: '', status: e.status, inside: false, scene: null, enemy: null, actions: [], facts: [] };
   return { title: '原净空院与独立的布拉姆·福斯', story: THREE_HEADED_TEMPLAR_ENCOUNTER_STORY, status: e.status, inside: hasThreeHeadedTemplarEncounterLock(s), scene: structuredClone(e.scene),
     enemy: { id: THREE_HEADED_TEMPLAR_TARGET_ID, name: '布拉姆·福斯', age: 49, source: 'ORIGINAL_LIMITED_G', sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, weaponId: 'THT3-BRAM-ROD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } }, actions: threeHeadedTemplarEncounterActions(s),
@@ -152,6 +152,7 @@ export function projectThreeHeadedTemplarEncounter(s: SliceState): ThreeHeadedTe
 /** Replays ordered costs, original inventory and shared alternating-action evidence across rounds. */
 export function validateThreeHeadedTemplarEncounter(s: SliceState): boolean {
   try {
+    const historical = threeHeadedTemplarHistoricalState(s); if (!historical) return false; s = historical;
     const e = s.threeHeadedTemplar?.encounter, initial = createThreeHeadedTemplarEncounterState();
     if (!e || !validateThreeHeadedTemplarSpiritSources(s.threeHeadedTemplar.life.spirits, s.week) || (['READY', 'FIGHTING'].includes(e.status) ? !localOriginals(s, true) : Object.values(s.threeHeadedTemplar.life.spirits).some(spirit => spirit.location === 'COURT')) || !same(Object.keys(e).sort(), Object.keys(initial).sort()) || e.targetId !== THREE_HEADED_TEMPLAR_TARGET_ID ||
       !['AVAILABLE', 'READY', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(e.status) || !actualCourt(e, e.status !== 'AVAILABLE') || !same(Object.keys(e.scene).sort(), Object.keys(initial.scene).sort()) ||

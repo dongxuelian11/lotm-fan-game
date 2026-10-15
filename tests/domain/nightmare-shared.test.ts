@@ -95,7 +95,7 @@ describe('Nightmare actual public acquisition, dream records and waking verifica
     const { schemaVersion: oldSchema, contentVersion: oldContent, ...prior } = old;
     expectPriorFields(next,old);
     expect([oldSchema, oldContent]).toEqual([20, 'midnight-life-v20']);
-    expect([schemaVersion, contentVersion]).toEqual([175, 'sage-v175']);
+    expect([schemaVersion, contentVersion]).toEqual([176,'elder-v176']);
     expect(nightmare).toEqual(createNightmareState());
     assertValidSliceState(next);
     expect(migrateSliceState(next)).toEqual(next);

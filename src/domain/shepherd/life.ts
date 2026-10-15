@@ -35,7 +35,7 @@ const CASES = [
 type Case = typeof CASES[number];
 type SupplyCommand = Extract<RoseBishopActivityCommand, { type: 'BUY_RATION' | 'TAKE_RATION' }>;
 const isSupply = (c: { type: string }): c is SupplyCommand => c.type === 'BUY_RATION' || c.type === 'TAKE_RATION';
-const active = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 5||(s.progression.sequence===4||s.progression.sequence===3));
+const active = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
 const succeeded = (status: string) => status === 'EXAMINED' || status === 'RESOLVED';
 const sourceFor = (id: string) => SHEPHERD_SPIRITS.find(spirit => spirit.id === id);
 const spiritFor = (s: SliceState, id: string) => s.shepherd.grazing.spirits.find(spirit => spirit.id === id);
@@ -82,7 +82,7 @@ export function activateShepherdSpirit(s: SliceState, spiritId: string | null, c
 function blocked(s: SliceState, c: ShepherdActivityCommand): string | null {
   if (s.status !== 'ACTIVE') return '当前周目已结束。';
   if (!active(s)) return '先完成牧羊人晋升。';
-  if((s.progression.sequence===4||s.progression.sequence===3)&&!['MEET_SPIRITS','GRAZE','ACTIVATE_SPIRIT','RELEASE_SPIRIT','BUY_RATION','TAKE_RATION'].includes(c.type))return '原牧羊人经历已经归档，请到黑骑士页继续。';
+  if((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))&&!['MEET_SPIRITS','GRAZE','ACTIVATE_SPIRIT','RELEASE_SPIRIT','BUY_RATION','TAKE_RATION'].includes(c.type))return '原牧羊人经历已经归档，请到黑骑士页继续。';
   if (s.activeEvent || s.combat) return '先处理当前事件或战斗；战斗只在回合选择中切换原灵。';
   const m = s.shepherd, r = 'caseId' in c ? m.cases[c.caseId] : null;
   if (s.world.city !== 'BACKLUND') return '先真实返回贝克兰德伊森的原旧物间。';
@@ -243,7 +243,7 @@ export function shepherdActions(s: SliceState): ShepherdAction[] {
   }
   if (s.shepherd.grazing.activeSpiritId !== null) add('shepherd-deactivate', '停止借用，只用自身能力', '0行动 · 0灵性 · 不释放原灵', { type: 'ACTIVATE_SPIRIT', spiritId: null });
   for (const action of roseBishopActions(s)) if (isSupply(action.command)) add(`shepherd-${action.id}`, action.label, action.cost, action.command);
-  if((s.progression.sequence===4||s.progression.sequence===3))return out;
+  if((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))return out;
   for (const p of CASES) {
     const r = s.shepherd.cases[p.id]!;
     if (r.contactOpen) add(`${p.id}-close`, p.id === 'paper-guidance' ? '实际取回原纸并普通步行返回' : p.id === 'willing-chorus' ? '实际停声并结束本人反馈' : '把写过的同一原说明交还导师', '0行动 · 原物与实际接触收束 · 不退款', { type: 'CLOSE', caseId: p.id });
@@ -363,6 +363,6 @@ export function validateShepherdLife(s: SliceState): boolean {
   if (f.note !== (account.contactOpen ? 'WRITTEN' : account.attemptWeek !== null ? 'HANDED_OVER' : 'BLANK')) return false;
   if (typeof m.reflected !== 'boolean' || s.seer.completedSources.filter(source => source === 'shepherd-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
   if (!promoted && (m.reflected || f.paper !== 'TABLE' || f.chorusOpen || f.playerNode !== 'DESK' || f.note !== 'BLANK')) return false;
-  if (promoted && ((s.progression.sequence===4||s.progression.sequence===3)?s.blackKnight.shepherdActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (promoted && ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.blackKnight.shepherdActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   return true;
 }

@@ -44,7 +44,7 @@ describe('Priest of Light actual shared route',()=>{
  });
  it('migrates 0.102 without changing prior original facts',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/ocean-singer-v01020/natural.json','utf8')).final;
-  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(175);
+  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(176);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);
   expect(migrateSliceState(after)).toEqual(after);
  });

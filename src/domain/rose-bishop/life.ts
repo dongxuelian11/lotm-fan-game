@@ -30,10 +30,10 @@ export const ROSE_BISHOP_ENVIRONMENT = '本作G血肉供给：每真实周最多
 export const roseBishopInside = (s: SliceState) => Object.values(s.roseBishop.cases).some(r => r.contactOpen);
 export const isRoseBishopActivity = (c: RoseBishopCommand): c is RoseBishopActivityCommand =>
   ['BUY_RATION', 'TAKE_RATION', 'OBSERVE', 'PREPARE', 'PERFORM', 'CLOSE', 'REPORT', 'WITHDRAW', 'REFLECT', 'ENCOUNTER_TALK', 'ENCOUNTER_FIGHT'].includes(c.type);
-const active = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 6 || s.progression.sequence === 5 || (s.progression.sequence===4||s.progression.sequence===3));
+const active = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence === 6 || s.progression.sequence === 5 || (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
 
 function blocked(s: SliceState, c: RoseBishopActivityCommand): string | null {
-  if ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)) && !['BUY_RATION','TAKE_RATION'].includes(c.type)) return '蔷薇主教经历已归档，请在牧羊人页继续当前实践。';
+  if ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))) && !['BUY_RATION','TAKE_RATION'].includes(c.type)) return '蔷薇主教经历已归档，请在牧羊人页继续当前实践。';
   if (c.type === 'ENCOUNTER_TALK' || c.type === 'ENCOUNTER_FIGHT') return blockRoseBishopEncounter(s, c);
   if (s.status !== 'ACTIVE') return '当前周目已结束。';
   if (!active(s)) return '先完成蔷薇主教晋升。';
@@ -117,7 +117,7 @@ export function roseBishopActions(s: SliceState): RoseBishopAction[] {
   const add = (id: string, label: string, cost: string, command: RoseBishopActivityCommand) => { const reason = blocked(s, command); out.push({ id, label, cost, command, enabled: reason === null, reason }); };
   add('rose-bishop-buy-ration', '购买一份动物来源封装鱼肉', '1行动 · 40便士 · 每真实周最多1份', { type: 'BUY_RATION' });
   for (const packet of s.roseBishop.reserve.packets) if (packet.status === 'HELD') add(`take-${packet.id}`, `实际取用${packet.id}`, '1行动 · 消耗同一原份 · 储备+1，上限3 · 不治疗', { type: 'TAKE_RATION', packetId: packet.id });
-  if(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))return out;
+  if(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))return out;
   for (const p of CASES) {
     const r = s.roseBishop.cases[p.id]!;
     if (r.contactOpen) add(`${p.id}-close`, '恢复本人正常形态并结束接触', '0行动 · 实际归还原物/停止讲解 · 不退款', { type: 'CLOSE', caseId: p.id });
@@ -183,7 +183,7 @@ export function validateRoseBishopLife(s: SliceState): boolean {
   }
   if (m.practice.shape !== expectedShape || open > 1 || prepared > 1 || open && prepared) return false;
   if (s.seer.completedSources.filter(x => x === 'rose-bishop-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (active(s) && ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.shepherd.roseBishopActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (active(s) && ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.shepherd.roseBishopActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (reserve.packetsBought !== 0 || reserve.points !== 0 || open !== 0 || prepared !== 0 || resolved !== 0 || m.reflected)) return false;
   return true;
 }

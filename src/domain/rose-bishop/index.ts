@@ -1,3 +1,4 @@
+import { ELDER_ABILITY_IDS } from '../elder/types.js';
 import {THREE_HEADED_TEMPLAR_ABILITY_IDS} from '../three-headed-templar/types.js';
 import {BLACK_KNIGHT_ABILITY_IDS} from '../black-knight/types.js';
 import {SHEPHERD_ABILITY_IDS} from '../shepherd/types.js';
@@ -34,7 +35,7 @@ export function createRoseBishopState(): RoseBishopState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
 const isShadowAscetic = (s: SliceState) => s.progression.pathwayId === 'hanged-man' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.secretSupplicant.discovered && s.secretSupplicant.guidanceKnown && s.listener.guidanceKnown && s.shadowAscetic.guidanceKnown && s.shadowAscetic.promotionWeek !== null && (isShadowAscetic(s) || promoted(s));
 const potionPrice = (bottle: RoseBishopBottle) => ROSE_BISHOP_PRICES.potion - (bottle.labourSteps === 5 ? ROSE_BISHOP_PRICES.labourCredit : 0);
@@ -158,7 +159,7 @@ export function applyRoseBishopCommand(s: SliceState, command: RoseBishopAcquisi
 
 export function projectRoseBishop(s: SliceState): RoseBishopProjection {
   const actions: RoseBishopAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.shepherd.roseBishopActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.shepherd.roseBishopActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: RoseBishopAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -252,7 +253,7 @@ export function validateRoseBishopState(s: SliceState): boolean {
   if (roseBishop.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!roseBishop.guidanceKnown || !integer(s.shadowAscetic.promotionWeek, 1, s.week) || !integer(roseBishop.promotionWeek, firstConsumptionWeek, s.week) || roseBishop.shadowAsceticActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?SHEPHERD_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?BLACK_KNIGHT_ABILITY_IDS:[]),...(s.progression.sequence===3?THREE_HEADED_TEMPLAR_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?SHEPHERD_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?BLACK_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?THREE_HEADED_TEMPLAR_ABILITY_IDS:[]),...(s.progression.sequence===2?ELDER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (roseBishop.promotionWeek !== null || roseBishop.shadowAsceticActingAtPromotion !== null || ROSE_BISHOP_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (roseBishop.reflected || Object.values(roseBishop.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;
