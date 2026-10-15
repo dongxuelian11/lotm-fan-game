@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.194.0",
+  "version": "0.195.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -336,6 +336,31 @@
       "name": "lotm_release_0.194.0_pure_white_angel_test_inputs_3_2026-10-15.tar.gz",
       "bytes": 8989012,
       "sha256": "ccc21f0db55a86b4ade4244481c337870e85f48e5d8c2d64986935fef63eab5c"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17884463,
+      "sha256": "be1700d654213f05150fa4fc9a709085c0322150fa960a7bba0083b168f139b9"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 17867496,
+      "sha256": "113dd9f5005f9d332d3b0090d65f0ff971fadc3fdf4b7bf579b506d6ab908614"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_3_2026-10-15.tar.gz",
+      "bytes": 17666794,
+      "sha256": "e50238c83b2f6a33c949f4310a425c56e39b16446b06be0c29949a2038f1194e"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_4_2026-10-15.tar.gz",
+      "bytes": 17754054,
+      "sha256": "98ae5c57dadd35cb3824be9cb1dbd73e02fce2e354d35337d2a6d02c8163bac7"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_5_2026-10-15.tar.gz",
+      "bytes": 7483024,
+      "sha256": "05e2488c53f45830776b908c219ea0a07c7909ee303fc529992c491735fe1fe3"
     }
   ],
   "fileEntries": [
@@ -10073,6 +10098,1196 @@
       "path": "tests/fixtures/pain-v01080/natural.json",
       "bytes": 2115818,
       "sha256": "a513b2a96810918f8e681f2da5688907f56ddda380f4a433bc6c4ce98bce64a9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundaries.index.json",
+      "bytes": 16715,
+      "sha256": "67b4194bc9ae6ba48d33e0be29bc0bd78063a65e294d52052c8df14d0a0149ab"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-consume-pale-emperor-potion-1.json",
+      "bytes": 3013690,
+      "sha256": "26c44c876ea57d9595ed0f916d05bcd60457e3253645cf385b36ecd25daa7c86"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-consume-pale-emperor-potion-2.json",
+      "bytes": 3310803,
+      "sha256": "be9a1614086a8c3c1869f8426c47b8548d5a84763aac3d3121c84a6e5bcd048d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-consume-pale-emperor-potion-3.json",
+      "bytes": 3625510,
+      "sha256": "8b0b44d14e54607f331169e47c5339d8ddf81b42aa263f4bc7a8425e9685c293"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-current-era-60p-care-without-healing.json",
+      "bytes": 2637656,
+      "sha256": "0cacadfc37bed1e03d27a216560b93194695bb7f4ff06c7a50c3b4b176bbad6e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-current-era-paid-work-after-living16m-exit.json",
+      "bytes": 6910137,
+      "sha256": "405d4e91749baf749651db5069c71311f48093657403f343a97900fd2d2e38aa"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-preparation-PLAN_RETURN.json",
+      "bytes": 2858861,
+      "sha256": "6a733d0bdb7551da639f91d0169cd8e698f02fd8c6e1a2cde878bc7555873d92"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-preparation-VERIFY_PROVENANCE.json",
+      "bytes": 2824296,
+      "sha256": "a88c74d97c2542226d0a144a53074f5dea9950ae89fdb60c202017044002a9c0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-preparation-VERIFY_RESIDUAL.json",
+      "bytes": 2849592,
+      "sha256": "c97008c3e804d275eab41297ea5d72046b3aef6bb27377cd7299b4705fb5a204"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual120p-guidance-frozen-eight-stages-and-long-history.json",
+      "bytes": 2741745,
+      "sha256": "977cf8000cc2d73c013360c3d241a969b1aaff91c494f1267ad088533703c6ea"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual16m16s-arrival-independent-alden.json",
+      "bytes": 5209051,
+      "sha256": "303fb4d47e106a7a7b1b25dfaff3ea748338404267cd9913a66244cd475ebf70"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual20p-current-week-preparation-pale-emperor-potion-1.json",
+      "bytes": 3004061,
+      "sha256": "4826e015040aee8e956c30365a39f3b5297e262cf73345e3af8e9d2f710044dc"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual20p-current-week-preparation-pale-emperor-potion-2.json",
+      "bytes": 3301234,
+      "sha256": "bd50fde7456c8ae2dcd88c76c3c32982b91220b0c7741eec74099ac63e559cd1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual20p-current-week-preparation-pale-emperor-potion-3.json",
+      "bytes": 3615142,
+      "sha256": "fa115645722fc7f6675172444a4b0d88211abbf3b7b3302c42e25385689f09a0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual80p-buy-pale-emperor-potion-1.json",
+      "bytes": 2995315,
+      "sha256": "0124eccd806df89cc5fe9f2415e9a3b97944eed6f664603b05bc1b68e0f38c5e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual80p-buy-pale-emperor-potion-2.json",
+      "bytes": 3150309,
+      "sha256": "5bac16c13e3758cb3790844de08813edf13c05fa52bd8e2f7fcfdb598603b831"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual80p-buy-pale-emperor-potion-3.json",
+      "bytes": 3447585,
+      "sha256": "9ef4066683d224d9b6b8befba00fc63d0fe98f6ef4f6ef392991bd306d3ca3df"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual8p-only-two-original-seals.json",
+      "bytes": 3705152,
+      "sha256": "32f153ba49c5b56d17e8b703c15ee88fc38c40b649ee4f5839a6918185eca14f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-1.json",
+      "bytes": 6123537,
+      "sha256": "1a2df9568b7bad6c77e9ba0557dac74d8599469e15ea0dff57a3bd68c972f5ab"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-10.json",
+      "bytes": 6823647,
+      "sha256": "b864f51154cf51f5ba69a159537f53aa304672b03932a9664c85e868aaabb1c0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-11.json",
+      "bytes": 6915616,
+      "sha256": "addeacc9456e880f9a0bdb4555bcae5aac1811c160342762a20ca8e738b51246"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-12.json",
+      "bytes": 6919805,
+      "sha256": "80431fc301e92237e7198cb44462a15003e4c750aad763d48aafde754d766312"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-2.json",
+      "bytes": 6275375,
+      "sha256": "79417f698acba3ca46a42f5dbe03acce81c9c8c9f3af2b68c4658972f22b6f1f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-3.json",
+      "bytes": 6368814,
+      "sha256": "71f8c4f1067b1771681c65fd8860dcdd86d9690f9a6bc1be6ab82f20a98c638d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-4.json",
+      "bytes": 6384420,
+      "sha256": "0c10598bc6a8fd24fc2f865395ac7978210496f030cc3214422efb9c8049ccdf"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-5.json",
+      "bytes": 6425883,
+      "sha256": "9ee4962af1abb65b918d0e5b259cbaf410ab1e6cb836d730e38cc8f31e8fe477"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-6.json",
+      "bytes": 6507636,
+      "sha256": "a9a2d0892460578b0dfd5820f8742dfcc70d898d719008502da557773838e789"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-7.json",
+      "bytes": 6559525,
+      "sha256": "8ce9466174dd7143ac827b329fdb425a9b665341b21854fd785d0157c2cdd7c8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-8.json",
+      "bytes": 6619160,
+      "sha256": "39068a3c004e9ef77b9a661bf39c75bd729e097eb0d4c6854ed7d35ef28e5edd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-9.json",
+      "bytes": 6707973,
+      "sha256": "74e51cf5b863a2132de14924c8fc2663799226ca66c0d6e772bf2d8148ab4e46"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-exact-original815-command-living-source.json",
+      "bytes": 2634941,
+      "sha256": "afaeaa20f2f5064f4750a979776598ba54355908a177c8e362361f402292b69d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-fixed-all-policy-before-independent-encounter.json",
+      "bytes": 6005975,
+      "sha256": "7233394cb4066b58ca916eeac95977e4aa24cb5d37244e22dc3f66c25ed8bf5f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-actual-source-and-ordinary-alternative.json",
+      "bytes": 3897514,
+      "sha256": "edb18ab53f7986a2b72fcf089f358b997e9cfa8861f2f9529a73ce5dff169673"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-actual-walk-and-open-same-vessel.json",
+      "bytes": 4006518,
+      "sha256": "2bf2621582b4ea1d6e1784124b05579d62dc82b9a71bddb1622f61947aa75537"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-actual12m12s-road-arrival-1AP.json",
+      "bytes": 3946972,
+      "sha256": "704b3ea431687276e37cc23b8c5ee2285b5318c27313defc643969c85a5da947"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-actual4m-carry-or-ordinary-fallback.json",
+      "bytes": 4050939,
+      "sha256": "9363dccd86040873f256b252b6e208de1b0978ee65b467077b8be9b706ac18f9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-consume-one-actual-original-seal.json",
+      "bytes": 4079692,
+      "sha256": "9da76ecd21aa39feebab0ecd6801246f28fe0fdb0a09087d14cf28acc3faa0b4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-fresh-ability-consent.json",
+      "bytes": 3991994,
+      "sha256": "ac61510ea6eac812d979b7c95a549969d3dcd7320249b4246736343741ab6a59"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-fresh-custodian-consent.json",
+      "bytes": 3977397,
+      "sha256": "120b30f270e5acf94448839352736a82a4259548016948bad7fe03e1924f5bbf"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-fresh10p1AP-nora-invitation.json",
+      "bytes": 3962166,
+      "sha256": "2b14727b9acdf7f0bcca4bca521cbb39e13ddba8d8a043d3fbd8ca70b9c81a18"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-honest-report-of-actual-applications-and-failures.json",
+      "bytes": 4123374,
+      "sha256": "ef773aa337ee970fc012f9f00800ab83b2fefbdb83a42db673df42c5c0b422d3"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-nora-actual-exit-and-player12m-road-return.json",
+      "bytes": 4108708,
+      "sha256": "01b0cc31dd8392efbed585b8f1c8d443958995482312e7c38560f82743d37294"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-observe-current-original-and4m-line.json",
+      "bytes": 4021011,
+      "sha256": "ce733415209780e08613a1f7ab1060835c08fe56483ff226eac5c9165ef087b0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-one-paid-window-attempt.json",
+      "bytes": 4036096,
+      "sha256": "20a4220f558f14ce89e39acb7a19d958978639592b50011fdf6733727539fe6c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-ordinary-original-screen-and-lid-with-real-scuff.json",
+      "bytes": 4065202,
+      "sha256": "14c17f13c4c175c1fd37f0174191d20393ecdbf6d3bb4fc0d1e0b76456d97097"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-return-same-original-loan-safe-box.json",
+      "bytes": 4094199,
+      "sha256": "314960b97c37bc57ecf17b7c05b1a10cd5dd0ef9544576d74ca3bce3543674eb"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-one-optional-independent-alden-fight.json",
+      "bytes": 6030419,
+      "sha256": "393fe8f8427cffe050ccd8f4fe917e36e67a54eb0d13a225e22a470375ec7fb5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job-2.json",
+      "bytes": 2876535,
+      "sha256": "9385f77104db30e4ef27201297fe74a2524f15b88504d206e16f0a0ae2c4e9f4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job-3.json",
+      "bytes": 2902508,
+      "sha256": "20706dd2e3a858000da08dce5d41eddc0328aba04a3f40f6e9dc5800157cd4fa"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job-4.json",
+      "bytes": 2911271,
+      "sha256": "761569be2196e601071734a54cd12985b76ede9215a3033ce28956820302057c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job-5.json",
+      "bytes": 2920160,
+      "sha256": "7394c23c540695653f35a46b78a0282ab0b16ceb2b00c4cf5a3a033381d92754"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job.json",
+      "bytes": 2867796,
+      "sha256": "a6660d482d36d21e76f90a6db6003aa2297de9a630d3f2f67455c0a4e3811d5d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job-2.json",
+      "bytes": 3031586,
+      "sha256": "7e2f7b05faa4592c64d283e8e88c1943a1ebb96426d5381bdadb0c4eefc49e4f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job-3.json",
+      "bytes": 3057560,
+      "sha256": "830780b8acf4032913503ce37d3c7c019c19825fe147f36eba5bc3b21bb27fa1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job-4.json",
+      "bytes": 3066320,
+      "sha256": "5672b3972f1ea07729786f252b757b16563e8c52d18c9b4ffd531a94dbc63f82"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job-5.json",
+      "bytes": 3075207,
+      "sha256": "6ce6c5600d00b8db5114d9756096f3ef44b655196d511a6a226818ba73d8c04a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job.json",
+      "bytes": 3023044,
+      "sha256": "e60fcbf538899c06a2ea3d5bb23da6536f029bbdabcf3b472f850f145d5e1272"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job-2.json",
+      "bytes": 3345645,
+      "sha256": "72a297941edfc242af5a42360481b6df02dbc583e626c9771f2c1f772c9b1b83"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job-3.json",
+      "bytes": 3354527,
+      "sha256": "e6ae9f0cf7f6c95766be0d26ee1d517747949f81dc7e7eb180fb4e5cc8b74bd5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job-4.json",
+      "bytes": 3363415,
+      "sha256": "398a03a67d4bee8f129bb524a47570e7b666e1bb947fc945c257b1d03f1d3349"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job-5.json",
+      "bytes": 3389384,
+      "sha256": "18b797af1d94c945663311ced9b5cd0be31a39269ab6de0981a8cd3565d3f7c2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job.json",
+      "bytes": 3336892,
+      "sha256": "a9ab15bc88f317ea71f87b34989c4cefabb482b5c77e37ddde89148842d9bf73"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-actual-lid-action-or-ordinary-fallback.json",
+      "bytes": 3808144,
+      "sha256": "4c00642ca56b67ebb555fd0d760972027072f51ecfd5e6a362f989d14f50d96a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-actual-source-and-ordinary-alternative.json",
+      "bytes": 3635781,
+      "sha256": "315e91c673aba04bd32541e54273f5e7ed0d00f8a644e2f6b18d10c04dad74a2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-actual-walk-and-open-same-vessel.json",
+      "bytes": 3764188,
+      "sha256": "34184a32a61125dabc9a8d33bb24989147efdbdc7c4ce0221af15b6e5db8eda2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-actual12m12s-road-arrival-1AP.json",
+      "bytes": 3690690,
+      "sha256": "e23e03dfcf5b719bdefd6e83f15395ea94c6de2f1d1eb43583064699583204e7"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-consume-one-actual-original-seal.json",
+      "bytes": 3822324,
+      "sha256": "a362898cf694f2b5eace9089b964266ea97d0b1c4583e79dde56b744cf2f58b4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-fresh-ability-consent.json",
+      "bytes": 3749800,
+      "sha256": "6b9942fe9a30192c02ddfbe3e7046b8c6b5cfd9c87c2f57316a4a25804a6687a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-fresh-custodian-consent.json",
+      "bytes": 3735347,
+      "sha256": "fe965bca105abe98dc4b7df87907adbfefc757dc17f3ce09b7e21f229715474d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-fresh10p1AP-nora-invitation.json",
+      "bytes": 3720238,
+      "sha256": "b7232b3de5fc4790b0a75d1d49c33db578a33a9909534732e1e3f7f26b5af042"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-honest-report-of-actual-applications-and-failures.json",
+      "bytes": 3883051,
+      "sha256": "38181f20d21d41d865772e18fada2a6251ec946d3eff85680803d59ca67c1e41"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-nora-actual-exit-and-player12m-road-return.json",
+      "bytes": 3851125,
+      "sha256": "b6deeda2aa317e3aa29751761b393f03c4e23ec08ddb784b33501a8c84950e7f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-observe-current-original-and4m-line.json",
+      "bytes": 3778553,
+      "sha256": "cb8e6862bf34aa0f41688d0b6e052fd3d371f8c5d645de4faaa24a71cf316099"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-one-paid-window-attempt.json",
+      "bytes": 3793454,
+      "sha256": "17ca12ae29120500cf8b85917b128968c9c527e54e279da9fb93adca6796c0a4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-return-same-original-loan-safe-box.json",
+      "bytes": 3836723,
+      "sha256": "c33c012cc9ea11597a3562cb29d4c99a9574250f009b0732e6929bce552572a9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1001-era_work.json",
+      "bytes": 4149741,
+      "sha256": "d2bfb46aa94fcfbc135d4bd7bd03e0ccbfa38e7576a594d24058969f574cfc0c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1002-era_next_week.json",
+      "bytes": 4158684,
+      "sha256": "046e461899e8276bbaa3bda4bc4ca2aa1f3678442c7b7876bde0feacb69417fd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1003-era_work.json",
+      "bytes": 4167514,
+      "sha256": "44e6e98c88c9c1a04540c97a8d7306f9e40196c69c1aff09f325b199a38ac1b5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1004-era_rest.json",
+      "bytes": 4176398,
+      "sha256": "702cac8f47a8931eff437010df5762392b5b4cbce2da27e47d43b0e91f96c225"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1016-era_work.json",
+      "bytes": 4348782,
+      "sha256": "fb11a31df0c7d3ff77717fc163053084182975fad2a4759812f6fee61b1cebfd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1017-era_next_week.json",
+      "bytes": 4357792,
+      "sha256": "aa61d90bcd68baefd28af7e13b96a477eb36cd683262f4363fc0a4875be27e24"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1020-era_work.json",
+      "bytes": 4396351,
+      "sha256": "4b2d09d0948df6dcd2d849db57878d1ac8ef2c175cf304c32cb3751270c06578"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1021-era_rest.json",
+      "bytes": 4405588,
+      "sha256": "c98859d4d9b09c6f9047234632fdb5897c94f9f182719a781e8f830427b08240"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1022-era_next_week.json",
+      "bytes": 4414854,
+      "sha256": "040bc368bb9767ff14fb5f811b79f0e269b29859202bd159d0b0e82218409d4b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-816-era_work.json",
+      "bytes": 2635362,
+      "sha256": "93c328fb5fc3017257024b2856cc861ed91e4c25b5a50b6e1d30e4ef8d0d8d99"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-817-era_next_week.json",
+      "bytes": 2636199,
+      "sha256": "4ef5ab1eb885217bbf6e9ca3cd4ec59fb8f1a6cc254bd371838028b7b87f0ee4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-818-era_work.json",
+      "bytes": 2636830,
+      "sha256": "3b4a6419690ad91ba838075868b367d61a4a7d4a916fefb396e6a5ab91a4e4a3"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-819-era_work.json",
+      "bytes": 2637074,
+      "sha256": "9c8d5607880c62af0d1b5f0fca2cf212f63289639334e8718a4ff8ac07b4755a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-821-era_work.json",
+      "bytes": 2638166,
+      "sha256": "526034147d5daf91fb8a2c80053dd9820b814d9c2d3a5c9ff1938f5576b158c2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-822-era_next_week.json",
+      "bytes": 2638931,
+      "sha256": "659fb538d6115d3984cc669d93365aea27eaa82b92e42d927afc36c9cb543a9c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-823-era_work.json",
+      "bytes": 2639562,
+      "sha256": "e672d3dde010ef27813d443b4450262653b0baec717861d9fb9fed7860591079"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-824-era_rest.json",
+      "bytes": 2640003,
+      "sha256": "3c282f732e0bcdb9a9a76c469f977bfee7e9fdb7068e681b9b132686d1ab078b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-825-era_rest.json",
+      "bytes": 2640738,
+      "sha256": "c4cf6a4708bcb98fc3a658bfd2797a5a4990e48af589ab3dcba9a5d7d0b4e5e1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-826-era_work.json",
+      "bytes": 2641178,
+      "sha256": "f943937cf83189b302af2f7e7765873d7cc8866e26b08d345b337c287fb4dfe8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-827-era_next_week.json",
+      "bytes": 2641914,
+      "sha256": "4d547cb66d70c552e9152561542daa569162d97c273479e0f403a96ac051d618"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-828-era_work.json",
+      "bytes": 2642543,
+      "sha256": "bc17d957621c937922545e057363742e9a1af58d3a5d3adc1a54c6166254ad85"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-829-era_rest.json",
+      "bytes": 2642984,
+      "sha256": "c334f8dcae7b0470c74014809ffeb4b4eaf00a0dc293ae4e56f854c01fe60547"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-830-era_rest.json",
+      "bytes": 2643718,
+      "sha256": "6abbb47f843c5b5e201e0ef03e95ac254e5908775682d9c61e2a7e5787a0f858"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-831-era_rest.json",
+      "bytes": 2644354,
+      "sha256": "272a4ab0c61a9d1a665d7ffa75ce87be3c59f78305412804aee5e06df659a5fd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-832-era_next_week.json",
+      "bytes": 2645191,
+      "sha256": "530020452789122525903453970908f1a0d88d0639d93c6a349fd2a17ed49a85"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-833-era_work.json",
+      "bytes": 2645725,
+      "sha256": "4e2e39a1f1708e11da1a212525a1b35ea57f7860bdf45eb8cba5d77108222af5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-834-era_work.json",
+      "bytes": 2645970,
+      "sha256": "4f6409361397ad3e7df9bef41fa4808ca8b41b8cfd1eb2df050ed5caff211cdf"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-835-era_rest.json",
+      "bytes": 2646606,
+      "sha256": "8ff1de7e5144b938de21089f3b798e7899181389d46e557c21814970fcd1fe17"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-836-era_rest.json",
+      "bytes": 2647340,
+      "sha256": "df38e0bcd20fb83923c627713a460ce901b8e1319f0addf5d436a048e2cd4585"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-837-era_next_week.json",
+      "bytes": 2648177,
+      "sha256": "82b52220a900d51169030d0a024281a479939c72cd479266b059a74e35bce8e0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-838-era_work.json",
+      "bytes": 2648710,
+      "sha256": "ee7c441fcbc5f79cfe84bd084bb4fa9235799ada51102dac195dd1c95ddb2377"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-839-era_rest.json",
+      "bytes": 2649150,
+      "sha256": "db0ce43ba1ee085445a2b0b6c39485dd542a51eda9f98a34361e4b7645055d06"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-840-era_work.json",
+      "bytes": 2649688,
+      "sha256": "9ccd5cc29f3b2a3d5c162102fcdecb22d0fec7025432a2bf2fe515f6ada7dee9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-841-era_rest.json",
+      "bytes": 2650226,
+      "sha256": "189e27f081fc465435fde0b420a4a1f812ab5bfb0140e52c7673a51935bd5c06"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-842-era_next_week.json",
+      "bytes": 2651161,
+      "sha256": "f3b1f2bdaf8ad537c9a374b8161da5fa14f3626668c8e9e6d73be3b3376f4765"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-843-era_work.json",
+      "bytes": 2651694,
+      "sha256": "bd7d8534ae37226a39dc35cc4aba824f7848a90c640c6adf9451536ddc1ad932"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-844-era_rest.json",
+      "bytes": 2652134,
+      "sha256": "3bce5448cf5639c6f3ba0539350ac850814b7ee6a05a172d7bac1178139f323a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-845-era_rest.json",
+      "bytes": 2652868,
+      "sha256": "924a3008ba62069a549d84b1ea67603ce958d51de1d9c78deaaceada43044aa0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-846-era_work.json",
+      "bytes": 2653308,
+      "sha256": "81b3001bf154956f27c39262d3be8a294ea7c60d4df6a69c6928dbe53e32bbf9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-847-era_next_week.json",
+      "bytes": 2654044,
+      "sha256": "3f59de74f154095aa5e46a06d6d4e235dccc830659072d9b5e75a8f43069e6d0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-848-era_work.json",
+      "bytes": 2654673,
+      "sha256": "b845c8518130e00fde45324f33e07292ddad7052c044e3eae6c6ca4e61ed0048"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-849-era_rest.json",
+      "bytes": 2654676,
+      "sha256": "f299121c94ee61dc0b712f013055e76cdf11a076aeb0c6e3e8050bee20108660"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-850-era_rest.json",
+      "bytes": 2654936,
+      "sha256": "3187d4c64ede99d73b3e1612136a9fe13522728af7d40a4c046180e3bd44ef75"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-851-era_rest.json",
+      "bytes": 2655536,
+      "sha256": "9e8c1e620518ccfec0fe84a060bd8e52d8538d631f4c15a9b131d553a9568dae"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-852-era_next_week.json",
+      "bytes": 2656370,
+      "sha256": "3f145b7f13d7589d87d7117843d4e62568bf5ad9a6b65eac9b1d605470682f4d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-853-era_work.json",
+      "bytes": 2656902,
+      "sha256": "7c503f8453b80e7c23aa072e2aec0376282daf66e04c31755364d3e3710e92f1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-854-era_work.json",
+      "bytes": 2657148,
+      "sha256": "f2a576eb4bef6bba9fe229244322710d51ab46ed8c9feaff2a02df2158569a63"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-855-era_rest.json",
+      "bytes": 2657784,
+      "sha256": "d517007f0dc8c2bbd7dd90565109ec42343576ed4232174c6567b68c4d24a91b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-856-era_rest.json",
+      "bytes": 2658519,
+      "sha256": "512da5fe182b2ec18caad28806265c19ae2aed9eedfaf5dc5ffd864b682b7123"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-857-era_next_week.json",
+      "bytes": 2659358,
+      "sha256": "129d4abf1c1f8b7dd0b06f7c3cffcb9f56fc33f45d4a282f900a5a80d854d410"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-858-era_work.json",
+      "bytes": 2659892,
+      "sha256": "f5d04052880fe6615f446502fb7024a0314dad6e932f59636b613c1c02662451"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-859-era_work.json",
+      "bytes": 2660136,
+      "sha256": "c868c9a5a98bfba70107a5867e13cdc721be6e6272988443beacc1eae964263a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-860-era_work.json",
+      "bytes": 2660576,
+      "sha256": "0ed6cb2a40b8cfdb0c8ac5a39106ca1576cf06a22488947b3c9c7d59ebbe13dd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-861-era_work.json",
+      "bytes": 2661017,
+      "sha256": "6b7b2be08ea106c89c57cff3c914c8bd7b9f7da6fce91e62488af2e34a897c9b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-862-era_next_week.json",
+      "bytes": 2661854,
+      "sha256": "3dfd044f5af411a709ab4ee1373c04a58a2f8c02696058b291cf483f99693e5b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-863-era_work.json",
+      "bytes": 2662485,
+      "sha256": "bf5e02a16c6fcb72067daf5e363d675af62da46e9c6f5edf67f74ed77bea9321"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-864-era_work.json",
+      "bytes": 2662730,
+      "sha256": "79c6dbef2f2c97bed6353369e657b6ae6341c5fe73c5bc57fd0652b8fa5d9725"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-867-era_work.json",
+      "bytes": 2832047,
+      "sha256": "4e531b51842e37e5152e0828b9b4e35faca2e2402e318f456a95276f0a52b3cb"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-868-era_next_week.json",
+      "bytes": 2840509,
+      "sha256": "4faa24abab35e6ec05910bb1d63508c63bec6d0f90a0b904462debb557e8554c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-873-era_work.json",
+      "bytes": 2885136,
+      "sha256": "995bf57dcf7fc4807b7481e4ecd3264bea30b75c4fd9db72094614815434a136"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-874-era_next_week.json",
+      "bytes": 2893749,
+      "sha256": "d1c72f2fcbc358c2f08c32a70cb28a33a371acaa697eba19b35c273f41e1e427"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-878-era_work.json",
+      "bytes": 2928588,
+      "sha256": "d5842cf63205d265331bb5ef2e7e008507b0f60b76ad272f2425dd7cf2d39f07"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-879-era_next_week.json",
+      "bytes": 2937121,
+      "sha256": "da090bfd04808d037e461df31247f92bec28e9c9e021e32cc9edf750285d8921"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-880-era_work.json",
+      "bytes": 2945516,
+      "sha256": "7868f97eb5f7a79eb02f9b0efa8cb94a8808c3a7efb53addfbbc39d5c344aa19"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-881-era_work.json",
+      "bytes": 2953517,
+      "sha256": "2a945977d9279a1dc02675d5e381387cddaac4af3b81970df7a375848bfe5059"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-882-era_work.json",
+      "bytes": 2961715,
+      "sha256": "28976c06b36b94d0be3cc3915001966d2aaf158955b67b7399c73b6b421b92f5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-883-era_work.json",
+      "bytes": 2969915,
+      "sha256": "a217ebd656c209a63ea7fae09a4773ee9a9d427bc5f8cdbd4199a80d4ee2971c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-884-era_next_week.json",
+      "bytes": 2978519,
+      "sha256": "54f03812f5598a3b97cb941381fd144ed0165131d58d046129b5bf4802c74434"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-885-era_work.json",
+      "bytes": 2986916,
+      "sha256": "de1e853faa462b14ebc6506db2a6083039c7e42f0e6f01cde292c2cc519fe8f0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-891-era_work.json",
+      "bytes": 3040186,
+      "sha256": "03d3c44bc3055ae61499272e1725b00e1aa77cba143acec18c2635a290a5a44f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-892-era_next_week.json",
+      "bytes": 3048801,
+      "sha256": "c5c8781acf8fc2544aa7cbd9e5a1362e5e97e7b5d6f3866452b68c3d10043713"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-896-era_work.json",
+      "bytes": 3083634,
+      "sha256": "210531acf7001a37bfba862405941d1727cd8a3f8d1aec129b785863dd8a9b14"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-897-era_next_week.json",
+      "bytes": 3092161,
+      "sha256": "3fe3ec988bc870c0fd2c3362d51b854e3b4087ab1958641d46ba24bbb790dcf1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-898-era_work.json",
+      "bytes": 3100547,
+      "sha256": "b9486e8e95cbaf2784421dedd8acb7dd49d36ed54166cb0d5aabe3da18700b78"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-899-era_work.json",
+      "bytes": 3108541,
+      "sha256": "9e3f302107f1cc997dd46b0028da36dcbc77be8573a23aa79aa1da825b003af6"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-900-era_work.json",
+      "bytes": 3116731,
+      "sha256": "b9f8c0dd20cae04481975eefe34e526755da5a95c045ff7154841d60ab2a919f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-901-era_work.json",
+      "bytes": 3124923,
+      "sha256": "bc6084569be9e10b2572775b421c1dcc73e00001a205b7ea685ca1e5c1fc5807"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-902-era_next_week.json",
+      "bytes": 3133521,
+      "sha256": "2b0b4f9acb3a3446b902bb6eb6b0fb8d48c98a0f00e2aa9809b355d3fc306119"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-903-era_work.json",
+      "bytes": 3141914,
+      "sha256": "2f2d265b7e162854d0b371f45fcdc641c10c55f3db30b6047e436d5954bf1b5d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-905-era_work.json",
+      "bytes": 3158777,
+      "sha256": "080fd06e57aeed48f13fac0a2863f91949438ea6dd9f312d1bcd943bbb3e0e10"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-906-era_rest.json",
+      "bytes": 3167127,
+      "sha256": "bf54e1ae5bccf19ddd7acdd8b056e2b3a9b8d3be16ef2c7b33e2c0fe1ee8748a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-907-era_rest.json",
+      "bytes": 3175615,
+      "sha256": "b6d6f94e53102a276de958b9411b374c211e08ae8f3efefc09953c4780013125"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-908-era_next_week.json",
+      "bytes": 3184213,
+      "sha256": "89d01dc049af52d4a01dba8deda114f0b0a33e00cf167f87ff9c4fb2bc7b17ba"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-909-era_work.json",
+      "bytes": 3192506,
+      "sha256": "98c7b1734b5f97ec2635052608914038b1df4eec86cf24ad5f3031a71e44ca2d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-910-era_rest.json",
+      "bytes": 3200701,
+      "sha256": "1823acc66cd2ec6bf2e130c44b499225583e0710de75ccb0804e9672e13c3f5e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-911-era_work.json",
+      "bytes": 3208997,
+      "sha256": "7e9a1eaef299e9e0c78fe012d5bb664dd15cbf8e2dfd0e6f3ab9aa4ac796dc84"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-912-era_rest.json",
+      "bytes": 3217295,
+      "sha256": "2d870f69da5a71f5cd7da0d8b8cb97d65283fbc262f2cf37b1fcf275c8d95f09"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-913-era_next_week.json",
+      "bytes": 3225999,
+      "sha256": "b57cb88d0ca0d8f78749358fe30ba3275cca8c4a68b0c90d7c1eefd52ecd8277"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-914-era_work.json",
+      "bytes": 3234300,
+      "sha256": "25da8544eae9953ff3ba52ffb0ca27f99dbddc11cd441101abeaf3550efaf809"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-915-era_rest.json",
+      "bytes": 3242501,
+      "sha256": "492559d8ac77c32f11ad6865d3dc34798a5d982a6896b790982561bec2944e65"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-916-era_rest.json",
+      "bytes": 3250995,
+      "sha256": "09aa99c4621eda7506c4c8a82ec18b62934b8ecaba0b2d1910090572e6144173"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-917-era_work.json",
+      "bytes": 3259193,
+      "sha256": "671be20d9f2bc1e6ea60dae59f726044aa022138ac09ce85acba3d5bd5045bd3"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-918-era_next_week.json",
+      "bytes": 3267693,
+      "sha256": "1138de6aa997b0b802920ecb17e2d24c1bf2239feaf540785f643b805877dbae"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-919-era_work.json",
+      "bytes": 3276083,
+      "sha256": "2bafe06d5953a7d1c19073ecfd86f9e3c740a9c740e3d16f83b152e7a4bd4c0b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-920-era_rest.json",
+      "bytes": 3284277,
+      "sha256": "430b61203572720d1dc29ab23c7cf4e8e3eb78dcb020697b81e130cec9e294c2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-921-era_rest.json",
+      "bytes": 3292765,
+      "sha256": "3bbf201b035c1dcb525b556d051fac691a05de25c251f59238c15445b1de7688"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-924-era_work.json",
+      "bytes": 3319870,
+      "sha256": "2cd6faf150c25ed1edee1807ba3397ac6233bbf3da09b652e2ca10152c616ae1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-925-era_next_week.json",
+      "bytes": 3328137,
+      "sha256": "1df7e182d835e2123f9b9724ecce88ac389c5adb1b14ceba5d71966c20e21eb8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-930-era_work.json",
+      "bytes": 3372015,
+      "sha256": "4a3c4c576e30331a2c8c721f304fedd87171ce60a7cf1ffe6266cff01cb1694b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-931-era_next_week.json",
+      "bytes": 3380625,
+      "sha256": "440c2057510835609d46d38cc43ceacbf24f5e1a7eecdea956d8c509a7183bf7"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-933-era_work.json",
+      "bytes": 3397684,
+      "sha256": "bdf86a33517b8896fa795466bbf9dda0682c2dde11bd6ed4df6c4d076787cea4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-934-era_work.json",
+      "bytes": 3405811,
+      "sha256": "d6ac9e403b211cb0c48b217177755eb7aa08e851a897cb954462a5d834333fed"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-935-era_work.json",
+      "bytes": 3414005,
+      "sha256": "531d24f21c704a3e751f9f67c45af54b332cffd40943b18175ac7660003f462e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-936-era_next_week.json",
+      "bytes": 3422603,
+      "sha256": "c8fe03174f6a59dba137ff39868f4999c01d1e091a2530acd114ee1533c3c077"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-937-era_work.json",
+      "bytes": 3430994,
+      "sha256": "1c14d4bfd200e8cdc40bf300e1b8fc99496f045dc7f91ca908a0b28a47bd4c24"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-938-era_work.json",
+      "bytes": 3438993,
+      "sha256": "49ad249f8681f0764b4970fcd27a360a4061cc0d60319b89e0f2a6730a5cf067"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-940-era_work.json",
+      "bytes": 3456053,
+      "sha256": "2b80ac55929dd518e0b9882110514ca2d70363bd0a1e6e400b38ada89f33adbb"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-941-era_rest.json",
+      "bytes": 3464403,
+      "sha256": "41838ff8f9fa7ff71635edd6f3d642686859bb4a42e503051e4cb94303badc3b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-942-era_next_week.json",
+      "bytes": 3473099,
+      "sha256": "31d1ea24f209c4aa09d0403d9923b79c29fee0428a6d469a2abb6f1543b6c574"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-943-era_work.json",
+      "bytes": 3481392,
+      "sha256": "7068bbf62f48e9cfd8611f3204c3291c124ee08222174d99325004dad8a7acfd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-944-era_rest.json",
+      "bytes": 3489585,
+      "sha256": "c6549bc26a9f71fb7ca1a2258e974831f97c62b3cc3de1ef5a6cf3edc506b98f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-945-era_rest.json",
+      "bytes": 3498075,
+      "sha256": "77a74f6791e406a1bf2376656f4aff519d49a0d2afe0bcfa1c8905aed22a4333"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-946-era_work.json",
+      "bytes": 3506273,
+      "sha256": "d925af81fd54a3cbd42be4e65c33440315c72e0f65506c9dd0e4e562b8a25358"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-947-era_next_week.json",
+      "bytes": 3514769,
+      "sha256": "f4d00e5e1dbef57da4c4c46ab58b9f242f42fc620e22406a986ad941f0a81ecd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-948-era_work.json",
+      "bytes": 3523154,
+      "sha256": "ee05fcbe4b3f7c0c34dbbf460319283f364d8c971f7d6b7bcb81dd05e50708f8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-949-era_rest.json",
+      "bytes": 3531347,
+      "sha256": "52d6defe53bdd0938e85f1a9e56b9e57436eafc66b49a412ed6486feeda0812d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-950-era_rest.json",
+      "bytes": 3539835,
+      "sha256": "568e63853abedecbe3456ae7f7dcc3cd99a03345d5c47a5999f3cbd20aef248f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-951-era_rest.json",
+      "bytes": 3548223,
+      "sha256": "e7ba7246764fc52dd38480bab1bbc539551456b3b6c7675a2adc18be2517ddfc"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-952-era_next_week.json",
+      "bytes": 3556815,
+      "sha256": "91eefd64b2363a720cb641f53f87a18490bd4dd40cacd2a1804a6fbee5ba6fe4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-953-era_work.json",
+      "bytes": 3565105,
+      "sha256": "f28cb76c850504074d937445040fd33701b3a7fbcca66e7480db121be9a1cc6a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-954-era_work.json",
+      "bytes": 3573103,
+      "sha256": "235c5f1fc8d3cea7e307c9cf055e92a16e4117cdbd564a6bccc5c98ed4883000"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-955-era_rest.json",
+      "bytes": 3581493,
+      "sha256": "4651e844b40d88b547b8b1e4eaba8315bac7438b40a7eb930225f78ec455d475"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-956-era_rest.json",
+      "bytes": 3589981,
+      "sha256": "894e7767ebfb301ae96bfe141c5cd3df68ab46ae549f400f9598c136c07bec28"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-957-era_next_week.json",
+      "bytes": 3598577,
+      "sha256": "24204a2160e3f89f3d5dc6faebb73bd9a2bdc1d4b55277fe6e8ad56ffb5f5a49"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-958-era_work.json",
+      "bytes": 3606869,
+      "sha256": "becb17963cc01c1ccbc49b46c5b375f7ef33e3053240e749d88675db95fd155b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-962-era_work.json",
+      "bytes": 3644370,
+      "sha256": "8a26e058e41d6c9263b84489cdfb1789ed80a7aeaf4317127e459fe677e48c8e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-963-era_rest.json",
+      "bytes": 3653091,
+      "sha256": "f215bc610e6f3aaed70a000ecd458672246165499ca8dc96e13c10a45030be25"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-964-era_next_week.json",
+      "bytes": 3661837,
+      "sha256": "f8f4a61bc5a6f9f18b85dc488d355ff423a061762c19e8ea50126d592b72785e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-965-era_work.json",
+      "bytes": 3670305,
+      "sha256": "bdb32c760cf1987a44072f8e4208651b39ca362d18bc54afd8599f1ee4329914"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-966-era_rest.json",
+      "bytes": 3678925,
+      "sha256": "2e78f7b35914bf91a19f53bb63572cc1afb9e6df224736807b4f19d0051525ae"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-979-era_work.json",
+      "bytes": 3862771,
+      "sha256": "4db42b896b5c97056afd05857254c053325012191fe5d30735b92ddf8d927e3c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-980-era_next_week.json",
+      "bytes": 3871511,
+      "sha256": "5ed5c2d993f8a3f02542acdab33e8608adfe8fe96ae9e7e2394e0cd2aae3b6b8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-983-era_work.json",
+      "bytes": 3909064,
+      "sha256": "494138f8a87528559fab27e1dbee18229f1be26f59adf1b0c10bedb23a0ef2bf"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-984-era_rest.json",
+      "bytes": 3917907,
+      "sha256": "7c319e603805805f40e80dd54bb35acc7e8462a1c20196fe25f802c4ff6e326e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-985-era_work.json",
+      "bytes": 3926623,
+      "sha256": "b7d8f1151283d1f8dbbc2b9005acee780a09f5a9422e59b72e08c698a3ce9cfc"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-986-era_next_week.json",
+      "bytes": 3935299,
+      "sha256": "e1f9d64d18237fda4520291d9cd53de878b2cc484ab0e570140e60016c178cc6"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-three-honest-reports-reflected.json",
+      "bytes": 4384396,
+      "sha256": "c4d26c6faae520c5bf76c1edea941fc99724eda374e50cb47f4e353204bac81f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-actual-current-withdrawal-no-refund.json",
+      "bytes": 4293051,
+      "sha256": "db6afca9bacb54c95b488d04b94a904a20874c4d7eab26315bf6c296a18bdaf9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-actual-source-and-ordinary-alternative.json",
+      "bytes": 4138056,
+      "sha256": "3c21780c08508a6a86e698a3fa7921dcdc2d77318a0f2d1e9f68e722460a39c7"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-actual-walk-and-open-same-vessel.json",
+      "bytes": 4248236,
+      "sha256": "91c729622ca44f510c5068b261480e29cc8f47e6f7b33941c9ed5f7bdc6861c0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-actual12m12s-road-arrival-1AP.json",
+      "bytes": 4188227,
+      "sha256": "dc45965217ac729534b2f1dd685b25a19cd892f3de5d3c6277c1039b069dd583"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-fresh-ability-consent.json",
+      "bytes": 4233593,
+      "sha256": "fb3070cbb05d5835d7a79370e76b62532207f448486f7fde900a3421bf797e06"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-fresh-custodian-consent.json",
+      "bytes": 4218876,
+      "sha256": "666d668188cd84f5c8caf2cac8c15981216ecca8097f9fc3cf81fd71db343965"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-fresh10p1AP-nora-invitation.json",
+      "bytes": 4203523,
+      "sha256": "a21f4351c2f56540425d1fcd05b65081e35d9d4d8f48db36dd1c490ebc573211"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-honest-report-of-actual-applications-and-failures.json",
+      "bytes": 4369628,
+      "sha256": "88b64d7596d295ea422121b57c3ac54ffa87ffa2aca664747e01ce30f64f971b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-nora-actual-exit-and-player12m-road-return.json",
+      "bytes": 4336877,
+      "sha256": "55c9a43c2ba1544695651db2591ea78c970d7cdc4d19f8b91cc6edd794280ec5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-observe-current-original-and4m-line.json",
+      "bytes": 4262845,
+      "sha256": "bfb976c15989b4b7c8ce77fcac8271cb7b849bf003038db3e1225dd2ad3429c4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-one-paid-window-attempt.json",
+      "bytes": 4278046,
+      "sha256": "31bed8dde755e4d65d54b9f662dbba9455000438cd40094f9ea6d1b4cdeb8119"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-return-same-original-loan-safe-box.json",
+      "bytes": 4322253,
+      "sha256": "f8bc9778d31aee69f73d3b771d48b2e9dd9f113d33f0285cf96d618c2bd269db"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-screened-same-vessel4m-return-no-new-seal.json",
+      "bytes": 4307546,
+      "sha256": "26363d0049810c3106498b4882c6001ff75165a65baff4768c37f55040e14170"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/capture-integrity.json",
+      "bytes": 26411,
+      "sha256": "bbd00338dcf3735f8843c319a1b2c48cff5aac6805174867612a5c38ca26ca63"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/commands.jsonl",
+      "bytes": 1972335,
+      "sha256": "4c5879c9223f70e48b3b2824f75b0dfaaca9b753dbb3b76242fa88098560fabb"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/natural.json",
+      "bytes": 8904695,
+      "sha256": "14be49645e7fa18b4127c7ec34b39875eff1302fbba8052b9037ed149a42d66c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/public.jsonl",
+      "bytes": 100216,
+      "sha256": "1b9f198bb161c42d02f1be5874d086db94d30a90a88922965ba9ee17f7c856c3"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-combatStart.json",
+      "bytes": 3023745,
+      "sha256": "749b8136c4c7f9974f207b475d3452d29f6e1d082de0422f56d5a22d953ed189"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-combatTerminal.json",
+      "bytes": 3452440,
+      "sha256": "ceabae148e587029e6c4d8f7621b76001a4dbc5020a1e3ac127f47d93d5bdd15"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-departure.json",
+      "bytes": 1317518,
+      "sha256": "5a425e1890d9f41d88324af8f97951a1b3190538a006b2c0b2ae8d90ab1bbe27"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-practiced.json",
+      "bytes": 2195856,
+      "sha256": "cfb55d02c84c029ed3a7266325aff7e5b78badcc13492cc08ea550b0c9eaf51b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-promoted.json",
+      "bytes": 1815658,
+      "sha256": "940f334c00ab09ba7fd2dc8a7e407da0dab61faa0081d7036eee51dd19caca60"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 2209649,
+      "sha256": "adeccd42282426b556462a8d1be8683080bc259863d0fd2995c1c332021a50e5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-recoveredOriginalInjuries.json",
+      "bytes": 1329881,
+      "sha256": "cb69b5c3b2ae6381d087723ae54acb2bddea5f23bdcf339806a187e9e1c1761e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/source-prefix.json",
+      "bytes": 53721,
+      "sha256": "f9d48079aa7498c109a00532cc3e5c727b5a62af4adb1635aec694df8d667b43"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/summary.json",
+      "bytes": 697709,
+      "sha256": "441d2466d46c0c9d38ad9c6d914b9fe429546df1935a34716f289106562e9e1a"
     },
     {
       "path": "tests/fixtures/parasite-v01280/boundaries.json",

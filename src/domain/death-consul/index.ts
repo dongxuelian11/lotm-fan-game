@@ -1,3 +1,4 @@
+import { PALE_EMPEROR_ABILITY_IDS } from '../pale-emperor/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -38,7 +39,7 @@ export function createDeathConsulState(): DeathConsulState {
 /** Historical membership never broadens an old stage's playable actions. */
 export const isDeathConsul = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 2;
 export const isDeathConsulAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 3;
-export const hasDeathConsulHistory = (s: SliceState) => isDeathConsul(s) && s.deathConsul.promotionWeek !== null;
+export const hasDeathConsulHistory = (s: SliceState) => (isDeathConsul(s)||(s.progression.pathwayId==='death'&&s.progression.sequence===1)) && s.deathConsul.promotionWeek !== null;
 /** The public era availability is the same authority used by the current S3 life channel. */
 export const currentDeathConsulSourceEra = (s: SliceState): DeathConsulSourceEra => projectFerrymanEra(s).available ? 'POST_CYCLE' : 'ORIGINAL';
 function realChannelMatches(s: SliceState, era: DeathConsulSourceEra): boolean {
@@ -48,8 +49,8 @@ function realChannelMatches(s: SliceState, era: DeathConsulSourceEra): boolean {
     integer(c.introducedWeek, 1, s.week) && integer(s.ferryman.promotionWeek, c.introducedWeek, s.week) &&
     c.bottles.filter(b => success(b.outcome) && b.status === 'CONSUMED' && b.consumedWeek === s.ferryman.promotionWeek).length === 1;
 }
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'death' && [3, 2].includes(s.progression.sequence ?? 0) && s.corpsecollector.discovered && s.ferryman.guidanceKnown && s.ferryman.promotionWeek !== null && realChannelMatches(s, currentDeathConsulSourceEra(s));
-export const hasDeathConsulLock = (s: SliceState): boolean => s.deathConsul.preparedWeek !== null || hasDeathConsulLifeLock(s) || hasDeathConsulEncounterLock(s);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'death' && ([3, 2].includes(s.progression.sequence ?? 0) || (s.progression.sequence === 1 && hasDeathConsulHistory(s) && s.paleEmperor.promotionWeek !== null)) && s.corpsecollector.discovered && s.ferryman.guidanceKnown && s.ferryman.promotionWeek !== null && realChannelMatches(s, currentDeathConsulSourceEra(s));
+export const hasDeathConsulLock = (s: SliceState): boolean => s.progression.pathwayId==='death' && [3,2].includes(s.progression.sequence??0) && (s.deathConsul.preparedWeek !== null || hasDeathConsulLifeLock(s) || hasDeathConsulEncounterLock(s));
 const bottleNumber = (b: Pick<DeathConsulBottle, 'id'>) => Number(b.id.slice('death-consul-potion-'.length));
 const sourceEraFor = (s: SliceState) => s.deathConsul.sourceEra ?? currentDeathConsulSourceEra(s);
 const potionPrice = (s: SliceState, b: DeathConsulBottle) => { const prices = deathConsulPrices(sourceEraFor(s)); return prices.potion - (b.labourSteps === DEATH_CONSUL_LABOUR_STEPS ? prices.labourCredit : 0); };
@@ -190,7 +191,7 @@ export function applyDeathConsulCommand(s: SliceState, command: DeathConsulComma
 }
 
 export function projectDeathConsul(s: SliceState): DeathConsulProjection {
-  const state = s.deathConsul, available = knownChannel(s), promoted = isDeathConsul(s), actions: DeathConsulAction[] = [];
+  const state = s.deathConsul, available = knownChannel(s), promoted = hasDeathConsulHistory(s), actions: DeathConsulAction[] = [];
   const era = sourceEraFor(s), prices = deathConsulPrices(era);
   const add = (id: string, label: string, cost: string, command: DeathConsulAcquisitionCommand) => {
     const reason = deathConsulAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -220,7 +221,7 @@ export function projectDeathConsul(s: SliceState): DeathConsulProjection {
     formulaKnown: false, formula: [],
     ...(available ? { story: `${DEATH_CONSUL_FORMULA_STATUS}${DEATH_CONSUL_SOURCE_STATUS}` } : {}),
     supplies: available ? `${state.guidanceKnown ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。` : '本次专业介绍后登记三瓶独立成品；现在尚未交付。'}每瓶${prices.potion}便士或本瓶五项真实劳动后${prices.labourBalance}便士；现有全部失败耗尽才可花1行动申请，跨真实周到货仍须逐瓶实际付费。` : '',
-    actions: available ? [...actions, ...(promoted ? [...deathConsulLifeActions(s), ...deathConsulEncounterActions(s)] : [])] : [],
+    actions: available && s.progression.sequence!==1 ? [...actions, ...(promoted ? [...deathConsulLifeActions(s), ...deathConsulEncounterActions(s)] : [])] : [],
     bottles: available ? state.bottles.map(b => ({
       id: b.id, title: `第${bottleNumber(b)}瓶 · 死亡执政官独立成品魔药`,
       source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`,
@@ -230,8 +231,8 @@ export function projectDeathConsul(s: SliceState): DeathConsulProjection {
     preparations: available ? DEATH_CONSUL_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [],
     preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? DEATH_CONSUL_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0,
-    digestion: promoted ? `摆渡人消化${state.ferrymanActingAtPromotion}/100留存；死亡执政官扮演${s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖。旧三案与旧反思不重复记为本阶经历。` : available ? `摆渡人需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${ferrymanWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完摆渡人之路。',
+    acting: promoted ? (s.progression.sequence===1?s.paleEmperor.deathConsulActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `摆渡人消化${state.ferrymanActingAtPromotion}/100留存；死亡执政官扮演${s.progression.sequence===1?s.paleEmperor.deathConsulActingAtPromotion:s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；每项新能力每案只在真实应用后最多增加8掌握，成功开窗而未使用不奖。旧三案与旧反思不重复记为本阶经历。` : available ? `摆渡人需消化100（当前${s.progression.acting}/100）、从其实际晋升周起12整周（当前${ferrymanWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完摆渡人之路。',
     pollution: s.seer.pollution, risk: available ? deathConsulConsumptionRisk(era) : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,
@@ -256,7 +257,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.deathConsul;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'sourceEra', 'sourceWeek', 'bottles', 'resupply', 'promotionWeek', 'ferrymanActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as DeathConsulState, promoted = isDeathConsul(s), acquisitionStage = isDeathConsulAcquisitionStage(s);
+  const state = raw as unknown as DeathConsulState, promoted = hasDeathConsulHistory(s), acquisitionStage = isDeathConsulAcquisitionStage(s);
   const firstWeek = s.ferryman.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + DEATH_CONSUL_MIN_FERRYMAN_WEEKS, lastAcquisitionWeek = state.promotionWeek ?? s.week;
   if (state.guidanceKnown) {
     if (!knownChannel(s) || !['ORIGINAL', 'POST_CYCLE'].includes(state.sourceEra ?? '') || !integer(state.sourceWeek, firstWeek, lastAcquisitionWeek) || !realChannelMatches(s, state.sourceEra!)) return false;
@@ -270,7 +271,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, Math.max(firstConsumptionWeek, state.sourceWeek ?? firstWeek), s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || !acquisitionStage || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || s.status !== 'ACTIVE' || s.health <= 20 || s.mind <= 40 || s.world.city !== 'BACKLUND' || s.activeEvent !== null || s.combat !== null || s.eventQueue.length > 0 || s.pulse !== 'NONE' || hasDeathConsulOldSceneLock(s) || hasDeathConsulLifeLock(s) || hasDeathConsulEncounterLock(s) || state.sourceEra === 'POST_CYCLE' && s.ferryman.era.location !== 'RECEPTION')) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.ferryman.promotionWeek, 1, s.week) || !integer(state.promotionWeek, Math.max(firstConsumptionWeek, state.sourceWeek ?? firstWeek), s.week) || state.ferrymanActingAtPromotion !== 100 || state.preparedWeek !== null || state.resupply.requestedWeek !== null || !hasPreparations(s) || hasDeathConsulOldSceneLock(s)) return false;
-    if (!shape(s.progression.mastery, [...INHERITED_ABILITY_IDS, ...DEATH_CONSUL_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PALE_EMPEROR_ABILITY_IDS:[]), ...INHERITED_ABILITY_IDS, ...DEATH_CONSUL_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.ferrymanActingAtPromotion !== null || DEATH_CONSUL_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {
@@ -303,7 +304,7 @@ function validateState(s: SliceState): boolean {
   if (successes !== (promoted ? 1 : 0) || !validateDeathConsulLife(s) || !validateDeathConsulEncounter(s)) return false;
   if (promoted) {
     const acting = Object.values(state.life.cases).filter(c => c.status === 'RESOLVED').length * 25 + (state.life.reflected ? 25 : 0);
-    if (s.progression.acting !== acting) return false;
+    if ((s.progression.sequence===1?s.paleEmperor.deathConsulActingAtPromotion:s.progression.acting) !== acting) return false;
   }
   return true;
 }

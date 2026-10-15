@@ -1,3 +1,4 @@
+import { hasPaleEmperorLock } from '../pale-emperor/index.js';
 import type { PublicGameDate } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
 import { addGameDays, addGameYears, compareGameDates, formatGameDate, gameDaysBetween } from '../game-calendar.js';
@@ -46,10 +47,11 @@ export const isFerrymanEraCommand = validateFerrymanEraCommand;
 export function blockFerrymanEraCommand(s: SliceState, c: FerrymanEraCommand): string | null {
   if (!validateFerrymanEraCommand(c)) return '摆渡人当代生活命令无效。';
   if (!hasLongChapterHandoff(s) || !isLongChapterEraClosed(s)) return '须先实际完成居所交接；原时代仍使用普通生活。当代普通劳动不要求先购买专业药源指导。';
-  if (s.status !== 'ACTIVE' || s.health <= 0 || s.progression.pathwayId !== 'death' || ![4, 3, 2].includes(s.progression.sequence!)) return '只有当前仍在世的序列4、3或2可以行动；普通致命伤不能靠休整或旧周期复活。';
+  if (s.status !== 'ACTIVE' || s.health <= 0 || s.progression.pathwayId !== 'death' || ![4, 3, 2, 1].includes(s.progression.sequence!)) return '只有当前仍在世的序列4、3、2或1可以行动；普通致命伤不能靠休整或旧周期复活。';
   if (s.activeEvent || s.combat || s.eventQueue.length || s.pulse !== 'NONE') return '先处理当前真实战斗或事件，不能同时劳动、治疗或推进日期。';
   if (hasFerrymanRitualLock(s) || hasFerrymanLifeLock(s) || hasFerrymanEncounterLock(s)) return '先实际收束当前服药准备、实践或遭遇，再回接待处继续生活。';
   if (s.deathConsul && (s.deathConsul.preparedWeek !== null || hasDeathConsulLifeLock(s) || ['READY', 'FIGHTING'].includes(s.deathConsul.encounter.status))) return '先实际收束当前死亡执政官服药准备、现场或遭遇，再回当代接待处劳动、治疗或推进日期。';
+  if (hasPaleEmperorLock(s)) return '先实际收束苍白皇帝服药准备、残响事务或遭遇，再回当代接待处继续生活。';
   const era = s.ferryman.era;
   if (c.type === 'ERA_ENTER') return era.location === 'OUTSIDE' ? null : '本人已经实际在当代摆渡人接待处。';
   if (era.location !== 'RECEPTION') return '本人须先沿普通12米道路进入本渠道的当代接待处。';

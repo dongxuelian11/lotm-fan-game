@@ -155,7 +155,7 @@ export function spiritGuideActions(s: SliceState): SpiritGuideAction[] {
   return out;
 }
 export function spiritGuideCases(s: SliceState): SpiritGuideProjection['cases'] {
-  if (s.progression.pathwayId !== 'death' || (s.progression.sequence !== 6&&s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&s.progression.sequence!==2)) return [];
+  if (s.progression.pathwayId !== 'death' || (s.progression.sequence !== 6&&s.progression.sequence !== 5&&s.progression.sequence!==4&&s.progression.sequence!==3&&(s.progression.sequence!==2&&s.progression.sequence!==1))) return [];
   return CASES.map(p => {
     const r = s.spiritGuide.cases[p.id]!;
     const result = ['EXAMINED', 'RESOLVED'].includes(r.status)
@@ -170,7 +170,7 @@ export function validateSpiritGuideLife(s: SliceState): boolean {
   if (!record(m) || !record(m.cases) || !shape(m.cases, SPIRIT_GUIDE_CASE_IDS) || !record(m.messenger) || !shape(m.messenger, ['recruited', 'deliveries', 'letter', 'replyReceived', 'feePaid']) || !Array.isArray(s.seer.completedSources) || !s.seer.completedSources.every(x => typeof x === 'string') || typeof m.reflected !== 'boolean') return false;
   const messenger = m.messenger;
   if (typeof messenger.recruited !== 'boolean' || typeof messenger.replyReceived !== 'boolean' || !['DESK', 'RECIPIENT'].includes(messenger.letter) || !integer(messenger.deliveries, 0, 1) || !integer(messenger.feePaid, 0, SPIRIT_GUIDE_MESSENGER_FEE)) return false;
-  const isPromoted = s.progression.pathwayId === 'death' && (s.progression.sequence === 6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+  const isPromoted = s.progression.pathwayId === 'death' && (s.progression.sequence === 6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
   let open = 0, prepared = 0, resolved = 0;
   for (const p of CASES) {
     const r = m.cases[p.id];
@@ -204,6 +204,6 @@ export function validateSpiritGuideLife(s: SliceState): boolean {
   if (s.seer.completedSources.some(x => x.startsWith('spirit-guide-case:') && !SPIRIT_GUIDE_CASE_IDS.some(id => x === `spirit-guide-case:${id}`))) return false;
   if (s.seer.completedSources.filter(x => x === 'spirit-guide-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
   if (!isPromoted && (m.reflected || messenger.recruited || messenger.deliveries !== 0 || messenger.letter !== 'DESK' || messenger.replyReceived || messenger.feePaid !== 0)) return false;
-  if (isPromoted && ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.gatekeeper.spiritGuideActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (isPromoted && ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?s.gatekeeper.spiritGuideActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   return true;
 }

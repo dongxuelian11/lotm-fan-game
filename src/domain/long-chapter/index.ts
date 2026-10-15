@@ -276,10 +276,10 @@ function validateState(s: SliceState): boolean {
   if (l.phase === 'NONE') return same(l, base);
   const h = l.handoff;
   if (h !== null && (!record(h) || !shape(h, ['target', 'date', 'week', 'cash', 'health', 'mind', 'spirituality', 'actionsRemaining']) || h.target !== 'FERRYMAN' || !isValidGameDate(h.date) || compareGameDates(h.date, s.date) > 0 || !integer(h.week, 1, s.week) || !integer(h.cash) || !integer(h.health, 1, 100) || !integer(h.mind, 1, 100) || !integer(h.spirituality, 0, 120) || !integer(h.actionsRemaining, 0, 4))) return false;
-  if (h !== null && (l.phase !== 'PARTIAL_RECOVERY' || !l.mentallyStable || l.location !== 'OUTSIDE' || l.body?.location !== 'LC-OUTSIDE' || s.progression.pathwayId !== 'death' || ![4, 3, 2].includes(s.progression.sequence!))) return false;
+  if (h !== null && (l.phase !== 'PARTIAL_RECOVERY' || !l.mentallyStable || l.location !== 'OUTSIDE' || l.body?.location !== 'LC-OUTSIDE' || s.progression.pathwayId !== 'death' || ![4, 3, 2, 1].includes(s.progression.sequence!))) return false;
   // A completed residence is checked against its compact terminal balance, never today's body or purse.
   const balance = h ?? s, throughDate = balance.date;
-  const cancelledHistory = l.phase === 'CANCELLED' && s.progression.pathwayId === 'death' && [4, 3, 2].includes(s.progression.sequence!);
+  const cancelledHistory = l.phase === 'CANCELLED' && s.progression.pathwayId === 'death' && [4, 3, 2, 1].includes(s.progression.sequence!);
   if (h === null && !cancelledHistory && (!firstCycle(s) || s.status !== 'ACTIVE') || !isValidGameDate(l.reviewedDate) || compareGameDates(l.reviewedDate, throughDate) > 0) return false;
   if (!Array.isArray(l.supportTasks) || l.supportTasks.length > 4 || new Set(l.supportTasks).size !== l.supportTasks.length || l.supportTasks.some(id => !LONG_CHAPTER_SUPPORT_IDS.includes(id))) return false;
   if (!integer(l.paidPennies, 0, COST) || !integer(l.cancellations) || !integer(l.bookDeposits) || !integer(l.bookWithdrawals) || !integer(l.elapsedDays) || !integer(l.calendarRemainderDays, 0, 6)) return false;

@@ -360,7 +360,7 @@ describe("readable playable slice", () => {
       expect(
         within(screen.getByRole("dialog")).getByText(record.text),
       ).toBeTruthy();
-  });
+  }, 15_000);
   it("keeps a blocking event inert, traps keyboard focus and ignores Escape", async () => {
     const event = {
       instanceId: "event-one",

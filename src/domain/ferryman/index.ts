@@ -1,3 +1,4 @@
+import { PALE_EMPEROR_ABILITY_IDS } from '../pale-emperor/types.js';
 import {DEATH_CONSUL_ABILITY_IDS} from '../death-consul/types.js';
 import type { PublicGameDate } from '../../shared/contracts.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -34,8 +35,8 @@ export function createFerrymanState(): FerrymanState {
   return { guidanceKnown: false, channels: [], promotionWeek: null, promotionDate: null, undyingActingAtPromotion: null, life: createFerrymanLifeState(), encounter: createFerrymanEncounterState(), era: createFerrymanEraState() };
 }
 export const isFerryman = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 3;
-const hasFerrymanHistory = (s: SliceState) => s.progression.pathwayId === 'death' && [3, 2].includes(s.progression.sequence ?? 0);
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'death' && [4, 3, 2].includes(s.progression.sequence ?? 0) && s.corpsecollector.discovered && s.undying.guidanceKnown && s.undying.promotionWeek !== null && (!postCycle(s) || handedOff(s));
+const hasFerrymanHistory = (s: SliceState) => s.progression.pathwayId === 'death' && [3, 2, 1].includes(s.progression.sequence ?? 0);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'death' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.corpsecollector.discovered && s.undying.guidanceKnown && s.undying.promotionWeek !== null && (!postCycle(s) || handedOff(s));
 export const activeFerrymanChannel = (s: SliceState): FerrymanChannel | null => s.ferryman.channels.find(c => c.agreementClosedDate === null) ?? null;
 export const hasFerrymanRitualLock = (s: SliceState): boolean => s.ferryman.channels.some(c => c.preparedWeek !== null);
 export const hasFerrymanLock = (s: SliceState): boolean => hasFerrymanRitualLock(s) || hasFerrymanLifeLock(s) || hasFerrymanEncounterLock(s);
@@ -185,7 +186,7 @@ export function applyFerrymanCommand(s: SliceState, command: FerrymanCommand, ct
 
 export function projectFerryman(s: SliceState): FerrymanProjection {
   const state = s.ferryman, available = knownChannel(s), promoted = hasFerrymanHistory(s), c = activeFerrymanChannel(s), actions: FerrymanAction[] = [];
-  const acting = promoted ? (s.progression.sequence === 2 ? s.deathConsul.ferrymanActingAtPromotion ?? 0 : s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence === 2||s.progression.sequence===1) ? s.deathConsul.ferrymanActingAtPromotion ?? 0 : s.progression.acting) : 0;
   const prices = ferrymanPrices(c?.id ?? channelIdFor(s));
   const add = (id: string, label: string, cost: string, command: FerrymanAcquisitionCommand) => { const reason = ferrymanAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
@@ -243,7 +244,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.ferryman;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'channels', 'promotionWeek', 'promotionDate', 'undyingActingAtPromotion', 'life', 'encounter', 'era']) || typeof raw.guidanceKnown !== 'boolean' || !Array.isArray(raw.channels) || raw.channels.length > 2) return false;
   const state = raw as unknown as FerrymanState, promoted = hasFerrymanHistory(s), firstWeek = (s.undying.promotionWeek ?? s.week), firstConsume = firstWeek + FERRYMAN_MIN_UNDYING_WEEKS;
-  if (state.guidanceKnown !== (state.channels.length > 0) || state.channels.length && !(s.progression.pathwayId === 'death' && [4, 3, 2].includes(s.progression.sequence ?? 0) && s.undying.guidanceKnown && s.undying.promotionWeek !== null)) return false;
+  if (state.guidanceKnown !== (state.channels.length > 0) || state.channels.length && !(s.progression.pathwayId === 'death' && [4, 3, 2, 1].includes(s.progression.sequence ?? 0) && s.undying.guidanceKnown && s.undying.promotionWeek !== null)) return false;
   if (new Set(state.channels.map(c => c.id)).size !== state.channels.length || state.channels.filter(c => c.agreementClosedDate === null).length > 1) return false;
   if (state.channels.length === 2 && (state.channels[0]!.id !== 'ORIGINAL' || state.channels[1]!.id !== 'POST_CYCLE')) return false;
   let successes = 0;
@@ -299,7 +300,7 @@ function validateState(s: SliceState): boolean {
   if (promoted) {
     const c = activeFerrymanChannel(s);
     if (!c || !state.guidanceKnown || !integer(state.promotionWeek, firstConsume, s.week) || !isValidGameDate(state.promotionDate) || weekFor(state.promotionDate) !== state.promotionWeek || compareGameDates(state.promotionDate, s.date) > 0 || state.undyingActingAtPromotion !== 100 || c.preparedWeek !== null || !hasPreparations(c)) return false;
-    if (!shape(s.progression.mastery, [...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS, ...SPIRITMEDIUM_ABILITY_IDS, ...SPIRIT_GUIDE_ABILITY_IDS, ...GATEKEEPER_ABILITY_IDS, ...UNDYING_ABILITY_IDS, ...FERRYMAN_ABILITY_IDS,...(s.progression.sequence === 2 ? DEATH_CONSUL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PALE_EMPEROR_ABILITY_IDS:[]),...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS, ...SPIRITMEDIUM_ABILITY_IDS, ...SPIRIT_GUIDE_ABILITY_IDS, ...GATEKEEPER_ABILITY_IDS, ...UNDYING_ABILITY_IDS, ...FERRYMAN_ABILITY_IDS,...((s.progression.sequence === 2||s.progression.sequence===1) ? DEATH_CONSUL_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.promotionDate !== null || state.undyingActingAtPromotion !== null || FERRYMAN_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   return successes === (promoted ? 1 : 0) && validateFerrymanLife(s) && validateFerrymanEncounter(s) && validateFerrymanEra(s);
 }

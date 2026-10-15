@@ -1,3 +1,4 @@
+import { PALE_EMPEROR_ABILITY_IDS } from '../pale-emperor/types.js';
 import {DEATH_CONSUL_ABILITY_IDS} from '../death-consul/types.js';
 import {FERRYMAN_ABILITY_IDS} from '../ferryman/types.js';
 import {UNDYING_ABILITY_IDS} from '../undying/types.js';
@@ -31,7 +32,7 @@ export function createGravediggerState(): GravediggerState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'death' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'death' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const isCorpsecollector = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.corpsecollector.discovered && s.corpsecollector.guidanceKnown && (isCorpsecollector(s) || promoted(s));
 const potionPrice = (bottle: GravediggerBottle) => GRAVEDIGGER_PRICES.potion - (bottle.labourSteps === 3 ? GRAVEDIGGER_PRICES.labourCredit : 0);
@@ -192,8 +193,8 @@ export function projectGravedigger(s: SliceState): GravediggerProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? GRAVEDIGGER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?(s.spiritmedium.gravediggerActingAtPromotion??100):s.progression.acting) : 0,
-    digestion: isPromoted ? `收尸人消化成果${s.gravedigger.corpsecollectorActingAtPromotion}/100已保留；掘墓人扮演${(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?(s.spiritmedium.gravediggerActingAtPromotion??100):s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?(s.spiritmedium.gravediggerActingAtPromotion??100):s.progression.acting) : 0,
+    digestion: isPromoted ? `收尸人消化成果${s.gravedigger.corpsecollectorActingAtPromotion}/100已保留；掘墓人扮演${(s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?(s.spiritmedium.gravediggerActingAtPromotion??100):s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成收尸人消化（${s.progression.acting}/100），并在首次晋升收尸人后度过4整周（${corpsecollectorWeeks(s)}/4）。用药指导与原瓶可以提前准备。` : '先走完收尸人之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应三次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${GRAVEDIGGER_CONSUMPTION_RISK}` : '成为收尸人后，可向原导师了解下一序列。',
@@ -244,7 +245,7 @@ export function validateGravediggerState(s: SliceState): boolean {
   if (gravedigger.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!gravedigger.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(gravedigger.promotionWeek, firstConsumptionWeek, s.week) || gravedigger.corpsecollectorActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?SPIRITMEDIUM_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?SPIRIT_GUIDE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?GATEKEEPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?UNDYING_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?FERRYMAN_ABILITY_IDS:[]),...(s.progression.sequence===2?DEATH_CONSUL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PALE_EMPEROR_ABILITY_IDS:[]),...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))?SPIRITMEDIUM_ABILITY_IDS:[]),...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?SPIRIT_GUIDE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?GATEKEEPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?UNDYING_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?FERRYMAN_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?DEATH_CONSUL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (gravedigger.promotionWeek !== null || gravedigger.corpsecollectorActingAtPromotion !== null || GRAVEDIGGER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (gravedigger.reflected || Object.values(gravedigger.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.conclusion !== null || value.withdrawals !== 0 || value.mistakes !== 0)) return false;

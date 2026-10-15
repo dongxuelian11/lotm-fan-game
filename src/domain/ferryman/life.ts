@@ -236,7 +236,7 @@ export function applyFerrymanActivity(s: SliceState, c: FerrymanActivityCommand,
 }
 
 export function ferrymanLifeActions(s: SliceState): FerrymanLifeAction[] {
-  if (s.progression.pathwayId === 'death' && s.progression.sequence === 2) return [];
+  if (s.progression.pathwayId === 'death' && (s.progression.sequence === 2||s.progression.sequence===1)) return [];
   const l = s.ferryman.life, out: FerrymanLifeAction[] = [];
   const add = (label: string, cost: string, command: FerrymanActivityCommand) => { const reason = blockFerrymanLife(s, command); out.push({ id: `FR3:${'caseId' in command ? command.caseId : 'COMMON'}:${command.type}${'method' in command ? `:${command.method}` : ''}`, label, cost, command, enabled: reason === null, reason }); };
   for (const caseId of FERRYMAN_CASE_IDS) {
@@ -370,7 +370,7 @@ export function validateFerrymanLife(s: SliceState): boolean {
   if (open > 1 || prepared > 1 || open && prepared || (l.activeCase !== null) !== (open === 1) || l.clockSeconds !== seconds + combatSeconds || l.playerTravelMetres !== metres || l.playerLocation !== playerLocation || l.reed.travelMetres !== spiritMetres || l.reed.energy !== 100 - energy || l.reed.location !== reedLocation || l.materials.remaining !== 2 - materials || l.seal.remaining !== 1 - seals || l.clamp.durability !== 100 - wear || l.jar.sealed !== (seals === 1) || l.tag.location !== tagLocation || l.reply.location !== replyLocation || l.reply.written !== written || l.tag.travelMetres !== tagMetres || l.reply.travelMetres !== replyMetres || l.reflected && resolved !== 3) return false;
   const a = currentAttempt(s); if (l.jar.agitation !== (l.activeCase === 'quiet-jar' && a?.effectActive ? 0 : 2)) return false;
   if (s.seer.completedSources.filter(x => x === 'ferryman-reflection').length !== (l.reflected ? 1 : 0) || !open && cleanupBlock(s) !== null) return false;
-  const inherited = s.progression.pathwayId === 'death' && s.progression.sequence === 2;
+  const inherited = s.progression.pathwayId === 'death' && (s.progression.sequence === 2||s.progression.sequence===1);
   if (inherited && hasFerrymanLifeLock(s)) return false;
   const acting = inherited ? s.deathConsul.ferrymanActingAtPromotion : s.progression.acting;
   return !(promoted(s) || inherited) || acting === resolved * 25 + (l.reflected ? 25 : 0);

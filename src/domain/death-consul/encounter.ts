@@ -143,7 +143,7 @@ export function deathConsulEncounterActions(s:SliceState):DeathConsulEncounterAc
   return([['ENCOUNTER_TALK',`清场后与${name}交谈`,'1行动；管理人2米/2秒/2精力，你2米/2秒'],['ENCOUNTER_FIGHT',`选择与${name}交战`,'1行动；有受伤和死亡风险'],['LEAVE_ENCOUNTER','沿通路和平离开','0行动；2米/2秒']]as const).map(([type,label,cost])=>{const command:DeathConsulEncounterCommand={type},reason=blockDeathConsulEncounter(s,command);return{id:`death-consul-${type}`,label,cost,command,enabled:reason===null,reason};});
 }
 export function projectDeathConsulEncounter(s:SliceState):DeathConsulEncounterProjection {
-  const e=s.deathConsul.encounter;if(!stage(s))return{title:'尚未开放的封存室遭遇',story:'',status:e.status,inside:false,site:null,startSite:null,enemy:null,actions:[],facts:[]};
+  const e=s.deathConsul.encounter;const history=stage(s)||(s.progression.pathwayId==='death'&&s.progression.sequence===1&&s.deathConsul.promotionWeek!==null&&s.paleEmperor.promotionWeek!==null);if(!history)return{title:'尚未开放的封存室遭遇',story:'',status:e.status,inside:false,site:null,startSite:null,enemy:null,actions:[],facts:[]};
   const era=e.sourceEra,target=era?DEATH_CONSUL_TARGETS[era]:null;
   return{title:target?`封存室里的${target.name}`:'封存室通路争议',story:DEATH_CONSUL_ENCOUNTER_STORY,status:e.status,inside:hasDeathConsulEncounterLock(s),site:structuredClone(s.deathConsul.life.site),startSite:structuredClone(e.startSite),
     enemy:target&&era?{id:target.id,name:target.name,age:target.age,source:target.source,sourceEra:era,sequence:3,health:e.enemyHealth,mind:e.enemyMind,spirituality:e.enemySpirituality,status:e.enemyStatus,weaponId:target.weaponId,weaponLocation:e.weaponLocation,location:e.enemyLocation,powerUses:{...e.powerUses}}:null,

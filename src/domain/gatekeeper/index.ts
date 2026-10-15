@@ -1,3 +1,4 @@
+import { PALE_EMPEROR_ABILITY_IDS } from '../pale-emperor/types.js';
 import {DEATH_CONSUL_ABILITY_IDS} from '../death-consul/types.js';
 import {FERRYMAN_ABILITY_IDS} from '../ferryman/types.js';
 import {UNDYING_ABILITY_IDS} from '../undying/types.js';
@@ -36,7 +37,7 @@ export function createGatekeeperState(): GatekeeperState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'death' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'death' && (s.progression.sequence === 5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))));
 const isSpiritGuide = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.corpsecollector.discovered && s.corpsecollector.guidanceKnown && s.gravedigger.guidanceKnown && s.spiritmedium.guidanceKnown && s.spiritGuide.guidanceKnown && s.spiritGuide.promotionWeek !== null && (isSpiritGuide(s) || promoted(s));
 const potionPrice = (bottle: GatekeeperBottle) => GATEKEEPER_PRICES.potion - (bottle.labourSteps === 5 ? GATEKEEPER_PRICES.labourCredit : 0);
@@ -162,7 +163,7 @@ export function applyGatekeeperCommand(s: SliceState, command: GatekeeperAcquisi
 
 export function projectGatekeeper(s: SliceState): GatekeeperProjection {
   const actions: GatekeeperAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.undying.gatekeeperActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?s.undying.gatekeeperActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: GatekeeperAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -203,7 +204,7 @@ export function projectGatekeeper(s: SliceState): GatekeeperProjection {
     })) : [],
     abilities: isPromoted ? GATEKEEPER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
     acting,
-    digestion: (s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?'看门人魔药已消化，原灰羽、原门与旧实践结果保留，不新增原灵。':isPromoted ? `死灵导师消化成果${s.gatekeeper.spiritGuideActingAtPromotion}/100已保留；看门人扮演${acting}/100，能力掌握分别记录。`
+    digestion: (s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?'看门人魔药已消化，原灰羽、原门与旧实践结果保留，不新增原灵。':isPromoted ? `死灵导师消化成果${s.gatekeeper.spiritGuideActingAtPromotion}/100已保留；看门人扮演${acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成死灵导师消化（${s.progression.acting}/100），并在晋升死灵导师后度过12整周（${spiritGuideWeeks(s)}/12）。用药指导与原瓶可以提前准备。` : '先走完死灵导师之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应五次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服用本次选定原瓶。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${GATEKEEPER_CONSUMPTION_RISK}` : '成为死灵导师后，可向原导师了解下一序列。',
@@ -245,7 +246,7 @@ export function validateGatekeeperState(s: SliceState): boolean {
   if (gatekeeper.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!gatekeeper.guidanceKnown || !integer(s.spiritGuide.promotionWeek, 1, s.week) || !integer(gatekeeper.promotionWeek, firstConsumptionWeek, s.week) || gatekeeper.spiritGuideActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS, ...SPIRITMEDIUM_ABILITY_IDS, ...SPIRIT_GUIDE_ABILITY_IDS, ...GATEKEEPER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?UNDYING_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?FERRYMAN_ABILITY_IDS:[]),...(s.progression.sequence===2?DEATH_CONSUL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PALE_EMPEROR_ABILITY_IDS:[]),...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS, ...SPIRITMEDIUM_ABILITY_IDS, ...SPIRIT_GUIDE_ABILITY_IDS, ...GATEKEEPER_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?UNDYING_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?FERRYMAN_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?DEATH_CONSUL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (gatekeeper.promotionWeek !== null || gatekeeper.spiritGuideActingAtPromotion !== null || GATEKEEPER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (gatekeeper.practice.marker !== 'DESK' || gatekeeper.practice.gateOpen || gatekeeper.practice.deliveries !== 0 || gatekeeper.practice.returns !== 0 || gatekeeper.practice.gateTests !== 0) return false;

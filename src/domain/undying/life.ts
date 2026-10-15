@@ -45,7 +45,7 @@ const CASES: readonly { id: UndyingCaseId; title: string; story: string; facts: 
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const shape = (v: object, keys: readonly string[]) => Object.keys(v).sort().join('|') === [...keys].sort().join('|');
 const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'death' && [4,3,2].includes(s.progression.sequence??0);
+const promoted = (s: SliceState) => s.progression.pathwayId === 'death' && [4,3,2,1].includes(s.progression.sequence??0);
 const freshCase = (): UndyingCaseState => ({ status: 'AVAILABLE', observedWeek: null, attemptWeek: null, recordedWeek: null, method: null, result: 'NONE', contactOpen: false, effectActive: false, closes: 0, withdrawals: 0, stripId: null });
 export function createUndyingLifeState(): UndyingLifeState {
   return { archiveId: 'UDY4-ARCHIVE', playerLocation: 'OUTSIDE', cases: { 'memory-ledger': freshCase(), 'willing-witness': freshCase(), 'bounded-seal': freshCase() },
@@ -80,7 +80,7 @@ function memoryFacts(s: SliceState): Omit<UndyingMemoryEntry, 'recordedWeek'>[] 
 }
 const intactEntries = (s: SliceState) => { const expected = memoryFacts(s), entries = s.undying.life.book.entries; return entries.length === 3 && entries.every((e, i) => e.id === expected[i]!.id && e.sourceId === expected[i]!.sourceId && e.text === expected[i]!.text); };
 export function blockUndyingLife(s: SliceState, c: UndyingActivityCommand): string | null {
-  if(s.progression.sequence===3||s.progression.sequence===2)return '旧不死者实践已只读，原三页、原人及周期事实保留。';
+  if(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))return '旧不死者实践已只读，原三页、原人及周期事实保留。';
   if (!validateUndyingActivityCommand(c)) return '不死者记忆准备命令无效。';
   if (s.status !== 'ACTIVE' || !promoted(s)) return '须仍活着并已经晋升不死者；本阶段不会自动复活。';
   if (s.activeEvent || s.combat) return '先处理当前事件或战斗。';
@@ -157,7 +157,7 @@ export function applyUndyingActivity(s: SliceState, c: UndyingActivityCommand, c
   ctx.note(p.title, success ? c.caseId === 'memory-ledger' ? '三张原空白页已逐项写入真实已知来源与本周日期，文字保持固定；请亲手取回原簿再关闭。没有恢复未知记忆或保证完整自我。' : c.caseId === 'willing-witness' ? '当前本人把同一原三页与旧可见记录当面对照并同意本次见证。' + WITNESS_LIMIT + '请实际取回原簿再关闭。' : ability ? '已耗1行动、6灵性和同一原封条，原低强回响暂为QUIET。须明确停止后回到ACTIVE，不是永久净化；原灰羽未被调用。' : '知识核对后亲手关闭同一原盒，原容器现为CONTAINED，回响没有被能力安静。须停止检查再实际退出。' : '本次核对失败，没有生成条目、见证或安静结果。行动、实付灵性与原封条成本保留；先拿回原簿或停止作用并退出，下一真实周再试。');
 }
 export function undyingLifeActions(s: SliceState): UndyingLifeAction[] {
-  if (!promoted(s) || s.progression.sequence === 2) return [];
+  if (!promoted(s) || (s.progression.sequence === 2||s.progression.sequence===1)) return [];
   const out: UndyingLifeAction[] = [], l = s.undying.life;
   const add = (id: string, label: string, cost: string, command: UndyingActivityCommand) => { const reason = blockUndyingLife(s, command); out.push({ id, label, cost, command, enabled: reason === null, reason }); };
   for (const p of CASES) { const r = l.cases[p.id];
@@ -211,5 +211,5 @@ export function validateUndyingLife(s: SliceState): boolean {
   for (const [i, strip] of l.strips.entries()) { if (!record(strip) || !shape(strip, ['id', 'owner', 'purchasedWeek', 'consumedWeek', 'status']) || strip.id !== `UDY4-STRIP-${i + 1}` || strip.owner !== 'PLAYER' || !integer(strip.purchasedWeek, promotion, s.week) || !['PLAYER', 'CONSUMED'].includes(strip.status) || (strip.status === 'PLAYER' ? strip.consumedWeek !== null : !integer(strip.consumedWeek, strip.purchasedWeek, s.week)) || i > 0 && (l.strips[i - 1]!.consumedWeek === null || strip.purchasedWeek <= l.strips[i - 1]!.consumedWeek!)) return false; }
   if (seal.stripId !== null) { const strip = l.strips.find(x => x.id === seal.stripId); if (!strip || seal.method !== 'ABILITY' || (seal.status === 'PREPARED' ? strip.status !== 'PLAYER' : strip.status !== 'CONSUMED' || strip.consumedWeek !== seal.attemptWeek)) return false; }
   if (seal.method === 'ABILITY' && seal.stripId === null || l.strips.some(x => x.consumedWeek !== null && (seal.attemptWeek === null || x.consumedWeek > seal.attemptWeek))) return false;
-  return typeof l.reflected === 'boolean' && (!l.reflected || resolved === 3) && s.seer.completedSources.filter(x => x === 'undying-reflection').length === (l.reflected ? 1 : 0) && ((s.progression.sequence===3||s.progression.sequence===2)?s.ferryman.undyingActingAtPromotion:s.progression.acting) === resolved * 25 + (l.reflected ? 25 : 0);
+  return typeof l.reflected === 'boolean' && (!l.reflected || resolved === 3) && s.seer.completedSources.filter(x => x === 'undying-reflection').length === (l.reflected ? 1 : 0) && ((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.ferryman.undyingActingAtPromotion:s.progression.acting) === resolved * 25 + (l.reflected ? 25 : 0);
 }

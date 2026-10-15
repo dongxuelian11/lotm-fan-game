@@ -1,3 +1,4 @@
+import { PALE_EMPEROR_ABILITY_IDS } from '../pale-emperor/types.js';
 import {DEATH_CONSUL_ABILITY_IDS} from '../death-consul/types.js';
 import {FERRYMAN_ABILITY_IDS} from '../ferryman/types.js';
 import type { PublicGameDate } from '../../shared/contracts.js';
@@ -48,7 +49,7 @@ export function createUndyingState(): UndyingState {
 }
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isUndying = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 4;
-const hasUndyingHistory = (s:SliceState) => isUndying(s)||(s.progression.pathwayId==='death'&&(s.progression.sequence===3||s.progression.sequence===2));
+const hasUndyingHistory = (s:SliceState) => isUndying(s)||(s.progression.pathwayId==='death'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)));
 const isGatekeeper = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.corpsecollector.discovered && s.corpsecollector.guidanceKnown && s.gravedigger.guidanceKnown && s.spiritmedium.guidanceKnown && s.spiritGuide.guidanceKnown && s.gatekeeper.guidanceKnown && s.gatekeeper.promotionWeek !== null && (isGatekeeper(s) || hasUndyingHistory(s));
 const bottleNumber = (bottle: Pick<UndyingBottle, 'id'>) => Number(bottle.id.slice('undying-potion-'.length));
@@ -184,20 +185,20 @@ export function projectUndying(s: SliceState): UndyingProjection {
   const chance = computeCheckChance({ baseAbility: s.character.coreStats.will, difficulty: 28, modifiers: [] });
   return {
     title: promoted ? '不死者 · 序列4' : '不死者之路', discovered: available, guidanceKnown: known, promoted,
-    formulaKnown: false, formula: [], actions: available && s.progression.sequence!==3 && s.progression.sequence!==2 ? [...actions, ...undyingRitualActions(s), ...undyingLifeActions(s), ...undyingEncounterActions(s)] : [],
+    formulaKnown: false, formula: [], actions: available && s.progression.sequence!==3 && (s.progression.sequence!==2&&s.progression.sequence!==1) ? [...actions, ...undyingRitualActions(s), ...undyingLifeActions(s), ...undyingEncounterActions(s)] : [],
     bottles: known ? state.bottles.map(bottle => ({
       id: bottle.id, title: `第${bottleNumber(bottle)}瓶 · 独立不死者成品`, source: `${bottle.source}${bottle.ritualId ? `第${bottle.ritualWindowWeek}周在原厅预约${bottle.ritualId}专业准备窗口服用；本次原包与原瓶均耗尽。` : ''}`,
       status: bottle.status === 'SUPPLIER' ? '原供应方持有，未交付' : bottle.status === 'PLAYER' ? '你实际持有，尚未服用' : `原瓶已耗尽 · ${bottle.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : bottle.outcome === 'SUCCESS' ? '成功晋升' : bottle.outcome === 'GREAT_FAILURE' ? '严重排异，仍为看门人' : '排异，仍为看门人'}`,
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: promoted ? UNDYING_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.ferryman.undyingActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: promoted ? `看门人消化${state.gatekeeperActingAtPromotion}/100与原掌握保留；不死者扮演${(s.progression.sequence===3||s.progression.sequence===2)?s.ferryman.undyingActingAtPromotion:s.progression.acting}/100。` : available ? `看门人消化需100（当前${s.progression.acting}/100），晋升后满12整周（${gatekeeperWeeks(s)}/12）；当前专业准备与原封装包须另行完成，可选择保持看门人。` : '先完成看门人之路。',
+    acting: promoted ? ((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.ferryman.undyingActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: promoted ? `看门人消化${state.gatekeeperActingAtPromotion}/100与原掌握保留；不死者扮演${(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?s.ferryman.undyingActingAtPromotion:s.progression.acting}/100。` : available ? `看门人消化需100（当前${s.progression.acting}/100），晋升后满12整周（${gatekeeperWeeks(s)}/12）；当前专业准备与原封装包须另行完成，可选择保持看门人。` : '先完成看门人之路。',
     pollution: s.seer.pollution, risk: known ? UNDYING_CONSUMPTION_RISK : '先通过原导师了解不死者成品来源与实际仪式风险。',
     supplies: known ? `供应方持有${state.bottles.filter(bottle => bottle.status === 'SUPPLIER').length}瓶，你持有未用原瓶${state.bottles.filter(bottle => bottle.status === 'PLAYER').length}瓶。${state.resupply.requestedWeek === null ? `后续实际到货${state.resupply.deliveries}批。` : `第${state.resupply.requestedWeek}周申请，下一真实周起实际到货。`}成品配方仍未知，原瓶、付费预约与专业准备分别结算，旧仪式不能代替。` : '',
     ...(available ? { story: `${UNDYING_FORMULA_STATUS}${UNDYING_RITUAL_SOURCE}${UNDYING_SOURCE_STATUS}` } : {}),
     lifecycle: { ...state.lifecycle, promotionDate: state.lifecycle.promotionDate ? { ...state.lifecycle.promotionDate } : null, expectedCycleDate: state.lifecycle.expectedCycleDate ? { ...state.lifecycle.expectedCycleDate } : null,
-      summary: state.lifecycle.status === 'CYCLE_DEAD' ? `原首六十年周年${formatGameDate(state.lifecycle.expectedCycleDate!)}已真实到达；原身体在供养居所周期性死亡，尚未复起（完成周期0次）。` : state.lifecycle.experiencedCycles === 1 ? `原晋升日${formatGameDate(state.lifecycle.promotionDate!)}与首周年${formatGameDate(state.lifecycle.expectedCycleDate!)}保留；已实际经历首次死亡与同一身体复起，完成周期1次。${state.lifecycle.status === 'PARTIAL_RECOVERY' ? '三个原来源已有限寻回，精神稳定；大量人生记忆仍未恢复。' : '当前部分失忆，须逐一实际寻回原来源。'}` : promoted ? `实际晋升：${formatGameDate(state.lifecycle.promotionDate!)}；G预期周年：${formatGameDate(state.lifecycle.expectedCycleDate!)}。六十年周期尚未实际经历（0次）；没有死亡、复活、失忆或恢复记忆的完成记录。` : '尚未晋升，未登记周期日期；六十年周期尚未实际经历。', boundary: known ? ((s.progression.sequence===3||s.progression.sequence===2)?'已经真实晋升摆渡人，原不死者周期诅咒不再触发；原登记、已发生周期与寻回记录保留，不提供普通战死复活。':UNDYING_LIFECYCLE_BOUNDARY) : '' },
+      summary: state.lifecycle.status === 'CYCLE_DEAD' ? `原首六十年周年${formatGameDate(state.lifecycle.expectedCycleDate!)}已真实到达；原身体在供养居所周期性死亡，尚未复起（完成周期0次）。` : state.lifecycle.experiencedCycles === 1 ? `原晋升日${formatGameDate(state.lifecycle.promotionDate!)}与首周年${formatGameDate(state.lifecycle.expectedCycleDate!)}保留；已实际经历首次死亡与同一身体复起，完成周期1次。${state.lifecycle.status === 'PARTIAL_RECOVERY' ? '三个原来源已有限寻回，精神稳定；大量人生记忆仍未恢复。' : '当前部分失忆，须逐一实际寻回原来源。'}` : promoted ? `实际晋升：${formatGameDate(state.lifecycle.promotionDate!)}；G预期周年：${formatGameDate(state.lifecycle.expectedCycleDate!)}。六十年周期尚未实际经历（0次）；没有死亡、复活、失忆或恢复记忆的完成记录。` : '尚未晋升，未登记周期日期；六十年周期尚未实际经历。', boundary: known ? ((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?'已经真实晋升摆渡人，原不死者周期诅咒不再触发；原登记、已发生周期与寻回记录保留，不提供普通战死复活。':UNDYING_LIFECYCLE_BOUNDARY) : '' },
     ritual: projectUndyingRitual(s), life: projectUndyingLife(s), encounter: projectUndyingEncounter(s),
     insideCase: hasUndyingRitualLock(s) || hasUndyingLifeLock(s) || hasUndyingEncounterLock(s),
     environment: available ? '原纪念工作室、乔里所在的持照纪念准备室UDY4-HALL、UDY4-ARCHIVE原档案室及普通净空庭院。原灰羽SG6-GRAY-FEATHER仍是原灵，旧约定、递信、入驻、派出、召回和木标记历史不重置或复制。' : '',
@@ -233,7 +234,7 @@ function validateState(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.gatekeeper.promotionWeek, 1, s.week) || !integer(state.promotionWeek, earliestConsumption, s.week) || state.gatekeeperActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS, ...SPIRITMEDIUM_ABILITY_IDS, ...SPIRIT_GUIDE_ABILITY_IDS, ...GATEKEEPER_ABILITY_IDS, ...UNDYING_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?FERRYMAN_ABILITY_IDS:[]),...(s.progression.sequence===2?DEATH_CONSUL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PALE_EMPEROR_ABILITY_IDS:[]),...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS, ...SPIRITMEDIUM_ABILITY_IDS, ...SPIRIT_GUIDE_ABILITY_IDS, ...GATEKEEPER_ABILITY_IDS, ...UNDYING_ABILITY_IDS,...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?FERRYMAN_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?DEATH_CONSUL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.gatekeeperActingAtPromotion !== null || UNDYING_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   for (const [index, bottle] of state.bottles.entries()) {
     if (!record(bottle) || !shape(bottle, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'status', 'outcome', 'ritualId', 'ritualWindowWeek']) || bottle.id !== `undying-potion-${index + 1}` || typeof bottle.source !== 'string' || !integer(bottle.labourSteps, 0, 5)) return false;

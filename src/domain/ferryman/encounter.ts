@@ -46,7 +46,7 @@ export function createFerrymanEncounterState(): FerrymanEncounterState {
     powerUses: { ECHO_STRIKE: 0, SEAL_WARD: 0, FOCUS: 0 }, terminal: null };
 }
 const stage = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 3;
-const hasHistory = (s: SliceState) => s.progression.pathwayId === 'death' && [3, 2].includes(s.progression.sequence ?? 0);
+const hasHistory = (s: SliceState) => s.progression.pathwayId === 'death' && [3, 2, 1].includes(s.progression.sequence ?? 0);
 const same = (a: unknown, b: unknown) => stableStringify(a) === stableStringify(b);
 const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
 export function validateFerrymanEncounterCommand(v: unknown): v is FerrymanEncounterCommand {
@@ -170,7 +170,7 @@ export function validateFerrymanEncounter(s: SliceState): boolean {
         [e.approachWeek, e.attemptWeek].some(w => w !== null && !integer(w, 1, s.week))) return false;
     if (e.status === 'AVAILABLE') return same(e, initial) && s.combat?.encounterId !== 'FERRYMAN_DISPUTE';
     const channel = currentChannel(s);
-    if (!hasHistory(s) || (s.progression.sequence === 2 && ['READY', 'FIGHTING'].includes(e.status)) || !channel || e.sourceEpoch !== channel.id || s.ferryman.promotionWeek === null || e.approachWeek === null || e.approachWeek < s.ferryman.promotionWeek || e.approachWeek < channel.introducedWeek) return false;
+    if (!hasHistory(s) || ((s.progression.sequence === 2||s.progression.sequence===1) && ['READY', 'FIGHTING'].includes(e.status)) || !channel || e.sourceEpoch !== channel.id || s.ferryman.promotionWeek === null || e.approachWeek === null || e.approachWeek < s.ferryman.promotionWeek || e.approachWeek < channel.introducedWeek) return false;
     if (e.startHistoryIndex === null) return ['READY', 'RESOLVED'].includes(e.status) && e.attemptWeek === null && e.terminal === null &&
       same({ ...e, status: initial.status, sourceEpoch: null, approachWeek: null, scene: { ...e.scene, clearanceConfirmed: false } }, initial) && s.combat?.encounterId !== 'FERRYMAN_DISPUTE';
     if (!integer(e.startHistoryIndex, 0, s.combatHistory.length) || e.attemptWeek === null || e.attemptWeek < e.approachWeek) return false;

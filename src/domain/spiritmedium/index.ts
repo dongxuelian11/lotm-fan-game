@@ -1,3 +1,4 @@
+import { PALE_EMPEROR_ABILITY_IDS } from '../pale-emperor/types.js';
 import {DEATH_CONSUL_ABILITY_IDS} from '../death-consul/types.js';
 import {FERRYMAN_ABILITY_IDS} from '../ferryman/types.js';
 import {UNDYING_ABILITY_IDS} from '../undying/types.js';
@@ -31,7 +32,7 @@ export function createSpiritmediumState(): SpiritmediumState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'death' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'death' && (s.progression.sequence === 7||(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))));
 const isGravedigger = (s: SliceState) => s.progression.pathwayId === 'death' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.corpsecollector.discovered && s.corpsecollector.guidanceKnown && s.gravedigger.guidanceKnown && (isGravedigger(s) || promoted(s));
 const potionPrice = (bottle: SpiritmediumBottle) => SPIRITMEDIUM_PRICES.potion - (bottle.labourSteps === 4 ? SPIRITMEDIUM_PRICES.labourCredit : 0);
@@ -192,8 +193,8 @@ export function projectSpiritmedium(s: SliceState): SpiritmediumProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? SPIRITMEDIUM_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.spiritGuide.spiritmediumActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?'通灵者魔药已消化，原问答、片段核实与原纸卡去向保留。':isPromoted ? `掘墓人消化成果${s.spiritmedium.gravediggerActingAtPromotion}/100已保留；通灵者扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?s.spiritGuide.spiritmediumActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?'通灵者魔药已消化，原问答、片段核实与原纸卡去向保留。':isPromoted ? `掘墓人消化成果${s.spiritmedium.gravediggerActingAtPromotion}/100已保留；通灵者扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成掘墓人消化（${s.progression.acting}/100），并在晋升掘墓人后度过8整周（${gravediggerWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完掘墓人之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${SPIRITMEDIUM_CONSUMPTION_RISK}` : '成为掘墓人后，可向原导师了解下一序列。',
@@ -245,7 +246,7 @@ export function validateSpiritmediumState(s: SliceState): boolean {
   if (spiritmedium.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!spiritmedium.guidanceKnown || !integer(s.gravedigger.promotionWeek, 9, s.week) || !integer(spiritmedium.promotionWeek, firstConsumptionWeek, s.week) || spiritmedium.gravediggerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS, ...SPIRITMEDIUM_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?SPIRIT_GUIDE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?GATEKEEPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?UNDYING_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?FERRYMAN_ABILITY_IDS:[]),...(s.progression.sequence===2?DEATH_CONSUL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...(s.progression.sequence===1?PALE_EMPEROR_ABILITY_IDS:[]),...CORPSECOLLECTOR_ABILITY_IDS, ...GRAVEDIGGER_ABILITY_IDS, ...SPIRITMEDIUM_ABILITY_IDS,...((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?SPIRIT_GUIDE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))?GATEKEEPER_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))?UNDYING_ABILITY_IDS:[]),...((s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))?FERRYMAN_ABILITY_IDS:[]),...((s.progression.sequence===2||s.progression.sequence===1)?DEATH_CONSUL_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (spiritmedium.promotionWeek !== null || spiritmedium.gravediggerActingAtPromotion !== null || SPIRITMEDIUM_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (spiritmedium.reflected || spiritmedium.cardLocation !== 'TABLE' || Object.values(spiritmedium.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.conclusion !== null || value.mistakes !== 0 || value.withdrawals !== 0)) return false;

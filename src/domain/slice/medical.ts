@@ -75,7 +75,7 @@ export function projectRecovery(s: SliceState, context: RecoveryActionContext): 
   const active = s.status === 'ACTIVE';
   // Later-era care has its own real people, fees and clock. Never direct this character
   // to an old-town investigation or mutate the historical medical invitation state.
-  if (hasLongChapterHandoff(s) && isLongChapterEraClosed(s) && s.progression.pathwayId === 'death' && [4, 3, 2].includes(s.progression.sequence!)) {
+  if (hasLongChapterHandoff(s) && isLongChapterEraClosed(s) && s.progression.pathwayId === 'death' && [4, 3, 2, 1].includes(s.progression.sequence!)) {
     const navigationReason = blockFerrymanEraCommand(s, {type: s.ferryman.era.location === 'OUTSIDE' ? 'ERA_ENTER' : 'ERA_LEAVE'});
     const careReason = blockFerrymanEraCommand(s, {type:'ERA_CARE'});
     const restReason = blockFerrymanEraCommand(s, {type:'ERA_REST'});

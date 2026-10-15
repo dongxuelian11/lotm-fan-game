@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.194.0 阶段版
+# 诡秘之主同人游戏 · 0.195.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手与太阳已有有限序列1基础；其余13条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手、太阳与死神已有有限序列1基础；其余12条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -114,6 +114,8 @@ node --expose-gc scripts/play/entropy-duke-save.mjs --key directed --source-dire
 公开续行脚本将新记录写入独立的output/play/entropy-duke-01830-*目录，保留原558条死亡记录；保存命令分别检查已交付的84个自然边界和5个明确标注的定向财务边界，定向输入不计入自然路线。这些命令均不等于可见窗口试玩。
 
 ## 当前验证与限制
+
+195增量：死神新增有限序列1苍白皇帝。原815条当代活档真实劳动筹措诊疗与休养，原种子续至1038条，前两瓶失败、第三瓶晋升。三次生活施术均失败，手工完成原容器处理，两项新掌握仍为零；独立可选战12轮对手死亡，玩家保留一重两轻伤，沿16米原路退出后真实劳动。原六十年经历、旧人物与器具履历保持。224个唯一SQLite转换全覆盖，9个新增测试文件135项、39个同链文件733项及共享界面12项通过；最终严格类型、构建和32项恢复/CI工具通过，五包238个新输入独立恢复核验。本阶段未重跑全部历史测试，详见[苍白皇帝阶段记录](docs/PALE_EMPEROR_PLAYABLE_STAGE.md)。
 
 194增量：太阳新增有限序列1纯白天使。原729条活档实际诊疗休养后同种子续至853条，首瓶晋升；净光一次实际清除原残留，温光未应用的零掌握如实保留。独立可选战一轮对手投降，玩家无伤沿原路退出再工作。127个命名保存边界、125种不同转换已完整通过SQLite专项。原物耗损、失效窗口及验证范围详见[纯白天使阶段记录](docs/PURE_WHITE_ANGEL_PLAYABLE_STAGE.md)。
 
@@ -238,3 +240,15 @@ npx vitest run tests/domain/pure-white-angel-acquisition.test.ts tests/domain/pu
 npm run build:main
 node --expose-gc scripts/play/pure-white-angel-save.mjs --expected-boundaries 127
 ```
+
+苍白皇帝专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix death-consul-v01730 --only-prefix pale-emperor-v01950
+npm run typecheck
+npx vitest run tests/domain/pale-emperor-acquisition.test.ts tests/domain/pale-emperor-life.test.ts tests/domain/pale-emperor-combat.test.ts tests/domain/pale-emperor-inheritance.test.ts tests/domain/pale-emperor-shared.test.ts tests/domain/pale-emperor-natural.test.ts tests/domain/pale-emperor-save.test.ts tests/renderer/pale-emperor-panel.test.tsx tests/renderer/pale-emperor-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/pale-emperor-save.mjs --expected-boundaries 224
+```
+
+完整专项逐一检验224个命名边界。Vitest 保留全输入完整性校验与关键事务代表测试，二者验证范围分别记录。恢复输入保留原当代人物、六十年经历、实际失败和新伤，不改变玩家存档。
