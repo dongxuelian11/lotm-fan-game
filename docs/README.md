@@ -1,55 +1,49 @@
-# 设计文档入口
+# 游戏设计文档
 
-`STATUS=DESIGN_MIRROR / AUTHORITY=PROJECT_STATE_LEDGER.md`
+[当前设计推进](DESIGN_PROGRESS.md)用于在自动压缩后找回正在进行的设计任务；[游戏设计总览](GAME_DESIGN.md)说明完整游戏方向、哪些内容已稳定、哪些仍未完成，并链接到每个主题的详细设计。
 
-这些文件把当前已经确认的设计按主题拆开，方便人和其他 agent 阅读。它们不是第二套规则：完整决定、用户确认、撤回/取代关系和下一题只在 `../PROJECT_STATE_LEDGER.md` 中登记。
+## 推荐阅读顺序
 
-## 推荐阅读路线
+1. [当前设计推进](DESIGN_PROGRESS.md)
+2. [游戏设计总览](GAME_DESIGN.md)
+3. [项目与玩家体验](PROJECT_OVERVIEW.md)
+4. [核心循环与日常行动](CORE_LOOP.md)
+5. [角色创建与成长](CHARACTER_AND_PROGRESSION.md)
+6. [底层数值与普通判定](NUMERIC_SYSTEM.md)
+7. [能力系统与掌握度](ABILITY_SYSTEM.md)
+8. [战斗与转盘](COMBAT_ROULETTE.md)
+9. [事件卡系统](EVENT_CARD_SYSTEM.md)
+10. [事件卡与世界模拟已确认记录](EVENT_WORLD_DESIGN_QUESTIONS.md)
+11. [第一条贝克兰德三阶段调查弧](FIRST_EVENT_ARC_DESIGN.md)
+12. [序列9事件模板包](SEQUENCE_9_EVENT_PACK.md)
+13. [“沉默的夜班”序列9规则卡](FIRST_EVENT_ARC_S9_RULE_CARDS.md)
+14. [“沉默的夜班”审核文本变体包](FIRST_EVENT_ARC_COPY_VARIANTS.md)
+15. [UI 与交互](UI_IMPLEMENTATION_PLAN.md)
+16. [封印物](SEALED_ARTIFACTS.md)
+17. [原著、知识与 RAG 边界](CANON_RAG_BOUNDARIES.md)
+18. [途径玩法与内容架构](PATHWAY_GAMEPLAY_ARCHITECTURE.md)
+19. [途径文档入口](PATHWAY_DOCUMENT_INDEX.md)
+20. [22 条途径基础设计](PATHWAY_BASE_DESIGN.md)
+21. [途径量化与战斗盘](PATHWAY_QUANTITATIVE_DESIGN.md)
+22. [途径特殊机制](PATHWAY_MECHANISMS.md)
+23. [途径日常效果](PATHWAY_DAILY_EFFECTS.md)
 
-1. [项目总览](PROJECT_OVERVIEW.md)
-2. [设计决定索引](DECISION_INDEX.md)
-3. [核心循环与日常行动](CORE_LOOP.md)
-4. [底层数值与判定](NUMERIC_SYSTEM.md)
-5. [战斗与转盘](COMBAT_ROULETTE.md)
-6. [能力系统与熟练度](ABILITY_SYSTEM.md)
-7. [角色创建与成长](CHARACTER_AND_PROGRESSION.md)
-8. [原著、知识与 RAG 边界](CANON_RAG_BOUNDARIES.md)
-9. [参考项目复用](REFERENCE_REUSE.md)
-10. [主开发计划](MASTER_DEVELOPMENT_PLAN.md)
-11. [架构合同](ARCHITECTURE_CONTRACT.md)
-12. [任务交接协议](THREAD_HANDOFF_PROTOCOL.md)
-13. [开发轮次账本](ROUND_LEDGER.md)
-14. [开源与 Git 治理](OPEN_SOURCE_AND_GIT.md)
-15. [底层实现切片（旧 S0—S5 参考）](IMPLEMENTATION_PLAN.md)
-16. [UI 与实现方案](UI_IMPLEMENTATION_PLAN.md)
-17. [事件卡系统与内容生产](EVENT_CARD_SYSTEM.md)
-18. [未决问题](OPEN_DECISIONS.md)
-19. [BMGD 隔离试用合同](BMGD_ADOPTION_CONTRACT.md)
+根目录的 [第一版角色创建规格](../V1_CHARACTER_CREATION_SPEC.md)与[原著玩法审计](../LOTM_CANON_GAMEPLAY_AUDIT.md)是配套资料。
 
-## 权威层级
+## 开发资料
 
-1. 用户最新明确确认。
-2. `PROJECT_STATE_LEDGER.md` 中的 `LOCKED` 决定。
-3. `LOTM_CANON_GAMEPLAY_AUDIT.md` 的原著事实与约束。
-4. `REFERENCE_REUSE_AUDIT.md` 的审计结论。
-5. 本目录的主题摘要和候选方案。
+- [开发流程与重构路线](DEVELOPMENT_WORKFLOW.md)
+- [游戏运行时与重构架构](TECHNICAL_ARCHITECTURE.md)
+- [轻量交互架构图](architecture/game-runtime-architecture.html)
+- [参考项目边界](REFERENCE_REUSE.md)
+- [开源与 Git](OPEN_SOURCE_AND_GIT.md)
 
-发现冲突时，暂停实现，更新台账状态，再修正文档。不要把 `QUESTION_READY`、`PENDING`、`DEFERRED`、`SUPERSEDED` 或 `NOT_STARTED` 改写成完成状态。
+## 设计状态
 
-## 当前状态
+主题文档中的“已确定、候选、待定、未完成”必须保持原义。实现可以使用明确标记的 fixture 打通底层，但不能把 fixture、自动生成内容或旧原型行为升级为正式设计。
 
-- 项目阶段：`R0_OPEN_SOURCE_GIT_ORCHESTRATION_ACTIVE`
-- 代码实现：`GOVERNANCE_ONLY / PRODUCT_CODE_NOT_STARTED`
-- 第一版玩家途径：占卜家、观众、猎人，普通人起步，目标至序列7。
-- 当前底层设计批次：`D-GRILLBATCH8` 已收口；事件卡结构 `D-EVENT1..18` 与 UI `D-UI1..3` 已全部锁定。用户已授权 R0 开源/Git/任务治理，R1 产品代码须等主任务冻结精确合同。一次性物品、先手数值和后果公开层级仍后置，城市切换/地图已延期到后续版本。
-- `V1_CHARACTER_CREATION_SPEC.md`、`LOTM_CANON_GAMEPLAY_AUDIT.md`、`REFERENCE_REUSE_AUDIT.md` 仍是根目录的配套权威资料，不在这里重复全文。
+旧的总账本、Grill 清单、轮次合同、任务交接、工作流状态、BMGD 合同和 Archify 门禁已经退役，保存在 [历史归档](archive/README.md)中。它们可用于追溯旧决定来源，但不再拥有开发权威。
 
-## 文档更新协议
+- [秘偶大师5可玩阶段](MARIONETTIST_PLAYABLE_STAGE.md)
 
-每批用户确认后：
-
-1. 先把决定、状态和影响写入 `PROJECT_STATE_LEDGER.md`；
-2. 再把同一决定同步到所有受影响的主题文档；若无对应文件，先创建模板并登记映射；
-3. 更新本目录中受影响的未决项或索引；
-4. 用 `docs-guard` 检查数字、公式、链接、路径和状态是否真实；
-5. 在最终回复中说明本批剩余未决项和下一批主题。
+- [收割者5可玩阶段](REAPER_PLAYABLE_STAGE.md)
