@@ -1,0 +1,7 @@
+.provoker-panel .provoker-story,
+.provoker-panel .seer-risk p { white-space: pre-line; }
+.provoker-panel .provoker-abilities > .seer-fold { margin-top: 14px; }
+.provoker-panel .seer-action,
+.provoker-panel .seer-action .slice-choice { min-width: 0; overflow-wrap: anywhere; }
+.provoker-panel .seer-bottle > :only-child { grid-column: 1 / -1; }
+.provoker-panel .seer-case-selector select { min-width: 0; max-width: 100%; }
