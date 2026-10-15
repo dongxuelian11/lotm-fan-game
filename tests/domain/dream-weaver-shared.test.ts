@@ -11,7 +11,7 @@ describe('Dream Weaver original public route and shared runtime',()=>{
   let s=createSliceRun(d.final.runId,d.creation,d.seed);for(const c of d.commands)s=applySliceIntent(s,c);assertValidSliceState(s);expect(s).toEqual(d.final);
  },30000);
  it('migrates the originalS4 without altering seven donors, assemblies, old personas or the original surrendered Rulan',()=>{
-  const d=old(),bytes=JSON.stringify(d.final),s=migrateSliceState(d.final);expect(s.schemaVersion).toBe(174);
+  const d=old(),bytes=JSON.stringify(d.final),s=migrateSliceState(d.final);expect(s.schemaVersion).toBe(175);
   expect(s.dreamWeaver.promotionWeek).toBeNull();expect(s.dreamWeaver.preparations).toEqual([]);
   for(const key of Object.keys(d.final))if(!['schemaVersion','contentVersion'].includes(key))expect((s as unknown as Record<string,unknown>)[key]).toEqual(d.final[key]);
   expect(s.manipulator.promotionWeek).toBe(74);expect(s.progression.promotionWeek).toBe(5);expect(JSON.stringify(d.final)).toBe(bytes);

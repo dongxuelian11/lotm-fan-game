@@ -44,6 +44,6 @@ describe('Pleasure original shared route',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/dawn-paladin-v0850/natural.json','utf8')).final,current=migrateSliceState(old);
   expect(current.pleasure.promotionWeek).toBeNull();
   const{pleasure:_,schemaVersion:__,contentVersion:___,...facts}=current;
-  const{schemaVersion:____,contentVersion:_____,...prior}=old;for(const key of Object.keys(prior))expect((facts as unknown as Record<string,unknown>)[key]).toEqual(prior[key]);expect(current.schemaVersion).toBe(174);
+  const{schemaVersion:____,contentVersion:_____,...prior}=old;for(const key of Object.keys(prior))expect((facts as unknown as Record<string,unknown>)[key]).toEqual(prior[key]);expect(current.schemaVersion).toBe(175);
  });
 });

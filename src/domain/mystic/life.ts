@@ -81,7 +81,7 @@ export function createMysticLifeState(): MysticLifeState {
 const record = (x: unknown): x is Record<string, unknown> => !!x && typeof x === 'object' && !Array.isArray(x);
 const shape = (x: Record<string, unknown>, keys: readonly string[]) => Object.keys(x).length === keys.length && keys.every(k => Object.hasOwn(x, k));
 const integer = (x: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): x is number => Number.isSafeInteger(x) && (x as number) >= min && (x as number) <= max;
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && [4,3].includes(s.progression.sequence!);
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && [4,3,2].includes(s.progression.sequence!);
 const sourceFor = (id: MysticCaseId) => `mystic-case:${id}`;
 const success = (outcome: MysticLifeAttempt['outcome']) => ['SUCCESS', 'GREAT_SUCCESS', 'ORDINARY'].includes(outcome);
 const currentAttempt = (l: MysticLifeState, id: MysticCaseId) => l.history.filter(h => h.caseId === id).at(-1);
@@ -331,6 +331,6 @@ export function validateMysticLife(s: SliceState): boolean {
     if (v.player.location === 'MARK' && (v.participant.location !== 'ROOM' || !er.contactOpen || er.method !== 'ORDINARY') || v.participant.location === 'MARK' && (!er.contactOpen || er.method !== 'ABILITY')) return false;
     if (hasMysticLifeLock(s) && (s.world.city !== 'BACKLUND' || s.status !== 'ACTIVE' || s.activeEvent || s.combat)) return false;
     if (s.seer.completedSources.filter(x => x === 'mystic-reflection').length !== Number(l.reflected) || l.reflected && resolved !== 3) return false;
-    return !promoted(s) || (s.progression.sequence===3?s.prophecyMaster.mysticActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25;
+    return !promoted(s) || ([3, 2].includes(s.progression.sequence ?? 0)?s.prophecyMaster.mysticActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25;
   } catch { return false; }
 }

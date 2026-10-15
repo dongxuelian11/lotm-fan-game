@@ -12,7 +12,7 @@ describe('War Bishop original public route and shared runtime',()=>{
  },30000);
  it('migrates originalS4 without inventing a member, healing, potion or current presence',()=>{
   const data=old(),bytes=JSON.stringify(data.final),s=migrateSliceState(data.final);
-  expect(s.schemaVersion).toBe(174);expect(s.warBishop.promotionWeek).toBeNull();expect(s.warBishop.preparations).toEqual([]);
+  expect(s.schemaVersion).toBe(175);expect(s.warBishop.promotionWeek).toBeNull();expect(s.warBishop.preparations).toEqual([]);
   for(const key of Object.keys(data.final))if(!['schemaVersion','contentVersion'].includes(key))expect((s as unknown as Record<string,unknown>)[key]).toEqual(data.final[key]);
   expect(s.ironBloodKnight.team.members.filter(m=>m.present)).toHaveLength(0);expect(JSON.stringify(data.final)).toBe(bytes);
  });

@@ -80,6 +80,7 @@ const shape = (v: object, keys: readonly string[]) => Object.keys(v).sort().join
 const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
 const success = (tier: PublicResolutionTier | null) => tier === 'SUCCESS' || tier === 'GREAT_SUCCESS';
 const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 3;
+const hasHistory = (s: SliceState) => s.progression.pathwayId === 'hermit' && [3, 2].includes(s.progression.sequence ?? 0);
 const sourceFor = (id: ProphecyMasterCaseId) => `prophecy-master-life-${id}`;
 const freshCase = (): ProphecyMasterCaseState => ({ status: 'AVAILABLE', observedWeek: null, method: null, result: 'NONE', contactOpen: false, returned: false, closes: 0, withdrawals: 0, attempts: [] });
 function freshAttempt(s: SliceState, method: 'ABILITY' | 'ORDINARY'): ProphecyMasterAttempt {
@@ -361,5 +362,5 @@ function validateLife(s: SliceState): boolean {
   if (prepared && (s.world.city !== 'BACKLUND' || s.activeEvent || s.combat)) return false;
   replay.activeCase = l.activeCase; replay.reflected = l.reflected; replay.owner.willing = l.owner.willing; replay.keeper.willing = l.keeper.willing; replay.receiver.willing = l.receiver.willing;
   if (stableStringify(replay) !== stableStringify(l) || !open && cleanupBlock(s) !== null) return false;
-  return !promoted(s) || s.progression.acting === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[ABILITY] ?? 0) >= masteryEarned;
+  return !hasHistory(s) || (s.progression.sequence === 2 ? s.sage?.prophecyMasterActingAtPromotion : s.progression.acting) === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[ABILITY] ?? 0) >= masteryEarned;
 }

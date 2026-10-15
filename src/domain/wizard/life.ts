@@ -9,7 +9,7 @@ export const WIZARD_ENVIRONMENT='三种本作G低阶教学法术必须实际学�
 export const wizardInside=(s:SliceState)=>Object.values(s.wizard.cases).some(r=>r.effectOpen);
 export const isWizardActivity=(c:WizardCommand):c is WizardActivityCommand=>['LEARN_SPELL','OBSERVE','PREPARE','PERFORM','END','REPORT','WITHDRAW','REFLECT'].includes(c.type);
 function blocked(s:SliceState,c:WizardActivityCommand):string|null{
- if(s.status!=='ACTIVE')return'当前周目已结束。';if(s.progression.pathwayId!=='hermit'||(s.progression.sequence!==7&&!((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))&&c.type==='LEARN_SPELL')))return'先完成巫师晋升。';
+ if(s.status!=='ACTIVE')return'当前周目已结束。';if(s.progression.pathwayId!=='hermit'||(s.progression.sequence!==7&&!((s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))&&c.type==='LEARN_SPELL')))return'先完成巫师晋升。';
  const r='caseId'in c?s.wizard.cases[c.caseId]:null;if(c.type==='END')return r?.effectOpen?null:'没有尚待结束的本次效果或遮板。';if(wizardInside(s))return'先0行动结束本次短时效果或撤去遮板。';if(s.activeEvent||s.combat)return'先处理当前事件或战斗。';if(s.world.city!=='BACKLUND')return'需要回到伊蕾的原教学室。';if(c.type==='WITHDRAW')return r?.status==='PREPARED'?null:'没有待取消的准备。';if(s.health<=0||s.mind<=0)return'先休养恢复身体与精神。';if(s.actionsRemaining<1)return'需要1行动。';
  if(c.type==='LEARN_SPELL'){const l=s.wizard.lessons[c.spellId];return!l?'未知教学法术。':l.learned?'已经实际学过此术。':l.attemptWeek===s.week?'本周学习未成，下周可复习。':s.cash<60?'本次学习需要60便士。':null;}
  if(c.type==='REFLECT')return s.wizard.reflected?'已经反思过这组经历。':CASES.some(p=>s.wizard.cases[p.id]?.status!=='RESOLVED')?'先完成三份有限实践报告。':null;

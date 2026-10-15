@@ -52,7 +52,7 @@ const record = (v: unknown): v is Record<string, unknown> => typeof v === 'objec
 const shape = (v: Record<string, unknown>, fields: readonly string[]) => Object.keys(v).length === fields.length && fields.every(f => Object.hasOwn(v, f));
 const integer = (v: unknown, min: number, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
 const success = (tier: string) => tier === 'GREAT_SUCCESS' || tier === 'SUCCESS';
-const eligible = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 5 || s.progression.sequence === 4 || s.progression.sequence === 3) && s.starMystic.promotionWeek !== null && s.mystic.guidanceKnown;
+const eligible = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 5 || s.progression.sequence === 4 || s.progression.sequence === 3 || s.progression.sequence === 2) && s.starMystic.promotionWeek !== null && s.mystic.guidanceKnown;
 export const hasMysticRitualLock = (s: SliceState): boolean => s.mystic.ritual.sample.status === 'ANALYSIS';
 export const hasMysticOldPracticeLock = (s: SliceState): boolean => starMysticInside(s) || scrollProfessorInside(s)
   || Object.values(s.wizard.cases).some(r => r.effectOpen)
@@ -72,7 +72,7 @@ export function mysticRitualReason(s: SliceState, command: MysticRitualCommand):
   if (hasMysticOldPracticeLock(s) || Object.values(s.mystic.life.cases).some(c => c.contactOpen) || s.mystic.encounter.status === 'FIGHTING') return '先实际收束旧实践、新接触与真实路线。';
   if (s.health <= 0 || s.mind <= 0) return '先休养，恢复身体与精神。';
   if (s.actionsRemaining < 1) return '本次需要1行动；已经开罩仍可0行动关闭。';
-  if (s.progression.sequence === 4 || s.progression.sequence === 3) return '已完成神秘学家晋升，分析记录保留，不再重复筹备。';
+  if (s.progression.sequence === 4 || s.progression.sequence === 3 || s.progression.sequence === 2) return '已完成神秘学家晋升，分析记录保留，不再重复筹备。';
   if (command.type === 'ACQUIRE_SAMPLE') return r.sample.status !== 'SUPPLIER' ? '这份原滴、防护罩与记录册已经实际交付，不能复制购买。' : s.cash < 240 ? '原渠道交接需要240便士。' : null;
   if (command.type === 'OPEN_ANALYSIS') {
     if (r.complete) return '三项完整分析已经完成，不重复开启原滴。';

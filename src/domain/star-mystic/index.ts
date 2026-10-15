@@ -1,3 +1,4 @@
+import { SAGE_ABILITY_IDS } from '../sage/types.js';
 import {PROPHECY_MASTER_ABILITY_IDS} from '../prophecy-master/types.js';
 import {MYSTIC_ABILITY_IDS} from '../mystic/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -40,7 +41,7 @@ export function createStarMysticState(): StarMysticState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 5||(s.progression.sequence===4||s.progression.sequence===3));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2));
 const isScrollProfessor = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.pryer.discovered && s.pryer.guidanceKnown && s.combatScholar.guidanceKnown && s.wizard.guidanceKnown && s.scrollProfessor.guidanceKnown && s.scrollProfessor.promotionWeek !== null && (isScrollProfessor(s) || promoted(s));
 const potionPrice = (bottle: StarMysticBottle) => STAR_MYSTIC_PRICES.potion - (bottle.labourSteps === 5 ? STAR_MYSTIC_PRICES.labourCredit : 0);
@@ -167,7 +168,7 @@ export function applyStarMysticCommand(s: SliceState, command: StarMysticAcquisi
 
 export function projectStarMystic(s: SliceState): StarMysticProjection {
   const actions: StarMysticAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3)?s.mystic.starMysticActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?s.mystic.starMysticActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: StarMysticAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -252,7 +253,7 @@ export function validateStarMysticState(s: SliceState): boolean {
   if (starMystic.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!starMystic.guidanceKnown || !integer(s.scrollProfessor.promotionWeek, 1, s.week) || !integer(starMystic.promotionWeek, firstConsumptionWeek, s.week) || starMystic.scrollProfessorActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS, ...STAR_MYSTIC_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3)?MYSTIC_ABILITY_IDS:[]),...(s.progression.sequence===3?PROPHECY_MASTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS, ...STAR_MYSTIC_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?MYSTIC_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0)?PROPHECY_MASTER_ABILITY_IDS:[]),...(s.progression.sequence===2?SAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (starMystic.promotionWeek !== null || starMystic.scrollProfessorActingAtPromotion !== null || STAR_MYSTIC_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (Object.entries(freshStarMysticPractice()).some(([key, value]) => starMystic.practice[key as keyof StarMysticPractice] !== value)) return false;

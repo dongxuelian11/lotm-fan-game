@@ -1,3 +1,4 @@
+import { SAGE_ABILITY_IDS } from '../sage/types.js';
 import {PROPHECY_MASTER_ABILITY_IDS} from '../prophecy-master/types.js';
 import {MYSTIC_ABILITY_IDS} from '../mystic/types.js';
 import {STAR_MYSTIC_ABILITY_IDS} from '../star-mystic/types.js';
@@ -30,7 +31,7 @@ export function createCombatScholarState(): CombatScholarState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))));
 const isPryer = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.pryer.discovered && s.pryer.guidanceKnown && (isPryer(s) || promoted(s));
 const potionPrice = (bottle: CombatScholarBottle) => COMBAT_SCHOLAR_PRICES.potion - (bottle.labourSteps === 3 ? COMBAT_SCHOLAR_PRICES.labourCredit : 0);
@@ -246,7 +247,7 @@ export function validateCombatScholarState(s: SliceState): boolean {
   if (combatScholar.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!combatScholar.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(combatScholar.promotionWeek, firstConsumptionWeek, s.week) || combatScholar.pryerActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?WIZARD_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?SCROLL_PROFESSOR_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?STAR_MYSTIC_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?MYSTIC_ABILITY_IDS:[]),...(s.progression.sequence===3?PROPHECY_MASTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))))?WIZARD_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)))?SCROLL_PROFESSOR_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?STAR_MYSTIC_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?MYSTIC_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0)?PROPHECY_MASTER_ABILITY_IDS:[]),...(s.progression.sequence===2?SAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (combatScholar.promotionWeek !== null || combatScholar.pryerActingAtPromotion !== null || COMBAT_SCHOLAR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (combatScholar.reflected || Object.values(combatScholar.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.exerciseOpen)) return false;

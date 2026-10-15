@@ -24,7 +24,7 @@ describe('Pain real public chain',()=>{
   const p=projectSliceState(s);expect(p.pain.abilities.filter(a=>a.id.startsWith('assassin.s5.')).map(a=>a.id)).toEqual(['assassin.s5.disease']);
  });
  it('migrates0.107 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/guardian-v01070/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(174);
+  const old=JSON.parse(readFileSync('tests/fixtures/guardian-v01070/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(175);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

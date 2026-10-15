@@ -71,7 +71,7 @@ describe('Prophecy Master actual public continuation from preserved Mystic histo
   }, 30_000);
   it('migrates the real W108 state without changing resources, old roots, original knowledge or the next RNG', () => {
     const old = original().final, bytes = JSON.stringify(old), s = migrateSliceState(old);
-    expect(s.schemaVersion).toBe(174); expect(s.contentVersion).toBe('calamity-demoness-v174'); expect(s.prophecyMaster).toEqual(createProphecyMasterState());
+    expect(s.schemaVersion).toBe(175); expect(s.contentVersion).toBe('sage-v175'); expect(s.prophecyMaster).toEqual(createProphecyMasterState());
     expect(s).toMatchObject({ week: 108, status: 'ACTIVE', health: 100, mind: 100, spirituality: 112, cash: 750, actionsRemaining: 2, progression: { sequence: 4, acting: 100 }, random: { seed: 'pryer-natural-v048', cursor: 238 } });
     for (const [key, value] of Object.entries(old)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((s as unknown as Record<string, unknown>)[key]).toEqual(value);
     expectOriginals(s, old); expect(JSON.stringify(old)).toBe(bytes); expect(migrateSliceState(s)).toEqual(s); assertValidSliceState(s);

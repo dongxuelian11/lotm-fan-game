@@ -18,7 +18,7 @@ describe('Town equipment through shared saves',()=>{
   const fresh=createSliceRun(old.runId,capture.creation,capture.seed),defaults=fresh as unknown as Record<string,unknown>;
   expect(Object.keys(next).sort()).toEqual(Object.keys(fresh).sort());
   for(const key of Object.keys(previous))if(!Object.hasOwn(old,key)){expect(previous[key],key).toEqual(defaults[key]);delete previous[key];}
-  expect([next.schemaVersion,next.contentVersion]).toEqual([174,'calamity-demoness-v174']);
+  expect([next.schemaVersion,next.contentVersion]).toEqual([175,'sage-v175']);
   previous.schemaVersion=old.schemaVersion;previous.contentVersion=old.contentVersion;
   expect(previous).toEqual(old);expect(next.town.shopKnown).toBe(false);expect(JSON.stringify(old)).toBe(bytes);expect(migrateSliceState(next)).toEqual(next);assertValidSliceState(next);
  });

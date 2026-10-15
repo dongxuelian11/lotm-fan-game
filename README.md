@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.177.0 阶段版
+# 诡秘之主同人游戏 · 0.178.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径包含9→3有限可玩切片，14条接至有限序列2。余下8条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。已暂停后续序列，优先验收现有内容。
+当前22条途径包含9→3有限可玩切片，15条接至有限序列2。余下7条序列2与全部序列1/0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -18,7 +18,7 @@ npm start
 
 ## 测试输入
 
-所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以32个完整文件tar.gz包保存在test-inputs，总压缩约537MB；清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
+所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以33个完整文件tar.gz包保存在test-inputs，总压缩约551MB；清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
 
 ```sh
 npm run typecheck
@@ -26,7 +26,7 @@ npm run test:smoke
 npm run test:fixture-restore
 ```
 
-运行全部历史测试前恢复完整输入（需额外约3.9GB空间）：
+运行全部历史测试前恢复完整输入（需额外约4.0GB空间）：
 
 ```sh
 npm run fixtures:restore
@@ -43,7 +43,7 @@ npm run test:wisdom-angel-life-isolated
 npm run fixtures:restore -- --only-prefix calamity-demoness-v01770 --only-prefix unaging-demoness-v01530
 ```
 
-若只复现本次60个历史输入相关测试，必须同时恢复其旧存档和辅助模块依赖；不能只恢复补充输入包。下面的命令与本次发布树验证使用的58个目录一致（298个文件，约232MB展开空间）。完整测试仍使用上面的全量恢复命令。
+若只复现177验收中的60个历史输入相关测试，必须同时恢复其旧存档和辅助模块依赖；不能只恢复补充输入包。下面的命令与177发布树验证使用的58个目录一致（298个文件，约232MB展开空间）。完整测试仍使用上面的全量恢复命令。
 
 <details>
 <summary>60个相关测试的完整输入恢复命令</summary>
@@ -56,11 +56,20 @@ npm run fixtures:restore -- --only-prefix apothecary-v0130 --only-prefix apprais
 
 `npm run fixtures:check`只流式验证完整输入，不创建展开副本。完整历史测试类型与全量测试的最终验收状态见发布验收报告，不能把专项通过当全量通过。
 
+贤者专项输入与公开续行：
+
+```sh
+npm run fixtures:restore -- --only-prefix prophecy-master-v01540 --only-prefix sage-v01780
+npx vitest run tests/domain/sage-acquisition.test.ts tests/domain/sage-life.test.ts tests/domain/sage-combat.test.ts tests/domain/sage-inheritance.test.ts tests/renderer/sage-panel.test.tsx tests/renderer/sage-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
 ## 当前验证与限制
 
-主工程与干净发布树完整严格类型检查、生产构建均通过。最终影响范围488个测试文件、8608个断言通过，覆盖全部296个界面文件；其余495个未改测试保留基线通过记录。干净发布树60个历史输入相关文件、466断言，以及48项烟测、17项恢复工具测试通过。全部范围、两项整文件运行限制和未验证内容见[验收报告](docs/RELEASE_ACCEPTANCE.md)。
+177验收时，主工程与干净发布树完整严格类型检查、生产构建均通过。其最终影响范围488个测试文件、8608个断言通过，覆盖全部296个界面文件；其余495个未改测试保留基线通过记录。干净发布树60个历史输入相关文件、466断言，以及48项烟测、17项恢复工具测试通过。全部范围、两项整文件运行限制和未验证内容见[验收报告](docs/RELEASE_ACCEPTANCE.md)。
 
-本版仍有构建大分块警告；可见Electron窗口、Windows实机及全路线自然通关尚未验证。门与银骑士部分高阶使用定向起点。177阶段原585条公开命令及54命名/50唯一SQLite转换证据见[阶段记录](docs/CALAMITY_DEMONESS_PLAYABLE_STAGE.md)。
+178增量验证：领域73项、界面53项、旧窥秘链484项、保存工具6项及54个独立SQLite边界通过；完整严格类型、48项烟测、17项恢复工具测试和构建通过。此为相关范围复验，未声称重跑全部992个测试文件。
+
+本版仍有构建大分块警告；可见Electron窗口、Windows实机及全路线自然通关尚未验证。门与银骑士部分高阶使用定向起点。178贤者阶段沿原507条公开命令继续到651条：亲自停止原灾难，第二瓶晋升，两次实际信息通道往返；筛读失败后通过普通核对完成生活事务，战斗第5轮撤退后保留两处重伤并回到生活。阶段记录见[贤者](docs/SAGE_PLAYABLE_STAGE.md)。177阶段原585条公开命令及54命名/50唯一SQLite转换证据见[阶段记录](docs/CALAMITY_DEMONESS_PLAYABLE_STAGE.md)。
 
 ## 来源与许可
 

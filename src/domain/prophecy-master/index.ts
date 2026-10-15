@@ -1,3 +1,4 @@
+import { SAGE_ABILITY_IDS } from '../sage/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -26,7 +27,10 @@ export function createProphecyMasterState(): ProphecyMasterState {
     preparations: [], preparedWeek: null, life: createProphecyMasterLifeState(), encounter: createProphecyMasterEncounterState() };
 }
 export const isProphecyMaster = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 3;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'hermit' && [4, 3].includes(s.progression.sequence ?? 0) && s.pryer.discovered && s.pryer.guidanceKnown && s.combatScholar.guidanceKnown && s.wizard.guidanceKnown && s.scrollProfessor.guidanceKnown && s.starMystic.guidanceKnown && s.mystic.guidanceKnown && s.mystic.promotionWeek !== null;
+/** Historical membership is separate from permission to replay the old stage. */
+export const hasProphecyMasterHistory = (s: SliceState) => s.progression.pathwayId === 'hermit' && [3, 2].includes(s.progression.sequence ?? 0);
+export const prophecyMasterActing = (s: SliceState): number => s.progression.sequence === 2 ? s.sage?.prophecyMasterActingAtPromotion ?? 0 : s.progression.acting;
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'hermit' && [4, 3, 2].includes(s.progression.sequence ?? 0) && (s.progression.sequence !== 2 || integer(s.sage?.promotionWeek, 1, s.week) && integer(s.prophecyMaster.promotionWeek, 1, s.sage.promotionWeek!)) && s.pryer.discovered && s.pryer.guidanceKnown && s.combatScholar.guidanceKnown && s.wizard.guidanceKnown && s.scrollProfessor.guidanceKnown && s.starMystic.guidanceKnown && s.mystic.guidanceKnown && s.mystic.promotionWeek !== null;
 export const hasProphecyMasterOldPractice = (s: SliceState): boolean => hasMysticOldPracticeLock(s) || hasMysticRitualLock(s) || hasMysticLifeLock(s) || hasMysticEncounterLock(s)
   || Object.values(s.pryer.cases).some(value => value.readingOpen) || Object.values(s.combatScholar.cases).some(value => value.exerciseOpen)
   || Object.values(s.mystic.life.cases).some(value => value.status === 'PREPARED')
@@ -65,7 +69,7 @@ export function prophecyMasterAcquisitionBlock(s: SliceState, command: ProphecyM
   if (hasProphecyMasterOldPractice(s) || hasProphecyMasterLifeLock(s) || hasProphecyMasterEncounterLock(s)) return '先实际结束旧窥视、演练、原血样分析与原能力效果，归还原物并收束旧准备和当前实践；旧人物、伤势、故事与能力记录保留，旧许可不代替新案同意。';
   if (s.world.city !== 'BACKLUND') return '须沿实际行程回到贝克兰德PM3-WAREHOUSE旁的独立指导场。';
   if (!knownChannel(s)) return '实际成为神秘学家并保留原指导渠道后，才能了解预言大师之路。';
-  if (isProphecyMaster(s)) return '已经真实晋升预言大师3，不能重复准备或服药；未服原瓶保留。';
+  if (hasProphecyMasterHistory(s)) return '已经真实晋升预言大师3，不能重复准备或服药；未服原瓶保留。';
   const state = s.prophecyMaster;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
@@ -160,7 +164,7 @@ export function applyProphecyMasterCommand(s: SliceState, command: ProphecyMaste
 }
 
 export function projectProphecyMaster(s: SliceState): ProphecyMasterProjection {
-  const state = s.prophecyMaster, available = knownChannel(s), promoted = isProphecyMaster(s), actions: ProphecyMasterAction[] = [];
+  const state = s.prophecyMaster, available = knownChannel(s), promoted = hasProphecyMasterHistory(s), actions: ProphecyMasterAction[] = [];
   const add = (id: string, label: string, cost: string, command: ProphecyMasterAcquisitionCommand) => { const reason = prophecyMasterAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-prophecy-master-guidance', '听取预言大师成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -189,7 +193,7 @@ export function projectProphecyMaster(s: SliceState): ProphecyMasterProjection {
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 预言大师成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为神秘学家' : '排异，仍为神秘学家'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? PROPHECY_MASTER_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? PROPHECY_MASTER_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `神秘学家消化${state.mysticActingAtPromotion}/100留存；预言大师扮演${s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `神秘学家需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${mysticWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完神秘学家之路。',
+    acting: promoted ? prophecyMasterActing(s) : 0, digestion: promoted ? `神秘学家消化${state.mysticActingAtPromotion}/100留存；预言大师扮演${prophecyMasterActing(s)}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖真实能力成功。` : available ? `神秘学家需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${mysticWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完神秘学家之路。',
     pollution: s.seer.pollution, risk: available ? PROPHECY_MASTER_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     inheritedTools: available ? `原厚镜片眼镜SM5-LENS-1：${s.starMystic.practice.lenses}。旧工坊现有原卷${s.scrollProfessor.workshop.scrolls.filter(scroll => scroll.status === 'HELD').length}张、已耗${s.scrollProfessor.workshop.scrolls.filter(scroll => scroll.status === 'USED').length}张；全部原材料、制作序列与刻录掌握保持，使用仍须实际消耗本人现存且已授权的同一原卷。` : '',
@@ -212,7 +216,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.prophecyMaster;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'mysticActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as ProphecyMasterState, promoted = isProphecyMaster(s), firstWeek = s.mystic.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + PROPHECY_MASTER_MIN_MYSTIC_WEEKS;
+  const state = raw as unknown as ProphecyMasterState, promoted = hasProphecyMasterHistory(s), firstWeek = s.mystic.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + PROPHECY_MASTER_MIN_MYSTIC_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !PROPHECY_MASTER_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
@@ -220,7 +224,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasProphecyMasterOldPractice(s) || hasProphecyMasterLifeLock(s) || hasProphecyMasterEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.mystic.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.mysticActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS, ...STAR_MYSTIC_ABILITY_IDS, ...MYSTIC_ABILITY_IDS, ...PROPHECY_MASTER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS, ...STAR_MYSTIC_ABILITY_IDS, ...MYSTIC_ABILITY_IDS, ...PROPHECY_MASTER_ABILITY_IDS, ...(s.progression.sequence === 2 ? SAGE_ABILITY_IDS : [])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.mysticActingAtPromotion !== null || PROPHECY_MASTER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

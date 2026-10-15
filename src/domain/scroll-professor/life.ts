@@ -35,11 +35,11 @@ export const SCROLL_PROFESSOR_ENVIRONMENT = '本作G制卷工房：每真实周�
 export const scrollProfessorInside = (s: SliceState) => Object.values(s.scrollProfessor.cases).some(r => r.contactOpen);
 export const isScrollProfessorActivity = (c: ScrollProfessorCommand): c is ScrollProfessorActivityCommand =>
   ['LEARN_SPELL', 'BUY_KIT', 'CRAFT_SCROLL', 'AUTHORIZE_SCROLL', 'OBSERVE', 'PREPARE', 'PERFORM', 'CLOSE', 'REPORT', 'WITHDRAW', 'REFLECT', 'ENCOUNTER_TALK', 'ENCOUNTER_FIGHT'].includes(c.type);
-const active = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 6 || s.progression.sequence === 5 || (s.progression.sequence===4||s.progression.sequence===3));
+const active = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 6 || s.progression.sequence === 5 || (s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2));
 const heldScroll = (s: SliceState, kind: ScrollProfessorScrollKind) => s.scrollProfessor.workshop.scrolls.find(scroll => scroll.kind === kind && scroll.status === 'HELD');
 
 function blocked(s: SliceState, c: ScrollProfessorActivityCommand): string | null {
-  if ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)) && !['LEARN_SPELL','BUY_KIT','CRAFT_SCROLL','AUTHORIZE_SCROLL'].includes(c.type)) return '卷轴教授经历已归档，请在当前序列成长页继续实践。';
+  if ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)) && !['LEARN_SPELL','BUY_KIT','CRAFT_SCROLL','AUTHORIZE_SCROLL'].includes(c.type)) return '卷轴教授经历已归档，请在当前序列成长页继续实践。';
   if (c.type === 'ENCOUNTER_TALK' || c.type === 'ENCOUNTER_FIGHT') return blockScrollProfessorEncounter(s, c);
   if (s.status !== 'ACTIVE') return '当前周目已结束。';
   if (!active(s)) return '先完成卷轴教授晋升。';
@@ -112,7 +112,7 @@ export function applyScrollProfessorActivity(s: SliceState, c: ScrollProfessorAc
     material.status = 'SPENT'; material.spentWeek = s.week; w.craftAttempts += 1; s.spirituality -= 2;
     const result = ctx.check('knowledge', 14), spec = SCROLL_PROFESSOR_SCROLLS[c.kind];
     if (result.tier === 'SUCCESS' || result.tier === 'GREAT_SUCCESS') {
-      const scroll = { id: `scroll-professor-scroll-${w.scrolls.length + 1}`, kind: c.kind, makerSequence: (s.progression.sequence===3?3:s.progression.sequence===4?4:s.progression.sequence===5?5:6) as 3|4|5|6, inscriptionMastery: s.progression.mastery['hermit.s6.scrollcraft']!, materialId: material.id, createdWeek: s.week, status: 'HELD' as const, usedWeek: null, authorized: false };
+      const scroll = { id: `scroll-professor-scroll-${w.scrolls.length + 1}`, kind: c.kind, makerSequence: (s.progression.sequence===2?2:s.progression.sequence===3?3:s.progression.sequence===4?4:s.progression.sequence===5?5:6) as 2|3|4|5|6, inscriptionMastery: s.progression.mastery['hermit.s6.scrollcraft']!, materialId: material.id, createdWeek: s.week, status: 'HELD' as const, usedWeek: null, authorized: false };
       w.scrolls.push(scroll);
       ctx.note('制卷成功，实体原卷入囊', `${scroll.id}：${spec.title}。本人已学对应巫师术式，花费1行动、2灵性，实际耗尽材料${material.id}。制造时序列${scroll.makerSequence}与卷轴掌握${scroll.inscriptionMastery}固定在本卷记录。${spec.effect}未用卷可跨周保留；目前未授权战斗自动使用，使用仍可能失败。`);
     } else {
@@ -153,7 +153,7 @@ export function scrollProfessorActions(s: SliceState): ScrollProfessorAction[] {
   add('scroll-professor-buy-kit', '购买4份独立G制卷材料', '1行动 · 100便士 · 每真实周最多1包', { type: 'BUY_KIT' });
   for (const kind of SCROLL_PROFESSOR_SCROLL_KINDS) add(`scroll-professor-craft-${kind}`, `事先制造${SCROLL_PROFESSOR_SCROLLS[kind].title}`, '1行动 · 2灵性 · 1份实际材料 · 知识14 · 失败照耗', { type: 'CRAFT_SCROLL', kind });
   for (const scroll of s.scrollProfessor.workshop.scrolls) if (scroll.status === 'HELD') add(`scroll-professor-authorize-${scroll.id}`, `${scroll.authorized ? '取消' : '明确允许'}${scroll.id}战斗自动烧用一次`, '0行动 · 仅本张 · 匹配主攻/自保槽 · 使用可失败', { type: 'AUTHORIZE_SCROLL', scrollId: scroll.id, authorized: !scroll.authorized });
-  if(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))return out;
+  if(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))return out;
   for (const p of CASES) {
     const r = s.scrollProfessor.cases[p.id]!;
     if (r.contactOpen) add(`${p.id}-close`, '实际结束本次接触与短时效果', '0行动 · 实际收束/放回原板 · 不补卷', { type: 'CLOSE', caseId: p.id });
@@ -205,7 +205,8 @@ export function validateScrollProfessorLife(s: SliceState): boolean {
   const usedMaterials = new Set<string>(); let previousCreated = promotion;
   for (const [index, scroll] of w.scrolls.entries()) {
     if (!record(scroll) || !shape(scroll, ['id', 'kind', 'makerSequence', 'inscriptionMastery', 'materialId', 'createdWeek', 'status', 'usedWeek', 'authorized'])) return false;
-    if (scroll.id !== `scroll-professor-scroll-${index + 1}` || !SCROLL_PROFESSOR_SCROLL_KINDS.includes(scroll.kind) || ![6,5,4,3].includes(scroll.makerSequence) || !integer(scroll.inscriptionMastery, 0, 500) || typeof scroll.authorized !== 'boolean') return false;
+    if (scroll.id !== `scroll-professor-scroll-${index + 1}` || !SCROLL_PROFESSOR_SCROLL_KINDS.includes(scroll.kind) || ![6,5,4,3,2].includes(scroll.makerSequence) || !integer(scroll.inscriptionMastery, 0, 500) || typeof scroll.authorized !== 'boolean') return false;
+    if (scroll.makerSequence === 2 && (s.progression.pathwayId !== 'hermit' || s.progression.sequence !== 2 || !integer(s.sage?.promotionWeek, promotion, s.week) || scroll.createdWeek < s.sage.promotionWeek!)) return false;
     if(scroll.makerSequence===3&&(s.prophecyMaster.promotionWeek===null||scroll.createdWeek<s.prophecyMaster.promotionWeek))return false;
     if(scroll.makerSequence===4&&(s.mystic.promotionWeek===null||scroll.createdWeek<s.mystic.promotionWeek))return false;
     if (scroll.makerSequence === 5 && (s.starMystic.promotionWeek === null || scroll.createdWeek < s.starMystic.promotionWeek)) return false;
@@ -248,7 +249,7 @@ export function validateScrollProfessorLife(s: SliceState): boolean {
   }
   if (open > 1 || prepared > 1 || open && prepared) return false;
   if (s.seer.completedSources.filter(x => x === 'scroll-professor-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if (active(s) && ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.starMystic.scrollProfessorActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (active(s) && ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?s.starMystic.scrollProfessorActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (w.kitsBought !== 0 || w.materials.length !== 0 || w.craftAttempts !== 0 || w.scrolls.length !== 0 || open !== 0 || prepared !== 0 || resolved !== 0 || m.reflected)) return false;
   return true;
 }

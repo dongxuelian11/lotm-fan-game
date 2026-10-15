@@ -1,3 +1,4 @@
+import { SAGE_ABILITY_IDS } from '../sage/types.js';
 import {PROPHECY_MASTER_ABILITY_IDS} from '../prophecy-master/types.js';
 import {MYSTIC_ABILITY_IDS} from '../mystic/types.js';
 import {STAR_MYSTIC_ABILITY_IDS} from '../star-mystic/types.js';
@@ -31,7 +32,7 @@ export function createWizardState(): WizardState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence === 7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))));
 const isCombatScholar = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 8;
 const knownChannel = (s: SliceState) => s.pryer.discovered && s.pryer.guidanceKnown && s.combatScholar.guidanceKnown && (isCombatScholar(s) || promoted(s));
 const potionPrice = (bottle: WizardBottle) => WIZARD_PRICES.potion - (bottle.labourSteps === 4 ? WIZARD_PRICES.labourCredit : 0);
@@ -196,8 +197,8 @@ export function projectWizard(s: SliceState): WizardProjection {
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
     abilities: isPromoted ? WIZARD_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
-    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?s.scrollProfessor.wizardActingAtPromotion??100:s.progression.acting) : 0,
-    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?'巫师魔药已消化，原三项已学教学术与实践经历保留。':isPromoted ? `格斗学者消化成果${s.wizard.combatScholarActingAtPromotion}/100已保留；巫师扮演${s.progression.acting}/100，能力掌握分别记录。`
+    acting: isPromoted ? ((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)))?s.scrollProfessor.wizardActingAtPromotion??100:s.progression.acting) : 0,
+    digestion: (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)))?'巫师魔药已消化，原三项已学教学术与实践经历保留。':isPromoted ? `格斗学者消化成果${s.wizard.combatScholarActingAtPromotion}/100已保留；巫师扮演${s.progression.acting}/100，能力掌握分别记录。`
       : available ? `服药前需完成格斗学者消化（${s.progression.acting}/100），并在晋升格斗学者后度过8整周（${combatScholarWeeks(s)}/8）。用药指导与原瓶可以提前准备。` : '先走完格斗学者之路。',
     pollution: s.seer.pollution,
     risk: available ? `步骤：用药指导 → 购买，或完成对应四次劳务后付款领取 → 满足消化与成熟条件 → 独立确认服药。每批3瓶；全部耗尽失败后，可以花1行动请求下一批，下一真实周起确认到货，每瓶费用与劳务不变。${WIZARD_CONSUMPTION_RISK}` : '成为格斗学者后，可向原导师了解下一序列。',
@@ -255,7 +256,7 @@ export function validateWizardState(s: SliceState): boolean {
   if (wizard.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!wizard.guidanceKnown || !integer(s.combatScholar.promotionWeek, 1, s.week) || !integer(wizard.promotionWeek, firstConsumptionWeek, s.week) || wizard.combatScholarActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?SCROLL_PROFESSOR_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?STAR_MYSTIC_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?MYSTIC_ABILITY_IDS:[]),...(s.progression.sequence===3?PROPHECY_MASTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS,...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)))?SCROLL_PROFESSOR_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?STAR_MYSTIC_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?MYSTIC_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0)?PROPHECY_MASTER_ABILITY_IDS:[]),...(s.progression.sequence===2?SAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (wizard.promotionWeek !== null || wizard.combatScholarActingAtPromotion !== null || WIZARD_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (Object.values(wizard.lessons).some(value => value.learned || value.attemptWeek !== null)) return false;

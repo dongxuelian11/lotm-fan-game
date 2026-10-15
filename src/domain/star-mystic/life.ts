@@ -198,7 +198,7 @@ export function starMysticActions(s: SliceState): StarMysticAction[] {
   return out;
 }
 export function starMysticCases(s: SliceState): StarMysticProjection['cases'] {
-  if (!(s.progression.pathwayId==='hermit'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) return [];
+  if (!(s.progression.pathwayId==='hermit'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)))) return [];
   return CASES.map(p => {
     const r = s.starMystic.cases[p.id]!;
     return { id: p.id, title: p.title, story: p.story, observations: r.status === 'AVAILABLE' ? [] : [...p.facts], preparation: r.status === 'PREPARED' ? r.method === 'ABILITY' ? p.ability : p.ordinary : null,
@@ -207,7 +207,7 @@ export function starMysticCases(s: SliceState): StarMysticProjection['cases'] {
   });
 }
 export function starMysticPractice(s: SliceState): StarMysticProjection['practice'] {
-  if (!(s.progression.pathwayId==='hermit'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) return null;
+  if (!(s.progression.pathwayId==='hermit'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)))) return null;
   const f = s.starMystic.practice;
   const history: string[] = [];
   if (f.markerSeen) history.push('已通过本次实际观察获得的历史知识：原SM5-MARKER-1有三道水平刻痕；遮挡恢复后仍记得，不表示现在又读取了薄布后方。');
@@ -226,7 +226,7 @@ const integer = (v: unknown, min: number, max = Number.MAX_SAFE_INTEGER) => Numb
 export function validateStarMysticLife(s: SliceState): boolean {
   const m = s.starMystic;
   if (!record(m) || !record(m.cases) || !shape(m.cases, STAR_MYSTIC_CASE_IDS) || !record(m.practice) || !record(m.encounter) || !record(s.seer) || !Array.isArray(s.seer.completedSources)) return false;
-  const f = m.practice, promoted = (s.progression.pathwayId==='hermit'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))), firstWeek = m.promotionWeek ?? s.week;
+  const f = m.practice, promoted = (s.progression.pathwayId==='hermit'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))), firstWeek = m.promotionWeek ?? s.week;
   if (!shape(f, ['lenses', 'screen', 'markerSeen', 'cageActive', 'companionNode', 'playerNode', 'weatherSeen'])) return false;
   if (!['SUPPLIER', 'WORN', 'HELD'].includes(f.lenses) || !['SHUT', 'OPEN'].includes(f.screen) || !['WAITING', 'MARK'].includes(f.companionNode) || !['ROOM', 'COURTYARD'].includes(f.playerNode) || [f.markerSeen, f.cageActive, f.weatherSeen].some(v => typeof v !== 'boolean')) return false;
   let open = 0, prepared = 0, resolved = 0;
@@ -266,6 +266,6 @@ export function validateStarMysticLife(s: SliceState): boolean {
   if (f.playerNode !== (weather.contactOpen ? 'COURTYARD' : 'ROOM') || f.weatherSeen !== (weather.attemptWeek !== null)) return false;
   if (typeof m.reflected !== 'boolean' || s.seer.completedSources.filter(x => x === 'star-mystic-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
   if (!promoted && (m.reflected || f.lenses !== 'SUPPLIER' || f.screen !== 'SHUT' || f.markerSeen || f.cageActive || f.companionNode !== 'WAITING' || f.playerNode !== 'ROOM' || f.weatherSeen)) return false;
-  if (promoted && ((s.progression.sequence===4||s.progression.sequence===3)?s.mystic.starMysticActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if (promoted && ((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?s.mystic.starMysticActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   return true;
 }

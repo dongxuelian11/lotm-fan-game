@@ -1,3 +1,4 @@
+import { SAGE_ABILITY_IDS } from '../sage/types.js';
 import {PROPHECY_MASTER_ABILITY_IDS} from '../prophecy-master/types.js';
 import {MYSTIC_ABILITY_IDS} from '../mystic/types.js';
 import {STAR_MYSTIC_ABILITY_IDS} from '../star-mystic/types.js';
@@ -34,7 +35,7 @@ export function createScrollProfessorState(): ScrollProfessorState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)));
 const isWizard = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.pryer.discovered && s.pryer.guidanceKnown && s.combatScholar.guidanceKnown && s.wizard.guidanceKnown && s.wizard.promotionWeek !== null && (isWizard(s) || promoted(s));
 const potionPrice = (bottle: ScrollProfessorBottle) => SCROLL_PROFESSOR_PRICES.potion - (bottle.labourSteps === 5 ? SCROLL_PROFESSOR_PRICES.labourCredit : 0);
@@ -158,7 +159,7 @@ export function applyScrollProfessorCommand(s: SliceState, command: ScrollProfes
 
 export function projectScrollProfessor(s: SliceState): ScrollProfessorProjection {
   const actions: ScrollProfessorAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.starMystic.scrollProfessorActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?s.starMystic.scrollProfessorActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: ScrollProfessorAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -258,7 +259,7 @@ export function validateScrollProfessorState(s: SliceState): boolean {
   if (scrollProfessor.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!scrollProfessor.guidanceKnown || !integer(s.wizard.promotionWeek, 1, s.week) || !integer(scrollProfessor.promotionWeek, firstConsumptionWeek, s.week) || scrollProfessor.wizardActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?STAR_MYSTIC_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?MYSTIC_ABILITY_IDS:[]),...(s.progression.sequence===3?PROPHECY_MASTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2))?STAR_MYSTIC_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3||s.progression.sequence===2)?MYSTIC_ABILITY_IDS:[]),...([3, 2].includes(s.progression.sequence ?? 0)?PROPHECY_MASTER_ABILITY_IDS:[]),...(s.progression.sequence===2?SAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (scrollProfessor.promotionWeek !== null || scrollProfessor.wizardActingAtPromotion !== null || SCROLL_PROFESSOR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (scrollProfessor.reflected || Object.values(scrollProfessor.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0 || !Array.isArray(value.usedScrollIds) || value.usedScrollIds.length !== 0)) return false;
@@ -316,7 +317,11 @@ export function validateScrollProfessorState(s: SliceState): boolean {
   if (e.status === 'LOST' && s.status !== 'DEAD') return false;
   const effective = e.startHistoryIndex !== null && s.combatHistory.slice(e.startHistoryIndex).some(r => r.retreat === 'NONE' && r.moves.some(move => move.actor === 'PLAYER' && (move.selfGain > 0 || move.enemyReduction > 0)));
   const disputeAwards = s.seer.completedSources.filter(source => source === 'scroll-professor-dispute').length;
-  if (disputeAwards > 1 || disputeAwards === 1 && (e.status !== 'RESOLVED' || s.status === 'DEAD' || !effective)) return false;
+  // A later Sage death cannot erase an award earned while this old S6 encounter
+  // was actually resolved. Death during the original S6 stage still cannot award it.
+  const laterSageDeath = s.status === 'DEAD' && s.progression.pathwayId === 'hermit' && s.progression.sequence === 2 &&
+    e.attemptWeek !== null && integer(s.sage?.promotionWeek, e.attemptWeek, s.week) && s.sage.prophecyMasterActingAtPromotion === 100;
+  if (disputeAwards > 1 || disputeAwards === 1 && (e.status !== 'RESOLVED' || s.status === 'DEAD' && !laterSageDeath || !effective)) return false;
   return successes === (isPromoted ? 1 : 0) && validateScrollProfessorLife(s);
 }
 

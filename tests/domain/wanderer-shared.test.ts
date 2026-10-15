@@ -53,7 +53,7 @@ describe('Wanderer explicitly directed S4 prefix followed by actual public conti
 
   it('migrates the actual W92 result without healing, rewriting old sources or retroactively making it natural', () => {
     const prior = original(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(174); expect(state.contentVersion).toBe('calamity-demoness-v174');
+    expect(state.schemaVersion).toBe(175); expect(state.contentVersion).toBe('sage-v175');
     expect(state.wanderer).toEqual(createWandererState());
     expect(state).toMatchObject({ week: 92, health: 40, mind: 100, spirituality: 120, cash: 560, actionsRemaining: 3, progression: { sequence: 4, acting: 100 } });
     expect(state.secretsSorcerer.promotionWeek).toBe(80); expectOriginals(state, prior.final);

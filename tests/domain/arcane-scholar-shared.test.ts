@@ -11,7 +11,7 @@ describe('Arcane Scholar original public route and shared runtime',()=>{
   let s=createSliceRun(d.final.runId,d.creation,d.seed);for(const c of d.commands)s=applySliceIntent(s,c);assertValidSliceState(s);expect(s).toEqual(d.final);
  },30000);
  it('migratesS4 without changing dead Osric, exhausted garden plots or original constructs',()=>{
-  const d=old(),bytes=JSON.stringify(d.final),s=migrateSliceState(d.final);expect(s.schemaVersion).toBe(174);expect(s.arcaneScholar.promotionWeek).toBeNull();
+  const d=old(),bytes=JSON.stringify(d.final),s=migrateSliceState(d.final);expect(s.schemaVersion).toBe(175);expect(s.arcaneScholar.promotionWeek).toBeNull();
   for(const key of Object.keys(d.final))if(!['schemaVersion','contentVersion'].includes(key))expect((s as unknown as Record<string,unknown>)[key]).toEqual(d.final[key]);
   expect(s.alchemist.promotionWeek).toBe(83);expect(s.alchemist.encounter.enemy.status).toBe('DEAD');expect(s.alchemist.encounter.enemy.weaponLocation).toBe('YARD');expect(JSON.stringify(d.final)).toBe(bytes);
  });

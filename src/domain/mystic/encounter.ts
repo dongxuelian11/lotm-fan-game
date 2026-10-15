@@ -40,7 +40,7 @@ export function createMysticEncounterState(): MysticEncounterState {
     enemyHealth: 100, enemyMind: 100, enemySpirituality: 40, enemyStatus: 'RESISTING', enemyInjuries: [], enemyRisk: 0,
     powerUses: { ARC_BOLT: 0, WARD: 0 }, focused: false, cageReady: false, echoReady: false, terminal: null };
 }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && [4,3].includes(s.progression.sequence!);
+const promoted = (s: SliceState) => s.progression.pathwayId === 'hermit' && [4,3,2].includes(s.progression.sequence!);
 const reported = (s: SliceState) => Object.values(s.mystic.life.cases).some(c => c.status === 'RESOLVED');
 const noEffects = (s: SliceState) => !s.mystic.encounter.focused && !s.mystic.encounter.cageReady && !s.mystic.encounter.echoReady;
 /** The owned S5 glasses may be lifted only by this encounter's actual finite focus. */

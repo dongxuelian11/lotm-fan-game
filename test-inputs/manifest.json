@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.177.0",
+  "version": "0.178.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -161,6 +161,11 @@
       "name": "lotm_release_0.177.0_legacy_test_inputs_2026-10-14.tar.gz",
       "bytes": 14088515,
       "sha256": "0027515dfe9f232a8e1ddbb2f21b0d20a19676159bc1440129e822209b4e8fde"
+    },
+    {
+      "name": "lotm_release_0.178.0_sage_test_inputs_2026-10-15.tar.gz",
+      "bytes": 15035977,
+      "sha256": "5af6d17f256d1c19fa91230c9df15583800f824fe71686f85ef186061b53aff0"
     }
   ],
   "fileEntries": [
@@ -6358,6 +6363,326 @@
       "path": "tests/fixtures/rose-bishop-v0880/natural.json",
       "bytes": 1600919,
       "sha256": "acc98df5eb5ee971231d71e4992ac8e36083cd7127938612c27ccf954019401f"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundaries.index.json",
+      "bytes": 3851,
+      "sha256": "8d8da6af1dcc99d3bb85790678629c3480e603b236e7ac5c9bcb81a64ada0817"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-actual-disaster-stopped-and-reviewed.json",
+      "bytes": 1844844,
+      "sha256": "4ca9fe4a4dff748778aef7024fcb324b8becaf8b32b3e5dbca239b318e59ef3c"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-actual-high-level-source-study.json",
+      "bytes": 1697494,
+      "sha256": "2f9c5684c2b11d5d7e27b9dbabe4c1f6a3d07944bcf7673b1bfe5ec34eafea24"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-adult-leaves-actual-yard-entry.json",
+      "bytes": 2147299,
+      "sha256": "bc63af5afe78a7d82fbc50cf00a35145f75841404bf297b87c058ef3913b589d"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-buy-sage-potion-1.json",
+      "bytes": 1916430,
+      "sha256": "8360aec1e251d61b2e029ebfae3425403e47a3872258db0c7fffbcf8f36cd4eb"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-buy-sage-potion-2.json",
+      "bytes": 1985650,
+      "sha256": "fbb485de6f8c0dae28684e64117940c24c628a282da8de24aa309d04eb5742e0"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-combat-round-1.json",
+      "bytes": 2212268,
+      "sha256": "58f94bdb9162247e98918a237f1cab96618ff5244d3703e82be8953b443494c8"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-combat-round-2.json",
+      "bytes": 2289011,
+      "sha256": "15b0d3c79118d8251aebbd65e4221c5f9b45db4b372adedfbc44fe5112f73973"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-combat-round-3.json",
+      "bytes": 2324362,
+      "sha256": "f09f099f35c176888969e4cdcdebce587148b1d8e4663151014414e1eb10eee2"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-combat-round-4.json",
+      "bytes": 2346082,
+      "sha256": "03cd08daae67e17a8c947ca8bcac21241ee2d240de847a88b437583979fe2e68"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-combat-round-5.json",
+      "bytes": 2358630,
+      "sha256": "8bea0294012d201195b283f7bc9376d11110ecb89e608fa4874bd70cfa6e7258"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-consume-sage-potion-1.json",
+      "bytes": 1932657,
+      "sha256": "d2717b377d9af5c9889a9e4cd0863caf1ca6de7b8412c60bcf2f715b137ea883"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-consume-sage-potion-2.json",
+      "bytes": 2002112,
+      "sha256": "e9ed80a1fdeddc6e040c104c446894c13a722446f17bba85fbd43ffc696a96a8"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-core-containment-attempt-1.json",
+      "bytes": 1829385,
+      "sha256": "89ee117bb71da82271a9a0858f92b46e3d44e5440acc2a9925e9c105a52ba532"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-guidance.json",
+      "bytes": 1679687,
+      "sha256": "88e5de3fe64eaa2648d8ebf8e5049ad58042ba9106a90012089fcc7dd0ed9e76"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-independent-optional-fight.json",
+      "bytes": 2159106,
+      "sha256": "ba189949203953c3fbb8c48ddb40242a4222b1f0e9e10cd07fb131f57f972d0d"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-index-route-attempt-1.json",
+      "bytes": 1795882,
+      "sha256": "8b49add96ee7ce5333bda92f0d2a996f9a0399cc6f25b09f9d5410a94022b48e"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-information-route-actual-conduit.json",
+      "bytes": 2029889,
+      "sha256": "cc0698a7b3209fc87ea0ed4b6c761edaeeced09badf925890b1e5d2ab9d0a887"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-information-route-form-check.json",
+      "bytes": 2025861,
+      "sha256": "85511908be935238d25cb2d0f132041fb97d404fa1f77214e23593f54684c45d"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-information-route-observe.json",
+      "bytes": 2008343,
+      "sha256": "2518d5286d1b40a476b568f05d4beaa20740d079d6b6e87043d090292c384031"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-information-route-original-items-return.json",
+      "bytes": 2037909,
+      "sha256": "91c38a0a7537a4832821891c2063963642f56578c257ce8b83a23c7014c05e02"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-information-route-prepare.json",
+      "bytes": 2015896,
+      "sha256": "90cb4e149997fae147e46c496cee3476ce5603c1f74c00acee080a7e2dfe7137"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-information-route-report.json",
+      "bytes": 2046029,
+      "sha256": "358dbf46eb3d71ff9b047468cbf82f0b967ce0fd305306057d0eaefb0ea6aed8"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-information-route-same-body-reassembled.json",
+      "bytes": 2031210,
+      "sha256": "69999f793acdf3af99d43022b8d2c4b1090ef3de5be59595f2ca7ebee54a9161"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-actual-conduit.json",
+      "bytes": 2108089,
+      "sha256": "e425be912e68b49c3c616ce1e10ea73a53352342f21977f7339cc2b75f16ec85"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-form-check.json",
+      "bytes": 2103893,
+      "sha256": "cdb6cc2b14d580e6838bdc43f7a419bf5acac900cbc54c93758376dc650cc30b"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-observe.json",
+      "bytes": 2085009,
+      "sha256": "9f1af125672d43397c15d0d291378b5686debd8e6ed3ff2c5d2fb1756219ce85"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-ordinary-source-read.json",
+      "bytes": 2117806,
+      "sha256": "38b0f92191f07b3f4677976dacf6ca99d47d3d7b6d11d52056715aba49911d2d"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-original-items-return.json",
+      "bytes": 2128590,
+      "sha256": "0776d10ad005639c7c58de5b3e1cdda2f6e3186fab6d6379c6e164b1e798fe26"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-prepare.json",
+      "bytes": 2091539,
+      "sha256": "a53269a059985843bf34afa909f5afffea1921fadbd9d67870fa7ea40cc7b081"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-real-information-verification.json",
+      "bytes": 2119509,
+      "sha256": "661c278a5825fbb6c03791874990f6010cb8bcf6c6048cd360a7a5d9bce182f4"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-report.json",
+      "bytes": 2137602,
+      "sha256": "6c06c65a783056320146c2df99014e33624d1272343361ad8d1d7fc414a40813"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-same-body-reassembled.json",
+      "bytes": 2109409,
+      "sha256": "157ea93911eaf52cedda1356ba0a8e121dba2f5d2d96f0a37bb26908173e26be"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-joint-verification-sift-check.json",
+      "bytes": 2113633,
+      "sha256": "e34a29fc02eb7b614d10d030d3b616aea26be29fdfe1cc85334e5110fac89aba"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-onsite-sift-observe.json",
+      "bytes": 2047804,
+      "sha256": "79285c7f124b2e79f5ef29e8ecca42914c1946c57a1e7a448a591a4bcce77270"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-onsite-sift-ordinary-source-read.json",
+      "bytes": 2068150,
+      "sha256": "7496225a54394c3aa187021fa25bdc4e47f3cc852a94ea36e4539ce6b7604a52"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-onsite-sift-original-items-return.json",
+      "bytes": 2075118,
+      "sha256": "4481b021f3d17123a3d5a1d81fde5b63b0b24cce186189c429b5dc11ac539777"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-onsite-sift-prepare.json",
+      "bytes": 2054293,
+      "sha256": "408aecae18efc4912da55a23fa0c48738c4a32ea7c93a0f544ca80424d8d6605"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-onsite-sift-real-information-verification.json",
+      "bytes": 2069846,
+      "sha256": "a5fc979020bd73350ab6e6700e169d9a776c75cf57b15466ed620d415ebbceb1"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-onsite-sift-report.json",
+      "bytes": 2083219,
+      "sha256": "2faf139a785b1b4559c2dfc1cc4378189b9a0dee6d025fa734ef441152d50f35"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-onsite-sift-sift-check.json",
+      "bytes": 2064175,
+      "sha256": "b49e30dd84108acbe1312a5bffdf2cdfec854692c08378b45ed78925c1a10e27"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 2354194,
+      "sha256": "2af4766914a96db44de28e57a395187d5696c63b541fbd85b826a59836ec6991"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-plate-route-attempt-1.json",
+      "bytes": 1746800,
+      "sha256": "45280e75d412d59ba88a35c21b9041a95080f787ba5cbe723ba8928693e48eb0"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-plate-route-attempt-2.json",
+      "bytes": 1771442,
+      "sha256": "19e9d2a52592783039669038a5962028bafaace9e87de0b3c53fa4f0533ffa1f"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-preparation-CHECK_IDENTITY.json",
+      "bytes": 1861328,
+      "sha256": "05d7ac8558f68f3bac0da9d65e33d3caed8dae3a94d461a60ee14faa38dc078a"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-preparation-CHECK_RETURN.json",
+      "bytes": 1869205,
+      "sha256": "9f6974504c71d1df4056282bf6e47610dd00e622651b19dd703d4b7908328bed"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-preparation-REVIEW_DISASTER.json",
+      "bytes": 1853140,
+      "sha256": "15532c21333fbc9af3a74339c91e2fc6e9e059be6b23c90b0fad93cf8aeb3685"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-prepare-sage-potion-1.json",
+      "bytes": 1924287,
+      "sha256": "3825c4cb156be49fbc35046a6ae706c5076e8096c2762ce8a194e5f721ff1a87"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-prepare-sage-potion-2.json",
+      "bytes": 1993422,
+      "sha256": "4b5b11a59a19f01b1824005aacb13e348cf7749f08aa43199cf5cec0d92ace7a"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-real-combat-preparation.json",
+      "bytes": 2142108,
+      "sha256": "ea4f6be4e1f36ba5a06df8dec2f139a63c0c5f0eda05b190c64511965ac809a5"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-same-adult-actually-arrives.json",
+      "bytes": 2095792,
+      "sha256": "68bffe43f9328e2dfb9f8c3a2b7dd6e6114d8221ca48d98c9ac1089a32524e3c"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-same-adult-ordinary-return.json",
+      "bytes": 2126685,
+      "sha256": "21f9affd933be00622e6a4d915a95aabaf766a93cdb1e38bcfe964d9d99ebe70"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-same-injured-adults-evacuated.json",
+      "bytes": 1721747,
+      "sha256": "3eabbd8b9add96f313c06e91d93d6989e11621cdda1cc42ab3bdcb6c58174dca"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-seal-resupply.json",
+      "bytes": 1729705,
+      "sha256": "9a46cee2d60dc9873b2d318bc0b3aea2f30aad4fb0ce8df15d621086ff09d359"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/boundary-three-cases-reflected.json",
+      "bytes": 2139189,
+      "sha256": "2520051075ccbfc4a872a0a9aaa1873ba9e6019dab53f7444111a92f1dc12ca3"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/capture-correction.json",
+      "bytes": 5152,
+      "sha256": "0440a10ff716ea545f13302578e490daf01fa750545a038c729ea3a6b5f27e2b"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/first-run-round2.json",
+      "bytes": 2288963,
+      "sha256": "1d30a02fa32bf9effd582823a3d0b27e95e4dad4534e849dad42d940c39b43d1"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/natural.json",
+      "bytes": 1749128,
+      "sha256": "a0e37a9db792f8a6906efa92dbec3b13e0c1dff00ad9df492158b7d05b569766"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/snapshot-combatStart.json",
+      "bytes": 1083115,
+      "sha256": "b7293d6fbbf51b8ca51f8148ba3ddda1a5512bcf9a9c1a0bf1292dadeb8111ea"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/snapshot-departure.json",
+      "bytes": 836574,
+      "sha256": "a92f794c2e2d3a98a2fcdb1bbf4b26e781511dc0164ebc1897f5c4421645f9d0"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/snapshot-practiced.json",
+      "bytes": 1069920,
+      "sha256": "65ddd8f850448928b20cafc18bd6eac4336eeafeed2ddeb51da8b3d2131c1ee6"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/snapshot-promoted.json",
+      "bytes": 1003383,
+      "sha256": "8cd64ca476d23fc31813e3e9b971bc5a43672f5f0dec78cb98796500e9f83c35"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/snapshot-ritualStopped.json",
+      "bytes": 924431,
+      "sha256": "6dcb9c91f80219fa9c4155e6ae57f1aa4f102aca84532c33db146b964439a6d9"
+    },
+    {
+      "path": "tests/fixtures/sage-v01780/summary.json",
+      "bytes": 2348,
+      "sha256": "76100ff9b4da6319e1b7f7fdb8cddcaa0833726c6ac66f22b6d6aa0ad9fb1bbd"
     },
     {
       "path": "tests/fixtures/sailor-v0260/natural.json",

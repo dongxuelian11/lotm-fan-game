@@ -1,3 +1,4 @@
+import type { SageRoundOutcome, SageCombatProjection } from '../sage/combat.js';
 import type { CalamityDemonessRoundOutcome, CalamityDemonessCombatProjection } from '../calamity-demoness/combat.js';
 import type { GloryRoundOutcome, GloryCombatProjection } from '../glory/combat.js';
 import type {FateTrojanRoundOutcome,projectFateTrojanCombat} from '../fate-trojan/combat.js';
@@ -9,6 +10,7 @@ import type {WisdomAngelRoundOutcome,projectWisdomAngelCombat} from '../wisdom-a
 import type {ConcealmentServantRoundOutcome,projectConcealmentServantCombat} from '../concealment-servant/combat.js';
 import type {LifeGiverRoundOutcome,projectLifeGiverCombat} from '../life-giver/combat.js';
 import type {KnowledgeMentorRoundOutcome,projectKnowledgeMentorCombat} from '../knowledge-mentor/combat.js';
+import type { SageState, SageCommand, SageProjection } from '../sage/types.js';
 import type { CalamityDemonessState, CalamityDemonessCommand, CalamityDemonessProjection } from '../calamity-demoness/types.js';
 import type { GloryState, GloryCommand, GloryProjection } from '../glory/types.js';
 import type {FateTrojanState,FateTrojanCommand,FateTrojanProjection} from '../fate-trojan/types.js';
@@ -249,6 +251,7 @@ export type SliceIntent =
   | { type: 'CLOWN'; command: ClownCommand }
   | { type: 'HUNTER'; command: HunterCommand }
   | { type:'FERRYMAN'; command:FerrymanCommand }
+  | { type:'SAGE'; command:SageCommand }
   | { type:'CALAMITY_DEMONESS'; command:CalamityDemonessCommand }
   | { type:'GLORY'; command:GloryCommand }
   | { type:'FATE_TROJAN'; command:FateTrojanCommand }
@@ -458,6 +461,7 @@ export interface SliceCombatRound {
   arcaneScholarOutcome?:ArcaneScholarRoundOutcome;
   dreamWeaverOutcome?:DreamWeaverRoundOutcome;
   warBishopOutcome?:WarBishopRoundOutcome;
+  sageOutcome?:SageRoundOutcome;
   calamityDemonessOutcome?:CalamityDemonessRoundOutcome;
   gloryOutcome?:GloryRoundOutcome;
   fateTrojanOutcome?:FateTrojanRoundOutcome;
@@ -514,7 +518,7 @@ export interface SliceCombatState {
   sailorScalesReady?: boolean;
   wrathCharge?: number;
   navigatorWater?: {soakedRemaining:0|1|2;bound:boolean;skipNext:boolean};
-  encounterId:'FIRST_CASE'|'CALAMITY_DEMONESS_DISPUTE'|'GLORY_DISPUTE'|'FATE_TROJAN_DISPUTE'|'PLANESWALKER_DISPUTE'|'DEATH_CONSUL_DISPUTE'|'LIGHT_SEEKER_DISPUTE'|'CATASTROPHE_DISPUTE'|'WISDOM_ANGEL_DISPUTE'|'CONCEALMENT_SERVANT_DISPUTE'|'LIFE_GIVER_DISPUTE'|'KNOWLEDGE_MENTOR_DISPUTE'|'DISCERNER_DISPUTE'|'WEATHER_WARLOCK_DISPUTE'|'MIRACLE_WORKER_DISPUTE'|'COFFIN_BEARER_DISPUTE'|'CHAOS_HUNTER_DISPUTE'|'FRENZY_MAGE_DISPUTE'|'CHAOS_WALKER_DISPUTE'|'SILENT_DISCIPLE_DISPUTE'|'BLATHERER_COURT'|'THREE_HEADED_TEMPLAR_DISPUTE'|'PROPHECY_MASTER_DISPUTE'|'UNAGING_DEMONESS_DISPUTE'|'SILVER_KNIGHT_HUNT'|'SILVER_KNIGHT_DISPUTE'|'DECEIT_MENTOR_DISPUTE'|'WANDERER_DISPUTE'|'FERRYMAN_DISPUTE'|'JUSTICE_MENTOR_DISPUTE'|'SEA_KING_DISPUTE'|'INSIGHT_SCHOLAR_DISPUTE'|'FEAR_BISHOP_DISPUTE'|'SUMMONING_MASTER_DISPUTE'|'ARCANE_SCHOLAR_DISPUTE'|'DREAM_WEAVER_DISPUTE'|'WAR_BISHOP_DISPUTE'|'ANCIENT_SCHOLAR_DISPUTE'|'ANCIENT_ALCHEMIST_DISPUTE'|'IMPERATIVE_MAGE_DISPUTE'|'FALLEN_EARL_DISPUTE'|'MISFORTUNE_MAGE_DISPUTE'|'PUPPET_DISPUTE'|'DEVIL_DISPUTE'|'BLACK_KNIGHT_DISPUTE'|'MYSTIC_DISPUTE'|'DESPAIR_DISPUTE'|'DEMON_HUNTER_DISPUTE'|'PARASITE_DISPUTE'|'SECRETS_SORCERER_RITUAL'|'UNDYING_DISPUTE'|'UNSHADOWED_DISPUTE'|'CATACLYSM_PRIEST_DISPUTE'|'PROPHET_DISPUTE'|'NIGHTWATCHER_DISPUTE'|'WITCH_KING_DISPUTE'|'ALCHEMIST_DISPUTE'|'MANIPULATOR_DISPUTE'|'IRON_BLOOD_DISPUTE'|'BIZARRO_RITUAL'|'DRUID_DISPUTE'|'PUNISHMENT_KNIGHT_DISPUTE'|'MENTOR_DISORDER_DISPUTE'|'WINNER_DISPUTE'|'WRAITH_DISPUTE'|'DESIRE_APOSTLE_DISPUTE'|'SHEPHERD_DISPUTE'|'STAR_MYSTIC_DISPUTE'|'PAIN_DISPUTE'|'GUARDIAN_DISPUTE'|'DREAM_STEALER_DISPUTE'|'TRAVELER_DISPUTE'|'GATEKEEPER_DISPUTE'|'PRIEST_OF_LIGHT_DISPUTE'|'OCEAN_SINGER_DISPUTE'|'MYSTICISM_MAGISTER_DISPUTE'|'SPIRIT_WARLOCK_DISPUTE'|'CRIMSON_SCHOLAR_DISPUTE'|'ASTRONOMER_DISPUTE'|'DREAMWALKER_DISPUTE'|'REAPER_DISPUTE'|'MARIONETTIST_DISPUTE'|'BIOLOGIST_DISPUTE'|'JUDGE_DISPUTE'|'CORRUPTION_BARON_DISPUTE'|'CALAMITY_PRIEST_DISPUTE'|'ZOMBIE_DISPUTE'|'DEMON_DISPUTE'|'ROSE_BISHOP_DISPUTE'|'SCROLL_PROFESSOR_DISPUTE'|'PLEASURE_DISPUTE'|'DAWN_PALADIN_DISPUTE'|'FIRE_THIEF_DISPUTE'|'RECORDER_DISPUTE'|'SPIRIT_GUIDE_DISPUTE'|'NOTARY_DISPUTE'|'WIND_BLESSED_DISPUTE'|'POLYMATH_DISPUTE'|'SOOTHER_DISPUTE'|'POTION_PROFESSOR_DISPUTE'|'ARTISAN_DISPUTE'|'HYPNOTIST_DISPUTE'|'CONSPIRATOR_DISPUTE'|'FACELESS_DISPUTE'|'CLOWN_RESCUE'|'HUNTER_CARGO'|'PROVOKER_DISPUTE'|'MAGICIAN_DISPUTE'|'PYROMANIAC_DISPUTE'|'PSYCHOLOGIST_DISPUTE'|'VAMPIRE_DISPUTE'|'SLEEPLESS_WATCH'|'MIDNIGHT_DISPUTE'|'NIGHTMARE_DISPUTE'|'MARAUDER_DISPUTE';
+  encounterId:'FIRST_CASE'|'SAGE_DISPUTE'|'CALAMITY_DEMONESS_DISPUTE'|'GLORY_DISPUTE'|'FATE_TROJAN_DISPUTE'|'PLANESWALKER_DISPUTE'|'DEATH_CONSUL_DISPUTE'|'LIGHT_SEEKER_DISPUTE'|'CATASTROPHE_DISPUTE'|'WISDOM_ANGEL_DISPUTE'|'CONCEALMENT_SERVANT_DISPUTE'|'LIFE_GIVER_DISPUTE'|'KNOWLEDGE_MENTOR_DISPUTE'|'DISCERNER_DISPUTE'|'WEATHER_WARLOCK_DISPUTE'|'MIRACLE_WORKER_DISPUTE'|'COFFIN_BEARER_DISPUTE'|'CHAOS_HUNTER_DISPUTE'|'FRENZY_MAGE_DISPUTE'|'CHAOS_WALKER_DISPUTE'|'SILENT_DISCIPLE_DISPUTE'|'BLATHERER_COURT'|'THREE_HEADED_TEMPLAR_DISPUTE'|'PROPHECY_MASTER_DISPUTE'|'UNAGING_DEMONESS_DISPUTE'|'SILVER_KNIGHT_HUNT'|'SILVER_KNIGHT_DISPUTE'|'DECEIT_MENTOR_DISPUTE'|'WANDERER_DISPUTE'|'FERRYMAN_DISPUTE'|'JUSTICE_MENTOR_DISPUTE'|'SEA_KING_DISPUTE'|'INSIGHT_SCHOLAR_DISPUTE'|'FEAR_BISHOP_DISPUTE'|'SUMMONING_MASTER_DISPUTE'|'ARCANE_SCHOLAR_DISPUTE'|'DREAM_WEAVER_DISPUTE'|'WAR_BISHOP_DISPUTE'|'ANCIENT_SCHOLAR_DISPUTE'|'ANCIENT_ALCHEMIST_DISPUTE'|'IMPERATIVE_MAGE_DISPUTE'|'FALLEN_EARL_DISPUTE'|'MISFORTUNE_MAGE_DISPUTE'|'PUPPET_DISPUTE'|'DEVIL_DISPUTE'|'BLACK_KNIGHT_DISPUTE'|'MYSTIC_DISPUTE'|'DESPAIR_DISPUTE'|'DEMON_HUNTER_DISPUTE'|'PARASITE_DISPUTE'|'SECRETS_SORCERER_RITUAL'|'UNDYING_DISPUTE'|'UNSHADOWED_DISPUTE'|'CATACLYSM_PRIEST_DISPUTE'|'PROPHET_DISPUTE'|'NIGHTWATCHER_DISPUTE'|'WITCH_KING_DISPUTE'|'ALCHEMIST_DISPUTE'|'MANIPULATOR_DISPUTE'|'IRON_BLOOD_DISPUTE'|'BIZARRO_RITUAL'|'DRUID_DISPUTE'|'PUNISHMENT_KNIGHT_DISPUTE'|'MENTOR_DISORDER_DISPUTE'|'WINNER_DISPUTE'|'WRAITH_DISPUTE'|'DESIRE_APOSTLE_DISPUTE'|'SHEPHERD_DISPUTE'|'STAR_MYSTIC_DISPUTE'|'PAIN_DISPUTE'|'GUARDIAN_DISPUTE'|'DREAM_STEALER_DISPUTE'|'TRAVELER_DISPUTE'|'GATEKEEPER_DISPUTE'|'PRIEST_OF_LIGHT_DISPUTE'|'OCEAN_SINGER_DISPUTE'|'MYSTICISM_MAGISTER_DISPUTE'|'SPIRIT_WARLOCK_DISPUTE'|'CRIMSON_SCHOLAR_DISPUTE'|'ASTRONOMER_DISPUTE'|'DREAMWALKER_DISPUTE'|'REAPER_DISPUTE'|'MARIONETTIST_DISPUTE'|'BIOLOGIST_DISPUTE'|'JUDGE_DISPUTE'|'CORRUPTION_BARON_DISPUTE'|'CALAMITY_PRIEST_DISPUTE'|'ZOMBIE_DISPUTE'|'DEMON_DISPUTE'|'ROSE_BISHOP_DISPUTE'|'SCROLL_PROFESSOR_DISPUTE'|'PLEASURE_DISPUTE'|'DAWN_PALADIN_DISPUTE'|'FIRE_THIEF_DISPUTE'|'RECORDER_DISPUTE'|'SPIRIT_GUIDE_DISPUTE'|'NOTARY_DISPUTE'|'WIND_BLESSED_DISPUTE'|'POLYMATH_DISPUTE'|'SOOTHER_DISPUTE'|'POTION_PROFESSOR_DISPUTE'|'ARTISAN_DISPUTE'|'HYPNOTIST_DISPUTE'|'CONSPIRATOR_DISPUTE'|'FACELESS_DISPUTE'|'CLOWN_RESCUE'|'HUNTER_CARGO'|'PROVOKER_DISPUTE'|'MAGICIAN_DISPUTE'|'PYROMANIAC_DISPUTE'|'PSYCHOLOGIST_DISPUTE'|'VAMPIRE_DISPUTE'|'SLEEPLESS_WATCH'|'MIDNIGHT_DISPUTE'|'NIGHTMARE_DISPUTE'|'MARAUDER_DISPUTE';
   round: number; enemyHealth: number; enemyMind: number; enemyInjuries: SliceInjury[]; enemyRisk: number;
   enemyStatus: 'RESISTING' | 'SURRENDERED' | 'DEAD'; lastRound: SliceCombatRound | null;
 }
@@ -540,6 +544,7 @@ export interface SliceCombatProjection {
   arcaneScholar?:ReturnType<typeof projectArcaneScholarCombat>;
   dreamWeaver?:ReturnType<typeof projectDreamWeaverCombat>;
   warBishop?:ReturnType<typeof projectWarBishopCombat>;
+  sage?:SageCombatProjection;
   calamityDemoness?:CalamityDemonessCombatProjection;
   glory?:GloryCombatProjection;
   fateTrojan?:ReturnType<typeof projectFateTrojanCombat>;
@@ -613,6 +618,7 @@ export interface SliceArc {
   relationship: AudreyOutcome; transferPending: boolean;
 }
 export interface SliceState {
+  sage:SageState;
   calamityDemoness:CalamityDemonessState;
   glory:GloryState;
   fateTrojan:FateTrojanState;
@@ -783,7 +789,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 174; contentVersion: 'calamity-demoness-v174'; runId: string; revision: number;
+  schemaVersion: 175; contentVersion: 'sage-v175'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -801,6 +807,7 @@ export interface SliceState {
 /** Deliberately constructed allow-list, never a spread of SliceState. */
 export interface SliceProjection {
   recovery: SliceRecoveryProjection;
+  sage:SageProjection;
   calamityDemoness:CalamityDemonessProjection;
   glory:GloryProjection;
   fateTrojan:FateTrojanProjection;

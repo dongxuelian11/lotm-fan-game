@@ -61,7 +61,7 @@ describe('Sleepless actual public watch and growth route', () => {
     const { schemaVersion: oldSchema, contentVersion: oldContent, ...prior } = old;
     expectPriorFields(next,old);
     expect([oldSchema, oldContent]).toEqual([18, 'vampire-life-v18']);
-    expect([schemaVersion, contentVersion]).toEqual([174, 'calamity-demoness-v174']);
+    expect([schemaVersion, contentVersion]).toEqual([175, 'sage-v175']);
     expect(sleepless).toEqual(createSleeplessState());
     assertValidSliceState(next);
     expect(migrateSliceState(next)).toEqual(next);

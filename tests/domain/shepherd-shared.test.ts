@@ -28,7 +28,7 @@ describe('Shepherd real public chain',()=>{
   expect(()=>applySliceIntent(s,{type:'COMBAT_ROUND',stance:'CONTROL',shepherdSpiritId:'SH5-CEDRIC-1'})).toThrow();expect(s).toEqual(before);
  });
  it('migrates0.109 without rewriting any prior original facts',()=>{
-  const old=JSON.parse(readFileSync('tests/fixtures/star-mystic-v01090/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(174);
+  const old=JSON.parse(readFileSync('tests/fixtures/star-mystic-v01090/natural.json','utf8')).final,after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(175);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);expect(migrateSliceState(after)).toEqual(after);
  });
 });

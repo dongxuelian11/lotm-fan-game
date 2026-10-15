@@ -38,7 +38,7 @@ describe('Sea King verifiedS3 original public route and shared runtime', () => {
 
   it('migrates the genuineW90 state to145 without altering original bodies, objects, coast damage or RNG', () => {
     const prior = original(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(174); expect(state.contentVersion).toBe('calamity-demoness-v174');
+    expect(state.schemaVersion).toBe(175); expect(state.contentVersion).toBe('sage-v175');
     expect(state.seaKing.promotionWeek).toBeNull(); expect(state.seaKing.cataclysmPriestActingAtPromotion).toBeNull();
     for (const key of Object.keys(prior.final)) if (!['schemaVersion', 'contentVersion'].includes(key)) expect((state as unknown as Record<string, unknown>)[key]).toEqual(key === 'longChapter' ? { ...prior.final.longChapter, handoff: null } : (prior.final as unknown as Record<string, unknown>)[key]);
     expect(state).toMatchObject({ week: 90, health: 100, mind: 100, spirituality: 110, cash: 590, actionsRemaining: 1, character: { age: 26, gender: 'FEMALE', coreStats: { physique: 32, perception: 25, will: 25, knowledge: 19 } } });

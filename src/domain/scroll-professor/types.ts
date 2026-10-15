@@ -39,7 +39,7 @@ export interface ScrollProfessorMaterial {
 }
 /** Persistent physical original. Maker/mastery/material are fixed at inscription. */
 export interface ScrollProfessorScroll {
-  id: string; kind: ScrollProfessorScrollKind; makerSequence: 6 | 5 | 4 | 3; inscriptionMastery: number;
+  id: string; kind: ScrollProfessorScrollKind; makerSequence: 6 | 5 | 4 | 3 | 2; inscriptionMastery: number;
   materialId: string; createdWeek: number; status: 'HELD' | 'USED'; usedWeek: number | null; authorized: boolean;
 }
 export interface ScrollProfessorWorkshop {

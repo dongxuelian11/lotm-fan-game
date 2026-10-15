@@ -43,7 +43,7 @@ describe('Ocean Singer actual shared route',()=>{
  });
  it('migrates 0.101 without changing any previous original facts',()=>{
   const old=JSON.parse(readFileSync('tests/fixtures/mysticism-magister-v01010/natural.json','utf8')).final;
-  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(174);
+  const after=migrateSliceState(old);assertValidSliceState(after);expect(after.schemaVersion).toBe(175);
   for(const key of Object.keys(old))if(!['schemaVersion','contentVersion'].includes(key))expect((after as unknown as Record<string,unknown>)[key]).toEqual(old[key]);
   expect(migrateSliceState(after)).toEqual(after);
  });

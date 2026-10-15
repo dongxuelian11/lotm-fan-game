@@ -52,7 +52,7 @@ describe('Summoning Master original public route and shared runtime', () => {
 
   it('migrates the genuineW92 state tocurrent schema165 without changing the female body, injured Dorian or original stock', () => {
     const prior = old(), bytes = JSON.stringify(prior.final), state = migrateSliceState(prior.final);
-    expect(state.schemaVersion).toBe(174); expect(state.contentVersion).toBe('calamity-demoness-v174');
+    expect(state.schemaVersion).toBe(175); expect(state.contentVersion).toBe('sage-v175');
     expect(state.summoningMaster.promotionWeek).toBeNull(); expect(state.summoningMaster.witchKingActingAtPromotion).toBeNull();
     for (const key of Object.keys(prior.final)) if (!['schemaVersion', 'contentVersion'].includes(key)) {
       expect((state as unknown as Record<string, unknown>)[key]).toEqual((prior.final as unknown as Record<string, unknown>)[key]);

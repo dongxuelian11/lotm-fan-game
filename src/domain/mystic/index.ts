@@ -1,3 +1,4 @@
+import { SAGE_ABILITY_IDS } from '../sage/types.js';
 import {PROPHECY_MASTER_ABILITY_IDS} from '../prophecy-master/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
@@ -44,7 +45,7 @@ export function createMysticState(): MysticState {
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export const isMystic = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 4;
-const hasMysticHistory=(s:SliceState)=>s.progression.pathwayId==='hermit'&&[4,3].includes(s.progression.sequence!);
+const hasMysticHistory=(s:SliceState)=>s.progression.pathwayId==='hermit'&&[4,3,2].includes(s.progression.sequence!);
 const isStarMystic = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.pryer.discovered && s.pryer.guidanceKnown && s.combatScholar.guidanceKnown && s.wizard.guidanceKnown && s.scrollProfessor.guidanceKnown && s.starMystic.guidanceKnown && s.starMystic.promotionWeek !== null && (isStarMystic(s) || hasMysticHistory(s));
 const potionPrice = (bottle: MysticBottle) => MYSTIC_PRICES.potion - (bottle.labourSteps === MYSTIC_LABOUR_STEPS ? MYSTIC_PRICES.labourCredit : 0);
@@ -65,7 +66,7 @@ function commandBlock(s: SliceState, command: MysticAcquisitionCommand): string 
   if (s.world.city !== 'BACKLUND') return '需要返回贝克兰德的原教学室，找到伊蕾·莫文。';
   if (!knownChannel(s)) return '成为星象师并保有伊蕾·莫文的原指导渠道后，才能继续了解神秘学家之路。';
   if (command.type === 'BUY_LENSES') return s.starMystic.practice.lenses !== 'SUPPLIER' ? '同一原眼镜已经实际购入，不能复制。' : s.cash < STAR_MYSTIC_LENSES_PRICE ? '原眼镜仍须实付80便士。' : null;
-  if (isMystic(s)) return '你已完成神秘学家晋升，不能重复服用或继续准备这份魔药；未服原瓶仍保留。';
+  if (hasMysticHistory(s)) return '你已完成神秘学家晋升，不能重复服用或继续准备这份魔药；未服原瓶仍保留。';
   if (command.type === 'LEARN_GUIDANCE') {
     if (s.mystic.guidanceKnown) return '已经听过神秘学家成品魔药的用药说明。';
     return s.cash < MYSTIC_PRICES.guidance ? '神秘学家用药指导需要540便士。' : null;
@@ -215,7 +216,7 @@ export function applyMysticCommand(s: SliceState, command: MysticCommand, c: See
 
 export function projectMystic(s: SliceState): MysticProjection {
   const actions: MysticAction[] = [], available = knownChannel(s), promoted = hasMysticHistory(s);
-  const acting = promoted ? (s.progression.sequence===3?s.prophecyMaster.mysticActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = promoted ? ([3, 2].includes(s.progression.sequence ?? 0)?s.prophecyMaster.mysticActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: MysticAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -296,7 +297,7 @@ function validateMysticStateRecord(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.starMystic.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.starMysticActingAtPromotion !== 100 || !state.ritual.complete || state.ritual.sample.status !== 'RETURNED' || state.ritual.sample.returnedWeek === null || state.ritual.sample.returnedWeek > state.promotionWeek! || s.starMystic.practice.lenses === 'SUPPLIER') return false;
-    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS, ...STAR_MYSTIC_ABILITY_IDS, ...MYSTIC_ABILITY_IDS,...(s.progression.sequence===3?PROPHECY_MASTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS, ...STAR_MYSTIC_ABILITY_IDS, ...MYSTIC_ABILITY_IDS,...([3, 2].includes(s.progression.sequence ?? 0)?PROPHECY_MASTER_ABILITY_IDS:[]),...(s.progression.sequence===2?SAGE_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.starMysticActingAtPromotion !== null || MYSTIC_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   // First validate every record shape, so a later batch cannot dereference malformed predecessors.
   for (const [index, bottle] of state.bottles.entries()) {

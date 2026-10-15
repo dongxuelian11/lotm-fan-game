@@ -47,6 +47,7 @@ export function createProphecyMasterEncounterState(): ProphecyMasterEncounterSta
 }
 export const createProphecyMasterEncounter = createProphecyMasterEncounterState;
 const stage = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 3;
+const hasHistory = (s: SliceState) => s.progression.pathwayId === 'hermit' && [3, 2].includes(s.progression.sequence ?? 0);
 const same = (a: unknown, b: unknown) => stableStringify(a) === stableStringify(b);
 const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
 export function validateProphecyMasterEncounterCommand(v: unknown): v is ProphecyMasterEncounterCommand {
@@ -131,7 +132,7 @@ export function prophecyMasterEncounterActions(s: SliceState): ProphecyMasterEnc
 }
 export function projectProphecyMasterEncounter(s: SliceState): ProphecyMasterEncounterProjection {
   const e = s.prophecyMaster.encounter;
-  if (!stage(s)) return { title: '尚未开放的预言大师遭遇', story: '', status: e.status, inside: false, scene: null, enemy: null, actions: [], facts: [] };
+  if (!hasHistory(s)) return { title: '尚未开放的预言大师遭遇', story: '', status: e.status, inside: false, scene: null, enemy: null, actions: [], facts: [] };
   return { title: '原净空院与独立的奥斯里克·盖尔', story: PROPHECY_MASTER_ENCOUNTER_STORY, status: e.status, inside: hasProphecyMasterEncounterLock(s), scene: structuredClone(e.scene),
     enemy: { id: PROPHECY_MASTER_TARGET_ID, name: '奥斯里克·盖尔', age: 48, source: 'ORIGINAL_LIMITED_G', sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, weaponId: 'PM3-OSRIC-ROD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } }, actions: prophecyMasterEncounterActions(s),
@@ -156,7 +157,7 @@ export function validateProphecyMasterEncounter(s: SliceState): boolean {
       e.enemySpirituality !== 120 - PROPHECY_MASTER_POWERS.reduce((n, p) => n + e.powerUses[p.id] * p.cost, 0) || [e.approachWeek, e.attemptWeek].some(w => w !== null && !integer(w, 1, s.week))) return false;
     if (e.startHistoryIndex === null && s.combatHistory.some(h => h.prophecyMasterOutcome)) return false;
     if (e.status === 'AVAILABLE') return same(e, initial) && s.combat?.encounterId !== 'PROPHECY_MASTER_DISPUTE';
-    if (!stage(s) || !s.prophecyMaster.guidanceKnown || s.prophecyMaster.promotionWeek === null || e.approachWeek === null || e.approachWeek < s.prophecyMaster.promotionWeek) return false;
+    if (!hasHistory(s) || !s.prophecyMaster.guidanceKnown || s.prophecyMaster.promotionWeek === null || e.approachWeek === null || e.approachWeek < s.prophecyMaster.promotionWeek) return false;
     if (e.startHistoryIndex === null) return ['READY', 'RESOLVED'].includes(e.status) && e.attemptWeek === null && e.terminal === null &&
       (e.status === 'READY' ? e.scene.playerPosition === 'COURT' && e.scene.ordinaryWalkedMetres === 0 : e.scene.playerPosition === 'EXIT' && e.scene.ordinaryWalkedMetres === 4) &&
       same({ ...e, status: initial.status, approachWeek: null, scene: { ...e.scene, clearanceConfirmed: false, playerPosition: 'COURT', ordinaryWalkedMetres: 0 } }, initial) && s.combat?.encounterId !== 'PROPHECY_MASTER_DISPUTE';
