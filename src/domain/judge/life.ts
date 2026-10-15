@@ -170,7 +170,7 @@ export function judgeActions(s: SliceState): JudgeAction[] {
   return out;
 }
 export function judgeCases(s: SliceState): JudgeProjection['cases'] {
-  if (!active(s) && !(s.progression.pathwayId==='justiciar'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) return [];
+  if (!active(s) && !(s.progression.pathwayId==='justiciar'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))) return [];
   return CASES.map(p => {
     const r = s.judge.cases[p.id]!;
     let result: string | null = r.status === 'RESOLVED' ? p.result : r.status === 'EXAMINED' ? r.contactOpen ? '本次有限结果已经出现，接触仍在；先实际停止、等候短效结束并亲手放回原木牌。' : p.result : r.attemptWeek !== null ? '此前未形成已保留的可报告结果；成本继续保留，接触须先收束，下一真实周可再准备。' : r.withdrawals ? '尚未实施的方案已取消，原物与本人保持稳定，没有新能力消耗。' : null;
@@ -222,7 +222,7 @@ export function validateJudgeLife(s: SliceState): boolean {
     if (r.attemptWeek !== null && r.status === 'OBSERVED' && !r.contactOpen && tested === 'NONE' && r.withdrawals === 0) return false;
   }
   if (s.seer.completedSources.filter(x => x === 'judge-reflection').length !== (m.reflected ? 1 : 0) || m.reflected && resolved !== 3) return false;
-  if ((active(s)||(s.progression.pathwayId==='justiciar'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))) && ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.punishmentKnight.judgeActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
+  if ((active(s)||(s.progression.pathwayId==='justiciar'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))) && ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.punishmentKnight.judgeActingAtPromotion:s.progression.acting) !== resolved * 25 + (m.reflected ? 25 : 0)) return false;
   if (m.promotionWeek === null && (m.practice.audience !== 'READY' || m.practice.boundary !== 'CLEAR' || m.practice.token !== 'ON_TABLE' || m.practice.lineTestedBy !== 'NONE' || m.practice.tokenTestedBy !== 'NONE' || open !== 0 || prepared !== 0 || resolved !== 0 || m.reflected)) return false;
   return true;
 }

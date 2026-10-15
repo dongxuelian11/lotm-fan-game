@@ -96,7 +96,7 @@ export function validatePunishmentKnightEncounter(s: SliceState): boolean {
   if (rewards > 1 || !['AVAILABLE', 'FIGHTING', 'RESOLVED', 'RETREATED', 'LOST'].includes(e.status) ||
       (e.attemptWeek !== null && (!Number.isSafeInteger(e.attemptWeek) || e.attemptWeek < 1 || e.attemptWeek > s.week))) return false;
   const initial = e.status === 'AVAILABLE' && e.startHistoryIndex === null && e.attemptWeek === null;
-  const promoted = s.progression.pathwayId === 'justiciar' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+  const promoted = s.progression.pathwayId === 'justiciar' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
   if (!promoted) return initial && rewards === 0 && c?.encounterId !== 'PUNISHMENT_KNIGHT_DISPUTE';
   if (!initial && (!reportsComplete(s) || s.punishmentKnight.promotionWeek === null || e.attemptWeek === null ||
       e.attemptWeek < s.punishmentKnight.promotionWeek)) return false;

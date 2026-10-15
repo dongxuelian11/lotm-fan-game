@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.183.0",
+  "version": "0.184.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -206,6 +206,21 @@
       "name": "lotm_release_0.183.0_entropy_duke_finance_test_inputs_2026-10-15.tar.gz",
       "bytes": 1383685,
       "sha256": "9dc3af7c9e51dbc84a2e3c7fced507e1b514eb52c344bf367fa5608552328e52"
+    },
+    {
+      "name": "lotm_release_0.184.0_balancer_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 11230953,
+      "sha256": "3fbe90593410b4e64943bd33f79603b8e99baf8f37fec94187f0d54725afe1db"
+    },
+    {
+      "name": "lotm_release_0.184.0_balancer_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 9906599,
+      "sha256": "f8f1b54f79ca37c9ad383066651d22192360963beaaf2f55fd9f05d81303e939"
+    },
+    {
+      "name": "lotm_release_0.184.0_balancer_finance_test_inputs_2026-10-15.tar.gz",
+      "bytes": 1466239,
+      "sha256": "831f10d817512b35fd54387d7e38a17a2b461e1ba58aef26d505de8403bdc8bd"
     }
   ],
   "fileEntries": [
@@ -728,6 +743,461 @@
       "path": "tests/fixtures/audience-v080/peaceful.json",
       "bytes": 119448,
       "sha256": "85be3dc3cbd124ba332fc1d021e84cb9cb806a136441f83804845c2ff2349000"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundaries.index.json",
+      "bytes": 6499,
+      "sha256": "e28a3629aa6884a257bbdc84c371c252f535b41f78ae46cfafc96807a177a9cb"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-buy-balancer-potion-1.json",
+      "bytes": 1856689,
+      "sha256": "58551c3ef151ee2b3fa5f1d61206ee17dc712db83d6851da8d54b76089a47b1e"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-buy-original-guide-plate-once.json",
+      "bytes": 1917086,
+      "sha256": "1216d8e313c79227a16cc1d8d29d12746edf2d9d3406c03e759ee7a059c9485a"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-clinic-actual-pay60.json",
+      "bytes": 1767265,
+      "sha256": "87bc951bcfdc8f911e809ad5f71d9f8ebab0af0bf69fc288a6d016546341409f"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-clinic-real-rest-1.json",
+      "bytes": 1766964,
+      "sha256": "a8100509b4e1925faca6f1ae7de0a44ef721883a347d4b23415a45aeadb0a7e1"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-clinic-real-rest-2.json",
+      "bytes": 1767715,
+      "sha256": "b3193b9f61fd73c721a69dec37383a999598fd8ad163a28052d60bd42645caed"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-combat-round-1.json",
+      "bytes": 2603475,
+      "sha256": "dd54ae0f18b60358830db9a617673749905c1c0eb30908ea273a2249202bffd1"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-combat-round-2.json",
+      "bytes": 2810640,
+      "sha256": "a1d4c9d4f617aa2a1aec2572e0b74838062db4dcea9b82a6a778da3df9a1aaba"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-combat-round-3.json",
+      "bytes": 2918833,
+      "sha256": "6f44f46f8708e0d3bba729484437ed686985e66c0ad1ad8bf73e10f8ec7ff594"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-combat-round-4.json",
+      "bytes": 3056280,
+      "sha256": "8a48cb9ad4068652e66501ceb0e5ddfeecf4494d8047fbca52bb09365ee7c84c"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-combat-round-5.json",
+      "bytes": 3098204,
+      "sha256": "4e2cb98de2cdb50ab7a8850097f732f605880f101ff787a79018f4d30d1753dc"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-consume-balancer-potion-1.json",
+      "bytes": 1874269,
+      "sha256": "c8177131732eb8919d4bc1aff1b57b2fca65058ed6a57cab54c3755c6bfc874a"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-guidance.json",
+      "bytes": 1774449,
+      "sha256": "8b189fd16db6e0e892048fd37d9dbbcb88421e4ebeab424bc32323c767f42024"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-independent-optional-fight.json",
+      "bytes": 2414598,
+      "sha256": "60ef6ef873dc46db4e7bd24ddaf2b14e9665beffd51f2e9ae6f8bac4643803b7"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-actual-preparation.json",
+      "bytes": 2052415,
+      "sha256": "6196a5ad409e376e7b00136d41cf78ad30c613e2262ebde0b20f9495d24cfe01"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-check_originals-1-actual.json",
+      "bytes": 2057959,
+      "sha256": "bc60f8936fb6bdb078986704087db5382e4333b5afbc589aee5e52cfb7abe5ac"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-consent_mira-2-actual.json",
+      "bytes": 2060378,
+      "sha256": "4495761f618c223d4919d5bb7ac9e3146f45a332a945d3c663ffac5a6ce26750"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-honest-report.json",
+      "bytes": 2094584,
+      "sha256": "85f8ae73a43e707387fa46b83d0b58839fc8fa65555abbed4238d6e89f4695c8"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-inspect-14-actual.json",
+      "bytes": 2090285,
+      "sha256": "7a80e7435d3e508dded1446b021c9ee57854e4c1aba16e6970dd17aa3904e2c2"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-leave-15-actual.json",
+      "bytes": 2092384,
+      "sha256": "7ba38b51d61770c1b986ee6997707592cab9aa9b3d10f43295cd9f74701bdce1"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-manual_inspection-8-actual.json",
+      "bytes": 2076314,
+      "sha256": "81355c54a98e304195fdf3f363d291dc7972a84d44779bd66a938d65618a8972"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-measured_resistance-5-actual.json",
+      "bytes": 2068307,
+      "sha256": "b0cb0e45a1aebcdddefe3add05833e11e689346caadf422b51d2115d66b85591"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-observe-original-room.json",
+      "bytes": 2048704,
+      "sha256": "44b5efb490d67bf741b5fc1934fc7e0a45e4c4587287587743ee847b6aef5c35"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-ordinary_brace-7-actual.json",
+      "bytes": 2073722,
+      "sha256": "651b094a4bb899735b4fe90332910bfd36054673f0e4471112cf26f796f54642"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-return_objects-12-actual.json",
+      "bytes": 2085496,
+      "sha256": "db5fdfb17d7981949504a753ab69577c434b4f5bda0693b37c86a4c9e083836d"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-setup_objects-3-actual.json",
+      "bytes": 2062783,
+      "sha256": "587d2f5400e2d2ad64f5dd2592e65429bae2aa6d32334139bfb984c6e72fcb25"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-stop-11-actual.json",
+      "bytes": 2083082,
+      "sha256": "bf49fb14844b82c855fd851a543648e820e4845e4c8f3974bee12fdb667c253f"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-take_object-9-actual.json",
+      "bytes": 2078557,
+      "sha256": "8c004b322b76dff6061d8ce5ac3e1249939578c7f5c793557a0f99e2b905dfe6"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-take_parcel-4-actual.json",
+      "bytes": 2065117,
+      "sha256": "410607cfb818d25bb673fe515b01f6965d9b044175020888011389973c067380"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-walk-0-actual.json",
+      "bytes": 2055504,
+      "sha256": "c1332c9865ba2ee423cebda44beeb0a282eb1d5175bb9607f83e743da2af83d0"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-walk-10-actual.json",
+      "bytes": 2080766,
+      "sha256": "f66a6e4ebc79d683ed3b8529d2d4d3523cdcb9a307b5865acd18aa1e7e672dc9"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-walk-13-actual.json",
+      "bytes": 2087977,
+      "sha256": "627f16fe8dc05e715f87970b7b3f03cda0cd0055351134dbb9e6fa7ff4d1369b"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-measured-impact-walk-6-actual.json",
+      "bytes": 2071336,
+      "sha256": "7d9e242ecea1db2260841fa5b4811285fb23e908b2217d9e846080df6752519d"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 3067221,
+      "sha256": "1748d8a68157f1ea8a916b370f333f370a20ee4be7fd084a33377d6c7b88dea7"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 1793309,
+      "sha256": "a4a41df0cc13e543acd49426f9616fb660742d1df08eb2a56aeba39dee2b0d3a"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-preparation-MARK_EXIT.json",
+      "bytes": 1801743,
+      "sha256": "da40e4cdd9bc4c5cce480f530ca6d66ff5a78474077784cb5ce1c2c0cec1952c"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-preparation-REVIEW_RECORDS.json",
+      "bytes": 1784353,
+      "sha256": "fba3b4edcfe73d6ccb21ec73e4f02fc24dc0cfab7ffa7cb237be1a64d29f9614"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-prepare-balancer-potion-1.json",
+      "bytes": 1864806,
+      "sha256": "da751ba98c9677b583f36bda2890d3a239db6aaf600dd19dca4c3f86bf368137"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-real-combat-preparation.json",
+      "bytes": 2224656,
+      "sha256": "883c5f9db1558b642aac5b605348f65679643f94c06ce50b47c52d8d46da6d9f"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-same-mira-and-guide-ordinary-clearance.json",
+      "bytes": 2369831,
+      "sha256": "53152df8a46e110092b739217d16ebcc44ef1e7c9c4f57ad5420b655dac3b448"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-three-cases-reflected.json",
+      "bytes": 2096844,
+      "sha256": "28119ec0fc1c0f788a22573d00fe55a23b07a1a457d585c78f223ba0d5add232"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-actual-preparation.json",
+      "bytes": 1959875,
+      "sha256": "82af19b02031bce829793c9482c2056aaf3d06cc527dd798984c7e40f8bed57f"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-check_originals-1-actual.json",
+      "bytes": 1965434,
+      "sha256": "9986d31ad5b7d1266c6e9e6c4d87d663d84b04b06bdeace26246f63e7514aaa3"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-consent_mira-2-actual.json",
+      "bytes": 1967859,
+      "sha256": "3e3028b450aab364f45e60bf3407cc20a48c03ee21ac583878b7be81e961a5b2"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-honest-report.json",
+      "bytes": 1997717,
+      "sha256": "a999d24b2aa298f033ddfa49e7e82a19b11c213bb48e7996de451f4eaf6a3875"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-imbalance_sensing-4-actual.json",
+      "bytes": 1974249,
+      "sha256": "8f5a17a9a37028b6c19d847e68f85296500c4d15acbb5fc329ced12323fe3b3f"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-inspect-12-actual.json",
+      "bytes": 1993410,
+      "sha256": "b4c44f3a7592783e78d066f0a2ab13ecef2afd03cda55772d9d4d95d85a1fe4e"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-leave-13-actual.json",
+      "bytes": 1995511,
+      "sha256": "413cd9e9b246bdb29982cf84c394e663263b32964c118b0ace6d508840ca74e5"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-manual_inspection-6-actual.json",
+      "bytes": 1979623,
+      "sha256": "431c31ab738e378feb5ce3a9c3cabc1b80c6d8f005c9f99881e4690c22cf746e"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-observe-original-room.json",
+      "bytes": 1955726,
+      "sha256": "084cfea807679c1c7d14fd7c4e2d9bcc91f675a594ff081ad21aa9ade75babb2"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-return_objects-10-actual.json",
+      "bytes": 1988753,
+      "sha256": "57afbac644d1163faacf769b09ce7e2d08fa59aede4f40d0d77ceed855fd3aa8"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-setup_objects-3-actual.json",
+      "bytes": 1970577,
+      "sha256": "367db38be54dad1e94d2a2ba220d8c689fc8bbe0560529c5999ea9129348bd77"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-stop-9-actual.json",
+      "bytes": 1986475,
+      "sha256": "c54ea4c669da18fb3632b3dc490b394532d64a564e27d95cac6dfc4a0c16341b"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-take_object-7-actual.json",
+      "bytes": 1981937,
+      "sha256": "34a315303ed22bc8017fe2afd33bbc5f663996b74c4be96c721b106c2b07e77a"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-walk-0-actual.json",
+      "bytes": 1962973,
+      "sha256": "58f60b16857ae380c43db4a0ceff570d8777716e9508cd07b449e898c79dbc0c"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-walk-11-actual.json",
+      "bytes": 1991098,
+      "sha256": "dc319183b9d00fbc8274d713396daee04e592eb0bfd4b7622dddd3c712d03545"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-walk-5-actual.json",
+      "bytes": 1977381,
+      "sha256": "a04c064cf7435b17ec6a4a7da23a1c451145b414a57f3aeadc19d03c8106c535"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-visible-imbalance-walk-8-actual.json",
+      "bytes": 1984153,
+      "sha256": "125c6383a32a11a1c3cd92a7179fdbcb76d1721c6f52f958bdc8a79c4ae408de"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-actual-preparation.json",
+      "bytes": 2003790,
+      "sha256": "96da7e67b6152eca24fe30e4521e1aadc056945eecd9fe7ced5eb6a9fce7b810"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-check_originals-1-actual.json",
+      "bytes": 2009369,
+      "sha256": "b7cdd97d610450fb444424c7bb6043abac23edea2db784df72d955492b061506"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-consent_mira-2-actual.json",
+      "bytes": 2011802,
+      "sha256": "c9714605f54f6286dbc30a5d4861355f03f83f01d36494ef0105749b122879bb"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-honest-report.json",
+      "bytes": 2046376,
+      "sha256": "0f090df87077870958311939df47a0ab39264e837537e667d25184ded3e75274"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-imbalance_sensing-4-actual.json",
+      "bytes": 2018198,
+      "sha256": "8a6a6404b0d37fbcc014cb6a8ccbdf29433dab967df8323015882c3facbd42e7"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-inspect-14-actual.json",
+      "bytes": 2042059,
+      "sha256": "8381633f6f7d9b2b82aaa99db3850009e3a81a881db14823001da5f6e714f5c3"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-leave-15-actual.json",
+      "bytes": 2044167,
+      "sha256": "1fb8bba1556fa0dcf92a51221e2b33e55fd55c85bf59cff55bdb473f54e6765a"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-manual_inspection-8-actual.json",
+      "bytes": 2028271,
+      "sha256": "177cf12e7354a47984b084e8397ae7d6fb85567bafca29dc624a10aad5189770"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-observe-original-room.json",
+      "bytes": 2000056,
+      "sha256": "7fd0d52b461885079a22a3de083687121925ad2c8475de7cdb871c39ca36e12f"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-remove_cover-7-actual.json",
+      "bytes": 2025879,
+      "sha256": "985be5d441e9720e2c1ea7742918c093c53f2661ea6456d2ba0132df0c731873"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-return_objects-12-actual.json",
+      "bytes": 2037384,
+      "sha256": "10a9de37daf7fcd8c56dbbaa4c18f5a4805016b45176cfce64f71e9cdb74959b"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-setup_objects-3-actual.json",
+      "bytes": 2014534,
+      "sha256": "3459483c6eed00028fa3871088e420cec65bf8ae210580aaa6007755bfff51e8"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-stop-11-actual.json",
+      "bytes": 2035098,
+      "sha256": "c15532cf1a659e61a327b8746fc294fc655afe7f3e3d5ed8e19c10e2cab4a3be"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-take_object-9-actual.json",
+      "bytes": 2030545,
+      "sha256": "33f13cf8727d4f662a27d507881037db8d7065ab9a3c1d9b9face832cd9e23f0"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-walk-0-actual.json",
+      "bytes": 2006900,
+      "sha256": "5b9c52f1b2b61f3c11c3e8379c5db25a72512d24123e10c4752f50795b3b1f9a"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-walk-10-actual.json",
+      "bytes": 2032768,
+      "sha256": "830120cd73b5776dd6f20e23b088e5c0af6b632be28dd45ff59dfa8a3c0c1801"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-walk-13-actual.json",
+      "bytes": 2039737,
+      "sha256": "7592b1d052853f82c393b3bcc299a069347099d0ca9502d364a3433609ba5295"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-walk-6-actual.json",
+      "bytes": 2023592,
+      "sha256": "d5d56382d6699a0ea033ad89b316e8536ac4909498c2036585e63f296950edd3"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/boundary-withdrawn-inspection-withdraw_permission-5-actual.json",
+      "bytes": 2021410,
+      "sha256": "b2ee45f6ed1427ae931e73af47fe803955161bd962ac815acf09941f75c5132e"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/directed/directed.index.json",
+      "bytes": 423,
+      "sha256": "7193154f6cfde727177091f4cb2e929052acbdb44b0a5ab497906655823f45e8"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/directed/zero-ap-fourth-missed-payment-suspension.json",
+      "bytes": 2445755,
+      "sha256": "8ccedbc7801d7261acd7f41632d2fe7b9afbd6b15f88789532e6841b518cfd3f"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/directed/zero-ap-paid-bill-and-advance.json",
+      "bytes": 2451738,
+      "sha256": "8144476634734c162f31004db31ac2d2a3bbb073efe98f8210041c076a2cac92"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/directed/zero-ap-second-missed-payment-notice.json",
+      "bytes": 2445752,
+      "sha256": "984fdf33b5f5c848706e7c35c0ebedfe73490e0ecbcd7de626abbc7c485cc651"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/directed/zero-ap-suspended-shortfall-new-debt.json",
+      "bytes": 2451223,
+      "sha256": "65a42077e93038e6e8e58f49b60832d2cace2bc03f4126bbc9cb09bde468c9ad"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/directed/zero-ap-unpaid-bill-interruption.json",
+      "bytes": 2451051,
+      "sha256": "d002c09b484eabbb21b9d8e7df8048baf07c1ae51ac0fdb6cdfbcf6d76c7bb67"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/natural.json",
+      "bytes": 3003943,
+      "sha256": "e9437ca076c8f9779f8586970308b03032d4b67a13b0588809966818bda264e1"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/snapshot-combatStart.json",
+      "bytes": 1220045,
+      "sha256": "bc5ec9b40c4c7b1e451e52ff4cc4394082f21d8349f8cc7fcb551c04a8f02321"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/snapshot-combatTerminal.json",
+      "bytes": 1533468,
+      "sha256": "9a1bbd2e2dbf8ceb1a1ea1b8fcbb67d31df5dfb59c5126a4fad7645b8d94c26f"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/snapshot-departure.json",
+      "bytes": 883486,
+      "sha256": "de7686b23675a9135dc724bb8241d9d6efa0b2226a1b78c09c6083604ec35407"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/snapshot-practiced.json",
+      "bytes": 1048938,
+      "sha256": "1d988f00ecc235280b0ab629db28b2bb6b009a5df4085b7d3666af9a0a563fb8"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/snapshot-promoted.json",
+      "bytes": 939761,
+      "sha256": "97098da6fd00f3056f0d7ee42866c9bd1a2da3acb8ebb589f9f870241569db23"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/snapshot-treated.json",
+      "bytes": 883929,
+      "sha256": "4e1f4f144070b6afc8601172520da4ee7f41494a5e91a0a32b37009ebe1f6317"
+    },
+    {
+      "path": "tests/fixtures/balancer-v01840/summary.json",
+      "bytes": 11859,
+      "sha256": "d392b04994882ff110b445a81796dd04706a04ee202abe374429ae27533e4aff"
     },
     {
       "path": "tests/fixtures/barbarian-v0640/boundaries.json",

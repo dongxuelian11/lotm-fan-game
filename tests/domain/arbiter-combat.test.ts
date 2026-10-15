@@ -115,7 +115,7 @@ describe('Arbiter S9 wheels, profile and original bodily source', () => {
   });
 
   it('keeps unsupported Justiciar sequences ordinary and existing Black Emperor profiles unchanged', () => {
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence; state.town.clubLocation = 'HAND';
       state.progression.mastery = { [authority]: 500, [training]: 500, [charisma]: 500,
         'justiciar.s8.tracking': 500, 'justiciar.s7.mental-puncture': 500, 'justiciar.s6.prohibition': 500 };

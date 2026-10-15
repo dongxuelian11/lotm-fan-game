@@ -1,3 +1,4 @@
+import { BALANCER_ABILITY_IDS } from '../balancer/types.js';
 import {CHAOS_HUNTER_ABILITY_IDS} from '../chaos-hunter/types.js';
 import {IMPERATIVE_MAGE_ABILITY_IDS} from '../imperative-mage/types.js';
 import {PUNISHMENT_KNIGHT_ABILITY_IDS} from '../punishment-knight/types.js';
@@ -30,7 +31,7 @@ export function createSheriffState(): SheriffState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'justiciar' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'justiciar' && (s.progression.sequence === 8||s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))));
 const isArbiter = (s: SliceState) => s.progression.pathwayId === 'justiciar' && s.progression.sequence === 9;
 const knownChannel = (s: SliceState) => s.arbiter.discovered && s.arbiter.guidanceKnown && (isArbiter(s) || promoted(s));
 const potionPrice = (bottle: SheriffBottle) => SHERIFF_PRICES.potion - (bottle.labourSteps === 3 ? SHERIFF_PRICES.labourCredit : 0);
@@ -246,7 +247,7 @@ export function validateSheriffState(s: SliceState): boolean {
   if (sheriff.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!sheriff.guidanceKnown || !integer(s.progression.promotionWeek, 5, s.week) || !integer(sheriff.promotionWeek, firstConsumptionWeek, s.week) || sheriff.arbiterActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))))?INTERROGATOR_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))?JUDGE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?PUNISHMENT_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?IMPERATIVE_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===3?CHAOS_HUNTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS,...((s.progression.sequence===7||(s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))))?INTERROGATOR_ABILITY_IDS:[]),...((s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))?JUDGE_ABILITY_IDS:[]),...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?PUNISHMENT_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?IMPERATIVE_MAGE_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?CHAOS_HUNTER_ABILITY_IDS:[]),...(s.progression.sequence===2?BALANCER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (sheriff.promotionWeek !== null || sheriff.arbiterActingAtPromotion !== null || SHERIFF_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (sheriff.reflected || Object.values(sheriff.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

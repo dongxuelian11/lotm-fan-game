@@ -1,3 +1,4 @@
+import { validateBalancerSourceChaosHunterLife } from '../balancer/life.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -8,7 +9,7 @@ import { hasChaosHunterOldPractice, hasChaosHunterRitualLock } from './index.js'
 
 export const CHAOS_HUNTER_CASE_IDS = ['paired-line', 'withdrawn-line', 'own-line'] as const;
 export type ChaosHunterCaseId = typeof CHAOS_HUNTER_CASE_IDS[number];
-export type ChaosHunterLocation = 'START' | 'A' | 'B';
+export type ChaosHunterLocation = 'START' | 'A' | 'B' | 'OUTSIDE';
 export type ChaosHunterConsent = 'UNASKED' | 'GRANTED' | 'DECLINED' | 'REVOKED' | 'ORDINARY';
 type SceneType = 'GO_A' | 'CHECK_OBJECT' | 'PERFORM' | 'ORDINARY_CHECK' | 'TRY_PLAYER' | 'TRY_PARTNER' | 'READ_RESULT' | 'STOP_RULE' | 'WAIT_EFFECT' | 'WITHDRAW_CONSENT' | 'RETURN_PERSON' | 'WALK_B' | 'TAKE_OBJECT' | 'RETURN_A' | 'RETURN_OBJECT' | 'RECORD_OUTCOME' | 'RETURN_START';
 export type ChaosHunterActivityCommand =
@@ -40,10 +41,10 @@ export interface ChaosHunterLifeState {
   siteId: 'CH3-LINE-PRACTICE'; introducedWeek: number | null; introducedDate: PublicGameDate | null; activeCase: ChaosHunterCaseId | null;
   playerLocation: ChaosHunterLocation; playerTravelMetres: number; guideTravelMetres: number; clockSeconds: number;
   guide: { id: 'GUIDE'; name: '薇娜·贝尔'; location: ChaosHunterLocation };
-  volunteer: { id: 'CH3-MIRA'; name: '米拉·佩恩'; age: 43; alive: true; independentMind: true; willing: boolean; location: 'A' | 'B'; health: 100; mind: 100; injuries: [] };
+  volunteer: { id: 'CH3-MIRA'; name: '米拉·佩恩'; age: 43; alive: true; independentMind: true; willing: boolean; location: 'A' | 'B' | 'OUTSIDE'; health: 100; mind: 100; injuries: [] };
   parcel: { id: 'CH3-PARCEL'; owner: 'GUIDE'; quantity: 1; massGrams: 350; sealed: true; confidential: false; holder: 'GUIDE' | 'TABLE' | 'PLAYER'; location: ChaosHunterLocation; handovers: number; returns: number };
-  line: { id: 'CH3-LINE'; owner: 'GUIDE'; quantity: 1; holder: 'GUIDE' | 'FLOOR'; location: 'START' | 'A'; isWall: false; returns: number };
-  paper: { id: 'CH3-RULE-PAPER'; owner: 'GUIDE'; quantity: 1; holder: 'GUIDE' | 'PLAYER'; location: ChaosHunterLocation; text: '本次从A到B的越线' };
+  line: { id: 'CH3-LINE'; owner: 'GUIDE'; quantity: 1; holder: 'GUIDE' | 'FLOOR'; location: 'START' | 'A' | 'OUTSIDE'; isWall: false; returns: number };
+  paper: { id: 'CH3-RULE-PAPER'; owner: 'GUIDE'; quantity: 1; holder: 'GUIDE' | 'PLAYER' | 'TABLE'; location: ChaosHunterLocation; text: '本次从A到B的越线' };
   table: { id: 'CH3-TABLE-B'; location: 'B'; thirdParties: 0 };
   cases: Record<ChaosHunterCaseId, ChaosHunterCaseState>; reflected: boolean;
 }
@@ -102,7 +103,17 @@ function cleanupBlock(s: SliceState): string | null {
   if (l.volunteer.location !== 'A' || l.parcel.holder !== 'GUIDE' || l.paper.holder !== 'GUIDE' || l.line.holder !== 'GUIDE') return '米拉须自主走回A；本人须亲取原包并当面归还原包、原纸及原标条。';
   return l.playerLocation !== 'START' || l.guide.location !== 'START' || l.parcel.location !== 'START' || l.paper.location !== 'START' || l.line.location !== 'START' ? '本人和薇娜须真正走回START，导引亲携全部原物。' : null;
 }
-export const hasChaosHunterLifeLock = (s: SliceState): boolean => s.chaosHunter.life.activeCase !== null || Object.values(s.chaosHunter.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+export const hasChaosHunterLifeLock = (s: SliceState): boolean => {
+  if (s.balancer?.life.source != null) {
+    // Weekly settlement validates its final budget later; this lock only checks the inherited original scene.
+    if (s.progression.pathwayId !== 'justiciar' || s.progression.sequence !== 2 || s.balancer.promotionWeek === null || s.balancer.chaosHunterActingAtPromotion !== 100) return true;
+    const original = s.balancer.life.source.snapshot;
+    const inherited = { ...s, progression: { ...s.progression, sequence: 3 as const, acting: s.balancer.chaosHunterActingAtPromotion }, chaosHunter: { ...s.chaosHunter, life: original } };
+    if (!validateChaosHunterLifeOriginal(inherited)) return true;
+    return original.activeCase !== null || Object.values(original.cases).some(r => r.status === 'PREPARED') || cleanupBlock(inherited) !== null;
+  }
+  return s.chaosHunter.life.activeCase !== null || Object.values(s.chaosHunter.life.cases).some(r => r.status === 'PREPARED') || cleanupBlock(s) !== null;
+};
 const attemptsDone = (a: ChaosHunterAttempt, id: ChaosHunterCaseId) => a.playerAttempted && (id === 'own-line' || a.partnerAttempted);
 function sceneReason(s: SliceState, id: ChaosHunterCaseId, type: SceneType | 'CONFIRM_LIMITED'): string | null {
   const l = s.chaosHunter.life, a = l.cases[id].attempts.at(-1)!, at = l.playerLocation;
@@ -294,7 +305,7 @@ export function projectChaosHunterLife(s: SliceState): ChaosHunterLifeProjection
 }
 
 /** Strictly replays the single paid check, consent transitions, each body, every original item, and the finite clock. */
-export function validateChaosHunterLife(s: SliceState): boolean {
+export function validateChaosHunterLifeOriginal(s: SliceState): boolean {
   try { return validateLife(s); } catch { return false; }
 }
 function validateLife(s: SliceState): boolean {
@@ -342,5 +353,10 @@ function validateLife(s: SliceState): boolean {
   if (open > 1 || prepared > 1 || open && prepared || (l.activeCase !== null) !== (open === 1) || l.reflected && resolved !== 3 || prepared && (s.world.city !== 'BACKLUND' || s.activeEvent || s.combat)) return false;
   replay.activeCase = l.activeCase; replay.reflected = l.reflected;
   if (!same(replay, l) || !open && cleanupBlock(s) !== null) return false;
-  return !promoted(s) || s.progression.acting === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[ABILITY] ?? 0) === mastery;
+  const inherited=s.progression.pathwayId==='justiciar'&&s.progression.sequence===2;
+  return !(promoted(s)||inherited) || (inherited?s.balancer.chaosHunterActingAtPromotion:s.progression.acting) === resolved * 25 + Number(l.reflected) * 25 && (s.progression.mastery[ABILITY] ?? 0) === mastery;
+}
+
+export function validateChaosHunterLife(s: SliceState): boolean {
+  return s.balancer?.life.source != null ? validateBalancerSourceChaosHunterLife(s) : validateChaosHunterLifeOriginal(s);
 }

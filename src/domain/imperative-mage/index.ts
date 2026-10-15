@@ -1,3 +1,4 @@
+import { BALANCER_ABILITY_IDS } from '../balancer/types.js';
 import {CHAOS_HUNTER_ABILITY_IDS} from '../chaos-hunter/types.js';
 import { isImperativeMage } from './combat.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -42,7 +43,7 @@ export function createImperativeMageState(): ImperativeMageState {
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
 export { isImperativeMage } from './combat.js';
-const hasImperativeMageHistory=(s:SliceState)=>s.progression.pathwayId==='justiciar'&&[4,3].includes(s.progression.sequence!);
+const hasImperativeMageHistory=(s:SliceState)=>s.progression.pathwayId==='justiciar'&&[4,3,2].includes(s.progression.sequence!);
 const isPunishmentKnight = (s: SliceState) => s.progression.pathwayId === 'justiciar' && s.progression.sequence === 5;
 const knownChannel = (s: SliceState) => s.arbiter.discovered && s.arbiter.guidanceKnown && s.sheriff.guidanceKnown && s.interrogator.guidanceKnown && s.judge.guidanceKnown && s.punishmentKnight.guidanceKnown && s.punishmentKnight.promotionWeek !== null && (isPunishmentKnight(s) || hasImperativeMageHistory(s));
 const potionPrice = (bottle: ImperativeMageBottle) => IMPERATIVE_MAGE_PRICES.potion - (bottle.labourSteps === IMPERATIVE_MAGE_LABOUR_STEPS ? IMPERATIVE_MAGE_PRICES.labourCredit : 0);
@@ -184,7 +185,7 @@ export function applyImperativeMageCommand(s: SliceState, command: ImperativeMag
 
 export function projectImperativeMage(s: SliceState): ImperativeMageProjection {
   const actions: ImperativeMageAction[] = [], available = knownChannel(s), promoted = hasImperativeMageHistory(s);
-  const acting = promoted ? (s.progression.sequence===3?s.chaosHunter.imperativeMageActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = promoted ? ((s.progression.sequence===3||s.progression.sequence===2)?s.chaosHunter.imperativeMageActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: ImperativeMageAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -262,7 +263,7 @@ function validateImperativeMageStateRecord(s: SliceState): boolean {
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.punishmentKnight.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.punishmentKnightActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS, ...INTERROGATOR_ABILITY_IDS, ...JUDGE_ABILITY_IDS, ...PUNISHMENT_KNIGHT_ABILITY_IDS, ...IMPERATIVE_MAGE_ABILITY_IDS,...(s.progression.sequence===3?CHAOS_HUNTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS, ...INTERROGATOR_ABILITY_IDS, ...JUDGE_ABILITY_IDS, ...PUNISHMENT_KNIGHT_ABILITY_IDS, ...IMPERATIVE_MAGE_ABILITY_IDS,...((s.progression.sequence===3||s.progression.sequence===2)?CHAOS_HUNTER_ABILITY_IDS:[]),...(s.progression.sequence===2?BALANCER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.punishmentKnightActingAtPromotion !== null || IMPERATIVE_MAGE_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   // First validate every record shape, so a later batch cannot dereference malformed predecessors.
   for (const [index, bottle] of state.bottles.entries()) {

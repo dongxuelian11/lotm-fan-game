@@ -1,3 +1,4 @@
+import { BALANCER_ABILITY_IDS } from '../balancer/types.js';
 import {CHAOS_HUNTER_ABILITY_IDS} from '../chaos-hunter/types.js';
 import {IMPERATIVE_MAGE_ABILITY_IDS} from '../imperative-mage/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
@@ -39,7 +40,7 @@ export function createPunishmentKnightState(): PunishmentKnightState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'justiciar' && (s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'justiciar' && (s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)));
 const isJudge = (s: SliceState) => s.progression.pathwayId === 'justiciar' && s.progression.sequence === 6;
 const knownChannel = (s: SliceState) => s.arbiter.discovered && s.arbiter.guidanceKnown && s.sheriff.guidanceKnown && s.interrogator.guidanceKnown && s.judge.guidanceKnown && s.judge.promotionWeek !== null && (isJudge(s) || promoted(s));
 const potionPrice = (bottle: PunishmentKnightBottle) => PUNISHMENT_KNIGHT_PRICES.potion - (bottle.labourSteps === 5 ? PUNISHMENT_KNIGHT_PRICES.labourCredit : 0);
@@ -166,7 +167,7 @@ export function applyPunishmentKnightCommand(s: SliceState, command: PunishmentK
 
 export function projectPunishmentKnight(s: SliceState): PunishmentKnightProjection {
   const actions: PunishmentKnightAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===4||s.progression.sequence===3)?s.imperativeMage.punishmentKnightActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?s.imperativeMage.punishmentKnightActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: PunishmentKnightAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -249,7 +250,7 @@ export function validatePunishmentKnightState(s: SliceState): boolean {
   if (punishmentKnight.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!punishmentKnight.guidanceKnown || !integer(s.judge.promotionWeek, 1, s.week) || !integer(punishmentKnight.promotionWeek, firstConsumptionWeek, s.week) || punishmentKnight.judgeActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS, ...INTERROGATOR_ABILITY_IDS, ...JUDGE_ABILITY_IDS, ...PUNISHMENT_KNIGHT_ABILITY_IDS,...((s.progression.sequence===4||s.progression.sequence===3)?IMPERATIVE_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===3?CHAOS_HUNTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS, ...INTERROGATOR_ABILITY_IDS, ...JUDGE_ABILITY_IDS, ...PUNISHMENT_KNIGHT_ABILITY_IDS,...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?IMPERATIVE_MAGE_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?CHAOS_HUNTER_ABILITY_IDS:[]),...(s.progression.sequence===2?BALANCER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (punishmentKnight.promotionWeek !== null || punishmentKnight.judgeActingAtPromotion !== null || PUNISHMENT_KNIGHT_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (Object.entries(freshPunishmentKnightPractice()).some(([key, value]) => punishmentKnight.practice[key as keyof PunishmentKnightPractice] !== value)) return false;

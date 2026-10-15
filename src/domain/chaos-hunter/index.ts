@@ -1,3 +1,4 @@
+import { BALANCER_ABILITY_IDS } from '../balancer/types.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
@@ -27,7 +28,8 @@ export function createChaosHunterState(): ChaosHunterState {
     preparations: [], preparedWeek: null, life: createChaosHunterLifeState(), encounter: createChaosHunterEncounterState() };
 }
 export const isChaosHunter = (s: SliceState) => s.progression.pathwayId === 'justiciar' && s.progression.sequence === 3;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'justiciar' && [4, 3].includes(s.progression.sequence ?? 0)
+export const hasChaosHunterHistory = (s: SliceState) => s.progression.pathwayId === 'justiciar' && [3,2].includes(s.progression.sequence??0);
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'justiciar' && ([4,3].includes(s.progression.sequence??0)||s.progression.sequence===2&&s.chaosHunter.promotionWeek!==null&&Number.isSafeInteger(s.balancer?.promotionWeek))
   && s.arbiter.discovered && s.arbiter.guidanceKnown && s.sheriff.guidanceKnown && s.interrogator.guidanceKnown
   && s.judge.guidanceKnown && s.punishmentKnight.guidanceKnown && s.imperativeMage.guidanceKnown && s.imperativeMage.promotionWeek !== null;
 /** Older people, originals and history are owned by their original stage. */
@@ -71,7 +73,7 @@ export function chaosHunterAcquisitionBlock(s: SliceState, command: ChaosHunterA
   if (hasChaosHunterOldPractice(s) || hasChaosHunterLifeLock(s) || hasChaosHunterEncounterLock(s)) return '先实际结束旧接触、演练、待生效影响，归还原物并收束旧准备和当前实践；旧人物、伤势与能力记录保留，旧许可不代替新案同意。';
   if (s.world.city !== 'BACKLUND') return '须沿实际行程回到贝克兰德原调解处旁CH3-QUIET-ROOM独立安静房间。';
   if (!knownChannel(s)) return '实际成为律令法师并保留原指导渠道后，才能了解混乱猎手之路。';
-  if (isChaosHunter(s)) return '已经真实晋升混乱猎手3，不能重复准备或服药；未服原瓶保留。';
+  if (hasChaosHunterHistory(s)) return '已经真实晋升混乱猎手3，不能重复准备或服药；未服原瓶保留。';
   const state = s.chaosHunter;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
@@ -166,7 +168,7 @@ export function applyChaosHunterCommand(s: SliceState, command: ChaosHunterComma
 }
 
 export function projectChaosHunter(s: SliceState): ChaosHunterProjection {
-  const state = s.chaosHunter, available = knownChannel(s), promoted = isChaosHunter(s), actions: ChaosHunterAction[] = [];
+  const state = s.chaosHunter, available = knownChannel(s), promoted = hasChaosHunterHistory(s), actions: ChaosHunterAction[] = [];
   const add = (id: string, label: string, cost: string, command: ChaosHunterAcquisitionCommand) => { const reason = chaosHunterAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-chaos-hunter-guidance', '听取混乱猎手成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });
@@ -195,7 +197,7 @@ export function projectChaosHunter(s: SliceState): ChaosHunterProjection {
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 混乱猎手成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周实际场地检查后服用。`}`, status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为律令法师' : '排异，仍为律令法师'}`, chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? CHAOS_HUNTER_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? CHAOS_HUNTER_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0, digestion: promoted ? `律令法师消化${state.imperativeMageActingAtPromotion}/100留存；混乱猎手扮演${s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖成功且真正拦停的双方案或本人案，每案8、最大16；撤回案不给新掌握；撤回、取消、失败或未实际应用均不给新掌握。和平100不保证原著安全消化。` : available ? `律令法师需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${imperativeMageWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完律令法师之路。',
+    acting: promoted ? (s.progression.sequence===2?s.balancer.chaosHunterActingAtPromotion??0:s.progression.acting) : 0, digestion: promoted ? `律令法师消化${state.imperativeMageActingAtPromotion}/100留存；混乱猎手扮演${s.progression.sequence===2?s.balancer.chaosHunterActingAtPromotion:s.progression.acting}/100。三项真实情境各25、反思25均为G，普通完成同样可消化，掌握只奖成功且真正拦停的双方案或本人案，每案8、最大16；撤回案不给新掌握；撤回、取消、失败或未实际应用均不给新掌握。和平100不保证原著安全消化。` : available ? `律令法师需消化100（当前${s.progression.acting}/100）、晋4后12整周（当前${imperativeMageWeeks(s)}/12）；另须三项不同专业准备与本周场地检查。` : '先走完律令法师之路。',
     pollution: s.seer.pollution, risk: available ? CHAOS_HUNTER_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     inheritedTools: available ? `旧原阿伦仍在原椅桌旁，既有效果${s.imperativeMage.life.attention.effect}；旧原埃尔登${s.imperativeMage.life.partner.id}仍在${s.imperativeMage.life.partner.position}，原灵性${s.imperativeMage.life.partner.spirituality}/${s.imperativeMage.life.partner.maxSpirituality}，FLASH可用${s.imperativeMage.life.partner.abilityAvailable ? '是' : '否'}。原${s.imperativeMage.life.light.cardId}卡与原${s.imperativeMage.life.light.hoodId}罩由${s.imperativeMage.life.light.holder}保管，在${s.imperativeMage.life.light.positionMetres}米处；原${s.imperativeMage.life.line.id}标线由${s.imperativeMage.life.line.holder}保管，原${s.imperativeMage.life.line.tokenId}标记片由${s.imperativeMage.life.line.tokenHolder}持有。全部旧原物与原人不移入新场，不复制、不返能。` : '',
@@ -218,7 +220,7 @@ function validateState(s: SliceState): boolean {
   const raw: unknown = s.chaosHunter;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'imperativeMageActingAtPromotion', 'preparations', 'preparedWeek', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
   if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== 3 * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations)) return false;
-  const state = raw as unknown as ChaosHunterState, promoted = isChaosHunter(s), firstWeek = s.imperativeMage.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + CHAOS_HUNTER_MIN_IMPERATIVE_MAGE_WEEKS;
+  const state = raw as unknown as ChaosHunterState, promoted = hasChaosHunterHistory(s), firstWeek = s.imperativeMage.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + CHAOS_HUNTER_MIN_IMPERATIVE_MAGE_WEEKS;
   if (state.guidanceKnown && !knownChannel(s)) return false;
   if (state.preparations.length > 3 || new Set(state.preparations.map(p => p.taskId)).size !== state.preparations.length) return false;
   for (const p of state.preparations) if (!record(p) || !shape(p, ['taskId', 'completedWeek']) || !CHAOS_HUNTER_PREPARATION_IDS.includes(p.taskId) || !integer(p.completedWeek, firstWeek, state.promotionWeek ?? s.week)) return false;
@@ -226,7 +228,7 @@ function validateState(s: SliceState): boolean {
   if (state.preparedWeek !== null && (!integer(state.preparedWeek, firstConsumptionWeek, s.week) || state.preparedWeek !== s.week || !state.guidanceKnown || promoted || !hasPreparations(s) || !state.bottles.some(b => b.status === 'PLAYER') || s.progression.acting !== 100 || hasChaosHunterOldPractice(s) || hasChaosHunterLifeLock(s) || hasChaosHunterEncounterLock(s))) return false;
   if (promoted) {
     if (!state.guidanceKnown || !integer(s.imperativeMage.promotionWeek, 1, s.week) || !integer(state.promotionWeek, firstConsumptionWeek, s.week) || state.imperativeMageActingAtPromotion !== 100 || state.preparedWeek !== null || !hasPreparations(s)) return false;
-    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS, ...INTERROGATOR_ABILITY_IDS, ...JUDGE_ABILITY_IDS, ...PUNISHMENT_KNIGHT_ABILITY_IDS, ...IMPERATIVE_MAGE_ABILITY_IDS, ...CHAOS_HUNTER_ABILITY_IDS]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS, ...INTERROGATOR_ABILITY_IDS, ...JUDGE_ABILITY_IDS, ...PUNISHMENT_KNIGHT_ABILITY_IDS, ...IMPERATIVE_MAGE_ABILITY_IDS, ...CHAOS_HUNTER_ABILITY_IDS,...(s.progression.sequence===2?BALANCER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return false;
   } else if (state.promotionWeek !== null || state.imperativeMageActingAtPromotion !== null || CHAOS_HUNTER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {

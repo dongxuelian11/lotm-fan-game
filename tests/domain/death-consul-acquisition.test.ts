@@ -1,13 +1,4 @@
-import { createAncientEvilState } from '../../src/domain/ancient-evil/index.js';
-import { createFateProphetState } from '../../src/domain/fate-prophet/index.js';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
-import {createBloodDukeState} from '../../src/domain/blood-duke/index.js';
-import {createElderState} from '../../src/domain/elder/index.js';
-import { createSageState } from '../../src/domain/sage/index.js';
-import { createPlaneswalkerState } from '../../src/domain/planeswalker/index.js';
-import { createFateTrojanState } from '../../src/domain/fate-trojan/index.js';
-import { createGloryState } from '../../src/domain/glory/index.js';
-import { createCalamityDemonessState } from '../../src/domain/calamity-demoness/index.js';
 import { describe, expect, it, vi } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -269,15 +260,20 @@ describe('DeathConsul S2 frozen-era acquisition and seven-stage inheritance', ()
     for (const change of mutations) { const s = structuredClone(base); change(s); expect(validateDeathConsulState(s)).toBe(false); }
   });
   it('migrates strict169 state into the current schema by adding only fresh missing roots, without erasing an old field', () => {
-    const current = fixture();
-    const { deathConsul: _newRoot, planeswalker: _planeswalker, fateTrojan: _fateTrojan, glory: _glory, calamityDemoness: _calamityDemoness, sage: _sage, elder: _elder, bloodDuke: _bloodDuke, ancientEvil: _ancientEvil, fateProphet: _fateProphet, ...rest } = current;
-    // Remove all ten roots introduced after schema 169; keep every earlier field and the real historical fixture unchanged.
-    const old = { ...rest, schemaVersion: 169, contentVersion: 'light-seeker-v169' }, before = structuredClone(old);
-    const result = migrateSliceState(old), { deathConsul, planeswalker, fateTrojan, glory, calamityDemoness, sage, elder, bloodDuke, ancientEvil, fateProphet, ...migrated } = result;
-    expect(ancientEvil).toEqual(createAncientEvilState()); expect(fateProphet).toEqual(createFateProphetState());
-    expect(bloodDuke).toEqual(createBloodDukeState()); expect(elder).toEqual(createElderState()); expect(sage).toEqual(createSageState()); expect(old).toEqual(before); expect(deathConsul).toEqual(createDeathConsulState());
-    expect({ planeswalker, fateTrojan, glory, calamityDemoness }).toEqual({ planeswalker: createPlaneswalkerState(), fateTrojan: createFateTrojanState(), glory: createGloryState(), calamityDemoness: createCalamityDemonessState() });
-    expect(migrated).toEqual({ ...old, schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION });
+    // A real archived169 save avoids inventing a legacy shape from today's roots.
+    const old = readObjectEntry<SliceState>('tests/fixtures/light-seeker-v01720/natural.json', 'departureStart');
+    const before = structuredClone(old);
+    expect(old.schemaVersion).toBe(169); expect(old.contentVersion).toBe('light-seeker-v169');
+    const result = migrateSliceState(old);
+    const fresh = createSliceRun('migration-new-root-defaults', sliceDefaultCreationSelection, 'migration-new-root-defaults');
+    for (const key of Object.keys(old) as (keyof SliceState)[]) {
+      if (key !== 'schemaVersion' && key !== 'contentVersion') expect(result[key], key).toEqual(old[key]);
+    }
+    const inserted = (Object.keys(result) as (keyof SliceState)[]).filter(key => !Object.hasOwn(old, key));
+    expect(inserted).toContain('deathConsul');
+    for (const key of inserted) expect(result[key], key).toEqual(fresh[key]);
+    expect(result.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(result.contentVersion).toBe(CURRENT_CONTENT_VERSION);
+    expect(result.deathConsul).toEqual(createDeathConsulState()); expect(old).toEqual(before);
     expect(migrateSliceState(result)).toEqual(result); assertValidSliceState(result);
     expect(() => migrateSliceState({ ...old, deathConsul: createDeathConsulState() })).toThrow();
     expect(() => migrateSliceState({ ...old, contentVersion: 'forged' })).toThrow();

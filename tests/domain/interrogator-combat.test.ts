@@ -121,7 +121,7 @@ describe('Interrogator S7 exact wheels and inherited physical profile', () => {
   });
 
   it('preserves Arbiter9, Sheriff8, unsupported Justiciar fallback and Black Emperor profiles', () => {
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence; state.town.clubLocation = 'HAND';
       state.progression.mastery = { [training]: 500, [authority]: 500, [charisma]: 500,
         [trace]: 500, [reconstruction]: 500, [puncture]: 500, [pressure]: 500, 'justiciar.s6.prohibition': 500 };

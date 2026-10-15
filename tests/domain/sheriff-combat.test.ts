@@ -118,7 +118,7 @@ describe('Sheriff S8 wheels, profile and original bodily source', () => {
   });
 
   it('preserves Arbiter S9, unsupported Justiciar fallback and all Black Emperor profiles', () => {
-    for (const sequence of [2, null] as const) {
+    for (const sequence of [1, 0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence; state.town.clubLocation = 'HAND';
       state.progression.mastery = { [authority]: 500, [training]: 500, [charisma]: 500,
         [trace]: 500, [reconstruction]: 500, 'justiciar.s7.mental-puncture': 500, 'justiciar.s6.prohibition': 500 };

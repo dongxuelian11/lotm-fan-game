@@ -1,3 +1,4 @@
+import { BALANCER_ABILITY_IDS } from '../balancer/types.js';
 import {CHAOS_HUNTER_ABILITY_IDS} from '../chaos-hunter/types.js';
 import {IMPERATIVE_MAGE_ABILITY_IDS} from '../imperative-mage/types.js';
 import {PUNISHMENT_KNIGHT_ABILITY_IDS} from '../punishment-knight/types.js';
@@ -33,7 +34,7 @@ export function createJudgeState(): JudgeState {
 }
 
 function rule(ok: unknown, message: string): asserts ok { if (!ok) throw new Error(message); }
-const promoted = (s: SliceState) => s.progression.pathwayId === 'justiciar' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)));
+const promoted = (s: SliceState) => s.progression.pathwayId === 'justiciar' && (s.progression.sequence===6||(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))));
 const isInterrogator = (s: SliceState) => s.progression.pathwayId === 'justiciar' && s.progression.sequence === 7;
 const knownChannel = (s: SliceState) => s.arbiter.discovered && s.arbiter.guidanceKnown && s.sheriff.guidanceKnown && s.interrogator.guidanceKnown && s.interrogator.promotionWeek !== null && (isInterrogator(s) || promoted(s));
 const potionPrice = (bottle: JudgeBottle) => JUDGE_PRICES.potion - (bottle.labourSteps === 5 ? JUDGE_PRICES.labourCredit : 0);
@@ -158,7 +159,7 @@ export function applyJudgeCommand(s: SliceState, command: JudgeAcquisitionComman
 
 export function projectJudge(s: SliceState): JudgeProjection {
   const actions: JudgeAction[] = [], available = knownChannel(s), isPromoted = promoted(s);
-  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?s.punishmentKnight.judgeActingAtPromotion??100:s.progression.acting) : 0;
+  const acting = isPromoted ? ((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?s.punishmentKnight.judgeActingAtPromotion??100:s.progression.acting) : 0;
   const add = (id: string, label: string, cost: string, command: JudgeAcquisitionCommand) => {
     const reason = commandBlock(s, command);
     actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -250,7 +251,7 @@ export function validateJudgeState(s: SliceState): boolean {
   if (judge.guidanceKnown && !knownChannel(s)) return false;
   if (isPromoted) {
     if (!judge.guidanceKnown || !integer(s.interrogator.promotionWeek, 1, s.week) || !integer(judge.promotionWeek, firstConsumptionWeek, s.week) || judge.interrogatorActingAtPromotion !== 100) return false;
-    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS, ...INTERROGATOR_ABILITY_IDS, ...JUDGE_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3))?PUNISHMENT_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===4||s.progression.sequence===3)?IMPERATIVE_MAGE_ABILITY_IDS:[]),...(s.progression.sequence===3?CHAOS_HUNTER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
+    if (!shape(s.progression.mastery, [...ARBITER_ABILITY_IDS, ...SHERIFF_ABILITY_IDS, ...INTERROGATOR_ABILITY_IDS, ...JUDGE_ABILITY_IDS,...((s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))?PUNISHMENT_KNIGHT_ABILITY_IDS:[]),...((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))?IMPERATIVE_MAGE_ABILITY_IDS:[]),...((s.progression.sequence===3||s.progression.sequence===2)?CHAOS_HUNTER_ABILITY_IDS:[]),...(s.progression.sequence===2?BALANCER_ABILITY_IDS:[])]) || !Object.values(s.progression.mastery).every(value => integer(value, 0, 500))) return false;
   } else {
     if (judge.promotionWeek !== null || judge.interrogatorActingAtPromotion !== null || JUDGE_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
     if (judge.reflected || Object.values(judge.cases).some(value => value.status !== 'AVAILABLE' || value.attemptWeek !== null || value.method !== null || value.outcome !== 'NONE' || value.withdrawals !== 0 || value.contactOpen || value.closes !== 0)) return false;

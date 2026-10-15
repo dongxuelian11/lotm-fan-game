@@ -177,11 +177,14 @@ import {emptyProgression,createSeerState} from '../../src/domain/seer/index.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { consequenceWeights, ORDINARY_COUNT_WHEEL, ordinaryAbilityWheel, resolveSliceCombatRound } from '../../src/domain/slice/combat.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
-import { applySliceIntent } from '../../src/domain/slice/index.js';
+import { applySliceIntent, createSliceRun } from '../../src/domain/slice/index.js';
+import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 
 function fixture(): SliceState {
   return {
+    // Keep all current empty chapter roots while preserving every declared combat input below.
+    ...createSliceRun('combat-test-default-roots', sliceDefaultCreationSelection, 'combat-test-default-roots'),
     schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION,
     ancientEvil: createAncientEvilState(), fateProphet: createFateProphetState(),
     bloodDuke:createBloodDukeState(),elder:createElderState(),sage:createSageState(),
@@ -225,6 +228,13 @@ function scriptRolls(...rolls: number[]) {
 afterEach(() => vi.restoreAllMocks());
 
 describe('ordinary combat wheels', () => {
+  it('retains the complete current root set in the declared combat fixture', () => {
+    const defaults = createSliceRun('combat-test-default-roots', sliceDefaultCreationSelection, 'combat-test-default-roots');
+    expect(Object.keys(fixture()).sort()).toEqual(Object.keys(defaults).sort());
+    expect(fixture().entropyDuke).toEqual(defaults.entropyDuke);
+    expect(fixture().balancer).toEqual(defaults.balancer);
+    expect(fixture()).toMatchObject({runId:'combat-test',revision:8,week:1,actionsRemaining:2,cash:20,health:100,mind:100,spirituality:15,random:{seed:'ordinary-round',cursor:0},combat:{encounterId:'FIRST_CASE',round:1,enemyHealth:100,enemyMind:100},character:{coreStats:{physique:15,perception:15,will:15,knowledge:15}}});
+  });
   it('keeps the independently sampled 45/40/15 ordinary count template', () => {
     expect(ORDINARY_COUNT_WHEEL.map(({ weight }) => weight)).toEqual([45, 40, 15]);
     expect(ORDINARY_COUNT_WHEEL.reduce((sum, entry) => sum + Number(entry.id) * entry.weight / 100, 0)).toBeCloseTo(1.7);
