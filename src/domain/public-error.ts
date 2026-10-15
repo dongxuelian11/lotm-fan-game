@@ -1,8 +1,15 @@
-import type { PublicError, PublicErrorCode, Revision } from "../shared/contracts.js";
+import {
+  PUBLIC_ERROR_CODES,
+  type PublicError,
+  type PublicErrorCode,
+  type Revision,
+} from "../shared/contracts.js";
 
 const PUBLIC_ERROR_MESSAGES: Record<PublicErrorCode, string> = {
   CONTRACT_VERSION_MISMATCH: "客户端合同版本已过期，请重新加载。",
   SCHEMA_INVALID: "请求格式无效。",
+  CONTENT_SELECTION_INVALID: "角色选择无效。",
+  ACTION_UNAVAILABLE: "本周已没有可用行动。",
   REVISION_CONFLICT: "周目状态已更新，请重新读取。",
   RUN_NOT_FOUND: "周目不存在。",
   DUPLICATE_INTENT_CONFLICT: "该意图标识已用于不同请求。",
@@ -36,9 +43,32 @@ export function isPublicError(value: unknown): value is PublicError {
   }
 
   const record = value as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  const baseKeys = ["code", "message", "retryable"];
+  const extendedKeys = [...baseKeys, "currentRevision"].sort();
+  if (!keysEqual(keys, baseKeys) && !keysEqual(keys, extendedKeys)) {
+    return false;
+  }
+
+  if (
+    typeof record.code !== "string" ||
+    !PUBLIC_ERROR_CODES.includes(record.code as PublicErrorCode) ||
+    record.message !== PUBLIC_ERROR_MESSAGES[record.code as PublicErrorCode] ||
+    typeof record.retryable !== "boolean"
+  ) {
+    return false;
+  }
+
+  return !Object.prototype.hasOwnProperty.call(record, "currentRevision") ||
+    (typeof record.currentRevision === "number" &&
+      Number.isSafeInteger(record.currentRevision) &&
+      record.currentRevision >= 0);
+}
+
+function keysEqual(actual: readonly string[], expected: readonly string[]): boolean {
+  const sortedExpected = [...expected].sort();
   return (
-    typeof record.code === "string" &&
-    typeof record.message === "string" &&
-    typeof record.retryable === "boolean"
+    actual.length === sortedExpected.length &&
+    actual.every((key, index) => key === sortedExpected[index])
   );
 }

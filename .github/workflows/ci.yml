@@ -20,5 +20,56 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: npm test
+      - run: npm run test:smoke
+      - run: npm run fixtures:restore -- --only-prefix long-chapter-v01390
+      - run: npx vitest run tests/backend/slice-store.test.ts tests/backend/slice-store-flush.test.ts tests/renderer/long-chapter-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+      - run: npm run test:fixture-restore
+      - run: node --test scripts/test-ci-batches.test.mjs
+      - run: node scripts/test-ci-batches.mjs --check-inventory
+      - run: npm run build
 
+  historical:
+    needs: contract
+    runs-on: windows-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: npm
+      - run: npm ci
+      - run: npm run fixtures:restore
+      - run: node scripts/test-ci-batches.mjs --shard ${{ matrix.shard }}/4
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: historical-shard-${{ matrix.shard }}
+          path: output/ci-shard-*/
+          if-no-files-found: warn
+
+  isolated:
+    needs: contract
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: npm
+      - run: npm ci
+      - run: npm run fixtures:restore
+      - run: npm run test:catastrophe-isolated
+      - run: npm run test:wisdom-angel-life-isolated
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: isolated-contracts
+          path: output/*-isolated-*/
+          if-no-files-found: warn
