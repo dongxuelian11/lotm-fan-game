@@ -1,0 +1,12 @@
+.cryptologist-action-list { display: grid; gap: 12px; margin-top: 16px; }
+.cryptologist-compact-action .slice-choice { min-height: 66px; padding: 12px 16px; }
+.cryptologist-growth-choice span { display: block; margin-top: 4px; font-size: 15px; font-weight: 400; }
+.cryptologist-environment p { margin-bottom: 0; }
+.cryptologist-observations, .cryptologist-preparation { margin-top: 22px; }
+.cryptologist-observations ul { display: grid; gap: 12px; padding-left: 24px; }
+.cryptologist-panel p, .cryptologist-observations li { white-space: pre-line; overflow-wrap: anywhere; }
+.cryptologist-preparation { padding-top: 18px; border-top: 1px dashed var(--slice-line); }
+.cryptologist-result { margin-top: 20px; padding: 18px 0 0; border-top: 2px solid var(--slice-line); }
+.cryptologist-panel .seer-action, .cryptologist-panel .slice-choice, .cryptologist-panel .seer-facts dd { min-width: 0; overflow-wrap: anywhere; }
+.cryptologist-history-bottle + .cryptologist-history-bottle { margin-top: 18px; }
+.cryptologist-progress { display: block; width: 100%; height: 12px; accent-color: var(--slice-ink); }
