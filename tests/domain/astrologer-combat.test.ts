@@ -1,3 +1,4 @@
+import { STAR_KEY_COUNT_WHEEL, starKeyAbilityWheel } from '../../src/domain/star-key/combat.js';
 import { WANDERER_COUNT_WHEEL, wandererAbilityWheel } from '../../src/domain/wanderer/combat.js';
 import { PLANESWALKER_COUNT_WHEEL, planeswalkerAbilityWheel } from '../../src/domain/planeswalker/combat.js';
 import { TRAVELER_COUNT_WHEEL, travelerAbilityWheel } from '../../src/domain/traveler/combat.js';
@@ -133,7 +134,8 @@ describe('Astrologer S7 exact Door V1 profile', () => {
     state.progression.pathwayId='door';state.progression.sequence=4;expect(isAstrologer(state)).toBe(false);expect(playerCountWheel(state)).toEqual(SECRETS_SORCERER_COUNT_WHEEL);expect(playerAbilityWheel(state,'CONTROL')).toEqual(secretsSorcererAbilityWheel(state,'CONTROL'));
     state.progression.pathwayId='door';state.progression.sequence=3;expect(isAstrologer(state)).toBe(false);expect(playerCountWheel(state)).toEqual(WANDERER_COUNT_WHEEL);expect(playerAbilityWheel(state,'CONTROL')).toEqual(wandererAbilityWheel(state,'CONTROL'));
     state.progression.sequence=2;expect(isAstrologer(state)).toBe(false);expect(playerCountWheel(state)).toEqual(PLANESWALKER_COUNT_WHEEL);expect(playerAbilityWheel(state,'CONTROL')).toEqual(planeswalkerAbilityWheel(state,'CONTROL'));
-    for (const [pathwayId, sequence] of [[null, null], ['door', 1], ['door', 0], ['moon', 9]] as const) {
+    state.progression.sequence=1;expect(isAstrologer(state)).toBe(false);expect(playerCountWheel(state)).toEqual(STAR_KEY_COUNT_WHEEL);expect(playerAbilityWheel(state,'CONTROL')).toEqual(starKeyAbilityWheel(state,'CONTROL'));
+    for (const [pathwayId, sequence] of [[null, null], ['door', 0], ['moon', 9]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isAstrologer(state)).toBe(false); expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));

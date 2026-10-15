@@ -108,7 +108,7 @@ export function createPlaneswalkerLifeState(): PlaneswalkerLifeState {
 const current = (l: PlaneswalkerLifeState) => l.activeCase ? l.cases[l.activeCase].attempts.at(-1) ?? null : null;
 const contactOpen = (l: PlaneswalkerLifeState) => l.activeCase !== null || Object.values(l.cases).some(r => r.contactOpen || r.status === 'PREPARED');
 export const planeswalkerLifeClosed = (s: SliceState): boolean => !contactOpen(s.planeswalker.life) && Object.values(s.planeswalker.life.cases).every(r => r.status === 'RESOLVED');
-export const hasPlaneswalkerLifeLock = (s: SliceState): boolean => contactOpen(s.planeswalker.life) || s.planeswalker.encounter.status === 'AVAILABLE' && physicalCleanupBlock(s.planeswalker.life) !== null;
+export const hasPlaneswalkerLifeLock = (s: SliceState): boolean => s.progression.pathwayId === 'door' && s.progression.sequence === 2 && (contactOpen(s.planeswalker.life) || s.planeswalker.encounter.status === 'AVAILABLE' && physicalCleanupBlock(s.planeswalker.life) !== null);
 export const planeswalkerInside = hasPlaneswalkerLifeLock;
 export function validatePlaneswalkerActivityCommand(v: unknown): v is PlaneswalkerActivityCommand {
   if (!record(v)) return false;

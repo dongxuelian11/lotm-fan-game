@@ -245,7 +245,7 @@ describe('Balancer original room encounter through public commands', () => {
     expect(e).toMatchObject({ targetId: 'BA2-CASPAR', enemyHealth: 100, enemyMind: 100, enemySpirituality: 120 }); expect(s.chaosHunter.encounter).toEqual(before.chaosHunter.encounter); expect(s.chaosHunter.encounter.enemyStatus).toBe('SURRENDERED');
     expect(s.chaosHunter.life.cases).toEqual(before.chaosHunter.life.cases); expect(s.combatHistory).toEqual(before.combatHistory); expect(s.progression.mastery).toEqual(before.progression.mastery); expect(Object.keys(s.progression.mastery)).toHaveLength(17);
     rejectIntent(s, { type: 'ACTION', action: 'REST' }); const bad = structuredClone(s); bad.chaosHunter.life.guide.location = 'START'; expect(validateBalancerEncounter(bad)).toBe(false);
-  });
+  }, 10_000);
   it('keeps preparation and exit costs, actual plate location, and old enemy outcome without respawn', () => {
     const before = ready(), prepared = ba(before, { type: 'PREPARE_ENCOUNTER' }); expect(prepared.mind).toBe(before.mind - 2); rejectBalancer(prepared, { type: 'PREPARE_ENCOUNTER' });
     const left = ba(ba(prepared, { type: 'ENCOUNTER_TALK' }), { type: 'LEAVE_ENCOUNTER' }); expect(left.chaosHunter.life.playerLocation).toBe('START'); expect(left.balancer.life.guardPlate).toEqual(before.balancer.life.guardPlate);

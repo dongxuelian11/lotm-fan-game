@@ -45,9 +45,9 @@ export function createPlaneswalkerState(): PlaneswalkerState {
 }
 export const isPlaneswalker = (s: SliceState) => s.progression.pathwayId === 'door' && s.progression.sequence === 2;
 export const isPlaneswalkerAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'door' && s.progression.sequence === 3;
-export const hasPlaneswalkerHistory = (s: SliceState) => isPlaneswalker(s) && s.planeswalker.promotionWeek !== null;
-const knownChannel = (s: SliceState) => s.progression.pathwayId === 'door' && [3, 2].includes(s.progression.sequence ?? 0) && s.apprentice.discovered && s.wanderer.guidanceKnown && integer(s.wanderer.promotionWeek, 1, s.week) && s.wanderer.bottles.filter(b => success(b.outcome) && b.status === 'CONSUMED' && b.consumedWeek === s.wanderer.promotionWeek).length === 1;
-export const hasPlaneswalkerLock = (s: SliceState): boolean => s.planeswalker.preparedWeek !== null || hasPlaneswalkerRitualLock(s) || hasPlaneswalkerLifeLock(s) || hasPlaneswalkerEncounterLock(s);
+export const hasPlaneswalkerHistory = (s: SliceState) => (isPlaneswalker(s) || s.progression.pathwayId === 'door' && s.progression.sequence === 1) && s.planeswalker.promotionWeek !== null;
+const knownChannel = (s: SliceState) => s.progression.pathwayId === 'door' && ([3, 2].includes(s.progression.sequence ?? 0) || s.progression.sequence === 1 && hasPlaneswalkerHistory(s) && s.starKey.promotionWeek !== null) && s.apprentice.discovered && s.wanderer.guidanceKnown && integer(s.wanderer.promotionWeek, 1, s.week) && s.wanderer.bottles.filter(b => success(b.outcome) && b.status === 'CONSUMED' && b.consumedWeek === s.wanderer.promotionWeek).length === 1;
+export const hasPlaneswalkerLock = (s: SliceState): boolean => s.progression.pathwayId === 'door' && [3, 2].includes(s.progression.sequence ?? 0) && (s.planeswalker.preparedWeek !== null || hasPlaneswalkerRitualLock(s) || hasPlaneswalkerLifeLock(s) || hasPlaneswalkerEncounterLock(s));
 const potionPrice = (b: PlaneswalkerBottle) => PLANESWALKER_PRICES.potion - (b.labourSteps === PLANESWALKER_LABOUR_STEPS ? PLANESWALKER_PRICES.labourCredit : 0);
 const wandererWeeks = (s: SliceState) => Math.max(0, (s.planeswalker.promotionWeek ?? s.week) - (s.wanderer.promotionWeek ?? s.week));
 const exhaustedSupply = (state: PlaneswalkerState) => state.bottles.length >= 3 && state.bottles.every(b => b.status === 'CONSUMED' && failed(b.outcome));
@@ -203,7 +203,7 @@ export function applyPlaneswalkerCommand(s: SliceState, command: PlaneswalkerCom
 }
 
 export function projectPlaneswalker(s: SliceState): PlaneswalkerProjection {
-  const state = s.planeswalker, available = knownChannel(s), promoted = isPlaneswalker(s), actions: PlaneswalkerAction[] = [];
+  const state = s.planeswalker, available = knownChannel(s), promoted = hasPlaneswalkerHistory(s), actions: PlaneswalkerAction[] = [];
   const add = (id: string, label: string, cost: string, command: PlaneswalkerAcquisitionCommand) => {
     const reason = planeswalkerAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
   };
@@ -232,7 +232,7 @@ export function projectPlaneswalker(s: SliceState): PlaneswalkerProjection {
     formula: available && state.guidanceKnown ? PLANESWALKER_AUXILIARY_DONORS.map(d => ({ name: d.name, quantity: 1, unit: '条' })) : [],
     ...(available ? { story: `${PLANESWALKER_FORMULA_STATUS}${PLANESWALKER_SOURCE_STATUS}` } : {}),
     supplies: available ? `${state.guidanceKnown ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。` : '专业介绍后登记三瓶独立成品与各自辅助箱；现在尚未交付。'}每瓶6400便士，或本瓶五项实际劳动后900便士，包含三件专属辅助原物；场地检查另付140便士。现有全部失败耗尽才可花1行动申请，跨真实周到货仍须逐瓶实际付费。` : '',
-    actions: available ? [...actions, ...(state.guidanceKnown && isPlaneswalkerAcquisitionStage(s) ? planeswalkerRitualActions(s) : []), ...(promoted ? [...planeswalkerLifeActions(s), ...planeswalkerEncounterActions(s)] : [])] : [],
+    actions: available && s.progression.sequence !== 1 ? [...actions, ...(state.guidanceKnown && isPlaneswalkerAcquisitionStage(s) ? planeswalkerRitualActions(s) : []), ...(promoted ? [...planeswalkerLifeActions(s), ...planeswalkerEncounterActions(s)] : [])] : [],
     bottles: available ? state.bottles.map(b => ({
       id: b.id, title: `第${bottleNumber(b)}瓶 · 旅法师独立成品与辅助箱`,
       source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}原箱${b.auxiliaryKit.id}、原封签${b.auxiliaryKit.sealId}。${b.auxiliaryKit.items.map(i => `${i.name}一条（${i.id}），${i.source}`).join('')} ${b.auxiliaryKit.checkedWeeks.length ? `实际检查周：${b.auxiliaryKit.checkedWeeks.join('、')}；${b.status === 'CONSUMED' ? `第${b.consumedWeek}周全部耗尽。` : '原件尚未耗用，旧检查不会延长本次场地有效期。'}` : '尚未打开核对原辅助箱。'}`,
@@ -242,8 +242,8 @@ export function projectPlaneswalker(s: SliceState): PlaneswalkerProjection {
     preparations: available ? PLANESWALKER_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [],
     preparedWeek: available ? state.preparedWeek : null,
     abilities: promoted ? PLANESWALKER_ABILITIES.map(a => ({ ...a, mastery: s.progression.mastery[a.id] ?? 0 })) : [],
-    acting: promoted ? s.progression.acting : 0,
-    digestion: promoted ? `漫游者消化${state.wandererActingAtPromotion}/100留存；旅法师扮演${s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；各项新能力每案只在真实应用后最多增加8掌握，成功而未使用不奖。九处原传说不重复算成本阶生活实践。` : available ? `漫游者需消化100（当前${s.progression.acting}/100）、从实际晋升周起12整周（当前${wandererWeeks(s)}/12）；另须九处真实传说、三项不同专业准备与本周场地及原辅助箱检查。` : '先走完漫游者之路。',
+    acting: promoted ? (s.progression.sequence === 1 ? s.starKey.planeswalkerActingAtPromotion ?? 100 : s.progression.acting) : 0,
+    digestion: s.progression.sequence === 1 && promoted ? '旅法师的消化与九处原传说已保留；旧阶段操作已经结束，当前实践请前往星之匙通行室。' : promoted ? `漫游者消化${state.wandererActingAtPromotion}/100留存；旅法师扮演${s.progression.acting}/100。三案各实际报告25、一次反思25，普通完成同样可消化；各项新能力每案只在真实应用后最多增加8掌握，成功而未使用不奖。九处原传说不重复算成本阶生活实践。` : available ? `漫游者需消化100（当前${s.progression.acting}/100）、从实际晋升周起12整周（当前${wandererWeeks(s)}/12）；另须九处真实传说、三项不同专业准备与本周场地及原辅助箱检查。` : '先走完漫游者之路。',
     pollution: s.seer.pollution, risk: available ? PLANESWALKER_CONSUMPTION_RISK : '',
     resources: available ? { health: s.health, maxHealth: 100, mind: s.mind, maxMind: 100, spirituality: s.spirituality, maxSpirituality: 120, cash: `${s.cash}便士`, actionsRemaining: s.actionsRemaining } : null,
     currentGender: s.character.gender,

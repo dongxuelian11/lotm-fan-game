@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.195.0 阶段版
+# 诡秘之主同人游戏 · 0.196.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手、太阳与死神已有有限序列1基础；其余12条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手、太阳、死神与门已有有限序列1基础；其余11条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -252,3 +252,15 @@ node --expose-gc scripts/play/pale-emperor-save.mjs --expected-boundaries 224
 ```
 
 完整专项逐一检验224个命名边界。Vitest 保留全输入完整性校验与关键事务代表测试，二者验证范围分别记录。恢复输入保留原当代人物、六十年经历、实际失败和新伤，不改变玩家存档。
+
+星之匙专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix planeswalker-v01740 --only-prefix wanderer-v01500 --only-prefix star-key-v01960
+npm run typecheck
+npx vitest run tests/domain/star-key-acquisition.test.ts tests/domain/star-key-life.test.ts tests/domain/star-key-combat.test.ts tests/domain/star-key-inheritance.test.ts tests/domain/star-key-shared.test.ts tests/domain/star-key-natural.test.ts tests/domain/star-key-save.test.ts tests/renderer/star-key-panel.test.tsx tests/renderer/star-key-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc scripts/play/star-key-save.mjs --expected-boundaries 126
+```
+
+专项核验126个命名边界，其中3个名称与另一名称记录同一实际转换，按原字节核对并分别计数为123个唯一转换。输入保留原707条与209条死亡分支、813命令首次校验拒绝与修复后完全相同的结算。当前活分支沿原701和平截点继续至823条；旧死亡档不会因此复起。门路线早期序列4起点有定向验证背景，不能当作普通人9→1完整自然通关。详见[星之匙阶段记录](docs/STAR_KEY_PLAYABLE_STAGE.md)。
