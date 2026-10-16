@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.201.0",
+  "version": "0.202.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -476,6 +476,21 @@
       "name": "lotm_release_0.201.0_dark_angel_test_inputs_5_2026-10-16.tar.gz",
       "bytes": 15652370,
       "sha256": "94c7d40972a66241f48d9152ad52101de276fa0d90e8126ca3e6565d976a84ff"
+    },
+    {
+      "name": "lotm_release_0.202.0_unclean_monarch_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17935088,
+      "sha256": "ccda7baa4910e799bfc672bb09c219dc3356491fece665a5f317b710dbaebd46"
+    },
+    {
+      "name": "lotm_release_0.202.0_unclean_monarch_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17898988,
+      "sha256": "48fadfefbd1dd3c1a1d7bf276a0e3cf1b84eccb64ac0cba327732a513bad22a6"
+    },
+    {
+      "name": "lotm_release_0.202.0_unclean_monarch_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 43679,
+      "sha256": "7c804f332d318bc00b974205c4e7c8264f002b4786bec4b69afcb40afabc78c2"
     }
   ],
   "fileEntries": [
@@ -21768,6 +21783,601 @@
       "path": "tests/fixtures/unaging-demoness-v01530/natural.json",
       "bytes": 5322517,
       "sha256": "e11152731ee89cb51c4c411864280a9dfb39c8452a33a898d94348f872d8a195"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundaries.index.json",
+      "bytes": 7446,
+      "sha256": "fa3ea0c3d0f336598c21751ded3b7a45005b092a92db3d62bbff492edd009067"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundaries.steps.json",
+      "bytes": 3402,
+      "sha256": "5f46986a1be4b51815e82de14dbe8edd9a9373a4cb06fef5ff2340257c73d9ee"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-actual-independent-harlan-contact.json",
+      "bytes": 6164486,
+      "sha256": "80d9c2d5f1d1321b983dab26fa7b8dac81156f76d9f556e5036e427cb32c0a24"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-actual-work-after-living-exit.json",
+      "bytes": 6871614,
+      "sha256": "a0d3b060688466faae3eabe94375747f43562072a59818bab289c688d2264ae3"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-actual1200p-buy-unclean-monarch-potion-1.json",
+      "bytes": 2535273,
+      "sha256": "efe5d236853a102d39790c54bd9ab66347c45a9a76c03356cfa51557269895f9"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-actual180p-current-week-prepare-unclean-monarch-potion-1.json",
+      "bytes": 2546065,
+      "sha256": "fa9956e5954695231dbdffbde8b2609cf0aaff7b31ffa3df0242482103008e1f"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-combat-round-1.json",
+      "bytes": 6616942,
+      "sha256": "a97cfb4b47ba028474f1196229d7da933d3a46c8e4afcab896a8e94028b54313"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-combat-round-2.json",
+      "bytes": 6866332,
+      "sha256": "844a534ddc5a44f385cc07b192ee1f748d619a765e4650eba8151e1d28d7365d"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-consume-unclean-monarch-potion-1.json",
+      "bytes": 2568664,
+      "sha256": "8f0574748b5e6038e08eb84a339be5f203dca17a7697514d4084c46eac1f8f39"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-exact-original718-living-source.json",
+      "bytes": 2058586,
+      "sha256": "6d6df04f26c88b437d64db08da473c2e0aa85bab6ba6fa44ab79c2afe687683c"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-independent-optional-fight.json",
+      "bytes": 6283484,
+      "sha256": "eaff987f2d7c9820b0d9c59111adb4e5948f72f9e6a8a8735ffa7213e0c24d11"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-check_original.json",
+      "bytes": 3237684,
+      "sha256": "c33774a7f9a77ee2b828b49af2ed59bb34b0dfd48bcbf726e3aecbc04544ffe8"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-consent-2.json",
+      "bytes": 2733756,
+      "sha256": "0dfea61ede863c56021e33b598e16e1b6e7b9df1152d11d0ef9df0a1f0775b44"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-consent.json",
+      "bytes": 2674563,
+      "sha256": "c6819ee690064119446261dc46746cc73a705ac06299862483c2bbe3d9a4256d"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-honest-report.json",
+      "bytes": 3617436,
+      "sha256": "c5d57e28d8a3978cca175f0bb0654df228db700d396d520c672f72a6028b4052"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-impulse_binding.json",
+      "bytes": 3176579,
+      "sha256": "587ad18f8a0665d2aaf6b0d479fa0352204f2d2883159fc8c853aa3fa69e4922"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-leave.json",
+      "bytes": 3546178,
+      "sha256": "2120961ff47cbe5e6958f5d930d80e92b93b2a19834feeceaa15d3b47ef997bd"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-notice_impulse.json",
+      "bytes": 3115976,
+      "sha256": "41db643004af209194f86b26f8da1e2a420b930ce314fb4be589032c0f201c96"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-observe-originals.json",
+      "bytes": 2615212,
+      "sha256": "2c0549758317cbdd52efd86a59d9043133aa9b98bcf607710159d9107121e72f"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-prepare.json",
+      "bytes": 2805739,
+      "sha256": "4e1b7744e9ef91e40fd5c909609d8d2b7929c01d7e37ab912046a3f29a7b6ea6"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-read_original.json",
+      "bytes": 3056180,
+      "sha256": "17774577677a078ad8324eb2f099fcdf67bda0e3b388feb1d28dbe4a6c67daa2"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-return_card.json",
+      "bytes": 3356574,
+      "sha256": "dd1dbdf2631cf322d00345639444abc16939bcef924c64ffcfe2437d227cb6c8"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-return_piece.json",
+      "bytes": 3475084,
+      "sha256": "ad5aa0fb0aa7bc74e8e8b5e4924493d63fc65b0d622b4b307449b24a81eaac15"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-return_to_a.json",
+      "bytes": 3297436,
+      "sha256": "7e0b8d89b52b3f61db6af0f3a1049e23189a127cc620da6d19f497379783e70d"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-return_to_entry.json",
+      "bytes": 3415837,
+      "sha256": "f7c95aa58dd23470accba63dacfd1739a5c6ac4d1a0026c4020a8819b974e479"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-take_card.json",
+      "bytes": 2937092,
+      "sha256": "3ffcf13082df43ccb8a9215083148369eccc78870728824ecde3bd6911d257dd"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-walk_to_a.json",
+      "bytes": 2877808,
+      "sha256": "8c39512cb960385f770f89a6f4ff29ffeb2a531097b1158a8e9ad922bf51a20c"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-measured-reading-walk_to_b.json",
+      "bytes": 2996385,
+      "sha256": "ff4be7713944526c6ab4f1190510fc36e84fd932a470c5d5de246db64fc92e92"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-confirm_emotion.json",
+      "bytes": 4240463,
+      "sha256": "3a1c8f89f7569ffb3788a1a0d159aa469dc1cf8b45ece8de168c08e946e79faf"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-consent-2.json",
+      "bytes": 3795889,
+      "sha256": "c61e1ee66e2e2af30c48cb65036773f86dbab072d7734f1c01827d20d3e4cdc4"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-consent.json",
+      "bytes": 3736530,
+      "sha256": "3586e159b4b714698c38f2969924336549c0545682c755414841948749721ab0"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-focused_interference.json",
+      "bytes": 4301994,
+      "sha256": "96bd042781eca926d8ec169a5634c2af56473079f5046123c41df9034e0216e4"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-honest-report.json",
+      "bytes": 4744121,
+      "sha256": "86be5203dc509b550a1fa0a3be6c204be7c89ce65f9bca585995a4e496c9cb05"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-leave.json",
+      "bytes": 4672703,
+      "sha256": "bfbd5262da0392c2caaef7ab594e1f7cd3efbd2067e3c7c782fdeec1ff86c0b3"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-observe-originals.json",
+      "bytes": 3677012,
+      "sha256": "40cf01eb2a92227e83a5d962504740354e46e0b30f947473f0eaa7beb178b1ee"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-perform_operation.json",
+      "bytes": 4363265,
+      "sha256": "93d3f05ea68d4a5b962542ca1358265686dee783bb3f80deb858009b303736f2"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-prepare.json",
+      "bytes": 3868045,
+      "sha256": "2ee8ec2d9ed48639a5a5a84adae171a984c611f997cddce74c6793c9eed257ae"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-read_original.json",
+      "bytes": 4119148,
+      "sha256": "760932c73d5dfc5250af9ab7778bc3bd245c47646f8021111819e246592a44d6"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-rehearse_bell.json",
+      "bytes": 4179694,
+      "sha256": "a854d4bf35929e1515de60ccb67538fe88e7ad6eed846bfee4acb7cfa6a9b1d8"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-return_card.json",
+      "bytes": 4482601,
+      "sha256": "799f2b271c99c50a9af82a296c2b764e0eb1843bd240fd2ebd75096781b230c0"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-return_piece.json",
+      "bytes": 4601443,
+      "sha256": "2aed7e5f1b2cb59d10e6ef39b5133cee091a631b1172787b2d011497a72c5bf7"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-return_to_a.json",
+      "bytes": 4423155,
+      "sha256": "51a60cead015e189f960e2c490346a939a61ed5c91b05c222a3e893f208f20c5"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-return_to_entry.json",
+      "bytes": 4542030,
+      "sha256": "e83afe99b1e53ba08deb865f1b36a6be71b940ece760bfcf6220c126eb66a4b9"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-take_card.json",
+      "bytes": 3999731,
+      "sha256": "537c913de9e919069d0ef5de8986c9f442f812cc1082b7f39769dca9f2ed0631"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-walk_to_a.json",
+      "bytes": 3940285,
+      "sha256": "1eee390dc23e1f6e57065031a7d41ee1e37300d6a833445dba9f918b51e0c38d"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-observed-tension-walk_to_b.json",
+      "bytes": 4059186,
+      "sha256": "baa97671a08c3c5c15eb1023b4cb9e7fe37e8d15dbbd4155071b15a7db2fcd02"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-paid-independent-combat-piece.json",
+      "bytes": 6081021,
+      "sha256": "769ffb1d74431b75c417c1dee132a3eb25065bf07103167df57d936dfc5c4069"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-paid500-guidance-freezes-eight-roots.json",
+      "bytes": 2246485,
+      "sha256": "544dbf00ab7935e1c0bf001d103795cc7c7adf54e8d6497f724fac79d68d18a8"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 2448733,
+      "sha256": "8b54236fe049109c1856b4ebfb4d6a22c95613653ad2728091b1e97cca8cb542"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-preparation-CHECK_RETURN.json",
+      "bytes": 2460188,
+      "sha256": "32d8d7d90e8b4afe6d4ccfa2e937358f29fbf58df69f8d85d390b719559956bb"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 2438616,
+      "sha256": "875e0e41cef89c589e3a75d6d0b501e2ba5c79e13a25f80eb195c68497c8bfbb"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-728-action.json",
+      "bytes": 2520615,
+      "sha256": "ed51c09ac49908433905430874915b4d098453a6eb1a017dd76fdef5c761ebd2"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-729-action.json",
+      "bytes": 2520838,
+      "sha256": "da91a3c8b403e75dc5b56267852b6d2c6b1856214b997035a330ddc1040057dc"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-730-action.json",
+      "bytes": 2521286,
+      "sha256": "d0dcb4283621e90df02e851cbc126f7daec8da0792a21ce30586077d8cd3932d"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-731-action.json",
+      "bytes": 2521729,
+      "sha256": "910724b1a1cc2202ce3a8d7586147ad651f9b4f62dfa1b2553c07dcaf8cd0378"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-732-action.json",
+      "bytes": 2521952,
+      "sha256": "0d5cb20e3a8f5ec819c5cacaec7208fbeca2dad1b38eaa0646caf6d1b833fcd6"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-733-action.json",
+      "bytes": 2522403,
+      "sha256": "0d24ec607545e09527875b3d03676ca375fc8cee96cf68adb5194662e16eab99"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-734-action.json",
+      "bytes": 2522849,
+      "sha256": "bb1ff527ac9cdfaadf01d9872f3488f6a54df756c7886845548ad416a467850d"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-735-action.json",
+      "bytes": 2523072,
+      "sha256": "07e8298ffbb1c40308aa109a8f7be3d28fedcd934ae3c198c492594456b4bdb3"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-736-action.json",
+      "bytes": 2523522,
+      "sha256": "dd88024ffa38b59349a0f7c1a2331a3332142e9dc1249667f5db0aa65b19188b"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-737-action.json",
+      "bytes": 2523967,
+      "sha256": "c9a2e9cde3cb01576f9e80575a6e9261c2c2d7060210b6fc03aa5fc1a19e628c"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-738-action.json",
+      "bytes": 2524190,
+      "sha256": "7c898b23db2720a70c5dd5850579039edd5ba16ef3979a0dfe96751629b7a469"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-739-action.json",
+      "bytes": 2524640,
+      "sha256": "22a82b260483f325e0c714fb431739940b76f4f1a78995daa52af35e9167fa55"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-740-action.json",
+      "bytes": 2525085,
+      "sha256": "a7d1e97df934d2f07bdd9b5ffc4a59d644be1a8cdd34fc4a0ce0a3989462c944"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-741-action.json",
+      "bytes": 2525308,
+      "sha256": "bd048709a143e75f97288efcd0a4d84398ecfbe00a5ed7d64890d573948fd4be"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-742-action.json",
+      "bytes": 2525757,
+      "sha256": "8fd68a0a1c7b4cae2865eca810195be6f1b08f2d8302a6d3d8ce0046b67c96a4"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-743-action.json",
+      "bytes": 2526202,
+      "sha256": "e338c5ffeed4e6567dfe8d7312abe24851b944f31d58ef946787e6e1a518fbbe"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-744-action.json",
+      "bytes": 2526426,
+      "sha256": "27ad5320eab4d22636f65fa4e365ede7b185a00d1a761348a144e2906b462262"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-745-action.json",
+      "bytes": 2526877,
+      "sha256": "7255a491e2fe1133a0e5abac8c84a5e6b6a65b670d1f4b9bf1aa0e30133cb388"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-746-action.json",
+      "bytes": 2527323,
+      "sha256": "e73f21d1926cb06f9d0568e68f44e0b33dc4ad0b86bd9c1242fcc38f9118945e"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-747-action.json",
+      "bytes": 2527546,
+      "sha256": "5c7b473dbee796a45b1934141bd49491adcf65f639ceb8dfd328aa47b2872f70"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-748-action.json",
+      "bytes": 2527996,
+      "sha256": "7604d30a8ab0daadb9d545817bef7139572f70ae05e1b3234c898c17c1938320"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-749-action.json",
+      "bytes": 2528441,
+      "sha256": "bb48c97ad201f3d28e771f56e271e9de6360d42683b2b7ae9e175e4c8fbcd68d"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-750-action.json",
+      "bytes": 2528664,
+      "sha256": "e3c60115bb986c612bcf6030e3f0a07a8b293fdd13fdaa5541aaffaed2965697"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-751-action.json",
+      "bytes": 2529114,
+      "sha256": "da0099de09fac76c8ef7c3580d287d127e94b3b9885e65a43ccc8c16d30629f7"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-752-action.json",
+      "bytes": 2529559,
+      "sha256": "afa01be21eea8f8ce1e97254558f4719700ed174fb21a461f88993ca42ba8f46"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-756-action.json",
+      "bytes": 2585640,
+      "sha256": "83b7e2be3bb7775c27f296a6c06f878208204b63a6c9ce639ddf32bd5aaad59e"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-792-event_choice.json",
+      "bytes": 4774103,
+      "sha256": "a18a78c2786aa11127e71abf9b91f93e0df7adfe706ae12fb1025d32cdf0f0c7"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-793-action.json",
+      "bytes": 4774261,
+      "sha256": "544092962345d5ad756a7a66d07206c86bc6fad10a05e73e96d532a583afc9de"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-794-action.json",
+      "bytes": 4774487,
+      "sha256": "a058bc16648fd327dead71bb893e01f4b5650692b297a9000438d3d165235b6b"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-step-795-action.json",
+      "bytes": 4775244,
+      "sha256": "480dc2f4e13915220d9f2893bf98ede405f3ec8b3ef4665abd71ee3e200b62a3"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-three-actual-honest-reports-reflected.json",
+      "bytes": 5997150,
+      "sha256": "d0a3652d73ff34c993d697a44b0484214ebd005167d8bd75a14646ded7d85872"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-unclean-monarch-potion-1-real-labour-2.json",
+      "bytes": 2482135,
+      "sha256": "ceec7c20dad4c982bfd240cd64482cb1fb88ce3ebc4a35534ae6e32a8f41aa37"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-unclean-monarch-potion-1-real-labour-3.json",
+      "bytes": 2493200,
+      "sha256": "c4bce29dcab1800ee72d6ab50d600b9458d578e3b7c1ee23eb733f439467d315"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-unclean-monarch-potion-1-real-labour-4.json",
+      "bytes": 2504226,
+      "sha256": "43091c3e180e975c0273d99f1c3b270444e89ef5cc09b86e8ef84fe84076c55a"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-unclean-monarch-potion-1-real-labour-5.json",
+      "bytes": 2515110,
+      "sha256": "09ce3333baf7f5cac7a388591bf469cc7c3277f5d0c9cda0d11075ef6e7deeda"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-unclean-monarch-potion-1-real-labour.json",
+      "bytes": 2471389,
+      "sha256": "23e24449b08ca39c8586c4fe950143de023aa7eb6d6ddfe8f4ef45378259f010"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-check_original.json",
+      "bytes": 5492947,
+      "sha256": "1b5c778093ba83423b077c0fbff5a608ccaab5efecbe6aea92527b6af646dee7"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-consent-2.json",
+      "bytes": 4925568,
+      "sha256": "2916d74bfa18e81565a3aa6bfad8cbd4a1fb5c725f25d0dde2771237afd7a443"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-consent.json",
+      "bytes": 4865837,
+      "sha256": "1ef2e9d4ca56041f52f878763232cf08155db98beafca9b3fd219852d8a830ca"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-honest-report.json",
+      "bytes": 5937046,
+      "sha256": "62721da5e0a7c012f2c6f0a451e08d759618bf664d82518515b1891571992d77"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-impulse_binding.json",
+      "bytes": 5372079,
+      "sha256": "d8e39dc0bf23754621176568c639d25567e90a100e5c7b26d6fe448d2d672e60"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-leave.json",
+      "bytes": 5865256,
+      "sha256": "264c6138cad1370bd7840fb24ed8bdcdd1e6e27cfa438f85334a0aa93158d70f"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-manual_operation.json",
+      "bytes": 5553976,
+      "sha256": "f6c2f79b2dfb20317c69caacfe2e01d286041ef45c96a22755fe8d213cfeb827"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-notice_impulse.json",
+      "bytes": 5311202,
+      "sha256": "bbb601a3064e0eef2913cb09a9137395dd99fa7e1d35541ee770553fb325ce09"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-observe-originals.json",
+      "bytes": 4805947,
+      "sha256": "3a9615c27cea5dbe4306d1d410ee8563b4af83536215eabdcc6d25a1c8aeb9f7"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-prepare.json",
+      "bytes": 4998089,
+      "sha256": "1dfbb99a8ea222cf97aaab433cd0318a3f75007937e7e0c4efa5d672a0e9b852"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-read_original.json",
+      "bytes": 5250770,
+      "sha256": "395dbbcf18bc6d815f0b6ccf6ffe9e54902f8d6cac2364c6779d1326ad382ac4"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-return_card.json",
+      "bytes": 5674046,
+      "sha256": "7bc41a042a8ffa6f11af3bef1ef6ce5f94bdb62c47a17a5a194494d18bb8b505"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-return_piece.json",
+      "bytes": 5793624,
+      "sha256": "9327977a8159787a33379fab0d4f08eda17cc2fd4f67f80436b0f04f1058ab32"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-return_to_a.json",
+      "bytes": 5614222,
+      "sha256": "407e898abae08ebe91c9bd2950ac6bfe0412501db7b91d29ec1d610d2a6d9db0"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-return_to_entry.json",
+      "bytes": 5733843,
+      "sha256": "da03787aa261472e40da002ce0f066dab0c28bb2867347de990b38e5887128ef"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-take_card.json",
+      "bytes": 5130512,
+      "sha256": "a4fec113c7e07ea524c6a5cdff289baae9975d7a53f24628e29c3cd76ba1824e"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-walk_to_a.json",
+      "bytes": 5070694,
+      "sha256": "1cf5093dc30c4f57d21594088294cd8d6cba4eae160ed7278183b10bddb4e321"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-walk_to_b.json",
+      "bytes": 5190339,
+      "sha256": "5d421f13bc73752f3cac9a787819aa8f5a5bf1af8b503b339dfd0659c7a44a07"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/boundary-withdrawn-input-withdraw_consent.json",
+      "bytes": 5432619,
+      "sha256": "4b2bb6f9d9f18e1fd2565c8e97f53f780dcdb5626376cd05ea47df4b8af8de1f"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/capture-integrity.json",
+      "bytes": 12699,
+      "sha256": "b4130dd6827fa56cc21a818604693f886624211dadf768dc8d3c95422e64ddda"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/commands.jsonl",
+      "bytes": 2531797,
+      "sha256": "50c50dae0b76f4de02182a76d57107fed3822cf842008b32c95a16ab8a694466"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/natural.json",
+      "bytes": 8591444,
+      "sha256": "44f863ff2286be6aff77275d5c8455b2641680214d5b879e285d9d976b6d3ada"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/public.jsonl",
+      "bytes": 3139729,
+      "sha256": "6986e63bccd501362b5bb1fc919f663e52d94e3a972940c39b461e04a8afc1d4"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/snapshot-combatStart.json",
+      "bytes": 3186317,
+      "sha256": "c351773adafe7a87b68fd3b6eeb1093cb93b486b40831149c0aee72b0cd3f882"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/snapshot-combatTerminal.json",
+      "bytes": 3435707,
+      "sha256": "eef7146a9136b7df4b9dfe5f36f43792d424418b56bbf5d9258e37181ed292ab"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/snapshot-departure.json",
+      "bytes": 1029416,
+      "sha256": "5edec8a1c8879a27c5de497754fca41d7ea1511ccd5a30991b090d06244fab2d"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/snapshot-guidance.json",
+      "bytes": 1216950,
+      "sha256": "1f78835f213b7cc65c70aa1e726ede1f082f4eb72cd3a0421b45aa6f3c180bad"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/snapshot-practiced.json",
+      "bytes": 3013579,
+      "sha256": "06c560c92a795eca2a30bc93f7e7c17274b2ae496c03469efc6d8a69ee403372"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/snapshot-promoted.json",
+      "bytes": 1292885,
+      "sha256": "277904e9d8727878f154e82e6771aec27053b9fb2b222e1f783228ca9b347d58"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/source-prefix.json",
+      "bytes": 1510125,
+      "sha256": "4988db8c77420deb9a680045227b649bfe745d92b3faf2ca06790d769a534ceb"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/summary.json",
+      "bytes": 2168304,
+      "sha256": "b4a2a47678689e72d0fa71ae5c1fae8758d122e73efeab6bd290556dea8c2512"
+    },
+    {
+      "path": "tests/fixtures/unclean-monarch-v02020/transitions.json",
+      "bytes": 15121,
+      "sha256": "a8922045e891b534c82068f711af4506690213ccc87710fad4270b58cfe52113"
     },
     {
       "path": "tests/fixtures/undying-v01260/boundaries.json",

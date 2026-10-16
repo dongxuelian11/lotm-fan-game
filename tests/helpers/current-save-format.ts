@@ -1,3 +1,3 @@
 /** Exact current output format. Historical input literals stay local to each migration test. */
-export const CURRENT_SCHEMA_VERSION = 198;
-export const CURRENT_CONTENT_VERSION = 'dark-angel-v198';
+export const CURRENT_SCHEMA_VERSION = 199;
+export const CURRENT_CONTENT_VERSION = 'unclean-monarch-v199';

@@ -1,6 +1,7 @@
 import type { PaleEmperorRoundOutcome, projectPaleEmperorCombat } from '../pale-emperor/combat.js';
 import type { PureWhiteAngelRoundOutcome, projectPureWhiteAngelCombat } from '../pure-white-angel/combat.js';
 import type { ThunderGodRoundOutcome, projectThunderGodCombat } from '../thunder-god/combat.js';
+import type { UncleanMonarchRoundOutcome, projectUncleanMonarchCombat } from '../unclean-monarch/combat.js';
 import type { DarkAngelRoundOutcome, projectDarkAngelCombat } from '../dark-angel/combat.js';
 import type { KnowledgeEmperorRoundOutcome, projectKnowledgeEmperorCombat } from '../knowledge-emperor/combat.js';
 import type { ApocalypseDemonessRoundOutcome, projectApocalypseDemonessCombat } from '../apocalypse-demoness/combat.js';
@@ -17,6 +18,7 @@ import type { AttendantMysteriesRoundOutcome, projectAttendantMysteriesCombat } 
 import type { PaleEmperorState, PaleEmperorCommand, PaleEmperorProjection } from '../pale-emperor/types.js';
 import type { PureWhiteAngelState, PureWhiteAngelCommand, PureWhiteAngelProjection } from '../pure-white-angel/types.js';
 import type { ThunderGodState, ThunderGodCommand, ThunderGodProjection } from '../thunder-god/types.js';
+import type { UncleanMonarchState, UncleanMonarchCommand, UncleanMonarchProjection } from '../unclean-monarch/types.js';
 import type { DarkAngelState, DarkAngelCommand, DarkAngelProjection } from '../dark-angel/types.js';
 import type { KnowledgeEmperorState, KnowledgeEmperorCommand, KnowledgeEmperorProjection } from '../knowledge-emperor/types.js';
 import type { ApocalypseDemonessState, ApocalypseDemonessCommand, ApocalypseDemonessProjection } from '../apocalypse-demoness/types.js';
@@ -300,6 +302,7 @@ export type SliceIntent =
   | { type:'PALE_EMPEROR'; command:PaleEmperorCommand }
   | { type:'PURE_WHITE_ANGEL'; command:PureWhiteAngelCommand }
   | { type:'THUNDER_GOD'; command:ThunderGodCommand }
+  | { type:'UNCLEAN_MONARCH'; command:UncleanMonarchCommand }
   | { type:'DARK_ANGEL'; command:DarkAngelCommand }
   | { type:'KNOWLEDGE_EMPEROR'; command:KnowledgeEmperorCommand }
   | { type:'APOCALYPSE_DEMONESS'; command:ApocalypseDemonessCommand }
@@ -533,6 +536,7 @@ export interface SliceCombatRound {
   paleEmperorOutcome?:PaleEmperorRoundOutcome;
   pureWhiteAngelOutcome?:PureWhiteAngelRoundOutcome;
   thunderGodOutcome?:ThunderGodRoundOutcome;
+  uncleanMonarchOutcome?:UncleanMonarchRoundOutcome;
   darkAngelOutcome?:DarkAngelRoundOutcome;
   knowledgeEmperorOutcome?:KnowledgeEmperorRoundOutcome;
   apocalypseDemonessOutcome?:ApocalypseDemonessRoundOutcome;
@@ -610,7 +614,7 @@ export interface SliceCombatState {
   sailorScalesReady?: boolean;
   wrathCharge?: number;
   navigatorWater?: {soakedRemaining:0|1|2;bound:boolean;skipNext:boolean};
-  encounterId:'FIRST_CASE'|'DARK_ANGEL_DISPUTE'|'KNOWLEDGE_EMPEROR_DISPUTE'|'APOCALYPSE_DEMONESS_DISPUTE'|'DIVINE_HAND_DISPUTE'|'TIME_WORM_DISPUTE'|'STAR_KEY_DISPUTE'|'PALE_EMPEROR_DISPUTE'|'PURE_WHITE_ANGEL_DISPUTE'|'THUNDER_GOD_DISPUTE'|'ALL_KNOWING_EYE_DISPUTE'|'MISFORTUNE_KNIGHT_DISPUTE'|'BEAUTY_GODDESS_DISPUTE'|'CIVILIZATION_ENLIGHTENER_DISPUTE'|'WRITER_DISPUTE'|'CONQUEROR_DISPUTE'|'ATTENDANT_MYSTERIES_DISPUTE'|'BARREN_MATRIARCH_DISPUTE'|'BALANCER_DISPUTE'|'ENTROPY_DUKE_DISPUTE'|'FATE_PROPHET_DISPUTE'|'ANCIENT_EVIL_DISPUTE'|'BLOOD_DUKE_DISPUTE'|'ELDER_DISPUTE'|'SAGE_DISPUTE'|'CALAMITY_DEMONESS_DISPUTE'|'GLORY_DISPUTE'|'FATE_TROJAN_DISPUTE'|'PLANESWALKER_DISPUTE'|'DEATH_CONSUL_DISPUTE'|'LIGHT_SEEKER_DISPUTE'|'CATASTROPHE_DISPUTE'|'WISDOM_ANGEL_DISPUTE'|'CONCEALMENT_SERVANT_DISPUTE'|'LIFE_GIVER_DISPUTE'|'KNOWLEDGE_MENTOR_DISPUTE'|'DISCERNER_DISPUTE'|'WEATHER_WARLOCK_DISPUTE'|'MIRACLE_WORKER_DISPUTE'|'COFFIN_BEARER_DISPUTE'|'CHAOS_HUNTER_DISPUTE'|'FRENZY_MAGE_DISPUTE'|'CHAOS_WALKER_DISPUTE'|'SILENT_DISCIPLE_DISPUTE'|'BLATHERER_COURT'|'THREE_HEADED_TEMPLAR_DISPUTE'|'PROPHECY_MASTER_DISPUTE'|'UNAGING_DEMONESS_DISPUTE'|'SILVER_KNIGHT_HUNT'|'SILVER_KNIGHT_DISPUTE'|'DECEIT_MENTOR_DISPUTE'|'WANDERER_DISPUTE'|'FERRYMAN_DISPUTE'|'JUSTICE_MENTOR_DISPUTE'|'SEA_KING_DISPUTE'|'INSIGHT_SCHOLAR_DISPUTE'|'FEAR_BISHOP_DISPUTE'|'SUMMONING_MASTER_DISPUTE'|'ARCANE_SCHOLAR_DISPUTE'|'DREAM_WEAVER_DISPUTE'|'WAR_BISHOP_DISPUTE'|'ANCIENT_SCHOLAR_DISPUTE'|'ANCIENT_ALCHEMIST_DISPUTE'|'IMPERATIVE_MAGE_DISPUTE'|'FALLEN_EARL_DISPUTE'|'MISFORTUNE_MAGE_DISPUTE'|'PUPPET_DISPUTE'|'DEVIL_DISPUTE'|'BLACK_KNIGHT_DISPUTE'|'MYSTIC_DISPUTE'|'DESPAIR_DISPUTE'|'DEMON_HUNTER_DISPUTE'|'PARASITE_DISPUTE'|'SECRETS_SORCERER_RITUAL'|'UNDYING_DISPUTE'|'UNSHADOWED_DISPUTE'|'CATACLYSM_PRIEST_DISPUTE'|'PROPHET_DISPUTE'|'NIGHTWATCHER_DISPUTE'|'WITCH_KING_DISPUTE'|'ALCHEMIST_DISPUTE'|'MANIPULATOR_DISPUTE'|'IRON_BLOOD_DISPUTE'|'BIZARRO_RITUAL'|'DRUID_DISPUTE'|'PUNISHMENT_KNIGHT_DISPUTE'|'MENTOR_DISORDER_DISPUTE'|'WINNER_DISPUTE'|'WRAITH_DISPUTE'|'DESIRE_APOSTLE_DISPUTE'|'SHEPHERD_DISPUTE'|'STAR_MYSTIC_DISPUTE'|'PAIN_DISPUTE'|'GUARDIAN_DISPUTE'|'DREAM_STEALER_DISPUTE'|'TRAVELER_DISPUTE'|'GATEKEEPER_DISPUTE'|'PRIEST_OF_LIGHT_DISPUTE'|'OCEAN_SINGER_DISPUTE'|'MYSTICISM_MAGISTER_DISPUTE'|'SPIRIT_WARLOCK_DISPUTE'|'CRIMSON_SCHOLAR_DISPUTE'|'ASTRONOMER_DISPUTE'|'DREAMWALKER_DISPUTE'|'REAPER_DISPUTE'|'MARIONETTIST_DISPUTE'|'BIOLOGIST_DISPUTE'|'JUDGE_DISPUTE'|'CORRUPTION_BARON_DISPUTE'|'CALAMITY_PRIEST_DISPUTE'|'ZOMBIE_DISPUTE'|'DEMON_DISPUTE'|'ROSE_BISHOP_DISPUTE'|'SCROLL_PROFESSOR_DISPUTE'|'PLEASURE_DISPUTE'|'DAWN_PALADIN_DISPUTE'|'FIRE_THIEF_DISPUTE'|'RECORDER_DISPUTE'|'SPIRIT_GUIDE_DISPUTE'|'NOTARY_DISPUTE'|'WIND_BLESSED_DISPUTE'|'POLYMATH_DISPUTE'|'SOOTHER_DISPUTE'|'POTION_PROFESSOR_DISPUTE'|'ARTISAN_DISPUTE'|'HYPNOTIST_DISPUTE'|'CONSPIRATOR_DISPUTE'|'FACELESS_DISPUTE'|'CLOWN_RESCUE'|'HUNTER_CARGO'|'PROVOKER_DISPUTE'|'MAGICIAN_DISPUTE'|'PYROMANIAC_DISPUTE'|'PSYCHOLOGIST_DISPUTE'|'VAMPIRE_DISPUTE'|'SLEEPLESS_WATCH'|'MIDNIGHT_DISPUTE'|'NIGHTMARE_DISPUTE'|'MARAUDER_DISPUTE';
+  encounterId:'FIRST_CASE'|'UNCLEAN_MONARCH_DISPUTE'|'DARK_ANGEL_DISPUTE'|'KNOWLEDGE_EMPEROR_DISPUTE'|'APOCALYPSE_DEMONESS_DISPUTE'|'DIVINE_HAND_DISPUTE'|'TIME_WORM_DISPUTE'|'STAR_KEY_DISPUTE'|'PALE_EMPEROR_DISPUTE'|'PURE_WHITE_ANGEL_DISPUTE'|'THUNDER_GOD_DISPUTE'|'ALL_KNOWING_EYE_DISPUTE'|'MISFORTUNE_KNIGHT_DISPUTE'|'BEAUTY_GODDESS_DISPUTE'|'CIVILIZATION_ENLIGHTENER_DISPUTE'|'WRITER_DISPUTE'|'CONQUEROR_DISPUTE'|'ATTENDANT_MYSTERIES_DISPUTE'|'BARREN_MATRIARCH_DISPUTE'|'BALANCER_DISPUTE'|'ENTROPY_DUKE_DISPUTE'|'FATE_PROPHET_DISPUTE'|'ANCIENT_EVIL_DISPUTE'|'BLOOD_DUKE_DISPUTE'|'ELDER_DISPUTE'|'SAGE_DISPUTE'|'CALAMITY_DEMONESS_DISPUTE'|'GLORY_DISPUTE'|'FATE_TROJAN_DISPUTE'|'PLANESWALKER_DISPUTE'|'DEATH_CONSUL_DISPUTE'|'LIGHT_SEEKER_DISPUTE'|'CATASTROPHE_DISPUTE'|'WISDOM_ANGEL_DISPUTE'|'CONCEALMENT_SERVANT_DISPUTE'|'LIFE_GIVER_DISPUTE'|'KNOWLEDGE_MENTOR_DISPUTE'|'DISCERNER_DISPUTE'|'WEATHER_WARLOCK_DISPUTE'|'MIRACLE_WORKER_DISPUTE'|'COFFIN_BEARER_DISPUTE'|'CHAOS_HUNTER_DISPUTE'|'FRENZY_MAGE_DISPUTE'|'CHAOS_WALKER_DISPUTE'|'SILENT_DISCIPLE_DISPUTE'|'BLATHERER_COURT'|'THREE_HEADED_TEMPLAR_DISPUTE'|'PROPHECY_MASTER_DISPUTE'|'UNAGING_DEMONESS_DISPUTE'|'SILVER_KNIGHT_HUNT'|'SILVER_KNIGHT_DISPUTE'|'DECEIT_MENTOR_DISPUTE'|'WANDERER_DISPUTE'|'FERRYMAN_DISPUTE'|'JUSTICE_MENTOR_DISPUTE'|'SEA_KING_DISPUTE'|'INSIGHT_SCHOLAR_DISPUTE'|'FEAR_BISHOP_DISPUTE'|'SUMMONING_MASTER_DISPUTE'|'ARCANE_SCHOLAR_DISPUTE'|'DREAM_WEAVER_DISPUTE'|'WAR_BISHOP_DISPUTE'|'ANCIENT_SCHOLAR_DISPUTE'|'ANCIENT_ALCHEMIST_DISPUTE'|'IMPERATIVE_MAGE_DISPUTE'|'FALLEN_EARL_DISPUTE'|'MISFORTUNE_MAGE_DISPUTE'|'PUPPET_DISPUTE'|'DEVIL_DISPUTE'|'BLACK_KNIGHT_DISPUTE'|'MYSTIC_DISPUTE'|'DESPAIR_DISPUTE'|'DEMON_HUNTER_DISPUTE'|'PARASITE_DISPUTE'|'SECRETS_SORCERER_RITUAL'|'UNDYING_DISPUTE'|'UNSHADOWED_DISPUTE'|'CATACLYSM_PRIEST_DISPUTE'|'PROPHET_DISPUTE'|'NIGHTWATCHER_DISPUTE'|'WITCH_KING_DISPUTE'|'ALCHEMIST_DISPUTE'|'MANIPULATOR_DISPUTE'|'IRON_BLOOD_DISPUTE'|'BIZARRO_RITUAL'|'DRUID_DISPUTE'|'PUNISHMENT_KNIGHT_DISPUTE'|'MENTOR_DISORDER_DISPUTE'|'WINNER_DISPUTE'|'WRAITH_DISPUTE'|'DESIRE_APOSTLE_DISPUTE'|'SHEPHERD_DISPUTE'|'STAR_MYSTIC_DISPUTE'|'PAIN_DISPUTE'|'GUARDIAN_DISPUTE'|'DREAM_STEALER_DISPUTE'|'TRAVELER_DISPUTE'|'GATEKEEPER_DISPUTE'|'PRIEST_OF_LIGHT_DISPUTE'|'OCEAN_SINGER_DISPUTE'|'MYSTICISM_MAGISTER_DISPUTE'|'SPIRIT_WARLOCK_DISPUTE'|'CRIMSON_SCHOLAR_DISPUTE'|'ASTRONOMER_DISPUTE'|'DREAMWALKER_DISPUTE'|'REAPER_DISPUTE'|'MARIONETTIST_DISPUTE'|'BIOLOGIST_DISPUTE'|'JUDGE_DISPUTE'|'CORRUPTION_BARON_DISPUTE'|'CALAMITY_PRIEST_DISPUTE'|'ZOMBIE_DISPUTE'|'DEMON_DISPUTE'|'ROSE_BISHOP_DISPUTE'|'SCROLL_PROFESSOR_DISPUTE'|'PLEASURE_DISPUTE'|'DAWN_PALADIN_DISPUTE'|'FIRE_THIEF_DISPUTE'|'RECORDER_DISPUTE'|'SPIRIT_GUIDE_DISPUTE'|'NOTARY_DISPUTE'|'WIND_BLESSED_DISPUTE'|'POLYMATH_DISPUTE'|'SOOTHER_DISPUTE'|'POTION_PROFESSOR_DISPUTE'|'ARTISAN_DISPUTE'|'HYPNOTIST_DISPUTE'|'CONSPIRATOR_DISPUTE'|'FACELESS_DISPUTE'|'CLOWN_RESCUE'|'HUNTER_CARGO'|'PROVOKER_DISPUTE'|'MAGICIAN_DISPUTE'|'PYROMANIAC_DISPUTE'|'PSYCHOLOGIST_DISPUTE'|'VAMPIRE_DISPUTE'|'SLEEPLESS_WATCH'|'MIDNIGHT_DISPUTE'|'NIGHTMARE_DISPUTE'|'MARAUDER_DISPUTE';
   round: number; enemyHealth: number; enemyMind: number; enemyInjuries: SliceInjury[]; enemyRisk: number;
   enemyStatus: 'RESISTING' | 'SURRENDERED' | 'DEAD'; lastRound: SliceCombatRound | null;
 }
@@ -639,6 +643,7 @@ export interface SliceCombatProjection {
   paleEmperor?:ReturnType<typeof projectPaleEmperorCombat>;
   pureWhiteAngel?:ReturnType<typeof projectPureWhiteAngelCombat>;
   thunderGod?:ReturnType<typeof projectThunderGodCombat>;
+  uncleanMonarch?:ReturnType<typeof projectUncleanMonarchCombat>;
   darkAngel?:ReturnType<typeof projectDarkAngelCombat>;
   knowledgeEmperor?:ReturnType<typeof projectKnowledgeEmperorCombat>;
   apocalypseDemoness?:ReturnType<typeof projectApocalypseDemonessCombat>;
@@ -736,6 +741,7 @@ export interface SliceState {
   paleEmperor:PaleEmperorState;
   pureWhiteAngel:PureWhiteAngelState;
   thunderGod:ThunderGodState;
+  uncleanMonarch:UncleanMonarchState;
   darkAngel:DarkAngelState;
   knowledgeEmperor:KnowledgeEmperorState;
   apocalypseDemoness:ApocalypseDemonessState;
@@ -927,7 +933,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 198; contentVersion: 'dark-angel-v198'; runId: string; revision: number;
+  schemaVersion: 199; contentVersion: 'unclean-monarch-v199'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -948,6 +954,7 @@ export interface SliceProjection {
   paleEmperor:PaleEmperorProjection;
   pureWhiteAngel:PureWhiteAngelProjection;
   thunderGod:ThunderGodProjection;
+  uncleanMonarch:UncleanMonarchProjection;
   darkAngel:DarkAngelProjection;
   knowledgeEmperor:KnowledgeEmperorProjection;
   apocalypseDemoness:ApocalypseDemonessProjection;

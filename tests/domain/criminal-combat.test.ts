@@ -1,3 +1,4 @@
+import { UNCLEAN_MONARCH_COUNT_WHEEL, uncleanMonarchAbilityWheel, currentUncleanMonarchCombatSource } from '../../src/domain/unclean-monarch/combat.js';
 import { BLOOD_DUKE_COUNT_WHEEL, bloodDukeAbilityWheel, currentBloodDukeCombatSource } from '../../src/domain/blood-duke/combat.js';
 import { BLATHERER_COUNT_WHEEL, blathererAbilityWheel, currentBlathererCombatSource } from '../../src/domain/blatherer/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -139,13 +140,15 @@ describe('Criminal S9 exact G physical profile', () => {
 
   it('does not unlock later Abyss powers or change neighboring original profiles', () => {
     const state = fixture();
-    for (const [pathwayId, sequence] of [[null, null], ['abyss', 3], ['abyss', 2], ['abyss', 1]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['abyss', 3], ['abyss', 2], ['abyss', 1], ['abyss', 0]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isCriminal(state)).toBe(false); expect(currentCriminalCombatSource(state)).toBeNull();
       // Sequence 3 is now the implemented Blatherer profile; changing the selector cannot grant its source.
-      expect(playerCountWheel(state)).toEqual(sequence === 2 ? BLOOD_DUKE_COUNT_WHEEL : sequence === 3 ? BLATHERER_COUNT_WHEEL : ORDINARY_COUNT_WHEEL);
-      expect(playerAbilityWheel(state, 'CONTROL')).toEqual(sequence === 2 ? bloodDukeAbilityWheel(state, 'CONTROL') : sequence === 3 ? blathererAbilityWheel(state, 'CONTROL') : ordinaryAbilityWheel(false, 'CONTROL'));
+      expect(playerCountWheel(state)).toEqual(sequence === 1 ? UNCLEAN_MONARCH_COUNT_WHEEL : sequence === 2 ? BLOOD_DUKE_COUNT_WHEEL : sequence === 3 ? BLATHERER_COUNT_WHEEL : ORDINARY_COUNT_WHEEL);
+      expect(playerAbilityWheel(state, 'CONTROL')).toEqual(sequence === 1 ? uncleanMonarchAbilityWheel(state, 'CONTROL') : sequence === 2 ? bloodDukeAbilityWheel(state, 'CONTROL') : sequence === 3 ? blathererAbilityWheel(state, 'CONTROL') : ordinaryAbilityWheel(false, 'CONTROL'));
       expect(currentBlathererCombatSource(state)).toBeNull(); expect(currentBloodDukeCombatSource(state)).toBeNull();
+      expect(currentUncleanMonarchCombatSource(state)).toBeNull();
+      if (sequence === 1) expect(playerCountWheel(state)).toHaveLength(6);
     }
     for (const [sequence, wheel, ability] of [[8, UNWINGED_COUNT_WHEEL, unwingedAbilityWheel], [7, SERIAL_KILLER_COUNT_WHEEL, serialKillerAbilityWheel], [6, DEMON_COUNT_WHEEL, demonAbilityWheel]] as const) {
       state.progression.pathwayId = 'abyss'; state.progression.sequence = sequence;
