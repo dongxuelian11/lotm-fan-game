@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.206.0",
+  "version": "0.207.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -596,6 +596,26 @@
       "name": "lotm_release_0.206.0_hand_of_order_test_inputs_6_2026-10-16.tar.gz",
       "bytes": 8134000,
       "sha256": "6485d88baeb9e0387139d5e7d6ffedf26e1a61008c2118e50a754e36eaab6906"
+    },
+    {
+      "name": "lotm_release_0.207.0_nature_walker_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17779961,
+      "sha256": "8aa556e13c59fe12ac1d110f6d85ea55ce38751a67edd11330f4d8e315786db0"
+    },
+    {
+      "name": "lotm_release_0.207.0_nature_walker_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17624843,
+      "sha256": "a8558236f186934ba3423b6e9fa61b23f147c07f31b37a20a45836a5d2d60cb5"
+    },
+    {
+      "name": "lotm_release_0.207.0_nature_walker_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 17832548,
+      "sha256": "0ad38d73a02511c2efc46598df2c241b985cd388f0d6c041b60eb442cb0f3c95"
+    },
+    {
+      "name": "lotm_release_0.207.0_nature_walker_test_inputs_4_2026-10-16.tar.gz",
+      "bytes": 719758,
+      "sha256": "7b350174e43e1b3ffd4469b53e8591959072155a311f321c1b8530e5b253aace"
     }
   ],
   "fileEntries": [
@@ -17068,6 +17088,616 @@
       "path": "tests/fixtures/mysticism-magister-v01010/shared-verify-save-boundary.json",
       "bytes": 625633,
       "sha256": "87ea926909881115da815383bbd92971c8dd34c39e4dcbaefbed59d1a97019c7"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundaries.index.json",
+      "bytes": 10479,
+      "sha256": "1d0f66c4a3f9e3f1216b42bd06d81447c4f798880bbb57c45f17bc458cf69ddc"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundaries.steps.json",
+      "bytes": 5032,
+      "sha256": "78e8d9af36cb9d4cbaca39058af67909a7fd47c4ef7891835800c365a659aa75"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-actual-event-life-bill-01-2.json",
+      "bytes": 4238140,
+      "sha256": "ce0d1d28ac0483704bc7df8428df33a6885a7c215ca68f6015a10267d44ae2d1"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-actual-event-life-bill-01-3.json",
+      "bytes": 4396501,
+      "sha256": "ac9a1762865430fa4974b59339d1660c49d8931668d11d59d7f7a1f1d6418c5a"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-actual-event-life-bill-01.json",
+      "bytes": 4126780,
+      "sha256": "26c45d5260592a396c007a412d07ae870b399aaf97eeb7bcb0a1f7f7e1017182"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-1.json",
+      "bytes": 5267296,
+      "sha256": "b1560499816b8c6d5b9856aad8b33ec69d73e5477d481138310663a431b6bf78"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-2.json",
+      "bytes": 5736961,
+      "sha256": "437e7bc2a0e8864b7757bcdc55509424befe6d9538430d8af31cb2c2b8aac598"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-3.json",
+      "bytes": 6000326,
+      "sha256": "7a98e823582c1a0804db2b8a1c308c0239469e5c1cd2160af42d4dd7eb7ffb44"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-4.json",
+      "bytes": 6284678,
+      "sha256": "2626c6f3aeb653f172be862bafd371a82692d8ea5e68ad24add8466b2a971fd8"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-5.json",
+      "bytes": 6588035,
+      "sha256": "71152fa3e8d708214e7753a8d89555d2399a66adf0baf7d7f60823719848fce6"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-6.json",
+      "bytes": 6853058,
+      "sha256": "e478e12d2152c0b8ce7001ac14bd8b2746b2f32c109d605bfa4dc8e6d6003f14"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-7.json",
+      "bytes": 7127725,
+      "sha256": "a948aa5318eeedc4a1f1a00962af3d676bf12a956c5c1318f22ae0b6b3418120"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-8.json",
+      "bytes": 7402576,
+      "sha256": "6080a2a565a217f777100e2a41099263bdb1e3e93879c4b213b5724670c3f0fa"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-combat-round-9.json",
+      "bytes": 7539891,
+      "sha256": "6b0b4ed23a5c4e4ef3b428fa80461f657ff06fe383c5c946c961869c56332354"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-consume-nature-walker-potion-1.json",
+      "bytes": 4187559,
+      "sha256": "88da134163335019a71caca22bcb29f57fc3f20e22f7146fe7d44cb531d1e97c"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-exact-original851-living-source.json",
+      "bytes": 3153942,
+      "sha256": "190df250d9ba35c47364821387b3cb3b4b61d3181c5eb02c57f545a124a8cc80"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-independent-optional-elias-fight.json",
+      "bytes": 4789209,
+      "sha256": "e20f20b098bbc8f68f21bb173c1e84e02e3ae764e1595770914ff3cf01a9cc96"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-care_check.json",
+      "bytes": 4276142,
+      "sha256": "5d11739f400772dcfadf0c2aaaa302d290ff3df0481cc5d9811a78e0d3bff7cd"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-check_originals.json",
+      "bytes": 4256461,
+      "sha256": "d0f0006edcb54469e7e6708d7f346429df56200ff716796134b8e9d70bf78a7e"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-check_sample.json",
+      "bytes": 4268243,
+      "sha256": "7a4ad255927b46300dac530a542f11db6d325331494499b8a803ce99f810ee72"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-consent_owner.json",
+      "bytes": 4259002,
+      "sha256": "9fb3a36a4dad68dab7194b5cc54d5a8f2e1f02b0a7440cf882cf8f71334e7155"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-honest-report.json",
+      "bytes": 4294161,
+      "sha256": "bf740707db3b35caf1c9976c673b378ac5f4274c8710f15e2e3722c46e687dd3"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-inspect.json",
+      "bytes": 4289699,
+      "sha256": "71f0cbaffa9173c4bbb509672a9249a58ba203cecd904f01239deaefd6fcff00"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-leave.json",
+      "bytes": 4291859,
+      "sha256": "a17c1211fb3352575541075bdf9eaa57bd561c12f47cffc34b2359e721f47247"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-living_response.json",
+      "bytes": 4271909,
+      "sha256": "fd8d5cb8e85df4d2b6ce6990ad8ed63017b270ed7ff69dceeebf9e38c2f81494"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-observe-originals-and-new-annex.json",
+      "bytes": 4246239,
+      "sha256": "bf1440c5bc3c3e9e78ca3d8508cce8e1d8a1586d432a5809624f3dbf2b525fea"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-prepare.json",
+      "bytes": 4249319,
+      "sha256": "698629ff882930af939c806376f802d4368ec523cc3bf2b8de7700ff0b94c466"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-return_objects.json",
+      "bytes": 4279235,
+      "sha256": "e63de1472a02f7fb7413004b1d3a9420b33f25cfc005345b82304ba9245d55d0"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-setup_objects.json",
+      "bytes": 4261548,
+      "sha256": "603ee43973213ec1503cb02cb0970375a9dc85782af358c34664e526b60708f2"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-walk-2.json",
+      "bytes": 4264814,
+      "sha256": "a24f1c96094a3f37010e9e2875bc5e6ffc2a4a9a4574a9d1661e827fc53f9d4b"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-walk-3.json",
+      "bytes": 4282276,
+      "sha256": "da6cd58bac35327928ee4443b679846e9b68e4703e5484c48c61bd0f4189a9e1"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-walk-4.json",
+      "bytes": 4286416,
+      "sha256": "b76e4e0ed0045d864d6977e37563d4327b06d432e15bf8485919f4db69822340"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-living-response-walk.json",
+      "bytes": 4253199,
+      "sha256": "2aec5ddcfa6beaeb8c31e7d6bc91ccfe22add9da236067b1b014f15686eac311"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-nature-walker-potion-1-actual-labour-2.json",
+      "bytes": 4068116,
+      "sha256": "2a353dbb731399d40c892f42091bd99a365e311cc1f348c0f204b054c3301840"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-nature-walker-potion-1-actual-labour-3.json",
+      "bytes": 4079791,
+      "sha256": "5f449f6538cf659045241794c52853d2d04419658c719bbc0a8eb0df67ff875f"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-nature-walker-potion-1-actual-labour-4.json",
+      "bytes": 4091425,
+      "sha256": "47ea1f4cc8dd369f795e9cced6bccb3f008d5668309fcb96ccfe2c9e7a505107"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-nature-walker-potion-1-actual-labour-5.json",
+      "bytes": 4102920,
+      "sha256": "291481581aeb2264a14da956910373f7b713f0b6581442bd1d7fedc50b8c9bc9"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-nature-walker-potion-1-actual-labour.json",
+      "bytes": 4056908,
+      "sha256": "163d5d1d99391e0a22a513e1ca370c795b241ae145d4f223fad97ea80abedf0d"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-ordinary-life-after-actual-exit.json",
+      "bytes": 7555824,
+      "sha256": "87d86d8df872f369c346d79de266547eed9dc7da5df5a715a4d97a6ac7065abb"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-original-adults-remain-outside-player-walks-to-new-yard.json",
+      "bytes": 4591981,
+      "sha256": "aced4d28a1ab44c7ad55a2bc403cc8f92fe92d8f97a7d8f9d421843438004605"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-paid1200-nature-walker-potion-1.json",
+      "bytes": 4120342,
+      "sha256": "30a7aa43e1633a03fed920d188dc779a4f356d98ea7e2a0826e11c3ed2f835c9"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-paid180-current-week-prepare-nature-walker-potion-1.json",
+      "bytes": 4133064,
+      "sha256": "1f13578925d6f8ce4c8c2d9d0e821eea3c576e2f803bdab127912a224ae23023"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-paid30-three-independent-combat-support-pieces.json",
+      "bytes": 4471094,
+      "sha256": "46c4ff741de4e279b47701bfc510b389e22fa4a1daf035cb3431eea1715461cb"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-paid500-guidance-freezes-eight-roots-and-original-pad50-guard.json",
+      "bytes": 3585361,
+      "sha256": "ad0a05ca6026554a8e8c67948f1da3c43ab0a65f9ee90f649a3046e373760313"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-pay40-place-two-marks-and-three-finite-pieces.json",
+      "bytes": 4241354,
+      "sha256": "2ccb571aecd32356767e7afd7e233158ba890ef8cf19c1747c3884aad1b3165d"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-preparation-check_limits.json",
+      "bytes": 4032485,
+      "sha256": "6d84362996f0d821e972d5984521e781f1e0c7d2c066710ac9fa9c691c948b63"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-preparation-check_return.json",
+      "bytes": 4044949,
+      "sha256": "a44c642c6d687f8be8e4d966c9a2213da98de36f67f5bcbaf12608889525a4d4"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-preparation-verify_originals.json",
+      "bytes": 4021554,
+      "sha256": "4c3eac9c2d49b0e83fa2afd477e70e723feb6ac82b4a58870530f88a0adae769"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-apply_impact.json",
+      "bytes": 4377238,
+      "sha256": "86058b7ddb28757fa4f12346c65541f45e57fc9b2620e1d40a3ebc6d25540cde"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-check_originals.json",
+      "bytes": 4358280,
+      "sha256": "56e40c38b9eabda9bbacb5b6eaafa790513a64f01948e1a4ea666b077cba9a06"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-check_sample.json",
+      "bytes": 4369977,
+      "sha256": "1c8e6670d5b39cee3621cd889d8ab98dde6a75b57f7b4827dc64268f092f6967"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-consent_owner.json",
+      "bytes": 4360811,
+      "sha256": "7c3ef3f38cc2d6aad82ea86e342e387d7d17076a876aa49ae8d5ec3a5ba2adef"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-honest-report.json",
+      "bytes": 4395108,
+      "sha256": "711fe52fbb73301f477882e299b8a7bd74e7f7107391e2e9fe5fa5ab06e93a91"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-inspect.json",
+      "bytes": 4390738,
+      "sha256": "7e4cc2e2f4b66e479b3938032221a9573976603f46857b16beb6587bee121d85"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-leave.json",
+      "bytes": 4392888,
+      "sha256": "2402bc2e41c4eadbc3b2d1d257bc87a475555175209ad17b9f0bc63d93f1f6f0"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-observe-originals-and-new-annex.json",
+      "bytes": 4348570,
+      "sha256": "dc97f9cf346fa8f10e4f0e0e2ceddad291c7d0bf2c1d415535836135ee89a91f"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-prepare.json",
+      "bytes": 4351400,
+      "sha256": "18e6eb8d01ca5a3cf212ea6dac0748df13b42880ea81afca273eb56c675ced2b"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-return_objects.json",
+      "bytes": 4380090,
+      "sha256": "fb1f98e44e0ebdfb0f6fc9d8f3463cf3de75ac45e164d08c465fb549fcfec08d"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-root_bearing.json",
+      "bytes": 4373542,
+      "sha256": "63f273ca4747f6fe5db7b28c325d717cc2f647c32860c48a93aad97ef942a80c"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-setup_objects.json",
+      "bytes": 4363352,
+      "sha256": "e5f573b673521f748a15b91240b18c4b89c3537e33b5312c7dedc91f6c2929a9"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-walk-2.json",
+      "bytes": 4366613,
+      "sha256": "1affa8c775e02280dbf00721e6498726529d36c613ca43f55d8d0e8d8d659648"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-walk-3.json",
+      "bytes": 4383343,
+      "sha256": "57245e2b9ef128674bdebf3150fc66298dcbd4c44f57bc7fc0266efda5b38005"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-walk-4.json",
+      "bytes": 4387469,
+      "sha256": "902aedff293508720181d58c60d8fbe5987b34514c98e305e17199352fe081ce"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-root-impact-walk.json",
+      "bytes": 4355029,
+      "sha256": "c1df2fcbc7d676fe68ca8dab0100cd14002dde0cf7e26c9c691b46922682fccf"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-861-action.json",
+      "bytes": 4108735,
+      "sha256": "a66e1fbb0ba6ef577dc13bbd72e2b57f985ea0d7d1456708d4cd6cc9f414da38"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-862-action.json",
+      "bytes": 4108959,
+      "sha256": "50b75100de7350d8449a444bb03e7cc2449c1f1c5281d412ccb86f43b3a58fd9"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-863-action.json",
+      "bytes": 4109411,
+      "sha256": "a1ba2ef94a68d6319cad2e19fda47bef7387dd36f0985dcf4f2b16897accd875"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-864-action.json",
+      "bytes": 4109857,
+      "sha256": "8622dc8686edaee82f470fe30620594fb426130f1c56e321c482af5e2c53cddc"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-865-action.json",
+      "bytes": 4110080,
+      "sha256": "6582b490bb1075c51bf09465149c5fbd4289332f63b1d4039936ccb59919ad33"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-866-action.json",
+      "bytes": 4110530,
+      "sha256": "9b3a04ece1f605a5e19abc41452f2cd0cb2e2dcdac494f9a4a61e9fe363eb183"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-867-action.json",
+      "bytes": 4110975,
+      "sha256": "bd595ac5f71436f0d1d9c6f115982cdf2ad2bf8372a0aa1a9356d49f5d72f0c1"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-868-action.json",
+      "bytes": 4111198,
+      "sha256": "b005cb8e0f60716583da2a2a0b811930444de6534708ed0c123c48f8af109db4"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-869-action.json",
+      "bytes": 4111648,
+      "sha256": "f578a88cf64284afc110a67f3ae70943cb19d51d608773ee10423c82689b91f9"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-870-action.json",
+      "bytes": 4112093,
+      "sha256": "e68773bbf00a41b99a0742f92aeb4c7fe683b10a7b2bee405b8e51f8983c1d16"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-871-action.json",
+      "bytes": 4112316,
+      "sha256": "3aecb8cdc7cd277f5d8dad51ecaeaf08e385032312e90c5acf9747ecc19e0c9f"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-872-action.json",
+      "bytes": 4112765,
+      "sha256": "5826e97f1ee11e7a370dd1071f4cc11d5fde21596e33d2bf77ac9c721f9a3a00"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-873-action.json",
+      "bytes": 4113210,
+      "sha256": "c8bde69fa7e23b8b38ce10c69a125cf0d0960d309a402290330167893281aaee"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-874-action.json",
+      "bytes": 4113434,
+      "sha256": "32dbac4f5cd47401671ed929ca74667a38c2eb6500347462b07b99cb03c59f00"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-875-action.json",
+      "bytes": 4113884,
+      "sha256": "082dce8ab6046347204669556faf798e51ee2a8d99431fbe56e06c3e4086d2e6"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-876-action.json",
+      "bytes": 4114329,
+      "sha256": "187ff8648aa405d8898406b99589f79fa6b8f60cf907d6282ac71b3e6fe0b388"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-878-action.json",
+      "bytes": 4126088,
+      "sha256": "ae33777a50f39122eb1be1d045903dfcd4e65aaa491c57b15ad2d2df6bdcb601"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-879-action.json",
+      "bytes": 4126241,
+      "sha256": "5a0ab1e31b5ce1907c4398c61cf8769509bed3a429b3f9309080a712bd2694c3"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-881-action.json",
+      "bytes": 4127075,
+      "sha256": "b5c3d0e585658d1ec4eecd838ff35e4fd5a6ff0c88cb7192dfd057181cfa21b5"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-885-action.json",
+      "bytes": 4237524,
+      "sha256": "5da5555a99858e87be657a2ffc4da796e27c87f0f0b5369fe508ee3722517aac"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-887-action.json",
+      "bytes": 4238595,
+      "sha256": "8875f5fe46ab29fa60ff382439e6efa224e42a62435a6711849d898428aebe13"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-889-action.json",
+      "bytes": 4244490,
+      "sha256": "848deb04f5c45ba7433cc60efd72ff8b10417f2022870f8406eec831766993ec"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-941-action.json",
+      "bytes": 4398936,
+      "sha256": "04395b2d46e552e62be563e9afc22bbc759d0b4d4dbe9b19ea806bbe9558f404"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-step-942-action.json",
+      "bytes": 4399609,
+      "sha256": "f793dacb0ba2766f83dd2a14070ed635385de0ce956503502e2ac723204911db"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-three-honest-reports-reflected.json",
+      "bytes": 4397782,
+      "sha256": "b496dd3b892234e179e0a636e16474b53dddea734891a947824ccfb7dbf81ac5"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-walk-four-metres-to-actual-outside.json",
+      "bytes": 4236778,
+      "sha256": "9ff62d14e69085b29218c447f694b72519d190391f966a07db2b3289a10d8235"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-care_check.json",
+      "bytes": 4327903,
+      "sha256": "3018f7a49345d201ca4d6ab2e0f6cb31a3ab9af00419eaab3faafc118edd3a34"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-check_originals.json",
+      "bytes": 4306275,
+      "sha256": "d17969029535e5417beaeae88e7e083576e5bc6ef984c17570cf5978699f304b"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-check_sample.json",
+      "bytes": 4318036,
+      "sha256": "3eb4d99fb86ade4555f55ed05983c969be82477d4f7dbb79f70d55c87ae96a35"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-consent_owner.json",
+      "bytes": 4308810,
+      "sha256": "92b374a75f311d0a1ad483dc37263b76d2a6da993b0db84bbd25e545d1be169a"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-honest-report.json",
+      "bytes": 4346189,
+      "sha256": "a6c93923b9a34308e6266b831e3afd6640c233e9959433387f7e4f297d7363ad"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-inspect.json",
+      "bytes": 4341725,
+      "sha256": "f00ccf74773cca4fa2b2c3bbe92db454d3ffdb0cc51b29af785044f59761de9d"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-leave.json",
+      "bytes": 4343887,
+      "sha256": "df09cdec2d0a5e7d36d39d339654292631760a5318636b32384e2871e781457e"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-living_response.json",
+      "bytes": 4321697,
+      "sha256": "8e83f01fdf5bf6c68572efd56c4dfc744fa9abf873314f289d940ac22a8c9ea2"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-observe-originals-and-new-annex.json",
+      "bytes": 4296547,
+      "sha256": "8352783c4900d8b81dc89d50b067b0b06ca5b3b2d200c201bf06d06847ca411f"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-prepare.json",
+      "bytes": 4299384,
+      "sha256": "4781cd811c72325590ae1d23a643e1d5891eec27f6e1c7d0d6ad4cabf51ab628"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-return_objects.json",
+      "bytes": 4331181,
+      "sha256": "870f9de8654a3d8894ecc951240c3aca27af291415055ecf013be9769da67b5e"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-setup_objects.json",
+      "bytes": 4311351,
+      "sha256": "ce12930b3b20ece5584489b98afe7b86ac5ae9e9634260028482c14f1c3879a6"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-walk-2.json",
+      "bytes": 4314612,
+      "sha256": "41ad92b69bf61aaf67c2c1ff7c9990f6e003a575747818e21a16e1218301b772"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-walk-3.json",
+      "bytes": 4334304,
+      "sha256": "da8580c618ae8e6890abdf68ac5b105d00331341f042bb917b067ab2086937dd"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-walk-4.json",
+      "bytes": 4338442,
+      "sha256": "ff7cd2ca0896ec116632f8dda5ce78c840b9ab53c541e3cd36f64188514a1e61"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-walk.json",
+      "bytes": 4303020,
+      "sha256": "ee330744d98d5cc596ab228eba3507ebcc9eaf200dcd1dc839c1aa03ee771304"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/boundary-withdrawn-care-withdraw_permission.json",
+      "bytes": 4324829,
+      "sha256": "47da660791f2dae9fd2ccf6d6f1efa1b7cb445f9a9347e2496e451a434ddf724"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/capture-integrity.json",
+      "bytes": 554071,
+      "sha256": "534f68cb17c71643483b73d2bde6b5b340d4c82e38016ca46a5f8b348132f560"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/commands.jsonl",
+      "bytes": 3372970,
+      "sha256": "a7a4fe8af3fc6d42c36d07f3d34b5f0b694f345144ebfe612b02e3e9d8a1ac56"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/natural.json",
+      "bytes": 9853856,
+      "sha256": "620cd1a94fd3a4c89abf6359c8126a564383bee51dc6fdfbd2442e4cca67916c"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/public.jsonl",
+      "bytes": 8625984,
+      "sha256": "52ceb71c23b98ee1f0490deb4564939ed4fba517e5203ba8c4a1fbb4f0db6258"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/snapshot-beforeEncounter.json",
+      "bytes": 2200083,
+      "sha256": "8d831e4e9e8aa2eaabe1cb450a28939ba0b0c21d2da83e1252af0a16be55e4bd"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/snapshot-combatStart.json",
+      "bytes": 2468118,
+      "sha256": "133095f9285335c37b1009742cad1f767e59272ca43f5047edd502bba7672117"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/snapshot-combatTerminal.json",
+      "bytes": 3777783,
+      "sha256": "bb7c612634b8d9f3409370827a1e340435ba7a3f060e78a01e98faa2f2ef1ee0"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/snapshot-departure.json",
+      "bytes": 1577029,
+      "sha256": "bea36d46cfb943ef508bf6ee948f1f8c3845c6f82dee32258c128c4f0d41679e"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/snapshot-guidance.json",
+      "bytes": 2008215,
+      "sha256": "a77db04bbebcdd1e863ccd5a01be0d99aa27c56bc3bb20523bf9631a3868212e"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/snapshot-livingContinuation.json",
+      "bytes": 3777951,
+      "sha256": "3fb3348879209af142a78c4d0d9f596efc49fce18a4426d6f020fdf294f8dbc0"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/snapshot-practiced.json",
+      "bytes": 2199410,
+      "sha256": "d94e2d7964882fe7edd4b80b38fdde5b2c8144aca809f719caf9a4a6d71db429"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/snapshot-promoted.json",
+      "bytes": 2118000,
+      "sha256": "3b9589e2c243ee3980d852071e70ffbf6e11a8ddf7694d9ee612a4aae3d44390"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/source-prefix.json",
+      "bytes": 2968520,
+      "sha256": "5743fefc8a159fab502b8317340274534b42a15a96d69d2941cf29e5465e803b"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/summary.json",
+      "bytes": 1664726,
+      "sha256": "ce58937ff8177f54e37eea719dc8c87f5e15d229733b8cbfccc4d78506445bf9"
+    },
+    {
+      "path": "tests/fixtures/nature-walker-v02070/transitions.json",
+      "bytes": 15092,
+      "sha256": "90a24d8b1adb4634800db87ccb8e92cee32bc5f35c852b3e6c88ba921fd1c720"
     },
     {
       "path": "tests/fixtures/navigator-v0280/natural.json",

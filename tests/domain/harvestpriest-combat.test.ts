@@ -1,3 +1,4 @@
+import { NATURE_WALKER_COUNT_WHEEL, natureWalkerAbilityWheel, currentNatureWalkerCombatSource } from '../../src/domain/nature-walker/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
@@ -130,7 +131,7 @@ describe('Harvest Priest S7 exact G profile and strict dispatch', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(45);
   });
 
-  it('preserves S9/S8 and unrelated S7, while unopened Mother S1/S0 stay ordinary', () => {
+  it('preserves S9/S8 and unrelated S7, while opened S1 and unopened S0 route exactly', () => {
     const state = fixture();
     expect(currentPhysicianCombatSource(state)).toBeNull(); expect(currentCultivatorCombatSource(state)).toBeNull();
     for (const [sequence, countWheel, abilityWheel] of [
@@ -141,7 +142,13 @@ describe('Harvest Priest S7 exact G profile and strict dispatch', () => {
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(abilityWheel('CONTROL', state));
       expect(isHarvestpriest(state)).toBe(false); expect(currentHarvestpriestCombatSource(state)).toBeNull();
     }
-    for (const sequence of [1, 0, null] as const) {
+    state.progression.sequence = 1;
+    expect(currentNatureWalkerCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(NATURE_WALKER_COUNT_WHEEL);
+    expect(playerCountWheel(state)).toHaveLength(6);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(natureWalkerAbilityWheel(state, 'CONTROL'));
+    expect(playerAbilityWheel(state, 'CONTROL')).not.toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
+    for (const sequence of [0, null] as const) {
       state.progression.sequence = sequence;
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));

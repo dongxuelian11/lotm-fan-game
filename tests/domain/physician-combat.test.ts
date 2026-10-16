@@ -1,3 +1,4 @@
+import { NATURE_WALKER_COUNT_WHEEL, natureWalkerAbilityWheel, currentNatureWalkerCombatSource } from '../../src/domain/nature-walker/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
@@ -143,14 +144,20 @@ describe('Physician S8 exact G profile and strict dispatch', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(30);
   });
 
-  it('keeps Cultivator S9 and existing Wheel and Chained profiles, with higher Mother stages ordinary', () => {
+  it('keeps Cultivator S9 and existing Wheel and Chained profiles, with opened S1 and unopened S0 routed exactly', () => {
     const state = fixture(); state.progression.sequence = 9;
     expect(playerCountWheel(state)).toEqual(CULTIVATOR_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(cultivatorAbilityWheel('CONTROL', state));
     expect(currentPhysicianCombatSource(state)).toBeNull();
     state.progression.sequence = 8;
     expect(currentCultivatorCombatSource(state)).toBeNull();
-    for (const sequence of [1, 0, null] as const) {
+    state.progression.sequence = 1;
+    expect(currentNatureWalkerCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(NATURE_WALKER_COUNT_WHEEL);
+    expect(playerCountWheel(state)).toHaveLength(6);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(natureWalkerAbilityWheel(state, 'CONTROL'));
+    expect(playerAbilityWheel(state, 'CONTROL')).not.toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
+    for (const sequence of [0, null] as const) {
       state.progression.sequence = sequence;
       expect(isPhysician(state)).toBe(false); expect(currentPhysicianCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);

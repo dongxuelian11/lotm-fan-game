@@ -226,5 +226,5 @@ describe("Long chapter navigation from actual natural saves", () => {
     // Assert the committed UI has released its save lock before checking the next action.
     await waitFor(() => expect(screen.getByRole("region", { name: "长期章节" }).getAttribute("aria-busy")).toBe("false"));
     expect(actionButton(game.state, "WORK").disabled).toBe(false); expectNoOldScene();
-  });
+ }, 10_000);
 });

@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.206.0 阶段版
+# 诡秘之主同人游戏 · 0.207.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手、太阳、死神、门、错误、战士、魔女、窥秘人、倒吊人、深渊、被缚者、怪物、黑皇帝与仲裁人已有有限序列1基础；最后1条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片，并已有有限序列1基础；本阶段补入大地途径序列1自然行者。全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -364,4 +364,16 @@ npm run fixtures:restore -- --only-prefix chaos-hunter-v01600 --only-prefix reco
 npx vitest run tests/domain/hand-of-order-acquisition.test.ts tests/domain/hand-of-order-life.test.ts tests/domain/hand-of-order-combat.test.ts tests/domain/hand-of-order-inheritance.test.ts tests/renderer/hand-of-order-panel.test.tsx --maxWorkers=1 --no-file-parallelism
 npm run build:main
 node --expose-gc --max-old-space-size=768 scripts/play/hand-of-order-save.mjs --expected-boundaries 283
+```
+
+
+207增量：大地新增有限序列1自然行者。原851条完整活档同种子续至955条，第一瓶第221周晋升。生机辨应与根系承冲各在生活中实际应用一次；另一次辨应施术成功后许可撤回，改为普通照料，不计能力应用。独立可选遭遇九轮后对手投降，两项新能力战斗实际应用均为0；原根垫与旧护腕继续真实消耗。本人沿四米原路退出后实际工作，第228周仍活着，保留两重两轻伤与累计风险3。有限范围、原人物物品连续性及验证状态见[自然行者阶段记录](docs/NATURE_WALKER_PLAYABLE_STAGE.md)。本地53个测试文件1113项、13项输入冻结/公开边界脚本测试及完整105个唯一SQLite转换通过，严格类型和构建通过。122个输入分4包，全部成员流式字节核对并实际恢复4个代表文件；远端Windows状态以本阶段PR为准。
+
+自然行者专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix coffin-bearer-v01610 --only-prefix barren-matriarch-v01850 --only-prefix nature-walker-v02070
+npx vitest run tests/domain/nature-walker-natural.test.ts tests/domain/nature-walker-natural-save.test.ts tests/renderer/nature-walker-combat-save.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc --max-old-space-size=768 scripts/play/nature-walker-save.mjs --source-directory tests/fixtures/nature-walker-v02070 --expected-boundaries 146
 ```

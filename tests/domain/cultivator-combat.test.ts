@@ -7,6 +7,7 @@ import { CULTIVATOR_COUNT_WHEEL, currentCultivatorCombatSource, drawCultivatorAb
   cultivatorAbilityWheel, cultivatorActionCount, resolveCultivatorCombatAbility,
   type CultivatorCombatSource, type CultivatorMoveId } from '../../src/domain/cultivator/combat.js';
 import * as cultivatorCombat from '../../src/domain/cultivator/combat.js';
+import { NATURE_WALKER_COUNT_WHEEL, natureWalkerAbilityWheel, currentNatureWalkerCombatSource } from '../../src/domain/nature-walker/combat.js';
 import { BARREN_MATRIARCH_COUNT_WHEEL, barrenMatriarchAbilityWheel } from '../../src/domain/barren-matriarch/combat.js';
 import { MONSTER_COUNT_WHEEL, monsterAbilityWheel } from '../../src/domain/monster/combat.js';
 import { MACHINE_COUNT_WHEEL, machineAbilityWheel } from '../../src/domain/machine/combat.js';
@@ -142,14 +143,21 @@ describe('Cultivator S9 exact G profile and strict dispatch', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(20);
   });
 
-  it('leaves unimplemented Mother sequences ordinary and preserves all Wheel and Chained profiles', () => {
+  it('keeps unimplemented Mother sequences ordinary, routes S1 exactly and preserves Wheel and Chained profiles', () => {
     const state = fixture();
-    for (const sequence of [1, 0, null] as const) {
+    for (const sequence of [0, null] as const) {
       state.progression.sequence = sequence;
       expect(isCultivator(state)).toBe(false); expect(currentCultivatorCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
     }
+    state.progression.sequence = 1;
+    expect(isCultivator(state)).toBe(false); expect(currentCultivatorCombatSource(state)).toBeNull();
+    expect(currentNatureWalkerCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(NATURE_WALKER_COUNT_WHEEL);
+    expect(playerCountWheel(state)).toHaveLength(6);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(natureWalkerAbilityWheel(state, 'CONTROL'));
+    expect(playerAbilityWheel(state, 'CONTROL')).not.toEqual(cultivatorAbilityWheel('CONTROL', state));
     state.progression.sequence = 2;
     expect(isCultivator(state)).toBe(false); expect(currentCultivatorCombatSource(state)).toBeNull();
     expect(playerCountWheel(state)).toEqual(BARREN_MATRIARCH_COUNT_WHEEL);
