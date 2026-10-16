@@ -1,13 +1,6 @@
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
-import { LAWYER_ABILITY_IDS } from '../lawyer/types.js';
-import { BARBARIAN_ABILITY_IDS } from '../barbarian/types.js';
-import { BRIBER_ABILITY_IDS } from '../briber/types.js';
-import { CORRUPTION_BARON_ABILITY_IDS } from '../corruption-baron/types.js';
-import { MENTOR_DISORDER_ABILITY_IDS } from '../mentor-disorder/types.js';
-import { FALLEN_EARL_ABILITY_IDS } from '../fallen-earl/types.js';
-import { FRENZY_MAGE_ABILITY_IDS } from '../frenzy-mage/types.js';
 import { hasFrenzyMageOldPractice, hasFrenzyMageRitualLock } from '../frenzy-mage/index.js';
 import { hasFrenzyMageLifeLock } from '../frenzy-mage/life.js';
 import { hasFrenzyMageEncounterLock } from '../frenzy-mage/encounter.js';
@@ -19,14 +12,14 @@ import type { PublicGameDate, PublicCheckResult } from '../../shared/contracts.j
 import { createEntropyDukeLifeState, applyEntropyDukeActivity, projectEntropyDukeLife, entropyDukeLifeActions, validateEntropyDukeLife, validateEntropyDukeActivityCommand, hasEntropyDukeLifeLock } from './life.js';
 import { createEntropyDukeEncounterState, applyEntropyDukeEncounterCommand, projectEntropyDukeEncounter, entropyDukeEncounterActions, validateEntropyDukeEncounter, validateEntropyDukeEncounterCommand, hasEntropyDukeEncounterLock } from './encounter.js';
 import { ENTROPY_DUKE_ABILITIES, ENTROPY_DUKE_INHERITED_ABILITIES, ENTROPY_DUKE_BOTTLE_IDS, ENTROPY_DUKE_CONSUMPTION_RISK, ENTROPY_DUKE_FORMULA_STATUS, ENTROPY_DUKE_GUIDE, ENTROPY_DUKE_LABOUR_STEPS, ENTROPY_DUKE_LABOUR_TASKS, ENTROPY_DUKE_MIN_FRENZY_MAGE_WEEKS, ENTROPY_DUKE_POTION_SOURCES, ENTROPY_DUKE_PREPARATIONS, ENTROPY_DUKE_PRICES, ENTROPY_DUKE_SOURCE_STATUS } from './content.js';
-import { ENTROPY_DUKE_ABILITY_IDS, ENTROPY_DUKE_PREPARATION_IDS, type EntropyDukeAcquisitionBudget, type EntropyDukeAcquisitionEvent, type EntropyDukeAcquisitionCommand, type EntropyDukeAction, type EntropyDukeBottle, type EntropyDukeCommand, type EntropyDukeProjection, type EntropyDukeState } from './types.js';
+import { ENTROPY_DUKE_INHERITED_ABILITY_IDS, ENTROPY_DUKE_ABILITY_IDS, ENTROPY_DUKE_PREPARATION_IDS, type EntropyDukeAcquisitionBudget, type EntropyDukeAcquisitionEvent, type EntropyDukeAcquisitionCommand, type EntropyDukeAction, type EntropyDukeBottle, type EntropyDukeCommand, type EntropyDukeProjection, type EntropyDukeState } from './types.js';
 
 const record = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const shape = (v: object, fields: readonly string[]) => Object.keys(v).sort().join('|') === [...fields].sort().join('|');
 const integer = (v: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): v is number => Number.isSafeInteger(v) && (v as number) >= min && (v as number) <= max;
 const success = (tier: string | null) => tier === 'SUCCESS' || tier === 'GREAT_SUCCESS';
 const failed = (tier: string | null) => tier === 'FAILURE' || tier === 'GREAT_FAILURE';
-export const ENTROPY_DUKE_INHERITED_ABILITY_IDS = [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS, ...BRIBER_ABILITY_IDS, ...CORRUPTION_BARON_ABILITY_IDS, ...MENTOR_DISORDER_ABILITY_IDS, ...FALLEN_EARL_ABILITY_IDS, ...FRENZY_MAGE_ABILITY_IDS] as const;
+export { ENTROPY_DUKE_INHERITED_ABILITY_IDS } from './types.js';
 const INHERITED_ABILITY_IDS = ENTROPY_DUKE_INHERITED_ABILITY_IDS;
 const freshBottle = (id: string, source: string, stockedWeek: number | null): EntropyDukeBottle => ({ id, source, stockedWeek, labourSteps: 0, acquiredWeek: null, consumedWeek: null, preparationWeek: null, status: 'SUPPLIER', outcome: null });
 export function createEntropyDukeState(): EntropyDukeState {

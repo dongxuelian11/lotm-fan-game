@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.204.0",
+  "version": "0.205.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -536,6 +536,36 @@
       "name": "lotm_release_0.204.0_mercury_snake_test_inputs_5_2026-10-16.tar.gz",
       "bytes": 920150,
       "sha256": "66c2456a9427e875ceba801a81e8db10f5375e76ad705d0c0deb32078efc6506"
+    },
+    {
+      "name": "lotm_release_0.205.0_prince_of_abolition_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17884319,
+      "sha256": "4a27a4e3155c6025017066da34c20f30428bf1faa5b56ff4fba708019991676a"
+    },
+    {
+      "name": "lotm_release_0.205.0_prince_of_abolition_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17787714,
+      "sha256": "fd1101f4950d780c6c1592413c1c00782a193f592bfbd40fad75d197c45be2b1"
+    },
+    {
+      "name": "lotm_release_0.205.0_prince_of_abolition_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 17839672,
+      "sha256": "4863f98c86d7367a41be705e51c4b7075cc60741121dba7059e72d298b91f6fa"
+    },
+    {
+      "name": "lotm_release_0.205.0_prince_of_abolition_test_inputs_4_2026-10-16.tar.gz",
+      "bytes": 17666488,
+      "sha256": "2375b00d9c55a6e9f603d99af8072c13ee2ef2a0bbd3d0e731455721cff0542a"
+    },
+    {
+      "name": "lotm_release_0.205.0_prince_of_abolition_test_inputs_5_2026-10-16.tar.gz",
+      "bytes": 17835903,
+      "sha256": "592ac328f22faca2bd8d8c1b83d15c42e94715b07dfc5fb57a2967176f0e1226"
+    },
+    {
+      "name": "lotm_release_0.205.0_prince_of_abolition_test_inputs_6_2026-10-16.tar.gz",
+      "bytes": 1831266,
+      "sha256": "011ad61228f73d321ebde26a8419973eaa6631d91975d0710094db91c799aeef"
     }
   ],
   "fileEntries": [
@@ -18088,6 +18118,996 @@
       "path": "tests/fixtures/priest-of-light-v01030/shared-stage-natural.json",
       "bytes": 2186994,
       "sha256": "60a2478639a780bdc7556220d7d4620c8d2e58137cb2910304e89bdeae6406b6"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundaries.index.json",
+      "bytes": 17786,
+      "sha256": "d37661f917c4babfb63d08f9b5efaa32ebd03606cfb8c9b039e1ceb14674bb95"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundaries.steps.json",
+      "bytes": 8456,
+      "sha256": "d132c1f506ff62e08037614b235b55478b0785f2fe28e0580f2030420d03c416"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-actual-event-life-bill-01-2.json",
+      "bytes": 4638474,
+      "sha256": "4fca6a267ea2ed7dbb8b9eeb63c06ca4c536444369abc7099379d14428d975c5"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-actual-event-life-bill-01-3.json",
+      "bytes": 6561445,
+      "sha256": "a451b839679a7217e5c731518b40a37a83d3fe9672a35cbc5401b745191215ab"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-actual-event-life-bill-01.json",
+      "bytes": 4588033,
+      "sha256": "86b63029bb647896a81e98e720c9b0f4092e05e3ae2b07f7d7b2c9d90a2c73f9"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-combat-round-1.json",
+      "bytes": 11001006,
+      "sha256": "642b5ad36c3bc29330547b872d0c697ae6b6fec7c4d6beb919c8dc4b813fb76a"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-combat-round-2.json",
+      "bytes": 11397829,
+      "sha256": "972c6f7bd6b502e0ae3cad08122fc4a120be42df5cbbbd2864821863478f83d3"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-combat-round-3.json",
+      "bytes": 11623407,
+      "sha256": "88e3f964c38bb6b45ea8a31841d974a76d348a97a93cf0e56baf38f38ecba8fd"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-combat-round-4.json",
+      "bytes": 11873391,
+      "sha256": "54e475042831cabd0be67584cb30d14c7671e95a1628d497bae048778c32e16b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-combat-round-5.json",
+      "bytes": 12110109,
+      "sha256": "963b6e49e5259ea37db6fb9be13d87778cbfdc7fe66b2a8161858c7d109a872b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-combat-round-6.json",
+      "bytes": 12224612,
+      "sha256": "24483488cd639158ad6025afb6d1bc26fd46c8aa74399f44ee21ede4b8d8893e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-consume-prince-of-abolition-potion-1.json",
+      "bytes": 4422165,
+      "sha256": "53f22ae7b6db9c8f7296c38dbf10b6330ebec3712dcb226fcdfae2089342c418"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-consume-prince-of-abolition-potion-2.json",
+      "bytes": 4563173,
+      "sha256": "84592aa4ccdc0c6babacc2130dd3edd02a1e165cda968b5f2f301deb8cd74f72"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-consume-prince-of-abolition-potion-3.json",
+      "bytes": 4723703,
+      "sha256": "d2461b7971cab6e95b1d4cdf81ba36111894e6455ec13773ded23e3a3c991fa5"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-consent-ability.json",
+      "bytes": 5202631,
+      "sha256": "26695bfdab7ef7275a5ac8d1803005c7d928ad40877bc1b81758f2c1cb032240"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-consent-cooperation.json",
+      "bytes": 5119783,
+      "sha256": "d1f2a64ececccd4bac16448e40880a7da4d01750eea1e4697926c1461852a3c3"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-consent-owner.json",
+      "bytes": 5036951,
+      "sha256": "eaaa2dac85e91c87ab3207dd6a9b9397f1f0207336af92765fbd929d3cae97aa"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-directed_amplification.json",
+      "bytes": 5736179,
+      "sha256": "e010f76f0562a0275e0f5134e4d299efd75e40237646c7b6bc6585b6d775cf89"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-honest-report.json",
+      "bytes": 6519571,
+      "sha256": "66aba64ba4f3d1e4269657bbbd87a8787f4cfdb7058bec7de0a2f8f2f18af315"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-inspect.json",
+      "bytes": 5569068,
+      "sha256": "14c557dfe8945179d571c0c1305b7793dc927caa683937965ee9c4c85347b8b0"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-leave.json",
+      "bytes": 6420086,
+      "sha256": "6da035242edccacf159c873c32002c1cf230efea0bf9d6817094ceba8fd27195"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-observe-originals-and-new-annex.json",
+      "bytes": 4953936,
+      "sha256": "1da0fb03e2e2326500b9812bb608ff21962f1a7e7edc60e672c693279e93224b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-prepare.json",
+      "bytes": 5302421,
+      "sha256": "54d937fc753a12a2029267eb6267dff80311b75218db678967781560932f3a9a"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-prepare_action.json",
+      "bytes": 5652277,
+      "sha256": "5b3aaea6ac46233945daaeacf3e37cba164ffdf1965aad26ddc0f852652912d4"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-retrieve_ball.json",
+      "bytes": 6070669,
+      "sha256": "83b4a7b8934e68368b39298565c65d72db208d5ace82febf5c0b095e818e6f44"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-return_objects.json",
+      "bytes": 6320747,
+      "sha256": "09f2bfa47b60f8f1a0388380f2a6946f22ceb37c1d9263b210591c6fa74994d9"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-return_to_annex.json",
+      "bytes": 6154020,
+      "sha256": "6b5cf7b5edc3de3be88bbd8781736c8549e4478d66c10d93f2f7417aa515929c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-return_to_outside.json",
+      "bytes": 6237462,
+      "sha256": "034127f5adc872ae0395a1fbbb0222a2dc825e762c3cfd493d89326ec53aa078"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-take_ball.json",
+      "bytes": 5402370,
+      "sha256": "34d79b675da9b188f0f7314f0abe184a178f1ead750a65b08270d37f51a17144"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-throw_ball.json",
+      "bytes": 5820734,
+      "sha256": "10389d2901ddaea0d4b2aca5016e81300d334837394d23079a33e82583911208"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-wait_flight.json",
+      "bytes": 5904350,
+      "sha256": "7a559ad0bfa353fc30ae49610b79b11fbab35a277ef535da662a0dfc29f9ac36"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-walk_to_annex.json",
+      "bytes": 5485722,
+      "sha256": "9486e5f33fc550ef796a2a74ab10a34e3f7b48645a9b5cb66bf6d69def71d34b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-directed-throw-walk_to_receiver.json",
+      "bytes": 5987378,
+      "sha256": "d0b95e203e2b05077ad20bf382d941256056583a019fe1c172c68866988d11ae"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-exact-original743-living-source.json",
+      "bytes": 3232990,
+      "sha256": "c76f9530c57f8575ac3c54a7db9fc15190e680df2fdc6e0921763d7f55862e95"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-independent-optional-edmund-fight.json",
+      "bytes": 10576301,
+      "sha256": "15e19587ee2434c7fc2521c02dc1b8365b5762c4cf2de1cf4f5a3f14b9fa994a"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-consent-ability.json",
+      "bytes": 6854951,
+      "sha256": "88b57df186cee8d5182eccab6bf8cde79d3f1bf828a5d4cd838b2b137d09bb7d"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-consent-cooperation.json",
+      "bytes": 6771709,
+      "sha256": "844fb9897869c7cd24c4ba1e4152abf96f38b79557ca58f25cace820dbb97e6c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-consent-owner.json",
+      "bytes": 6688483,
+      "sha256": "cab5e066432caa34d4145e9996570fabc371c06797b665da12cd6afb6a5349a9"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-effect_maintenance.json",
+      "bytes": 7475944,
+      "sha256": "669cb93ff5e3ba09905835d5898aaf1fd635335821c73167cb87d247aa82359c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-honest-report.json",
+      "bytes": 8346589,
+      "sha256": "288c7ad9d8563798bec543b121eb1c2665990570b0a80442ff5459c037a1e151"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-inspect.json",
+      "bytes": 7223007,
+      "sha256": "d51b82bc31d2f0fd13372e4a376c8bd5e2e5b0c81f690ca765ee66f15c2b0107"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-leave.json",
+      "bytes": 8246699,
+      "sha256": "6076cbf9c9d13785266975d1d25304bd03b620c902ac818220130715444ac5af"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-observe-originals-and-new-annex.json",
+      "bytes": 6605074,
+      "sha256": "6d712d20e334941882199178d5d2f40ef0407878799bc0a1b7bfdf5cd2d46b88"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-prepare.json",
+      "bytes": 6955143,
+      "sha256": "8718193acc81e8e7dcc0f8cfafca665cff2de19b110fe22ec7ea4cad473bae73"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-prepare_action.json",
+      "bytes": 7306627,
+      "sha256": "b65d190ebb8076d9123e5db0cb9146846da8d66e1c3f86e8f58428120b83e4d5"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-retrieve_ball.json",
+      "bytes": 7895676,
+      "sha256": "50510949c47d6cc44be9170e257a96fc19f428e19310118b52a56ca7766be749"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-return_objects.json",
+      "bytes": 8146961,
+      "sha256": "98597136341d8e03f8fb3cf810dd3af90191b3a62c77535973cc2fc4d6a76193"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-return_to_annex.json",
+      "bytes": 7979430,
+      "sha256": "beab3769a2b8d7d923cd592fa601d94a08d1eac1768fd0bfd4bcd42f3a2a18ae"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-return_to_outside.json",
+      "bytes": 8063274,
+      "sha256": "24ff8c395e1fa1e99ba341647f1276172e30a81ea3c74219ef8a1e07222e344c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-take_ball.json",
+      "bytes": 7055499,
+      "sha256": "c01f0e83bb44665e925adcf8ab0f8f09f7cccbbbed10804a65b35f11837ebfde"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-throw_ball.json",
+      "bytes": 7390916,
+      "sha256": "3b085f2bc544323be7a7a55e8cb39a4438271537a788663efa974b6a980d36a6"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-wait_flight-2.json",
+      "bytes": 7644370,
+      "sha256": "20670c5577188be9f36492959df6a361ca89f50ec4c667367ace235d000e656a"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-wait_flight-3.json",
+      "bytes": 7728298,
+      "sha256": "50ebfae1f572822ba594daf96448fbe6784c226afebc228bc57036cfcc042804"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-wait_flight.json",
+      "bytes": 7560354,
+      "sha256": "0323be1c6b32ed9aa43f721dc2a4c89b1620dfee9eb86b9993cc294b921abfef"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-walk_to_annex.json",
+      "bytes": 7139255,
+      "sha256": "993bf8688c2ae571f160f38bab4296e37647778a83df447a1005345ef139ea9e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-maintained-flight-walk_to_receiver.json",
+      "bytes": 7811981,
+      "sha256": "a561851b11f7a3171790ac94dbc91949d81ee60c2478e33598e36daf41fc7f7c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-original-adults-remain-outside-player-walks-to-new-yard.json",
+      "bytes": 10408250,
+      "sha256": "e3abbcd7066562cbfc9cecadd4f434bd8e030aef0092672fa643b9c54afbfb4f"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-paid1200-prince-of-abolition-potion-1.json",
+      "bytes": 4387720,
+      "sha256": "896521a1563200fa2a1c38617de67c4d049a901f983644117cab488d03916f50"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-paid1200-prince-of-abolition-potion-2.json",
+      "bytes": 4528734,
+      "sha256": "ac758a49cfc6c4d1f96f12bd1888b1f1172436d6fdfc9cfb5949b0255ceac98b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-paid1200-prince-of-abolition-potion-3.json",
+      "bytes": 4673485,
+      "sha256": "69a6a636a71193bc674e1d6f8603ed684931fe6aaafb6c4f783bfbc54f39776e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-paid180-current-week-prepare-prince-of-abolition-potion-1.json",
+      "bytes": 4404954,
+      "sha256": "9555ce2512e06a4f72df199bd6984bf2c77feadb298111ce248316a8fe3284e3"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-paid180-current-week-prepare-prince-of-abolition-potion-2.json",
+      "bytes": 4545966,
+      "sha256": "7873e2130cb12b80f4c38e5a2ae5bf22644e7755fe7905601f4d92e99e11bb31"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-paid180-current-week-prepare-prince-of-abolition-potion-3.json",
+      "bytes": 4691128,
+      "sha256": "27a5c8910f1e39a84d732302a98270fa8c5743a8ef1be19c226ed603a27cd1c5"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-paid30-three-independent-combat-support-pieces.json",
+      "bytes": 10291261,
+      "sha256": "cd62b68e82ee117a8d5739fcfbe0e09f1a768d63f7e4be3bfc0a311ab289d068"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-paid500-guidance-freezes-eight-roots-and-original-gift-stock.json",
+      "bytes": 3737488,
+      "sha256": "696b4f9203b98c294ae1dddc2a90a524e54c474b6d09b84cf60b2de0d3b894fc"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-pay40-place-new-annex-receiver.json",
+      "bytes": 4870716,
+      "sha256": "f05d206072f8fe4ec1679573006b0446c023ed2413dae8a5e5c379a7d578244c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-preparation-check_limits.json",
+      "bytes": 4264783,
+      "sha256": "2e898bef535fc0452c54d09aba1dea0ecd5f8fab9455d878b614dc97104b86a2"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-preparation-check_return.json",
+      "bytes": 4281934,
+      "sha256": "26bdc02889f7d98976e4c622755881be9aed51e36a8b3c6fa1394a24399bdc16"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-preparation-verify_originals.json",
+      "bytes": 4249116,
+      "sha256": "38474946e724811e2268c6913abd744ea1db64656d35cae4422da6830c6efae4"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-1-actual-labour-2.json",
+      "bytes": 4314857,
+      "sha256": "47c522364dcd6cb0cfed384258e4e8909ce74539929a25b3f661399655564036"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-1-actual-labour-3.json",
+      "bytes": 4331410,
+      "sha256": "2e90a64be23b32f7d77786da0cb6d855aa27d8a12c379f28038ce0b948119568"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-1-actual-labour-4.json",
+      "bytes": 4347928,
+      "sha256": "9b3468708534b02b0a94e9f6a457b8b0d769b94e738c3d4e283bf6c0a70f7203"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-1-actual-labour-5.json",
+      "bytes": 4364296,
+      "sha256": "a0b8925d1898667ddd5a52a9b947390eb598b9834a29f91f71bee3da472234e3"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-1-actual-labour.json",
+      "bytes": 4298717,
+      "sha256": "efa59da74755f6420544a60ac549c4cbabacfc69fb4d844b292a16600e70b33b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-2-actual-labour-2.json",
+      "bytes": 4455218,
+      "sha256": "389ed66fce872d77f460bf782a953138059505805418f0edad8a6b0cb5d97436"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-2-actual-labour-3.json",
+      "bytes": 4471730,
+      "sha256": "56155427f7aa6d5bc287ad04a2c15cccb538873a34fee630f89162f4888b1e41"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-2-actual-labour-4.json",
+      "bytes": 4488097,
+      "sha256": "96319a0b07f316ed0cd7010a5a67b4e9401175e7356b2e3f5045af46aa367790"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-2-actual-labour-5.json",
+      "bytes": 4504650,
+      "sha256": "4e49e5ee79ddbe8df6e72d9bc7b3daa95683cc800ad777ea63a1e27bc3f02f9b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-2-actual-labour.json",
+      "bytes": 4439003,
+      "sha256": "805ad24fc86fd5b9e96ce970bc6fe9f6c6239f27e1e5dad32e401b0fd3bafe7c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-3-actual-labour-2.json",
+      "bytes": 4596562,
+      "sha256": "02b0f51a6f62c648edfaaf3a775c5c106eb443f3f980c9f975fb5a911d0f475f"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-3-actual-labour-3.json",
+      "bytes": 4613274,
+      "sha256": "d5084e3e557392da422ab2aac7f0a82926df35abd10a4c9d4a4d4f7e3cdb8142"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-3-actual-labour-4.json",
+      "bytes": 4629882,
+      "sha256": "e7af5376a7cff90396dcce227b5c15a593201fff4a901b9c832ea5feb27a6c83"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-3-actual-labour-5.json",
+      "bytes": 4647263,
+      "sha256": "fd6d75a45923e463340259c500cfa781bc1395b8c321316faff6c39c077f3564"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-prince-of-abolition-potion-3-actual-labour.json",
+      "bytes": 4580044,
+      "sha256": "b8bb5e1db82de1ea8ca542c5d8852701f8ae5847cfe2b5c4fa848f7739eb0034"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-753-action.json",
+      "bytes": 4372533,
+      "sha256": "9cde7c311a6f16c3f25da90759402cca6d9f4d58e616dee4564b994b04540104"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-754-action.json",
+      "bytes": 4372758,
+      "sha256": "6e8ea0946f9c44f90faa8d5c2e430ba65cdfa876aad7a7ee5bbd7f0a55b44a21"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-755-action.json",
+      "bytes": 4373209,
+      "sha256": "4bde0b2ed7df7c19da7d3025f70d5c768d60916ed4dbe9ec76ea6fe40713bfd1"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-756-action.json",
+      "bytes": 4373653,
+      "sha256": "7e131bf50ed98baca313ef48ac2498cc929b5d390f24a6a2481a286ca9dfe827"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-757-action.json",
+      "bytes": 4373876,
+      "sha256": "834887b02e242f9cf710254edb1d5f21f642ecd8befea4b59323f854e40f426b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-758-action.json",
+      "bytes": 4374327,
+      "sha256": "2abc5796987cbd7a66c522317f53b5b155d259cd43ca9380532127efffc60f09"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-759-action.json",
+      "bytes": 4374773,
+      "sha256": "2c4b4f29a1a124d0361387ea8fa03212f2534e92a3b755c78259af023f1e4294"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-760-action.json",
+      "bytes": 4374996,
+      "sha256": "3010bd951b0933f0f4fdcbd278ae4d988aee15679d7348b1bfc1ac916b07ccb4"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-761-action.json",
+      "bytes": 4375446,
+      "sha256": "89ad837801f346892f9a77cfb80eda3033d7354be4f7c3f3c8389d832b8ab7a0"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-762-action.json",
+      "bytes": 4375891,
+      "sha256": "ec9ac10a354d9f54a37d12f5cd48dabdbbbe4b5579a08913c94c2fd90db7ec1b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-763-action.json",
+      "bytes": 4376114,
+      "sha256": "7b7d76cfe7274caa7cc6737d7dac5608ef86f43309fffbf3b67c0dd0a614bb44"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-764-action.json",
+      "bytes": 4376564,
+      "sha256": "d6f03f513f90e2c4aa99dca0c9cf8f1c1f16bbaba47035b844d017b39ec354c9"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-765-action.json",
+      "bytes": 4377009,
+      "sha256": "5da31da59e07da3f28d7d46ba04bbcd0262271bed136344bcef9bd7a02c17b5a"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-766-action.json",
+      "bytes": 4377232,
+      "sha256": "dc178b6e68bc8a6c4315e6f6a3b6d4b780229b3ae01fcad01136d4c7bf3db81b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-767-action.json",
+      "bytes": 4377681,
+      "sha256": "2061e17648039a6d067d960fbb74a6968aec937ece67cfa2c72c92cdd39d505a"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-768-action.json",
+      "bytes": 4378126,
+      "sha256": "4885554cd55390a5c685459abe806aab7442e70a01d275b3f991268bb9f999c5"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-769-action.json",
+      "bytes": 4378350,
+      "sha256": "40c23850a24430dfee1c2151c503799de20ac06d6038741c003e275e39921331"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-770-action.json",
+      "bytes": 4378801,
+      "sha256": "dccafe78bf3ce024767bf9f9be6df29c683910244126d975e0280dcfceacf03d"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-771-action.json",
+      "bytes": 4379247,
+      "sha256": "3e7b5b7fd2f26441555e89c84ab04f3fc49885bbad6cbae1cf5f8f8e8ae2acc8"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-773-action.json",
+      "bytes": 4395896,
+      "sha256": "9fc1d44a60fa7ed43aee8dbd02f25b837f9cd73befa8e0452444d641d0d4c5d3"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-774-action.json",
+      "bytes": 4396186,
+      "sha256": "455c5f43a6dad386e7c4af9e82e5de8d510766c3e4b4637ce1abfbc31228c604"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-775-action.json",
+      "bytes": 4396632,
+      "sha256": "b28fa6966e257f6064e12ab6d751cad08b908f16e483c362d11e84b3fe31243c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-783-action.json",
+      "bytes": 4512849,
+      "sha256": "0a7912fedea29af1591a4ed44e41ab2b1f046abda8f20ab3d196e85bf0ea14dc"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-784-action.json",
+      "bytes": 4513107,
+      "sha256": "7052096fcf716a24da10dcda9123a06ea05e39913d9ad02b5b73c367b5501d2d"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-785-action.json",
+      "bytes": 4513551,
+      "sha256": "5a1e416e33e91d591033314dbc51bd6c476348b431ede8c13f5bd3eb37eedc39"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-786-action.json",
+      "bytes": 4513771,
+      "sha256": "fcd8704651f9255299a554200828e2ebc6c379942e68e76d61d2ad37b52664a4"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-787-action.json",
+      "bytes": 4514221,
+      "sha256": "51e0a300db709ff9ecad37f0f12c7d797875634a8172568e5a9131522c8d731d"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-788-action.json",
+      "bytes": 4514669,
+      "sha256": "d66a2747d57c29676533c85e4030146216ab448ff1b0c9de20cc5492e96d656e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-789-action.json",
+      "bytes": 4514892,
+      "sha256": "b866fdc2f07cd15ff3f3b88607e9970913e0251607db44c0f55c3b53ce61fdae"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-790-action.json",
+      "bytes": 4515342,
+      "sha256": "1e0c5d5555e1764bf71830a905129d7fe88ba2e318d3e1cbf60661d11af4bac7"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-791-action.json",
+      "bytes": 4515787,
+      "sha256": "1151b7775d2a684aac08ef6180d153c6bc144000b5711430c107e3e2c8dd1448"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-792-action.json",
+      "bytes": 4516010,
+      "sha256": "b64f2fa5db8f613506d87c0ec64daf3fd804f1793903c2d1ccf9cc2a05570445"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-793-action.json",
+      "bytes": 4516460,
+      "sha256": "16ab1b2316528e6fc41cd21949f486cc4173965d62a6d21df1dd7c2a677ac193"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-794-action.json",
+      "bytes": 4516905,
+      "sha256": "a423208ecc97fadfda4b39e1d08de3a8f5474e6806ddfe33e73fcc997d4a9e68"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-795-action.json",
+      "bytes": 4517128,
+      "sha256": "c437a5bbd503919a9f8e91e0597b198bc48a5948785a04cf44fbb82ab7da977b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-796-action.json",
+      "bytes": 4517577,
+      "sha256": "35250424d10d98a048e1dad76fafe925112e753781ad4e58096d6c10aa4d1f3e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-797-action.json",
+      "bytes": 4518021,
+      "sha256": "b84433b170ce923e56b30c208ca289ff7901ec97b89783b5f7f708a2ea842bc6"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-798-action.json",
+      "bytes": 4518244,
+      "sha256": "5be2afce05daec89edddc792343f15a9d10b5d8005176d17dcffcc338234f7d6"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-799-action.json",
+      "bytes": 4518695,
+      "sha256": "b9d0752be23f1798728482feea751c5f6dc15f21180ef8fa65a20e3c91eb34b1"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-800-action.json",
+      "bytes": 4519142,
+      "sha256": "a207cd42e67a5071d189077c387bd562b3e8363c8aee665844e02c1388ba8fa7"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-801-action.json",
+      "bytes": 4519366,
+      "sha256": "61483f2b287de6a850c36f9bf2e1392036b5b149d0a44293d6ae0326bea72dd0"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-802-action.json",
+      "bytes": 4519816,
+      "sha256": "8624cc9ee7f4f646bdd1011929ab54943a01a3d29f79b52226991b43ae8443a3"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-803-action.json",
+      "bytes": 4520261,
+      "sha256": "49da251805cd8c448f2e0cd492e5b057606ac6ac071166f068dc9d774369078e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-805-action.json",
+      "bytes": 4536910,
+      "sha256": "435110fd3fc621025c49b2eaf5a50996868b0fd380307a66119bd9c41dba12c0"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-806-action.json",
+      "bytes": 4537199,
+      "sha256": "5a21bfab7323002176b28249d6e56f1c81f35426988daa2236fdb805e2e5a68c"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-807-action.json",
+      "bytes": 4537645,
+      "sha256": "a5bad904e15f8b482032bd71ac10e519de60d72bd9c813dea28e7b3b489e098b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-817-action.json",
+      "bytes": 4655667,
+      "sha256": "1c24c4983140a6b308366615bae89373b46a4a9e238c0ce64ad31ef9ee48fb1b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-818-action.json",
+      "bytes": 4656231,
+      "sha256": "c678492f351171b730ab17bcc8d560eb4532ba01e350553f4b42aa3b5ab64e57"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-819-action.json",
+      "bytes": 4656982,
+      "sha256": "feb5b7cb3f03dfb10bda428a1a620ae54ead4b7d12071d9a951c202112be9661"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-820-action.json",
+      "bytes": 4657203,
+      "sha256": "ec0a5d93fb25f008b5d34d27038467ed422e74c755aa11c2026769c568daa5f8"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-821-action.json",
+      "bytes": 4657652,
+      "sha256": "3d0560a68509a80f5c01c080dbc272ba64ff220761fda45ac1959bc6ad94dd5f"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-822-action.json",
+      "bytes": 4658099,
+      "sha256": "6e65161caacc7fadd32249ac78835016b098d924055cac72d9ae07ba20750871"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-823-action.json",
+      "bytes": 4658322,
+      "sha256": "b20f32d473843060b58746f8f02e38ed389af9280d9b41bddfdab87d0db642fc"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-824-action.json",
+      "bytes": 4658772,
+      "sha256": "5b9518e3243dc4a945c2f3804277ab74ee840c57cdf68741e81ed8667450a995"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-825-action.json",
+      "bytes": 4659217,
+      "sha256": "a5e489a5b226ac4ef09761e7aa3bf0237afab88c23bc8d9d2fe4b66d3b16f45e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-826-action.json",
+      "bytes": 4659440,
+      "sha256": "71b536a7556c7bf63c843aa338237524edc7e1129372815bfac33cd3936c2c21"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-827-action.json",
+      "bytes": 4659889,
+      "sha256": "04915118bf9767af207729dad413a148559f93c001bfc667ef3fea7edc6de500"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-828-action.json",
+      "bytes": 4660333,
+      "sha256": "1b589c5e4a01e825309fffd25c21d40b1e942547fdd6ae29f3c98321525893d6"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-829-action.json",
+      "bytes": 4660556,
+      "sha256": "610663ffe51765a95e11e26f94aed9769f1dff6e873f00a646f9a65e23aacb96"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-830-action.json",
+      "bytes": 4661007,
+      "sha256": "d7a2a234716127aa88c058b63af1d3452df00fe8cef6d3504bc149aaee5d1fae"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-831-action.json",
+      "bytes": 4661453,
+      "sha256": "71d7e8f4a82a26ad340458ea72ca93d65455561b11e0cbb4a8c09f2cb2261d6f"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-832-action.json",
+      "bytes": 4661676,
+      "sha256": "32922df088311415b5cf4c6dd6a1cb1b428ec1f6a43400f58de4b1c67782303d"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-833-action.json",
+      "bytes": 4662126,
+      "sha256": "3b3331ab9c3d6afcd3900189f7b3b7775bcf03e02ce6840f87eb7f069458d5aa"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-834-action.json",
+      "bytes": 4662572,
+      "sha256": "f84b5d3c79089c676f6b5d3ef2deef6e7c39feedf11f4d6026fb7b20f7280cd0"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-835-action.json",
+      "bytes": 4662796,
+      "sha256": "8b4c6c684a712e0a23bd5c684db454ce7d55390be151f91632a1e56d7f84e6a4"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-836-action.json",
+      "bytes": 4663245,
+      "sha256": "2ed521cbab87b87163df9ae8e4637733175592bc9d2acdddc1a57165595e059e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-837-action.json",
+      "bytes": 4663690,
+      "sha256": "988ca6e52a173dc4f6ed52086601306fa9cf32205078e7587d47df5316a69006"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-838-action.json",
+      "bytes": 4663914,
+      "sha256": "3c07f938b787573c657c0e2936215b045c1c0b347043e315b8b049e62d2012e6"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-839-action.json",
+      "bytes": 4664363,
+      "sha256": "f80e029a868d28240df2d67ef4fcb1dba2f7e9ec56df7aa8d0e73cb2c35f39d8"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-840-action.json",
+      "bytes": 4664807,
+      "sha256": "31053e621f70fb3f5895e84f487f85c5f49fb33c008d153b7bd01a89afb1514e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-842-action.json",
+      "bytes": 4681866,
+      "sha256": "05998278ff4877e13d5ae2966cefbb1370190916a3c61fc5855cc7986fef59be"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-843-action.json",
+      "bytes": 4682156,
+      "sha256": "f0df3004f64690b9463d73bae0459af8a1a360771d8d2b2dffc665d6712d81fc"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-844-action.json",
+      "bytes": 4682602,
+      "sha256": "910887a45b8641542416c372415d926ddb04abc0be065c59ecb95146a5d8c37d"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-869-action.json",
+      "bytes": 6561605,
+      "sha256": "3c4c7af10dc5481054d293f54a803aade6a7282bce3daea1a20a32958a0418a4"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-870-action.json",
+      "bytes": 6561828,
+      "sha256": "d16011d6830e6ed7626f88518f85b32070e63584c4843d3293f77631d7abe895"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-871-action.json",
+      "bytes": 6562583,
+      "sha256": "e292f4baee469b35532b2ce204f7d50292507fc434484c8dcc31ffbed6d856ae"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-914-action.json",
+      "bytes": 10214880,
+      "sha256": "fcca3e9db5184955a67bc30b894f2814f04cab16de9f2072f9e6a08c60e955ce"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-step-915-action.json",
+      "bytes": 10215164,
+      "sha256": "2c6c6925807eab95a9838a7e6ca4772298aa3cdd06614afcb8e15e07d4d1076b"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-three-honest-reports-reflected.json",
+      "bytes": 10173379,
+      "sha256": "81c0acf1eb99b3f0f038cb7274c45f4a2557c73dd079875b649cf2ad889062e5"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-walk-four-metres-to-actual-outside.json",
+      "bytes": 4788454,
+      "sha256": "c3f4760e29b3ce62d250e73d221ac8b2151e1c294d67157862f032c58e1de843"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-consent-ability.json",
+      "bytes": 8680761,
+      "sha256": "03d5b8d28fbac254ac3d73dbfcc55242a67f457404fb80e5dfa10d166daec404"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-consent-cooperation.json",
+      "bytes": 8597355,
+      "sha256": "76124711d13a939d3fb759c344b2d83f327cd9b36129acf7720c315306c16a00"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-consent-owner.json",
+      "bytes": 8513965,
+      "sha256": "7fc72c8ed2acc32ef1d00bcd7c2657910daf09d0de7657d6895449a94e985a49"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-directed_amplification.json",
+      "bytes": 9217707,
+      "sha256": "808be1f6a8540e0edcdff7b2d8ad83814697e6e2bd000f6f7003a4b89330a863"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-honest-report.json",
+      "bytes": 10089813,
+      "sha256": "821d560f6b075eaaab3599b6014cdd06ea5c4c1a7709ee87c9cdc7e6e8f19d53"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-inspect.json",
+      "bytes": 9049455,
+      "sha256": "797684d48da315a364f1ca38b1b6be6e15058346ea780a803829f5149e627fc8"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-leave.json",
+      "bytes": 9989756,
+      "sha256": "d2b650591d0e290aca3ba5235d0cd26058fcde12a06e1030b277c71c89a1e738"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-observe-originals-and-new-annex.json",
+      "bytes": 8430392,
+      "sha256": "0668deb4e741ddfd1f3ba55d7df5af8be952f21119ef2deb0da6d334ab7838f7"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-prepare.json",
+      "bytes": 8781113,
+      "sha256": "785fe1669984178d86c41ec19205e07db2b20a813cc09a1cabe1ca448b011132"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-prepare_action.json",
+      "bytes": 9133233,
+      "sha256": "3cd383302fc03d74d896e6e06bc297c5e4a583b07fa577eeceac19b6e3a79396"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-retrieve_ball.json",
+      "bytes": 9638072,
+      "sha256": "a4f4f77feae19cf1f95f02d296514b022b7cab2f8c1143a3f89910af78d3ca6e"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-return_objects.json",
+      "bytes": 9889849,
+      "sha256": "ac2b044ea7ebf5d34b7906853839c939e56593dd842aca65e71a87f64d6b5a63"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-return_to_annex.json",
+      "bytes": 9721990,
+      "sha256": "05629f35e1a2d937381dee95033043d1b5d069d5d02fb070b5fce28cd8a586e4"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-return_to_outside.json",
+      "bytes": 9805998,
+      "sha256": "cfb2e6ffdb3f8e08b6c346f9944e516d2c4cc3fa3e2d2e087b3d4532cf07bfde"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-take_ball.json",
+      "bytes": 8881627,
+      "sha256": "2596494bdfc914d8cf3769c272d5f69f8b1a6c8a131865e33fee850369a5cfc8"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-throw_ball.json",
+      "bytes": 9386293,
+      "sha256": "5fd6fcbf909e8e5c8333f16df00339fdf1ea4a7b2a88071c636663f7e544d490"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-wait_flight.json",
+      "bytes": 9470537,
+      "sha256": "ce601a2a17c424bdb88dafbdeb69da8845a8a136e7ce2e40ee7302bcc7dddbfc"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-walk_to_annex.json",
+      "bytes": 8965543,
+      "sha256": "302b6bc7f68200ce6b095bf58ce4387001aa56b00bd4eac188cabadef81ce04f"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-walk_to_receiver.json",
+      "bytes": 9554213,
+      "sha256": "276d41159fb001d4c5a21d4f91f5c626aa06eaebfded46c46081576efc4128ca"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/boundary-withdrawn-input-withdraw_consent-ability.json",
+      "bytes": 9302043,
+      "sha256": "9bb0f9573bfb355cb63cd87fa2ffebf0dcaf83259a97894e745898e27f0040ed"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/capture-integrity.json",
+      "bytes": 558091,
+      "sha256": "c929212a12e0c56c6ec7a4de88c1f32722c5c516e53c6e7567b2f3ada8959da3"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/commands.jsonl",
+      "bytes": 2796881,
+      "sha256": "aaf25c57075e379a0a0bf70ec6cc89857f9884d15310a565a14a5b4cf91a6fb7"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/natural.json",
+      "bytes": 14553732,
+      "sha256": "116e7060455dbde907758f92af3fb20f6de8f0e15b248f44bb895d4a78e03dfa"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/public.jsonl",
+      "bytes": 9280453,
+      "sha256": "76954d5c0086c257e4be60d741c81a78b1320e812fdc45c80f58a910c0f0311f"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/snapshot-beforeEncounter.json",
+      "bytes": 5107707,
+      "sha256": "f37dacdc60d8400fff94764259308d8381f07092b1c1418d62fdcfcd686ce9aa"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/snapshot-combatStart.json",
+      "bytes": 5351478,
+      "sha256": "c2ab915262c81cd1d13be5282703b6cee20dd63e137e35c092686e32f5a5ce58"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/snapshot-combatTerminal.json",
+      "bytes": 6112788,
+      "sha256": "a3ae09362ea13a99b1ceb7cbb2b5e43d02717b72fc837043bbea6ab6824b2963"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/snapshot-departure.json",
+      "bytes": 1616556,
+      "sha256": "fe9a3d74cde170419042a31816c982ef801e13cc678160f0246386c5b41eb76f"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/snapshot-guidance.json",
+      "bytes": 2120809,
+      "sha256": "8f0eae9bff0b13de766f5c7e08a7cf420dcd69727f4d06bddc065667bdbcd3e0"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/snapshot-practiced.json",
+      "bytes": 5107423,
+      "sha256": "1407550ab5b139664ca2403da1f55e3e6efb2c67e736c1b61730bc25166e4b06"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/snapshot-promoted.json",
+      "bytes": 2373837,
+      "sha256": "a07b4975f00bb095f51699c368f0fe90c0bf095a300833ca980d98e8b900f506"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/source-prefix.json",
+      "bytes": 2925124,
+      "sha256": "ec2bd5ec1279088a7fbbf5d5faf6f98a68ec62643253ace8e69277ff6f812293"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/summary.json",
+      "bytes": 3727364,
+      "sha256": "2c3a8fa8a96a206adc63b54812d469048ca64af76aa707017289962914980e74"
+    },
+    {
+      "path": "tests/fixtures/prince-of-abolition-v02050/transitions.json",
+      "bytes": 26477,
+      "sha256": "69836e45d00b06b9acc5810b185bf51abc93ef2d78d0dca05a61bc5d0a57cabc"
     },
     {
       "path": "tests/fixtures/prisoner-v0570/boundaries.json",

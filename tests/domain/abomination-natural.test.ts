@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync, realpathSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
+import { createSliceRun, applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { validateAbominationAcquisitionJournal, validateAbominationJournalContinuity } from '../../src/domain/abomination/index.js';
@@ -117,7 +117,18 @@ describe.skipIf(evidence.observed === null)('Abomination actual original-seed ca
     same(readObjectEntry(prefix, 'rawInitial'), sourceEntry('initial'));
     same(readObjectEntry(prefix, 'rawFinal'), sourceEntry('final'));
     same(readObjectEntry(prefix, 'commands'), sourceEntry<SliceIntent[]>('commands').slice(0, PREFIX));
-    expect(readObjectEntry(prefix, 'migratedWholeStateSha256')).toBe(captureValueHash(capturedState('prefixFinal')));
+    // This digest records the complete schema200 state at capture time, not a future migration.
+    const rawPrefix = naturalEntry<SliceState>('prefixFinal'), migratedPrefix = capturedState('prefixFinal');
+    expect(readObjectEntry(prefix, 'migratedWholeStateSha256')).toBe(captureValueHash(rawPrefix));
+    expect([migratedPrefix.schemaVersion, migratedPrefix.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+    for (const key of Object.keys(rawPrefix) as (keyof SliceState)[]) {
+      if (key !== 'schemaVersion' && key !== 'contentVersion') same(migratedPrefix[key], rawPrefix[key]);
+    }
+    const defaults = createSliceRun(rawPrefix.runId, sourceEntry<Parameters<typeof createSliceRun>[1]>('creation'), SEED);
+    same(Object.keys(migratedPrefix).sort(), Object.keys(defaults).sort());
+    for (const key of Object.keys(defaults) as (keyof SliceState)[]) {
+      if (!Object.hasOwn(rawPrefix, key)) same(migratedPrefix[key], defaults[key]);
+    }
     same(naturalEntry('provenance'), expected.provenance); same(naturalEntry('continuation'), expected.continuation);
     expect(naturalEntry('provenance')).toMatchObject({ kind: 'EXACT642_PUBLIC_ANCIENT_EVIL_THEN_PUBLIC_ABOMINATION',
       source: SOURCE, sourceRoot: 'final', inheritedDirectedPrefix: false,

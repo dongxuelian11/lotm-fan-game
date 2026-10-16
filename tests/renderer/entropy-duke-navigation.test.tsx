@@ -167,15 +167,15 @@ describe('Entropy Duke actual SliceApp acquisition and current S2 navigation', (
     expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled(); expect(oldBlackEmperorRoots(game.state)).toEqual(oldBlackEmperorRoots(before));
   }, 20_000);
 
-  it('loads current S2 growth ahead of the older saved round and shows all14 actual mastery values and untreated injury', async () => {
+  it('loads the available S1 preparation ahead of the older saved round and preserves all14 actual S2 mastery values and untreated injury', async () => {
     const before = promoted(), game = savedGame(before); expect(before.lastCombatRound?.fallenEarlOutcome).toBeTruthy();
     expect(before.injuries).toEqual(originalFrenzyMage().injuries); expect(before.injuries[0]).toMatchObject({ severity: 'HEAVY', treatedRevision: null });
     await mount(game); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ })); const panel = await screen.findByRole('region', { name: PANEL });
+    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ })); const panel = await screen.findByRole('region', { name: '弑序亲王成长' });
     expect(screen.queryByRole('region', { name: '狂乱法师', hidden: true })).toBeNull();
     await userEvent.click(within(panel).getByText('能力、消化与继承经历', { selector: 'summary' })); expect(view(before).abilities).toHaveLength(14);
     for (const ability of view(before).abilities) expect(panel.textContent).toContain(`${ability.label} · 掌握${before.progression.mastery[ability.id]}`);
-    expect(within(panel).getByRole('region', { name: '熵之公爵当前资源' }).textContent).toContain(`健康${before.health}/100 · 精神${before.mind}/100 · 灵性${before.spirituality}/120`);
+    expect(within(panel).getByRole('region', { name: '弑序亲王当前资源' }).textContent).toContain(`健康${before.health}/100 · 精神${before.mind}/100 · 灵性${before.spirituality}/120`);
     expect(panel.textContent).not.toMatch(/候选|原创G|本作G|原文未核|编号推断/); expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
   }, 20_000);
 

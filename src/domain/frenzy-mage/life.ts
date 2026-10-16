@@ -1,3 +1,4 @@
+import { princeOfAbolitionInheritedView, validatePrinceOfAbolitionSource } from '../prince-of-abolition/index.js';
 import { validateEntropyDukeSourceFrenzyMageLife } from '../entropy-duke/life.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
@@ -102,6 +103,15 @@ function cleanupBlock(s: SliceState): string | null {
   return l.playerLocation !== 'START' || l.guide.location !== 'START' || l.parcel.location !== 'START' || l.ball.location !== 'START' || l.paper.location !== 'START' ? '本人和导引须沿原路实走回START，导引亲带原物，不可瞬移退出。' : null;
 }
 export const hasFrenzyMageLifeLock = (s: SliceState): boolean => {
+  if (s.progression.pathwayId === 'black-emperor' && s.progression.sequence === 1) {
+    const prince = s.princeOfAbolition;
+    // Only the actual completed S1 channel may read its frozen S2 checkpoint.
+    // Current people and objects are owned by the new scene; old actions stay closed.
+    if (!prince?.guidanceKnown || prince.promotionWeek === null || prince.entropyDukeActingAtPromotion !== 100 ||
+      !prince.acquisitionJournal.some(e => e.command.type === 'CONSUME' && e.after.sequence === 1 && e.before.sequence === 2 && e.week === prince.promotionWeek) ||
+      !validatePrinceOfAbolitionSource(s)) return true;
+    return hasFrenzyMageLifeLock(princeOfAbolitionInheritedView(s));
+  }
   if (s.entropyDuke?.life.source != null) {
     // During settlement the shared weekly pulse has not run yet. Check only the
     // immutable inherited scene here; full S2 replay is enforced by state validation.

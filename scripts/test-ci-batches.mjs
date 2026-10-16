@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const defaultRepo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const SHARD_COUNT = 4;
+export const SHARD_COUNT = 8;
 export const BATCH_SIZE = 5;
 // Keep the single-worker batch bounded; compare large files as bytes, not object keys.
 export const DEFAULT_NODE_OPTIONS = '--max-old-space-size=768';
@@ -56,7 +56,7 @@ export function assertCoverage(discovered, shards) {
   const assigned = [...shards.flat(), ...ISOLATED_TESTS];
   for (const file of [...discovered, ...assigned]) assertTestPath(file);
   if (shards.length !== SHARD_COUNT || shards.some(shard => shard.length === 0)) {
-    throw new Error('Exactly four nonempty test shards are required.');
+    throw new Error('Exactly eight nonempty test shards are required.');
   }
   if (new Set(discovered).size !== discovered.length || new Set(assigned).size !== assigned.length) {
     throw new Error('Duplicate test file in discovery or CI assignment.');
@@ -96,7 +96,7 @@ export function verifyBatchReport(report, expected, repo) {
 
 export function runShard({ shard, repo = defaultRepo, execute = spawnSync, log = console.log }) {
   if (!Number.isInteger(shard) || shard < 1 || shard > SHARD_COUNT) {
-    throw new Error('Shard must be an integer from 1 through 4.');
+    throw new Error('Shard must be an integer from 1 through 8.');
   }
   const plan = createPlan(discoverTestFiles(repo));
   const selected = plan.shards[shard - 1];
@@ -112,7 +112,7 @@ export function runShard({ shard, repo = defaultRepo, execute = spawnSync, log =
       const files = selected.slice(offset, offset + BATCH_SIZE);
       const batchNumber = summary.batches.length + 1;
       const reportPath = path.join(output, `batch-${String(batchNumber).padStart(3, '0')}.json`);
-      log(`Shard ${shard}/4, batch ${batchNumber}: ${files.join(', ')}`);
+      log(`Shard ${shard}/8, batch ${batchNumber}: ${files.join(', ')}`);
       const batch = { files, passed: false };
       summary.batches.push(batch);
       save();
@@ -136,7 +136,7 @@ export function runShard({ shard, repo = defaultRepo, execute = spawnSync, log =
     throw error;
   } finally {
     save();
-    log(`Shard ${shard}/4: ${summary.passed.length}/${selected.length} files passed. Reports: ${output}`);
+    log(`Shard ${shard}/8: ${summary.passed.length}/${selected.length} files passed. Reports: ${output}`);
   }
   return summary;
 }
@@ -147,8 +147,8 @@ export function main(argv = process.argv.slice(2)) {
     console.log(`Inventory only (tests not run): ${plan.discovered.length} files = shards [${plan.shards.map(shard => shard.length).join(', ')}] + ${plan.isolated.length} isolated files.`);
     return;
   }
-  if (argv.length !== 2 || argv[0] !== '--shard' || !/^[1-4]\/4$/.test(argv[1])) {
-    throw new Error('Usage: node scripts/test-ci-batches.mjs --shard N/4 | --check-inventory');
+  if (argv.length !== 2 || argv[0] !== '--shard' || argv[1].length !== 3 || !/^[1-8]\/8$/.test(argv[1])) {
+    throw new Error('Usage: node scripts/test-ci-batches.mjs --shard N/8 | --check-inventory');
   }
   runShard({ shard: Number(argv[1][0]) });
 }

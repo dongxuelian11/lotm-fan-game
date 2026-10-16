@@ -1,8 +1,19 @@
+import { LAWYER_ABILITY_IDS } from '../lawyer/types.js';
+import { BARBARIAN_ABILITY_IDS } from '../barbarian/types.js';
+import { BRIBER_ABILITY_IDS } from '../briber/types.js';
+import { CORRUPTION_BARON_ABILITY_IDS } from '../corruption-baron/types.js';
+import { MENTOR_DISORDER_ABILITY_IDS } from '../mentor-disorder/types.js';
+import { FALLEN_EARL_ABILITY_IDS } from '../fallen-earl/types.js';
+import { FRENZY_MAGE_ABILITY_IDS } from '../frenzy-mage/types.js';
+
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import type { BriberGift } from '../briber/types.js';
 import type { SliceState } from '../slice/types.js';
 import type { EntropyDukeActivityCommand, EntropyDukeLifeProjection, EntropyDukeLifeState } from './life.js';
 import type { EntropyDukeEncounterCommand, EntropyDukeEncounterProjection, EntropyDukeEncounterState } from './encounter.js';
+
+// Keep the immutable inherited identifiers independent of runtime validators.
+export const ENTROPY_DUKE_INHERITED_ABILITY_IDS = [...LAWYER_ABILITY_IDS, ...BARBARIAN_ABILITY_IDS, ...BRIBER_ABILITY_IDS, ...CORRUPTION_BARON_ABILITY_IDS, ...MENTOR_DISORDER_ABILITY_IDS, ...FALLEN_EARL_ABILITY_IDS, ...FRENZY_MAGE_ABILITY_IDS] as const;
 
 export const ENTROPY_DUKE_ABILITY_IDS = ['black-emperor.s2.action-amplification', 'black-emperor.s2.effect-prolongation'] as const;
 export type EntropyDukeAbilityId = typeof ENTROPY_DUKE_ABILITY_IDS[number];
