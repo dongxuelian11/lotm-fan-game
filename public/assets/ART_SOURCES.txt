@@ -1,0 +1,13 @@
+Production etched asset family, 2026-10-09
+
+14 independent web-ready assets: 8 cosmetic player portraits, 3 environments, 3 original NPC appearance slots.
+Player 01,05,06 reused unchanged sources; 02,03,04,07,08 replaced. All old originals remain preserved in portrait_choices_v1/originals.
+Portraits/NPCs 600x800 WebP quality86; scenes 1600x900 quality85. Warm opaque paper background; no transparency promised. Source PNGs preserved.
+Review sheets do not burn labels into production assets. Portrait sheet is 01-04 top, 05-08 bottom. Scene sheet order boiler-room, east-district, factory. NPC sheet order Maeve, intermediary, responsible person.
+
+Provenance: original built-in OpenAI imagegen generation/editing; full prompts in generation-prompts.json. Approved original UI concepts are style references; no third-party game/cover assets copied. ImageMagick only normalizes dimensions/compresses and lays out review contact sheets.
+
+Cosmetic player appearance does not bind profession, origin, age field, race rules, personality or stats. NPCs do not inherit player appearance requirements.
+Maeve is original GAME_ADAPTATION seamstress; anonymous intermediary is not Audrey. Responsible-person portrait is only a role appearance slot and must never automatically be assigned to a successor or bell carrier. See FIRST_EVENT_ARC_DESIGN sections5 and16.3. No plot objects included.
+
+Visual inspection complete for coherent style, adult appearance, crop, no baked UI/text. Product code not modified by this asset task; in-game integration and accessibility belong to implementation QA.

@@ -1,6 +1,6 @@
 {
   "name": "lotm-fan-game",
-  "version": "0.1.0",
+  "version": "0.201.0",
   "private": true,
   "description": "A local-first, original side-story fan game inspired by Lord of Mysteries.",
   "license": "MIT",
@@ -23,10 +23,19 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run test && npm run build",
-    "smoke:electron": "npm run build && node tests/integration/run-electron-smoke.mjs",
-    "start": "electron ."
+    "smoke:electron": "npm run smoke:slice",
+    "start": "electron .",
+    "smoke:slice": "npm run build && node tests/integration/run-slice-electron-smoke.mjs",
+    "typecheck:renderer:app": "tsc -p tsconfig.renderer-app.json --noEmit",
+    "test:smoke": "vitest run tests/domain/release-smoke.test.ts tests/domain/slice-creation.test.ts tests/renderer/pathway-navigation.test.tsx --maxWorkers=1 --no-file-parallelism",
+    "fixtures:restore": "node test-inputs/restore-test-inputs.mjs",
+    "fixtures:check": "node test-inputs/restore-test-inputs.mjs --dry-run",
+    "test:fixture-restore": "node --test test-inputs/restore-test-inputs.test.mjs",
+    "test:catastrophe-isolated": "node scripts/test-catastrophe-isolated.mjs",
+    "test:wisdom-angel-life-isolated": "node scripts/test-wisdom-angel-life-isolated.mjs"
   },
   "dependencies": {
+    "@noble/hashes": "1.8.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
