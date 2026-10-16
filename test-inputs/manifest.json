@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.198.0",
+  "version": "0.199.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -401,6 +401,36 @@
       "name": "lotm_release_0.198.0_divine_hand_test_inputs_3_2026-10-15.tar.gz",
       "bytes": 12977459,
       "sha256": "cfd6a7d5c03bc76df212cdc42754766774bdf775248a65267fd70135798d00ce"
+    },
+    {
+      "name": "lotm_release_0.199.0_apocalypse_demoness_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17887517,
+      "sha256": "f9a85e6cdfb419dafef410203c441690878428e0a7a9b227b98f2da7fd155e24"
+    },
+    {
+      "name": "lotm_release_0.199.0_apocalypse_demoness_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17743567,
+      "sha256": "f1313325423a52c29657a94e2b409ddb2b5294ae57e7d5dafc944c7bac15db43"
+    },
+    {
+      "name": "lotm_release_0.199.0_apocalypse_demoness_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 17737294,
+      "sha256": "be3761f545b94664b3a5316f360e3a116b3b40aa9950a61811a9ffcd4984852d"
+    },
+    {
+      "name": "lotm_release_0.199.0_apocalypse_demoness_test_inputs_4_2026-10-16.tar.gz",
+      "bytes": 17863136,
+      "sha256": "8074f9cb31a05096111a4d90f8a2eedc142cebf698951345241b2a4279271655"
+    },
+    {
+      "name": "lotm_release_0.199.0_apocalypse_demoness_test_inputs_5_2026-10-16.tar.gz",
+      "bytes": 17829223,
+      "sha256": "2fd2578dc14432b30c613567fb343b1ee1cccb8d76b9ff97c19bf410a4a5d0e7"
+    },
+    {
+      "name": "lotm_release_0.199.0_apocalypse_demoness_test_inputs_6_2026-10-16.tar.gz",
+      "bytes": 753354,
+      "sha256": "0a7897a7398f65b2fc1f5064d961df7252da66f4eb7f69e83a41d72605298c2a"
     }
   ],
   "fileEntries": [
@@ -1558,6 +1588,1436 @@
       "path": "tests/fixtures/ancient-scholar-v01400/natural.json",
       "bytes": 7476754,
       "sha256": "428b1a0eaba7c7183eef682fd3f5a6284f8b06f94dc250ef16570e6d0e47d82c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundaries.index.json",
+      "bytes": 18653,
+      "sha256": "f57575b15c23efb96ff3b9156020db9dd07003e82c1939eee093575218a3bd19"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundaries.steps.json",
+      "bytes": 8457,
+      "sha256": "48e648facde69583a32bb112f77bc69f47da2ae001853b37c2ebf7277e0e8c8b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual-independent-leona-contact.json",
+      "bytes": 5211464,
+      "sha256": "8c49533832c2d8c3aa69392664b21e12a053e7ff6479d2fcd70d34d3755dc8b9"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual-next-week-new-stock.json",
+      "bytes": 2720289,
+      "sha256": "602074a373edec4f826c49bbd7ffeefa89f24e20f40bc268f541d34e1a8af7b4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual-paid-outside-energy-recovery-2.json",
+      "bytes": 3441053,
+      "sha256": "1c26e7dc4c13a64580e9397721fe895d1f4b774743bb4a38aa382ca7ac845835"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual-paid-outside-energy-recovery-3.json",
+      "bytes": 3865904,
+      "sha256": "c3454dbb8a7df0c92a1959dac982e7546ba5c4fa8cff3578c81d9a150cb76330"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual-paid-outside-energy-recovery.json",
+      "bytes": 3043948,
+      "sha256": "8f22eaa0be46f280d16e6b5412d7e55f1e26ad557171f2a6c2cc7ab830aa9edc"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual-rest-and-clinic-for-original-heavy-2.json",
+      "bytes": 2048846,
+      "sha256": "d7625fa77bc4dfd9a2a89c11194bcb744f9ed809d0be0e6e824ddddd287e2042"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual-rest-and-clinic-for-original-heavy.json",
+      "bytes": 2048227,
+      "sha256": "9e06c6d30b1666457a395f1ee9e2c8d693e82973e7ac030ae4c83eaf1740d078"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual-work-after-living-exit.json",
+      "bytes": 7652243,
+      "sha256": "e54dffe98728a6ae2ada549d316ae031d4176b7a4bc51a645cf444077978b77d"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual1100p-buy-apocalypse-demoness-potion-1.json",
+      "bytes": 2480014,
+      "sha256": "2b105983f38cfe92484b14b11c59766325d2dd022232d1fcc129262a45acb80f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual1100p-buy-apocalypse-demoness-potion-2.json",
+      "bytes": 2574529,
+      "sha256": "615b51b90229b472c98e3585c4afaf202007f8fea819d822afb6f1faf90f878f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual1100p-buy-apocalypse-demoness-potion-3.json",
+      "bytes": 2672853,
+      "sha256": "ee562c9e7989865c3112ea671190a1acec45c4545759538d22c476166687db5d"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual1100p-buy-apocalypse-demoness-potion-4.json",
+      "bytes": 2795733,
+      "sha256": "e35a13209d35adc9a7feff4d6ef01fc4b01184e5f768acd3c525614e79324873"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual1100p-buy-apocalypse-demoness-potion-5.json",
+      "bytes": 2895876,
+      "sha256": "28909491b64ff0dabcd62838ffe5676d255219769221ce40ffe2d61f95a69a02"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual1100p-buy-apocalypse-demoness-potion-6.json",
+      "bytes": 2995378,
+      "sha256": "806c035f107c65af8042d8685555346f02f58e49170f9c7ea4f00cd6c152995c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual150p-current-week-prepare-apocalypse-demoness-potion-1.json",
+      "bytes": 2490756,
+      "sha256": "58e42be533656d0b787b5e8b5ee8949fd8582fdfff19ac4738a4866491d7657a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual150p-current-week-prepare-apocalypse-demoness-potion-2.json",
+      "bytes": 2585273,
+      "sha256": "b4f9335ed19f814e882457ae85f2d30bafe0ea861686ca0546415e3f10947241"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual150p-current-week-prepare-apocalypse-demoness-potion-3.json",
+      "bytes": 2684013,
+      "sha256": "121b79094ffbf2ea7ffa1aa1c3518520ca3d3177673112ec8a9d73cfaea35f04"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual150p-current-week-prepare-apocalypse-demoness-potion-4.json",
+      "bytes": 2806893,
+      "sha256": "10ccd371742f529ad378e84b913f953e07b13a1ab9301a99c47623de90c0fb76"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual150p-current-week-prepare-apocalypse-demoness-potion-5.json",
+      "bytes": 2907240,
+      "sha256": "b1447719bccfa943ad4f83dd8277409d12df34f68d6bfa5ad4d833c710790947"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-actual150p-current-week-prepare-apocalypse-demoness-potion-6.json",
+      "bytes": 3006740,
+      "sha256": "878d01c2af0fc265a195b0f56987cf10cc4d23e9de563d452f7da7932b7d1861"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-1-real-labour-2.json",
+      "bytes": 2429956,
+      "sha256": "cd420f7eb74c5c48489754542b54a196abb51d066f6d1e67c18a1c52d322baa8"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-1-real-labour-3.json",
+      "bytes": 2440825,
+      "sha256": "27da88980aa7f43d96114e71a12b38cbda6c8ede5bea1a9072ad6706b5792605"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-1-real-labour-4.json",
+      "bytes": 2451661,
+      "sha256": "1e2f485b7fc94bac8f946a043dc6f920078e23a37c6309983a5367167e023100"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-1-real-labour-5.json",
+      "bytes": 2462345,
+      "sha256": "6876c97cbba72a7087d61ea9a1375e9b1c1938b3a55e2b5e7fad84df97c0328e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-1-real-labour.json",
+      "bytes": 2419522,
+      "sha256": "380ed749eb3155db7a5968b9bafb3fdd262bd6370d62b65977fdeef55568869b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-2-real-labour-2.json",
+      "bytes": 2523783,
+      "sha256": "d61b53ea945ffe1d22dcc130358c25f92ca421451220721e8d98a30a7cc0733a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-2-real-labour-3.json",
+      "bytes": 2534605,
+      "sha256": "44950056569d7c12868f9b9e13f524c403de6ab8cacca351a93259ce9d1841ae"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-2-real-labour-4.json",
+      "bytes": 2545281,
+      "sha256": "58f693b2bc658026b319be4bb410ef619a911037ac3f2c4ffefed6800f346702"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-2-real-labour-5.json",
+      "bytes": 2556145,
+      "sha256": "f23fe0e144cabc7c536d17084a2b9bde91f853b8ccd20c75fcc46816bb7fb70e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-2-real-labour.json",
+      "bytes": 2513260,
+      "sha256": "d1fcd47a77fe8412f4805eb14aecd67e430c9a2da981b1cb633de21f85926ab4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-3-real-labour-2.json",
+      "bytes": 2618658,
+      "sha256": "822e02c5e709622f0762a2092f7bc71fc24c90b344bf322a275989d05ff17486"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-3-real-labour-3.json",
+      "bytes": 2629686,
+      "sha256": "371d3b880568c28a82f7456fb5129678f97a680d6e4e3f70455d7beabf1c5101"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-3-real-labour-4.json",
+      "bytes": 2640609,
+      "sha256": "5bc12e331bcf38aa4ae78adc904c3f39ad8703e687fbdbb39af5c784912cfab0"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-3-real-labour-5.json",
+      "bytes": 2652310,
+      "sha256": "f6c0741ffcd986a311295823374055c0c99e4f2e2cfa3030774c4c1925f3f6e3"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-3-real-labour.json",
+      "bytes": 2607818,
+      "sha256": "6261465562a2d7f909c8b5888afcfe1fdffa0743d3a542b4e68621e487d1b3dd"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-4-real-labour-2.json",
+      "bytes": 2743717,
+      "sha256": "8a5b247cc88a23ecf01d3dcedf63b087f26d2cf527bf476446780cc1deb5cbde"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-4-real-labour-3.json",
+      "bytes": 2754810,
+      "sha256": "96154bbf2a7c7dbe1be0ed9c0ec1975fad6ed80f32e6a41763f25cc3129d6290"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-4-real-labour-4.json",
+      "bytes": 2766094,
+      "sha256": "e4df509bd620afa8f356dae57f0f6612a6ead3b435a74b43750b255889dc0140"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-4-real-labour-5.json",
+      "bytes": 2777333,
+      "sha256": "38e7e19d441dc860c4befb1f16ef01189b9185977ff3a62b9a8bd71fcd704bbb"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-4-real-labour.json",
+      "bytes": 2732625,
+      "sha256": "94c6ae8d3480e5f9c3359ba7516135074d69535f94f5a27a0ca98f8632f3fac7"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-5-real-labour-2.json",
+      "bytes": 2841175,
+      "sha256": "b11c9bf6b85de860f8295ed9f838e847e9c02820d9e27f2c7e9971407bd3fa75"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-5-real-labour-3.json",
+      "bytes": 2852413,
+      "sha256": "34c5763dd10d37dfa7a541720293fc9cbe86abaf50371b9eef381ec62a1c0a23"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-5-real-labour-4.json",
+      "bytes": 2863546,
+      "sha256": "a3da2af9cd159cdc79000db8cbfe94ad7a0e6ceb2f48b7afc97c780b7f2390d1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-5-real-labour-5.json",
+      "bytes": 2875131,
+      "sha256": "bada868b8510a46fb1b097012f574f83fc6aeaa50a85b9913e7f89f70032c4cd"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-5-real-labour.json",
+      "bytes": 2830234,
+      "sha256": "6bed4b1108f0b664b9de9c84d8a1113ca5d707d89ae35b336ec44c6e0d7d4807"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-6-real-labour-2.json",
+      "bytes": 2942139,
+      "sha256": "7a307d1b74151a0b337ed88f92a65741aef4be327c9878ae1772ad89f6df47a1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-6-real-labour-3.json",
+      "bytes": 2953581,
+      "sha256": "cb9a30b549afea6327671e7cc52aca7d87693f47f515b091910b5fc1b9d4f736"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-6-real-labour-4.json",
+      "bytes": 2964879,
+      "sha256": "f91c0bccf2338d996a4fe47912d78b001786009d05e006ed26d8695d940a2a9f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-6-real-labour-5.json",
+      "bytes": 2976365,
+      "sha256": "babcde20f776d34e96dc061c0ec42e71368189c5078f4ae61da5912c53608e5a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-apocalypse-demoness-potion-6-real-labour.json",
+      "bytes": 2930993,
+      "sha256": "e2db6a993c496e8b3b2d2f44df413eee97e2f893b4ec4d2242c73ff3889c1d72"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-combat-round-1.json",
+      "bytes": 6568978,
+      "sha256": "23501e9f4a6c21f501451e07b7cd0cabdfa7eec06bf22f8fd0e72ed9d60edf90"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-combat-round-2.json",
+      "bytes": 7100622,
+      "sha256": "f438709b0477b54a6c3c58ea36790d3e2109f9c8ed168bbc39bc5105aa849027"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-combat-round-3.json",
+      "bytes": 7489356,
+      "sha256": "078da464405f230a96c8e645b7324ffa0fd866c6f55de043fcb7bfca1c51d963"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-combat-round-4.json",
+      "bytes": 7643273,
+      "sha256": "d57d44f3d7e3b78e76f0ea1a12b20e473b47a309105d9bc640970c6cbc1453a6"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-consume-apocalypse-demoness-potion-1.json",
+      "bytes": 2502194,
+      "sha256": "1911fe6115bbbbd5e77f32a7d356e34d298f3cb7b6bef44772aad8f6b4c5adbe"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-consume-apocalypse-demoness-potion-2.json",
+      "bytes": 2596713,
+      "sha256": "ee7bca93c5788e279ae864f4238412cffd76e3c237a66700ae0eda1968ce0581"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-consume-apocalypse-demoness-potion-3.json",
+      "bytes": 2695899,
+      "sha256": "01d020cae41f303956db4dbec9f5b75889a8da35bf2c6d7b95674a866c72c4ed"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-consume-apocalypse-demoness-potion-4.json",
+      "bytes": 2818749,
+      "sha256": "883a2f01ae990ad79b5084dc7ad533bdd5ad754ec14e18e8a3ed3ffcb98d4f0a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-consume-apocalypse-demoness-potion-5.json",
+      "bytes": 2919302,
+      "sha256": "4de52fe31b6cca358694e0c827ea6e61a2c0d13c18f3db40bb4986f5bae563fc"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-consume-apocalypse-demoness-potion-6.json",
+      "bytes": 3023247,
+      "sha256": "ce6b538205b5ef0d7b7ace32c209c9043d39258d59c788a9542dd1b0976fa3d4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-exact-original585-living-source.json",
+      "bytes": 2047916,
+      "sha256": "d9b8c07d26b44fc066ffd6d1049c6b326d330958836d8301cd1194fab32216e7"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-fixed-all-policy.json",
+      "bytes": 6180688,
+      "sha256": "e82cb6ed2abe91707540aaa84b21cd046f61ad194eede08fd996a94a651926ff"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-independent-optional-fight.json",
+      "bytes": 6239372,
+      "sha256": "bf497a4ecd981fc01f58c0464250f6164326e90c85eb34cfcd009f6a46772a4d"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-apply_load.json",
+      "bytes": 3731159,
+      "sha256": "6e05f970593b30ecd0594ab03ebf57866aa702a30392b13f84130a306903d728"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-approach.json",
+      "bytes": 3598889,
+      "sha256": "448f0ad45c1153a0bf9cd426908edfe098e009e2107567c160b63d0810dcc739"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-buy_load.json",
+      "bytes": 3620979,
+      "sha256": "e9291f77794708d5e7c45862e950317498f8aeea607c9680e079bd118238dde1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-consent-2.json",
+      "bytes": 3535221,
+      "sha256": "4d9cc9e611896d5a00cef7264a25d8e8e5c25d37959e9fb15ebb52059034151f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-consent-3.json",
+      "bytes": 3556249,
+      "sha256": "47df8c16fa6924b0515e3d4ea2109db4ec19f4f5e04d274e6c12fd84b8c0e520"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-consent-4.json",
+      "bytes": 3577269,
+      "sha256": "f28cc31872025a19666f8000f430006b3cec24524737aa5ab592fb85173fdd2a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-consent.json",
+      "bytes": 3514171,
+      "sha256": "5ca77618968b9b4804b2c69faf8040104a8aad3379eaa371b60be9197a257d73"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-exit_room.json",
+      "bytes": 3774677,
+      "sha256": "329aa1078c9e1030189ea6d07839c6efd7558232643156157817aaa00c3e5b5c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-honest-report.json",
+      "bytes": 3842091,
+      "sha256": "a018fcfa832b5341d7e6189d153336922b33a157cc3dea53d8742e6e6f39c62f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-install_plate.json",
+      "bytes": 3685703,
+      "sha256": "235e53ab3273ea1f12c4397b152eeb24da74fc06b82ca004fb473932830449ed"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-leave.json",
+      "bytes": 3819637,
+      "sha256": "3ecf52aa14b196805fb26ad8a701ff7a8c353e8f65f7e1e6d4fdbf2a6458fb30"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-mirror_buffer.json",
+      "bytes": 3708575,
+      "sha256": "21e9ea86ae751616f9c80a4cd134d0d62b18c845586d2d50dc940568628dfb26"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-observe-originals.json",
+      "bytes": 3462216,
+      "sha256": "0d33e09a56a668b2d336c76b3a8928b9dc927f69b2589277c2035424b1e391a1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-paid-current-invitation.json",
+      "bytes": 3488193,
+      "sha256": "305760e0e9b6fe14b5c35c9dbee839b4a71aa5d88e813eedf3a3525b94647243"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-prepare_load.json",
+      "bytes": 3664111,
+      "sha256": "3068414018f1582f82e634b48f78f1d625f14f597e77dbe4954e98c449114aba"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-receive_load.json",
+      "bytes": 3642627,
+      "sha256": "54ac973b5fc90d9477a8ac5403f7c3603cfb190bb772bcf6378262629b66ff29"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-remove_plate.json",
+      "bytes": 3752413,
+      "sha256": "edb5fc45c155cf9264364dc93df0040296064f54a3f05249cf68f910f2a75cba"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-mirror-buffer-return_plate.json",
+      "bytes": 3797372,
+      "sha256": "02e0a5dc5567dead84da3ea1945c00d4ed454720432d142fa5f7a725ec1b58b5"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-paid-next-week-resupply.json",
+      "bytes": 2707585,
+      "sha256": "cf0056821483a5ea25e437aec4a8c444e88cac67010e12cf5140f3a451d0e4d4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-paid500-guidance-freezes-eight-roots.json",
+      "bytes": 2216543,
+      "sha256": "725547665e5013f4dfc95ec40a89337a4048eeb6492749409a20eac67b2e449b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-preparation-CHECK_RETURN.json",
+      "bytes": 2408402,
+      "sha256": "2d0e1cb3cf79854ef3c76ab9ab9d7724d55b75dc8539953a043cbcb63427561e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-preparation-PLAN_CONTAINMENT.json",
+      "bytes": 2396900,
+      "sha256": "27b4f2039b27a92c14702c7be026dc6e41556ee09b0509732f03cf0170131d6a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 2386921,
+      "sha256": "7341492bc3901255281e73716a4d533d0019750781f4bb333d973b28b49d483b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-apply_pulse.json",
+      "bytes": 3315067,
+      "sha256": "2b46b2caae99485f77b9f884fd13a3cd2986ab631523e155ae479eeca1991743"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-approach.json",
+      "bytes": 3190921,
+      "sha256": "a799a4d4246d9b3093ed1b45bcb9136312d03e1e1d2b213d7e987d8684b0b810"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-buy_residue.json",
+      "bytes": 3211738,
+      "sha256": "95001ac4f1e1c8ea84a8390505c1adf783ec9334e56f0c657e2822053ca92310"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-consent-2.json",
+      "bytes": 3131610,
+      "sha256": "ab054a606fc752abbad08e1bcc466e76354f989bf7f15195fe36afea9aa666a9"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-consent-3.json",
+      "bytes": 3151180,
+      "sha256": "2111fb04568bd9e67e5797cd0b0634477764b5ab38608cf475f85cba31a61247"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-consent-4.json",
+      "bytes": 3170742,
+      "sha256": "4ac9402970cfaa9a71b1bd9569c3abf07e631ca4326251ded28f0b7d82c79b83"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-consent.json",
+      "bytes": 3112018,
+      "sha256": "b43ece2c74d8fa1f49932a11926655fe8d26cac95947491548bbed9d50787e93"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-exit_room.json",
+      "bytes": 3355649,
+      "sha256": "32f6cb4b237ac8babd2463c3ab4d270baf95fd2934d45a8823e373bab71e623d"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-honest-report.json",
+      "bytes": 3418697,
+      "sha256": "2abbd08b7855c37b3403ed59e3772bfbb629748850419e04e5dcd50fdd0a2ce2"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-install_plate.json",
+      "bytes": 3252262,
+      "sha256": "563355dcc99ad00faf9de4c4bf56a2dcc9441535a574e359c091f053bf51fb1a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-leave.json",
+      "bytes": 3397692,
+      "sha256": "4d58e97828fd59ba40f99ea02de436614bc174e9dd1a09e4f9695c318450c4cb"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-observe-originals.json",
+      "bytes": 3063673,
+      "sha256": "91e4823d3b09515b5d12b6f00eae023bf52f19da6f2c0d506f878a8ddc049195"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-paid-current-invitation.json",
+      "bytes": 3087852,
+      "sha256": "02b1858d51c65b2b1879fa3e6de946fce397979ebfa2bdc59d7b2d10a3bca91e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-pulse_containment.json",
+      "bytes": 3293986,
+      "sha256": "fc7ac32aed8bf4ad1d1aa5d787e3cc11bec4d9c2b2606d72fca59bb1696a6f58"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-receive_residue.json",
+      "bytes": 3232178,
+      "sha256": "72c03b668b3d719724fcf56eae3246e9aa6fed490967cbe5d56b324c29bc9e50"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-remove_plate.json",
+      "bytes": 3334823,
+      "sha256": "958bbab0c4a8e4f6cd2f7fc97ca843e775cd62089925bacec10840f7558571ab"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-return_plate.json",
+      "bytes": 3376890,
+      "sha256": "38f368d9313d132ae70268d6be50a03d1f484cc056bb04b09e84904a06d692d8"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-pulse-containment-start_pulse.json",
+      "bytes": 3272461,
+      "sha256": "d41cf57727e634de2ccb6e411b66d553bf96c3ef8b1d6bd5393024e1958ba589"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-587-event_choice.json",
+      "bytes": 2048618,
+      "sha256": "5905ff57455b6b64f4e87a998545384ba27d29c6a208d8344323796a3238fb4d"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-589-action.json",
+      "bytes": 2049283,
+      "sha256": "23960325387b7236dc7a6de75c68506329a0e669942be6b6dffd81facf52977e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-590-action.json",
+      "bytes": 2049666,
+      "sha256": "39c4f340dce2523d63d58a38e4540757f20186ec3d892974f9db22c01b20ddd5"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-591-action.json",
+      "bytes": 2049883,
+      "sha256": "e591411c55c81f3b15f63d51e3e13c4960ca09bfb0513f4be1308f653de32f44"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-592-action.json",
+      "bytes": 2050326,
+      "sha256": "de97606c24049048b58d5d5238d2989cce552ec5b85a3ed61760f6acf7cb0627"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-602-action.json",
+      "bytes": 2467738,
+      "sha256": "cd59d1bbd392dd813543256754b8e0808512eff27e3213e86491cd7c4dddbfd1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-603-action.json",
+      "bytes": 2467959,
+      "sha256": "c9def56133e675d739badf5a1532b82ecdee7b8cd77999b5c4c3dada58e7e937"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-604-action.json",
+      "bytes": 2468405,
+      "sha256": "dfe06377239f403853028eeb1ed3c4a7cfe45684d095a0d3d4e78bc072b6db0a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-605-action.json",
+      "bytes": 2468846,
+      "sha256": "d492003dacb995f564e120b0590ddc300c622d7ab9fe734c36668f39e06b0a13"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-606-action.json",
+      "bytes": 2469067,
+      "sha256": "b77e965e4862a6819ac92f41e55f0cb9876bcaf2a23f301e14139c9ac19831cd"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-607-action.json",
+      "bytes": 2469512,
+      "sha256": "0254cab177c352406e2de8f0454aa2a730862b83682e222ce5dc04f61435d3af"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-608-action.json",
+      "bytes": 2469952,
+      "sha256": "ec5fdbb801c18c747112efa3d4b77723c3e3fd1886a4c8eaea87a32656c3e3e2"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-609-action.json",
+      "bytes": 2470173,
+      "sha256": "e4610953185222d1eb27ade955e9af75b817f7503deb9e5ad4208c5877c2f580"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-610-action.json",
+      "bytes": 2470620,
+      "sha256": "4de548f6ff1ad92d2557d0b7fc8bd8988cbe6a0e92f56a20b904033ae6f32465"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-611-action.json",
+      "bytes": 2471062,
+      "sha256": "e94dd2339164662ca8871be72514d237bb229e0ecf54715cdb8fb30d9e9cddd2"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-612-action.json",
+      "bytes": 2471283,
+      "sha256": "111e23f31fbfbc24f7621a6fa2d22c282c292fe071d7e894628225b6d9a5789c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-613-action.json",
+      "bytes": 2471729,
+      "sha256": "7ac18fdb13075855a649332b03dd37b0ab70c7877f81f9733420b6ffa4dcea6c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-614-action.json",
+      "bytes": 2472171,
+      "sha256": "5cbcd45256cf260b6ea73c7a9b280b3690d7fa1baabeca0d2961bd8e0e7cf41b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-615-action.json",
+      "bytes": 2472393,
+      "sha256": "20ed3308a3652dd709ae1011935423aed59a19fb5d960d902121603de9d7c97f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-616-action.json",
+      "bytes": 2472839,
+      "sha256": "08c932e7e6db0b91940e1890d80ec27036cc2b41bb94e44c1c324ccfe480f72d"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-617-action.json",
+      "bytes": 2473280,
+      "sha256": "15bde93cdfbd24cc2e1140431a9d540febd51d35705bf4c3ce6ed9b46faac3d3"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-618-action.json",
+      "bytes": 2473501,
+      "sha256": "7853d0f00210fca0e19af8f35925323b7c1e3f2ccbe2333f2f2d1d06651d9b6e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-619-action.json",
+      "bytes": 2473946,
+      "sha256": "798d32542ffe4a4d2e8da9a7d0e98a3c7f91b02cc52e684d748eefcf21043ef1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-620-action.json",
+      "bytes": 2474386,
+      "sha256": "27ea89bea4fad3ba1cb806bc958ee6ea8ce1a8d72222bdecb61efa668063d13f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-629-action.json",
+      "bytes": 2561499,
+      "sha256": "1023aed4530dbe96447cef3f7bd4083c0cc999d593afd8d0aee8fd3c39c3077a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-630-action.json",
+      "bytes": 2561753,
+      "sha256": "41cfa6b2f00b7fc9b1f1c24ea85719b460f3145f2f1638594657ebc8caff347b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-631-action.json",
+      "bytes": 2562194,
+      "sha256": "9967ff5edf876e6066f24d2ff6361daa788feba20a8ef80aaa558ef5dcf89f1e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-632-action.json",
+      "bytes": 2562412,
+      "sha256": "9683349fb311fad351c1baefe23d1d65cc7bc2b54feffa5dadf75955c443ce02"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-633-action.json",
+      "bytes": 2562860,
+      "sha256": "f13828dca816058830bffb00ac8c9b6e7d4846d306a7a23cbeb9b654e2bc4205"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-634-action.json",
+      "bytes": 2563307,
+      "sha256": "263e4c77ae2d68c9e770a5c33dad4cfab57f9bc9e41f1cdf49ba88846357025d"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-635-action.json",
+      "bytes": 2563530,
+      "sha256": "fbe5e3162b24abd6d5dc59d17e9fb92efec20b8ff32d03138a960db2954e4e5e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-636-action.json",
+      "bytes": 2563980,
+      "sha256": "bf36b4b8f6212257559b913613c216d59a8babe8409b25a88c87a56e6af92186"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-637-action.json",
+      "bytes": 2564425,
+      "sha256": "c1f161c2c5cb6b555f4dc8baf4c58bae20e9a3c8eab7248295bdc1d99c7987ab"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-638-action.json",
+      "bytes": 2564648,
+      "sha256": "903f9462376f767f587f074664d887e567882b9e9523533ecb63733939feda52"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-639-action.json",
+      "bytes": 2565099,
+      "sha256": "9e9589f7dbc28bf285ef03c2341a978716eb2a1cc8162b7064e6bed1f4b284bb"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-640-action.json",
+      "bytes": 2565545,
+      "sha256": "222dd5b394d87ad707a79cc2f36ce929df4a058bc8d70b2a26ba533508368a07"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-641-action.json",
+      "bytes": 2565768,
+      "sha256": "33b6463cb07b842284b3d8880f04147175422b6838ad541756d6ffe18d5109c4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-642-action.json",
+      "bytes": 2566218,
+      "sha256": "f6ddd26d0c9f47429490f6926b667e90138e0fa6d055eae8c22454471c5c22aa"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-643-action.json",
+      "bytes": 2566663,
+      "sha256": "314b6cab0c052be354e8ea025c60a2845fec592d88a8ac2aa834143157e0fc1f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-644-action.json",
+      "bytes": 2566886,
+      "sha256": "a636e20af4d430f777362472c536b9c7c067e64c65ce00c37e59a992f8d121e5"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-645-action.json",
+      "bytes": 2567336,
+      "sha256": "da7e43da48937f10fb67227a0a5fbe4109a3b6d5b85784ee9b3b92010dfa6f57"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-646-action.json",
+      "bytes": 2567782,
+      "sha256": "f827ecfe51369fe4789ff7b1e3599feca6b6019d3791f96eb70e662efd09dc63"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-647-action.json",
+      "bytes": 2568006,
+      "sha256": "dcdeb93a99804ab71e5e5852e142600c99fcc5565734e22ddb0a0406c0ebf2d4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-648-action.json",
+      "bytes": 2568455,
+      "sha256": "b50eb1a775bd5ff701369605b175df03ed802b1610214d50c016c788f967b985"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-649-action.json",
+      "bytes": 2568899,
+      "sha256": "d52e130c727341ac57bf81fe40307b1d599f0c332d91a92b4fd2cd0716fee097"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-654-event_choice.json",
+      "bytes": 2612966,
+      "sha256": "e64c7d1a2a07d6854e2d1a766903147f11505b0936117ffe76832aa7fe483586"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-658-event_choice.json",
+      "bytes": 2646359,
+      "sha256": "d7ef8d3d1a50ef0bde184c3a46b3beadf2f564c9c5af893b9247acbdcc05d3e2"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-660-action.json",
+      "bytes": 2657873,
+      "sha256": "c00f717758c7932ee12998718e54f6a3bcaab8a450d105296e0e217fdaee99d8"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-661-action.json",
+      "bytes": 2658437,
+      "sha256": "3b7ac1f7ba4b829ea586a87c393f7815d26093f7341c547b3391ca3a9a7fdd85"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-662-action.json",
+      "bytes": 2659187,
+      "sha256": "92578ec1f73f386367d4a693280c547ccf346b370c3f9baf8fd4c0b997938a89"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-663-action.json",
+      "bytes": 2659407,
+      "sha256": "ad052b6801f31986580175508a237dce87ab2fc5dd6f469298f32b6b872faccf"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-664-action.json",
+      "bytes": 2659855,
+      "sha256": "68afcf52b2feb866188f5ff81adf4dae5ffbe89ade6c2d215c09d1dee37a95ad"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-665-action.json",
+      "bytes": 2660301,
+      "sha256": "3b029958617aa52d4c741319fd2d289343d232bb9324fce6e493097c657708b4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-666-action.json",
+      "bytes": 2660524,
+      "sha256": "726c0f7d5e57a224dbbd8235bf77c15626d5c512edb6d4cf1193598139e709a7"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-667-action.json",
+      "bytes": 2660974,
+      "sha256": "d789a951c5dad955ef32bd0819eb44b24fa382681b944984dd0b269e12c45451"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-668-action.json",
+      "bytes": 2661419,
+      "sha256": "ac6300d135dcf9f89b84e060b97eb1ea3bc12896214918ee7bad35e348986850"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-669-action.json",
+      "bytes": 2661642,
+      "sha256": "12c25d968570469f8d12b1fa7e1d8df0ca10458ea6efa9b2feb9d5949aa91323"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-670-action.json",
+      "bytes": 2662093,
+      "sha256": "baf05c53faababbe375f468154d5192a3c57249b9e84c4bf33532c929898d6dc"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-671-action.json",
+      "bytes": 2662539,
+      "sha256": "1d490146ba85990932a240c925de00fdac7866096d3b7057e6f7d05a1b8e9642"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-672-action.json",
+      "bytes": 2662762,
+      "sha256": "ed96f94ce811821878058dfa54872cf542510fbbd774fb72edd1c54faed102a2"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-673-action.json",
+      "bytes": 2663212,
+      "sha256": "ebe3ab5ef13649f692636374f20a75d1bef5249734a337d5d8c2b1188e07f518"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-674-action.json",
+      "bytes": 2663657,
+      "sha256": "60a2fa08f5eed444983f7c5dbc0b50936a652f03bce55b36a0e617b0b49d9c53"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-675-action.json",
+      "bytes": 2663880,
+      "sha256": "ec5b2028603d85d77331ad99f52f84bd7da2fc12e77730f34d5b370364065cab"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-676-action.json",
+      "bytes": 2664330,
+      "sha256": "48c1d2d5fa304272da72d4914ecf92fd67c357569903b6ce381035fc4eeb477c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-677-action.json",
+      "bytes": 2664776,
+      "sha256": "b48fa2d5612e9e69c707e13185c5f5715aaf816aadf7b1d8a26276740bd7595a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-678-action.json",
+      "bytes": 2665000,
+      "sha256": "98dfa8bb57117b2ac9241e89e51bfdcb455e323112d948aca8514b7a50881615"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-679-action.json",
+      "bytes": 2665450,
+      "sha256": "6c1637f496b1ab9d1b11f47ea159f1183c06cefc184f92dd0eb85be358ce5fcb"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-680-action.json",
+      "bytes": 2665895,
+      "sha256": "5028bd94042a09b25126eca9a183ea2ffbbf554e01d80929203fe5fb1f492329"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-681-action.json",
+      "bytes": 2666118,
+      "sha256": "aa4ed7ea70eb50a664392de976c8dec0a0787aa9e753e12b4faa9be5edd7dab5"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-682-action.json",
+      "bytes": 2666569,
+      "sha256": "16692d499494b6facf1b40b46d3219d9a5d7ead744d1bad65482ce7b32e6615f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-683-action.json",
+      "bytes": 2667015,
+      "sha256": "6accb3b3ff321212ec2a41f8cf16df388c9f585726576217a0ab4358393fd652"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-687-action.json",
+      "bytes": 2701913,
+      "sha256": "bcf53122ebc3d4a142992bb03cb2f0e32c8e9db5490a96ac3d102db1c863e818"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-688-action.json",
+      "bytes": 2701822,
+      "sha256": "34e43b3cb872a7c43851e5d3d583983e06b2081d8645bc42cd10b6d243a5bb67"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-690-action.json",
+      "bytes": 2713348,
+      "sha256": "bba63c421bcce06bb4d767b2cf4092abcb4e51bcdf72f8b10981bb5fbe27ba06"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-697-action.json",
+      "bytes": 2782933,
+      "sha256": "24a43353b4e4ce72d8104b3a6ca59d2054728450f9e20f63342ddd4813bd8bff"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-698-action.json",
+      "bytes": 2783193,
+      "sha256": "6f6ce2ec64db66915970818fce6b87aa2b5c706f25154020b65091a148660637"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-699-action.json",
+      "bytes": 2783410,
+      "sha256": "6891afb8a71ecdb2151cf287e8572da5597928a2ab8328932f1175dc9a14027b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-700-action.json",
+      "bytes": 2783856,
+      "sha256": "b3c8b4a38bbb990da9c0ee0727ae2f005735ae03680682e1ddcdc0fe25175b23"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-701-action.json",
+      "bytes": 2784303,
+      "sha256": "099d7192356d9bbfc0f873b985b5a53dc335b689dda7249b6e5bfa8c8d9a48db"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-702-action.json",
+      "bytes": 2784527,
+      "sha256": "1879a14bb760e1b5a1416507b555c0d9c9bf73bf03a9783d98e71782672fd844"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-703-action.json",
+      "bytes": 2784977,
+      "sha256": "a4017432bfc3ce125d23f9bf7019f9a2ab5b5e1e9338291b16f08de1dfdaeeda"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-704-action.json",
+      "bytes": 2785421,
+      "sha256": "21e8c1ef7c15df8cba838d843a94a5cba6fe21a61a5f6d954496561690890065"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-705-action.json",
+      "bytes": 2785644,
+      "sha256": "ddbef0d5b38708fb73951d14adbf6f43db9cb2bedf9898db196340f37a8c004b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-706-action.json",
+      "bytes": 2786093,
+      "sha256": "9edd1ddcb1c4d4fb27b31e7d5ca9523a246b6ae27ef42c8543ce362fff925f4a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-707-action.json",
+      "bytes": 2786537,
+      "sha256": "a786fac9221ca25049dcc008e21119aed1ab2aa527daceed329ae1580fac8d76"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-708-action.json",
+      "bytes": 2786760,
+      "sha256": "3edf67c2b48344b43aaf270c8c71960cd7c798decb68ab7d451251ebbf348b2c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-709-action.json",
+      "bytes": 2787210,
+      "sha256": "35d75b3b8c5f1c7f853971e6aa8e58e7158003b1492203ef16209dc5236786a7"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-710-action.json",
+      "bytes": 2787656,
+      "sha256": "a313f42735fa653497114bf2fe2333f277ae99c37476dc687949b02c17ccfcff"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-711-action.json",
+      "bytes": 2787880,
+      "sha256": "d34b8480634d7be4043e131d52c572bdb48ee3fd6365058c7f20e49beee7ac83"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-712-action.json",
+      "bytes": 2788330,
+      "sha256": "49245efa5c772f30066fd709a00e12f8376d0d50b4b0e05a256980e38f4b060c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-713-action.json",
+      "bytes": 2788776,
+      "sha256": "78f51061d2a302a6bc01b6a31aeee15d703e6ff5444deb010a6451b3468f4427"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-714-action.json",
+      "bytes": 2789000,
+      "sha256": "bc6e0e204b32e9d1da165e5aa8641706918c2a05cbe995d2d27a06de86e797c8"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-715-action.json",
+      "bytes": 2789450,
+      "sha256": "0ffa73c7306750ff991a547eb999fe446964a49edc0fa958c0c766c68e659cc1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-716-action.json",
+      "bytes": 2789895,
+      "sha256": "05d44be6a67d00370f2aa8d6972e90f7a5dd3629cf42565f8d82ab06530536cb"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-724-event_choice.json",
+      "bytes": 2869240,
+      "sha256": "930e778a9378488b2729ccf398590353a56bb414d116151d04d6ca719778badc"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-726-action.json",
+      "bytes": 2880795,
+      "sha256": "8e42adb9d6da98c12712c1da86d609cb593dd2b4202f0b59256b19042647b1de"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-727-action.json",
+      "bytes": 2881361,
+      "sha256": "803876b2fc97b889f28a9802094224b240765ec8f072b075e38a2d94be6262df"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-728-action.json",
+      "bytes": 2882113,
+      "sha256": "e8b88dec156d8e349c8f6da59513d28436a797ebc3e5fc3ae003d2d4af1a8af8"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-729-action.json",
+      "bytes": 2882333,
+      "sha256": "43b832bdfd462b4239f8a32488168e0b703960453c28b91f9926ef8ada3f382a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-730-action.json",
+      "bytes": 2882782,
+      "sha256": "8bcdd42ba099b213ddbdb49028989de0ca7b0b620e86046908f98bbf0913eadb"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-731-action.json",
+      "bytes": 2883229,
+      "sha256": "08d893102c5dcbc97ad70c6d76a120a2e7c3665adc3fdefa66eb8a95f96a90b0"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-732-action.json",
+      "bytes": 2883452,
+      "sha256": "a1fb7a1e2b55b02946af56b1fdca484285a06a527f0b248e75d05fbed76660b7"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-733-action.json",
+      "bytes": 2883902,
+      "sha256": "60ac5129672ad09f9834cde6ffae70aeb5a7f41c776c4f4f785014b176a1963f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-734-action.json",
+      "bytes": 2884347,
+      "sha256": "6258a83fbaea79158e898faaee431911602ea3ba646f693d6d5ff6ffbd2c36c7"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-735-action.json",
+      "bytes": 2884570,
+      "sha256": "8843f4714b3c1d9b976927de454a945c13353e11dce3405f8738e90333928ee1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-736-action.json",
+      "bytes": 2885019,
+      "sha256": "b5fb93046eb80d167275ea4cc2c75a25bfc65de6226569a41b618ac7f7a3358e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-737-action.json",
+      "bytes": 2885463,
+      "sha256": "94096d0ab1c9fe0cd629892e2f17f96110f2c0b61ea67823c34859cb12802ffc"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-738-action.json",
+      "bytes": 2885686,
+      "sha256": "c28efe293a4057f54ea2a0932d24e4c9786af4c1b11f1efdab432076cc236ba9"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-739-action.json",
+      "bytes": 2886137,
+      "sha256": "ef6097696e898eea86be5b4791b2a27fd9d5beb113446662df51fe2cf7c0b0f1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-740-action.json",
+      "bytes": 2886583,
+      "sha256": "514f7cd0be59b66afabc02ebc1a88e9a073bf122ee9f77ea4a783ca50e5f41fc"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-741-action.json",
+      "bytes": 2886806,
+      "sha256": "065a71ed78336f34251fc3ed128acbd9dabf894b6ac94b5be52212a002446602"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-742-action.json",
+      "bytes": 2887256,
+      "sha256": "32b584bcdd49b1f16cf52c3d88c0f5549d0a07446f6977173454ace32f0b3612"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-743-action.json",
+      "bytes": 2887702,
+      "sha256": "11e6ebc446bc58e241abff1e81dfcd265fa442c48400f6ab5e923bd7b8eb8c2b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-744-action.json",
+      "bytes": 2887926,
+      "sha256": "d6e586f17fe6b65ca388563113a628a8c670c14a9fd8f6f46d0bfef8342ce1e3"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-745-action.json",
+      "bytes": 2888376,
+      "sha256": "8b01aa4f6aaf90453b1c3d6ab34385f65593c1d56826b04edbe4f606747427e7"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-746-action.json",
+      "bytes": 2888821,
+      "sha256": "1113f00cf56fe00a1855f65ab8f6dc490dec8f6887732eccf58132327bd72788"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-747-action.json",
+      "bytes": 2889044,
+      "sha256": "1389370edaf38e98b99d4c34eaf34858a374f97d9cb69ab2b7e3cf484f4dae96"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-748-action.json",
+      "bytes": 2889493,
+      "sha256": "f54255e4a659dccaf85c65906232b9df3d0f1f5073776c110af7a072f7756eb4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-749-action.json",
+      "bytes": 2889937,
+      "sha256": "5ceb06a9be6e62cb109f6e7c4b3d4f424e60e2d68cb77d36a5e911d959b0afad"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-758-action.json",
+      "bytes": 2982030,
+      "sha256": "23d23d34e1a5beb284a182babfb1ebc34245837ae11c3e9d0f02eafbb88af507"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-759-action.json",
+      "bytes": 2982288,
+      "sha256": "f2f1723ce525eb0d9639ad583eaba625ddf8d6dc95735c7b8f4fd7b6efc56b7e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-760-action.json",
+      "bytes": 2982733,
+      "sha256": "623acef7ee2095e4c05e313271232459f1990655d4ea53a3fa8bff998eb4ec89"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-761-action.json",
+      "bytes": 2982953,
+      "sha256": "c9f14dacb7107614e4f67b55c0f7b977188433876f4cf3bf349c0156fe6315e4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-762-action.json",
+      "bytes": 2983402,
+      "sha256": "a5bd78e01ece330f4aca6d42ffa2e38e7387113401de0831fedbee99e8ff538e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-763-action.json",
+      "bytes": 2983849,
+      "sha256": "f6700b21a1245481c05445785fcec089033b7d7451dd72ac0e0820e6db638a31"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-764-action.json",
+      "bytes": 2984072,
+      "sha256": "05e4c7fb7fde61a11e6d8d5bbedb1233535763a891df4e4daca9a88e4a8195a0"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-765-action.json",
+      "bytes": 2984521,
+      "sha256": "93015bb7099bb83923a939ead9c8f853e9e002b30e6730acf1517f24fbda8e56"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-766-action.json",
+      "bytes": 2984965,
+      "sha256": "e756d0663f8358ebb6d9455bf4480e2afa815c910c24eb91bd559ce31af2f285"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-767-action.json",
+      "bytes": 2985188,
+      "sha256": "e42809af4644dd7ab111a1b68684db1f37fd35b27dc83cf5d3d1f51aacacc884"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-768-action.json",
+      "bytes": 2985639,
+      "sha256": "e2ec780d38a458b9cc418d81066000f472538a5d49e7f8fe849d38f2f0e24c8f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-769-action.json",
+      "bytes": 2986085,
+      "sha256": "6d41b429b234145f8557044f62a86d5716d77f4b41290795b7d94c199de1b13a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-770-action.json",
+      "bytes": 2986308,
+      "sha256": "f3f17d47e9da4392cc718203607b6ffe92a82e8f02ed0d31732458fe51e7987a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-771-action.json",
+      "bytes": 2986758,
+      "sha256": "73a74fa6aeca7c465e4ffa26a1516876c0fb5dbcdc475289a146584debc57b21"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-772-action.json",
+      "bytes": 2987203,
+      "sha256": "85d19389bf3d0768b077e427e451794260b1fa0f3ef989b4a484147e7641b7aa"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-773-action.json",
+      "bytes": 2987426,
+      "sha256": "94b9b9e425aa5d3b022673fcaab0e8d610c76e2781bbe821ee13f79f3291b639"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-774-action.json",
+      "bytes": 2987876,
+      "sha256": "6c039bfb5e658da27f7acd0c51aa952e1ea79fb0a02cc0219c9cea90ed9501de"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-775-action.json",
+      "bytes": 2988322,
+      "sha256": "016ca65c013352c8a6881fb2530666449eddc5fe5a54f3c54e6f66c87bc07e04"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-776-action.json",
+      "bytes": 2988546,
+      "sha256": "51766264ec65acd585dca2c36fa251c291f966e05d7499f5931ec448a65153e1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-777-action.json",
+      "bytes": 2988995,
+      "sha256": "6e544b87e5fc8bc993150ca6ed2ac8732c66ada0825b0486b1f060232dfb4da8"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-778-action.json",
+      "bytes": 2989439,
+      "sha256": "f72d8f854c8e027dfefc8746f857065e8735079e96347f28c92b7d57d490cdef"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-782-action.json",
+      "bytes": 3033423,
+      "sha256": "3c2d45e79c1c329c1a64384eb4c021516c0998b9a1a6c146274722a6dd0bab63"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-783-action.json",
+      "bytes": 3032974,
+      "sha256": "ae5929519afe7e7303b171b00edb3562f40afc9872371eb1851d1b815a52b195"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-784-action.json",
+      "bytes": 3033199,
+      "sha256": "ccb407402da58b2f43cbf076224fa278b9536188ca5e987de3c46d306fec2fce"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-785-action.json",
+      "bytes": 3033650,
+      "sha256": "9913ddc0f27e5670828513c16a569b6ef6670dc094ba8125bbdc51b74b2d43c7"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-805-action.json",
+      "bytes": 3429358,
+      "sha256": "7e60446eaa68d85f0a9d035e6b181abad120cdc8c2cc2736146b9d28f8b510f2"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-806-action.json",
+      "bytes": 3429583,
+      "sha256": "a9b353638e4f265e13db291777c4131ac1993bfe32c19c50f6974dc115594539"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-807-action.json",
+      "bytes": 3430033,
+      "sha256": "adc303e7eb3a3b9d0ac7a0977ab9b5a395dcee681446f4387fd2fd7dee1f856d"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-827-action.json",
+      "bytes": 3853475,
+      "sha256": "38b1fcb281b4591137398d3b6c840ce8dc875aaf847092f1be961dc35055b34f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-828-action.json",
+      "bytes": 3853698,
+      "sha256": "9b120b8d0f669dab13cacca1b665d536046195c0d726c7ac056ef65cd0e4767c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-step-829-action.json",
+      "bytes": 3854150,
+      "sha256": "67bb8049865e71691f93b57a3fb3ce0f6987ca032aae7641875ef95fbdb4dc7e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-three-actual-honest-reports-reflected.json",
+      "bytes": 4247149,
+      "sha256": "6c2ea4de0b77c8f8939d4f5bc75192fe9fca1d0ca4b11068fe6df97f598e96b1"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-approach.json",
+      "bytes": 4034744,
+      "sha256": "2919bf7569dcab4516a176bc47489f106dd0f6207c7ae3fe167efaf5d54a9a38"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-consent-2.json",
+      "bytes": 3966674,
+      "sha256": "7b32de753265e55c0eb6f9dcaebb1452a5262c38fdd373fc820829060022329b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-consent-3.json",
+      "bytes": 3989164,
+      "sha256": "e905241aca721dc5d2b3e0e3355d20f857a6228c3d4f025bc6f83ac3a34cc301"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-consent-4.json",
+      "bytes": 4011646,
+      "sha256": "f5f9e7df940a1252572f297b2ea486d80908c540ae959af385400476c06af5df"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-consent.json",
+      "bytes": 3944162,
+      "sha256": "e176e703132af9cb503f7819a4372f162eae644408efc33081d2a8748d0151c2"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-exit_room.json",
+      "bytes": 4151164,
+      "sha256": "6b3bd992d8a051a28cb9f125bc4346fcb784984772c9316563d19833e26bde71"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-honest-report.json",
+      "bytes": 4222985,
+      "sha256": "5812a31e1db8377b977013da23cfb5097de27ca9da5d0121fc9bf0ff93faa0f4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-install_plate.json",
+      "bytes": 4058094,
+      "sha256": "18dd2e4cf861dcdcfbf8ae034da47bbddff2a5b6b6dccd5d218a66952d67a97e"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-leave.json",
+      "bytes": 4199057,
+      "sha256": "2cd144cbf1d73fe962a427c375c0b31dff9e910c6d0268b25d1f1c4f115b0eb5"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-observe-originals.json",
+      "bytes": 3888535,
+      "sha256": "2522cefafd549b5970c90a395add11a3cd4d4177ab9a88726f4b108a9b29e3ee"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-ordinary_seal.json",
+      "bytes": 4104311,
+      "sha256": "ecf22e1e242e483cf30eec3c5f69962349dd9c3ca13f5c8d301dff63eb003f6f"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-paid-current-invitation.json",
+      "bytes": 3916351,
+      "sha256": "c0a56bae61c8466185982e478317fa76fb98f33591d7dd078911778dc8f97df0"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-remove_plate.json",
+      "bytes": 4127405,
+      "sha256": "40607bfa15643516442349b247261cb9414149ba3ae6f957b659026616b493b8"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-return_plate.json",
+      "bytes": 4175328,
+      "sha256": "391324063d7e0b13da545f70c16129dd372d27470c0e0e9cacb4c0169b789db4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/boundary-withdrawn-window-withdraw_consent.json",
+      "bytes": 4081169,
+      "sha256": "b9b49bc5032b215ec4c06a4b63a8da18d7824ec2a2605f646ecf517d163e5be4"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/capture-integrity.json",
+      "bytes": 30487,
+      "sha256": "02d039456b32fad6f5da6d53acf992e6990fb7e44ab5cfdc7929801353ffdede"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/commands.jsonl",
+      "bytes": 1263835,
+      "sha256": "aaab574eeba829b2f6a44c1b9148409d7e360dc104741e52895515433de4f704"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/natural.json",
+      "bytes": 9355955,
+      "sha256": "baf997edd399bee66132fc7278a741968063dee012e960c9e2fc80ae1f1f4339"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/public.jsonl",
+      "bytes": 2859225,
+      "sha256": "757c32d520a623a790286e619c9f727eba9d0e235f092d255262f5a2be368795"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/snapshot-combatStart.json",
+      "bytes": 3140461,
+      "sha256": "2f7a86b6b61bc9218bc181fa0121500f8254425971b6dba32ac2703d192f493b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/snapshot-combatTerminal.json",
+      "bytes": 3826022,
+      "sha256": "8640b47bbfd9b23acd4cee4f2ca13843c78cd2d7515b8876c75e55502c1c685a"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/snapshot-departure.json",
+      "bytes": 1023976,
+      "sha256": "4825610208a558dcbf86e41476ba2998a48dc58d17deb4a29b954870a940c648"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/snapshot-guidance.json",
+      "bytes": 1191135,
+      "sha256": "b429847381873600639397e57faefc3a0534622e2db15265d667cde3d3239f98"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/snapshot-practiced.json",
+      "bytes": 2129580,
+      "sha256": "33c1fb452fd49e18ce7b038891d0cee84dccf506de2e70085fb794f89eb2ee9c"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/snapshot-promoted.json",
+      "bytes": 1516946,
+      "sha256": "a75c5b10902be8f36ba43b522b7ee3f3fc8bc3804654df79359693a1091551bd"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/snapshot-sourceRecovered.json",
+      "bytes": 1025285,
+      "sha256": "10a8264fcbca0724e5163b97a334b5561499a0b1c232190d3f28388aa277ba6b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/source-prefix.json",
+      "bytes": 1490909,
+      "sha256": "be14d0dfbb5fa2605010861c921ccb529f8088eb70eb7a13f1f5b79627d04327"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/summary.json",
+      "bytes": 2195553,
+      "sha256": "f3a1b3b3b17beedea23df2f6cd5480dc57f598600c3e4bf44b2c3cb2c38a789b"
+    },
+    {
+      "path": "tests/fixtures/apocalypse-demoness-v01990/transitions.json",
+      "bytes": 38381,
+      "sha256": "3cc061f1703f97825b83a86bafacb3b745c8cbd181b081e301bf227d9e6a389b"
     },
     {
       "path": "tests/fixtures/apothecary-v0130/natural.json",

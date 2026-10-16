@@ -37,7 +37,7 @@ export function createCalamityDemonessState(): CalamityDemonessState {
 /** Current playability and historical membership are deliberately separate. */
 export const isCalamityDemoness = (s: SliceState) => s.progression.pathwayId === 'demoness' && s.progression.sequence === 2;
 export const isCalamityDemonessAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'demoness' && s.progression.sequence === 3;
-export const hasCalamityDemonessHistory = (s: SliceState) => isCalamityDemoness(s) && s.calamityDemoness.promotionWeek !== null;
+export const hasCalamityDemonessHistory = (s: SliceState) => (isCalamityDemoness(s) || s.progression.pathwayId === 'demoness' && s.progression.sequence === 1) && s.calamityDemoness.promotionWeek !== null;
 /** Original finished bottles and the two actually brewed stages have distinct histories.
  * Neither a brewedWeek nor an acquiredWeek is invented for a source that never stored it. */
 function sourceHistory(s: SliceState): boolean {
@@ -70,7 +70,7 @@ function sourceHistory(s: SliceState): boolean {
     s.pleasure.witchActingAtPromotion === 100 && s.pain.pleasureActingAtPromotion === 100 &&
     s.despair.painActingAtPromotion === 100 && s.unagingDemoness.despairActingAtPromotion === 100;
 }
-const knownChannel = (s: SliceState) => (isCalamityDemonessAcquisitionStage(s) || isCalamityDemoness(s)) && sourceHistory(s);
+const knownChannel = (s: SliceState) => (isCalamityDemonessAcquisitionStage(s) || isCalamityDemoness(s) || s.progression.pathwayId === 'demoness' && s.progression.sequence === 1 && hasCalamityDemonessHistory(s) && s.apocalypseDemoness.promotionWeek !== null) && sourceHistory(s);
 /** These remain historical locks; none widens the exact-stage predecessor command gates. */
 export function hasCalamityDemonessOldPractice(s: SliceState): boolean {
   return hasUnagingDemonessOldPractice(s) || hasUnagingDemonessRitualLock(s) || hasUnagingDemonessLifeLock(s) || hasUnagingDemonessEncounterLock(s) ||
@@ -315,7 +315,7 @@ export function applyCalamityDemonessCommand(s: SliceState, command: CalamityDem
 }
 
 export function projectCalamityDemoness(s: SliceState): CalamityDemonessProjection {
-  const state = s.calamityDemoness, available = knownChannel(s), promoted = isCalamityDemoness(s), actions: CalamityDemonessAction[] = [];
+  const state = s.calamityDemoness, available = knownChannel(s), promoted = hasCalamityDemonessHistory(s), actions: CalamityDemonessAction[] = [];
   const add = (id: string, label: string, cost: string, command: CalamityDemonessAcquisitionCommand) => { const reason = calamityDemonessAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-calamity-demoness-guidance', '听取灾难魔女成品与专业准备指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });

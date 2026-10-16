@@ -8,6 +8,7 @@ import { WITCH_COUNT_WHEEL, drawWitchAbility, isWitch, resolveWitchCombatAbility
 import * as witchCombat from '../../src/domain/witch/combat.js';
 import { ASSASSIN_COUNT_WHEEL, assassinAbilityWheel, resolveAssassinCombatAbility } from '../../src/domain/assassin/combat.js';
 import { INSTIGATOR_COUNT_WHEEL, instigatorAbilityWheel, resolveInstigatorCombatAbility } from '../../src/domain/instigator/combat.js';
+import { APOCALYPSE_DEMONESS_COUNT_WHEEL, apocalypseDemonessAbilityWheel } from '../../src/domain/apocalypse-demoness/combat.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 
@@ -149,12 +150,18 @@ describe('Witch S7 exact profile and inherited sequence isolation', () => {
     expect(playerCountWheel(state)).toEqual(INSTIGATOR_COUNT_WHEEL);
     expect(playerAbilityWheel(state, null)).toEqual(instigatorAbilityWheel(null, state));
     expect(resolveInstigatorCombatAbility(state, burst, 1, stream(state)).selfGain).toBe(27 * 0.65);
-    for (const [pathwayId, sequence] of [[null, null], ['demoness', 1], ['moon', 9]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['demoness', 0], ['moon', 9]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isWitch(state)).toBe(false);
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
       expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
     }
+    state.progression.pathwayId = 'demoness'; state.progression.sequence = 1;
+    expect(isWitch(state)).toBe(false);
+    expect(playerCountWheel(state)).toEqual(APOCALYPSE_DEMONESS_COUNT_WHEEL);
+    expect(playerCountWheel(state)).toHaveLength(6);
+    expect(playerCountWheel(state)).not.toEqual(WITCH_COUNT_WHEEL);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(apocalypseDemonessAbilityWheel(state, 'CONTROL'));
     expect(ids.join(' ')).not.toMatch(/s6|s5|disease|silk|charm|curse/);
   });
 });

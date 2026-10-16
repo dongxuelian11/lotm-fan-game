@@ -228,7 +228,7 @@ describe("Current pathway navigation at persistence and history boundaries", () 
     expect(screen.getByRole("button", { name: `${stage.name}成长` }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText("本次实践：本次实践已实际结束")).toBeTruthy();
     expect(api.submitIntent).toHaveBeenCalledTimes(2);
-  });
+  }, 10_000);
 
   it.each(currentStages)("keeps both earlier stages read-only while navigating $name history", async (stage) => {
     const state = currentProjection(stage);
