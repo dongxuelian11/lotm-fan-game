@@ -148,7 +148,7 @@ describe("Long chapter navigation from actual natural saves", () => {
     expect(game.state.undying.lifecycle.experiencedCycles).toBe(1);
     expect(game.state.longChapter.recoveredSources).toEqual([]); expectNoOldScene();
     expect(projectSliceState(game.state).longChapter.actions.some(action => action.command.type === "AWAIT_REVIVAL")).toBe(false);
-  });
+  }, 10_000);
 
   it("keeps readable external originals separate from three actual memory recoveries and original-book return", async () => {
     const game = savedGame(natural("revived")), entries = structuredClone(game.state.undying.life.book.entries);

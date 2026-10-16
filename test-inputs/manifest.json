@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.202.0",
+  "version": "0.203.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -491,9 +491,789 @@
       "name": "lotm_release_0.202.0_unclean_monarch_test_inputs_3_2026-10-16.tar.gz",
       "bytes": 43679,
       "sha256": "7c804f332d318bc00b974205c4e7c8264f002b4786bec4b69afcb40afabc78c2"
+    },
+    {
+      "name": "lotm_release_0.203.0_abomination_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17683036,
+      "sha256": "ed3944bec2e01799b9c927528d4a494c7b0d8a279512caa30641df21b18b9d23"
+    },
+    {
+      "name": "lotm_release_0.203.0_abomination_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17713969,
+      "sha256": "0eb3c7104f6a0d1d4935850c72dcfb9408950f3c31d1bc6e9c52ebcba66699b3"
+    },
+    {
+      "name": "lotm_release_0.203.0_abomination_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 17813961,
+      "sha256": "8a7173924d79fc67ae423b368cd90096258edec8f879750cf6885ffd668135d4"
+    },
+    {
+      "name": "lotm_release_0.203.0_abomination_test_inputs_4_2026-10-16.tar.gz",
+      "bytes": 846368,
+      "sha256": "d5183368980a3a3c264ef02ac88aa0f835173c2e59769c13f92ece56cda4a149"
     }
   ],
   "fileEntries": [
+    {
+      "path": "tests/fixtures/abomination-v02030/boundaries.index.json",
+      "bytes": 9153,
+      "sha256": "d5bda7582336b324d07082734f39ceeea4399ae8b1e1ec5935080dfeed87d87e"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundaries.steps.json",
+      "bytes": 4152,
+      "sha256": "70e4faeb73beea5122f8f90c390e32b3a17f304ffaa3c47ccfa50a49ee9edb68"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-1-real-labour-2.json",
+      "bytes": 2950146,
+      "sha256": "112a5cc78483be3a18092ce1bb2387e290e7d827b984915749562b90e3e2e240"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-1-real-labour-3.json",
+      "bytes": 2959713,
+      "sha256": "48fac8206dac1c08f13f09d325dfcc367cbfdd35e40ee41ef542038d099e6eac"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-1-real-labour-4.json",
+      "bytes": 2969237,
+      "sha256": "25af0e274d86672b3bce9b4da15c3af4c01f12b7a5301c699531ac81628216e6"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-1-real-labour-5.json",
+      "bytes": 2978628,
+      "sha256": "602c0e3a9709500f55b0c630b37ae9039c18a084b674720bed1bc33c4a2f2596"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-1-real-labour.json",
+      "bytes": 2940955,
+      "sha256": "854e7c80fda4871842c7c50e56712583946f5077033fb036ab3e5095e2f13d40"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-2-real-labour-2.json",
+      "bytes": 3035744,
+      "sha256": "6d96bd7719726ac3b3b77b12c89bb3c1463d9591fa81c1db49d061f8b0131823"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-2-real-labour-3.json",
+      "bytes": 3045264,
+      "sha256": "430fc6487cb628efaa6661f21694c3ffd9bfbf842f2f7af0bcc20a5ab4126502"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-2-real-labour-4.json",
+      "bytes": 3054655,
+      "sha256": "309d727726a572526006d7612b9f6853b32bf33724c92157ceed4618ac37e087"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-2-real-labour-5.json",
+      "bytes": 3064224,
+      "sha256": "368e732be2d226e4918b3b9ac20072d112b70e8e8f3b288df679ac9903190883"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-abomination-potion-2-real-labour.json",
+      "bytes": 3026507,
+      "sha256": "fb4b3003e7b31a0be0066eb16942139c98b84b003721aef28d22a3081f5ff0a0"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-actual-roderick-contact-elsa-walks-out.json",
+      "bytes": 6932111,
+      "sha256": "e5f9060a28d3b9401f49436865f04c4171576e504ae3acecb1e3f5d232c93913"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-actual-work-after-living-exit.json",
+      "bytes": 7994723,
+      "sha256": "3e409e7ef7dd8a290ac96ddcd14883d3a27a3615238f76825a01665746c823b9"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-actual1200p-buy-abomination-potion-1.json",
+      "bytes": 2997287,
+      "sha256": "a8d1992140b3d73b0b38b14f06980c49c1f3cfb9c762e0b30573d60de5f2f8fc"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-actual1200p-buy-abomination-potion-2.json",
+      "bytes": 3082428,
+      "sha256": "e0ecde359aafd00d015c28a886c5e2cc3be7063725d785fc78cef7fc63503f10"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-actual180p-current-week-prepare-abomination-potion-1.json",
+      "bytes": 3006593,
+      "sha256": "b2405270f40276adb7c739d65449b2a34bd8311e55ae97d18733a6d4fe4d0dff"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-actual180p-current-week-prepare-abomination-potion-2.json",
+      "bytes": 3091734,
+      "sha256": "1acae495c3111ccbaad605e18f38cabe7f9b07050ca07abce88b94f85d5ff6b2"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-combat-round-1.json",
+      "bytes": 7380470,
+      "sha256": "01bdba2b9f3b22ca57d8a38b19f463e436402c4f110d2c06df3783475109f4ad"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-combat-round-2.json",
+      "bytes": 7705982,
+      "sha256": "00b99c90133a331c06be777d2012fcc8d4dfe2d736445c6e8fd07d53f91c5784"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-combat-round-3.json",
+      "bytes": 7909381,
+      "sha256": "92f0a370eb5079edbf3d922d758ecb04c4eaa65217156e07d88a866dd37555d3"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-combat-round-4.json",
+      "bytes": 8002576,
+      "sha256": "52866723da2f701a1cb850bc2a30e22205cff4188347ac96ccfbce930046c0ec"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-consume-abomination-potion-1.json",
+      "bytes": 3016660,
+      "sha256": "d0e0e35057f54d1112be1b1100747e103032ce3018308779579829f98363aadf"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-consume-abomination-potion-2.json",
+      "bytes": 3114247,
+      "sha256": "4dbd8da496b29e1c98fbb7638f0fcea9afb84c3a2d0f5d248f5a9f61e8d37986"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-exact-original642-living-source.json",
+      "bytes": 2430083,
+      "sha256": "0bc326f6ece3e4ed1edf078f490f0f6abd91124f14b33469bc7318825e87e202"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-independent-optional-fight.json",
+      "bytes": 7060526,
+      "sha256": "f0f816e109a4967ee0f1a4af17f5f6da005aa3034c76430addb5eb436809c805"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-paid-independent-combat-piece.json",
+      "bytes": 6841442,
+      "sha256": "6b283c0c4313ef4898397aa9b0e7c1f0da537973e59101b896f51c1d448c9bed"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-paid500-guidance-freezes-eight-roots.json",
+      "bytes": 2669361,
+      "sha256": "a0bff7c77c02ce82d6ef706aa98b7c7f41adcfc0571444f1b096e07c714ed3e4"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-preparation-CHECK_LIMITS.json",
+      "bytes": 2921101,
+      "sha256": "85c6e2db2e87109063009e729eae369c8c0e393a3e18267791e6eff193eefce9"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-preparation-CHECK_RETURN.json",
+      "bytes": 2931192,
+      "sha256": "0dc6a33a869615ca1af018320d6584d737f112208d5efa3eb0a83a821fb43a32"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 2912388,
+      "sha256": "6823ed37491a327851d6077145672d6008f85d4f0d25ee977da97b400e72cfc7"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-brief_cry.json",
+      "bytes": 5049972,
+      "sha256": "35e8884920db68cb82112c33653399edf56d3ccb4567257d455211178df9ec60"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-consent-2.json",
+      "bytes": 4505743,
+      "sha256": "58294796f0c842b37111c83bad484d48ca44a518f1461926224fea43518624ff"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-consent.json",
+      "bytes": 4442262,
+      "sha256": "ee3621143ecd4792600704e448c1ba3953ff49e64c1ce2fbf731ab6c06644f5c"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-honest-report.json",
+      "bytes": 5466850,
+      "sha256": "3a7dd3d4c45c96efddcbdc8535a8c07e2ce5903a22ef0274b9d919711f51e12a"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-leave.json",
+      "bytes": 5388359,
+      "sha256": "b02642b661697296d86187a9b1d639803bd840d45856e87e4cd8271fee3ad947"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-observe-originals.json",
+      "bytes": 4378615,
+      "sha256": "68e28f00187ac3c6f7329599c971933fc14cef2684ba24875aa3a3c4019e21fe"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-perform_cue.json",
+      "bytes": 5115129,
+      "sha256": "cfe03f3230b0a2fba8092ebe81b6025fc246a5c7963c2a1d1234ff49f2d53df2"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-place_piece.json",
+      "bytes": 4919899,
+      "sha256": "b08cf266410b9a271e293498bc608eb4062e9e2b9b03738e61c4b8f1ac8b8463"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-prepare.json",
+      "bytes": 4583441,
+      "sha256": "589b32cd3bc15a61acf843407b210b4fee39374b6a7de5c7069b9cbb05275e92"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-prepare_cue.json",
+      "bytes": 4984624,
+      "sha256": "5b026dc77470729e7e3ae06ce7ae345d5bce1171dbd7c4887acc114b8f5e2648"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-read_original.json",
+      "bytes": 4790839,
+      "sha256": "acbca63e142ec099470672443a9a0d471b60073e79a16ca7db5a6e7072178393"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-return_piece.json",
+      "bytes": 5309991,
+      "sha256": "7b8d7c6442e1f741f6fbf0fcf333e4f4d1039eedd6496a172df7bfd3931d68b5"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-return_to_a.json",
+      "bytes": 4855356,
+      "sha256": "96d9602fd05abc4ed8d96dd321bb7341185aa745197ad2442dd1392a0bb45259"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-return_to_entry.json",
+      "bytes": 5244934,
+      "sha256": "6f0247e27b2d98256cc7c6abcbc20665a6e20117b2187625c463c694c8fec4d0"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-take_piece.json",
+      "bytes": 5179904,
+      "sha256": "376752531c33bec9b1f88477f392ed54d7c40579d7df00b4d15d6ca4e7a12a80"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-walk_to_a.json",
+      "bytes": 4661720,
+      "sha256": "0f6e36444996bf9230eae1645bf854ddbf3a4958deb595c2f477a2ed36f94a97"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-spoken-hesitation-walk_to_b.json",
+      "bytes": 4726344,
+      "sha256": "8671b2d5ae5a59af378177c46adc7d93c9393e48924c0d2cc4c5deb560c69195"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-652-action.json",
+      "bytes": 2983397,
+      "sha256": "d606e755f96615d7f165c5a8ae0d71ff8451300910ec8e98739d515e4f07508f"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-653-action.json",
+      "bytes": 2983621,
+      "sha256": "1077209b4d6e6f86e54a69b81fc6f1b467eaaaf454f56dc4ca522eaccd2b4fd6"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-654-action.json",
+      "bytes": 2984072,
+      "sha256": "b17a664ee4e9a885323ce50c1f51b2aa2febad02f1426664f4f47c5e1dfaf576"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-655-action.json",
+      "bytes": 2984517,
+      "sha256": "4c6d83809c9a7555bba77417275b8fc26caf9f9ccc14c63aa498ab4baa493338"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-656-action.json",
+      "bytes": 2984740,
+      "sha256": "17768b8c4cae595f46e75312acc58afb15dfd49d70022e73fccf3885a9327544"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-657-action.json",
+      "bytes": 2985190,
+      "sha256": "dd3ffa1cf37fe35c7375db720a30a70fda28292396930dd4ec7c734bbf84692d"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-658-action.json",
+      "bytes": 2985635,
+      "sha256": "c561daa1371e86babd221dfd341275fa93bab7ebfd1564bc85c5725cedd68b2d"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-659-action.json",
+      "bytes": 2985858,
+      "sha256": "3f81ed44bf614e87d0f16dbc5f6b126dc11922c43d63b53105645ea8d20f2da5"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-660-action.json",
+      "bytes": 2986307,
+      "sha256": "86b52ae25ccca98378830de9cca0ef0cf5f88f9117cd18204399a58a6e78a099"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-661-action.json",
+      "bytes": 2986751,
+      "sha256": "5c79db6e4be6e849924f321813df6e001970bbcd10d8eb1620a9505bfd125307"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-662-action.json",
+      "bytes": 2986974,
+      "sha256": "db198b6229b028826feee2ccf282cd06d3b6dfe6830a1990e3824f2210f75ea9"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-663-action.json",
+      "bytes": 2987425,
+      "sha256": "7c962cdfa4e9ae9eb59e2979fd73a44f0267e132d646e1ce9d280a02a5a41c0d"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-664-action.json",
+      "bytes": 2987871,
+      "sha256": "764bd5efd72660ee69fa8d40eac9a326aaf4adda15f8de7c5e0a170781418e4f"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-665-action.json",
+      "bytes": 2988094,
+      "sha256": "b9123e9f3736983e12e04ccb56b8672868f6e859ee206a1516a8457707a95ecc"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-666-action.json",
+      "bytes": 2988544,
+      "sha256": "ba172fc433f9e59664c57e218e6a7b19bf41dca3193ca5d7e89547837a8f18d9"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-667-action.json",
+      "bytes": 2988990,
+      "sha256": "1bddab1e51c9f9a7694251f9229cfa870175811923e09ed8be0719672bc99855"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-668-action.json",
+      "bytes": 2989214,
+      "sha256": "49624e916742dc38516daa6a1e5b94062c3245c9149d40b34bfcfd1d07211445"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-669-action.json",
+      "bytes": 2989664,
+      "sha256": "5c29ef0eb7e751c5525e52f1e2fe31a47cc0a0fa28d2f48d88d073d8e44236cd"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-670-action.json",
+      "bytes": 2990109,
+      "sha256": "694f85ff6a2dfad0d6ab7320d2e7991ffc2557cfe1eeb658eea48b4bf1d2811f"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-671-action.json",
+      "bytes": 2990332,
+      "sha256": "3b221501d8ad9fc784b4c2ec51f1fba96cc90b43ece9c71b5dc8e54ada3d2b38"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-672-action.json",
+      "bytes": 2990781,
+      "sha256": "85112e2a3a32c8d5d06f3c08de8b09286dc56636b122bf1bc366c6247596640e"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-673-action.json",
+      "bytes": 2991225,
+      "sha256": "1b7272cca8818a8e145b26f4a70b5c841c75a9f9bd0fc1da2b75446e43f08130"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-674-action.json",
+      "bytes": 2991448,
+      "sha256": "213b07cf9abb51b5f82385aed10641373c7906c96b7a7300348ae1ff81ebaa6b"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-675-action.json",
+      "bytes": 2991898,
+      "sha256": "04a9a7b4500d18868a4b971e92d3f761b1e547c163ae065795a47496896cc456"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-676-action.json",
+      "bytes": 2992343,
+      "sha256": "c121f76ab3620db343264ff00ef7605e665f3fdfd5825b20ab7fe6901cfc1c59"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-685-action.json",
+      "bytes": 3068946,
+      "sha256": "3cd79f460ddc8ae92cdc3e9ef46ab1812b52e3b909d4f00e087c1c920dd78707"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-686-action.json",
+      "bytes": 3069212,
+      "sha256": "debc429f7cc08ec2c371f233bb46e4f2a0ab209a12679eb78dab8b70810cf122"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-687-action.json",
+      "bytes": 3069657,
+      "sha256": "434ee92de0d5355073b0beb7feb311ed0216811206ad122897cfcdd00f780bfb"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-688-action.json",
+      "bytes": 3069877,
+      "sha256": "5c0fd4a354c7c6e5affe1d84fa84b0149501d41845acc7046a9bf794137ffba1"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-689-action.json",
+      "bytes": 3070325,
+      "sha256": "8d9ce7a3e505af13918e0cec4d69394e0c8418c365d6b177297f81e5cb398236"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-690-action.json",
+      "bytes": 3070771,
+      "sha256": "792162b3cd1cce4e8102ae7aca1fa21dfb9fcc7ec000dccbe16574b2f2207e86"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-691-action.json",
+      "bytes": 3070994,
+      "sha256": "7f3b8d3ee20d1d6f4d7fc8fa1b7715fb028d4eceeb1c16a5c5b62358a3a340e0"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-692-action.json",
+      "bytes": 3071445,
+      "sha256": "e97674c1fc87f7387f457c620e113a9c94995550dc5dd884d87683ccb5e0855b"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-693-action.json",
+      "bytes": 3071891,
+      "sha256": "bb8220b68432d5fc3a4b7dc60ea3f1733c45b616dbde53e12c46be7d57f9678f"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-694-action.json",
+      "bytes": 3072114,
+      "sha256": "673376819401c08651c7ae7a019285e64c6ae4ca63878a1f8375a09e3fb10712"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-695-action.json",
+      "bytes": 3072564,
+      "sha256": "52877a63ce2d4a3e73d88276b158ea2c4a3cffcf26055608a5d969857da394a3"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-696-action.json",
+      "bytes": 3073009,
+      "sha256": "75de1e1a63018b7b9f9d8554b8e83af9985b4e2643fe2fd8195e8032c99102ed"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-697-action.json",
+      "bytes": 3073232,
+      "sha256": "8766c12a50bb33dad5e82d79167d2c868d22ff701f0b0d3c9a3c8136037e8651"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-698-action.json",
+      "bytes": 3073682,
+      "sha256": "4c2f46476c8e6c38d7181d362b218698db4cb5f931b2ca1c6633cb729bb3b547"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-699-action.json",
+      "bytes": 3074128,
+      "sha256": "d3b4fc8a29bad75266c523da7b11894bbfc25ad9ba754b5b1453aaacbeb1d998"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-700-action.json",
+      "bytes": 3074352,
+      "sha256": "729363fbe041a394ee6a1f3e712bf00ba2b5e5be3967a0c41a9b9f7c306690f5"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-701-action.json",
+      "bytes": 3074800,
+      "sha256": "b9d2c8abe5c0ac0d97ddb9dbbca877a2f1e1227140c42e1aec11b01be9824563"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-702-action.json",
+      "bytes": 3075244,
+      "sha256": "34e6e4ad998192e962755b7084e821e4d3010c977c1c81de4abc248f79131ae1"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-703-action.json",
+      "bytes": 3075468,
+      "sha256": "8894ca086abce90bec9f8bd96799248387b1c3817f5ffee602b25f5a843b79bd"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-704-action.json",
+      "bytes": 3075918,
+      "sha256": "7d5cefd022256b61d8d9f75b65ac7adb3df517432592d180d0fcadf121eb07a3"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-705-action.json",
+      "bytes": 3076363,
+      "sha256": "7182a6920c3a17edd3cdd7ff8eb9949c7346a31a91106b7b39ddec6ae5806351"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-706-action.json",
+      "bytes": 3076586,
+      "sha256": "e85a7b4f33fccb17bbc70eac92d17d426efc2e19fd9bde5bcf1fdd614cc9bc05"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-707-action.json",
+      "bytes": 3077037,
+      "sha256": "4926e10d9d875177100a64abef2b5c2a28e5ecfe3fe615fb8ccc64f70c1ab435"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-708-action.json",
+      "bytes": 3077483,
+      "sha256": "37371b4d9298129dc8799c80591c48ed3f95ff68bc0008cf0640878757c178ac"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-712-action.json",
+      "bytes": 3131882,
+      "sha256": "fef65fc116be598885ce0bf904b80b494b3ea3174315c5c0e2545a0d4592461e"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-731-action.json",
+      "bytes": 4345661,
+      "sha256": "c13d0932dde6d494d5a28f7faba65e88070853542ce672f0b158d27201c4792f"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-732-action.json",
+      "bytes": 4345887,
+      "sha256": "20e241a8d3c00a7b553bd8124a5b59a0f566e5a5fdd9a4eff08468cfb6c95053"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-733-action.json",
+      "bytes": 4346338,
+      "sha256": "6b8d3184ba61feb1b9b5b4fcc95834d2a617b6f82501e747e4488b4b108a89ce"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-step-777-event_choice.json",
+      "bytes": 7994667,
+      "sha256": "806318b69c10ac1a5e1db1aa39cd015b9110d0c6386ebd83f0faa0b20e271c0c"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-three-actual-honest-reports-reflected.json",
+      "bytes": 6750465,
+      "sha256": "d14b1d075af2e1edbf8a1739d25bab9292b6ed9e6902f2625099a57c71ddd59e"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-consent-2.json",
+      "bytes": 3290421,
+      "sha256": "736f622b5e36461bf3c4bd44cdbb29f27b964930a5780e83fba2e64f34efd554"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-consent.json",
+      "bytes": 3227062,
+      "sha256": "b3e8a75dd9c721c149145787245596c869f7fd74a01a3a1fa2aa72146e8cbbb8"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-honest-report.json",
+      "bytes": 4313142,
+      "sha256": "27b7076f22bfab02da205862f27383ddd5149fd50ec7e8643926322e275e8ef5"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-invite.json",
+      "bytes": 3353775,
+      "sha256": "89c74dc8c81cabc7c0d91d6a331ece512ede2081d91dfba346717d4633c43f17"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-leave.json",
+      "bytes": 4234994,
+      "sha256": "be618934ef237dcfbfcfdea592fff1f8c9baacbe39526099b83249a9fdf42170"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-observe-originals.json",
+      "bytes": 3163538,
+      "sha256": "6f7cb7cf89c65be02fd4948a99784e42a7233e76e626c72feb5a859d64e0b929"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-perform_pulse.json",
+      "bytes": 3963060,
+      "sha256": "0ee091d4ce92196bebc6b0b8c2e90950456e7faa9a2c5e263f84ad66c4fda2c4"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-place_piece.json",
+      "bytes": 3767781,
+      "sha256": "ca0c275dacb4b6cd03043ec5542faaf03da50b4b0a497cb76d8b492145b6aa5b"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-prepare.json",
+      "bytes": 3431538,
+      "sha256": "2f2f9f021de14b9879e191e8129be6b465ae691fc5e504e35022c3ebe418593d"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-prepare_pulse.json",
+      "bytes": 3832252,
+      "sha256": "768116e93500259a9878f088b63056ec41129c18d76802c22f248c837409b322"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-read_original.json",
+      "bytes": 3639076,
+      "sha256": "f1be3f18cb57bb00e1ca6cbf24d0a0053b637c0cd4d573471ad26681cf55612e"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-return_piece.json",
+      "bytes": 4156955,
+      "sha256": "a4666a83ac634f8a490bc500e7aa23213039ab871edbc3edd65f90ea970a4ecd"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-return_to_a.json",
+      "bytes": 3703416,
+      "sha256": "da29df98908067af7ce6c9b1448b2a949a46f376e524e03a7fa4e69c8c008b21"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-return_to_entry.json",
+      "bytes": 4092232,
+      "sha256": "5c67e276c4d879a2e4d2d30079763f2dc055e6074a7c23cdfd4aff33a946ba4f"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-spirit_barrier.json",
+      "bytes": 3897554,
+      "sha256": "72a92845ee40f5bbb788f5fda09188193b3be5c25feb55a3bdfbf538557be99b"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-take_piece.json",
+      "bytes": 4027718,
+      "sha256": "1cb3cd85da6a077b44f81d7af5121c0aa88b06358df14845b7ca141ccb9d93d3"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-walk_to_a.json",
+      "bytes": 3510085,
+      "sha256": "84da66cdd6d62956880ca292712d3f9024fbe6a575cc4274be49d9706fa54b93"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-tray-pulse-walk_to_b.json",
+      "bytes": 3574775,
+      "sha256": "21f6d08815c6e84153de82bd9de5c99d6debdf57cce2c1214bf6a6adf14c5c6f"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-consent-2.json",
+      "bytes": 5658854,
+      "sha256": "52fcbe67d5c9e0090663b0046efbdd26a1cf799284b84e8cd296c22f8c03d745"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-consent.json",
+      "bytes": 5595231,
+      "sha256": "6dbb4f16af29d7c2dd23d3575135627b7e4ada3fd84b02e780c773d5e00b1ea1"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-honest-report.json",
+      "bytes": 6685823,
+      "sha256": "46b1fe18b5fc8f95990a1cc5bdb81b72e92ffabb6a00b979559ee19585cb9a26"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-leave.json",
+      "bytes": 6607362,
+      "sha256": "2d3827d3ee93c3cd2818d74cc54ac0c4f0b918fe80a9a58c839d011d6227ac46"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-observe-originals.json",
+      "bytes": 5531442,
+      "sha256": "36d804a0642d18a727783b5c5a20e290f6828ec8a8ca3a7f42f48e9cafc2dd3b"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-perform_pulse.json",
+      "bytes": 6334049,
+      "sha256": "6ddac149a464d41ecfd26152bb1eedd93996e62df503ce32db3d7a61267b0685"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-place_piece.json",
+      "bytes": 6073631,
+      "sha256": "443d4343aca39c993e9d3bb8b7a16dc1ab545e4ed7f7d6d8b09dda4f4b06787e"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-prepare.json",
+      "bytes": 5736607,
+      "sha256": "3747dd13fb01ac0482c668568c0752f1aa3075c8beb261f3aabb74821fe0412d"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-prepare_pulse.json",
+      "bytes": 6138408,
+      "sha256": "ccc4ed132868aa8dfff07a9cff5705a6d9f3074e70d3178d9db452344dcc84a8"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-read_original.json",
+      "bytes": 5944314,
+      "sha256": "8e96a843f7ffdffa30bacc3f0d69c92a62f5b5b33e09173ff91092fe8a67bca1"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-return_piece.json",
+      "bytes": 6529019,
+      "sha256": "7a95a5ac60a6816a83f84112fd0287d91bb0a14d7125cc5a05649b758c2b5575"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-return_to_a.json",
+      "bytes": 6008960,
+      "sha256": "496fb04d1df702ebf8db9fcd3eaeeaa0995e6a13a009233c330e8aa270c85852"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-return_to_entry.json",
+      "bytes": 6463990,
+      "sha256": "10f3b5b1c233876bd8ded83ce3aad95e26ec12cf22d8bdc4d516d23325a0b225"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-spirit_barrier.json",
+      "bytes": 6203736,
+      "sha256": "6bdcec34dc92615b9e7b017520fe5fc42c6861837dbcc7fc484c4c00bec58aa0"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-take_piece.json",
+      "bytes": 6399170,
+      "sha256": "9938d78ece97502ab697f2c52807ebd6030fcd5f0608707a1905ad9e7df2d872"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-walk_to_a.json",
+      "bytes": 5814935,
+      "sha256": "b178f8eec6ad1d48e09163c79a894dd5ca79adb5d0955fe335c38629a3ec2017"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-walk_to_b.json",
+      "bytes": 5879689,
+      "sha256": "536dd5148568435b0dec399c3a721ff3029a9ca88357e4178a60153875db6878"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/boundary-withdrawn-input-withdraw_consent.json",
+      "bytes": 6268921,
+      "sha256": "827092e33e2beeee43aa861a36e5b77671ef73195dda1c688c4ce2e5953d277f"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/capture-integrity.json",
+      "bytes": 15962,
+      "sha256": "cd452ddf7bae96aeecdd59c793da0f8ca8ab27a0d2a3a4d2af3404e4317234e4"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/commands.jsonl",
+      "bytes": 1952919,
+      "sha256": "cbf25625234ec2415887efd9b122478b3784b7f00a007f2fe6cf518f718eecee"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/natural.json",
+      "bytes": 9903538,
+      "sha256": "0d99439f4e950a633e20fdba372fb0e59beb41982ccff5fe6a27fd2834adf442"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/public.jsonl",
+      "bytes": 4374154,
+      "sha256": "8ff648fde7c3fc79d54e25c8a5b01bc2a50910f5935b2d0b8064ea79bd73a0fc"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/snapshot-combatStart.json",
+      "bytes": 3578530,
+      "sha256": "4d7ccc6de0c4afef1d127049f7ab956352cd4c2041b16800657b90278691ca27"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/snapshot-combatTerminal.json",
+      "bytes": 3997237,
+      "sha256": "0929b85bfc7a4ad9b7babc237844cfb8db0954aa039072eeb51ddee0c86a2f75"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/snapshot-departure.json",
+      "bytes": 1215076,
+      "sha256": "b3e5733a78dd52c3b2e50acb4ff935045bbb0969ff9dcf508724527d591e7c06"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/snapshot-guidance.json",
+      "bytes": 1454170,
+      "sha256": "f33667f6ac637d61ea89a013e485bc7119ac01826f3037e6a9e06a8bd145f825"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/snapshot-practiced.json",
+      "bytes": 3391208,
+      "sha256": "807e4c3a5bdea547586182fcac307c9e4e8d6736bcc8f9e2f5df5d52ead03c9a"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/snapshot-promoted.json",
+      "bytes": 1566004,
+      "sha256": "fe9103fb849d0d9eb2636fb1de01d59dd3d90002d0caf7a9cfc8680e1c953222"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/source-prefix.json",
+      "bytes": 1694235,
+      "sha256": "b3d38d32089a7482c3cf96b59046a0b5573d97799b075e03be17c71bac95a0f6"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/summary.json",
+      "bytes": 2503508,
+      "sha256": "d66b411006cdcc589da08673f3041aa8d8f737c41eb2b58a0c1b126096e9ee53"
+    },
+    {
+      "path": "tests/fixtures/abomination-v02030/transitions.json",
+      "bytes": 19238,
+      "sha256": "d57481fb9052e7dd079722c3e3017f5b02995969df2ba3e12926bbd5cc5cf74c"
+    },
     {
       "path": "tests/fixtures/alchemist-v01200/close-boundary.json",
       "bytes": 829732,

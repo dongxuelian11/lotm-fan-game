@@ -1,3 +1,4 @@
+import { ABOMINATION_COUNT_WHEEL, abominationAbilityWheel, currentAbominationCombatSource } from '../../src/domain/abomination/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
@@ -155,11 +156,13 @@ describe('Madman S8 exact G profile and round dispatch', () => {
     state.progression.pathwayId = 'tyrant'; state.progression.sequence = 8;
     expect(playerCountWheel(state)).toEqual(RAGER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ragerAbilityWheel('CONTROL'));
-    for (const [pathwayId, sequence] of [[null, null], ['chained', 1]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['chained', 1], ['chained', 0]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isMadman(state)).toBe(false); expect(currentMadmanCombatSource(state)).toBeNull();
-      expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
-      expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
+      expect(playerCountWheel(state)).toEqual(sequence === 1 ? ABOMINATION_COUNT_WHEEL : ORDINARY_COUNT_WHEEL);
+      expect(playerAbilityWheel(state, 'CONTROL')).toEqual(sequence === 1 ? abominationAbilityWheel(state, 'CONTROL') : ordinaryAbilityWheel(false, 'CONTROL'));
+      expect(currentAbominationCombatSource(state)).toBeNull();
+      if (sequence === 1) expect(playerCountWheel(state)).toHaveLength(6);
     }
   });
 });

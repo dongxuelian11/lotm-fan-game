@@ -1,3 +1,4 @@
+import { ABOMINATION_COUNT_WHEEL, abominationAbilityWheel, currentAbominationCombatSource } from '../../src/domain/abomination/combat.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
@@ -135,7 +136,7 @@ describe('Werewolf S7 exact G profile and strict dispatch', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(45);
   });
 
-  it('keeps earlier profiles and unimplemented S1 separate', () => {
+  it('keeps earlier profiles, implemented S1 without its source, and unimplemented S0 separate', () => {
     const state = fixture(); state.progression.sequence = 8;
     expect(currentWerewolfCombatSource(state)).toBeNull(); expect(isMadman(state)).toBe(true);
     expect(playerCountWheel(state)).toEqual(MADMAN_COUNT_WHEEL);
@@ -144,6 +145,11 @@ describe('Werewolf S7 exact G profile and strict dispatch', () => {
     expect(playerCountWheel(state)).toEqual(PRISONER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(prisonerAbilityWheel('CONTROL', state));
     state.progression.sequence = 1;
+    expect(currentWerewolfCombatSource(state)).toBeNull(); expect(currentAbominationCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(ABOMINATION_COUNT_WHEEL); expect(playerCountWheel(state)).toHaveLength(6);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(abominationAbilityWheel(state, 'CONTROL'));
+    state.progression.sequence = 0;
+    expect(currentWerewolfCombatSource(state)).toBeNull(); expect(currentAbominationCombatSource(state)).toBeNull();
     expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
   });

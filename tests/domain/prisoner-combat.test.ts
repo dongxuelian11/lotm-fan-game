@@ -1,3 +1,4 @@
+import { ABOMINATION_COUNT_WHEEL, abominationAbilityWheel, currentAbominationCombatSource } from '../../src/domain/abomination/combat.js';
 import {MADMAN_COUNT_WHEEL,madmanAbilityWheel} from '../../src/domain/madman/combat.js';
 import {WEREWOLF_COUNT_WHEEL,werewolfAbilityWheel} from '../../src/domain/werewolf/combat.js';
 import {ZOMBIE_COUNT_WHEEL,zombieAbilityWheel} from '../../src/domain/zombie/combat.js';
@@ -154,11 +155,13 @@ describe('Prisoner S9 exact G physical profile', () => {
 
   it('does not unlock later Chained powers or change neighboring original profiles', () => {
     const state = fixture();
-    for (const [pathwayId, sequence] of [[null, null], ['chained', 1]] as const) {
+    for (const [pathwayId, sequence] of [[null, null], ['chained', 1], ['chained', 0]] as const) {
       state.progression.pathwayId = pathwayId; state.progression.sequence = sequence;
       expect(isPrisoner(state)).toBe(false); expect(currentPrisonerCombatSource(state)).toBeNull();
-      expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
-      expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
+      expect(playerCountWheel(state)).toEqual(sequence === 1 ? ABOMINATION_COUNT_WHEEL : ORDINARY_COUNT_WHEEL);
+      expect(playerAbilityWheel(state, 'CONTROL')).toEqual(sequence === 1 ? abominationAbilityWheel(state, 'CONTROL') : ordinaryAbilityWheel(false, 'CONTROL'));
+      expect(currentAbominationCombatSource(state)).toBeNull();
+      if (sequence === 1) expect(playerCountWheel(state)).toHaveLength(6);
     }
     for(const [sequence,wheel,ability] of [[8,MADMAN_COUNT_WHEEL,madmanAbilityWheel],[7,WEREWOLF_COUNT_WHEEL,werewolfAbilityWheel],[6,ZOMBIE_COUNT_WHEEL,zombieAbilityWheel]] as const){
       state.progression.pathwayId='chained';state.progression.sequence=sequence;
