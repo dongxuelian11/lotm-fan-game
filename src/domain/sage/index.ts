@@ -38,7 +38,7 @@ export function createSageState(): SageState {
 /** Current playability and historical membership are deliberately separate. */
 export const isSage = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 2;
 export const isSageAcquisitionStage = (s: SliceState) => s.progression.pathwayId === 'hermit' && s.progression.sequence === 3;
-export const hasSageHistory = (s: SliceState) => isSage(s) && s.sage.promotionWeek !== null;
+export const hasSageHistory = (s: SliceState) => (isSage(s) || (s.progression.pathwayId === 'hermit' && s.progression.sequence === 1 && s.knowledgeEmperor?.promotionWeek != null)) && s.sage.promotionWeek !== null;
 /** The seven actual Hermit finished-potion histories retain their distinct original bottles. */
 function sourceHistory(s: SliceState): boolean {
   if (!s.pryer.discovered || !s.pryer.guidanceKnown) return false;
@@ -56,7 +56,7 @@ function sourceHistory(s: SliceState): boolean {
     s.scrollProfessor.wizardActingAtPromotion === 100 && s.starMystic.scrollProfessorActingAtPromotion === 100 &&
     s.mystic.starMysticActingAtPromotion === 100 && s.prophecyMaster.mysticActingAtPromotion === 100;
 }
-const knownChannel = (s: SliceState) => (isSageAcquisitionStage(s) || isSage(s)) && sourceHistory(s);
+const knownChannel = (s: SliceState) => (isSageAcquisitionStage(s) || hasSageHistory(s)) && sourceHistory(s);
 /** These remain historical locks; none widens the exact-stage predecessor command gates. */
 export function hasSageOldPractice(s: SliceState): boolean {
   return hasProphecyMasterOldPractice(s) || hasProphecyMasterRitualLock(s) || hasProphecyMasterLifeLock(s) || hasProphecyMasterEncounterLock(s) ||
@@ -329,7 +329,7 @@ function preferredSageAction(s: SliceState, actions: SageAction[]): SageAction |
 }
 
 export function projectSage(s: SliceState): SageProjection {
-  const state = s.sage, available = knownChannel(s), promoted = isSage(s), actions: SageAction[] = [];
+  const state = s.sage, available = knownChannel(s), promoted = hasSageHistory(s), actions: SageAction[] = [];
   const add = (id: string, label: string, cost: string, command: SageAcquisitionCommand) => { const reason = sageAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
   if (available && !promoted) {
     if (!state.guidanceKnown) add('learn-sage-guidance', '听取贤者成品与灾难仪式指导', '1行动 · 500便士', { type: 'LEARN_GUIDANCE' });

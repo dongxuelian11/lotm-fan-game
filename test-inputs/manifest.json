@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.199.0",
+  "version": "0.200.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -431,6 +431,26 @@
       "name": "lotm_release_0.199.0_apocalypse_demoness_test_inputs_6_2026-10-16.tar.gz",
       "bytes": 753354,
       "sha256": "0a7897a7398f65b2fc1f5064d961df7252da66f4eb7f69e83a41d72605298c2a"
+    },
+    {
+      "name": "lotm_release_0.200.0_knowledge_emperor_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17852528,
+      "sha256": "cd84e68a77177598209899d137e1ec23afd63de7f83c85998b736a2195092493"
+    },
+    {
+      "name": "lotm_release_0.200.0_knowledge_emperor_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17868406,
+      "sha256": "89eb6d0d88d209ac83f3d57d9f130ad50c260aeb48e3db2b65ba1eb77ff0d684"
+    },
+    {
+      "name": "lotm_release_0.200.0_knowledge_emperor_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 17922735,
+      "sha256": "84dc3e89188c5731638193fad26b26ff3d719b63376549912817244e2c684a5f"
+    },
+    {
+      "name": "lotm_release_0.200.0_knowledge_emperor_test_inputs_4_2026-10-16.tar.gz",
+      "bytes": 11493509,
+      "sha256": "18174203ceff9441ff78621b2c3bd07ee5fba51deb56b0b457ada656cc4ffbe0"
     }
   ],
   "fileEntries": [
@@ -10848,6 +10868,996 @@
       "path": "tests/fixtures/justice-mentor-v01480/peaceful.json",
       "bytes": 1909793,
       "sha256": "22167f3b11e684ef82967fcda5b4da7643b1c7a162793d09cf1a86b212898e56"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundaries.index.json",
+      "bytes": 12540,
+      "sha256": "1dea9cc299c21c3a8d294f92edd10d92819460e04e41fd7762a7542f27e12e90"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundaries.steps.json",
+      "bytes": 5694,
+      "sha256": "fef062f950f9055b37ba04d6761be4416fb07eb93462d49517eb9eeee8cc4fc6"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-discovery-of-ordinary-clinic.json",
+      "bytes": 2545740,
+      "sha256": "dc0de9cc2231998a19c7dd8ee58e444e0fc6992d91421bf55fe327c03799f7ca"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-independent-darian-contact.json",
+      "bytes": 4651886,
+      "sha256": "95a120f77fe03de35f1fb438dad8f17e38018af965b6f26c0338ddc7916138a2"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-paid-outside-energy-recovery-2.json",
+      "bytes": 4166770,
+      "sha256": "df9d3f1a02774d722731d7b9c2503ce42882a5491b3591da254fdb6379d0dfa0"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-paid-outside-energy-recovery-3.json",
+      "bytes": 4188928,
+      "sha256": "3e481c802ae3ed66e28120b1d1db3197fb75b48cffde91c1994155fcd06ed0a5"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-paid-outside-energy-recovery.json",
+      "bytes": 3752442,
+      "sha256": "7a7d4aaedf18744d0be109815499e3775d3fb99c8493fc924048fe4e0fdc2cc0"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-rest-and-clinic-for-original-heavy-2.json",
+      "bytes": 2546892,
+      "sha256": "bb8731128b0f7b615e3dc273292ac1b7cfae7d5b146ff3fcace34e7353b986f3"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-rest-and-clinic-for-original-heavy-3.json",
+      "bytes": 2547287,
+      "sha256": "01474485722f74b172b2ef516a5e1532e3ffbe3971eb95855a3162a5bb69f53f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-rest-and-clinic-for-original-heavy-4.json",
+      "bytes": 2547507,
+      "sha256": "1f56671eab6ddb84ef7fd6a58d98557b43420c249fd18037d1f734da694a36e2"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-rest-and-clinic-for-original-heavy-5.json",
+      "bytes": 2547884,
+      "sha256": "392735f012d2b50a896bae345a116f5f2b518175ba65fd59713cd2171dfa49da"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual-rest-and-clinic-for-original-heavy.json",
+      "bytes": 2546197,
+      "sha256": "89e5185d7ce652497fbaa3bdc476537587ada7fb4a1a813a9497f669d3e89615"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual1200p-buy-knowledge-emperor-potion-1.json",
+      "bytes": 3180110,
+      "sha256": "ecf1d5c16d9c2dfe882a894d0bdf8ed3bf29f8ffe1b5022fe70c60bb2abde50f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual1200p-buy-knowledge-emperor-potion-2.json",
+      "bytes": 3271529,
+      "sha256": "216cd22a1f9d951d8130407977f321cb8b88c1ff7d7f90aa49dde7d15a9f555d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual1200p-buy-knowledge-emperor-potion-3.json",
+      "bytes": 3365219,
+      "sha256": "a2f042d04791591a5d839c2679d4817501844a7d767adb5999e40c4ab69aaf35"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual180p-current-week-prepare-knowledge-emperor-potion-1.json",
+      "bytes": 3190192,
+      "sha256": "d1378519d08c73bdc6f07f3ad876bfd55ffd026cc4ce875a4f6036ad273d0f43"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual180p-current-week-prepare-knowledge-emperor-potion-2.json",
+      "bytes": 3281613,
+      "sha256": "584a1e519d69e26fac188d2e0b0ffb1c4dd29d02105e8196266dba8bd37ce9a8"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-actual180p-current-week-prepare-knowledge-emperor-potion-3.json",
+      "bytes": 3375505,
+      "sha256": "96221093fb6b1cefff207251017128918b0b1850a322e1ddfb0aabb90d5f19ae"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-combat-round-1.json",
+      "bytes": 4832055,
+      "sha256": "153b7b2bcbdcd98b9cc1ed8802c636ccb6353561b7b0121a4ae58e1e48605226"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-consume-knowledge-emperor-potion-1.json",
+      "bytes": 3201033,
+      "sha256": "c14030fc03ae5f72927dc28f34c9e3133686759c6a38eb75bd79ebbcb1b45610"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-consume-knowledge-emperor-potion-2.json",
+      "bytes": 3292456,
+      "sha256": "52358969da54fadb3ac89eda02d4089f0d3b7e69392bb902344fa7cfacf6708b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-consume-knowledge-emperor-potion-3.json",
+      "bytes": 3390853,
+      "sha256": "c54d1ff656002aae8c1e5cab7e61ab943a07af429be869fadcfdc8a6a8407c1f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-exact-original651-living-source.json",
+      "bytes": 2545177,
+      "sha256": "acebba107a9c3422a3610fc9b39f19eb2b7a9ef7b443eb93779a55914fec26ac"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-independent-optional-fight.json",
+      "bytes": 4706409,
+      "sha256": "3ab05ff16d1eccd08bdc7f3bfc5343952c8bc1d408f7eaeee6cfb78e9563bc5c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-1-real-labour-2.json",
+      "bytes": 3132884,
+      "sha256": "0a9a9de42211e45a59fdca08c08af2a30c3ceef5114c1f893026075a92864287"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-1-real-labour-3.json",
+      "bytes": 3143058,
+      "sha256": "962962938d864dee44470560b3219bda33931392fbca6108de3a10a7a23ad8b1"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-1-real-labour-4.json",
+      "bytes": 3153423,
+      "sha256": "29352a7f7352bb5c965b8c16daf75f2d5003a2a943e481dd6908015a929de231"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-1-real-labour-5.json",
+      "bytes": 3163742,
+      "sha256": "f3d2c2df9c63f83beff7d4e73ce68f1d99fd5360c699f36b7bd239ce5312e48f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-1-real-labour.json",
+      "bytes": 3122566,
+      "sha256": "f06f461f499880914d65d0945f30a9bb83fcb5b61ed1624e2e35ddd6bc1d00d2"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-2-real-labour-2.json",
+      "bytes": 3221686,
+      "sha256": "d968c83365b94de25129f45a8316ee7835b4ee6928d0fc627d7f0bd37b76c945"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-2-real-labour-3.json",
+      "bytes": 3231996,
+      "sha256": "c973076d8690b14d0568c1dcdb07e0879b243f84e969c665c9b8a6a2f8a63d72"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-2-real-labour-4.json",
+      "bytes": 3242166,
+      "sha256": "4a4f420ed62de55c3f5b560f1c2fba78dafebfe8327c74cbc4ab51a3c7a4300e"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-2-real-labour-5.json",
+      "bytes": 3252522,
+      "sha256": "95c8119503431363e82303ac135794bf692b6e4afe79d38c8da1af309e7e54b9"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-2-real-labour.json",
+      "bytes": 3211665,
+      "sha256": "e80e830350d0b3c7a5367ada8c9c3a3e84607753abd69fd40b9ea640363d0851"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-3-real-labour-2.json",
+      "bytes": 3313109,
+      "sha256": "d530fdc7b53bec1d3951664184cc743038c3a64b4beaf0f390265da3f3cd9955"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-3-real-labour-3.json",
+      "bytes": 3323417,
+      "sha256": "c6dc2539ab1190fe9c320ee7f6fa0017c64319e9e38f479808d38dc810f1d03d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-3-real-labour-4.json",
+      "bytes": 3333622,
+      "sha256": "919aa3081eed12214ad7f239a0cebc4167ee44ce6cfdc02e87cbf9c18cb05c5b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-3-real-labour-5.json",
+      "bytes": 3344283,
+      "sha256": "4faee9d3a8c4826509f0ae97ce55059a8b112bd54b0c9aebcff191ebef8ccc4d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-emperor-potion-3-real-labour.json",
+      "bytes": 3303089,
+      "sha256": "126a2436f30d680a452c0086c4c21e9c3831a08cf6f6ed1833b95790620823bb"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-apply_power.json",
+      "bytes": 3612781,
+      "sha256": "2ff0a2b02dd0fc26b152d9926934a49aaa3043e35f1122c7ee8acad775cb802d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-approach.json",
+      "bytes": 3493431,
+      "sha256": "46f86010fbf899602a497f4fa8fb13204b9ce6cbb342813e9cb000f54e0bfeee"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-consent-2.json",
+      "bytes": 3449316,
+      "sha256": "a0bdb8ab81cccf9573c8487a6bf1896479e2b1741fa9f8eb64cb104d8180c01a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-consent.json",
+      "bytes": 3430376,
+      "sha256": "02de0b37b6a5bed183add677a561355f747b6604c9735fb59a7a6c05c9323eb2"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-copy_note.json",
+      "bytes": 3570590,
+      "sha256": "57facfebd560138c609eb71ae21062083dc20dfbb87098043646378eda7557b0"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-honest-report.json",
+      "bytes": 3732079,
+      "sha256": "6e73d459b40759381ab29c026abeaf8b780f848565fc53746f9a254819ca77b3"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-knowledge_power.json",
+      "bytes": 3591468,
+      "sha256": "004709e8b4ef813947cd9bb55ae3d5bdd47c669837cb8ba362605f0c304e293c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-leave.json",
+      "bytes": 3689721,
+      "sha256": "0ba4280fdc9dff9024cb2c999b421680ecda1b7616cb13ca4d921610a8bbec7f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-observe-originals.json",
+      "bytes": 3411320,
+      "sha256": "a440ccb63dc9d0ca0dc80a24524102d198bebdcddaedada61fca774ef1e3571c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-prepare.json",
+      "bytes": 3471336,
+      "sha256": "507e96e7c14cdf976439291bd9705d0dd88b7e8fe240408da5e68ac87e8c1757"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-read_original.json",
+      "bytes": 3550927,
+      "sha256": "263f069fad534e97a6a08e40482113345adae112f2b7b88f4e6b2db812d2001f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-return_note.json",
+      "bytes": 3710858,
+      "sha256": "38870810357f5a6c994149e37811366c1138d444525a4f32f1e068924a3b25e1"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-return_to_a.json",
+      "bytes": 3651527,
+      "sha256": "20e5c6a1bceb760bda39e445a5ad21ebf57955a5edebc4b9eb1545b19c81a92e"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-return_to_entry.json",
+      "bytes": 3670640,
+      "sha256": "23fc30396cbd34225cd75b2eda3924c57bc7daee953b952d79e360684ed5a354"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-stop_method.json",
+      "bytes": 3632584,
+      "sha256": "6f229d35704856af94e90f176b9aec244a8b0e2d00f7dbe472f2f26f50d57b7d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-walk_to_a.json",
+      "bytes": 3512553,
+      "sha256": "213e10a5b62f98c357cc49dd784dbbba5768a429112240cce3abf98ca3f3cd2b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-knowledge-power-walk_to_b.json",
+      "bytes": 3531671,
+      "sha256": "5294410a2d2cf7f3ad2f2463c942f38cedae5d09e87ad3b8b731952af4e6c1c6"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-paid-independent-combat-note.json",
+      "bytes": 4618600,
+      "sha256": "d5fb142673b7043bc266351fc6892e3978b1b793f85a22575ca39a8b32b71814"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-paid500-guidance-freezes-eight-roots.json",
+      "bytes": 2817613,
+      "sha256": "81eff9989d88e63491bb6ee30aa5bf1bbd10c4a96eb106376fd34b8b38ca305a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-approach.json",
+      "bytes": 3854652,
+      "sha256": "d30cb4f616756624a91a6ce6b05f6c06526a00cb7f7619da89fc6c4b02ea0e75"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-consent-2.json",
+      "bytes": 3809837,
+      "sha256": "2280e2f81089adaed29d948d5de0dce306b305e0f92e0c6482c85f68135460b7"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-consent.json",
+      "bytes": 3790731,
+      "sha256": "773947d3c1a9eef6751f73f3b16720eed23b0f4ce3f849a498c7bb91c76d7fad"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-copy_note.json",
+      "bytes": 3937765,
+      "sha256": "5996277e721f2549cf6254fd41a41964341694a2a51968f7e240c4183013ed28"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-honest-report.json",
+      "bytes": 4143837,
+      "sha256": "fe6013cdbae6442a358a81133cb0ad1753c0318db59cd26f4af711360299294f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-leave.json",
+      "bytes": 4093666,
+      "sha256": "6bbf9fedd8d9ba6c72b0c901a9b0dadd394a87f829dcc97077cfd7022961cb5b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-observe-originals.json",
+      "bytes": 3771626,
+      "sha256": "58ea2f6bc4d112e259cce3cf1b8b126b77b87a299edd7a5229540488260bd509"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-power_knowledge.json",
+      "bytes": 3983800,
+      "sha256": "5e2dd048c1e5a9cf677b94f2425127f9a324314e8a360848a69560a76286ca2b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-prepare.json",
+      "bytes": 3832023,
+      "sha256": "28eb39c150d0de88fcc257a11d4b4eff12b6a030ff8c9ebbf4c54284552479ee"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-read_original.json",
+      "bytes": 3916532,
+      "sha256": "cf66752f7230482a213797ac331edee7f90583d12a7b5913bc6095ffa3fe826c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-return_note.json",
+      "bytes": 4118763,
+      "sha256": "4442a7d0e9adfb69a7ac163ded1765d84ea1ebfbcf04405b14c477edd5c50e79"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-return_to_a.json",
+      "bytes": 4049960,
+      "sha256": "eae4967e4013880ab0db23bd745251c1e4c9161aa5669416e06093666982f2fd"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-return_to_entry.json",
+      "bytes": 4071576,
+      "sha256": "72f22ae45c194ba3890e7367042451efa6270bddb9795184732cf99fae5d5833"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-spend_force.json",
+      "bytes": 3960184,
+      "sha256": "cfca62937b92f3e40a390eeddb1680182e9bc69710d754dc7e43c13b381f446f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-stop_method.json",
+      "bytes": 4029096,
+      "sha256": "839bb2dd8fb5f9d467007b3a33faf02efd0a5197dfa915c4646ee21a36f4a2c1"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-verify_reaction.json",
+      "bytes": 4007337,
+      "sha256": "6e3a1badd14ec0a5a508b2eff3e57b14a862bfc25987c8cc9ef8c4afdab36224"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-walk_to_a.json",
+      "bytes": 3874899,
+      "sha256": "5d279ce898f349ecee386fb514c015d324e0e118ddb7925d6cad93482a9fefe5"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-power-knowledge-walk_to_b.json",
+      "bytes": 3895591,
+      "sha256": "333928ad2a5a9affd53abf4327272968c75bf00b0c9bfd58d535ae21f656c903"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-preparation-CHECK_RETURN.json",
+      "bytes": 3112186,
+      "sha256": "5ef335434796e4765dc9e3756e2ab7fdc9acc6b3e1cb0c1336ada6c63067a92c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-preparation-VERIFY_KNOWLEDGE.json",
+      "bytes": 3101835,
+      "sha256": "1af74266e50ba12d058e39abc97ebac919dc40aaa2f9d470c25f372d60db9d43"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 3091053,
+      "sha256": "e4ca1fcc0fbd2424232546a6bf894dc688ecdb5de9f3345fc764493873d31841"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-654-event_choice.json",
+      "bytes": 2546544,
+      "sha256": "5ab6fb391a9a095081322defcc976262d6a630dcdf7fe7f788fd115b19714803"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-659-action.json",
+      "bytes": 2548261,
+      "sha256": "4ee119d1ff778ca2d3611d05f7d1489cd1df0fd1c7d363a0f21fad3a4d5bc11a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-660-action.json",
+      "bytes": 2548480,
+      "sha256": "ec2b5def07602f0f6fdd36050636c0efcf7dee9081d9a2879dbbb9809dccb728"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-661-action.json",
+      "bytes": 2548927,
+      "sha256": "1da2b99c9419032be7880df3bf9c585d4690ef3ce5b2b0a9b076e4a400170457"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-662-action.json",
+      "bytes": 2549373,
+      "sha256": "e951bd040796f28524bc6abbfb5ddd9a226fa22e6d0f2ba84dc36598293c37e3"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-663-action.json",
+      "bytes": 2549595,
+      "sha256": "8a828e955aa3a06e63c4dd204e830f61c125e6a845e9b393301b82c9aef924f7"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-673-action.json",
+      "bytes": 3168887,
+      "sha256": "1529a40c9ad79b425efa303ad4c29cdf00acce26318f385c34cd956bc6db2d52"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-674-action.json",
+      "bytes": 3169147,
+      "sha256": "1e56f2bd4c45854d2402c3a2bf437ff195de564dfe53c1090f3c79c32e39f425"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-675-action.json",
+      "bytes": 3169370,
+      "sha256": "d0ae6e4fd00ca87fe9ff546e413cf0758f52c1eaf55871e89c8da8db2f96fd94"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-676-action.json",
+      "bytes": 3169821,
+      "sha256": "278605b5f4c75388a95bcb58bde7d30b3013a3412711a12f7ddc47e328399e7a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-677-action.json",
+      "bytes": 3170267,
+      "sha256": "7731f062ffaf054e3ce5ca09e3ba34052db8b6a50a03d3b7e202750b1656907c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-678-action.json",
+      "bytes": 3170490,
+      "sha256": "c0bf92244d2737302bb8fee1f2e229ed4a8534976b8d4f1dab4474a4d84d5950"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-679-action.json",
+      "bytes": 3170940,
+      "sha256": "df52e56370ff6afa2918f347386a165b0d34cfd700fc0a6a117335883ad2c086"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-680-action.json",
+      "bytes": 3171386,
+      "sha256": "41ed9a32b0439870868254eb4f8e7277802f5083ce73a8ef183af84a474c89dd"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-681-action.json",
+      "bytes": 3171610,
+      "sha256": "fd3a70cc3b75982680f700db000688cf8e4ac0f3d2834b29a0c36cae8e288705"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-682-action.json",
+      "bytes": 3172059,
+      "sha256": "866c5120a61c7b4077a581aaa42695108e9e8d488192d54a8a61847138f3dc03"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-683-action.json",
+      "bytes": 3172504,
+      "sha256": "34ca8687214235a481d01a374fa870949a3dd02846a89f0accc901a2d1d84e5d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-684-action.json",
+      "bytes": 3172728,
+      "sha256": "3ad3986de90d1d83b6bbe4a462c462e7da7383271df7bc4f96ffc8e16c32710e"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-685-action.json",
+      "bytes": 3173177,
+      "sha256": "bf926724fd9ba172ab7c166cd3a93aa38e628a7c0c4581540aa0dbb9c0c9b9af"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-686-action.json",
+      "bytes": 3173621,
+      "sha256": "81825c317d245042a1bf85f55ca65446054064f07c7b8e936b5bf0c2c9c3d42d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-687-action.json",
+      "bytes": 3173844,
+      "sha256": "7016b20fe91af35e5591dfe0929035c165bddceec7c1ae948637704e4c150abb"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-688-action.json",
+      "bytes": 3174295,
+      "sha256": "13673a28a6f6a3a5688c74829d35a9a5dc353bd403ddfe03314d5f5d3de700c3"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-689-action.json",
+      "bytes": 3174741,
+      "sha256": "4deb60748abcc693af590d8dfd6e7253595e32e286d7252895c03a7ac9b161fe"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-698-action.json",
+      "bytes": 3257626,
+      "sha256": "9bdea4b03f1528f01e8ddf781dd0bdbea6c45be0320b102466e1a6f6e14289ff"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-699-action.json",
+      "bytes": 3257885,
+      "sha256": "c2556721c7b9cbe2331f6c08c72cf6186425736af8a7ebf3126450930dec0032"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-700-action.json",
+      "bytes": 3258329,
+      "sha256": "7e2ee071425658bb307a0a010620b56ec3b416efa0adaa4a438e63924487c9c9"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-701-action.json",
+      "bytes": 3258549,
+      "sha256": "410b6d4f255f2cbf9642d06903b4f92d97d336c15b19b7d5bbcd50f36246c57b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-702-action.json",
+      "bytes": 3258998,
+      "sha256": "51e2c2cf06163ac49704cbf2769cb6e2810dfac4c3dd66437a5b884a8b417946"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-703-action.json",
+      "bytes": 3259445,
+      "sha256": "81ae8d2131688028dd36edc53260789967a190279ed1846dd43486322e6727a6"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-704-action.json",
+      "bytes": 3259668,
+      "sha256": "c538df5b898b61b71391f38e6cdece249b0f29582d21a3e5c8cc2dc11cc3c166"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-705-action.json",
+      "bytes": 3260119,
+      "sha256": "fa13ddab375cadfcd86ecbd987436a724382fc722f88b407d9b48af54d09c2b3"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-706-action.json",
+      "bytes": 3260565,
+      "sha256": "0a88f5c45d7c21c22baa82859449938f023496d59fe93c844b82fbc20c4af77b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-707-action.json",
+      "bytes": 3260788,
+      "sha256": "737779d564413e0b00a689d2b33fff03e7992453164096b076cb3d9f01ead4f1"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-708-action.json",
+      "bytes": 3261238,
+      "sha256": "3d82f7a6a04fdbb651e28975c23a7bb75a80b033f183a819c881a26337e3724d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-709-action.json",
+      "bytes": 3261683,
+      "sha256": "636abe33686e2505e0922e81c569be22235b46a0becbd10cfd3a7b7c70dc9feb"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-710-action.json",
+      "bytes": 3261906,
+      "sha256": "bcb3abe2a3d7cc7532da78f303de2151dd2764e6ecba2e82d70f728c3c843f30"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-711-action.json",
+      "bytes": 3262356,
+      "sha256": "f3513fca50cbdf2ffe02809f3b2384a7a705a98fe3bb4cc159c8d33dfdf634b8"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-712-action.json",
+      "bytes": 3262801,
+      "sha256": "9ae6360c287d5a407ac34cbaf2fb0e73fb8178fc997ae9330ecef04821c1a9bb"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-713-action.json",
+      "bytes": 3263024,
+      "sha256": "fc0475693031ddd3e8f6e37e0cfe7340655d93ee3f1f7fa89d1e5e58bcc84bf6"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-714-action.json",
+      "bytes": 3263474,
+      "sha256": "9d178b0dee881112eeb527c22afd62de2a8eaee767510a51dadc77dbe1388cc5"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-715-action.json",
+      "bytes": 3263920,
+      "sha256": "da514afd40856b8b07ba75874b7580be9a997cdee8e048434effcf180d3f8fe0"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-716-action.json",
+      "bytes": 3264144,
+      "sha256": "242edc2610e1632f671997451c7d6a8ef2a7f86f6aeeb5cb6eacd7dc40f4348e"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-717-action.json",
+      "bytes": 3264595,
+      "sha256": "08605c74dba08a02232bdd77f0fe028490c5b6858549c8db1cf4c0bb61152f62"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-718-action.json",
+      "bytes": 3265041,
+      "sha256": "f54528ff1096c7a6dedc3b11745bc0a37bf844ddf872e884ffcf855ea16bcb8c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-719-action.json",
+      "bytes": 3265264,
+      "sha256": "22f6fcae318b27810386a86f7ea291e505d3b49515fdc7ac28003433c286382a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-720-action.json",
+      "bytes": 3265714,
+      "sha256": "7961b38fc5fdcd80bf71fb619946e7121628bd716f49772322382b7aceedb53b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-721-action.json",
+      "bytes": 3266159,
+      "sha256": "f7875c32b405bb779ebe3b7e54dd24d3867f07559b97afdef86f5ac74a3ee504"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-729-event_choice.json",
+      "bytes": 3338858,
+      "sha256": "5670012f6bafbd7f9c7dc632029e283f96a22971a0331e19cbb90f3744a52b5a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-731-action.json",
+      "bytes": 3349489,
+      "sha256": "684c45f92b6de891f36d108d4c2eabfd613c7f2cb765324d5c3ca38f541deff2"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-732-action.json",
+      "bytes": 3350057,
+      "sha256": "937445b310bf111714dad6474b05d2d4a418e521ed07401b38c4f4754f3dc051"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-733-action.json",
+      "bytes": 3350809,
+      "sha256": "154330444c25dbcca13de292a903a4f3c54b914a2152cf21a8408386b74f6dca"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-734-action.json",
+      "bytes": 3351029,
+      "sha256": "d0467cfbb724a5b1f0cea4df9be62ca68f1186d96986166e8c9f23f1ef1cd7b6"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-735-action.json",
+      "bytes": 3351478,
+      "sha256": "f79885b71209b97eec6563d87daeff529b730673a59fbb663c2c6bca3d8ae1ac"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-736-action.json",
+      "bytes": 3351925,
+      "sha256": "788eba068e03c183f39e29a99914361104a74ff0c17017d85ce7c1749db9ceb1"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-737-action.json",
+      "bytes": 3352148,
+      "sha256": "c181fae2d8f526015d2eb943b538d0b216001861e15c6987c1adb0f6b315272a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-738-action.json",
+      "bytes": 3352598,
+      "sha256": "ebc8239c2b674f5101247170de0bcfa8baad429aba0631a573df64e22516b745"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-739-action.json",
+      "bytes": 3353043,
+      "sha256": "8fae62295531dfcf7792752460a858fe60f0b4c805e8dd853d224b180b92f57c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-740-action.json",
+      "bytes": 3353266,
+      "sha256": "d96bd0f82e79e3ac0d1cfd47a3a37416a3b882fe3e2e32a5606d0277fa88640a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-741-action.json",
+      "bytes": 3353715,
+      "sha256": "3341834374e559bec9f9413db763ce731a67f8ee5b1fe9722dd2df48f017024a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-742-action.json",
+      "bytes": 3354159,
+      "sha256": "b90db2af8800ac2157669cbfef139a01ae05febd7e4815cb426d7ce773c3b590"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-743-action.json",
+      "bytes": 3354382,
+      "sha256": "d56afd043ac88c2a1423f83fae360a29393df0e7863af92efa28770375cd901c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-744-action.json",
+      "bytes": 3354832,
+      "sha256": "988206e9e0916c481315240d3825b1dc44bc99f0e5dd734f7654e81082c37853"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-745-action.json",
+      "bytes": 3355277,
+      "sha256": "6a2b1242df045cad541dfefb22aa4d8e2262af01d04e3ca81c1c8a40bb4e251d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-746-action.json",
+      "bytes": 3355500,
+      "sha256": "e9038229ad09b3dcf2567bae56738e322a9220d6a8b7968706744f49eb0c7a87"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-747-action.json",
+      "bytes": 3355951,
+      "sha256": "6bf2ed514c524d4ea6600d4ac616b38489343722422ab277bae1e3d42d088050"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-748-action.json",
+      "bytes": 3356398,
+      "sha256": "9a895255b51a68148dd31edea5e1824f7eb3d14e5f8f7d25e6bb9843f513e796"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-749-action.json",
+      "bytes": 3356622,
+      "sha256": "9b9972f314910afcc5710336d592d4c809b9a7c3104b666d4fd203850daef564"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-750-action.json",
+      "bytes": 3357072,
+      "sha256": "211d8d0c38e3a45a482264c08114b8e37ceb333aa1612f36f572678e42b69c75"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-751-action.json",
+      "bytes": 3357517,
+      "sha256": "8a37f12b48103dbaa4740cf6e3f382102b4610f12fbb748c10646e0c83356167"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-752-action.json",
+      "bytes": 3357740,
+      "sha256": "b1ee1f23473e77934a479eaa1b33fe16bfff21b2770ca77ed7ba4876f26cdf9c"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-753-action.json",
+      "bytes": 3358190,
+      "sha256": "29ffa31a84f388649989627ecdd6a37f4580523d3303ebc05503ad9b6d822c13"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-754-action.json",
+      "bytes": 3358635,
+      "sha256": "c86807388f52b551409e00f62aee1024d2f5fac8e26336d9557f1288d0ae77f6"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-755-action.json",
+      "bytes": 3358858,
+      "sha256": "bc2acf9a2e2482b999e66d08e9290569012083d6481ce5a7f9126d9e09a4775b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-756-action.json",
+      "bytes": 3359306,
+      "sha256": "cbb2a8470c0c24e9cdb96b51dd734332aa26f82acfa9c8cba98f0d07a15b0a8d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-757-action.json",
+      "bytes": 3359749,
+      "sha256": "d0c0917ee03fa251af03c7e784512c1a153f35583a61c31871cdfb25dc228243"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-761-action.json",
+      "bytes": 3400813,
+      "sha256": "73ce535da6dc2932d621d25f150a70ae7c69d46488857f8bbd3045afbb5ccf3a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-762-action.json",
+      "bytes": 3400688,
+      "sha256": "6efa6881d72040e82fb90caba577131493f7a9d90d7fc9c76839742f04a7367b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-763-action.json",
+      "bytes": 3400913,
+      "sha256": "2a5ee0d5783b9b2fad499cd2a2cc3fbe6e1e550d39b3c7a5e6205b7260e4a447"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-764-action.json",
+      "bytes": 3401364,
+      "sha256": "267769aa9924dbc26dbf85c52c36f7c3aeefb4b737329641c9fc025a54d9c684"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-782-action.json",
+      "bytes": 3741773,
+      "sha256": "fe6a6c91b6a962af331de589cd82e170b541431d800a1c7ab5a468b734fa757e"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-783-action.json",
+      "bytes": 3741997,
+      "sha256": "94d5b2f02494531019479019ebab4f074d922693eb343668d9a6c98aebd1de24"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-784-action.json",
+      "bytes": 3742447,
+      "sha256": "d61375596db6212118584c0fe30ad5b725f54d38c7d666d65732621997674b7f"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-804-action.json",
+      "bytes": 4154935,
+      "sha256": "5aa2b3b0b6d837b04a8e5857aa2bdf012e58a38285fa52fb1568adfe09cd6a69"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-805-action.json",
+      "bytes": 4155262,
+      "sha256": "4147a4e2568a2362304ba149d59b031430d3502a4377a6f77e0c496b678e23b6"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-808-action.json",
+      "bytes": 4200139,
+      "sha256": "070f434d88aeed1c3c86b597ef4b14431f556637ab3920247a429ddb6be05128"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-826-action.json",
+      "bytes": 4595790,
+      "sha256": "3500635aa5478f89fd93369d50bbe4a6893bcca3495b42c53e1c68e74e931548"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-step-827-action.json",
+      "bytes": 4596111,
+      "sha256": "6ea4ebfc745932f14f472509d50f0ea2dbe5c45578a9e451ee7bb09b41ca8dcd"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-three-actual-honest-reports-reflected.json",
+      "bytes": 4584535,
+      "sha256": "baf484c1469e31280d925383940eb37649e42fb5e6cdb43a40a4793e47b05662"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-approach.json",
+      "bytes": 4307873,
+      "sha256": "2bd8f97cbd3fc7ddfc8485e2b331ddc44391b4cca3c8d0f481c6cec6650362f4"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-consent-2.json",
+      "bytes": 4255946,
+      "sha256": "7c66acf92fdc44fae761db1de0d95f2ad16cfaff2228ecbaab66db208cf1418d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-consent.json",
+      "bytes": 4233818,
+      "sha256": "4b3a8512cac5cc4a297652b3167ffd30fabf7bc93dbf121b87d423ef2773e090"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-copy_note.json",
+      "bytes": 4397784,
+      "sha256": "4ddf222b89bd504087b6c4ba21c9dca8617685a7d5b6b71f966509d55fb941c3"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-honest-report.json",
+      "bytes": 4562032,
+      "sha256": "eaa7cd56b8f7c9a0e57ae39450f8b3c1230795925f4c7a0f7ac45723c3abc845"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-knowledge_power.json",
+      "bytes": 4421854,
+      "sha256": "1e3ec8ac0c80834e147f2df850962c30c145712428dd8759a83389cd30cdad3b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-leave.json",
+      "bytes": 4511860,
+      "sha256": "cc9695c9f4253741eebd2d0de6b46b676a681de59549da7bb275988fff1c647a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-observe-originals.json",
+      "bytes": 4211575,
+      "sha256": "3fb2c4ff5bfa698d4b62b2dfe8aa0d1b4ecb81b407e56d749b206752078dd136"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-prepare.json",
+      "bytes": 4281872,
+      "sha256": "92506eae85f35a022bfe9208935c79a57682d6b9ec36222c0b0b840899c95c2a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-read_original.json",
+      "bytes": 4374933,
+      "sha256": "adee1984ebafcf09d0fae9a05e0802ed0c0596db084658c1de2679f851a69778"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-return_note.json",
+      "bytes": 4536904,
+      "sha256": "a5da86bb56b30d440caa1fa06fea992a63bc9430dafdb0ded8971efbd76569de"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-return_to_a.json",
+      "bytes": 4467321,
+      "sha256": "7be9a8b0a9fcfb01d3637efcaaf98eb3761ba0ff358b68aeb4f8012e8991fad1"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-return_to_entry.json",
+      "bytes": 4489584,
+      "sha256": "88e7abe2c4ee6a036701582f2aa640e13a1f81a14d7e90a71767a15089734c6d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-walk_to_a.json",
+      "bytes": 4330183,
+      "sha256": "46fc25f113733b1e873cbdabdba342b764c7bba8ffede1daae1b3015c6d71595"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-walk_to_b.json",
+      "bytes": 4352489,
+      "sha256": "983c29c92b87bd665493011a927bcad2796a9f7d78ed2a7b730e0dfbad3aec48"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/boundary-withdrawn-consent-withdraw_consent.json",
+      "bytes": 4445307,
+      "sha256": "b44126c3a0d4a983fb73c1ad1bd2c58360acfe524b18c4ab4c1aac3ad98d467e"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/capture-integrity.json",
+      "bytes": 21106,
+      "sha256": "be698cd000f9750162d11727190e05daf3780adb2a96a4ed5d934f7a49072587"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/commands.jsonl",
+      "bytes": 1030180,
+      "sha256": "fc734f8488a9dd58b4ad66de7f7531adc66d162cad0e2d1c45af9d9df9ef429a"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/natural.json",
+      "bytes": 6786657,
+      "sha256": "1fd5f8c1fa3f29bb60925268851a597976904065c8b0ed66b95ce95258a92548"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/public.jsonl",
+      "bytes": 1213553,
+      "sha256": "bed05b1d5a7e409499a5e914d5e3679916a33162d5d4d893ce26882d8701c989"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/snapshot-actualTerminal.json",
+      "bytes": 2457139,
+      "sha256": "fdf3be037a5ff43ffede2a259036ca3e3ce545d69dbce022df2ee09a50194bc1"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/snapshot-combatStart.json",
+      "bytes": 2374817,
+      "sha256": "1d10a9e2f94a1e0dfc70f3169fd0cdd2c6922eab9889730f0b524f4c87b74a19"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/snapshot-departure.json",
+      "bytes": 1272632,
+      "sha256": "81417d70ca8d4c542126d6b6fa04e4ee0fb9b791c13f295008449780dfa4494d"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/snapshot-guidance.json",
+      "bytes": 1542683,
+      "sha256": "d7e81220ddb949d58c562f2e4316426748d7b2552c463f2d6e841837972bf220"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/snapshot-practiced.json",
+      "bytes": 2297860,
+      "sha256": "c487c4cb55426cab554ac27d7b14c2ac53d71e62e26f7a60e09122d11eba0660"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/snapshot-promoted.json",
+      "bytes": 1700479,
+      "sha256": "867b0cc6383fd72e9557879af2efb0adc359b2296d9282fa4f8efebba43733b1"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 2298181,
+      "sha256": "7dfb8d05d6dfd262aa804fd6e8a4a1c0256dccffbdebdd0dcad4e77e830b0cb7"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/snapshot-sourceRecovered.json",
+      "bytes": 1274809,
+      "sha256": "5e9ff6503ab56e1d86cbe0020bc38b2348eefe9f90a469afcf698c712130c74b"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/source-prefix.json",
+      "bytes": 1748731,
+      "sha256": "900add764b895091745606868c14c91796888b986a116f4b62fb915ecbdb1f8e"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/summary.json",
+      "bytes": 747271,
+      "sha256": "be4da0465de75207d2dd4e8896eee0f11bd51e6169d75669dc7008359bff1232"
+    },
+    {
+      "path": "tests/fixtures/knowledge-emperor-v02000/transitions.json",
+      "bytes": 25900,
+      "sha256": "822389825d7376ba22bef157cf1fefe4a871bf658a7e11e4dfaa74da22f79778"
     },
     {
       "path": "tests/fixtures/knowledge-mentor-v01670/boundaries.json",

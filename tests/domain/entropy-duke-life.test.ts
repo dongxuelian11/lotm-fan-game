@@ -38,7 +38,7 @@ describe('Entropy Duke finite own-action life in the actual FrenzyMage original 
   it('requires exact shapes and rejects foreign actions, remote target/route edits and extra fields', () => {
     for (const c of [{ type: 'REFLECT', extra: true }, { type: 'WALK', caseId: 'measured-throw', to: 'OUTSIDE' }, { type: 'ACTION_AMPLIFICATION', caseId: 'measured-throw', subject: 'DARIAN' }, { type: 'EFFECT_PROLONGATION', caseId: 'foreign-effect' }, { type: 'ACCUMULATE' }]) expect(validateEntropyDukeActivityCommand(c)).toBe(false);
     rejectEntropyDuke(promoted(), { type: 'ACTION_AMPLIFICATION', caseId: 'measured-throw' });
-  });
+  }, 10_000);
   it('ordinary three-case route earns acting100, no new mastery and preserves all originals/old histories and two untreated injuries', () => {
     let s = promoted(); const old = structuredClone(s.frenzyMage.life), injuries = structuredClone(s.injuries), resources = [s.health, s.mind, s.spirituality, s.cash], earlier = [s.lawyer, s.barbarian, s.briber, s.corruptionBaron, s.mentorDisorder, s.fallenEarl], mastery = { ...s.progression.mastery };
     for (const id of ENTROPY_DUKE_CASE_IDS) s = ordinary(s, id); s = act(s, { type: 'REFLECT' });

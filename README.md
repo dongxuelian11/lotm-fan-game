@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.199.0 阶段版
+# 诡秘之主同人游戏 · 0.200.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手、太阳、死神、门、错误、战士与魔女已有有限序列1基础；其余8条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手、太阳、死神、门、错误、战士、魔女与窥秘人已有有限序列1基础；其余7条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -299,3 +299,16 @@ npx vitest run tests/domain/apocalypse-demoness-natural.test.ts tests/domain/apo
 本次854条公开命令保留原585及此前487条真实历史，前五药败与跨周补货均未回滚。生活两项新技巧各实际应用一次，可选交战四轮对手投降，本人普通退场后工作并保留两轻伤。专项按277个命名边界、270个唯一转换和7个同字节别名核验，完整进展与最终验证范围见[末日魔女阶段记录](docs/APOCALYPSE_DEMONESS_PLAYABLE_STAGE.md)。
 
 0.199.0阶段验收：50个相关测试文件、1086项全部通过；277个命名保存边界对应270个唯一事务转换。新增6个历史输入包恢复出286个原文件并逐字节核对，严格类型与生产构建通过。远端Windows检查状态见对应PR；完整1.0、剩余序列1和全部序列0仍在开发。
+
+知识皇帝专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix prophecy-master-v01540 --only-prefix sage-v01780 --only-prefix knowledge-emperor-v02000
+npm run build:main
+node --expose-gc --max-old-space-size=768 scripts/play/knowledge-emperor-save.mjs --expected-boundaries 184
+npx vitest run tests/domain/knowledge-emperor-natural.test.ts tests/integration/knowledge-emperor-save.test.ts tests/renderer/knowledge-emperor-combat-save.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+原651条贤者历史继续至831条，实际诊疗、两瓶失败和第三瓶成功均保留。三案施术全部失败，新技巧掌握保持0；第194周健康100无伤进入可选交战，首轮身体后果骰97导致死亡，终档封存。专项按184个命名边界、181个唯一转换与3个原字节相同别名分别核验，完整范围见[知识皇帝阶段记录](docs/KNOWLEDGE_EMPEROR_PLAYABLE_STAGE.md)。
+
+0.200.0阶段验收：55个相关测试文件、948项全部通过；184个命名保存边界对应181个唯一事务与3个别名。新增4包实际恢复198个原文件并逐字节核验，严格类型和生产构建通过。Windows远端结果见本阶段PR；可见桌面体验与完整1.0仍待完成。
