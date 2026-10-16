@@ -1,6 +1,7 @@
 # Dependencies and generated output
 node_modules/
 dist/
+output/
 out/
 release/
 coverage/
@@ -48,3 +49,23 @@ desktop.ini
 
 # Local third-party evaluation sandboxes (never source authority)
 .bmgd-evaluation/
+
+# Local verification and archive workspaces (never publish)
+/archive_validation_cache/
+/verification_runtime/
+/lotm_rebuild_*.zip*
+/lotm_rebuild_*.tar.gz
+/.codex/
+/.cache/
+
+# Expanded test inputs are restored from checked release packs
+/tests/fixtures/*
+!/tests/fixtures/seer-v030/
+/tests/fixtures/seer-v030/*
+!/tests/fixtures/seer-v030/natural.json
+!/tests/fixtures/physician-v0700/
+/tests/fixtures/physician-v0700/*
+!/tests/fixtures/physician-v0700/natural.json
+!/tests/fixtures/harvestpriest-v0710/
+/tests/fixtures/harvestpriest-v0710/*
+!/tests/fixtures/harvestpriest-v0710/natural.json
