@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.200.0",
+  "version": "0.201.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -451,6 +451,31 @@
       "name": "lotm_release_0.200.0_knowledge_emperor_test_inputs_4_2026-10-16.tar.gz",
       "bytes": 11493509,
       "sha256": "18174203ceff9441ff78621b2c3bd07ee5fba51deb56b0b457ada656cc4ffbe0"
+    },
+    {
+      "name": "lotm_release_0.201.0_dark_angel_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17745891,
+      "sha256": "b838ab54e8faaa0fa6b74b5d3d4445e8c5652aa13e54e1ca56cab9b8048917e0"
+    },
+    {
+      "name": "lotm_release_0.201.0_dark_angel_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17681788,
+      "sha256": "664cdfe94fe84e245f0dd2e86426f20c97a014de8ea8a22cb913c56f61d4b4aa"
+    },
+    {
+      "name": "lotm_release_0.201.0_dark_angel_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 17877281,
+      "sha256": "855687669f6e064120c5ef022d9b5a95e92fd317b845005a16bd574d10da90ad"
+    },
+    {
+      "name": "lotm_release_0.201.0_dark_angel_test_inputs_4_2026-10-16.tar.gz",
+      "bytes": 17758310,
+      "sha256": "9a2e2259742dc6379ff5f8221105ae550cccf2c4be787c350989acdc3e63b41e"
+    },
+    {
+      "name": "lotm_release_0.201.0_dark_angel_test_inputs_5_2026-10-16.tar.gz",
+      "bytes": 15652370,
+      "sha256": "94c7d40972a66241f48d9152ad52101de276fa0d90e8126ca3e6565d976a84ff"
     }
   ],
   "fileEntries": [
@@ -7333,6 +7358,1141 @@
       "path": "tests/fixtures/cultivator-v0690/natural.json",
       "bytes": 976625,
       "sha256": "268a4bee446b4e391331a0e1cb6d57cc5a629497e43c3d56dd2fcd79a1e833da"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundaries.index.json",
+      "bytes": 13711,
+      "sha256": "88172f95580d9344fd6370196ce6945a69418c73b0ecc77a1f08d8908958ba76"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundaries.steps.json",
+      "bytes": 6203,
+      "sha256": "b9d9c4df0161399f564943759c97a5eda869bb84f20a3926e0f79ef7b22ca645"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual-independent-edgar-contact.json",
+      "bytes": 8292586,
+      "sha256": "061c8fdeb6f0ebef87e418e47311645a1d61b102fdb8a975e63af23a14ef58c8"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual-next-week-new-stock.json",
+      "bytes": 3657167,
+      "sha256": "65dbd3d92cef1bd05416c7b26f565b0bba8d8f340e5b039e8295ff4acb6c1b04"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual-rest-and-clinic-for-original-heavy-2.json",
+      "bytes": 2877288,
+      "sha256": "1526fa089abb422d7c236b5999a6d15423ba51bbad22322c598ada6e29f45d33"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual-rest-and-clinic-for-original-heavy-3.json",
+      "bytes": 2877584,
+      "sha256": "d2f46f818671e342af537a19d2d84e873e120d728e597bab81fa77a2a28f2467"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual-rest-and-clinic-for-original-heavy.json",
+      "bytes": 2876786,
+      "sha256": "fa6daa41f0b99f0c6d507375f032a0e0c7d690f664b051e1aef826ef76c18f67"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual-work-after-living-exit.json",
+      "bytes": 9536363,
+      "sha256": "9aaf0b29fe0edb40819d3ab1b0a67a7ac9f22822059547f26826a1d92f419c97"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual1200p-buy-dark-angel-potion-1.json",
+      "bytes": 3441554,
+      "sha256": "43151f44ebe708901653357ca99cefbdd928754d408c8fa78656697713edcb4b"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual1200p-buy-dark-angel-potion-2.json",
+      "bytes": 3528641,
+      "sha256": "fda379a0088c0444d2dc3dde0769054e8b6cc14e72666ea87030acb281b00637"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual1200p-buy-dark-angel-potion-3.json",
+      "bytes": 3616827,
+      "sha256": "9c5e719205b957463c14da21f8b220c757be07f9af0bf23efeee5d823cc773ad"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual1200p-buy-dark-angel-potion-4.json",
+      "bytes": 3725989,
+      "sha256": "5099d44cc20fda5668808127c79eb8d3ba72617cf1a0e0b62b5abdc62205cc2d"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual180p-current-week-prepare-dark-angel-potion-1.json",
+      "bytes": 3451110,
+      "sha256": "40ce9c2bc3e39c79490fb917bdcc18226c34f3d96918771d42bf4dfa33751c21"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual180p-current-week-prepare-dark-angel-potion-2.json",
+      "bytes": 3538193,
+      "sha256": "e146f48bb3c87e2d82b49a83dc898b1b220070d764a35f1cbb5d6f7e17dd8c13"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual180p-current-week-prepare-dark-angel-potion-3.json",
+      "bytes": 3626385,
+      "sha256": "0cbf69f4751070b6d56420d50ede19acf29c7be3bb86cae746fc4dd0e6987401"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-actual180p-current-week-prepare-dark-angel-potion-4.json",
+      "bytes": 3735543,
+      "sha256": "e321229f92d3bd87ef41339b57688240b41818707d116b83f17c3e14be574727"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-combat-round-1.json",
+      "bytes": 8977312,
+      "sha256": "b813463b969edaa7acacae7ecce3e9850872a1ab34ecece1adc67e08936390e5"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-combat-round-2.json",
+      "bytes": 9404044,
+      "sha256": "8b1662f9c5f143f5836a7629e24c4106693245749d28bcd5d1a98f45a07d9c70"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-combat-round-3.json",
+      "bytes": 9529639,
+      "sha256": "d0daf2d450bcd418b76592d70c86caf09f846d41db34c2e5fecb9d8bc730bdc2"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-consume-dark-angel-potion-1.json",
+      "bytes": 3461425,
+      "sha256": "0fb9be1898aeeb4d4d7d6c56c07323b95ece41784f883df0a54abaac069033a7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-consume-dark-angel-potion-2.json",
+      "bytes": 3548502,
+      "sha256": "2a08cd8be86ea7db2990ea1a13774373998389f7f4ee3c6a6a8cd27f666291ee"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-consume-dark-angel-potion-3.json",
+      "bytes": 3636702,
+      "sha256": "c550a22334fe0fbeab0927dfef8c6ee6ed0937a45ce5e6d4506bd0755045e4ef"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-consume-dark-angel-potion-4.json",
+      "bytes": 3762445,
+      "sha256": "3c6506bdd503accc69fedce4461a2d2794cf51b72f90625704eef3654fc98549"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-1-real-labour-2.json",
+      "bytes": 3394610,
+      "sha256": "c41e5f7f4a5d8c88d9d4f906965e3613beb05daf15ecb3be5a40f4e944a38314"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-1-real-labour-3.json",
+      "bytes": 3404421,
+      "sha256": "86d3103677b5b53c52ea64303c8692476132d30137756b1b18e832bd0d4c2e74"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-1-real-labour-4.json",
+      "bytes": 3414190,
+      "sha256": "8542006e95665aa0482d04165376be9efb93790f32c4cf012e8837494301f678"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-1-real-labour-5.json",
+      "bytes": 3423824,
+      "sha256": "3e4170af2ef79b36ddd51f8ab6c388433b0ad452f82ad97644dfcdba19fe28f4"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-1-real-labour.json",
+      "bytes": 3385086,
+      "sha256": "324bd94cdf4b6ea31393dc60640550e0b39d1af54ef9d4326aaeea826bfc103e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-2-real-labour-2.json",
+      "bytes": 3480991,
+      "sha256": "a7b8c3f5d5901974b676f5c9e253daafab0f7f37221468ec3459e989b77b3b29"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-2-real-labour-3.json",
+      "bytes": 3490750,
+      "sha256": "828bf0e579c2f4a7d247e6263df1aa228c4bac94340c455de593231a564d3b9d"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-2-real-labour-4.json",
+      "bytes": 3500382,
+      "sha256": "e3a7b26bdafd9dadcc624e6194afdddc754e46de3c123878c9ace2b7d6e78658"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-2-real-labour-5.json",
+      "bytes": 3510191,
+      "sha256": "2e195953f6f21515101eaa86cca4dfb6dba3d2700cab4917329d5670995a96b9"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-2-real-labour.json",
+      "bytes": 3471517,
+      "sha256": "e375abeb19c652a4f109fbfb8d06419689b67214f5f64fc1e30b4784944a7beb"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-3-real-labour-2.json",
+      "bytes": 3568059,
+      "sha256": "75ceebdb0ba539822018378b05b6374274ca2112b9c44f5aeae01c2fad5e2567"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-3-real-labour-3.json",
+      "bytes": 3577814,
+      "sha256": "e7da94c59bdb5a6b89d7a67286ca707ac12c3a4408d6f1d160d751f373a57806"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-3-real-labour-4.json",
+      "bytes": 3587444,
+      "sha256": "2eab66e55d3ddb228275f5d3facd0a052f9c5c78025f7e78a4791a89523b5cda"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-3-real-labour-5.json",
+      "bytes": 3597254,
+      "sha256": "ccfa92db7f97569bdce39231bf9ea98fe9fc09192cd7f986620cb7db3bd453e7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-3-real-labour.json",
+      "bytes": 3558589,
+      "sha256": "3ae8cea6d91f1ac9dcc24999afc74a600bd10dc7acd0aa979276230809b9ff0e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-4-real-labour-2.json",
+      "bytes": 3677632,
+      "sha256": "6e4fa1016413fa6dff509f0d5dabe2558bf60a22be852b41d47640b465ed294b"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-4-real-labour-3.json",
+      "bytes": 3687260,
+      "sha256": "e378df85a3b9270c594f14bd6066db1b8a8173afe2d138e83185d99b3a1a9d7c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-4-real-labour-4.json",
+      "bytes": 3697070,
+      "sha256": "c0a6a12c63408dd4064794d579489ffcd2b51293d52786c2e56f254c53723231"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-4-real-labour-5.json",
+      "bytes": 3706826,
+      "sha256": "41495f52cbf5f69ffe7e42d527946c6e67bf0879e4d39876c77273b52ad31825"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-dark-angel-potion-4-real-labour.json",
+      "bytes": 3668020,
+      "sha256": "ef9e2aef9bc3df225eee504950798c71742537cc4c6d329339d5bf6920ce315e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-exact-original615-living-source.json",
+      "bytes": 2876399,
+      "sha256": "7a0f7f6c15b1b23b59ae89557b2567254b47a0895c8d3baecacb63a84781fd12"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-fixed-original-roland-selection.json",
+      "bytes": 8373214,
+      "sha256": "055c53546b55e45956f3d8b5fa255b5ffc771bd2fbacd9317f7a816c4a47d475"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-consent-2.json",
+      "bytes": 5349894,
+      "sha256": "15e42c27b4a544539f6b098c72e59db0ea45dfa439835a45045b1ae945f3246e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-consent.json",
+      "bytes": 5266132,
+      "sha256": "29cb1e9d0716e522172edf430a14d764e1733c9168cfa752a7c456bbe72afebe"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-honest-report.json",
+      "bytes": 6539747,
+      "sha256": "987b022f4c6ac0550f1aba9693cd4e8d4d9b02da155bd6881e982510923ccfa0"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-leave.json",
+      "bytes": 6438105,
+      "sha256": "edeaa6b317008dec41973b591cfa469dbef8d63bf384be3555d96f2189759b9d"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-observe-originals.json",
+      "bytes": 5182236,
+      "sha256": "6fe5ef877e8c7cd9a9b72fedf4004a59e77d50cd1b13231bb7f396dfad40dd1b"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-perform_operation.json",
+      "bytes": 5997227,
+      "sha256": "069806ca2178c6a1ba6ef4d59cc771ce79f78e46d7139c523c04392d0701d175"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-prepare.json",
+      "bytes": 5452114,
+      "sha256": "53c21f56e9a74b4733af38015c155b449ce2da532d6c659030fc0e3c51c57c53"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-read_original.json",
+      "bytes": 5805954,
+      "sha256": "a6b360dd40cf1b58117872b3cee0bab65f56436afbda298f90e8017234188f57"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-return_card.json",
+      "bytes": 6169145,
+      "sha256": "81c9fc7e666bbc3a2103f432c247f140b36fe0b35c0d2fc1284601df9cdb12fe"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-return_strip.json",
+      "bytes": 6336638,
+      "sha256": "ec66368833dbfbaab30beb041100a467cb913b7c2dd67b1a5f1aefafad327de7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-return_to_a.json",
+      "bytes": 6085378,
+      "sha256": "7c727dc568a4f9a80eeb58708e817b2f3fd48f5e6190daa689eadb77d5b77ef3"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-return_to_entry.json",
+      "bytes": 6252894,
+      "sha256": "8446697a4302043508f8329e2b35718eb25e3575812749f3e1a5d80e604234d4"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-shelter.json",
+      "bytes": 5899554,
+      "sha256": "8a45740467354aa7d1a3be841126ad35b947adf1063024b314ebada27cd638be"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-take_card.json",
+      "bytes": 5638129,
+      "sha256": "55ca32f14631f6678989607a9b688e4ae0534ea5be6f1229a1b451b04f273042"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-walk_to_a.json",
+      "bytes": 5554398,
+      "sha256": "aefd7addc542d46718f4dfa998f14cfbaf42edc027e6066b0a4a80c3d5c139e7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guarded-pulse-walk_to_b.json",
+      "bytes": 5721888,
+      "sha256": "98ecabf12d0a8992555f1e5fa571c2ba9b887da9741f0a30cd786a5ca290fdb8"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-consent-2.json",
+      "bytes": 3993430,
+      "sha256": "27ce890c06fb83b5bf975c70bc756820d0b27cdee1ff95e6791526a4a8653929"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-consent.json",
+      "bytes": 3909806,
+      "sha256": "8b83a1122878b2ecb19582e57ef8e01868bb63194e712d526441f10bbd03b4ae"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-guidance.json",
+      "bytes": 4458111,
+      "sha256": "fcc8d4fb3f8e115fb99baec07ba4bbdc8ba8a1126c5e5e8e3fe99bc37128bc75"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-honest-report.json",
+      "bytes": 5097221,
+      "sha256": "c666cce477a5122bc497fa81a4a4f2b8935973dae7da33932c80d8ee97fe4998"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-leave.json",
+      "bytes": 4995716,
+      "sha256": "d47ce09a3a63a67b81d62da58c9a3061b5c8535ef907b6fcea153b00e7fa697c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-observe-originals.json",
+      "bytes": 3826049,
+      "sha256": "69dd11fc4b2d63d37320f3c3be53a79e766eaf6d238b8b11e8b39eebae19af29"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-prepare.json",
+      "bytes": 4095512,
+      "sha256": "dd52e03e1e51b8c9f39cd093cbb816f5d8531d0a5decd9e5cdd98852fa3c41c5"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-read_original.json",
+      "bytes": 4555530,
+      "sha256": "4105c9abab4c330b33557a39fc0f34e87660dc111ae59b97c91d050c32881bed"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-return_card.json",
+      "bytes": 4727179,
+      "sha256": "927e24ce9cb1ae7420e5e86cb045f40aeeb8cd27ee5b3a7740a15c75c28e2000"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-return_strip.json",
+      "bytes": 4894391,
+      "sha256": "e423c5f2d32674ea98578ca9ba5dd9b5f1bba58831e7d72c095b89e03ceb9914"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-return_to_a.json",
+      "bytes": 4643525,
+      "sha256": "977f10de44f3dae89affdbc3abbfa499b7ecab5777e15b10c9726679f0462790"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-return_to_entry.json",
+      "bytes": 4810787,
+      "sha256": "6d3be18e61177d4de85360d32fe1a028998f9be10557a927c7a5862cca0e8e0d"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-take_card.json",
+      "bytes": 4281251,
+      "sha256": "17c68730dab537bf356c508153758482b8e8d2573ada13368bec029438d84ad1"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-walk_to_a.json",
+      "bytes": 4197658,
+      "sha256": "50e26accd1b9398f094467af90b902fcf57403ccc771f0d78b4cb3d48c081229"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-guided-reading-walk_to_b.json",
+      "bytes": 4364872,
+      "sha256": "d0d6f240b52104e2d78b5325b253e20b0a174218de25ed447f0d56ad6226f70f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-independent-optional-fight.json",
+      "bytes": 8541491,
+      "sha256": "9290750579c47ca88e35f3b0226d31bea84d80ae07deea619b8721e01908950e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-paid-independent-combat-seal-strip.json",
+      "bytes": 8172727,
+      "sha256": "5bf16eecf2a31bf9f809cff1a7ed1033e2cca7a47d26d743d1ff405b3923b6f9"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-paid-next-week-resupply.json",
+      "bytes": 3646713,
+      "sha256": "8d35f41e5e994f755201ee579d8ea6a0299db95b826d01a16f9e62eb9c20aa46"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-paid500-guidance-freezes-eight-roots.json",
+      "bytes": 3115515,
+      "sha256": "028b66b3d52c2c5bf942256e3a472335cb893a85bcf327865affec17574bdfb7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-preparation-CHECK_RETURN.json",
+      "bytes": 3375169,
+      "sha256": "9bcd023996c56e83f398dc336e79722857f38d5cbe5ae79b5470cf3110bd5480"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-preparation-CHECK_SPIRITS.json",
+      "bytes": 3365056,
+      "sha256": "5ac786c162107ecf5788f31487c37f1ea8ed446ea3ad7af585c4cc0da05340d3"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 3356136,
+      "sha256": "7b81e32c5b6969229c710227867907d4b8f41d24227f9d6119590ed3c7995aed"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-617-event_choice.json",
+      "bytes": 2877190,
+      "sha256": "776c86e92b8fe1fc53392bd4cd6c54f96c1d659d310f5e54c78da39c910bf35f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-620-action.json",
+      "bytes": 2877932,
+      "sha256": "95b37d00f9ce581315fd238ed4a16a79b62f57ec57d62d02aefa20549c8ff51c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-621-action.json",
+      "bytes": 2878149,
+      "sha256": "323f0662e122305ff0b644866405c9341608e3549761f4ecb386e4567249c363"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-622-action.json",
+      "bytes": 2878594,
+      "sha256": "8f8222cad957db26979e04bf16d9434a5f17d97d73582a10d81c394118b6354f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-632-action.json",
+      "bytes": 3428714,
+      "sha256": "b915ab4026770429b574384f3658e42ff8b56a58b3d1c67e0ae1abb9b9446bcf"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-633-action.json",
+      "bytes": 3428935,
+      "sha256": "79633f4c9d903a2c9d54a126093ca7edcabbfe715bfbcc15f38bdad37fe8207a"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-634-action.json",
+      "bytes": 3429382,
+      "sha256": "036929b47f289acfa1b7bfbd7b32c4980fb6480338f59daa4d1fd2b98248f6ea"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-635-action.json",
+      "bytes": 3429824,
+      "sha256": "6a96eb8f597413525be9a46b336111f9a94b6dddb038353120e06d74eef0f828"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-636-action.json",
+      "bytes": 3430045,
+      "sha256": "8936385da61c4d2f8de194ae229f07511762c14e7cdef47e3707ebeeb8172f8b"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-637-action.json",
+      "bytes": 3430491,
+      "sha256": "597e2ec993e761c4d567628bf53bbd375cfb198f990a7f18d7c7210c9f6951d1"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-638-action.json",
+      "bytes": 3430932,
+      "sha256": "bca55af82f3f68935db599a15350e92e816d4c6d907e45570f13a0a9a7cb06b6"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-639-action.json",
+      "bytes": 3431153,
+      "sha256": "476cf5db03ce853cb86abdca271413976869ca9006a9ed79d1b58b8fa4dbf809"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-640-action.json",
+      "bytes": 3431599,
+      "sha256": "e6312af9b0e89f6627bbfbedd365e5d380feabe9a0fbce87ef782b6259951449"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-641-action.json",
+      "bytes": 3432040,
+      "sha256": "8cca79ee86a9f17e355a64c05f25f84296657bab7e88eedab3d88a1790c54cbf"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-642-action.json",
+      "bytes": 3432261,
+      "sha256": "c1071d9e639bf41c8664e1235d0cd7cc92e981ffba68fbc9bb151183965c9dfd"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-643-action.json",
+      "bytes": 3432706,
+      "sha256": "cf51524da2a6d3c6bcf29b716a40c9d018a7456a11348962cacf40004b1bfaea"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-644-action.json",
+      "bytes": 3433147,
+      "sha256": "0311acf5765611bea6deab2c305aa57c3c048fa9ec430e1c4cb2ceef4c378446"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-645-action.json",
+      "bytes": 3433369,
+      "sha256": "d43f073f72b7de898ee0b70d9d75d49955f66bc5e87281984aab1e8f008fdbf5"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-646-action.json",
+      "bytes": 3433816,
+      "sha256": "4841503e4c5fdd49e34dc0ee999b9c8034c49c6a8a49ac2057830b3df77bff1f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-647-action.json",
+      "bytes": 3434258,
+      "sha256": "0afca357807bb9d080873d9184d74a8e6b7fba8b73c8ccf3cbd89f477db71acd"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-648-action.json",
+      "bytes": 3434479,
+      "sha256": "a7217b7c4b82c0b10278372dab4bce8547f4153882a86b19ced3b1a6b41d87ee"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-649-action.json",
+      "bytes": 3434925,
+      "sha256": "51efc56e09dc0f46b21c87951ecc7359615e2aaa31b6b0c412fcd56c5faeeef7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-650-action.json",
+      "bytes": 3435366,
+      "sha256": "a27e32135bd66f583992ac694639d9a5eb2298bebdf947d7f943021ebfb55397"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-651-action.json",
+      "bytes": 3435589,
+      "sha256": "1a6bcb3541fde31412b175982b87b250bc8880b70fb384d4a044b4cf2513f3c8"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-652-action.json",
+      "bytes": 3436040,
+      "sha256": "6b1a1eda969d0ad30f0539d3fc4a08b6d472f393abc75c2e411a3a9e3354b22a"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-653-action.json",
+      "bytes": 3436485,
+      "sha256": "0f620b1fe378a9d5d2b199c1714abf81e1a55efa24c1ddefe4e154ab2d65f665"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-662-action.json",
+      "bytes": 3515035,
+      "sha256": "e7e490a6aacfbebcf1278a9fbedb3eca548a1fc7acf010a11c1a1177ebd3e772"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-663-action.json",
+      "bytes": 3515303,
+      "sha256": "762312759addadecc09f5b2b7a9427f40072b5df81e6daff1f6109218b10e321"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-664-action.json",
+      "bytes": 3515749,
+      "sha256": "db1defe22418aa5e35ddbe78f55db84f5e653f39bcb0207a832240f6c580077c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-665-action.json",
+      "bytes": 3515969,
+      "sha256": "a76919d6b5280a90bab42fa992d36742db97fddd1395f14523b5f4a4f331dc21"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-666-action.json",
+      "bytes": 3516418,
+      "sha256": "6244e70d6db23aa384080aa70eaa2de9aee28860dd01f4442df3811781acfd4e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-667-action.json",
+      "bytes": 3516865,
+      "sha256": "890c908594d35a2482ef2f38eade45043dc04ef7e44916a62b5188e90cf4e894"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-668-action.json",
+      "bytes": 3517088,
+      "sha256": "3090722f23b643e18d9740cae7402473fe4484a759f5bd1afe7a818f29e5b365"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-669-action.json",
+      "bytes": 3517538,
+      "sha256": "951ab9c7966719fbc64f9d4d80a470a261072f17c6227eb41c2e41cf88bf3de6"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-670-action.json",
+      "bytes": 3517983,
+      "sha256": "d60a14b4d667f9d9b187d79107921c0ad0d226857ceec584f94ab278ec23e5c4"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-671-action.json",
+      "bytes": 3518206,
+      "sha256": "24437c48df535aa24f3caffc34e70528923662fefa7bb7a00ddff5748b5ddd69"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-672-action.json",
+      "bytes": 3518655,
+      "sha256": "3817bcafaf5020a101f2a7ae29edf645f658ee1079d35d86e43e4897add8ef62"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-673-action.json",
+      "bytes": 3519099,
+      "sha256": "a7d11c8ce4a31cb2157f2b3f224be0ccf66ba375c5b28cfa25cb6b996028011c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-674-action.json",
+      "bytes": 3519322,
+      "sha256": "e8d822468da7adf74802a5e55abe7ae9ea94eed43ed9517a16bbd71530a7fdde"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-675-action.json",
+      "bytes": 3519773,
+      "sha256": "fbe2ebf63fe8a222cdfe67a21cd32c14f8114eedfb2ae8703eb2c0cabc99d6c0"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-676-action.json",
+      "bytes": 3520220,
+      "sha256": "8e014b256aa554760326046236ee1e562ef49ab6f05e38885a6be438695570ba"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-677-action.json",
+      "bytes": 3520444,
+      "sha256": "3a7521f6093426c1edb167f54eb330df17114130eeaf29917566917e38b47c10"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-678-action.json",
+      "bytes": 3520893,
+      "sha256": "96df55b47b86660c4efcba551c04b0931ef2c6f9e64b86c183391b96c2766468"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-679-action.json",
+      "bytes": 3521338,
+      "sha256": "54a7acec8692ede6e50118495cfb0be0762e2c5791c88eb675c846deb138234e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-680-action.json",
+      "bytes": 3521562,
+      "sha256": "791c93d4a3e72492d016ff9bbbe68bd7029e7b5692de6ee2d3ee4bab6b511215"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-681-action.json",
+      "bytes": 3522012,
+      "sha256": "f5a564c65353623f7697ab42269389b23a320e6bd015c63aa91d72838804ea59"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-682-action.json",
+      "bytes": 3522457,
+      "sha256": "66e43f92edfb88cdce68dd57486c01b99a8b04b79284874ecab266e01d8538d4"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-683-action.json",
+      "bytes": 3522680,
+      "sha256": "ceeafd36c95b9ceda291440d341bd629d14cad88576f67e37228fb91adc75f97"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-684-action.json",
+      "bytes": 3523129,
+      "sha256": "6d0b71485da5d620f531801d1fa82d72f2f3677137068496b030726d0280c699"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-685-action.json",
+      "bytes": 3523573,
+      "sha256": "78d2f26433de465fd856be2b1c140a982930f208c73e176ddc889f63e666e111"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-694-action.json",
+      "bytes": 3602099,
+      "sha256": "850e10f5160752ada9a9dfc2f6894b0783b1df7caace38319b2963c22d4b5df7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-695-action.json",
+      "bytes": 3602366,
+      "sha256": "591316f62b42b5f547889a8b416a9c435bc2ab3ebe4a0f9fbe2507505e202500"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-696-action.json",
+      "bytes": 3602811,
+      "sha256": "3b6a2c2c95a2a7d773d3d352c3ad03c3a3856e653ec990e690c7adde02e72539"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-697-action.json",
+      "bytes": 3603031,
+      "sha256": "ad9ffeb99b7c021ba1f879620aa52576ec6bdb5000012419c991ae37e6a9b23e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-698-action.json",
+      "bytes": 3603480,
+      "sha256": "4c9543d3a00fbdcc62b46816ebdb24cfaa58409b93c83338aa674d1724e9208e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-699-action.json",
+      "bytes": 3603927,
+      "sha256": "ed04f6fe51f11517b77bdd27e4aacd3ca9606999c17324be3f41fb115eb9999a"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-700-action.json",
+      "bytes": 3604150,
+      "sha256": "be71b7f4b6f711791bf8c4beca203d7d96011d4e80537175525a3a3b523ee8c1"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-701-action.json",
+      "bytes": 3604600,
+      "sha256": "e6610bea88705750ae33cb0baa5337fee92d956792aa62edbadbfac8a4d646e6"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-702-action.json",
+      "bytes": 3605045,
+      "sha256": "ac50c9f10778a69377e467130738b3fa87dc40ebf3a845ca521b55ba75037ffd"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-703-action.json",
+      "bytes": 3605268,
+      "sha256": "b8e2677d2040733b3b800a47f6fc4c875d35c5151f325f11889f5f43d3f04648"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-704-action.json",
+      "bytes": 3605719,
+      "sha256": "60c35afbcd0537daa6b78ccb1e670db2b7870db896b74c2b1f593c63cb2e29da"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-705-action.json",
+      "bytes": 3606165,
+      "sha256": "b028040506a5c64baf9bdcd4052fedf020921a21901f10ae20159551b8ead51a"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-706-action.json",
+      "bytes": 3606388,
+      "sha256": "64c870a1779b8cbd1cfc427370160fb9b4388655a2691f5ae8534b551be9a572"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-707-action.json",
+      "bytes": 3606838,
+      "sha256": "5734d8839afb2c14e1416af4ba9050d3e9a8fea8570ac779de4e200297f658b6"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-708-action.json",
+      "bytes": 3607283,
+      "sha256": "7edbffb39b3bfd6eef20c4be2f3b567727dd961c4e6a934b99e04dbabdd254f1"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-709-action.json",
+      "bytes": 3607506,
+      "sha256": "5734fe0b4119f38e2ff7209720c3791ef12de2f066c5053f849937ba575964b0"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-710-action.json",
+      "bytes": 3607956,
+      "sha256": "2fff0d8a82432002b7f3d5da5f417afea9b7d3e252444e974841f1b9371aca59"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-711-action.json",
+      "bytes": 3608402,
+      "sha256": "a15fde26e7e948d7d3a080e809652fc00b0474fc5961698a9bc014e9318297d1"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-712-action.json",
+      "bytes": 3608626,
+      "sha256": "c63ceae5be694fe1c2282d890a715290ef1c65ea60273ebc4ffb69c42b1674cd"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-713-action.json",
+      "bytes": 3609075,
+      "sha256": "b1a8c6bf080ccce4c8053b62e91442bb2c4593fc4a925ef583fc675696a1f6aa"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-714-action.json",
+      "bytes": 3609519,
+      "sha256": "b9b4a5bb97cb1f989a06ea160e03178cfb255418b9d3dcbd1c79c2e93b9d320e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-715-action.json",
+      "bytes": 3609742,
+      "sha256": "aea74ff311510396de2b8196123301cd97e4e6f24387d85e360dbd8ec9f2d46c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-716-action.json",
+      "bytes": 3610193,
+      "sha256": "426a492f5f0bb2e48e0e2140c6a229f39c2cadfc1bb1a95615061008d9a52b3c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-717-action.json",
+      "bytes": 3610639,
+      "sha256": "b7a6f0492b73a282160a10343346dd82cabf898a29b6512c9526b64ce86db5e1"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-718-action.json",
+      "bytes": 3610862,
+      "sha256": "431925006e30cce61d9af5462ea6327fb674e163a844f22f2ed93b356c144865"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-719-action.json",
+      "bytes": 3611312,
+      "sha256": "7b68805b0cf8b04fbaf5cdba0a85b91259501fdf1612961f2f7d025524183a24"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-720-action.json",
+      "bytes": 3611757,
+      "sha256": "2f549a68eb6ce38ca1435113ddc77d6ab21f2d7ed3f5ca8b53005043be346e6f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-731-action.json",
+      "bytes": 3711716,
+      "sha256": "7496f103ae0bffca4a9e04016a6e3a06243ad0c795228a64d4626a24bbe5e351"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-732-action.json",
+      "bytes": 3711985,
+      "sha256": "eafd30a1c28c85e3a6cbef9fb1138c4a57524aedf3dc7ce92a23171daa1d54dc"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-733-action.json",
+      "bytes": 3712202,
+      "sha256": "d16d58ff790f9e7da8ccd0ee858f4be64d2455d510943fa228385f8b203da80c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-734-action.json",
+      "bytes": 3712649,
+      "sha256": "ad0a932c58401c66cfde2d2ab910fad4b51c33d0cedf97bd0e3174f5919ec46f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-735-action.json",
+      "bytes": 3713097,
+      "sha256": "ae92943c472ee24504b51960abf1e89debfcb9249021e1bf0d3b2a1bdb7fb94c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-736-action.json",
+      "bytes": 3713320,
+      "sha256": "4e6089789a30848d4602d1294bb1ef0a9c3aea68ab3815acf909d833a3271fcd"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-737-action.json",
+      "bytes": 3713770,
+      "sha256": "0d87d63a81bd59ad2017f9bb8b668b0cf9ea3714339dd25905c66d4da18bfad0"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-738-action.json",
+      "bytes": 3714215,
+      "sha256": "0ba3bc5c41785b682eecdee75932454db003c3c37c8b5956aaf6a24c3c7aba10"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-739-action.json",
+      "bytes": 3714438,
+      "sha256": "f268342b5ef434a3add44f33c0c9748e1b527d0356babd28f436b2801cd13724"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-740-action.json",
+      "bytes": 3714888,
+      "sha256": "4552d4e284460cd89ed75b18e51f9980c12594cdab91520aa46a6a37e97b226f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-741-action.json",
+      "bytes": 3715333,
+      "sha256": "68a0ec01a3a10dd01a0a790a5bba75aafe48d96d7ad19e41115e340ceb9f1664"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-742-action.json",
+      "bytes": 3715556,
+      "sha256": "0e90f71ea5a1ebd87050be29111472747251a809d35dc037918037b8179137c2"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-743-action.json",
+      "bytes": 3716004,
+      "sha256": "f87b045ee7846dd1a86bd4fcbd8e0509c1ae578d98a638515e4cc0bbdf715f6d"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-744-action.json",
+      "bytes": 3716447,
+      "sha256": "86cbfb228958deea9c078b267f353fe44c77bb6fe69c45c68ee40bfc2c135cc9"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-745-action.json",
+      "bytes": 3716670,
+      "sha256": "6ed5f8be89c95af5348a752b75b4b078765366893d3c137f62d33ac2517156c6"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-746-action.json",
+      "bytes": 3717121,
+      "sha256": "b20d17801412fe7b96630c7ee415ca240553683cef382e46884a2c136605d65c"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-747-action.json",
+      "bytes": 3717568,
+      "sha256": "55dd7390e1184cf19486e89cb0590d7ef6ab3adfa4c8e394f4ae6139721fee79"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-748-action.json",
+      "bytes": 3717792,
+      "sha256": "22a6583e00c69b91971f7082643c517b6e1761dfa709beebe5568f4a512d0971"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-749-action.json",
+      "bytes": 3718242,
+      "sha256": "3cf1e9eb200299000ba782d286c2ec869f0da504e93d0edf33d35542e8fd3e52"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-750-action.json",
+      "bytes": 3718687,
+      "sha256": "e25a97e0610ef158648ef01a7fbce4ad4bc6732087084cf4cd45bcc4d52305ca"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-751-action.json",
+      "bytes": 3718910,
+      "sha256": "f749366e1d00064dd153f18231f6415ba4f3204e38c9e9d82eca584de4d6bdda"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-752-action.json",
+      "bytes": 3719360,
+      "sha256": "76b52a20120f50914f383a53622b3e1b8e8b7f31d10353422daca56c49a3cbf5"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-753-action.json",
+      "bytes": 3719805,
+      "sha256": "cdfaeadba6cc22211293bb89cf2086eadc0c4026c9fdc7b615a826d740a1d499"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-754-action.json",
+      "bytes": 3720028,
+      "sha256": "92aa4f04de1e1df1577f88ff2e5b678d500ebe581591f471845669ee8107e17f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-755-action.json",
+      "bytes": 3720477,
+      "sha256": "4cc89a7a101c253659bf747ad4d01294dabc11120304199edd1153907c69d79f"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-756-action.json",
+      "bytes": 3720921,
+      "sha256": "462d459b5d54e7eb032f74b252fa60ac59660942636a93d54aef5b6cc7586393"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-760-action.json",
+      "bytes": 3784342,
+      "sha256": "17863d9fd71141ca4994e19164f506d974a29c048713e57a4b9a7a97773a01b9"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-776-action.json",
+      "bytes": 5139224,
+      "sha256": "be307522fc4f5861c3b62c0293a2fa3972c273ca7f39a9b19e166b27fb76d388"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-777-action.json",
+      "bytes": 5139449,
+      "sha256": "52c6911c4e8fbc32266f9a8421a4f3ac0591eb92e9560560d77568b7bd8419a0"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-778-action.json",
+      "bytes": 5139900,
+      "sha256": "ca38ec78c38474ed186aadd0127f253b32e3e37b192f828ecb5e076524bec1ba"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-795-action.json",
+      "bytes": 6581815,
+      "sha256": "620b0be7277279bf23539df382bc342a6e4ac1992b0ed500fa932d48694db21e"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-796-action.json",
+      "bytes": 6582039,
+      "sha256": "bc8e72bfae1b8a6d1ab0763d3cdc26c8aaaa0ddb309c0c7f682e5d0e0dc33089"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-797-action.json",
+      "bytes": 6582491,
+      "sha256": "30061d927c535320487e21f342a60f4d0cc15c141b9143d4b5895126a48576c3"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-815-action.json",
+      "bytes": 8092606,
+      "sha256": "55fd574ab6e4c690f46fcbd79d8a776f16f357047e4b361548d2d63a5a4cd031"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-step-816-action.json",
+      "bytes": 8092930,
+      "sha256": "ec0558fa866f8d8aefec9b7388d667dc3307ab35665e42b7bd670e20d81d35d1"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-three-actual-honest-reports-reflected.json",
+      "bytes": 8050517,
+      "sha256": "69350432361c45352f219dba63fcdfd48962e268e86235146e9190c7c7e1fef0"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-consent-2.json",
+      "bytes": 6792855,
+      "sha256": "ffe40ef6da99edb1d3cc11ba7e67065094256d0993d9658c9cb5a9b68b262d37"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-consent.json",
+      "bytes": 6708948,
+      "sha256": "8bfa713c97aa49052516e3e6cd6e8e370a27bb5798bffb811932c73a6e6c9891"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-guidance.json",
+      "bytes": 7258981,
+      "sha256": "60b68010ddc494ed7221c23869f98fca8f5c6f1ec4cd2e52ccd886a3b0d67a4d"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-honest-report.json",
+      "bytes": 7966346,
+      "sha256": "a4304fa3073ddaf02676b1969f995585321b15a329625569bb46f407f8e6b268"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-leave.json",
+      "bytes": 7864562,
+      "sha256": "dec554e76ad59538e442c0061981edea279fdbb12d620bc18fe3658b5afeeacd"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-observe-originals.json",
+      "bytes": 6624906,
+      "sha256": "354195488f232b3f36b249f2cc07dda7b267d6f3036d7439cc7ac53c3090bb24"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-prepare.json",
+      "bytes": 6895230,
+      "sha256": "75453ac63554c993977f2a6933ebfdbd5594a5d5555623c052266204bdc8a2df"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-read_original.json",
+      "bytes": 7427052,
+      "sha256": "efd6660c745806db863c2826065e96843a7a32f968ac2d0e35b0aaf7f9624dd2"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-return_card.json",
+      "bytes": 7595204,
+      "sha256": "1d1b7d2762de7d6030fdcc67a3477b0ce9c29891d43d09b8838f893df16f1c19"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-return_strip.json",
+      "bytes": 7762964,
+      "sha256": "861519ff40924f52a0e2413961a37a354c234d0ad95761e9326f3b25749821a3"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-return_to_a.json",
+      "bytes": 7511276,
+      "sha256": "1ae06e8905b634904012fc43a2277f597b2bc9810b63bd3df20f227303850173"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-return_to_entry.json",
+      "bytes": 7679086,
+      "sha256": "297c01a5eeee546e691d112017d5fb59b2133c92a199e9bbfb13150832dc78e7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-take_card.json",
+      "bytes": 7081544,
+      "sha256": "62532ec7cab8f3cb4093218cede10da3ac042aa84d867185f2a674abdc8f437a"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-walk_to_a.json",
+      "bytes": 6997669,
+      "sha256": "02bbb6388eb2bdeb61d2fa225b894a3eccdd3eef04ffef8ced0f36dac0d2c896"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-walk_to_b.json",
+      "bytes": 7165447,
+      "sha256": "ed2fd8e2e76c4e12e425871c6929083a9823d88796a07176397ede3df713ad05"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/boundary-withdrawn-guidance-withdraw_consent.json",
+      "bytes": 7347680,
+      "sha256": "0ec4b11e6ac77cf4116a5ef09fc683f1753fab060ee2275d020280147b23ccb9"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/capture-integrity.json",
+      "bytes": 23781,
+      "sha256": "65b86d07717818e7190a03b54f4e3d4ac82323d635b5df75d1c92ac02fbd94f2"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/commands.jsonl",
+      "bytes": 1748156,
+      "sha256": "9deb91cc831f88b7b06e0d06c314b69f1054333bac98bf43ae504c25d06636f7"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/natural.json",
+      "bytes": 11663964,
+      "sha256": "54c625eb2781a5e5dbd9b31b0e9d09c3cb89d60a83c16d82d631d37d5329e79b"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/public.jsonl",
+      "bytes": 8391874,
+      "sha256": "3ce49276abbcad61a49efd4c6fb2d4d85276c7d68a400bd6bdcabcbb8fe4bf75"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/snapshot-combatStart.json",
+      "bytes": 4334756,
+      "sha256": "7ce59a6537195e983e92f7b58256f39e8e67392cb52bc46a80afde6f64544042"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/snapshot-combatTerminal.json",
+      "bytes": 4768052,
+      "sha256": "0963f29579e2780101bd58133262968b3a04758c7ef0cd95a4a3c2560e11f5d0"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/snapshot-departure.json",
+      "bytes": 1438249,
+      "sha256": "9461f7e7dbb7d95deea83d22904f005f4a4c0595007abd8c1f1ca89483ab2b47"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/snapshot-guidance.json",
+      "bytes": 1675981,
+      "sha256": "24856e295c16f0f9929b940cae71fd3b0b825d369ce1b2e4c182b405642f9e32"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/snapshot-practiced.json",
+      "bytes": 4046266,
+      "sha256": "10c5a76849fbc88b9a24f1e42e7b8ac4589cea2bbb1ee6d35b2591af68c2b0ce"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/snapshot-promoted.json",
+      "bytes": 1892238,
+      "sha256": "4f38ba3b0fe5c7d29e5203f3e8569c978dff3f9910dd916b1e34e8796f5a4c01"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 4046590,
+      "sha256": "368b0baec6b2dc1f60dd0d3a420c7288c429f476a1b28d93a26269df45b72a62"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/snapshot-sourceRecovered.json",
+      "bytes": 1439420,
+      "sha256": "e79afa9cdf8bcde44831c7c03b0c44c0c0449c916428b305533800443df166ec"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/source-prefix.json",
+      "bytes": 1914559,
+      "sha256": "c90dcc876537db9b31e08fcde5a63b3dba933748e24349c8b7f7638e3556838b"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/summary.json",
+      "bytes": 2965357,
+      "sha256": "e0267bb0e39c844e5a8dbb71fc3e2601397945f23d21928332254b1c1733ed31"
+    },
+    {
+      "path": "tests/fixtures/dark-angel-v02010/transitions.json",
+      "bytes": 29133,
+      "sha256": "2f9a32f80575b61540a4b60f1dc5e8a1b2363123c434af4f581ade434afd9703"
     },
     {
       "path": "tests/fixtures/dawn-paladin-v0850/boundaries.json",

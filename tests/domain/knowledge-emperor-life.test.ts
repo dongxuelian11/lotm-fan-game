@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 import { computeCheckChance } from '../../src/resolution/normal-check.js';
-import { assertValidSliceState } from '../../src/domain/slice/index.js';
+import { applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { validateKnowledgeEmperorState } from '../../src/domain/knowledge-emperor/index.js';
 import { blockKnowledgeEmperorLife, getKnowledgeEmperorCurrentSite, hasKnowledgeEmperorLifeLock, knowledgeEmperorLifeActions, knowledgeEmperorLifeClosed,
@@ -71,6 +71,11 @@ describe('Knowledge Emperor finite original archive practice', () => {
     s = ke(s, { type: 'CONSENT', caseId: 'knowledge-power', permission: 'ABILITY' });
     const cash = s.cash, ap = s.actionsRemaining; s = ke(s, { type: 'PREPARE', caseId: 'knowledge-power', method: 'ABILITY' });
     expect([s.cash, s.actionsRemaining]).toEqual([cash - 20, ap - 1]);
+    const displayed = projectSliceState(s), committed = structuredClone(s);
+    expect(displayed.knowledgeEmperor.insideCase).toBe(true); expect(displayed.canAct).toBe(false);
+    expect(displayed.actionBlockedReason).toBe('先收束当前知识赋力与循力求知窗口，归还原物并沿原路离开。');
+    for (const action of ['WORK', 'REST'] as const) expect(() => applySliceIntent(s, { type: 'ACTION', action })).toThrow();
+    expect(s).toEqual(committed);
     expect(note(s, 'knowledge-power')).toMatchObject({ id: 'KE1-PAPER-1', substrateId: 'KE1-PAPER-1', charges: 1, wear: 0, content: [], copied: false });
     rejectKnowledgeEmperor(s, { type: 'COPY_NOTE', caseId: 'knowledge-power' }); s = read(s, 'knowledge-power');
     expect(s.knowledgeEmperor.life.notes).toHaveLength(1);

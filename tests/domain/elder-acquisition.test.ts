@@ -40,7 +40,7 @@ describe('Elder acquisition: actual 500-command natural S3 source and explicitly
     expect(s.character).toEqual(original.character); expect(s.progression).toEqual(original.progression);
     expect(journal(s)).toEqual([]); expect(originalTemplarFinal()).toEqual(original);
   });
-  it('keeps independent defaults and hides the stage from unrelated, earlier and S1/S0 characters', () => {
+  it('keeps independent defaults and this old channel closed for unrelated, earlier, S1 and S0 characters', () => {
     const s = createSliceRun('elder-hidden', sliceDefaultCreationSelection, 'elder-hidden');
     expect(projectElder(s)).toMatchObject({ discovered: false, promoted: false, formulaKnown: false, formula: [], bottles: [], abilities: [], actions: [], resources: null });
     rejectElder(s, { type: 'LEARN_GUIDANCE' });

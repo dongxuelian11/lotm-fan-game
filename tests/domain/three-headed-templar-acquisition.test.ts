@@ -55,11 +55,11 @@ describe('Three Headed Templar3 original bottles and bounded G preparation', () 
     const other = createThreeHeadedTemplarState(); other.bottles[0]!.labourSteps = 5; other.preparations.push({ taskId: 'REVIEW_RECORDS', completedWeek: 1 });
     expect(s.threeHeadedTemplar.bottles[0]!.labourSteps).toBe(0); expect(s.threeHeadedTemplar.preparations).toEqual([]);
   });
-  it('does not open this source for another path, an unsupported sequence, or a missing real S4 promotion', () => {
+  it('keeps this old channel closed for unrelated sequences, S1 and S0, another path or a missing real S4 promotion', () => {
     for (const pathwayId of ['diviner', 'hunter', 'audience', 'paragon', 'moon', 'darkness', 'white-tower', 'tyrant', 'death', 'sun', 'door', 'warrior', 'error', 'demoness', 'hermit', 'abyss', 'chained', 'wheel', 'black-emperor', 'justiciar', 'mother'] as const) {
       const s = blackKnight(); s.progression.pathwayId = pathwayId; expect(projectThreeHeadedTemplar(s).discovered).toBe(false); reject(s, { type: 'LEARN_GUIDANCE' });
     }
-    // S2 now retains the tested Elder lineage; S1 and S0 remain unopened.
+    // S2 retains the tested Elder lineage; this old channel stays closed at S1, and S0 is still unimplemented.
     for (const sequence of [9, 8, 7, 6, 5, 1, 0]) { const s = blackKnight(); s.progression.sequence = sequence as NonNullable<SliceState['progression']['sequence']>; expect(projectThreeHeadedTemplar(s).discovered).toBe(false); }
     const s = blackKnight(); s.blackKnight.promotionWeek = null; reject(s, { type: 'LEARN_GUIDANCE' });
   });

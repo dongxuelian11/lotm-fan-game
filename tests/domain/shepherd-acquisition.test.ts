@@ -142,7 +142,7 @@ describe('Shepherd S5 actual finished bottles and finite original soul sources',
     expect(second).toMatchObject({ status: 'CONSUMED', outcome: 'GREAT_SUCCESS' }); expect(validateShepherdState(s)).toBe(true);
     reject(s, { type: 'REQUEST_SUPPLY' }); reject(s, { type: 'BUY_POTION', bottleId: s.shepherd.bottles[2]!.id });
   });
-  it('keeps cost, location, combat, ended-run and current future-sequence boundaries atomic', () => {
+  it('keeps cost, location, combat, ended-run and the closed S1 old-channel boundary atomic', () => {
     const withoutAction = roseBishop(); withoutAction.actionsRemaining = 0; reject(withoutAction, { type: 'LEARN_GUIDANCE' });
     const withoutCash = roseBishop(); withoutCash.cash = 459; reject(withoutCash, { type: 'LEARN_GUIDANCE' });
     const dead = prepared(); dead.status = 'DEAD'; reject(dead, { type: 'CONSUME', bottleId: dead.shepherd.bottles[0]!.id, confirmed: true });
