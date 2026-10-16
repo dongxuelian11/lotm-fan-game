@@ -1,0 +1,127 @@
+{
+  "kind": "MERCURY204_REVIEWED_PUBLIC_PROJECTION",
+  "captureFreezeSha256": "fb1107cca1f1e07c8f8d141c421a5dd7916d042c68499cb0510b0df379793bfd",
+  "runtimeFreezeSha256": "4e528ffb1d43d5ba15ca51183644a5317a8e60ab5ca9685fb9fc71a069672472",
+  "changes": [
+    {
+      "before": {
+        "file": "src/domain/mercury-snake/encounter.ts",
+        "bytes": 45728,
+        "sha256": "eaa19b15fda5768f342fa8169e69288449ddacb6c811bc35a3ac3b9e9f6e637c"
+      },
+      "after": {
+        "file": "src/domain/mercury-snake/encounter.ts",
+        "bytes": 45977,
+        "sha256": "79071eafc58089d75e8fe7992e51bf433a2c36aa8c337d9ab9be622a06b435dd"
+      }
+    },
+    {
+      "before": {
+        "file": "src/domain/mercury-snake/index.ts",
+        "bytes": 70107,
+        "sha256": "72611ec2a55c322f02282267ba6b7efe7f94766de51ffee7a2179c8f8a7fe2f4"
+      },
+      "after": {
+        "file": "src/domain/mercury-snake/index.ts",
+        "bytes": 70126,
+        "sha256": "cdd29171b5b9f59a4875c8a06968b88c35b78b9b711f8fd017182e8b4080ff76"
+      }
+    },
+    {
+      "before": {
+        "file": "src/domain/mercury-snake/life.ts",
+        "bytes": 64639,
+        "sha256": "0f22074224872941f432b272cc6d213aa91ee0b5d26505ba2420fea376606dd8"
+      },
+      "after": {
+        "file": "src/domain/mercury-snake/life.ts",
+        "bytes": 65069,
+        "sha256": "eb958362d4aa2d75d7ee43ae9f73d5332775cc31c0a3192fcd5d242dc001e7bb"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/mercury-snake/encounter.js",
+        "bytes": 43095,
+        "sha256": "08bcb38188dd04bce058249cb4eaabf898a7d65df7126718fa5a35c6e4d56b79"
+      },
+      "after": {
+        "file": "dist/domain/mercury-snake/encounter.js",
+        "bytes": 43344,
+        "sha256": "58e1789f02b19efa33f092b1bd8da757d76a2a6c76d03e6d537d0999329fa9eb"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/mercury-snake/encounter.js.map",
+        "bytes": 42792,
+        "sha256": "8ee4aa917d54ce0c3fd183d08bfc871e90145feb894fcf9038b7c0c30f9fdcf6"
+      },
+      "after": {
+        "file": "dist/domain/mercury-snake/encounter.js.map",
+        "bytes": 43116,
+        "sha256": "efcb94636df8e86f05fe82167d94258c83590a4804f5812fc4de0f37330b2fcb"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/mercury-snake/index.js",
+        "bytes": 74700,
+        "sha256": "7af5ead4043501f3a8e7dc48607ff3b71a8efb18d730738bce566b68154facdc"
+      },
+      "after": {
+        "file": "dist/domain/mercury-snake/index.js",
+        "bytes": 74719,
+        "sha256": "caddeaa35e17e442d73070ed735f09097ed1ca297f15bf3071d766687576d62c"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/mercury-snake/index.js.map",
+        "bytes": 68736,
+        "sha256": "ad192323c1b36ae40cac30e78f9e9e71509dfafe149727656ed0eb5c9d2127cb"
+      },
+      "after": {
+        "file": "dist/domain/mercury-snake/index.js.map",
+        "bytes": 68786,
+        "sha256": "36faa2667da82701e852a5a83e31ca7e46acc0de90b817564faab208a97c62eb"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/mercury-snake/life.js",
+        "bytes": 62013,
+        "sha256": "2fa5bc9722bf212513845e109351a52a483a26423c3489fc2eb342583d2d1693"
+      },
+      "after": {
+        "file": "dist/domain/mercury-snake/life.js",
+        "bytes": 62246,
+        "sha256": "9d115caa504d8d3c291c98e35178ff89440e7a63c1fa32a88429113fbff5421c"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/mercury-snake/life.js.map",
+        "bytes": 65970,
+        "sha256": "22fa2d678a7bebe2836d911a5262204b4bfc425d4ed99a4745cd618fe105c643"
+      },
+      "after": {
+        "file": "dist/domain/mercury-snake/life.js.map",
+        "bytes": 66380,
+        "sha256": "0a4dee8e333e7264f555c067bf3b33b70cb023dd4c78c1b9b36e9a7e808dbdbc"
+      }
+    },
+    {
+      "before": {
+        "file": "scripts/play/mercury-snake-save.mjs",
+        "bytes": 41273,
+        "sha256": "f1c45dbac470771eaa84c0922bbed202e3aaf0a5999f80ca9ed801bea1180272"
+      },
+      "after": {
+        "file": "scripts/play/mercury-snake-save.mjs",
+        "bytes": 43718,
+        "sha256": "228b6d5d17d95421fe2943b4372e91aa6b4e9a27c89116d2c56f2217faf93e8a"
+      }
+    }
+  ]
+}

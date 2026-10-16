@@ -8,6 +8,7 @@ import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { FATE_PROPHET_CASE_IDS, type FateProphetCaseId } from '../../src/domain/fate-prophet/life.js';
 import { FATE_PROPHET_ENEMY_ABILITY_WHEEL, FATE_PROPHET_ENEMY_COUNT_WHEEL } from '../../src/domain/fate-prophet/combat.js';
 import { type FateProphetCommand } from '../../src/domain/fate-prophet/types.js';
+import { MERCURY_SNAKE_ABILITIES } from '../../src/domain/mercury-snake/index.js';
 import type { SliceCombatRound, SliceIntent, SliceState, SliceStance } from '../../src/domain/slice/types.js';
 import type { SliceBridge } from '../../src/shared/slice-contracts.js';
 import { fp, dose, oldWheelRoots, originalChaosWalker, prepared, promoted } from '../domain/fate-prophet-directed-helper.js';
@@ -132,15 +133,24 @@ describe('Fate Prophet actual SliceApp acquisition and current S2 navigation', (
     expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled(); expect(oldWheelRoots(game.state)).toEqual(oldWheelRoots(before));
   }, 20_000);
 
-  it('loads current S2 growth ahead of the stale S3 round and shows all17 actual mastery values and untreated injury', async () => {
+  it('opens current S1 preparation ahead of the stale S3 round while retaining all17 S2 mastery values and untreated injury', async () => {
     const before = promoted(), game = savedGame(before); expect(before.lastCombatRound?.chaosWalkerOutcome).toBeTruthy();
     expect(before.injuries).toEqual(originalChaosWalker().injuries); expect(before.injuries[0]).toMatchObject({ severity: 'HEAVY', treatedRevision: null });
     await mount(game); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ })); const panel = await screen.findByRole('region', { name: PANEL });
+    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ })); const panel = await screen.findByRole('region', { name: '水银之蛇成长' });
     expect(screen.queryByRole('region', { name: '混乱行者', hidden: true })).toBeNull();
+    expect(screen.queryByRole('region', { name: PANEL, hidden: true })).toBeNull();
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
     await userEvent.click(within(panel).getByText('能力、消化与继承经历', { selector: 'summary' })); expect(view(before).abilities).toHaveLength(17);
-    for (const ability of view(before).abilities) expect(panel.textContent).toContain(`${ability.label} · 掌握${before.progression.mastery[ability.id]}`);
-    expect(within(panel).getByRole('region', { name: '先知当前资源' }).textContent).toContain(`健康${before.health}/100 · 精神${before.mind}/100 · 灵性${before.spirituality}/120`);
+    const current = projectSliceState(before).mercurySnake; expect(current.promoted).toBe(false); expect(current.abilities).toHaveLength(17);
+    expect(Object.fromEntries(current.abilities.map(ability => [ability.id, ability.mastery]))).toEqual(before.progression.mastery);
+    for (const ability of view(before).abilities) expect(within(panel).getByRole('heading', { name: `${ability.label} · 掌握${before.progression.mastery[ability.id]}` })).toBeTruthy();
+    for (const ability of MERCURY_SNAKE_ABILITIES) {
+      expect(current.abilities.some(entry => entry.id === ability.id)).toBe(false);
+      expect(Object.hasOwn(before.progression.mastery, ability.id)).toBe(false);
+      expect(within(panel).queryByRole('heading', { name: `${ability.label} · 掌握0` })).toBeNull();
+    }
+    expect(within(panel).getByRole('region', { name: '水银之蛇当前资源' }).textContent).toContain(`健康${before.health}/100 · 精神${before.mind}/100 · 灵性${before.spirituality}/120`);
     expect(panel.textContent).not.toMatch(/候选|原创G|本作G|原文未核|编号推断/); expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
   }, 20_000);
 

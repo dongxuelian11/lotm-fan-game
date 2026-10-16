@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.203.0",
+  "version": "0.204.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -511,6 +511,31 @@
       "name": "lotm_release_0.203.0_abomination_test_inputs_4_2026-10-16.tar.gz",
       "bytes": 846368,
       "sha256": "d5183368980a3a3c264ef02ac88aa0f835173c2e59769c13f92ece56cda4a149"
+    },
+    {
+      "name": "lotm_release_0.204.0_mercury_snake_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17629814,
+      "sha256": "cef32283225cd11dbeddabf7be961419e8caff70da1a29ae8da3b6277d28982f"
+    },
+    {
+      "name": "lotm_release_0.204.0_mercury_snake_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17550506,
+      "sha256": "f5c2005f1377a132569b6e9fdeab771c7cc8951ac1f3dac15991f526525a3689"
+    },
+    {
+      "name": "lotm_release_0.204.0_mercury_snake_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 17481440,
+      "sha256": "88bfb3acf2609d1f496bd331d88a63920c0ae077e53f9147fbd767599d4df637"
+    },
+    {
+      "name": "lotm_release_0.204.0_mercury_snake_test_inputs_4_2026-10-16.tar.gz",
+      "bytes": 17644733,
+      "sha256": "22110b89d7cc5105fa2ecf494608dfac043ba9602fb89114df529cf6fe15a346"
+    },
+    {
+      "name": "lotm_release_0.204.0_mercury_snake_test_inputs_5_2026-10-16.tar.gz",
+      "bytes": 920150,
+      "sha256": "66c2456a9427e875ceba801a81e8db10f5375e76ad705d0c0deb32078efc6506"
     }
   ],
   "fileEntries": [
@@ -14498,6 +14523,776 @@
       "path": "tests/fixtures/mentor-disorder-v01140/natural.json",
       "bytes": 2350157,
       "sha256": "b105309cdfaa135291e12f8f088af3bb2677fc45b4571b9cd7d74b2ae3303ebb"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundaries.index.json",
+      "bytes": 12981,
+      "sha256": "d77b34b57d43228fd8dc0baeea5f1bbbdd43ebe47d2836fc1bb0f4a5aa5099ca"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundaries.steps.json",
+      "bytes": 6174,
+      "sha256": "d179c4c9590b8b3c5277bf245cb4e2e82dfef12edc81758c9c98d31a7e7c8ba6"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-actual-event-life-bill-01-2.json",
+      "bytes": 3730258,
+      "sha256": "7788c1b6facd96a4bae07184202ba091cde4395dd0e1bcd95b6ff845603852ac"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-actual-event-life-bill-01-3.json",
+      "bytes": 7098724,
+      "sha256": "1e969a2a4d10f75da69cc7d3755d1904989b6f21e7b874283c0861defe56c259"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-actual-event-life-bill-01.json",
+      "bytes": 3695659,
+      "sha256": "6241daa8dc1a6b0c2accbe2ac12a06e5287550c91902a29fbafab7964e75f0ea"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-capture_moment.json",
+      "bytes": 4650462,
+      "sha256": "580d0e5aa1e934274b48adc22067622acf41957066a0631255620e7244ce49eb"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-consent-ability.json",
+      "bytes": 4005938,
+      "sha256": "b8bbda70b6a696622bd05b8edad4581d904eaa79c5a014270acd1fef132cfcc6"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-consent-owner.json",
+      "bytes": 3930090,
+      "sha256": "46fb934463c6023f8fa26d179e5d9deae1ff3bfb02faf07c4ad76df01eb87fef"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-honest-report.json",
+      "bytes": 5299754,
+      "sha256": "ffc9a103a0aa3b03362680844515b8c36a2355bd101f5b0663080d40ad83fe94"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-invite.json",
+      "bytes": 4081772,
+      "sha256": "03421bef1bc0da2b2c63d2d688950e3dcbd14204502f63969b6f2cee17447583"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-leave.json",
+      "bytes": 5206810,
+      "sha256": "980a574d8c46c9917a113f52497ce9520de6e2e79d05d5196cf79e3749032944"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-local_restart.json",
+      "bytes": 4805471,
+      "sha256": "515b18cfacc43737c4cfee3246a3e0159d9730e8237e4743162ba4b8e3d828e3"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-observe-original-room.json",
+      "bytes": 3854112,
+      "sha256": "5157a4ef73f9e32100a841261a50127efc08397b9a0a40ab04b89a16443faa62"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-place_piece.json",
+      "bytes": 4573750,
+      "sha256": "e8172ab72c3f7366e9721516efe18b99d19043fb7c2a16fb56e4458fc06a8b0b"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-prepare.json",
+      "bytes": 4174284,
+      "sha256": "a9d20926e09d7c9e194837c2581b8812cde5717f50d8ee9f7a5e59dabdb083d0"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-read_original.json",
+      "bytes": 4420975,
+      "sha256": "d03deef0b06eff3c536218193caba4a2a53e4205255d08411f122cf72bf8d46f"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-release_cart.json",
+      "bytes": 4727672,
+      "sha256": "3e0216ef7d9649b0f1a1c3c69c13e6ff6ac2707773806810328938eb245b9534"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-return_object.json",
+      "bytes": 4882915,
+      "sha256": "a3887d52a113cd49dfa41d45cbe59acbef6060e0c92d2a8f9622658f5a10dbb3"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-return_piece.json",
+      "bytes": 5114037,
+      "sha256": "e13641733750db0c76ef6506e72acaacc00047b3584a3436f6a07f033fab3bf3"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-return_to_a.json",
+      "bytes": 4497363,
+      "sha256": "19d4765de886c87bcec1f57d18eedd9bf69fd898579872403c576528435018b4"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-return_to_entry.json",
+      "bytes": 5036871,
+      "sha256": "a43372d49ca8ee71b5dcd9acbfd6d9586100ab9ade08b45a8c16e415d90b19b3"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-take_piece.json",
+      "bytes": 4959726,
+      "sha256": "e89bbd3b6f1ae4c5c3ac12cfb5b3a348bd66a01160df3017263879a2b44901a6"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-walk_to_a.json",
+      "bytes": 4267563,
+      "sha256": "40ee19ac4dfb9e9cefdeb31c4c7f41a6e30709477541f8b04703e20928c41896"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-cart-return-walk_to_b.json",
+      "bytes": 4344556,
+      "sha256": "70da8a95660df14f0234ed5094d5aa5c2762d8b173e1b7eb0343f5426833752f"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-combat-round-1.json",
+      "bytes": 9663680,
+      "sha256": "506da574379204569b5159c667646540a8d79775a7b5f74af90bfe538b3d4f6c"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-combat-round-2.json",
+      "bytes": 9951775,
+      "sha256": "de017bd555710e88840977a7f1dbb9b9c9c83e584f15fefe97ea62dabb538962"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-consume-mercury-snake-potion-1.json",
+      "bytes": 3678708,
+      "sha256": "2e1dc30d2c82d05b1762ce9e51e7547d8a1f786d042b087491c6e5925501f384"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-consume-mercury-snake-potion-2.json",
+      "bytes": 3796065,
+      "sha256": "dc4774fd25270b72a55c44a587e14cc4cd1889030c4f34bff74dc18c4ca9a41b"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-exact-original703-living-source.json",
+      "bytes": 2858376,
+      "sha256": "1f4b325503cf981db22bd69e106c9c361e1d4c13d468def44f94b25172760655"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-independent-optional-oswin-fight.json",
+      "bytes": 9272833,
+      "sha256": "cfdb891b55bbe0655c089aea6c1dc2152b69402286bcc631fb916925029a53da"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-capture_moment.json",
+      "bytes": 6176496,
+      "sha256": "e5ab546deac3efafe90f3910132355835135b66015da84c919cd99aec1651410"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-consent-ability.json",
+      "bytes": 5530516,
+      "sha256": "9d6d8888ef08e5e98186e62e39f371086ff04e5396403cfae7a2a4cc2bc8384a"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-consent-owner.json",
+      "bytes": 5453798,
+      "sha256": "5c31346c4e8735134c8dfb246b005cd21e8faa8ea8c6a55a29393360e50a37bb"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-honest-report.json",
+      "bytes": 7059756,
+      "sha256": "f33d41a64cb5b61375179501071ba517bf9498b9f3c94ffa88b4d37a36f5c220"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-invite.json",
+      "bytes": 5607220,
+      "sha256": "750d0ca05e8ed2a8b3698b928a66bad1a748b0c0cbb1e0b6e7ab6289ba4af19f"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-leave.json",
+      "bytes": 6966654,
+      "sha256": "5f958c0fb3825b66b71ef443fa2b13a7a944e1a15346261d12d392e76cdce6fd"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-local_restart.json",
+      "bytes": 6409378,
+      "sha256": "37ff293940b76884e09e52bbef7452225256a492a3efb64aaf7521f6ba208761"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-moment_anchor.json",
+      "bytes": 6254195,
+      "sha256": "dcf41fd82bfad2e70e5bf50431d5827b361932b7f385e72993d1b7752ba2e2c1"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-observe-original-room.json",
+      "bytes": 5376949,
+      "sha256": "85901920e446eb4f77d36505a90bc1fa5d6d58c6c1fb274bb7c00f69f3adc34f"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-place_piece.json",
+      "bytes": 6099601,
+      "sha256": "2f085c764fb3da886917cf50f08ec5473002c2a901b92cb966c533872c85684b"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-prepare.json",
+      "bytes": 5700224,
+      "sha256": "bb40a6b73a3cb9c27c50300a6d4181b4297ea1d7b8a364ae786d1de66aca51b4"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-push_back.json",
+      "bytes": 6564294,
+      "sha256": "67a19373943ddd78f30caf23b4f392613a71ab7abcc3eaf0f31e7caafe11f281"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-read_original.json",
+      "bytes": 5946474,
+      "sha256": "1e752c38f5824aeebda96701feaadb858dd4a59d1488e3554f65a7d205057ec6"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-release_cart.json",
+      "bytes": 6331794,
+      "sha256": "65c75749b4cda4da53d57c55e0c175e88b9f75fe942fb9111776182c1a8a0411"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-return_object.json",
+      "bytes": 6641778,
+      "sha256": "5c11c9a3f03ef8cf355537f181041104b9acdd3770ec4f349909f2a77748a2ff"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-return_piece.json",
+      "bytes": 6873698,
+      "sha256": "ed4a82f16124c289f8cdc6523aace29a74f19a19c400812459a65a864fa18391"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-return_to_a.json",
+      "bytes": 6023038,
+      "sha256": "b51276221c0d049de7cab62ca69af3882cf42d58365a1783a0af9a872098aa7f"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-return_to_entry.json",
+      "bytes": 6796344,
+      "sha256": "863d0853b70dc0fd0ccd4f0f4f089b6a32925b4a3bf95365581d3d4231e52a6a"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-take_piece.json",
+      "bytes": 6719011,
+      "sha256": "4fee725d97dd0bbdad666007a004dc1479c04ddff05ba7b253d6e3125af0e4cf"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-walk_to_a.json",
+      "bytes": 5793180,
+      "sha256": "bb6692a01d758b4c41c3182398a727c0cb479ceaab5c42d872e9d4e7ed005cf4"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-walk_to_b-2.json",
+      "bytes": 6486921,
+      "sha256": "f02451626b817c2426a1ce92feb9deb6e89c99c3b5af78daeb6e5521b83bf902"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-maintained-contact-walk_to_b.json",
+      "bytes": 5869880,
+      "sha256": "f235f72b66b4baaba69e65e8c3000700c7c86c54368aa0d0704b6d1acb416784"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-1-actual-labour-2.json",
+      "bytes": 3603995,
+      "sha256": "66545a1abf1f107d2c5ca7b5788464648ac291bfe75fd5ad573733877a9b7e53"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-1-actual-labour-3.json",
+      "bytes": 3615678,
+      "sha256": "aee09ead45fc9157f8ec14220078fbc9750d47cc3981f9c6ae514a106f8a8eee"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-1-actual-labour-4.json",
+      "bytes": 3627258,
+      "sha256": "ba144b6020d11ecccc598b7d941d8f3fd9f7f98bc1375a81b746a61d36c3d968"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-1-actual-labour-5.json",
+      "bytes": 3639004,
+      "sha256": "9009f6489b16014088fae0e43eafef0dcd28c3ab5837aca825f15a2059389de7"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-1-actual-labour.json",
+      "bytes": 3592436,
+      "sha256": "70ee1e0e7fe2a2d6f79137328ecd2a5bd625b16ba3e65a8f80a2a1524f9f92dc"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-2-actual-labour-2.json",
+      "bytes": 3701536,
+      "sha256": "1365077cd0d620db32277e4a46a105e227f3f8998995e90d8fbe0f38922739e3"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-2-actual-labour-3.json",
+      "bytes": 3712945,
+      "sha256": "d4d879934588fcf411dc439f89f21ecd4f357b6f7749b62b9ce644bd4052137b"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-2-actual-labour-4.json",
+      "bytes": 3724272,
+      "sha256": "b61aae4c27dc1b9edc4d85b082388834b7fc86892c702472874efe54ad711b06"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-2-actual-labour-5.json",
+      "bytes": 3736394,
+      "sha256": "5b9a65ef70b633421cfa40357d5daefbbb65719df578e1e9e0f743b12509a602"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-mercury-snake-potion-2-actual-labour.json",
+      "bytes": 3690269,
+      "sha256": "933ebd32474eeeb426f4a3782625dd31ef5c4960729270e6eea8b4658bbba332"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-original-adults-actually-leave-player-walks-to-new-yard.json",
+      "bytes": 9121494,
+      "sha256": "e0fa87775835432c06cfac9abb02e5b2bfc4f6927b0b37ae78adb34f1ae54bf3"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-paid1200-mercury-snake-potion-1.json",
+      "bytes": 3654799,
+      "sha256": "91ad691d2bdbd93f21866682117eb3d4938b1215b2b06d54043db76dd142f883"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-paid1200-mercury-snake-potion-2.json",
+      "bytes": 3757348,
+      "sha256": "0593b060c672e2fe36abecdb61c6c12bba5eafce71afc9efe5d559af1f63a52e"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-paid180-current-week-prepare-mercury-snake-potion-1.json",
+      "bytes": 3666797,
+      "sha256": "8178843cea9bc4869f9e6324b471e8f0476cdac256c9e52dd859093c3430d6ae"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-paid180-current-week-prepare-mercury-snake-potion-2.json",
+      "bytes": 3769764,
+      "sha256": "616fa25b92bdac881687946e98ebe2bc0e847c3640d28025c406430483e1478e"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-paid30-independent-three-charge-combat-piece.json",
+      "bytes": 9014398,
+      "sha256": "14d223e2b2742dcb051bbeff4a0af9aaf4c766a9a456e9c1dbfde65d157e53ec"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-paid500-guidance-freezes-eight-roots-and-original-luck.json",
+      "bytes": 3205442,
+      "sha256": "3275094563f4ae58739545d4b850109533f96eac842a7aa9757fb18930716e64"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-preparation-check_limits.json",
+      "bytes": 3568501,
+      "sha256": "1b1ce2ca3cc3c74a39bc6eb7fc6ab2aa18fe0ea56bf9e9c620c15ecc084f2e59"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-preparation-check_return.json",
+      "bytes": 3580854,
+      "sha256": "abdc19b837406635c7c3ffb8c6ebb7dc5e3442715100a046a2c4df4581f43a19"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-preparation-verify_originals.json",
+      "bytes": 3557243,
+      "sha256": "15900975f9172bc2af8ff51857a3ade52ce81371e2382db3745117041a6b8574"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-713-action.json",
+      "bytes": 3644810,
+      "sha256": "a53b57f8f591ef1a3e62daa0348c8d385d988e23ca71b1f61fdfede332664a25"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-714-action.json",
+      "bytes": 3645137,
+      "sha256": "7b3d549669c98e243ddb7be4912373e9c3dd6899e28b16e6eb4ae71247c2ebb1"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-715-action.json",
+      "bytes": 3645631,
+      "sha256": "86666f887a877f4e6d53d1ac9d6017e99fda8aa2ec9c12ee484b90e38807d501"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-716-action.json",
+      "bytes": 3645853,
+      "sha256": "22f0c4c91c3e4808a603b9f9be639044e2911b0fae5b08ed2bfef14a7b74531e"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-717-action.json",
+      "bytes": 3646304,
+      "sha256": "eba70ed6506546bbe4ee5a00accbf5c7b6004add1abea1193990319a3c056b5a"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-718-action.json",
+      "bytes": 3646751,
+      "sha256": "1bcef313e0f3a34c08a97a76e8c391bda15feac6656f1728c01b0c6716d83d79"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-719-action.json",
+      "bytes": 3646974,
+      "sha256": "3a218b4af2a8883db9e92135e3599d40a52f429abdbaacebf84fae939584c487"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-720-action.json",
+      "bytes": 3647424,
+      "sha256": "3efe8e7177a1fe2c39976c40d6f9067c435ffd3b35e27576973d28ee2c028083"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-721-action.json",
+      "bytes": 3647870,
+      "sha256": "78589613a71088e462d792dbc4d4a86ddf49dd49b6151ea54cab37a64dca9d79"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-722-action.json",
+      "bytes": 3648094,
+      "sha256": "fad21ddfeed5c8d57eb028114d0e88a4cd77f8a4c2f5caa59128d9fe5ed4c250"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-723-action.json",
+      "bytes": 3648544,
+      "sha256": "d4e7d951dd7881fdbd5c73768477edacac17bedc0a534b5da84ede5b3ae90f11"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-724-action.json",
+      "bytes": 3648989,
+      "sha256": "16937a2f1ffed805a96e934cc69cf02efdd539646cf7a30ac0c2d168e1abec23"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-726-action.json",
+      "bytes": 3660351,
+      "sha256": "fcdcf2b4ddd37d8cc0f3246f902d7f37a74f9043688e228bda70377163d594a9"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-727-action.json",
+      "bytes": 3660654,
+      "sha256": "549012a3ab558a1365e7f302965d09761b5f41a142f83b05354d7fc722f679d4"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-728-action.json",
+      "bytes": 3661098,
+      "sha256": "2a5e41a0f1648e9b4c1b5776943fc755cdacbc9839a419730765ee5dc97c5380"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-738-action.json",
+      "bytes": 3742170,
+      "sha256": "6ee5deb4993e5ec7141c9796325e7033e20ef21d32e9fd04790be8823a3b1f11"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-739-action.json",
+      "bytes": 3742755,
+      "sha256": "f3095fa4e5e1cca36323a5875acb23a1bacce6fdc6668abd0b639b1e9bc06b51"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-740-action.json",
+      "bytes": 3743505,
+      "sha256": "21f03856ef283c659b207d49cacc97947d92f520fe796cc90ee449124089b333"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-741-action.json",
+      "bytes": 3743725,
+      "sha256": "a4de25a3d3b4265f5a95294471e1cc61cfb354c0c078ad3dd1b1dd42ecf8d811"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-742-action.json",
+      "bytes": 3744173,
+      "sha256": "6f1ef747551115cbd3a36b20ea92f90a764f1e4d42728f332a4bd7352d39a2f9"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-743-action.json",
+      "bytes": 3744619,
+      "sha256": "bcb6d7da1c8874b432277bb6dd3c4590e78b99a371717056dfac6f98defb3b8b"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-744-action.json",
+      "bytes": 3744842,
+      "sha256": "fd74383b4346146ad095f2d345c2b57a9f5c68db6ef89522849ae517444da9c3"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-745-action.json",
+      "bytes": 3745293,
+      "sha256": "131375f52100993df64dc9bfa28a5481a94dd65aa221080d06763ad654511224"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-746-action.json",
+      "bytes": 3745739,
+      "sha256": "7232d5dd9445e5485e1caf792ad01d4b6b08da730a48c7921d4fb20e89c58602"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-747-action.json",
+      "bytes": 3745962,
+      "sha256": "6d3805ba6c6d9d0c4909c6dac06b5d85e50b33266fdabd2de22e6037cff22820"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-748-action.json",
+      "bytes": 3746412,
+      "sha256": "22465d0147a952a85aaaf1bb338591dc9bd5962e481057ff62c6222dace35f78"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-749-action.json",
+      "bytes": 3746857,
+      "sha256": "b467a5a209a52df8f76305594bee8c652c0c02ce70ff90cea0a6fdc976f836b0"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-750-action.json",
+      "bytes": 3747080,
+      "sha256": "9a6d8218188cd35ef5ba6a4898c312ebdc170edc9d571ff844c3524414f904a5"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-751-action.json",
+      "bytes": 3747530,
+      "sha256": "24b0236a1c4591820379aa59cbc2c5b08b397a27f40b9eff334d67264ce2c1f3"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-752-action.json",
+      "bytes": 3747975,
+      "sha256": "626ed450a470741b69295c9ca78fc06df70711a610fb726bc66c9fe0465f3e45"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-753-action.json",
+      "bytes": 3748198,
+      "sha256": "0f91615da9b4ee9ceaf52fdc1c00ca8aa91f549a37c268aa9218e441b44e5713"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-754-action.json",
+      "bytes": 3748647,
+      "sha256": "412c7f9577957ae009019d0c8152cdd36ee9cbc6f17f6a0771efc57eec3f5d5e"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-755-action.json",
+      "bytes": 3749092,
+      "sha256": "6ae1e520c3cf91663663fb588ded073274894ea9bf7b6b96cf41f85734e8b8b7"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-756-action.json",
+      "bytes": 3749316,
+      "sha256": "bd8f28de5df6007c000e9b65b8a8d46a9c2478c09d57a4a882abf7b780fb00f2"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-757-action.json",
+      "bytes": 3749767,
+      "sha256": "b63e19b64d35a6158485329ae14b0990d17dceaa76375202ad9f5c602d39e003"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-758-action.json",
+      "bytes": 3750213,
+      "sha256": "8d61eb11e1fbd53c9b18aa4967d28f770af9fe0961cf43b28969af840f52b428"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-759-action.json",
+      "bytes": 3750436,
+      "sha256": "09f974c82f2dfc08b1e5f3f37547412f26b45b3fe007c9141323668cd4951911"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-760-action.json",
+      "bytes": 3750886,
+      "sha256": "51839b70a7dfe48c87006a19672cae293450c8248895a0b580382f234703c765"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-761-action.json",
+      "bytes": 3751331,
+      "sha256": "956caa25e9cd4efc111188e48e6a033f0962778cb5fdb9c83e0c36d96835705d"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-763-action.json",
+      "bytes": 3763107,
+      "sha256": "160db8f26d06d1ef6df9bf85e66753d4d0ad4080202a2339d954fcdc38d582a8"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-764-action.json",
+      "bytes": 3763412,
+      "sha256": "9c3a7d4ea84f8e9839c50b79d38cbdb54b1eaff2b30c24fcfeb74912294f396f"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-765-action.json",
+      "bytes": 3763857,
+      "sha256": "30308556038a3917415a872c1b2e695d204639706ffdb2c4337424fa15d32727"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-768-action.json",
+      "bytes": 3816254,
+      "sha256": "284b32c2e1ae16353ce3d6f97b1c724e493ebae8b813285519aa357fea2f75ff"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-811-action.json",
+      "bytes": 7098919,
+      "sha256": "5b88b8a9980afdcbeb9561e61f919e2ec4fa0a32b83f1d46afe2651ed66d013b"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-812-action.json",
+      "bytes": 7099143,
+      "sha256": "0eb1e430ac9fd5b09bfa104e35ae2c72fbf96d7c633138ad7f99c2b261836824"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-step-813-action.json",
+      "bytes": 7099900,
+      "sha256": "e72ca560605fb922b0548f02fb6b69e17ee3dfd807293a92ec1afca49879b81e"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-three-honest-reports-reflected.json",
+      "bytes": 8906957,
+      "sha256": "d1e958cd76bf1ee61d008eb3585efc89533898a9dd5878cb44341d98cead3115"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-capture_moment.json",
+      "bytes": 7942587,
+      "sha256": "96ffcefb88e8e64289f11bb68544c9543b4f2b6ff1418ffbf700f772c0ea4f55"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-consent-ability.json",
+      "bytes": 7293609,
+      "sha256": "10703233b55577f3945f6bd85e1965ddc32888f5b21fde75d4d274279bb44564"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-consent-owner.json",
+      "bytes": 7216503,
+      "sha256": "ea86e99926d1b044a7a33d72f551ed39eb76fda33137c774b09e6014f1b328f2"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-honest-report.json",
+      "bytes": 8829969,
+      "sha256": "9d87180108f8200dcf5adb7ffc6500fbba85f7c7662d1b59bc45b60511e1784b"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-invite.json",
+      "bytes": 7370701,
+      "sha256": "24cc1a69c1a7377223fbafab7cab89388fdffad39e30c459e4c18787743debb2"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-leave.json",
+      "bytes": 8736460,
+      "sha256": "307c91f5ac87a4967e02519bd59ec619a7343fbe768125a83ecf1cabc29b6a07"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-moment_anchor.json",
+      "bytes": 8020840,
+      "sha256": "30b99c0ffefe42d7390d19a86637ca78aa8022bc913d6360d903e8fd981f9c42"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-observe-original-room.json",
+      "bytes": 7139266,
+      "sha256": "374444085d2086017f62e69d6af54d368fb125a77643035c7963257bc6a007c4"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-place_piece.json",
+      "bytes": 7865320,
+      "sha256": "edf509ad66bfeaed73893705ec4aa9ce4cf985c40723b9a8fda267055923c015"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-prepare.json",
+      "bytes": 7464084,
+      "sha256": "3a13bd207ecf3b1aac20f17bc385fc995cd7423191c93bd5d206089a1d3a53ab"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-push_back.json",
+      "bytes": 8332248,
+      "sha256": "633302cafd9938e39ae4eada2bb19fbdf4e25288e3ad5a00434f1aa822479ccb"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-read_original.json",
+      "bytes": 7711449,
+      "sha256": "9b06e2d68d1d10e98eb23f4549f6ca421a434f3b7e6ca73d3a1a01d6986fb756"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-release_cart.json",
+      "bytes": 8176465,
+      "sha256": "bc7dcdc41b72c45fcbf7d083590091bcfd0bc7374ebee86acd8b0e22884aa280"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-return_object.json",
+      "bytes": 8410102,
+      "sha256": "4198ffc1f00e6851c60c2a387661b0233a34bbf375da74231d1243ec489d80bc"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-return_piece.json",
+      "bytes": 8643132,
+      "sha256": "992eac35f10e8f5ac89d1663cb3a8d4487d5aac79ae8669ddb142d0bb044e0df"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-return_to_a.json",
+      "bytes": 7788385,
+      "sha256": "356ab79a723481c91d87d5842a5a8ba559c3d39b305c9fe938a50781793d3473"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-return_to_entry.json",
+      "bytes": 8565408,
+      "sha256": "2b53028701928dc74a766eac8f0e5a4bf0bd9a70daa2f9b5729eb7b5f3a5596d"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-take_piece.json",
+      "bytes": 8487705,
+      "sha256": "d8d23f673b328593a3693fd839751d7af28688d41af0ba96447d5efcf3d3da8d"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-walk_to_a.json",
+      "bytes": 7557411,
+      "sha256": "78456499daffaa118482f9290fbbe42265acd65088cbc3bd77a4c4949a9c843d"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-walk_to_b-2.json",
+      "bytes": 8254312,
+      "sha256": "a70f78ab6edbc2bb4869e0051c9354c40080abbd5eb1f23e59f483d05a737ff4"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-walk_to_b.json",
+      "bytes": 7634483,
+      "sha256": "0f157ee39a4326627bc645e27de986793eaa14bc3bda2be692cc9e0f3793d4fb"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/boundary-withdrawn-contact-withdraw_consent-ability.json",
+      "bytes": 8098909,
+      "sha256": "f53180631bfe9c5e0d191bbd9095f0121cb0889b28d0c259d7911a7e6368e425"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/capture-integrity.json",
+      "bytes": 548906,
+      "sha256": "baa2ea408b2d274314b0b062de265fb3775d0a9f8b1f07a81544145b1e49480d"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/commands.jsonl",
+      "bytes": 2827510,
+      "sha256": "12f032ac6a3a120ed42ca4025e8fe8d812c5851102ef072047a7d46f79c0ede0"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/natural.json",
+      "bytes": 12083320,
+      "sha256": "6d4542561817368ec18b535ee6195084412f97f356c00d511b8cf57c8198d574"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/public.jsonl",
+      "bytes": 7014923,
+      "sha256": "c3704242c80f332c4838288cb40e879d969423f83eedc0c68ef069f6c2e4341f"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/snapshot-combatStart.json",
+      "bytes": 4693183,
+      "sha256": "4fb83040e327ae5d0e5c423b6bbb0d5ae1cc0f3ca4e460c500250b12162e6b26"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/snapshot-combatTerminal.json",
+      "bytes": 4981278,
+      "sha256": "0daa489c488b20794c35f3e13437da3023093ada529a985a542d6c0516ed35d0"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/snapshot-departure.json",
+      "bytes": 1429198,
+      "sha256": "3aff260b88efd26f7d8eeba47d48a5b913b6efaeed4012cfd7c706b616df3fb1"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/snapshot-guidance.json",
+      "bytes": 1776127,
+      "sha256": "560309fd9b23be675978d677976245b684dc57d520ecfb00b2aea6aa7a28149d"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/snapshot-practiced.json",
+      "bytes": 4472433,
+      "sha256": "a02e967eab69ae85f5e0340a0418e9cad66c389fc4083e70e6f56711732ce123"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/snapshot-promoted.json",
+      "bytes": 1908196,
+      "sha256": "8de1230507da8306123edc09887cc669d285450bf45dddc2e0153df12796c39d"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/source-prefix.json",
+      "bytes": 1910135,
+      "sha256": "e3fdb204dcc28946432ba9746eb343f0b85645db65b1826f8912adf3a9eb5b23"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/summary.json",
+      "bytes": 3050257,
+      "sha256": "41b534b2d29c608826a3945c6f3acc75c5fde429fd45edb60769d57fbe045bf8"
+    },
+    {
+      "path": "tests/fixtures/mercury-snake-v02040/transitions.json",
+      "bytes": 20214,
+      "sha256": "ee6b25ebb7a7d43f00bc1598d2f1057de91c0c78303ddefb4100ac15fd097667"
     },
     {
       "path": "tests/fixtures/midnight-v0210/natural.json",

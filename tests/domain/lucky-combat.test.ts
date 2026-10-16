@@ -6,6 +6,7 @@ import { ORDINARY_COUNT_WHEEL, ordinaryAbilityWheel, playerAbilityWheel, playerC
 import { LUCKY_COUNT_WHEEL, currentLuckyCombatSource, drawLuckyAbility, drawLuckyPassiveLuck, isLucky,
   luckyAbilityWheel, luckyActionCount, resolveLuckyCombatAbility,
   type LuckyCombatSource, type LuckyMoveId } from '../../src/domain/lucky/combat.js';
+import { MERCURY_SNAKE_COUNT_WHEEL, mercurySnakeAbilityWheel, currentMercurySnakeCombatSource } from '../../src/domain/mercury-snake/combat.js';
 import * as luckyCombat from '../../src/domain/lucky/combat.js';
 import { MACHINE_COUNT_WHEEL, machineAbilityWheel, resolveMachineCombatAbility,
   currentMachineCombatSource } from '../../src/domain/machine/combat.js';
@@ -325,7 +326,7 @@ describe('Lucky shared consequences, retreat, old-profile isolation and replay',
   });
 
   it('leaves Monster, Machine and ordinary wheels, draws, source guards and budgets isolated', () => {
-    for (const sequence of [9, 8, 1, null] as const) {
+    for (const sequence of [9, 8, 0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence;
       state.progression.mastery[passive] = 500;
       expect(isLucky(state)).toBe(false); expect(currentLuckyCombatSource(state)).toBeNull();
@@ -339,6 +340,13 @@ describe('Lucky shared consequences, retreat, old-profile isolation and replay',
       expect(round.playerAdvantage).toBe(sequence === 9 ? 215 : sequence === 8 ? 315 : 115);
       vi.restoreAllMocks();
     }
+    const s1 = fixture(); s1.progression.sequence = 1;
+    expect(isLucky(s1)).toBe(false); expect(currentLuckyCombatSource(s1)).toBeNull();
+    expect(currentMercurySnakeCombatSource(s1)).toBeNull();
+    expect(playerCountWheel(s1)).toEqual(MERCURY_SNAKE_COUNT_WHEEL);
+    expect(playerCountWheel(s1)).toHaveLength(6);
+    expect(playerAbilityWheel(s1, 'ATTACK')).toEqual(mercurySnakeAbilityWheel(s1, 'ATTACK'));
+    expect(playerAbilityWheel(s1, 'ATTACK')).toHaveLength(8);
     const lucky = fixture(), random = stream(lucky);
     expect(currentMachineCombatSource(lucky)).toBeNull();
     expect(resolveMachineCombatAbility(lucky, calculation, 1, random).selfGain).toBe(0);

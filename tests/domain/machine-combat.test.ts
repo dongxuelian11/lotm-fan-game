@@ -8,6 +8,7 @@ import { MACHINE_COUNT_WHEEL, currentMachineCombatSource, drawMachineAbility, is
   type MachineCombatSource, type MachineMoveId } from '../../src/domain/machine/combat.js';
 import * as machineCombat from '../../src/domain/machine/combat.js';
 import { MONSTER_COUNT_WHEEL, monsterAbilityWheel } from '../../src/domain/monster/combat.js';
+import { MERCURY_SNAKE_COUNT_WHEEL, mercurySnakeAbilityWheel, currentMercurySnakeCombatSource } from '../../src/domain/mercury-snake/combat.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../src/resolution/deterministic-random.js';
 
@@ -71,6 +72,14 @@ describe('Machine S8 exact profile and inherited Monster dispatch', () => {
     expect(playerCountWheel(state)).toEqual(MONSTER_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'ATTACK')).toEqual(monsterAbilityWheel('ATTACK', state));
     state.progression.sequence = 1;
+    expect(isMachine(state)).toBe(false); expect(currentMachineCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(MERCURY_SNAKE_COUNT_WHEEL);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(mercurySnakeAbilityWheel(state, 'CONTROL'));
+    expect(playerCountWheel(state)).toHaveLength(6);
+    expect(playerAbilityWheel(state, 'CONTROL')).toHaveLength(8);
+    expect(playerAbilityWheel(state, 'CONTROL')).not.toEqual(machineAbilityWheel('CONTROL', state));
+    expect(currentMercurySnakeCombatSource(state)).toBeNull(); // No actual S1 opponent in this old FIRST_CASE fixture.
+    state.progression.sequence = 0;
     expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);
     expect(playerAbilityWheel(state, 'CONTROL')).toEqual(ordinaryAbilityWheel(false, 'CONTROL'));
   });

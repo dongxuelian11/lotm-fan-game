@@ -6,6 +6,7 @@ import { ORDINARY_COUNT_WHEEL, ordinaryAbilityWheel, playerAbilityWheel, playerC
 import { MONSTER_COUNT_WHEEL, currentMonsterCombatSource, drawMonsterAbility, isMonster,
   monsterAbilityWheel, monsterActionCount, resolveMonsterCombatAbility,
   type MonsterCombatSource, type MonsterMoveId } from '../../src/domain/monster/combat.js';
+import { MERCURY_SNAKE_COUNT_WHEEL, mercurySnakeAbilityWheel, currentMercurySnakeCombatSource } from '../../src/domain/mercury-snake/combat.js';
 import * as monsterCombat from '../../src/domain/monster/combat.js';
 import { PRISONER_COUNT_WHEEL, prisonerAbilityWheel } from '../../src/domain/prisoner/combat.js';
 import { MADMAN_COUNT_WHEEL, madmanAbilityWheel } from '../../src/domain/madman/combat.js';
@@ -132,9 +133,16 @@ describe('Monster S9 exact G profile and strict dispatch', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(20);
   });
 
-  it('leaves unimplemented Wheel sequences ordinary and preserves all Chained profiles', () => {
+  it('dispatches implemented Wheel S1, leaves unopened sequences ordinary and preserves Chained profiles', () => {
     const state = fixture();
-    for (const sequence of [1, null] as const) {
+    state.progression.sequence = 1;
+    expect(isMonster(state)).toBe(false); expect(currentMonsterCombatSource(state)).toBeNull();
+    expect(playerCountWheel(state)).toEqual(MERCURY_SNAKE_COUNT_WHEEL);
+    expect(playerCountWheel(state)).toHaveLength(6);
+    expect(playerAbilityWheel(state, 'CONTROL')).toEqual(mercurySnakeAbilityWheel(state, 'CONTROL'));
+    expect(playerAbilityWheel(state, 'CONTROL')).toHaveLength(8);
+    expect(currentMercurySnakeCombatSource(state)).toBeNull(); // The old FIRST_CASE is not an S1 encounter.
+    for (const sequence of [0, null] as const) {
       state.progression.sequence = sequence;
       expect(isMonster(state)).toBe(false); expect(currentMonsterCombatSource(state)).toBeNull();
       expect(playerCountWheel(state)).toEqual(ORDINARY_COUNT_WHEEL);

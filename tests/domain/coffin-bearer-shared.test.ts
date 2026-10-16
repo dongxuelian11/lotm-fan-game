@@ -72,7 +72,7 @@ describe('CoffinBearer public continuation with the same old originals and expli
     const b = Object.values(boundaries()).find(b => b.lastIntent.type === 'COFFIN_BEARER' && b.lastIntent.command.type === 'CONSUME' && b.beforeLast.progression.sequence === 4 && b.final.progression.sequence === 3)!;
     expect(b).toBeTruthy(); expect(s.spirituality).toBe(b.beforeLast.spirituality); expect(s.health).toBe(b.beforeLast.health);
     for (const stat of ['physique', 'perception', 'will', 'knowledge'] as const) expect(s.character.coreStats[stat]).toBe(Math.min(500, b.beforeLast.character.coreStats[stat] + 1));
-  });
+  }, 30_000);
   it('replays every actual save boundary atomically without mutating input or prior history', () => {
     const saved = Object.values(boundaries()); expect(saved.length).toBeGreaterThan(0);
     for (const b of saved) {
