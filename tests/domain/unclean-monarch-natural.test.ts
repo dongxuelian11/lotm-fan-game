@@ -132,7 +132,8 @@ describe.skipIf(evidence.observed === null)('Unclean Monarch actual original-see
     same(readObjectEntry(prefix, 'rawInitial'), sourceEntry('initial'));
     same(readObjectEntry(prefix, 'rawFinal'), readObjectEntry(SOURCE_BOUNDARY, 'beforeLast'));
     same(readObjectEntry(prefix, 'commands'), sourceEntry<SliceIntent[]>('commands').slice(0, PREFIX));
-    expect(readObjectEntry(prefix, 'migratedWholeStateSha256')).toBe(captureValueHash(capturedState('prefixFinal')));
+    // This digest describes the migration performed during the original capture, not a later schema migration.
+    expect(readObjectEntry(prefix, 'migratedWholeStateSha256')).toBe(captureValueHash(naturalEntry('prefixFinal')));
     same(naturalEntry('provenance'), expected.provenance); same(naturalEntry('continuation'), expected.continuation);
     expect(naturalEntry('provenance')).toMatchObject({ kind: 'EXACT718_PUBLIC_BLOOD_DUKE_THEN_PUBLIC_UNCLEAN_MONARCH',
       source: SOURCE, sourceRoot: 'beforeLast', sourceBoundary: SOURCE_BOUNDARY, inheritedDirectedPrefix: false,

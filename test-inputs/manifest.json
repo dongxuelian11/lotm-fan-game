@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.205.0",
+  "version": "0.206.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -566,6 +566,36 @@
       "name": "lotm_release_0.205.0_prince_of_abolition_test_inputs_6_2026-10-16.tar.gz",
       "bytes": 1831266,
       "sha256": "011ad61228f73d321ebde26a8419973eaa6631d91975d0710094db91c799aeef"
+    },
+    {
+      "name": "lotm_release_0.206.0_hand_of_order_test_inputs_1_2026-10-16.tar.gz",
+      "bytes": 17548028,
+      "sha256": "a5ea69598f3741f344ad5ca964d515a39d8dfac25cbd885436448c7d6f908b42"
+    },
+    {
+      "name": "lotm_release_0.206.0_hand_of_order_test_inputs_2_2026-10-16.tar.gz",
+      "bytes": 17634846,
+      "sha256": "afe140fbe77d84f35cc2b41b800f6667f4279ad5c3a021fceab73ee37af54635"
+    },
+    {
+      "name": "lotm_release_0.206.0_hand_of_order_test_inputs_3_2026-10-16.tar.gz",
+      "bytes": 17728591,
+      "sha256": "7b813e31038ce7ca38623be7ef1eedc273d84032dada2db6cd45c2b97cd053c3"
+    },
+    {
+      "name": "lotm_release_0.206.0_hand_of_order_test_inputs_4_2026-10-16.tar.gz",
+      "bytes": 17799012,
+      "sha256": "1a0f5e55fcc5a75d1de99e76b261d599ff4ced81ed477124b36e9324bcadc2a4"
+    },
+    {
+      "name": "lotm_release_0.206.0_hand_of_order_test_inputs_5_2026-10-16.tar.gz",
+      "bytes": 17656397,
+      "sha256": "eea2584343fc108ab8c2e05b1be441248345acca8a8b2a26c65af2c787eafbf3"
+    },
+    {
+      "name": "lotm_release_0.206.0_hand_of_order_test_inputs_6_2026-10-16.tar.gz",
+      "bytes": 8134000,
+      "sha256": "6485d88baeb9e0387139d5e7d6ffedf26e1a61008c2118e50a754e36eaab6906"
     }
   ],
   "fileEntries": [
@@ -12783,6 +12813,1136 @@
       "path": "tests/fixtures/guardian-v01070/natural.json",
       "bytes": 1982520,
       "sha256": "eb45572bb613549c3df0ee5d75e6677ab0bfe9788fa878e3f81648e54f78ec78"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundaries.index.json",
+      "bytes": 19704,
+      "sha256": "57c3cef480c3cbaa1891a5bc9dac0534862174466e55f2b88c0c1530eba89cf2"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundaries.steps.json",
+      "bytes": 9420,
+      "sha256": "37aa27ce8dfbf36db6adb0868ace25490a809f1a65de8b813ae903b78ec4e7fb"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-actual-event-life-bill-01-2.json",
+      "bytes": 4214662,
+      "sha256": "4bff510920c1458bf76282ae93eb095e569c370e063294731fba00beb0b899ef"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-actual-event-life-bill-01.json",
+      "bytes": 4181806,
+      "sha256": "6c45a465972da8bf147143291eca381b3f152ce8bb157a634df01de656679a9e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-actual-event-life-care-01.json",
+      "bytes": 3282808,
+      "sha256": "975712a84b7b5e830421dcc73f34a7326aa0fc311773fcff186e8cd54d8073bf"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-combat-round-1.json",
+      "bytes": 5486859,
+      "sha256": "89d84648cea8873795cc7e18962439129cfcb876e3f6fda69552d696d3346fdb"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-combat-round-2.json",
+      "bytes": 5913897,
+      "sha256": "af82ba226419d5a0dabf0fff40fdceebfd79f0d3962ffab889a64dd2084ff847"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-combat-round-3.json",
+      "bytes": 6026120,
+      "sha256": "3faace0f036a766935fa02e0dc034a5de35e437a6866fc0c7d4464bee1d3f707"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-consume-hand-of-order-potion-1.json",
+      "bytes": 4165720,
+      "sha256": "4d00e60a576938cf10b0517b001024631c9e7e7e1d0851ed1d77cd21dd1a03eb"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-consume-hand-of-order-potion-2.json",
+      "bytes": 4264418,
+      "sha256": "30fedcb338b519d1353c0a261b6cebe8b633494e9ccda73cb8edb62d77e5478a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-consume-hand-of-order-potion-3.json",
+      "bytes": 4361796,
+      "sha256": "4b20f03ca8e632abb06245a347b6d86f1312528bdd2ab047d110e7622adaf867"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-consume-hand-of-order-potion-4.json",
+      "bytes": 4521322,
+      "sha256": "24ff09f0bc982dcd9adf05c661825568e7ddca7595e1c9682e3fd022fe703009"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-exact-original594-living-source.json",
+      "bytes": 3282012,
+      "sha256": "990e5d3e145dd601e6c5c05e952ded907e45eca89b3e2c276cb881e06e94c85a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-1-actual-labour-2.json",
+      "bytes": 4093399,
+      "sha256": "9aab44bdc9d56c37362a6006df6f1ff951f667f61a4b197f6e62718ba1393a38"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-1-actual-labour-3.json",
+      "bytes": 4103906,
+      "sha256": "48daff709ac74a1ae1b0ba465b66056c7902e49abd3db1e637e07bbdc8769cc3"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-1-actual-labour-4.json",
+      "bytes": 4114601,
+      "sha256": "8e32641c8ca648159fcdf36d7375c7445d0655f8bf005e727ef313a7108b050b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-1-actual-labour-5.json",
+      "bytes": 4125248,
+      "sha256": "4b29f2bb29a41df66a86de11d69ace141de9072080d361706197fb09e0d73c37"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-1-actual-labour.json",
+      "bytes": 4082755,
+      "sha256": "ddfd18d56b5eb88719569f267be6d6ecce4bd6319c3f792a02f4e3fce11deb60"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-2-actual-labour-2.json",
+      "bytes": 4187391,
+      "sha256": "29e4f8c87cc1c45189e2bdf4c7a0c9c5c7ad9845dca4977666a89aaa6b038bff"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-2-actual-labour-3.json",
+      "bytes": 4198235,
+      "sha256": "d1632ca2f7df2007e34fe5fb014d727093dedbbe8967ea85b66ef4f0b3f85a7a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-2-actual-labour-4.json",
+      "bytes": 4208982,
+      "sha256": "504910c971a16788d23231c38da749282575cd95f7af18a2c8038c13166684ed"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-2-actual-labour-5.json",
+      "bytes": 4220506,
+      "sha256": "6973c08cbe5e1915eba82cdc914140e541325b08ebf304e5fb15e958ea0c8467"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-2-actual-labour.json",
+      "bytes": 4176723,
+      "sha256": "50d3ad37694aff52c9b9d03de7aeb0adf38aa121ae59041352d4184449ee047f"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-3-actual-labour-2.json",
+      "bytes": 4286559,
+      "sha256": "b1693677728a671bbdfdb1dca9d384140e26bf6c4e48f598c8b5b13cd93d69a1"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-3-actual-labour-3.json",
+      "bytes": 4297607,
+      "sha256": "930e6daf536f288d759f95b7aa205754497798f56d789500521c5a55afb13ed7"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-3-actual-labour-4.json",
+      "bytes": 4308524,
+      "sha256": "cc99101998a98b10a5067f06c707983a7efa235e10233360f3bf9be46809d39c"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-3-actual-labour-5.json",
+      "bytes": 4319624,
+      "sha256": "e59469216702b9db38da5a8a37defc33fa56f4db09c3846ec7372dce8891eed6"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-3-actual-labour.json",
+      "bytes": 4275798,
+      "sha256": "5d9e2e6974812e5b34ecd89c36b7a2e1f747f3c44496598947dc243d7de05a77"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-4-actual-labour-2.json",
+      "bytes": 4409164,
+      "sha256": "9c469a48711d15f7ee2b103fa4e4b280a1da6fcf16dc11ced040b9152fb60630"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-4-actual-labour-3.json",
+      "bytes": 4420083,
+      "sha256": "b1abb65e9509bb29b024889de352ae076b40d8108a9a1c90268d7e9122e49938"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-4-actual-labour-4.json",
+      "bytes": 4431190,
+      "sha256": "b27afa096d9e6b95e4e73679d631a12d982fefdfadcc390a519797d4dda2bdc2"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-4-actual-labour-5.json",
+      "bytes": 4442247,
+      "sha256": "85bba9089be02090a1c92840d1e14ead2a92ef21c694d186ddc3e5796ce376d9"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-hand-of-order-potion-4-actual-labour.json",
+      "bytes": 4398260,
+      "sha256": "d04880bb0e937e4aa6960900e40dbfabfecf0b42ca7d61888bf87af56f62478a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-independent-optional-bram-fight.json",
+      "bytes": 5031126,
+      "sha256": "cebc305d67cbc5a8a64b6bf6db873c5a2fefd225fb4c4b624e6f49b0de52d229"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-aftermath_control.json",
+      "bytes": 4633483,
+      "sha256": "ce61f0fb90fd8837e90ab561103d7a6a73130269a9505df66054c866faaf1f99"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-check_originals.json",
+      "bytes": 4625429,
+      "sha256": "7f299e806e64da553b542e60a0629d9d7caeb45337efff5b945b65e3eddb64d6"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-consent_mira.json",
+      "bytes": 4627658,
+      "sha256": "f16ed3dfd0a8f1e8af96d37d0f49cbd12d3d21f81cd47afd54c3a2fc06cec00b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-honest-report.json",
+      "bytes": 4647725,
+      "sha256": "a79a34f997060836586af780b7758d8ae32a6a3068ba59ee1ad03d8a08dd0847"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-inspect.json",
+      "bytes": 4644252,
+      "sha256": "b72400aaf1cd47aba6ac40a144e0284c953d17ac506dfec1a2bf076a9b636270"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-leave.json",
+      "bytes": 4645919,
+      "sha256": "79ac8a336c705c54d1cbe46822e2ad699b32613c35ec49b6aa161923124d446c"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-observe-originals-and-new-annex.json",
+      "bytes": 4616554,
+      "sha256": "9e45c961afa6ad80f1c13e144e4732f5fd32c5ae981938b55a2c2be8071b9292"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-ordinary_brace.json",
+      "bytes": 4636462,
+      "sha256": "cadff49bc60c7ab5d1e4b565ee788561e06576077f8cd8c312dddc9cc4076070"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-prepare.json",
+      "bytes": 4619259,
+      "sha256": "0f2bd478d44101ebd0f625596396dab7ec506bfc229c42edc3b9d58725af01ba"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-return_objects.json",
+      "bytes": 4638809,
+      "sha256": "68f6ac47b23654d808cfd0d529bbef63155e951eb20bf08c401e2d384ccad4f0"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-setup_objects.json",
+      "bytes": 4630226,
+      "sha256": "89469b6b513f8987aa61ca95e10d9827c08e626bb8703b3a30fdac897ce69262"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-walk-2.json",
+      "bytes": 4641622,
+      "sha256": "f889e3e917f6cfb51f4774b8c6dc1ee174f2686fef0216fb2b10cc8e0fe99eef"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-measured-aftermath-walk.json",
+      "bytes": 4622600,
+      "sha256": "5c69e4935853a3417c93ecdc99bc2c06e61f6d1bba844643e9ea5a9302e92ab8"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-next-real-week-three-new-bottle-identities.json",
+      "bytes": 4386025,
+      "sha256": "ec8860320bb1e205cbd046f410d02ad8b38ff813c4cabfd2ee31e362c7b4de4b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-original-adults-remain-outside-player-walks-to-new-yard.json",
+      "bytes": 4860846,
+      "sha256": "b3e4963d78f9e908bbf5c285b2befeaa8f7cfe58542c3ac2238453fa6abb1e60"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid100-after-all-original-bottles-failed.json",
+      "bytes": 4373396,
+      "sha256": "65e93eb2c74883bc0fc8cebffcea63679547cc1c9d8e2e36a05ff2e93698fca0"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid1200-hand-of-order-potion-1.json",
+      "bytes": 4142998,
+      "sha256": "02e1714901b8ca9fa6b320f9e6305ba4286af1f06f5455eae73131ecae424e7b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid1200-hand-of-order-potion-2.json",
+      "bytes": 4240866,
+      "sha256": "dacfca0c4bed3d2f278ca7af95f71d16191c28c7d837c8668990ee75954b06d1"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid1200-hand-of-order-potion-3.json",
+      "bytes": 4338249,
+      "sha256": "5e696460fa33d91fe878dfa8aadd83ca021aea8ad87124a901425bf0c0c6ff4b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid1200-hand-of-order-potion-4.json",
+      "bytes": 4460481,
+      "sha256": "2c081546f38884a78e2d3ba1e7983d8f4fb036c6701f7825264c78a5e2933f93"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid180-current-week-prepare-hand-of-order-potion-1.json",
+      "bytes": 4154381,
+      "sha256": "b8cd8c8a26e5e13133fc80c635397b0197114609bdf2e4ccc1f5ce99193bf236"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid180-current-week-prepare-hand-of-order-potion-2.json",
+      "bytes": 4252667,
+      "sha256": "ff2aed1dcb353bfbe2cbaa3932705ebc4b8fb0e85c84b417e682bf2c3017f3ab"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid180-current-week-prepare-hand-of-order-potion-3.json",
+      "bytes": 4350049,
+      "sha256": "0be7ad750319866c980746906f1d6e2f0b6d05e6a6a62317b11ed9ccf6a0b886"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid180-current-week-prepare-hand-of-order-potion-4.json",
+      "bytes": 4472285,
+      "sha256": "d6e046c9e6afc58ac8bb0b2f1c9c44bfb0f3b6c59ec9b2c95c02453d2ef4fe22"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid30-three-independent-combat-support-pieces.json",
+      "bytes": 4756761,
+      "sha256": "faebfe378913e308d73fc171183855b60df72db81c6585cf41350f8f949cd4c0"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paid500-guidance-freezes-eight-roots-and-original-guard-plate.json",
+      "bytes": 3663966,
+      "sha256": "f54399c25768bef64a859a9dd87a4692a74ce86c8450755a64ab7b7034b5f52e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-attempt_handover.json",
+      "bytes": 4592774,
+      "sha256": "e4ca9825fb403b14fba320dbf4f5ae7ed395c1b81e190b5b925f8d334ab51912"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-battlefield_division.json",
+      "bytes": 4589852,
+      "sha256": "ee6ef03f0a2b99a877e94b65aa954e5e20970815056976a9db5e437fafab10df"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-check_originals.json",
+      "bytes": 4581180,
+      "sha256": "14d317c26304b40fb99105f47f6627e511f1479ef9d3264f956a795f354a44c1"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-complete_handover.json",
+      "bytes": 4595204,
+      "sha256": "2064e21c13c3da5ebb53d1857f2274a8235fbb87e8c6f43ebd3ee4dc0ccdfa67"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-consent_mira.json",
+      "bytes": 4583409,
+      "sha256": "f4f682e474d9c596b7d55c27dce62e401766019fc36b895502887bc0ef5862b5"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-honest-report.json",
+      "bytes": 4614419,
+      "sha256": "ee809788cb04341c74d461c102a47a1b1ee1939b0358fcd5f320d1f4412955de"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-inspect.json",
+      "bytes": 4610925,
+      "sha256": "63161ce8e378e5e1a149c82bc3f9a9ca7335b26a2520c3763489128a2a0d9357"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-leave.json",
+      "bytes": 4612601,
+      "sha256": "b8b9f6b8628cac65a435e71daed8b13e6bec610ca754e9b747c0ce24349b7cc6"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-observe-originals-and-new-annex.json",
+      "bytes": 4572311,
+      "sha256": "050e098d78015dee06e6c8f7aad21b6727294dde8049ef729591d593fadd1e44"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-prepare.json",
+      "bytes": 4575012,
+      "sha256": "b9bb872a3443b04198e36d49c7a0d95ac3944bc5597160e1187e98ca65737964"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-return_objects.json",
+      "bytes": 4605269,
+      "sha256": "62c592084251e5be1b3656e01bdf6900dfc505b3fec078eb658cfa2f93c11277"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-setup_objects.json",
+      "bytes": 4586170,
+      "sha256": "088f2b5e4740322b2bea1993c7a5b49e6e65bbd7a54ba1d6a90f7bcdb267cc6e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-take_object.json",
+      "bytes": 4600325,
+      "sha256": "253bb8968101eea58f9bd16650264295fb7406992316e2dc48d7e0fd28bdaffc"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-walk-2.json",
+      "bytes": 4597994,
+      "sha256": "143083bcc9cdedd3d7da7ae692acc690fef8bd5f70af7bdae5eab9aa9169b250"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-walk-3.json",
+      "bytes": 4602678,
+      "sha256": "14ac6dae0e2194b72fbb266b7cc6ed6bc003aee06f8f570d37a3a980371964a9"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-walk-4.json",
+      "bytes": 4608297,
+      "sha256": "0a095415bef53a49ef5f8ad5c867064fb644664a4a4a50074a1f864bdd04d4f8"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-paired-handover-walk.json",
+      "bytes": 4578350,
+      "sha256": "63af9bf7c710e4d83bac3a29bacdbd264587684ea3df2f731aec84042d2e35e2"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-pay40-place-new-annex-with-three-finite-pieces.json",
+      "bytes": 4568726,
+      "sha256": "8e30274bd0e97cee2a111c3da1d068b699deca9ffddb7415c0315ed552de29e3"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-preparation-check_limits.json",
+      "bytes": 4061158,
+      "sha256": "383e4a585da809c42290aa7b61bead77dc8ddb6181be27cf5f0929eac0dc156e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-preparation-check_return.json",
+      "bytes": 4072058,
+      "sha256": "f44ab21ca7cffb06d8e501bcd8b0094ce712a3fb2962975afb922001501ebe9b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-preparation-verify_originals.json",
+      "bytes": 4049761,
+      "sha256": "4a3529f3f96832e4a43d364a92e957e1c0791c99285bf3122074a440f3efa403"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-595-action.json",
+      "bytes": 3282414,
+      "sha256": "02289faeb261dcb2c77c1a1a1ef0246f4427a372e301b15f8259708b96673327"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-597-action.json",
+      "bytes": 3282926,
+      "sha256": "58e0b7cf519811b7f34d78efc7a5d20c25866b3f0ff0c830f7ed004e5253870a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-598-action.json",
+      "bytes": 3283242,
+      "sha256": "7da85c35d4e58dd6cb7b870bb83c65c10fef092bc1e5129b4b879eb884102960"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-599-action.json",
+      "bytes": 3283612,
+      "sha256": "ea72259921735f5430d8b0e59817485545f27953ecc8dffacf4b22eecff0dd19"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-600-action.json",
+      "bytes": 3283833,
+      "sha256": "6258ce99e321458b1b81c6168e521c1320915eb413a51f2d23ed836050de6347"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-610-action.json",
+      "bytes": 4130569,
+      "sha256": "e155aa9e70f3d966f79084e4bfc5c33a3ddaacd9358caecd82651202963f90d0"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-611-action.json",
+      "bytes": 4130830,
+      "sha256": "a40f1c39ed7ac8a4209fbd288929ef2ce1e0249b2ed671e86dc841ccc99c745d"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-612-action.json",
+      "bytes": 4131051,
+      "sha256": "0ff88fedb090f97c2df8a5fa16eef3b21ec6ebf51db8f4aef6757642d701103c"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-613-action.json",
+      "bytes": 4131496,
+      "sha256": "c7023ab1791c74902de7fba6fd84f18643376a4ea310e3c3619a96d7095f2161"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-614-action.json",
+      "bytes": 4131936,
+      "sha256": "8fe7d3bd918a16005769b1beded49b80e097240a5132169f441fd3d1fa9d7b6a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-615-action.json",
+      "bytes": 4132157,
+      "sha256": "7e4590a30702d361cf5943599febd89af3d3eb27cbc166066121deeeaa074117"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-616-action.json",
+      "bytes": 4132604,
+      "sha256": "7eea7588ff584e3825cdb0e95baac6964f826d02a14c289352fe363d63652c84"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-617-action.json",
+      "bytes": 4133046,
+      "sha256": "55707ee666b56c2e8791ca7fdffa46b63399160fbeac6c35d222ac5c1727f1cb"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-618-action.json",
+      "bytes": 4133267,
+      "sha256": "4f034a42b565da9f2ead7197ad894f1132beb7104420fd30d67c33bc3a182220"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-619-action.json",
+      "bytes": 4133713,
+      "sha256": "e006ebb78fe984b045389a93a9990ae7d46baf1abc0eb5c951f7f160e89cc9eb"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-620-action.json",
+      "bytes": 4134154,
+      "sha256": "14ec5dcea9839920c3e03926af7f2104b7e39c375e5aaa81c99a9d59f20de147"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-621-action.json",
+      "bytes": 4134375,
+      "sha256": "8d0beadcc4d8cecfb07297aabb877cdd83389abb1b4465740803cc6b622dfe29"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-622-action.json",
+      "bytes": 4134821,
+      "sha256": "ffa74ce7a36abfc1ce71d1bc969ca5579fe41453c64630bbcc32c6086e05734b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-623-action.json",
+      "bytes": 4135262,
+      "sha256": "21f3048411427d5d7ff1fd843ae43bf899644b9e6f049a44ccf69166caad4376"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-624-action.json",
+      "bytes": 4135483,
+      "sha256": "f28e56b5b8e9beddf4d381ce3c68b189181ad8bc040f2752491aa759a7f41b45"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-625-action.json",
+      "bytes": 4135928,
+      "sha256": "0b1766fe4cefc1e75209cb384d03edb25170a9f152c5c7709727140a79ffc368"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-626-action.json",
+      "bytes": 4136369,
+      "sha256": "f621c48fa19e8f8b708c9d9340dcfcf8d096d05afa50cb965b93d514af308bf0"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-627-action.json",
+      "bytes": 4136591,
+      "sha256": "cf291590df22ed86074a02ceb72ba1c5b7fc5a3db21fd719357a3929cf4ce20d"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-628-action.json",
+      "bytes": 4137037,
+      "sha256": "aebdbfe8a2d7efc974227a688425ab079af5b07f2d9ee0a6b737e0febe1753b4"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-629-action.json",
+      "bytes": 4137478,
+      "sha256": "ca7780ec16f605b5a554533af4cbbb99e71ce969d3e8e57bd76056ad1aeec3d1"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-631-action.json",
+      "bytes": 4148251,
+      "sha256": "5e5b74d383e4378f13003c2cdff1276a48e086b6c9ced3fd2150cb7c392523c9"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-632-action.json",
+      "bytes": 4148544,
+      "sha256": "79e29a6bf5da7c9dc074f04fa130c1c771ab4eb9ea73f9721d45fdf0bd7c571a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-633-action.json",
+      "bytes": 4148987,
+      "sha256": "df9fe61b36b74bb07037db8b2331cc7529e871c8a78483024c16b4fdb64e396b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-643-action.json",
+      "bytes": 4225991,
+      "sha256": "cd9aa2ab078ba4c06df02caa12cbdba65e67e76b1dee21864f550ded24362fe5"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-644-action.json",
+      "bytes": 4226560,
+      "sha256": "c3da0197cd35a5e6fb6865e860f84d0f0320c84682b7ce844cc6b37bf27664ee"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-645-action.json",
+      "bytes": 4227309,
+      "sha256": "44feffb7cfb3ac8793d7eeb718bfe12eddb49f44b82520d6bcc1569601990981"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-646-action.json",
+      "bytes": 4227529,
+      "sha256": "1075db89d2370343435b2d9cb8b5fb9937d4dedf49fe68b0be356dc14f3a7f85"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-647-action.json",
+      "bytes": 4227979,
+      "sha256": "71ff73c4cf20eb0b4f250506629901a45fd88a28af1de3c73737eb71178a14ce"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-648-action.json",
+      "bytes": 4228427,
+      "sha256": "3f8ea17fe16af2532e8e312e693d32ba7b570a6c9aacbd88ff34336ed776be86"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-649-action.json",
+      "bytes": 4228650,
+      "sha256": "fa895853cf789541ddfe6768685432f6da1c91c10d5a5450e834a022dc964a4e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-650-action.json",
+      "bytes": 4229100,
+      "sha256": "9356ba76db987caf89aacbd3fcd22023fbff06ad06b2df905631dc25f42fccb6"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-651-action.json",
+      "bytes": 4229545,
+      "sha256": "040573ba6e346a370a18a27e9e696d55f1c55254823c2edce50f822b91c1d4fd"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-652-action.json",
+      "bytes": 4229768,
+      "sha256": "f70af8e096337a7b1aec3c8f953d39491ecd76ea07e0e8850a97713535e8976a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-653-action.json",
+      "bytes": 4230218,
+      "sha256": "b35990806300094a49f7300f8c64eafbf6ba9df3a6dd8b217858b3ce008010ed"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-654-action.json",
+      "bytes": 4230663,
+      "sha256": "a69677c7eb3e982540bbc311020d61a91230fa415d197e948649303b05917c38"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-655-action.json",
+      "bytes": 4230886,
+      "sha256": "c291539c46c66453dff70dbca8849de100c6e1c66f9b6147f93b18292a76aa4d"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-656-action.json",
+      "bytes": 4231335,
+      "sha256": "2cd4c2ff1873d129fb042204c9f3cf0959af130b8e71f05a2c0513601216b029"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-657-action.json",
+      "bytes": 4231779,
+      "sha256": "cb96fab9da87fecd50638238f14c29092ba05a5142dafdd97a50237285d3a36e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-658-action.json",
+      "bytes": 4232002,
+      "sha256": "260a1cdb118331a4122133d8f0d6932a33343a70907c1dce162005bc11aa8eef"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-659-action.json",
+      "bytes": 4232453,
+      "sha256": "f312a6d34d42d34a6fa0cd202ee7c7ad2b89913748d01d9be57a1c8525e292a9"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-660-action.json",
+      "bytes": 4232900,
+      "sha256": "d113e8c1b0e63f9db1f0c970588dd9a0d77e8ebfdbdd9a254bf9b551d469a0aa"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-661-action.json",
+      "bytes": 4233124,
+      "sha256": "de5ca97d4916f1e664abc51b4f31997b495a60eb99d2db79642e9d44ba66627d"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-662-action.json",
+      "bytes": 4233574,
+      "sha256": "f32da68a87d9cfabd8f9f28711c3ac068f3b711a7c5d6a6974e54ce011c40977"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-663-action.json",
+      "bytes": 4234019,
+      "sha256": "9076e3fb489d17cc23bb5c8b4518755cd0b9ba0e50ef740627f1b6561b87f39b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-664-action.json",
+      "bytes": 4234242,
+      "sha256": "5a9b497467f62bc33ba07da0797259e99f5b20495645f0ac169197dcd14e9837"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-665-action.json",
+      "bytes": 4234692,
+      "sha256": "5cb2cbafdc305934dcb0a2ccf241dfd9e0cfe11947123b2a3ec9d3fc849a4466"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-666-action.json",
+      "bytes": 4235137,
+      "sha256": "0f4504f4e4f40658b1d84b03537182fa6dc1674b0ae7426990f52d430df4a1c7"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-668-action.json",
+      "bytes": 4246328,
+      "sha256": "f7c525c886d19680fe22c7be80428947b88b5c83e92bba0caf07fb07a7037052"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-669-action.json",
+      "bytes": 4246623,
+      "sha256": "e5544e80e8251f891aab16e235f61128cf42bd291b2d061e44ca4f2f9a0a6e34"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-670-action.json",
+      "bytes": 4247067,
+      "sha256": "9e4418868c774d5487ad2989247d5f2ce261ef75134c2b33f292f71530f429af"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-678-action.json",
+      "bytes": 4325108,
+      "sha256": "20dadab4762745e9b197b84bef452109688c99dee1f6c34ef4203c9ad2bcace9"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-679-action.json",
+      "bytes": 4325372,
+      "sha256": "bcb212565877bac089a419d402858ae28550cc917995e2d80b52d5e9c2e7a3f6"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-680-action.json",
+      "bytes": 4325817,
+      "sha256": "21636bce771f73d27fe882dce19b6f6238f696d3e12d83e36e995368977fd8f2"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-681-action.json",
+      "bytes": 4326037,
+      "sha256": "c85862e5e46863674d4095ebca3dd14e0f6c3df03ee7eb5c4aab0d6d2542cb21"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-682-action.json",
+      "bytes": 4326486,
+      "sha256": "9a2b247864ff59f632773b34cf3487197452790af4442929e8f9b65824ba6f23"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-683-action.json",
+      "bytes": 4326933,
+      "sha256": "ca3a26d2c84a4a9babc03eae7480087a1f93b13b9ffc957a3858401eac93eee1"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-684-action.json",
+      "bytes": 4327156,
+      "sha256": "4fed80de87ab88193352e1edd63a8788a3b358e48e0e710c95784cddc2a1a41d"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-685-action.json",
+      "bytes": 4327605,
+      "sha256": "d0e0aec518378a66c0deda9f4be4c3964847b1276c542d94d36782822a6ef8de"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-686-action.json",
+      "bytes": 4328049,
+      "sha256": "f48ae270846e4a4d0b1ee4118dbe40b92880fb20831a30003af5b96140bce7e1"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-687-action.json",
+      "bytes": 4328272,
+      "sha256": "1f87862b71ae32e6e223b51af1cc97b87e1d6b0114a7287bd8dd7056e4489465"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-688-action.json",
+      "bytes": 4328723,
+      "sha256": "ac06a9751c1a378e516e33f3cd92c4acbd8354a6fb6538b84b4741845773ed99"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-689-action.json",
+      "bytes": 4329169,
+      "sha256": "ced5edfec01f606045234952398c2a8fecd208dffaadf41f782d27827bc69a3f"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-690-action.json",
+      "bytes": 4329392,
+      "sha256": "3f9106305f40aebeac23822039572cdbbc5f3e39d0bb08f0499af008c305450e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-691-action.json",
+      "bytes": 4329842,
+      "sha256": "a845070dbd231a71f398e85aeecad5cf3dd0dde2b683206d2cdc28480a23a17f"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-692-action.json",
+      "bytes": 4330287,
+      "sha256": "6faf4278ae8455a2428c147b0946edf5b445d0c3d87e716ac9651463741f987a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-693-action.json",
+      "bytes": 4330510,
+      "sha256": "0dce5f88b89fc62e7460e3b6d8ab6d27c952699f0dffe29f8bb5bea969db3e3e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-694-action.json",
+      "bytes": 4330960,
+      "sha256": "58bc0e7ab1f5a1efeeb9903785252ed8c94f8d051b94f422938f3472e79a1d49"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-695-action.json",
+      "bytes": 4331406,
+      "sha256": "ca716cd873757180e6c3756bc2f9a45232ffd258d195999940e9a89a5ae8c0ae"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-696-action.json",
+      "bytes": 4331630,
+      "sha256": "562b1ae387a5aa27475996188f0e1d05b6303ec382d4e8fa933e3b2dfd13ad6e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-697-action.json",
+      "bytes": 4332079,
+      "sha256": "8d2aebde1fd772007c95bf1c9656d3ecf04e978a053cbe905c53c2664dbd7330"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-698-action.json",
+      "bytes": 4332523,
+      "sha256": "5c453d10e79baa5dcb399b05fe7e28765a0bddc96e1e1535ef6695df7554edeb"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-700-action.json",
+      "bytes": 4343708,
+      "sha256": "032cc87258a8d33c3129b2538cb98906f28fc5712aede8c45647e28d6500c2cd"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-701-action.json",
+      "bytes": 4344004,
+      "sha256": "b5d8cbb71ded0665fce242948fecb9b2369cfeda4c9ac8d374df764fb1076ae8"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-702-action.json",
+      "bytes": 4344450,
+      "sha256": "5c7ed5f29c9bc9a115b0e4cc7456465e7f40de33fbfa26b9cb282255dca2870c"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-705-action.json",
+      "bytes": 4367789,
+      "sha256": "cd0f11a2cba4762f603c96856ca4618e873aa21f3884c091fc0c58fdb47da72f"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-706-action.json",
+      "bytes": 4367720,
+      "sha256": "7cb9aa2ac25d209060582aef054f9c0fb1d8af8a77b2d071fc8feef633893f4c"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-708-action.json",
+      "bytes": 4379086,
+      "sha256": "824a84ac33e110c8f12e61a1aee056764c8ba1a0f40290918019ac1d5cc514b0"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-715-action.json",
+      "bytes": 4447776,
+      "sha256": "b0030a460ac7ffe454c311bcdd3b1fa20c29072e5fe37c1befde0a2027ab4a2e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-716-action.json",
+      "bytes": 4448041,
+      "sha256": "4927817c0a47f8d6995455721a3c3f5ab0cfa413b5058ab5524525214fef7f30"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-717-action.json",
+      "bytes": 4448264,
+      "sha256": "ff4ff76b580b69fb08e662e7facb7da902bb8ec21366aef68b9c904bfff02def"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-718-action.json",
+      "bytes": 4448715,
+      "sha256": "01778f3d0670ab8de9cd1c136bea97484c513e4821f4bdf7f04089c5aa7e846f"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-719-action.json",
+      "bytes": 4449161,
+      "sha256": "1c05d64929ae98e69c5af64c06a634b7a125de77d79d6f7269a9304e337d0ac4"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-720-action.json",
+      "bytes": 4449384,
+      "sha256": "07cb388a0c53038f11ae6cbd63fb46c0d8574e919d3679b979cb2f3466d879ff"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-721-action.json",
+      "bytes": 4449834,
+      "sha256": "578c3984cf2ed9056996e8433d2cd2b8d6ec93806006c5acdc237b2d0b90fc45"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-722-action.json",
+      "bytes": 4450279,
+      "sha256": "880556c2c2b525d7866df3e1d6ec20760fe95fe807915452a0c1d23517861f1a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-723-action.json",
+      "bytes": 4450502,
+      "sha256": "0fd8436852ef4fcf66ff99a5afff6c81135a95f8ffc146c27dcfc76f80deb1f0"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-724-action.json",
+      "bytes": 4450952,
+      "sha256": "02a72df8b6a5f6f0d6a806ce5923c235e2e92d5e976404be4490578c2f98c9c0"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-725-action.json",
+      "bytes": 4451397,
+      "sha256": "b9f772ed5f1b3d7214266b9bc72bbc8a477b409a0ba23956271fb04a03e526bb"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-726-action.json",
+      "bytes": 4451620,
+      "sha256": "e9a897137a613ccdb54a83b1703a6b252b49517c3ab4608d2bf4401c0c5f3e1a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-727-action.json",
+      "bytes": 4452069,
+      "sha256": "ba003706e238fb175a5e810291264b7a97d908aac0e5ce60c4f45c7e59065eae"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-728-action.json",
+      "bytes": 4452513,
+      "sha256": "d18e888240be1d65c7885f674432da8386c036d503cb18ef30e6c9abea18d2ce"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-729-action.json",
+      "bytes": 4452736,
+      "sha256": "d63228c1fefccbdb31584078f2df372a4d214c52a76ed6d588d31234136b9b21"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-730-action.json",
+      "bytes": 4453187,
+      "sha256": "51d6a87ea3917113d907622c303c767ee0683e59fce155dc27540fdd4138f629"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-731-action.json",
+      "bytes": 4453634,
+      "sha256": "464906a777a4b1aba4f812f403fe5703580fc8574245cdc689c7d6f7e44d0b5c"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-732-action.json",
+      "bytes": 4453858,
+      "sha256": "c2cdcba48f43c36fcd87ce866e02688122ea50e28f9365388b2a140dec663dce"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-733-action.json",
+      "bytes": 4454308,
+      "sha256": "0f429bdf7cc4e454f4f31466a259108193a69facea4140f744cb954285044fad"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-734-action.json",
+      "bytes": 4454753,
+      "sha256": "fcf71fc0d9491297b72cace2f216fda521918c43a6c81921f43fdcb1c0ac7ca9"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-736-action.json",
+      "bytes": 4465942,
+      "sha256": "d1fe3e64734728bddfbcbaa933852f00e67315440867b9144254395966c87393"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-737-action.json",
+      "bytes": 4466238,
+      "sha256": "368f30577912fbaf936dcbabeda994bc8a75df50735fff03e167a3dd99d3650b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-738-action.json",
+      "bytes": 4466684,
+      "sha256": "469a1266d21d82b636d44bab7183d83ef2d4238322b9288656b80a291034df93"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-742-action.json",
+      "bytes": 4566198,
+      "sha256": "febe8af0d71dc0346d64fb0ce1d9720be96475ad183638017ab42563e87fb76e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-743-action.json",
+      "bytes": 4566561,
+      "sha256": "3acda3640a36c143b1ef27ec0c162ab13323ef47a4b5f959e04eff9db4194ea1"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-745-action.json",
+      "bytes": 4570987,
+      "sha256": "74b32c4da7f130515c2220c1b2a1277a9caa68dcad155e7ae56007ac122b2b65"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-794-action.json",
+      "bytes": 4694674,
+      "sha256": "0c6ec8f28a6ee9b9fc3e2d25f00e666810c9b2d578ab5064dda998dae9c55c53"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-step-795-action.json",
+      "bytes": 4695035,
+      "sha256": "941a540d20a53f9295c4c6810b6698e1d45fe34ecf8120a388b3b4888dc4190d"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-three-honest-reports-reflected.json",
+      "bytes": 4693650,
+      "sha256": "45838bc09f8177d4285cfaf3383a7283e632d2ec19373d8571e72640d50d1a98"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-walk-four-metres-to-actual-outside.json",
+      "bytes": 4565390,
+      "sha256": "9eab8bc11f7ef4c2b9a1bda6d5362f0cabc3d1d6d978d68fefa88527136e02b4"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-battlefield_division.json",
+      "bytes": 4667141,
+      "sha256": "21a4b72bfad47d0881b7c628df0726596b386a0849eb44ee5673a1183fec6dc7"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-check_originals.json",
+      "bytes": 4658717,
+      "sha256": "bf89c819268971d4cd07ada176125205109c3a59e81d47b1a036be49bc23f55f"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-complete_handover.json",
+      "bytes": 4672382,
+      "sha256": "5182d35cf0291d0c720aa1c545d4407b8640fd9447e31066c4df5f28b93deca5"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-consent_mira.json",
+      "bytes": 4660942,
+      "sha256": "53139ef1c06fae71cfdedcdda1e9d24dfba3011951d1e611d2959116a2f8123a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-honest-report.json",
+      "bytes": 4691553,
+      "sha256": "41e74334d08309747ce0d22e92c890d0ee3d0b9d07c652b6bbb7c8128f91dac9"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-inspect.json",
+      "bytes": 4688082,
+      "sha256": "02a8bd59082d460650b2e8897d33a80a182349076016a80119bd2b7bf75ab0d4"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-leave.json",
+      "bytes": 4689748,
+      "sha256": "2264742f03b21a7c86a72ab0aa83197ba10d64359ae2a4581e65c7780057a8bc"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-observe-originals-and-new-annex.json",
+      "bytes": 4649854,
+      "sha256": "8d5948c839fcac00c55629bac8687b0785aec7c1fa2a4b94d05ccc7f4c442cfd"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-prepare.json",
+      "bytes": 4652555,
+      "sha256": "8ee3cd631ffd326a2c52c9bed87c2e9cb8843c0b6655bfc00751a4dcb2eb0f62"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-return_objects.json",
+      "bytes": 4682433,
+      "sha256": "80e312c3719fc94e1e2cbac67ac28c0138fada07d333ca8f7c5dc0c8dc7cc8bb"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-setup_objects.json",
+      "bytes": 4663706,
+      "sha256": "00421095c5c62a454a7f502ba41cdeb19cd259660e7b84b7d8b2aaeb71bf3040"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-take_object.json",
+      "bytes": 4677498,
+      "sha256": "214a14841b65389120c9672ce69ef21e481a3c1bb0e5bc2362088dd276f10a23"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-walk-2.json",
+      "bytes": 4675171,
+      "sha256": "820d6ecee2c01a603d197df276299fdb8e76e20ebc5036a8f0bc084e678760b8"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-walk-3.json",
+      "bytes": 4679847,
+      "sha256": "1efe98f0069251d076035215ed8e645b780ee1dc4d71be5a3d16b39e543368c4"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-walk-4.json",
+      "bytes": 4685456,
+      "sha256": "b18137630f09a1cb03def49caf9c3145cfe4be1e170cec27749f1086c84419c2"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-walk.json",
+      "bytes": 4655892,
+      "sha256": "6e1b236ff8da734c8ca77e3dda347ea074332d335ecc187718bed49705ca9ccd"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/boundary-withdrawn-boundary-withdraw_permission.json",
+      "bytes": 4669861,
+      "sha256": "6d8da679c505f04360885f308e87ac67aa5abfcd2b8a122e80fef6b1d09f7b53"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/capture-integrity.json",
+      "bytes": 564744,
+      "sha256": "d0580182c43aaf3b9e11cd664f9e30e6bd39c70b3a40d65fd35da24a342b2b89"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/commands.jsonl",
+      "bytes": 2445273,
+      "sha256": "5cc02b5ba91f07b2e62c6feae26d8d5ef91c2f75940430b70bb161ad90a9377b"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/natural.json",
+      "bytes": 8379027,
+      "sha256": "f5b1e8090128b479850acda55353f828a1ee2f122b1feaafd89cc6a18ad94d4a"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/original-death-source.json",
+      "bytes": 1242132,
+      "sha256": "835820b4fd7f512acfcf4f5704b58a753217ccfdfc3181e2ea04cacef4ac6094"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/public.jsonl",
+      "bytes": 9115437,
+      "sha256": "3f37ccdd3cb6414af79f02fee479564f2a9303f65b9ec39fecdfcc724845e7dc"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/snapshot-actualTerminal.json",
+      "bytes": 3019705,
+      "sha256": "bcc9d0f7cc32564d1eff6a5824c53199e53cc51e2d2f3974074e0f68868f4ae2"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/snapshot-beforeEncounter.json",
+      "bytes": 2347642,
+      "sha256": "93ba7ece291c8b1726ae81c4b9d110c0e8329d2ebc58b691e7ca05a9ffdaf575"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/snapshot-combatStart.json",
+      "bytes": 2579278,
+      "sha256": "fd7834fceb65f5d5c92f897efc9ce6e03491dc283c3e1507a4f6aeb9e00d4c51"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/snapshot-departure.json",
+      "bytes": 1641068,
+      "sha256": "9642a97ab35ccde9af313abd2a588f8d8cb15ed707fd75fd47b0ee5f8261e38e"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/snapshot-guidance.json",
+      "bytes": 2021922,
+      "sha256": "47a81cc9624c6c1d8564ae9988abcd3d5b3740fa290de70e7a1b9ed55aa53128"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/snapshot-practiced.json",
+      "bytes": 2347281,
+      "sha256": "75f8a689244f5f048b7a055c0128c79010ab274286b5451e50a2bf8cb84cedc1"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/snapshot-promoted.json",
+      "bytes": 2282346,
+      "sha256": "e615e670f23ecb38377722c5ceb6ac3e4d4c3d70fd45207b2c83ae9cf1a57598"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/snapshot-treated.json",
+      "bytes": 1641927,
+      "sha256": "5463c8538ef943fd6033009b25136804c50f2c7707fc9ac6cbf58ea5f839bc91"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/source-prefix.json",
+      "bytes": 3003197,
+      "sha256": "9e43e88c9c6be4c01ba355d339fd4924077244dfea42475fed18abdcff66970f"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/summary.json",
+      "bytes": 744610,
+      "sha256": "1843fbd61f2db968373f4c1c04aa3a7e878c51c58597bbe493bcd18b87ebfe17"
+    },
+    {
+      "path": "tests/fixtures/hand-of-order-v02060/transitions.json",
+      "bytes": 29503,
+      "sha256": "95bb36bc3b6f0dc923b0bee152bcadd0715ee8f97bc445f4ef51e99701c21c29"
     },
     {
       "path": "tests/fixtures/harvestpriest-v0710/boundaries.json",

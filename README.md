@@ -1,8 +1,8 @@
-# 诡秘之主同人游戏 · 0.205.0 阶段版
+# 诡秘之主同人游戏 · 0.206.0 阶段版
 
 基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手、太阳、死神、门、错误、战士、魔女、窥秘人、倒吊人、深渊、被缚者、怪物与黑皇帝已有有限序列1基础；其余2条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
+当前22条途径均包含9→2有限可玩切片。占卜家、猎人、观众、通识者、月亮、黑夜、阅读者、水手、太阳、死神、门、错误、战士、魔女、窥秘人、倒吊人、深渊、被缚者、怪物、黑皇帝与仲裁人已有有限序列1基础；最后1条序列1及全部序列0尚未完成；这不是完整1.0。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。正在继续完成后续阶段；每阶段保留原有失败记录并进行相关回归。
 
 ## 安装和启动
 
@@ -353,3 +353,15 @@ node --expose-gc --max-old-space-size=768 scripts/play/abomination-save.mjs --so
 
 
 205增量：黑皇帝新增有限序列1弑序亲王。原743条完整活档同种子续至924条，前两瓶失败、第三瓶第216周晋升。原球在新旁侧承接区中实际投掷、维持飞行与撤回后普通归还，两项新技巧各在生活中应用一次。独立可选遭遇六轮后对手投降，定向放大实际应用一次，延效被抵抗；本人沿四米原路退出，保留两处新轻伤。原十五份贿赂物使用唯一有效账本，已赠物与旧投降者没有重置。真实结果、有限范围与验收状态见[弑序亲王阶段记录](docs/PRINCE_OF_ABOLITION_PLAYABLE_STAGE.md)。
+
+
+206增量：仲裁人新增有限序列1秩序之手。原594条完整活档同种子续至801条，真实诊治休养后前三瓶失败，付费调查隔周新供货后第四瓶在第179周晋升。原封包在相邻区完成真实交接、撤回和普通归还，划分实际应用一次，余波失败后普通支撑磨损原护板。可选新遭遇三轮后玩家死亡，死亡结局保留；战中两项新技巧没有实际应用。有限范围、原人物物品连续性及最终验证结果见[秩序之手阶段记录](docs/HAND_OF_ORDER_PLAYABLE_STAGE.md)。本地58个测试文件1161项、7项冻结负例、完整208个唯一SQLite转换、修后代表与界面回归通过，严格类型检查和构建通过；远端Windows矩阵以本次PR实际状态为准。
+
+秩序之手专项输入与保存复验：
+
+```sh
+npm run fixtures:restore -- --only-prefix chaos-hunter-v01600 --only-prefix recovery-v01620 --only-prefix balancer-v01840 --only-prefix hand-of-order-v02060
+npx vitest run tests/domain/hand-of-order-acquisition.test.ts tests/domain/hand-of-order-life.test.ts tests/domain/hand-of-order-combat.test.ts tests/domain/hand-of-order-inheritance.test.ts tests/renderer/hand-of-order-panel.test.tsx --maxWorkers=1 --no-file-parallelism
+npm run build:main
+node --expose-gc --max-old-space-size=768 scripts/play/hand-of-order-save.mjs --expected-boundaries 283
+```

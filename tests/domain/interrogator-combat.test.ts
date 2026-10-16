@@ -7,6 +7,7 @@ import { INTERROGATOR_COUNT_WHEEL, interrogatorAbilityWheel, interrogatorActionC
   drawInterrogatorAbility, isInterrogator, resolveInterrogatorCombatAbility,
   type InterrogatorCombatSource, type InterrogatorMoveId } from '../../src/domain/interrogator/combat.js';
 import * as interrogatorCombat from '../../src/domain/interrogator/combat.js';
+import { HAND_OF_ORDER_COUNT_WHEEL, handOfOrderAbilityWheel, currentHandOfOrderCombatSource } from '../../src/domain/hand-of-order/combat.js';
 import { ARBITER_COUNT_WHEEL, arbiterAbilityWheel, currentArbiterCombatSource }
   from '../../src/domain/arbiter/combat.js';
 import { SHERIFF_COUNT_WHEEL, sheriffAbilityWheel, currentSheriffCombatSource }
@@ -120,8 +121,14 @@ describe('Interrogator S7 exact wheels and inherited physical profile', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(45);
   });
 
-  it('preserves Arbiter9, Sheriff8, unsupported Justiciar fallback and Black Emperor profiles', () => {
-    for (const sequence of [1, 0, null] as const) {
+  it('preserves Arbiter9, Sheriff8 and Black Emperor profiles while distinguishing opened S1 from unsupported fallback', () => {
+    const s1 = fixture(); s1.progression.sequence = 1;
+    expect(isInterrogator(s1)).toBe(false); expect(currentInterrogatorCombatSource(s1)).toBeNull();
+    expect(currentHandOfOrderCombatSource(s1)).toBeNull();
+    expect(playerCountWheel(s1)).toEqual(HAND_OF_ORDER_COUNT_WHEEL); expect(playerCountWheel(s1)).toHaveLength(6);
+    expect(playerCountWheel(s1)).not.toEqual(INTERROGATOR_COUNT_WHEEL);
+    expect(playerAbilityWheel(s1, 'CONTROL')).toEqual(handOfOrderAbilityWheel(s1, 'CONTROL'));
+    for (const sequence of [0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence; state.town.clubLocation = 'HAND';
       state.progression.mastery = { [training]: 500, [authority]: 500, [charisma]: 500,
         [trace]: 500, [reconstruction]: 500, [puncture]: 500, [pressure]: 500, 'justiciar.s6.prohibition': 500 };

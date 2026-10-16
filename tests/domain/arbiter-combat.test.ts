@@ -7,6 +7,7 @@ import { ARBITER_COUNT_WHEEL, arbiterAbilityWheel, arbiterActionCount, currentAr
   drawArbiterAbility, isArbiter, resolveArbiterCombatAbility,
   type ArbiterCombatSource, type ArbiterMoveId } from '../../src/domain/arbiter/combat.js';
 import * as arbiterCombat from '../../src/domain/arbiter/combat.js';
+import { HAND_OF_ORDER_COUNT_WHEEL, handOfOrderAbilityWheel, currentHandOfOrderCombatSource } from '../../src/domain/hand-of-order/combat.js';
 import { LAWYER_COUNT_WHEEL, lawyerAbilityWheel } from '../../src/domain/lawyer/combat.js';
 import { BARBARIAN_COUNT_WHEEL, barbarianAbilityWheel } from '../../src/domain/barbarian/combat.js';
 import { BRIBER_COUNT_WHEEL, briberAbilityWheel } from '../../src/domain/briber/combat.js';
@@ -114,8 +115,14 @@ describe('Arbiter S9 wheels, profile and original bodily source', () => {
     expect(resolveSliceCombatRound(fixture(), 'ATTACK').round.playerAdvantage).toBe(20);
   });
 
-  it('keeps unsupported Justiciar sequences ordinary and existing Black Emperor profiles unchanged', () => {
-    for (const sequence of [1, 0, null] as const) {
+  it('uses the opened S1 wheel while keeping unsupported Justiciar sequences ordinary and Black Emperor profiles unchanged', () => {
+    const s1 = fixture(); s1.progression.sequence = 1;
+    expect(isArbiter(s1)).toBe(false); expect(currentArbiterCombatSource(s1)).toBeNull();
+    expect(currentHandOfOrderCombatSource(s1)).toBeNull();
+    expect(playerCountWheel(s1)).toEqual(HAND_OF_ORDER_COUNT_WHEEL); expect(playerCountWheel(s1)).toHaveLength(6);
+    expect(playerCountWheel(s1)).not.toEqual(ARBITER_COUNT_WHEEL);
+    expect(playerAbilityWheel(s1, 'CONTROL')).toEqual(handOfOrderAbilityWheel(s1, 'CONTROL'));
+    for (const sequence of [0, null] as const) {
       const state = fixture(); state.progression.sequence = sequence; state.town.clubLocation = 'HAND';
       state.progression.mastery = { [authority]: 500, [training]: 500, [charisma]: 500,
         'justiciar.s8.tracking': 500, 'justiciar.s7.mental-puncture': 500, 'justiciar.s6.prohibition': 500 };
