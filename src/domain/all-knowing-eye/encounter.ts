@@ -1,0 +1,291 @@
+import { SLICE_LIFE } from '../../content/slice-events.js';
+import type { PublicGameDate } from '../../shared/contracts.js';
+import { stableStringify } from '../canonical.js';
+import { addGameWeeks, compareGameDates, isValidGameDate } from '../game-calendar.js';
+import type { SeerContext } from '../seer/index.js';
+import type { SliceCombatRound, SliceInjury, SliceState } from '../slice/types.js';
+import { resolveSliceWeeklyFinance } from '../slice/weekly-finance.js';
+import type { MysticismMagisterCraft } from '../mysticism-magister/types.js';
+import type { PolymathSampleState } from '../polymath/types.js';
+import { hasAllKnowingEyeLifeLock } from './life.js';
+import { currentAllKnowingEyeCombatSource, nextAllKnowingEyeCombatSource, validAllKnowingEyeCombatSource, validateAllKnowingEyeCombatRound,
+  validAllKnowingEyeBody, validAllKnowingEyeInjuries, validAllKnowingEyeCrafts, type AllKnowingEyeCombatSource, type AllKnowingEyeRoundOutcome } from './combat.js';
+
+export const ALL_KNOWING_EYE_TARGET_ID = 'AE1-EDWIN-ROSS' as const;
+export const ALL_KNOWING_EYE_SITE = 'AE1-OPEN-STONE-COURT' as const;
+export const ALL_KNOWING_EYE_POWER_IDS = ['FLASH', 'WARD', 'MIND_PRESSURE', 'FEINT'] as const;
+export type AllKnowingEyePowerId = typeof ALL_KNOWING_EYE_POWER_IDS[number];
+export type AllKnowingEyeEnemyIntent = AllKnowingEyePowerId | 'BODY_STRIKE' | 'OBSERVE' | 'ACCIDENT';
+export type AllKnowingEyePolicy = 'INHERITED_ONLY' | 'BOUNDED_INSIGHT' | 'PENDING_FORECAST' | 'ALL' | 'ORDINARY';
+export type AllKnowingEyeCombatPolicy = AllKnowingEyePolicy;
+export const ALL_KNOWING_EYE_POLICIES: readonly AllKnowingEyePolicy[] = ['INHERITED_ONLY','BOUNDED_INSIGHT','PENDING_FORECAST','ALL','ORDINARY'];
+export const ALL_KNOWING_EYE_POWERS = [
+  { id: 'FLASH', label: '原杆有限闪光', cost: 7, selfGain: 105, enemyReduction: 0 },
+  { id: 'WARD', label: '有限护术', cost: 6, selfGain: 0, enemyReduction: 60 },
+  { id: 'MIND_PRESSURE', label: '有限精神压力', cost: 7, selfGain: 65, enemyReduction: 0 },
+  { id: 'FEINT', label: '改变节奏并横杆遮挡', cost: 3, selfGain: 0, enemyReduction: 0 },
+] as const;
+export interface AllKnowingEyeMaterials {
+  weapon: { id: 'AE1-EDWIN-ROD'; sourceId: 'AE1-EDWIN-OWNED-ROD-1'; owner: typeof ALL_KNOWING_EYE_TARGET_ID;
+    massKg: 2; location: 'HAND' | 'YARD'; condition: 100; charge: number; capacity: 4; visible: true };
+}
+export function createAllKnowingEyeMaterials(): AllKnowingEyeMaterials {
+  return { weapon: { id: 'AE1-EDWIN-ROD', sourceId: 'AE1-EDWIN-OWNED-ROD-1', owner: ALL_KNOWING_EYE_TARGET_ID,
+    massKg: 2, location: 'HAND', condition: 100, charge: 4, capacity: 4, visible: true } };
+}
+export interface AllKnowingEyeScene {
+  siteId: typeof ALL_KNOWING_EYE_SITE; playerLocation: 'OUTSIDE' | 'YARD'; playerCoordinate: 0 | 4; enemyCoordinate: 6;
+  ordinaryExit: 'OPEN'; visibleBodyLine: boolean; conditionVersion: number; observedConditionVersion: number | null;
+  thirdPartiesInArea: 0; presentMemberIds: string[]; observedSourceId: string | null; observationWeek: number | null;
+  clockSeconds: number; externalSeconds: number; playerTravelMetres: number; knownPlayerName: string | null; knownEnemyName: string | null;
+}
+export function createAllKnowingEyeScene(): AllKnowingEyeScene {
+  return { siteId: ALL_KNOWING_EYE_SITE, playerLocation: 'OUTSIDE', playerCoordinate: 0, enemyCoordinate: 6,
+    ordinaryExit: 'OPEN', visibleBodyLine: true, conditionVersion: 1, observedConditionVersion: null,
+    thirdPartiesInArea: 0, presentMemberIds: [], observedSourceId: null, observationWeek: null,
+    clockSeconds: 0, externalSeconds: 0, playerTravelMetres: 0, knownPlayerName: null, knownEnemyName: null };
+}
+export interface AllKnowingEyeObservation { power: 'FLASH' | 'WARD'; conditionVersion: number; round: number; order: number; atSeconds: number; paidCost: 6 | 7 }
+export interface AllKnowingEyeCombatBody {
+  enemyHealth: number; enemyMind: number; enemySpirituality: number; enemyStatus: 'RESISTING' | 'SURRENDERED' | 'DEAD'; enemyInjuries: SliceInjury[]; enemyRisk: number;
+  weaponLocation: 'HAND' | 'YARD'; powerUses: Record<AllKnowingEyePowerId, number>; observations: AllKnowingEyeObservation[];
+  totalOwnerMindSpent: number; boundedInsightAttempts: number; boundedInsightChecks: number; boundedInsightSuccesses: number;
+  pendingForecastAttempts: number; pendingForecastChecks: number; pendingForecastSuccesses: number;
+}
+export function initialAllKnowingEyeBody(): AllKnowingEyeCombatBody {
+  return { enemyHealth: 100, enemyMind: 100, enemySpirituality: 120, enemyStatus: 'RESISTING', enemyInjuries: [], enemyRisk: 0, weaponLocation: 'HAND',
+    powerUses: { FLASH: 0, WARD: 0, MIND_PRESSURE: 0, FEINT: 0 }, observations: [], totalOwnerMindSpent: 0,
+    boundedInsightAttempts: 0, boundedInsightChecks: 0, boundedInsightSuccesses: 0, pendingForecastAttempts: 0, pendingForecastChecks: 0, pendingForecastSuccesses: 0 };
+}
+export function combatBody(e: AllKnowingEyeCombatBody): AllKnowingEyeCombatBody {
+  return Object.fromEntries(Object.keys(initialAllKnowingEyeBody()).map(k => [k, structuredClone(e[k as keyof AllKnowingEyeCombatBody])])) as unknown as AllKnowingEyeCombatBody;
+}
+export type AllKnowingEyeFinanceSnapshot = Pick<SliceState, 'weeklyBudget' | 'lifeTier' | 'nextLifeTier' | 'debts' | 'missedWeeks' | 'credit'>;
+export interface AllKnowingEyeEncounterBudget {
+  cash: number; actions: number; health: number; mind: number; spirituality: number; pollution: number; gender: string; sequence: 1;
+  acting: number; coreStats: SliceState['character']['coreStats']; mastery: Record<string, number>; completedSources: string[]; injuries: SliceInjury[]; injuryRisk: number;
+}
+export interface AllKnowingEyePreparation {
+  week: number; date: PublicGameDate; revision: number; runId: string; randomSeed: string; randomCursor: number; pricePaid: 0; actionsPaid: 1;
+  lifeReflected: true; playerName: string; playerClubHeld: boolean; before: AllKnowingEyeEncounterBudget; after: AllKnowingEyeEncounterBudget;
+  finance: AllKnowingEyeFinanceSnapshot; flashSample: PolymathSampleState; crafts: MysticismMagisterCraft[]; craftingPromotionWeek: number | null; craftingCaseStatus: string; kitsUsed: number; materialsBefore: AllKnowingEyeMaterials; materialsAfter: AllKnowingEyeMaterials;
+}
+export type AllKnowingEyeEncounterCommand = { type: 'ENCOUNTER_TALK' | 'ENCOUNTER_FIGHT' | 'LEAVE_ENCOUNTER' } | { type: 'ENCOUNTER_POLICY'; policy: AllKnowingEyePolicy };
+export interface AllKnowingEyeEncounterJournal {
+  command: AllKnowingEyeEncounterCommand; week: number; date: PublicGameDate; revision: number; randomCursor: number;
+  before: AllKnowingEyeEncounterBudget; after: AllKnowingEyeEncounterBudget; finance: AllKnowingEyeFinanceSnapshot; sceneBefore: AllKnowingEyeScene; sceneAfter: AllKnowingEyeScene; materialsBefore: AllKnowingEyeMaterials; materialsAfter: AllKnowingEyeMaterials;
+}
+export interface AllKnowingEyeEncounterTerminal {
+  outcome: 'PLAYER_DEAD' | 'RETREATED' | 'ENEMY_DEAD' | 'ENEMY_SURRENDERED'; round: number; historyIndex: number;
+  enemyHealth: number; enemyMind: number; enemySpirituality: number; enemyStatus: AllKnowingEyeCombatBody['enemyStatus']; exitMetres: 0 | 4; exitSeconds: 0 | 4;
+}
+export interface AllKnowingEyeEncounterState extends AllKnowingEyeCombatBody {
+  status: 'AVAILABLE' | 'READY' | 'FIGHTING' | 'RESOLVED' | 'RETREATED' | 'LOST'; targetId: typeof ALL_KNOWING_EYE_TARGET_ID; policy: AllKnowingEyePolicy;
+  preparation: AllKnowingEyePreparation | null; purchases: never[]; attemptWeek: number | null; startHistoryIndex: number | null; startSource: AllKnowingEyeCombatSource | null;
+  originalHistory: SliceCombatRound[] | null; originalResources: string | null; scene: AllKnowingEyeScene; materials: AllKnowingEyeMaterials; journal: AllKnowingEyeEncounterJournal[]; terminal: AllKnowingEyeEncounterTerminal | null;
+}
+export function createAllKnowingEyeEncounterState(): AllKnowingEyeEncounterState {
+  return { ...initialAllKnowingEyeBody(), status: 'AVAILABLE', targetId: ALL_KNOWING_EYE_TARGET_ID, policy: 'INHERITED_ONLY', preparation: null, purchases: [], attemptWeek: null, startHistoryIndex: null,
+    startSource: null, originalHistory: null, originalResources: null, scene: createAllKnowingEyeScene(), materials: createAllKnowingEyeMaterials(), journal: [], terminal: null };
+}
+export const createAllKnowingEyeEncounter = createAllKnowingEyeEncounterState;
+export const isAllKnowingEyeEncounterStage = (s: SliceState) => s.progression.pathwayId === 'white-tower' && s.progression.sequence === 1;
+const same = (a: unknown, b: unknown) => a === b || (a !== undefined && b !== undefined && stableStringify(a) === stableStringify(b));
+const integer = (n: unknown, min = 0, max = Number.MAX_SAFE_INTEGER): n is number => Number.isSafeInteger(n) && (n as number) >= min && (n as number) <= max;
+const shape = (v: unknown, keys: readonly string[]) => !!v && typeof v === 'object' && !Array.isArray(v) && same(Object.keys(v).sort(), [...keys].sort());
+export function allKnowingEyeFinanceSnapshot(s: AllKnowingEyeFinanceSnapshot): AllKnowingEyeFinanceSnapshot {
+  return { weeklyBudget: s.weeklyBudget, lifeTier: s.lifeTier, nextLifeTier: s.nextLifeTier, debts: structuredClone(s.debts), missedWeeks: s.missedWeeks, credit: s.credit };
+}
+function validFinance(v: AllKnowingEyeFinanceSnapshot, week: number): boolean {
+  return shape(v, ['weeklyBudget', 'lifeTier', 'nextLifeTier', 'debts', 'missedWeeks', 'credit']) && integer(v.weeklyBudget, 1, 100) && Object.hasOwn(SLICE_LIFE, v.lifeTier) && Object.hasOwn(SLICE_LIFE, v.nextLifeTier) &&
+    integer(v.missedWeeks) && ['NORMAL', 'NOTICE', 'SUSPENDED'].includes(v.credit) && Array.isArray(v.debts) && v.debts.every(d => shape(d, ['id', 'source', 'remaining', 'weeklyPayment', 'createdWeek']) &&
+      typeof d.id === 'string' && !!d.id && typeof d.source === 'string' && !!d.source && integer(d.remaining) && integer(d.weeklyPayment, 1) && integer(d.createdWeek, 0, week));
+}
+export function allKnowingEyeEncounterBudget(s: SliceState): AllKnowingEyeEncounterBudget {
+  return { cash: s.cash, actions: s.actionsRemaining, health: s.health, mind: s.mind, spirituality: s.spirituality, pollution: s.seer.pollution, gender: s.character.gender,
+    sequence: 1, acting: s.progression.acting, coreStats: { ...s.character.coreStats }, mastery: { ...s.progression.mastery }, completedSources: [...s.seer.completedSources], injuries: structuredClone(s.injuries), injuryRisk: s.injuryRisk };
+}
+function validBudget(v: AllKnowingEyeEncounterBudget, revision: number): boolean {
+  return shape(v, ['cash', 'actions', 'health', 'mind', 'spirituality', 'pollution', 'gender', 'sequence', 'acting', 'coreStats', 'mastery', 'completedSources', 'injuries', 'injuryRisk']) && integer(v.cash) &&
+    integer(v.actions, 0, 100) && integer(v.health, 1, 100) && integer(v.mind, 1, 100) && integer(v.spirituality, 0, 120) && integer(v.pollution, 0, 100) && typeof v.gender === 'string' && v.sequence === 1 && integer(v.acting, 0, 100) &&
+    shape(v.coreStats, ['physique', 'perception', 'will', 'knowledge']) && Object.values(v.coreStats).every(n => integer(n, 0, 500)) && !!v.mastery && typeof v.mastery === 'object' && !Array.isArray(v.mastery) && Object.values(v.mastery).every(n => integer(n, 0, 500)) &&
+    Array.isArray(v.completedSources) && v.completedSources.every(x => typeof x === 'string' && !!x) && new Set(v.completedSources).size === v.completedSources.length && validAllKnowingEyeInjuries(v.injuries, revision) && integer(v.injuryRisk);
+}
+export function validAllKnowingEyeMaterials(v: AllKnowingEyeMaterials): boolean {
+  try { const initial = createAllKnowingEyeMaterials(), w = v.weapon;
+    return shape(v, ['weapon']) && shape(w, Object.keys(initial.weapon)) && ['HAND','YARD'].includes(w.location) && integer(w.charge,0,4) && same({...w,location:'HAND',charge:4},initial.weapon);
+  } catch { return false; }
+}
+function arrivalMaterials(before: AllKnowingEyeMaterials): AllKnowingEyeMaterials { return structuredClone(before); }
+export function validateAllKnowingEyePreparation(v: unknown): v is AllKnowingEyePreparation {
+  try { const p=v as AllKnowingEyePreparation; return shape(p,['week','date','revision','runId','randomSeed','randomCursor','pricePaid','actionsPaid','lifeReflected','playerName','playerClubHeld','before','after','finance','flashSample','crafts','craftingPromotionWeek','craftingCaseStatus','kitsUsed','materialsBefore','materialsAfter']) &&
+    integer(p.week,1)&&isValidGameDate(p.date)&&integer(p.revision,1)&&typeof p.runId==='string'&&!!p.runId&&typeof p.randomSeed==='string'&&!!p.randomSeed&&integer(p.randomCursor)&&typeof p.playerClubHeld==='boolean'&&typeof p.playerName==='string'&&!!p.playerName.trim()&&p.pricePaid===0&&p.actionsPaid===1&&p.lifeReflected===true&&
+    validBudget(p.before,p.revision)&&validBudget(p.after,p.revision)&&validFinance(p.finance,p.week)&&p.before.actions>=1&&p.before.actions<=Math.max(4,p.finance.weeklyBudget)&&same(p.after,{...p.before,actions:p.before.actions-1})&&validAllKnowingEyeCrafts(p,p.week)&&
+    validAllKnowingEyeMaterials(p.materialsBefore)&&validAllKnowingEyeMaterials(p.materialsAfter)&&same(p.materialsAfter,arrivalMaterials(p.materialsBefore));
+  }catch{return false;}
+}
+export function validAllKnowingEyeScene(p: AllKnowingEyeScene): boolean {
+  const initial=createAllKnowingEyeScene();
+  return shape(p,Object.keys(initial)) && same({...p,playerLocation:'OUTSIDE',playerCoordinate:0,visibleBodyLine:true,conditionVersion:1,observedConditionVersion:null,observedSourceId:null,observationWeek:null,clockSeconds:0,externalSeconds:0,playerTravelMetres:0,knownPlayerName:null,knownEnemyName:null},initial) &&
+    typeof p.visibleBodyLine==='boolean' && integer(p.conditionVersion,1) && (p.observedConditionVersion===null||integer(p.observedConditionVersion,1,p.conditionVersion)) &&
+    (p.playerLocation==='OUTSIDE'&&p.playerCoordinate===0||p.playerLocation==='YARD'&&p.playerCoordinate===4) && integer(p.clockSeconds) && p.externalSeconds===p.clockSeconds && integer(p.playerTravelMetres) &&
+    (p.observedSourceId===null?p.observationWeek===null&&p.knownPlayerName===null&&p.knownEnemyName===null:typeof p.observedSourceId==='string'&&integer(p.observationWeek,1)&&typeof p.knownPlayerName==='string'&&!!p.knownPlayerName.trim()&&p.knownEnemyName==='埃德温·罗斯');
+}
+function protectedOriginals(s: SliceState): string {
+  const mysticismMagister=structuredClone(s.mysticismMagister);
+  mysticismMagister.crafts=structuredClone(s.allKnowingEye.encounter.preparation?.crafts??s.mysticismMagister.crafts);
+  return stableStringify({reader:s.reader,reasoner:s.reasoner,detective:s.detective,polymath:s.polymath,mysticismMagister,prophet:s.prophet,insightScholar:s.insightScholar,wisdomAngel:s.wisdomAngel,town:s.town,life:s.allKnowingEye.life});
+}
+function adultsAbsent(s: SliceState): boolean {
+  const life=s.allKnowingEye.life;
+  return !hasAllKnowingEyeLifeLock(s)&&life.reflected&&life.playerLocation==='OUTSIDE'&&!life.maraPresent&&!life.irena.present&&life.irena.location==='AWAY'&&s.wisdomAngel.life.mara.location==='EXIT';
+}
+function historyUnchanged(s: SliceState): boolean {const e=s.allKnowingEye.encounter;return Array.isArray(e.originalHistory)&&same(e.originalHistory,s.combatHistory.slice(0,e.originalHistory.length));}
+function originalsUnchanged(s: SliceState): boolean {return s.allKnowingEye.encounter.originalResources===protectedOriginals(s)&&historyUnchanged(s);}
+export function validateAllKnowingEyeEncounterCommand(v:unknown):v is AllKnowingEyeEncounterCommand {if(!v||typeof v!=='object'||Array.isArray(v))return false;const c=v as AllKnowingEyeEncounterCommand;return c.type==='ENCOUNTER_POLICY'?shape(c,['type','policy'])&&['INHERITED_ONLY','BOUNDED_INSIGHT','PENDING_FORECAST','ALL','ORDINARY'].includes(c.policy):shape(c,['type'])&&['ENCOUNTER_TALK','ENCOUNTER_FIGHT','LEAVE_ENCOUNTER'].includes(c.type);}
+export const isAllKnowingEyeEncounterCommand=validateAllKnowingEyeEncounterCommand;
+export const hasAllKnowingEyeEncounterLock=(s:SliceState):boolean=>['READY','FIGHTING'].includes(s.allKnowingEye.encounter.status);
+export const isInsideAllKnowingEyeEncounter=hasAllKnowingEyeEncounterLock;
+export function blockAllKnowingEyeEncounter(s:SliceState,c:AllKnowingEyeEncounterCommand):string|null {
+  if(!validateAllKnowingEyeEncounterCommand(c))return'遭遇命令无效。';const e=s.allKnowingEye.encounter;
+  if(!isAllKnowingEyeEncounterStage(s)||s.allKnowingEye.promotionWeek===null||s.status!=='ACTIVE'||s.health<=0)return'须本人仍活着并完成全知之眼晋升。';
+  if(s.combat)return'先处理当前真实战斗。';if(!adultsAbsent(s))return'先收束三项生活实践，归还原纸与滑块，让玛拉与伊蕾娜实际离场。';if(s.world.city!=='BACKLUND')return'须实际在贝克兰德石院。';
+  if(c.type==='LEAVE_ENCOUNTER')return e.status==='READY'&&originalsUnchanged(s)?null:'须已亲自到场，才能普通离开。';
+  if(s.activeEvent||s.eventQueue.length||s.pulse!=='NONE')return'先处理当前事件或周账。';if(s.mind<=0)return'需要清醒；到场后仍可普通退出。';
+  if(c.type==='ENCOUNTER_TALK')return e.status!=='AVAILABLE'||e.preparation?'同一埃德温的争议不能重置。':s.actionsRemaining<1?'到场需1行动；行动用尽仍可普通离开。':null;
+  if(e.status!=='READY'||!e.preparation||!originalsUnchanged(s))return'须先亲自交谈并保留同一原人原物和旧记录。';
+  if(c.type==='ENCOUNTER_POLICY')return c.policy===e.policy&&e.journal.some(j=>j.command.type==='ENCOUNTER_POLICY')?'已经采用这项策略。':null;
+  if(!e.journal.some(j=>j.command.type==='ENCOUNTER_POLICY'))return'先明确选择本场策略；开战后不能更换。';return s.actionsRemaining<1?'开战需要1行动；和平离开不花行动。':null;
+}
+export const allKnowingEyeEncounterReason=blockAllKnowingEyeEncounter;
+export function leaveAllKnowingEyeCombatScene(p:AllKnowingEyeScene):void {if(p.playerLocation!=='YARD'||p.playerCoordinate!==4)throw new Error('须从实际所在石院离开。');p.playerLocation='OUTSIDE';p.playerCoordinate=0;p.playerTravelMetres+=4;p.clockSeconds+=4;p.externalSeconds+=4;}
+function arrive(s:SliceState,p:AllKnowingEyePreparation):AllKnowingEyeScene{return{...createAllKnowingEyeScene(),playerLocation:'YARD',playerCoordinate:4,observedSourceId:`${s.runId}:AE1-YARD:${p.revision}`,observationWeek:p.week,observedConditionVersion:1,clockSeconds:4,externalSeconds:4,playerTravelMetres:4,knownPlayerName:p.playerName,knownEnemyName:'埃德温·罗斯'};}
+export function applyAllKnowingEyeEncounterCommand(s:SliceState,c:AllKnowingEyeEncounterCommand,ctx:SeerContext):void {
+  const reason=blockAllKnowingEyeEncounter(s,c);if(reason)throw new Error(reason);const e=s.allKnowingEye.encounter;
+  if(c.type==='ENCOUNTER_TALK'){
+    const before=allKnowingEyeEncounterBudget(s),materialsBefore=structuredClone(e.materials);s.actionsRemaining--;e.materials=arrivalMaterials(e.materials);
+    e.preparation={week:s.week,date:{...s.date},revision:s.revision+1,runId:s.runId,randomSeed:s.random.seed,randomCursor:s.random.cursor,pricePaid:0,actionsPaid:1,lifeReflected:true,playerName:s.character.name,playerClubHeld:s.town.clubLocation==='HAND',before,after:allKnowingEyeEncounterBudget(s),finance:allKnowingEyeFinanceSnapshot(s),flashSample:structuredClone(s.polymath.samples.FLASH),crafts:structuredClone(s.mysticismMagister.crafts),craftingPromotionWeek:s.mysticismMagister.promotionWeek,craftingCaseStatus:s.mysticismMagister.cases['modest-craft']!.status,kitsUsed:s.mysticismMagister.practice.kitsUsed,materialsBefore,materialsAfter:structuredClone(e.materials)};
+    e.originalHistory=structuredClone(s.combatHistory);e.originalResources=protectedOriginals(s);e.scene=arrive(s,e.preparation);e.status='READY';
+    ctx.note('走到石院与埃德温交谈',`实付1行动，步行4米4秒。你介绍姓名“${s.character.name}”，47岁的埃德温·罗斯也报出姓名。他持自己的唯一杆，身体100、精神100、灵性120，杆中只有四次有限闪光。玛拉、伊蕾娜及旧人物均不在场；维克托仍未接触。`);return;
+  }
+  const entry:AllKnowingEyeEncounterJournal={command:structuredClone(c),week:s.week,date:{...s.date},revision:s.revision+1,randomCursor:s.random.cursor,before:allKnowingEyeEncounterBudget(s),after:allKnowingEyeEncounterBudget(s),finance:allKnowingEyeFinanceSnapshot(s),sceneBefore:structuredClone(e.scene),sceneAfter:structuredClone(e.scene),materialsBefore:structuredClone(e.materials),materialsAfter:structuredClone(e.materials)};
+  if(c.type==='ENCOUNTER_POLICY'){e.policy=c.policy;ctx.note('选择全知之眼交战策略',c.policy==='ORDINARY'?'本场只作普通动作；不施放抽到的能力。':c.policy==='INHERITED_ONLY'?'本场只允许已学能力；两项新能力回到普通防备。':'仅在所选能力抽到、实际对象与资源齐备时尝试。每轮各一次，失败照付，空窗口没有掌握奖励。');}
+  else if(c.type==='LEAVE_ENCOUNTER'){leaveAllKnowingEyeCombatScene(e.scene);e.status='RESOLVED';ctx.note('沿普通路和平离开石院','沿开放出口实际走4米4秒，原纸、旧装置和生活滑块均留在原处。没有战斗或奖励，埃德温与自己的杆留在石院。');}
+  else{s.actionsRemaining--;e.status='FIGHTING';e.attemptWeek=s.week;e.startHistoryIndex=s.combatHistory.length;s.combat={encounterId:'ALL_KNOWING_EYE_DISPUTE',round:1,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemyInjuries:structuredClone(e.enemyInjuries),enemyRisk:e.enemyRisk,enemyStatus:'RESISTING',lastRound:null};ctx.note('选择与埃德温交战','实付1行动。双方各自最多六次实际行动，精神压力与身体伤害各有实际来源。普通撤退、停止抵抗、伤势与真实死亡照常。');}
+  entry.after=allKnowingEyeEncounterBudget(s);entry.sceneAfter=structuredClone(e.scene);entry.materialsAfter=structuredClone(e.materials);e.journal.push(entry);
+  if(c.type==='ENCOUNTER_FIGHT'){const source=currentAllKnowingEyeCombatSource(s);if(!source)throw new Error('真实战斗来源不完整。');e.startSource={...source,revision:s.revision+1};}
+}
+export const applyAllKnowingEyeEncounter=applyAllKnowingEyeEncounterCommand;
+export const handleAllKnowingEyeEncounter=applyAllKnowingEyeEncounterCommand;
+export function startAllKnowingEyeEncounter(s:SliceState,ctx:SeerContext):void{applyAllKnowingEyeEncounterCommand(s,{type:'ENCOUNTER_FIGHT'},ctx);}
+export function hasAllKnowingEyeDisputeOpponent(s:SliceState):boolean {
+  const e=s.allKnowingEye?.encounter,c=s.combat;return isAllKnowingEyeEncounterStage(s)&&s.status==='ACTIVE'&&!s.activeEvent&&s.world.city==='BACKLUND'&&s.health>0&&s.mind>0&&s.allKnowingEye.promotionWeek!==null&&!!e&&e.status==='FIGHTING'&&e.targetId===ALL_KNOWING_EYE_TARGET_ID&&e.terminal===null&&e.preparation!==null&&e.materials.weapon.charge===4-e.powerUses.FLASH&&originalsUnchanged(s)&&e.attemptWeek===s.week&&adultsAbsent(s)&&
+    validAllKnowingEyeScene(e.scene)&&e.scene.playerLocation==='YARD'&&e.scene.knownPlayerName===s.character.name&&validAllKnowingEyeMaterials(e.materials)&&validAllKnowingEyeBody(e)&&e.weaponLocation===e.materials.weapon.location&&c?.encounterId==='ALL_KNOWING_EYE_DISPUTE'&&c.enemyStatus==='RESISTING'&&c.enemyHealth>0&&c.enemyMind>0&&e.enemyStatus==='RESISTING'&&e.enemyHealth===c.enemyHealth&&e.enemyMind===c.enemyMind&&same(e.enemyInjuries,c.enemyInjuries)&&e.enemyRisk===c.enemyRisk&&integer(c.round,1)&&e.startHistoryIndex!==null&&integer(e.startHistoryIndex)&&s.combatHistory.length-e.startHistoryIndex===c.round-1;
+}
+function terminalScene(o:AllKnowingEyeRoundOutcome):{root:AllKnowingEyeScene;exit:0|4;materials:AllKnowingEyeMaterials}{const root=structuredClone(o.rootAfter),materials=structuredClone(o.materialsAfter),exit=o.playerHealthAfter>0?4:0;if(exit)leaveAllKnowingEyeCombatScene(root);return{root,exit,materials};}
+export function settleAllKnowingEyeEncounter(s:SliceState,outcome:string,ctx:SeerContext,_award?:(source:string,amount:5|8|25)=>void):void {
+  const e=s.allKnowingEye.encounter,c=s.combat;if(e.status!=='FIGHTING'||c?.encounterId!=='ALL_KNOWING_EYE_DISPUTE')throw new Error('没有这场石院冲突。');if(outcome==='CONTINUE')return;const last=c.lastRound,o=last?.allKnowingEyeOutcome;
+  if(!last||!o||!validateAllKnowingEyeCombatRound(last)||o.continuing||e.terminal||e.startHistoryIndex===null||c.round!==last.round+1||s.combatHistory.length-e.startHistoryIndex!==last.round||!originalsUnchanged(s)||!same(s.combatHistory.at(-1),last)||!same(combatBody(e),combatBody(o))||!same(o.rootAfter,e.scene)||!same(o.materialsAfter,e.materials)||o.playerHealthAfter!==s.health||o.playerMindAfter!==s.mind||o.playerSpiritualityAfter!==s.spirituality||!same(o.craftsAfter,s.mysticismMagister.crafts)||!same(o.masteryAfter,s.progression.mastery)||!same(o.playerInjuriesAfter,s.injuries)||o.playerRiskAfter!==s.injuryRisk||o.enemyHealth!==c.enemyHealth||o.enemyMind!==c.enemyMind||!same(o.enemyInjuries,c.enemyInjuries)||o.enemyRisk!==c.enemyRisk||o.enemyStatus!==c.enemyStatus||outcome!==(o.playerHealthAfter===0?'PLAYER_DEAD':o.enemyHealth===0?'ENEMY_DEAD':o.enemyStatus==='SURRENDERED'?'ENEMY_SURRENDERED':'RETREATED'))throw new Error('结局与真实回合、原人原物和费用不一致。');
+  const final=terminalScene(o);e.scene=final.root;e.materials=final.materials;e.terminal={outcome:outcome as AllKnowingEyeEncounterTerminal['outcome'],round:last.round,historyIndex:s.combatHistory.length-1,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,enemyStatus:e.enemyStatus,exitMetres:final.exit,exitSeconds:final.exit};e.status=outcome==='PLAYER_DEAD'?'LOST':outcome==='RETREATED'?'RETREATED':'RESOLVED';s.combat=null;
+  ctx.note('埃德温的石院冲突结束',`${final.exit?'本人带着实际剩余原微光片，沿普通出口走4米4秒。':'本人的原身体真实死亡，未使用原微光片留在实际身体处。'}双方原灵性、精神、伤势与杆落点保留，没有复活或补发杆中储能。玛拉、伊蕾娜和旧人物仍各在原处。`);
+}
+export const finishAllKnowingEyeEncounter=settleAllKnowingEyeEncounter;
+export function allKnowingEyeEncounterActions(s:SliceState){
+  if(!isAllKnowingEyeEncounterStage(s))return[];
+  const choices:{command:AllKnowingEyeEncounterCommand;label:string;cost:string}[]=[
+    {command:{type:'ENCOUNTER_TALK'},label:'到石院与埃德温交谈',cost:'1行动、4米4秒；用尽行动仍可和平离开'},
+    ...ALL_KNOWING_EYE_POLICIES.map(policy=>({command:{type:'ENCOUNTER_POLICY' as const,policy},label:({INHERITED_ONLY:'只用已学能力',BOUNDED_INSIGHT:'允许现场洞察',PENDING_FORECAST:'允许先机预判',ALL:'允许两项新能力',ORDINARY:'只作普通行动'})[policy],cost:'0行动；开战前明确选择'})),
+    {command:{type:'ENCOUNTER_FIGHT'},label:'自主承担真实冲突',cost:'1行动；真实伤势与死亡风险'},
+    {command:{type:'LEAVE_ENCOUNTER'},label:'沿普通路和平离开',cost:'0行动、4米4秒'}];
+  return choices.map(({command,label,cost})=>{const reason=blockAllKnowingEyeEncounter(s,command);return{id:`AE1-${command.type}${command.type==='ENCOUNTER_POLICY'?'-'+command.policy:''}`,command,label,cost,enabled:reason===null,reason,cleanup:command.type==='LEAVE_ENCOUNTER'};});
+}
+export const ALL_KNOWING_EYE_ENCOUNTER_STORY='47岁的埃德温·罗斯独自在净空石院提出通行争议。他有独立健康100、精神100、灵性120与自己的唯一原杆，杆中四次有限闪光用尽后仍是同一根杆。玛拉、伊蕾娜和旧人物均不在场，维克托仍未接触。沿四米普通路到场，亲自交谈、明确策略后再决定交战或和平离开。';
+export function projectAllKnowingEyeEncounter(s:SliceState){const e=s.allKnowingEye.encounter;return{title:'埃德温的石院争议',story:isAllKnowingEyeEncounterStage(s)?ALL_KNOWING_EYE_ENCOUNTER_STORY:'',status:e.status,inside:hasAllKnowingEyeEncounterLock(s),policy:e.policy,policyConfirmed:e.journal.some(j=>j.command.type==='ENCOUNTER_POLICY'),scene:structuredClone(e.scene),materials:structuredClone(e.materials),crafts:structuredClone(s.mysticismMagister.crafts),remainingCraftIds:s.mysticismMagister.crafts.filter(c=>c.status==='PLAYER').map(c=>c.id),flashSample:structuredClone(s.polymath.samples.FLASH),
+  enemy:{id:e.targetId,name:'埃德温·罗斯',age:47 as const,sequence:1 as const,health:e.enemyHealth,mind:e.enemyMind,spirituality:e.enemySpirituality,status:e.enemyStatus,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses}},actions:allKnowingEyeEncounterActions(s),facts:[
+    '现场洞察每轮一次，6灵性2精神、知识18并受抵抗。30秒内只辅助同一条件下下一项独立实际行动10；开窗本身没有效果。',
+    '先机预判每轮一次，8灵性3精神、感知18并受抵抗。30秒内只削弱下一项可见身体冲击30，不能挡住精神压力。',
+    '变招改变条件并遮挡视线，旧窗口立即失效；普通侧步观察能重新看清当前位置。失败和未应用窗口没有掌握奖励。',
+    '原FLASH样本须早已学会；微光片只消耗实际持有原件，没有新材料或补发。旧装置仍为零储能。',
+    '体35%、感25%、意25%、知15%；双方1至6动作权重10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。',
+    '精神耗尽仍活着停战，身体死亡终结本周目；生还沿普通出口实走4米4秒。']};}
+export type AllKnowingEyeEncounterProjection=ReturnType<typeof projectAllKnowingEyeEncounter>;
+
+/** Exact shared finance transition after a completed, unlocked action. Locked
+ * READY/FIGHTING scenes never pay a bill or grant next-week actions early. */
+export function allKnowingEyeCompletedBudgetMatches(s:SliceState,expected:AllKnowingEyeEncounterBudget,finance:AllKnowingEyeFinanceSnapshot,week:number,date:PublicGameDate,revision:number,randomCursor:number,anchorTitle:string):boolean {
+ const current=allKnowingEyeEncounterBudget(s);
+ if(!same({...current,cash:expected.cash,actions:expected.actions},expected)||s.random.cursor!==randomCursor)return false;
+ const titles=['本周生活费','生活费如实记账','本周约定还款','账目结清','新的一周'];
+ const receipts=s.chronicle.filter((entry,index)=>entry.id===`record-${s.revision}-${index}`&&titles.includes(entry.title));
+ if(expected.actions>0||expected.health===0)return s.week===week&&same(s.date,date)&&s.actionsRemaining===expected.actions&&s.cash===expected.cash&&same(allKnowingEyeFinanceSnapshot(s),finance)&&s.pulse==='NONE'&&s.billAmount===0&&s.activeEvent===null&&s.eventQueue.length===0&&receipts.length===0;
+ if(expected.actions!==0||s.status!=='ACTIVE')return false;
+ const result=resolveSliceWeeklyFinance({...finance,cash:expected.cash,week,revision:revision-1,pulse:'BILL',billAmount:0}),advanced=result.eventId===null&&result.state.pulse==='ADVANCE';
+ const finalFinance={...finance,...result.state,weeklyBudget:finance.weeklyBudget,lifeTier:advanced?result.state.nextLifeTier:finance.lifeTier};
+ if(s.cash!==result.state.cash||!same(allKnowingEyeFinanceSnapshot(s),allKnowingEyeFinanceSnapshot(finalFinance))||s.week!==week+(advanced?1:0)||!same(s.date,advanced?addGameWeeks(date,1):date)||s.actionsRemaining!==(advanced?finance.weeklyBudget:0)||s.pulse!==(advanced?'NONE':result.state.pulse)||s.billAmount!==(advanced?0:result.state.billAmount))return false;
+ const expectedReceipts=result.receipts.map(receipt=>({week,...receipt}));if(advanced)expectedReceipts.push({week:week+1,title:'新的一周',text:`日期推进7天，本周${finance.weeklyBudget}次行动。`});
+ if(!same(receipts.map(({week,title,text})=>({week,title,text})),expectedReceipts))return false;
+ if(result.eventId){const anchor=s.chronicle.findIndex((entry,index)=>entry.id===`record-${s.revision}-${index}`&&entry.title===anchorTitle),eventIndex=anchor+1+result.receipts.length;return anchor>=0&&s.eventQueue.length===0&&same(s.activeEvent,{id:result.eventId,instanceId:`${s.runId}:${result.eventId}:${s.revision}:${eventIndex}`});}
+ return s.activeEvent===null&&s.eventQueue.length===0;
+}
+export function allKnowingEyeTerminalBudgetMatches(s:SliceState,_prep:AllKnowingEyePreparation,o:AllKnowingEyeRoundOutcome):boolean {
+ const fight=s.allKnowingEye.encounter.journal.find(j=>j.command.type==='ENCOUNTER_FIGHT');if(!fight)return false;
+ const expected={...fight.after,health:o.playerHealthAfter,mind:o.playerMindAfter,spirituality:o.playerSpiritualityAfter,mastery:o.masteryAfter,injuries:o.playerInjuriesAfter,injuryRisk:o.playerRiskAfter};
+ return same(s.allKnowingEye.encounter.scene,terminalScene(o).root)&&same(s.allKnowingEye.encounter.materials,terminalScene(o).materials)&&allKnowingEyeCompletedBudgetMatches(s,expected,fight.finance,fight.week,fight.date,o.source.revision+1,o.randomCursorAfter,'埃德温的石院冲突结束');
+}
+function peacefulBudgetMatches(s:SliceState,e:AllKnowingEyeEncounterJournal):boolean{return e.command.type==='LEAVE_ENCOUNTER'&&allKnowingEyeCompletedBudgetMatches(s,e.after,e.finance,e.week,e.date,e.revision,e.randomCursor,'沿普通路和平离开石院');}
+export function replayAllKnowingEyePurchases(s:SliceState):AllKnowingEyeMaterials|null { return Array.isArray(s.allKnowingEye.encounter.purchases)&&s.allKnowingEye.encounter.purchases.length===0?createAllKnowingEyeMaterials():null; }
+/** Exact root and source-chain replay. Historical rounds are immutable; a later
+ * ordinary rest may change the live player but cannot alter a recorded fight. */
+export function replayAllKnowingEyeEncounterRoot(s:SliceState):AllKnowingEyeScene|null {
+ try{
+  const e=s.allKnowingEye.encounter,initial=createAllKnowingEyeEncounterState(),allNew=s.combatHistory.flatMap((r,i)=>r.allKnowingEyeOutcome?[i]:[]),purchased=replayAllKnowingEyePurchases(s);
+  if(!e||!shape(e,Object.keys(initial))||!['AVAILABLE','READY','FIGHTING','RESOLVED','RETREATED','LOST'].includes(e.status)||e.targetId!==initial.targetId||!['INHERITED_ONLY','BOUNDED_INSIGHT','PENDING_FORECAST','ALL','ORDINARY'].includes(e.policy)||!validAllKnowingEyeBody(e)||!validAllKnowingEyeScene(e.scene)||!validAllKnowingEyeMaterials(e.materials)||e.weaponLocation!==e.materials.weapon.location||!purchased)return null;
+  if(!e.preparation)return same({...e,purchases:[],materials:createAllKnowingEyeMaterials()},initial)&&same(e.materials,purchased)&&allNew.length===0&&s.combat?.encounterId!=='ALL_KNOWING_EYE_DISPUTE'?createAllKnowingEyeScene():null;
+  const prep=e.preparation;
+  if(!isAllKnowingEyeEncounterStage(s)||s.allKnowingEye.promotionWeek===null||!s.allKnowingEye.life.reflected||!validateAllKnowingEyePreparation(prep)||prep.runId!==s.runId||prep.playerName!==s.character.name||prep.randomSeed!==s.random.seed||prep.randomCursor>s.random.cursor||!integer(prep.week,s.allKnowingEye.promotionWeek,s.week)||compareGameDates(prep.date,s.date)>0||!integer(prep.revision,1,s.revision)||!historyUnchanged(s)||typeof e.originalResources!=='string'||!e.originalResources||!Array.isArray(e.journal)||!same(prep.materialsBefore,purchased))return null;
+  let policyChosen=false,root=arrive(s,prep),status:AllKnowingEyeEncounterState['status']='READY',policy:AllKnowingEyePolicy='INHERITED_ONLY',materials=structuredClone(prep.materialsAfter),crafts=structuredClone(prep.crafts);
+  let budget=prep.after,finance=prep.finance,week=prep.week,date=prep.date,revision=prep.revision;
+  for(const entry of e.journal){
+   if(!shape(entry,['command','week','date','revision','randomCursor','before','after','finance','sceneBefore','sceneAfter','materialsBefore','materialsAfter'])||!validateAllKnowingEyeEncounterCommand(entry.command)||!['ENCOUNTER_POLICY','ENCOUNTER_FIGHT','LEAVE_ENCOUNTER'].includes(entry.command.type)||!validBudget(entry.before,entry.revision)||!validBudget(entry.after,entry.revision)||!validFinance(entry.finance,entry.week)||!integer(entry.revision,revision+1,s.revision)||entry.randomCursor!==prep.randomCursor||!same(entry.sceneBefore,root)||!same(entry.materialsBefore,materials)||status!=='READY'||entry.week!==week||!same(entry.date,date)||!same(entry.before,budget)||!same(entry.finance,finance))return null;
+   if(entry.command.type==='ENCOUNTER_POLICY'){if(policyChosen&&entry.command.policy===policy)return null;policy=entry.command.policy;policyChosen=true;}
+   else if(entry.command.type==='ENCOUNTER_FIGHT'){if(!policyChosen||root.playerLocation!=='YARD'||entry.before.actions<1)return null;status='FIGHTING';}
+   else{leaveAllKnowingEyeCombatScene(root);status='RESOLVED';}
+   if(!same(entry.after,{...entry.before,actions:entry.before.actions-(entry.command.type==='ENCOUNTER_FIGHT'?1:0)})||!same(entry.sceneAfter,root)||!same(entry.materialsAfter,materials))return null;
+   budget=entry.after;finance=entry.finance;week=entry.week;date=entry.date;revision=entry.revision;
+  }
+  if(e.policy!==policy)return null;
+  if(status!=='FIGHTING'){
+   if(e.status!==status||e.startHistoryIndex!==null||e.startSource!==null||e.attemptWeek!==null||e.terminal!==null||!same(combatBody(e),initialAllKnowingEyeBody())||!same(e.materials,materials)||allNew.length||s.combat?.encounterId==='ALL_KNOWING_EYE_DISPUTE')return null;
+   if(status==='READY'||s.revision===revision){
+    if(!same(s.mysticismMagister.crafts,crafts)||!originalsUnchanged(s)||!adultsAbsent(s))return null;
+    if(status==='READY'){if(!same(allKnowingEyeEncounterBudget(s),budget)||!same(allKnowingEyeFinanceSnapshot(s),finance)||s.week!==week||!same(s.date,date)||s.random.cursor!==prep.randomCursor||s.pulse!=='NONE'||s.billAmount!==0||s.activeEvent||s.eventQueue.length)return null;}
+    else if(!e.journal.at(-1)||!peacefulBudgetMatches(s,e.journal.at(-1)!))return null;
+   }
+   return root;
+  }
+  const start=e.startSource;
+  if(!start||!validAllKnowingEyeCombatSource(start)||!integer(e.startHistoryIndex,0,s.combatHistory.length)||e.startHistoryIndex!==e.originalHistory!.length||e.attemptWeek!==week||start.round!==1||start.revision!==revision||start.week!==week||!same(start.date,date)||start.startHistoryIndex!==e.startHistoryIndex||start.runId!==s.runId||!same(start.preparation,prep)||start.policy!==policy||!same(start.crafts,crafts)||!same(start.body,initialAllKnowingEyeBody())||!same(start.root,root)||!same(start.materials,materials)||start.randomSeed!==s.random.seed||start.randomCursor!==prep.randomCursor||start.playerHealth!==budget.health||start.playerMind!==budget.mind||start.playerSpirituality!==budget.spirituality||!same(start.mastery,budget.mastery)||!same(start.playerInjuries,budget.injuries)||start.playerRisk!==budget.injuryRisk)return null;
+  const terminal=e.terminal;
+  if(terminal&&(!shape(terminal,['outcome','round','historyIndex','enemyHealth','enemyMind','enemySpirituality','enemyStatus','exitMetres','exitSeconds'])||!integer(terminal.historyIndex,e.startHistoryIndex,s.combatHistory.length-1)))return null;
+  const end=terminal?terminal.historyIndex+1:s.combatHistory.length,rounds=s.combatHistory.slice(e.startHistoryIndex,end);
+  if(!same(allNew,rounds.map((_r,i)=>e.startHistoryIndex!+i)))return null;
+  for(const[i,round]of rounds.entries()){const o=round.allKnowingEyeOutcome,previous=rounds[i-1]?.allKnowingEyeOutcome;if(!o||!validateAllKnowingEyeCombatRound(round)||round.round!==i+1||o.source.revision>=s.revision||o.randomCursorAfter>s.random.cursor||!same(o.source,previous?nextAllKnowingEyeCombatSource(previous):start)||!same(o.source.root,root)||i<rounds.length-1&&!o.continuing)return null;root=structuredClone(o.rootAfter);crafts=structuredClone(o.craftsAfter);materials=structuredClone(o.materialsAfter);}
+  const last=rounds.at(-1),o=last?.allKnowingEyeOutcome;
+  if(e.status==='FIGHTING'){
+   if(!same(s.mysticismMagister.crafts,crafts)||terminal||!hasAllKnowingEyeDisputeOpponent(s)||!same(combatBody(e),o?combatBody(o):start.body)||!same(e.materials,materials))return null;
+   const current=allKnowingEyeEncounterBudget(s),expected={...budget,health:o?.playerHealthAfter??start.playerHealth,mind:o?.playerMindAfter??start.playerMind,spirituality:o?Math.min(120,o.playerSpiritualityAfter+12):start.playerSpirituality,mastery:o?.masteryAfter??start.mastery,injuries:o?.playerInjuriesAfter??start.playerInjuries,injuryRisk:o?.playerRiskAfter??start.playerRisk};
+   if(!same(current,expected)||!same(allKnowingEyeFinanceSnapshot(s),finance)||s.week!==week||!same(s.date,date)||s.pulse!=='NONE'||s.billAmount!==0||s.activeEvent!==null||s.eventQueue.length)return null;
+   return o?o.continuing&&same(last,s.combat!.lastRound)&&same(currentAllKnowingEyeCombatSource(s),nextAllKnowingEyeCombatSource(o))?root:null:s.combat!.lastRound===null&&same(currentAllKnowingEyeCombatSource(s),start)?root:null;
+  }
+  if(s.combat?.encounterId==='ALL_KNOWING_EYE_DISPUTE'||!terminal||!last||!o||o.continuing||terminal.round!==last.round||rounds.length!==terminal.round||!same(combatBody(e),combatBody(o))||terminal.enemyHealth!==e.enemyHealth||terminal.enemyMind!==e.enemyMind||terminal.enemySpirituality!==e.enemySpirituality||terminal.enemyStatus!==e.enemyStatus)return null;
+  const final=terminalScene(o);if(terminal.exitMetres!==final.exit||terminal.exitSeconds!==final.exit||!same(e.materials,final.materials))return null;
+  if(s.revision===o.source.revision+1&&(!same(s.mysticismMagister.crafts,crafts)||!originalsUnchanged(s)||!allKnowingEyeTerminalBudgetMatches(s,prep,o)))return null;
+  if(terminal.outcome==='PLAYER_DEAD')return e.status==='LOST'&&s.status==='DEAD'&&o.playerHealthAfter===0?final.root:null;
+  if(terminal.outcome==='RETREATED')return e.status==='RETREATED'&&o.playerHealthAfter>0&&(last.retreat==='SUCCESS'||o.playerMindAfter===0)?final.root:null;
+  return e.status==='RESOLVED'&&o.playerHealthAfter>0&&(terminal.outcome==='ENEMY_DEAD'?e.enemyStatus==='DEAD':terminal.outcome==='ENEMY_SURRENDERED'&&e.enemyStatus==='SURRENDERED')?final.root:null;
+ }catch{return null;}
+}
+export function validateAllKnowingEyeEncounter(s:SliceState):boolean {try{const root=replayAllKnowingEyeEncounterRoot(s);return root!==null&&same(root,s.allKnowingEye.encounter.scene);}catch{return false;}}
+export const validateAllKnowingEyeEncounterState=validateAllKnowingEyeEncounter;
+/** Real commit revisions for the acquisition owner's frozen original-craft ledger. */
+export function allKnowingEyeEncounterOriginalEvents(s:SliceState):{revision:number;week:number;before:MysticismMagisterCraft[];after:MysticismMagisterCraft[]}[]{return s.combatHistory.flatMap(round=>{const o=round.allKnowingEyeOutcome;return o?[{revision:o.source.revision+1,week:o.source.week,before:structuredClone(o.source.crafts),after:structuredClone(o.craftsAfter)}]:[];});}
