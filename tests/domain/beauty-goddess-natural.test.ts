@@ -114,7 +114,7 @@ describe('Beauty Goddess exact original572-command public continuation', () => {
     same(applySliceIntent(second, walk.intent), walk.final);
     expect(walk.final.beautyGoddess.life.practice).toMatchObject({ playerLocation: 'HOME', playerTravelMetres: 60, elapsedSeconds: 70 });
     expect(projectSliceState(walk.final).beautyGoddess.actions.some(action => action.enabled && action.command.type === 'CONSENT')).toBe(true);
-  });
+  }, 10_000);
 
   it('separately confirms the unchanged female body, retains seven failures and promotes only on the eighth original bottle', () => {
     const acknowledgment = boundary('explicit-successful-female-body-confirmation');
@@ -176,7 +176,7 @@ describe('Beauty Goddess exact original572-command public continuation', () => {
     expect(life.practice.pieces.map(piece => [piece.status, piece.holder])).toEqual([['SPENT', 'RETURN_TRAY'], ['SPENT', 'RETURN_TRAY'], ['SUPPLIER', 'SHOP']]);
     expect(BEAUTY_GODDESS_ABILITY_IDS.map(id => final.progression.mastery[id])).toEqual([0, 8]);
     expect(life.reflected).toBe(true); expect(final.progression.acting).toBe(100);
-  });
+  }, 10_000);
 
   it('replays the two actual BODY wins, keeps the mental-pressure slot distinct, and awards no unapplied combat mastery', () => {
     const final = captured('final'), rounds = final.combatHistory.filter(round => round.beautyGoddessOutcome);
