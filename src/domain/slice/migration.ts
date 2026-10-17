@@ -1,3 +1,4 @@
+import { createRedPriestState } from '../red-priest/index.js';
 import { createFoolState } from '../fool/index.js';
 import { createNatureWalkerState } from '../nature-walker/index.js';
 import { createHandOfOrderState } from '../hand-of-order/index.js';
@@ -206,7 +207,7 @@ import {createClownState} from '../clown/index.js';
 import type {SliceState} from './types.js';
 function withSupply(value:unknown){if(!value||typeof value!=='object'||Array.isArray(value)||'resupply'in value)throw new TypeError('Invalid historical potion state');return {...structuredClone(value),resupply:{requestedWeek:null,deliveries:0}};}
 function combatWithEncounter(value:unknown){return value&&typeof value==='object'?{...structuredClone(value),encounterId:'FIRST_CASE'}:value;}
-type NatureWalkerSliceState = Omit<SliceState, 'fool' | 'schemaVersion' | 'contentVersion'> & {
+type NatureWalkerSliceState = Omit<SliceState, 'redPriest' | 'fool' | 'schemaVersion' | 'contentVersion'> & {
  schemaVersion:204; contentVersion:'nature-walker-v204';
 };
 /** Validate old migrations through the current schema without changing their
@@ -214,16 +215,23 @@ type NatureWalkerSliceState = Omit<SliceState, 'fool' | 'schemaVersion' | 'conte
 function assertValidSliceState(input:unknown):asserts input is NatureWalkerSliceState {
  if(!input||typeof input!=='object'||Array.isArray(input))throw new TypeError('Invalid legacy slice state');
  const old=input as Record<string,unknown>;
- if(old.schemaVersion!==204||old.contentVersion!=='nature-walker-v204'||'fool'in old)throw new TypeError('Invalid NatureWalker save');
- assertValidCurrentSliceState({...old,schemaVersion:205,contentVersion:'fool-v205',fool:createFoolState()});
+ if(old.schemaVersion!==204||old.contentVersion!=='nature-walker-v204'||'fool'in old||'redPriest'in old)throw new TypeError('Invalid NatureWalker save');
+ assertValidCurrentSliceState({...old,schemaVersion:206,contentVersion:'red-priest-v206',fool:createFoolState(),redPriest:createRedPriestState()});
 }
 export function migrateSliceState(input:unknown):SliceState {
- if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===205){
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===206){
   assertValidCurrentSliceState(input);return structuredClone(input);
+ }
+ // Legacy inputs cannot smuggle a future root, even an apparently empty one.
+ if(input&&typeof input==='object'&&'redPriest'in input)throw new TypeError('Unexpected RedPriest state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===205){
+  if(!('contentVersion'in input)||input.contentVersion!=='fool-v205')throw new TypeError('Invalid Fool save');
+  const next={...structuredClone(input),schemaVersion:206 as const,contentVersion:'red-priest-v206' as const,redPriest:createRedPriestState()};
+  assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'fool'in input)throw new TypeError('Unexpected Fool state in a legacy save');
  const old=migratePreFoolSliceState(input);
- const next={...old,schemaVersion:205 as const,contentVersion:'fool-v205' as const,fool:createFoolState()};
+ const next={...old,schemaVersion:206 as const,contentVersion:'red-priest-v206' as const,fool:createFoolState(),redPriest:createRedPriestState()};
  assertValidCurrentSliceState(next);return next;
 }
 function migratePreFoolSliceState(input:unknown):NatureWalkerSliceState {

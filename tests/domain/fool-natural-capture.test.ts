@@ -10,6 +10,7 @@ import { applySliceIntent, assertValidSliceState, projectSliceState, validateSli
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { projectFool, validateFoolCommand } from '../../src/domain/fool/index.js';
+import { projectRedPriest } from '../../src/domain/red-priest/index.js';
 import { openFoolRuntimeSession, type FoolRuntimeSession } from '../../src/domain/fool/owned-session.js';
 import { foolFrozenSourceDigest } from '../../src/domain/fool/source.js';
 import type { FoolProjection } from '../../src/domain/fool/types.js';
@@ -17,9 +18,9 @@ import { DeterministicActionRandomStream } from '../../src/resolution/determinis
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 
-/** Private candidate only. Restore the original files through test-inputs before
- * integration. Nothing here launches the producer, imports dist, rewrites an
- * input, supplies a random result, or claims a creation-to-1868 historical replay. */
+/** Immutable 208 capture evidence plus current-runtime migration/replay checks.
+ * Nothing here launches the producer, imports dist, rewrites an input, supplies
+ * a random result, or claims a creation-to-1868 historical replay. */
 const ROOT = 'tests/fixtures/fool-v02080';
 const SOURCE = 'tests/fixtures/attendant-mysteries-v01860/natural-battle.json';
 const SOURCE_PATH = join('tests', 'fixtures', 'attendant-mysteries-v01860', 'natural-battle.json');
@@ -62,9 +63,9 @@ interface FinalRuntimeProof {
   publicRedaction: unknown;
   finalRuntimeFreeze: Freeze; changedFiles: Array<{ file: string; before: FilePin | null; after: FilePin }>;
 }
-// Separate coordinator-reviewed final-runtime proof; never alter historical OBSERVED
-// values to match optimized source. The coordinator fills these exact values only
-// after the actual final runtime/proof is frozen. Missing review fails closed.
+// Separate coordinator-reviewed historical 208 final-runtime proof. These exact
+// bytes authenticate that review, not the source of a later product version.
+// Never alter historical OBSERVED values to match current source.
 const FINAL_RUNTIME_REVIEW: FinalRuntimeReview | null = { file: `${ROOT}/final-runtime-proof.json`, bytes: 866580, sha256: '85f7992dad6feebde5ae24d51dd2eb9874737a213cf4ca08ea6df7a425fe61e1', runtimeFreezeSha256: 'afc9b8237e6694069da5013719d4b1b16536f39448ce311a5b9bbdef70c23a16', verifierSha256: '2aacb0785e85ae79aef0cb74a986e659ccc04c6527e78718b48e65d6d8b381c7' };
 
 function finalRuntimeReview(): FinalRuntimeReview {
@@ -248,16 +249,15 @@ async function fileHash(path: string, prefixBytes?: number): Promise<string> {
 interface PriorPublicRow { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; public: { strictSha256: string } }
 interface RedactionAudit {
   prior: { rows: PriorPublicRow[] };
-  restore: (state: SliceState, projection: ReturnType<typeof projectSliceState>, display: typeof projectPlayerText) => unknown;
+  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest'>, display: typeof projectPlayerText) => unknown;
   assertRow: (prior: { rows: PriorPublicRow[] }, index: number, actual: { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; legacyPublicSha256: string }) => string;
 }
 let redactionAudit: RedactionAudit | null = null;
-// Reuse the same exact bounded-difference/pinned-input validator as SQLite.
-// Vitest executes source TS, so authenticate the entire current src tree, locked
-// dependencies and current producer here. The separately reviewed compiled
-// inventory stays in the proof; full actual dist equality belongs to the dedicated
-// runtime-equivalence and SQLite audits, and is not claimed by this source test.
-async function assertReviewedFinalRuntime(): Promise<void> {
+// Reuse the exact pinned verifier to authenticate both historical inventories,
+// their bounded differences and every original capture input. The proof records
+// source hashes, not source bytes: it cannot authenticate today's source tree.
+// Current source is exercised by migration, validation and replay below.
+async function assertReviewedHistoricalRuntimeProof(): Promise<void> {
   const review = finalRuntimeReview(), e = observed();
   keys(review, ['file', 'bytes', 'sha256', 'runtimeFreezeSha256', 'verifierSha256']);
   for (const value of [review.sha256, review.runtimeFreezeSha256, review.verifierSha256]) expect(value).toMatch(/^[a-f0-9]{64}$/);
@@ -279,24 +279,17 @@ async function assertReviewedFinalRuntime(): Promise<void> {
     const path = resolve(fixturePath(file)); expect(realpathSync(path)).toBe(path);
     captureInputs.push({ file, bytes: statSync(path).size, sha256: await fileHash(path) });
   }
-  // The helper binds both complete proof inventories, unchanged historical pins,
-  // exact changed-file rows and the approved narrow addition/modification paths.
+  // Both arguments are historical evidence. The helper binds complete recorded
+  // inventories, unchanged pins and exact approved 208 changed-file rows; this
+  // self-consistency check does not claim current-runtime byte equality.
   validator.assertFoolFinalRuntimeProof(proof, captured, proof.finalRuntimeFreeze, captureInputs);
   redactionAudit = { prior: validator.assertFoolPublicRedactionEvidence(proof.publicRedaction, jsonLines<StateRow>('states.jsonl')), restore: validator.restoreFoolLegacyPublicProjection, assertRow: validator.assertFoolPublicRedactionRow };
   expect(captured.sha256).toBe(e.captureRuntimeFreezeSha256);
   expect(captured.files.find(row => row.file === '$natural-runner')?.sha256).toBe(e.captureProducerSha256);
-  const actual: Freeze['files'] = [];
-  const walk = async (file: string): Promise<void> => {
-    const path = resolve(file); expect(realpathSync(path)).toBe(path); const stat = statSync(path);
-    if (stat.isDirectory()) { for (const name of readdirSync(path).sort()) await walk(posix.join(file, name)); }
-    else { expect(stat.isFile()).toBe(true); actual.push({ file, bytes: stat.size, sha256: await fileHash(path) }); }
-  };
-  for (const file of ['package.json', 'package-lock.json', 'src']) await walk(file);
-  const producerPath = resolve('scripts', 'play', 'fool-stage.mjs'); expect(realpathSync(producerPath)).toBe(producerPath);
-  actual.push({ file: '$natural-runner', bytes: statSync(producerPath).size, sha256: await fileHash(producerPath) });
-  actual.push({ file: SOURCE, bytes: statSync(SOURCE_PATH).size, sha256: await fileHash(SOURCE_PATH) });
-  const expected = proof.finalRuntimeFreeze.files.filter(row => row.file.startsWith('src/') || ['package.json', 'package-lock.json', '$natural-runner', SOURCE].includes(row.file));
-  expect(actual).toEqual(expected);
+  const sourcePath = resolve(SOURCE_PATH); expect(realpathSync(sourcePath)).toBe(sourcePath);
+  const originalSource = { file: SOURCE, bytes: statSync(sourcePath).size, sha256: await fileHash(sourcePath) };
+  expect(originalSource.sha256).toBe(SOURCE_SHA);
+  expect(proof.finalRuntimeFreeze.files.find(row => row.file === SOURCE)).toEqual(originalSource);
   expect(await fileHash(proofPath)).toBe(review.sha256); expect(await fileHash(verifierPath)).toBe(review.verifierSha256);
 }
 
@@ -313,10 +306,58 @@ function jsonLines<T>(file: FileName): T[] {
   const text = readFileSync(fixturePath(file), 'utf8'); expect(text.endsWith('\n'), file).toBe(true);
   return text.slice(0, -1).split('\n').map(line => { expect(line.length).toBeGreaterThan(0); return JSON.parse(line) as T; });
 }
-function current(raw: unknown): SliceState {
-  const state = migrateSliceState(raw);
+type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
+const EMPTY_RED_PRIEST: SliceState['redPriest'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  campaign: null, materials: null, epilogue: null, journal: [],
+};
+let originalStateKeys: readonly string[] | null = null;
+function historicalStateKeys(): readonly string[] {
+  if (!originalStateKeys) {
+    const raw = entry<HistoricalFoolState>('final');
+    expect(hash(raw)).toBe(observed().finalStateSha256);
+    expect([raw.schemaVersion, raw.contentVersion]).toEqual([205, 'fool-v205']);
+    expect(Object.hasOwn(raw, 'redPriest')).toBe(false);
+    originalStateKeys = Object.keys(raw).sort();
+  }
+  return originalStateKeys;
+}
+/** Audit only: allow exactly the approved new root and two version changes.
+ * Every original field, including all nested history, remains in the hash. */
+function historicalStateView(state: SliceState): HistoricalFoolState {
+  keys(state, [...historicalStateKeys(), 'redPriest']);
   expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
+  const { redPriest: _emptyRedPriest, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 205, contentVersion: 'fool-v205' };
+}
+function current(raw: unknown): SliceState {
+  const before = hash(raw), state = migrateSliceState(raw);
+  assertValidSliceState(state);
+  const historical = historicalStateView(state);
+  expect(hash(raw), 'Migration preserves the complete original input').toBe(before);
+  if (raw && typeof raw === 'object' && 'schemaVersion' in raw && raw.schemaVersion === 205) {
+    keys(raw, historicalStateKeys());
+    expect('contentVersion' in raw && raw.contentVersion).toBe('fool-v205');
+    for (const [field, value] of Object.entries(raw)) same(historical[field as keyof HistoricalFoolState], value);
+    same(historical, raw);
+  }
   return state;
+}
+
+/** Remove only the verified inactive new chapter from this detached audit view.
+ * Its complete remaining shape/content is still bound by the old public hash. */
+function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest'> {
+  expect(state.progression.pathwayId).toBe('diviner');
+  expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
+  expect(Object.hasOwn(projection, 'redPriest')).toBe(true);
+  expect(projection.redPriest).toStrictEqual(projectPlayerText(projectRedPriest(state), state.character.name));
+  expect(projection.redPriest.guidanceKnown).toBe(false); expect(projection.redPriest.promoted).toBe(false);
+  expect(projection.redPriest.insideCase).toBe(false); expect(projection.redPriest.abilities).toEqual([]);
+  expect(projection.redPriest.actions.every(action => !action.enabled)).toBe(true);
+  for (const field of ['source', 'frame', 'journal']) expect(Object.hasOwn(projection.redPriest, field)).toBe(false);
+  const { redPriest: _emptyRedPriest, ...originalFields } = projection;
+  return originalFields;
 }
 function budget(s: SliceState) {
   return { revision: s.revision, week: s.week, date: s.date, status: s.status, sequence: s.progression.sequence,
@@ -459,8 +500,21 @@ async function assertTransition(e: Observation, commands: SliceIntent[], freeze:
 }
 
 describe.sequential('Fool original1868 continuation with explicit original43 reconstruction evidence', () => {
-  beforeAll(assertReviewedFinalRuntime, 240_000);
-  afterAll(assertReviewedFinalRuntime, 240_000);
+  beforeAll(assertReviewedHistoricalRuntimeProof, 240_000);
+  afterAll(assertReviewedHistoricalRuntimeProof, 240_000);
+  it('limits the historical audit view to the exact original keys and one strictly empty current chapter', () => {
+    const raw = entry<HistoricalFoolState>('final');
+    // This is only an audit-helper guard; actual migration/loading is tested below.
+    const shape: SliceState = { ...raw, schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION, redPriest: structuredClone(EMPTY_RED_PRIEST) };
+    same(historicalStateView(shape), raw);
+    expect(() => historicalStateView({ ...shape, unexpectedRoot: null } as SliceState)).toThrow();
+    const { fool: _missingOriginalRoot, ...missingOriginal } = shape;
+    expect(() => historicalStateView(missingOriginal as SliceState)).toThrow();
+    expect(() => historicalStateView({ ...shape, redPriest: { ...shape.redPriest, guidanceKnown: true } })).toThrow();
+    expect(() => historicalStateView({ ...shape, redPriest: { ...shape.redPriest, unexpectedField: undefined } } as SliceState)).toThrow();
+    expect(() => historicalStateView({ ...shape, schemaVersion: 205 } as unknown as SliceState)).toThrow();
+    expect(hash(historicalStateView({ ...shape, cash: shape.cash + 1 })), 'An old field is never normalized away').not.toBe(hash(raw));
+  });
   it('requires reviewed actual observations and immutable restored inputs, preserving both raw original roots', async () => {
     const e = observed();
     expect(e.commands).toBeGreaterThanOrEqual(PAUSED_COUNT); expect(e.commands).toBeLessThanOrEqual(PREFIX + 1600);
@@ -501,9 +555,8 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     expect(new Set(freeze.files.map(f => f.file)).size).toBe(freeze.files.length);
     expect(freeze.files.find(f => f.file === '$natural-runner')?.sha256).toBe(e.captureProducerSha256);
     expect(freeze.files.find(f => f.file === SOURCE)?.sha256).toBe(SOURCE_SHA);
-    // Historical producer identity stays pinned above. Current source/producer
-    // identity is separately bound to FINAL_RUNTIME_REVIEW in the suite hooks;
-    // it must not be compared to or substituted for the old captured producer.
+    // Historical producer identity stays pinned above. The suite hooks bind the
+    // separate historical final-runtime review, not today's source or producer.
     // Original freeze and completed-capture freeze are separately authenticated.
     // The original run has NO persisted complete private state or boundary tree.
     const interruption = json<Interruption>(`${PROOF}/interruption.json`), baseline = json<BaselineSummary>(`${PROOF}/baseline/summary.json`);
@@ -564,6 +617,7 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
       const before = state, immutable = hash(before), intent = commands[i]!;
       expect(before.status).toBe('ACTIVE'); expect(validateSlicePayload(intent)).toBe(true);
       state = applySliceIntent(before, intent); assertValidSliceState(state);
+      historicalStateView(state);
       expect(hash(before)).toBe(immutable); expect(state.revision).toBe(before.revision + 1);
       expect(state.random.seed).toBe(SEED); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor);
     }
@@ -614,11 +668,12 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     let session: FoolRuntimeSession | null = null;
     const origin = { runId: state.runId, character: { ...state.character, coreStats: null }, frozen: foolFrozenSourceDigest(state),
       mastery: { ...state.progression.mastery }, revival: hash(state.miracleWorker.revival), combat: hash(state.combatHistory) };
-    const stateHashes = new Map<number, string>();
+    const stateHashes = new Map<number, string>(), currentStateHashes = new Map<number, string>();
     const checkBoundary = (count: number): void => {
       expect(needed.has(count)).toBe(true);
-      const h = hash(state); stateHashes.set(count, h);
-      const captured = capturedStates[count - PREFIX]!; expect(h, `Full private state after command${count}`).toBe(captured.stateSha256);
+      const currentHash = hash(state), h = hash(historicalStateView(state));
+      currentStateHashes.set(count, currentHash); stateHashes.set(count, h);
+      const captured = capturedStates[count - PREFIX]!; expect(h, `Every original 205 private field after command${count}`).toBe(captured.stateSha256);
       if (!redactionAudit) throw new Error('Missing exact reviewed public-redaction proof');
       const prior = redactionAudit.prior.rows[count - PREFIX]!;
       expect(h).toBe(prior.stateSha256); expect(hash(budget(state))).toBe(prior.budgetSha256); same(state.random, prior.random);
@@ -637,16 +692,19 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
         expect(state.runId).toBe(origin.runId); same({ ...state.character, coreStats: null }, origin.character); expect(state.random.seed).toBe(SEED);
         expect(foolFrozenSourceDigest(state)).toBe(origin.frozen); expect(hash(state.miracleWorker.revival)).toBe(origin.revival); expect(hash(state.combatHistory)).toBe(origin.combat);
         for (const [id, mastery] of Object.entries(origin.mastery)) expect(state.progression.mastery[id], id).toBe(mastery);
-        assertValidSliceState(state); const p = session ? session.project() : projectSliceState(state); assertPublicProjection(p);
-        // Only this detached audit copy receives the exact removed private S1 fields.
-        // Current player output above must remain safe; no historical hash is ignored.
-        const legacyHash = hash(redactionAudit.restore(state, p, projectPlayerText));
+        assertValidSliceState(state); const p = projectSliceState(state); assertPublicProjection(p);
+        if (session) { const owned = session.project(); assertPublicProjection(owned); same(owned, p); }
+        // The complete current strict/owned output agrees before the only added
+        // inactive chapter is checked and removed. Only this detached audit copy
+        // receives the reviewed removed private S1 fields; every old public field
+        // remains covered by its exact historical hash.
+        const legacyHash = hash(redactionAudit.restore(state, historicalPublicView(state, p), projectPlayerText));
         redactionAudit.assertRow(redactionAudit.prior, count - PREFIX, { stateSha256: h, budgetSha256: hash(budget(state)), random: state.random, eventSha256: count > 1869 ? hash(state.fool.journal.at(-1)) : null, legacyPublicSha256: legacyHash });
         if (baseline) expect(legacyHash, `Original-freeze reconstructed public state${count}`).toBe(baseline.publicSha256);
         // A separate post-pause computation under the previous frozen runtime,
         // not a 45th recorded public row or a claim of 69 captured public states.
         if (count === PAUSED_COUNT) expect(legacyHash).toBe(TRANSITION.finalPublicSha256);
-        expect(hash(state), 'Validation and public projection are read-only').toBe(h);
+        expect(hash(state), 'Validation and public projection are read-only').toBe(currentHash);
       }
     };
     checkBoundary(PREFIX);
@@ -674,19 +732,20 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
           session.commit(draft);
         }
         expect(state.revision).toBe(before.revision + 1); assertRandom(before, intent, state);
-        expect(hash(before), 'Reducer preserves every previous complete state').toBe(stateHashes.get(i));
+        expect(hash(before), 'Reducer preserves every previous complete current state').toBe(currentStateHashes.get(i));
         same(row.after, budget(state)); const event = state.fool.journal.at(-1); expect(row.journalEventId).toBe(event?.revision === state.revision ? event.id : null);
         checkBoundary(i + 1);
       }
       expect((await ledger.next()).done, 'No unconsumed ledger commands').toBe(true);
     } finally { await ledger.return(undefined); }
     expect(stateHashes.size).toBe(needed.size);
+    expect(currentStateHashes.size).toBe(needed.size);
     expect(stateHashes.get(INTERRUPTED_COUNT)).toBe(report.resumeProvenance.reconstruction.baselineFinalStateSha256);
     expect(stateHashes.get(beforeLastCount)).toBe(e.beforeLastStateSha256); expect(stateHashes.get(beforeLastCount)).toBe(hash(entry('beforeLast')));
     if (pending === null) { expect(beforeLastCount).toBe(commands.length - 1); same(entry('lastIntent'), commands.at(-1)); }
     else { expect(beforeLastCount).toBe(commands.length); same(entry('lastIntent'), pending); expect(validateSlicePayload(pending)).toBe(true); }
     // A pending intent is evidence of an uncommitted attempt; never apply it.
-    expect(hash(state)).toBe(e.finalStateSha256); same(state, current(entry('final'))); same(state.random, e.finalRandom); same(budget(state), e.finalBudget); same(report.final, budget(state));
+    expect(hash(historicalStateView(state))).toBe(e.finalStateSha256); same(state, current(entry('final'))); same(state.random, e.finalRandom); same(budget(state), e.finalBudget); same(report.final, budget(state));
     const actualPotions = state.fool.journal.flatMap((event, i) => event.consumption ? [{ commandCount: PREFIX + i + 2, eventId: event.id, compoundId: event.consumption.compoundId, outcome: event.consumption.outcome }] : []);
     same(report.potions.attempts.map(({ commandCount, eventId, compoundId, outcome }) => ({ commandCount, eventId, compoundId, outcome })), actualPotions);
     expect(report.potions.prepared).toBe(state.fool.materials?.compounds.length ?? 0); expect(report.potions.consumed).toBe(actualPotions.length);

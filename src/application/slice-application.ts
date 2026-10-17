@@ -9,7 +9,7 @@ import {
   SliceRuleError,
 } from "../domain/slice/index.js";
 import type { SliceState, SliceProjection, SliceIntent } from "../domain/slice/types.js";
-import type { FoolRepositoryDraft, FoolRepositoryHead } from "./slice-owned-runtime.js";
+import type { FoolRepositoryDraft, FoolRepositoryHead, OwnedRepositoryDraft, OwnedRepositoryHead } from "./slice-owned-runtime.js";
 import { validateSliceCreation } from "../content/slice-creation.js";
 import type {
   SliceBootstrap,
@@ -34,6 +34,11 @@ export interface SliceRepository {
   list(): StoredSlice[];
   get(runId: string): StoredSlice | null;
   put(value: StoredSlice): void;
+  ownedHead(runId: string): OwnedRepositoryHead | null;
+  prepareOwned(runId: string, intent: SliceIntent, expectedRevision: number): OwnedRepositoryDraft;
+  projectOwnedDraft(draft: OwnedRepositoryDraft): SliceProjection;
+  putOwnedDraft(draft: OwnedRepositoryDraft, updatedAt: string): void;
+  // Original Fool entry points remain for callers and existing fault-injection tests.
   foolHead(runId: string): FoolRepositoryHead | null;
   projectFoolRun(runId: string): SliceProjection | null;
   loadRunProjection(runId: string): SliceProjection | null;
@@ -192,7 +197,8 @@ export class SliceApplication {
                 "这个操作编号已用于其他选择。请重新操作。",
               );
         let next: SliceState | undefined;
-        let draft: FoolRepositoryDraft | undefined;
+        let draft: OwnedRepositoryDraft | undefined;
+        const redPriestIntent = intent.payload.type === "RED_PRIEST";
         let previousRevision = 0;
         if (intent.payload.type === "CREATE") {
           next = createSliceRun(
@@ -201,9 +207,12 @@ export class SliceApplication {
             this.identity(),
           );
         } else {
+          // First guidance remains the original fully validated raw-state path.
           const owned = intent.payload.type === "FOOL" && intent.payload.command.type !== "LEARN_GUIDANCE"
             ? this.repository.foolHead(intent.runId!)
-            : null;
+            : intent.payload.type === "RED_PRIEST" && intent.payload.command.type !== "LEARN_GUIDANCE"
+              ? this.repository.ownedHead(intent.runId!)
+              : null;
           const current = owned ? { state: owned } : this.repository.get(intent.runId!);
           if (!current) return failure("RUN_NOT_FOUND", "没有找到这个周目。");
           if (current.state.revision !== intent.expectedRevision)
@@ -214,7 +223,9 @@ export class SliceApplication {
           if (current.state.status === "DEAD")
             return failure("ARCHIVED", "这个周目已经死亡封存，只能查看卷宗。");
           previousRevision = current.state.revision;
-          if (owned) draft = this.repository.prepareFool(intent.runId!, intent.payload, intent.expectedRevision);
+          if (owned) draft = redPriestIntent
+            ? this.repository.prepareOwned(intent.runId!, intent.payload, intent.expectedRevision)
+            : this.repository.prepareFool(intent.runId!, intent.payload, intent.expectedRevision);
           else next = applySliceIntent((current as StoredSlice).state, intent.payload);
         }
         if (next) assertValidSliceState(next);
@@ -229,9 +240,14 @@ export class SliceApplication {
           newRevision: head.revision,
           committedAt,
           replayed: false,
-          state: draft ? this.repository.projectFoolDraft(draft) : projectSliceState(next!),
+          state: draft
+            ? redPriestIntent ? this.repository.projectOwnedDraft(draft) : this.repository.projectFoolDraft(draft)
+            : projectSliceState(next!),
         };
-        if (draft) this.repository.putFoolDraft(draft, committedAt);
+        if (draft) {
+          if (redPriestIntent) this.repository.putOwnedDraft(draft, committedAt);
+          else this.repository.putFoolDraft(draft, committedAt);
+        }
         else this.repository.put({ state: next!, updatedAt: committedAt });
         this.repository.putReceipt(intent.intentId, { fingerprint, receipt });
         this.repository.selectRun(head.runId);

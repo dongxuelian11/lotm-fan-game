@@ -3,6 +3,7 @@ import {
   type FoolRuntimeDraft,
   type FoolRuntimeSession,
 } from "../domain/fool/owned-session.js";
+import { openRedPriestRuntimeSession } from "../domain/red-priest/owned-session.js";
 import type { SliceIntent, SliceProjection, SliceState } from "../domain/slice/types.js";
 import { projectSliceState } from "../domain/slice/index.js";
 import type { StoredSlice } from "./slice-application.js";
@@ -12,30 +13,54 @@ export function assertSliceSaveTimestamp(value: unknown): asserts value is strin
     throw Error("Invalid save timestamp");
 }
 
-export interface FoolRepositoryHead {
+export interface OwnedRepositoryHead {
   readonly runId: string;
   readonly revision: number;
   readonly status: SliceState["status"];
 }
 /** Metadata is public; authority is runtime membership in one repository's private map. */
-export interface FoolRepositoryDraft extends FoolRepositoryHead {
+export interface OwnedRepositoryDraft extends OwnedRepositoryHead {
   readonly __repositoryDraft: unique symbol;
 }
-interface Head {
+// Preserve the original Fool API and its transaction-test fault injection points.
+export type FoolRepositoryHead = OwnedRepositoryHead;
+export type FoolRepositoryDraft = OwnedRepositoryDraft;
+type RedPriestRuntimeSession = ReturnType<typeof openRedPriestRuntimeSession>;
+type RedPriestRuntimeDraft = ReturnType<RedPriestRuntimeSession["prepare"]>;
+interface FoolHead {
+  readonly kind: "FOOL";
   readonly raw: string;
   readonly session: FoolRuntimeSession;
 }
-interface Draft {
-  readonly epoch: object;
-  readonly head: Head;
-  readonly domain: FoolRuntimeDraft;
-  readonly runId: string;
+interface RedPriestHead {
+  readonly kind: "RED_PRIEST";
+  readonly raw: string;
+  readonly session: RedPriestRuntimeSession;
 }
+type Head = FoolHead | RedPriestHead;
+type Draft = { readonly epoch: object; readonly runId: string } & (
+  | { readonly kind: "FOOL"; readonly head: FoolHead; readonly domain: FoolRuntimeDraft }
+  | { readonly kind: "RED_PRIEST"; readonly head: RedPriestHead; readonly domain: RedPriestRuntimeDraft }
+);
 interface Transaction {
   readonly epoch: object;
   readonly heads: Map<string, Head>;
   readonly drafts: Set<Draft>;
   readonly writes: Map<string, { raw: string; draft: Draft | null }>;
+}
+
+/** Fixed current-format dispatch only. A marker selects a strict factory; it is
+ * never authority. Both factories must validate the entire detached current
+ * slice and all predecessor history before returning a private session. */
+function openCurrentHead(raw: string, state: SliceState): Head | null {
+  if (state.schemaVersion !== 206 || state.contentVersion !== "red-priest-v206")
+    throw Error("Runtime head requires the current save format");
+  const fool = state.fool?.guidanceKnown === true && state.fool.source !== null;
+  const redPriest = state.redPriest?.guidanceKnown === true && state.redPriest.source !== null;
+  if (fool && redPriest) throw Error("Multiple current chapter sessions");
+  if (fool) return { kind: "FOOL", raw, session: openFoolRuntimeSession(state) };
+  if (redPriest) return { kind: "RED_PRIEST", raw, session: openRedPriestRuntimeSession(state) };
+  return null;
 }
 
 /** Kept in a repository #private field. Never hands a domain session or state out. */
@@ -64,13 +89,12 @@ export class SliceOwnedRuntime {
     heads.delete(runId);
     const stored = decode(raw);
     if (stored.state.runId !== runId) throw Error("Snapshot identity mismatch");
-    if (!stored.state.fool.guidanceKnown || stored.state.fool.source === null) return null;
-    const head = { raw, session: openFoolRuntimeSession(stored.state) };
-    heads.set(runId, head);
+    const head = openCurrentHead(raw, stored.state);
+    if (head) heads.set(runId, head);
     return head;
   }
 
-  inspect(runId: string, raw: string | null, decode: (raw: string) => StoredSlice): FoolRepositoryHead | null {
+  inspect(runId: string, raw: string | null, decode: (raw: string) => StoredSlice): OwnedRepositoryHead | null {
     return this.#read(runId, raw, decode)?.session.inspect() ?? null;
   }
 
@@ -78,9 +102,11 @@ export class SliceOwnedRuntime {
     return this.#read(runId, raw, decode)?.session.project() ?? null;
   }
 
-  /** Explicit load always opens from these exact persisted bytes. Envelope parsing
-   * confers no authority: the domain factory validates the complete current Fool
-   * state, while every other snapshot uses the original strict migration path. */
+  /** Explicit load always starts from these exact persisted bytes. Current 206
+   * inputs cross the selected chapter's complete strict factory. Original 205
+   * Fool fixtures must instead pass full migration before opening a current
+   * session; their original bytes remain the cache identity until a real write.
+   * No legacy snapshot is relabelled or treated as an already validated head. */
   load(runId: string, raw: string | null, readEnvelope: (raw: string) => StoredSlice,
     hydrateState: (input: unknown) => SliceState, sealed: boolean): { state: SliceProjection; updatedAt: string } | null {
     const transaction = this.#transaction;
@@ -89,39 +115,50 @@ export class SliceOwnedRuntime {
     transaction.heads.delete(runId);
     if (raw === null) return null;
     const stored = readEnvelope(raw), input = stored.state;
-    const assertIdentity = (identity: FoolRepositoryHead): void => {
+    const assertIdentity = (identity: OwnedRepositoryHead): void => {
       if (identity.runId !== runId) throw Error("Snapshot identity mismatch");
       if (sealed && identity.status !== "DEAD") throw Error("Sealed run cannot be reopened alive");
     };
-    if (input?.schemaVersion === 205 && input.contentVersion === "fool-v205" &&
-      input.fool?.guidanceKnown === true && input.fool.source !== null) {
-      const session = openFoolRuntimeSession(input);
-      assertIdentity(session.inspect());
-      const projection = session.project();
+    const publishLoaded = (head: Head): { state: SliceProjection; updatedAt: string } => {
+      assertIdentity(head.session.inspect());
+      const projection = head.session.project();
       // Failed validation, sealed checks or projection never retain a partial head.
-      transaction.heads.set(runId, { raw, session });
+      transaction.heads.set(runId, head);
       return { state: projection, updatedAt: stored.updatedAt };
+    };
+    if (input?.schemaVersion === 206 && input.contentVersion === "red-priest-v206") {
+      const head = openCurrentHead(raw, input);
+      if (head) return publishLoaded(head);
     }
+    // Includes the original 205 Fool import and the 187-capture predecessor
+    // fixture's older save format. hydrateState owns the strict migration gate.
     const state = hydrateState(input);
     assertIdentity(state);
-    return { state: projectSliceState(state), updatedAt: stored.updatedAt };
+    const head = openCurrentHead(raw, state);
+    return head ? publishLoaded(head) : { state: projectSliceState(state), updatedAt: stored.updatedAt };
   }
 
-  prepare(runId: string, raw: string | null, decode: (raw: string) => StoredSlice, intent: SliceIntent, expectedRevision: number): FoolRepositoryDraft {
+  prepare(runId: string, raw: string | null, decode: (raw: string) => StoredSlice, intent: SliceIntent, expectedRevision: number): OwnedRepositoryDraft {
     const transaction = this.#transaction;
     if (!transaction) throw Error("Prepare outside transaction");
     if (transaction.writes.has(runId)) throw Error("Run already written in this transaction");
     const head = this.#read(runId, raw, decode);
-    if (!head) throw Error("No current Fool session");
-    const domain = head.session.prepare(intent, expectedRevision);
-    const draft: Draft = { epoch: transaction.epoch, head, domain, runId };
-    const handle = Object.freeze({ ...head.session.inspectDraft(domain) }) as FoolRepositoryDraft;
+    if (!head) throw Error("No current owned chapter session");
+    // Keep the two independent domain brands correlated with their real owner.
+    // The domain session itself checks the intent's chapter and exact revision.
+    const draft: Draft = head.kind === "FOOL"
+      ? { kind: "FOOL", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
+      : { kind: "RED_PRIEST", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId };
+    const identity = draft.kind === "FOOL"
+      ? draft.head.session.inspectDraft(draft.domain)
+      : draft.head.session.inspectDraft(draft.domain);
+    const handle = Object.freeze({ ...identity }) as OwnedRepositoryDraft;
     this.#drafts.set(handle, draft);
     transaction.drafts.add(draft);
     return handle;
   }
 
-  #require(handle: FoolRepositoryDraft): Draft {
+  #require(handle: OwnedRepositoryDraft): Draft {
     const draft = this.#drafts.get(handle), transaction = this.#transaction;
     if (!draft || !transaction || draft.epoch !== transaction.epoch ||
       transaction.heads.get(draft.runId) !== draft.head || transaction.writes.has(draft.runId))
@@ -129,21 +166,25 @@ export class SliceOwnedRuntime {
     return draft;
   }
 
-  projectDraft(handle: FoolRepositoryDraft): SliceProjection {
+  projectDraft(handle: OwnedRepositoryDraft): SliceProjection {
     const draft = this.#require(handle);
-    return draft.head.session.projectDraft(draft.domain);
+    return draft.kind === "FOOL"
+      ? draft.head.session.projectDraft(draft.domain)
+      : draft.head.session.projectDraft(draft.domain);
   }
 
-  snapshotDraft(handle: FoolRepositoryDraft, raw: string | null): SliceState {
+  snapshotDraft(handle: OwnedRepositoryDraft, raw: string | null): SliceState {
     const draft = this.#require(handle);
     if (raw !== draft.head.raw) {
       this.#transaction!.heads.delete(draft.runId);
       throw Error("Persisted snapshot changed during runtime transaction");
     }
-    return draft.head.session.snapshotDraft(draft.domain);
+    return draft.kind === "FOOL"
+      ? draft.head.session.snapshotDraft(draft.domain)
+      : draft.head.session.snapshotDraft(draft.domain);
   }
 
-  stageDraft(handle: FoolRepositoryDraft, raw: string): void {
+  stageDraft(handle: OwnedRepositoryDraft, raw: string): void {
     const draft = this.#require(handle);
     this.#transaction!.writes.set(draft.runId, { raw, draft });
   }
@@ -159,10 +200,12 @@ export class SliceOwnedRuntime {
     if (!transaction) return;
     for (const [runId, write] of transaction.writes) {
       transaction.heads.delete(runId);
-      if (write.draft) {
+      const draft = write.draft;
+      if (draft) {
         try {
-          write.draft.head.session.commit(write.draft.domain);
-          transaction.heads.set(runId, { raw: write.raw, session: write.draft.head.session });
+          if (draft.kind === "FOOL") draft.head.session.commit(draft.domain);
+          else draft.head.session.commit(draft.domain);
+          transaction.heads.set(runId, { ...draft.head, raw: write.raw });
         } catch {
           // Persistence already succeeded. Re-enter strict hydration rather than
           // misreport a rollback if a programming error prevents publication.
@@ -179,7 +222,10 @@ export class SliceOwnedRuntime {
     this.#transaction = null;
     this.#drafts = new WeakMap();
     if (transaction) for (const draft of transaction.drafts) {
-      try { draft.head.session.discard(draft.domain); } catch { /* already discarded */ }
+      try {
+        if (draft.kind === "FOOL") draft.head.session.discard(draft.domain);
+        else draft.head.session.discard(draft.domain);
+      } catch { /* already discarded */ }
     }
   }
 

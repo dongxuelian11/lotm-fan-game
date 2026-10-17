@@ -1,3 +1,4 @@
+import type { RedPriestState, RedPriestCommand, RedPriestProjection } from '../red-priest/types.js';
 import type { FoolState, FoolCommand, FoolProjection } from '../fool/types.js';
 import type { NatureWalkerRoundOutcome, NatureWalkerPublicRoundOutcome, projectNatureWalkerCombat } from '../nature-walker/combat.js';
 import type { NatureWalkerState, NatureWalkerCommand, NatureWalkerProjection } from '../nature-walker/types.js';
@@ -23,7 +24,7 @@ import type { MisfortuneKnightRoundOutcome, projectMisfortuneKnightCombat } from
 import type { BeautyGoddessRoundOutcome, projectBeautyGoddessCombat } from '../beauty-goddess/combat.js';
 import type { CivilizationEnlightenerRoundOutcome, projectCivilizationEnlightenerCombat } from '../civilization-enlightener/combat.js';
 import type { WriterRoundOutcome, projectWriterCombat } from '../writer/combat.js';
-import type { ConquerorRoundOutcome, projectConquerorCombat } from '../conqueror/combat.js';
+import type { ConquerorRoundOutcome, ConquerorPublicRoundOutcome, projectConquerorCombat } from '../conqueror/combat.js';
 import type { AttendantMysteriesRoundOutcome, AttendantMysteriesPublicRoundOutcome, projectAttendantMysteriesCombat } from '../attendant-mysteries/combat.js';
 import type { PaleEmperorState, PaleEmperorCommand, PaleEmperorProjection } from '../pale-emperor/types.js';
 import type { PureWhiteAngelState, PureWhiteAngelCommand, PureWhiteAngelProjection } from '../pure-white-angel/types.js';
@@ -298,6 +299,7 @@ import type { PublicCheckResult, PublicCoreStatKey, PublicGameDate } from '../..
 export type SliceLifeTier = 'DESTITUTE' | 'POOR' | 'ORDINARY' | 'RESPECTABLE' | 'LUXURIOUS';
 export type SliceStance = 'ATTACK' | 'DEFEND' | 'CONTROL' | 'PREPARE' | 'RETREAT';
 export type SliceIntent =
+  | { type: 'RED_PRIEST'; command: RedPriestCommand }
   | { type: 'FOOL'; command: FoolCommand }
   | { type: 'ACTION'; action: 'WORK' | 'REST' }
   | { type: 'ACTION'; action: 'LEARN' | 'INVESTIGATE'; targetId: string }
@@ -765,6 +767,7 @@ export interface SliceArc {
   relationship: AudreyOutcome; transferPending: boolean;
 }
 export interface SliceState {
+  redPriest:RedPriestState;
   fool:FoolState;
   paleEmperor:PaleEmperorState;
   pureWhiteAngel:PureWhiteAngelState;
@@ -966,7 +969,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 205; contentVersion: 'fool-v205'; runId: string; revision: number;
+  schemaVersion: 206; contentVersion: 'red-priest-v206'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -983,8 +986,9 @@ export interface SliceState {
 }
 /** Deliberately constructed allow-list, never a spread of SliceState. */
 /** Public records keep resolved action facts; deterministic replay source stays private. */
-export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome'> & { natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
+export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome'> & { conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
 export interface SliceProjection {
+  redPriest:RedPriestProjection;
   fool:FoolProjection;
   recovery: SliceRecoveryProjection;
   paleEmperor:PaleEmperorProjection;
