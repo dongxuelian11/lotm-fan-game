@@ -1,20 +1,32 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import { join } from "node:path";
 
-import { registerIpcHandlers } from "./ipc.js";
-import { SqliteGameStore } from "../persistence/sqlite-store.js";
+import { registerSliceIpc } from "./slice-ipc.js";
+import {
+  SqliteSliceStore,
+  NewerSliceSaveError,
+} from "../persistence/slice-store.js";
 import { resolveRendererLoadPlan } from "./renderer-source.js";
-import { buildMainWindowOptions, installWindowSecurity } from "./window-security.js";
+import {
+  buildMainWindowOptions,
+  installWindowSecurity,
+} from "./window-security.js";
 
 let mainWindow: BrowserWindow | null = null;
-let store: SqliteGameStore | null = null;
+let store: SqliteSliceStore | null = null;
 let disposeIpcHandlers: (() => void) | null = null;
+
+let storageError = "桌面存档无法打开，原文件已保留。";
 
 function openStore(): void {
   try {
-    const databasePath = join(app.getPath("userData"), "mystery-game.sqlite");
-    store = new SqliteGameStore(databasePath, app.getVersion());
-  } catch {
+    const databasePath = join(app.getPath("userData"), "playable-slice.sqlite");
+    store = new SqliteSliceStore(databasePath);
+  } catch (error) {
+    storageError =
+      error instanceof NewerSliceSaveError
+        ? "存档来自更新版本，当前程序不会覆盖它。请使用更新版本打开。"
+        : "桌面存档无法打开，原文件已保留。请检查存储权限或恢复备份。";
     store = null;
   }
 }
@@ -46,11 +58,11 @@ function createMainWindow(): BrowserWindow {
 
 function startApplication(): void {
   openStore();
-  disposeIpcHandlers = registerIpcHandlers({
+  disposeIpcHandlers = registerSliceIpc({
     ipcMain,
     getWindow: () => mainWindow,
     getStore: () => store,
-    appVersion: app.getVersion(),
+    getStorageError: () => storageError,
   });
 
   mainWindow = createMainWindow();
@@ -59,7 +71,13 @@ function startApplication(): void {
   });
 }
 
-app.whenReady().then(startApplication).catch(() => undefined);
+if (process.env.LOTM_TEST_USER_DATA)
+  app.setPath("userData", process.env.LOTM_TEST_USER_DATA);
+
+app
+  .whenReady()
+  .then(startApplication)
+  .catch(() => undefined);
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {

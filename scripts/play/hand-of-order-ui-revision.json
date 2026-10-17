@@ -1,0 +1,31 @@
+{
+  "kind": "HAND_OF_ORDER206_REVIEWED_UI_DRAWER_REVISION",
+  "captureFreezeSha256": "82595e0577e1408fe3343da02116e90f99f4ac129af355b3ad57947655dc8b90",
+  "runtimeFreezeSha256": "13ed59282ec870a5c48381b5bcb00b8432ef138b27c241111d174749ea00fd83",
+  "changes": [
+    {
+      "before": {
+        "file": "src/renderer/SliceApp.tsx",
+        "bytes": 1276616,
+        "sha256": "cd645f63846be3c1a73728724d77e1f0e150710323816cf4bd4ca8aa8a45625f"
+      },
+      "after": {
+        "file": "src/renderer/SliceApp.tsx",
+        "bytes": 1276747,
+        "sha256": "7710e96e6ccde1899a9b0d78d96d20ce997d33ae0936ebb7513e86a50f53b3b9"
+      }
+    },
+    {
+      "before": {
+        "file": "scripts/play/hand-of-order-save.mjs",
+        "bytes": 51428,
+        "sha256": "bca686d7c234b6e14920e58085251ec7e69a5872f588c2c8e1534c04b1d2b75b"
+      },
+      "after": {
+        "file": "scripts/play/hand-of-order-save.mjs",
+        "bytes": 52943,
+        "sha256": "b97e40c2074fbad7e8857a26d5f4947f068d1aa2efef2a621aef14cb32faf997"
+      }
+    }
+  ]
+}
