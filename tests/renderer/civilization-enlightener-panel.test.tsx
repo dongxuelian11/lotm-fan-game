@@ -248,7 +248,7 @@ describe('Civilization Enlightener panel: actual objects, fresh consent and ordi
     // Finite public display receipt only; this is not a valid campaign journal.
     const originals = value.life.creations.map(({ id, charge, durability, location, active }) => ({ id, charge, durability, location, active }));
     return { week: 170, date: { epoch: 'FIFTH_EPOCH', year: 1352, month: 9, day: 23 }, revision: 720,
-      randomCursor: 310, randomBefore: null, randomAfter: null, checkBase: null, check: null, command, outcome: null,
+      checkBase: null, check: null, command, outcome: null,
       before: { health: 98, mind: 98, spirituality: 120, cash: 560, actions: 1 },
       after: { health: 98, mind: 98, spirituality: 120, cash: 560, actions: 1 },
       elapsedSeconds: 0, ownerWalkedMetres: 0, veraWalkedMetres: 0, originalsCarriedMetres: 0, wrenchCarriedMetres: 0,

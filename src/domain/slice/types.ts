@@ -1,3 +1,4 @@
+import type { PerfecterState, PerfecterCommand, PerfecterProjection } from '../perfecter/types.js';
 import type { VisionaryState, VisionaryCommand, VisionaryProjection } from '../visionary/types.js';
 import type { RedPriestState, RedPriestCommand, RedPriestProjection } from '../red-priest/types.js';
 import type { FoolState, FoolCommand, FoolProjection } from '../fool/types.js';
@@ -23,7 +24,7 @@ import type { StarKeyRoundOutcome, projectStarKeyCombat } from '../star-key/comb
 import type { AllKnowingEyeRoundOutcome, projectAllKnowingEyeCombat } from '../all-knowing-eye/combat.js';
 import type { MisfortuneKnightRoundOutcome, projectMisfortuneKnightCombat } from '../misfortune-knight/combat.js';
 import type { BeautyGoddessRoundOutcome, projectBeautyGoddessCombat } from '../beauty-goddess/combat.js';
-import type { CivilizationEnlightenerRoundOutcome, projectCivilizationEnlightenerCombat } from '../civilization-enlightener/combat.js';
+import type { CivilizationEnlightenerRoundOutcome, CivilizationEnlightenerPublicRoundOutcome, projectCivilizationEnlightenerCombat } from '../civilization-enlightener/combat.js';
 import type { WriterRoundOutcome, WriterPublicRoundOutcome, projectWriterCombat } from '../writer/combat.js';
 import type { ConquerorRoundOutcome, ConquerorPublicRoundOutcome, projectConquerorCombat } from '../conqueror/combat.js';
 import type { AttendantMysteriesRoundOutcome, AttendantMysteriesPublicRoundOutcome, projectAttendantMysteriesCombat } from '../attendant-mysteries/combat.js';
@@ -70,7 +71,7 @@ import type {CatastropheRoundOutcome,projectCatastropheCombat} from '../catastro
 import type {WisdomAngelRoundOutcome,projectWisdomAngelCombat} from '../wisdom-angel/combat.js';
 import type {ConcealmentServantRoundOutcome,projectConcealmentServantCombat} from '../concealment-servant/combat.js';
 import type {LifeGiverRoundOutcome,projectLifeGiverCombat} from '../life-giver/combat.js';
-import type {KnowledgeMentorRoundOutcome,projectKnowledgeMentorCombat} from '../knowledge-mentor/combat.js';
+import type {KnowledgeMentorRoundOutcome,KnowledgeMentorPublicRoundOutcome,projectKnowledgeMentorCombat} from '../knowledge-mentor/combat.js';
 import type { SageState, SageCommand, SageProjection } from '../sage/types.js';
 import type { CalamityDemonessState, CalamityDemonessCommand, CalamityDemonessProjection } from '../calamity-demoness/types.js';
 import type { GloryState, GloryCommand, GloryProjection } from '../glory/types.js';
@@ -300,6 +301,7 @@ import type { PublicCheckResult, PublicCoreStatKey, PublicGameDate } from '../..
 export type SliceLifeTier = 'DESTITUTE' | 'POOR' | 'ORDINARY' | 'RESPECTABLE' | 'LUXURIOUS';
 export type SliceStance = 'ATTACK' | 'DEFEND' | 'CONTROL' | 'PREPARE' | 'RETREAT';
 export type SliceIntent =
+  | { type: 'PERFECTER'; command: PerfecterCommand }
   | { type: 'VISIONARY'; command: VisionaryCommand }
   | { type: 'RED_PRIEST'; command: RedPriestCommand }
   | { type: 'FOOL'; command: FoolCommand }
@@ -769,6 +771,7 @@ export interface SliceArc {
   relationship: AudreyOutcome; transferPending: boolean;
 }
 export interface SliceState {
+  perfecter:PerfecterState;
   visionary:VisionaryState;
   redPriest:RedPriestState;
   fool:FoolState;
@@ -972,7 +975,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 207; contentVersion: 'visionary-v207'; runId: string; revision: number;
+  schemaVersion: 208; contentVersion: 'perfecter-v208'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -989,8 +992,9 @@ export interface SliceState {
 }
 /** Deliberately constructed allow-list, never a spread of SliceState. */
 /** Public records keep resolved action facts; deterministic replay source stays private. */
-export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome' | 'writerOutcome'> & { writerOutcome?: WriterPublicRoundOutcome; conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
+export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome' | 'writerOutcome' | 'civilizationEnlightenerOutcome' | 'knowledgeMentorOutcome'> & { knowledgeMentorOutcome?: KnowledgeMentorPublicRoundOutcome; civilizationEnlightenerOutcome?: CivilizationEnlightenerPublicRoundOutcome; writerOutcome?: WriterPublicRoundOutcome; conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
 export interface SliceProjection {
+  perfecter:PerfecterProjection;
   visionary:VisionaryProjection;
   redPriest:RedPriestProjection;
   fool:FoolProjection;

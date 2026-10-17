@@ -45,6 +45,15 @@ export interface CivilizationEnlightenerLifeReceipt {
   originalsBefore: CivilizationEnlightenerOriginalSnapshot[]; originalsAfter: CivilizationEnlightenerOriginalSnapshot[];
   loadTransitions: ('HAND_START' | 'HAND_STOP' | 'LEARNER_STOP')[];
 }
+export interface CivilizationEnlightenerPublicLifeReceipt {
+  week: number; date: PublicGameDate; revision: number;
+  checkBase: number | null; check: PublicCheckResult | null;
+  command: CivilizationEnlightenerActivityCommand; outcome: PublicResolutionTier | null;
+  before: CivilizationEnlightenerLifeBudget; after: CivilizationEnlightenerLifeBudget;
+  elapsedSeconds: number; ownerWalkedMetres: number; veraWalkedMetres: number; originalsCarriedMetres: number; wrenchCarriedMetres: number;
+  originalsBefore: CivilizationEnlightenerOriginalSnapshot[]; originalsAfter: CivilizationEnlightenerOriginalSnapshot[];
+  loadTransitions: ('HAND_START' | 'HAND_STOP' | 'LEARNER_STOP')[];
+}
 export interface CivilizationEnlightenerLifeCase {
   status: 'AVAILABLE' | 'OBSERVED' | 'ACTIVE' | 'PAUSED' | 'EXAMINED' | 'RESOLVED';
   observedWeek: number | null; invitedWeek: number | null; invitationWeeks: number[]; method: Method | null;
@@ -84,8 +93,8 @@ export interface CivilizationEnlightenerLifeProjection {
   cases: { id: CivilizationEnlightenerCaseId; title: string; story: string; observations: string[]; status: string;
     permission: CivilizationEnlightenerLifeCase['permission']; contactOpen: boolean; preparation: string | null; result: string | null; returned: boolean;
     attempts: { invitedWeek: number; method: Method; outcome: PublicResolutionTier | null; learnerOutcome: PublicResolutionTier | null;
-      evidence: { abilityAttempted: boolean; abilityApplied: boolean; returned: boolean; result: Result; ordinaryStepLearned: boolean }; receipts: CivilizationEnlightenerLifeReceipt[] }[] }[];
-  ledger: CivilizationEnlightenerLifeReceipt[];
+      evidence: { abilityAttempted: boolean; abilityApplied: boolean; returned: boolean; result: Result; ordinaryStepLearned: boolean }; receipts: CivilizationEnlightenerPublicLifeReceipt[] }[] }[];
+  ledger: CivilizationEnlightenerPublicLifeReceipt[];
 }
 const ANALYSIS = 'paragon.s1.process-analysis', GUIDANCE = 'paragon.s1.operational-guidance';
 const ABILITIES = [ANALYSIS, GUIDANCE] as const;
@@ -470,13 +479,47 @@ export function civilizationEnlightenerLifeActions(s: SliceState): CivilizationE
   } else if (!l.reflected) add({ type: 'REFLECT' }, '反思结构、劳动、普通学习与撤回许可', '1行动 · 扮演25', false, true);
   return out;
 }
+const publicLifeBudget = (b: CivilizationEnlightenerLifeBudget): CivilizationEnlightenerLifeBudget => ({ health: b.health, mind: b.mind, spirituality: b.spirituality, cash: b.cash, actions: b.actions });
+const publicOriginalSnapshot = (x: CivilizationEnlightenerOriginalSnapshot): CivilizationEnlightenerOriginalSnapshot => ({ id: x.id, charge: x.charge, durability: x.durability, location: x.location, active: x.active });
+/** Material provenance remains public; only its known historical authoring prefix is display-only. */
+export function projectCivilizationEnlightenerOriginalCreation(x: AlchemistCreation): AlchemistCreation {
+  return { id: x.id, kind: x.kind, source: x.source.startsWith('原创G：') ? x.source.slice('原创G：'.length) : x.source,
+    componentIds: [...x.componentIds], madeBy: x.madeBy, owner: x.owner, custodian: x.custodian, location: x.location,
+    durability: x.durability, charge: x.charge, active: x.active, manufacturedWeek: x.manufacturedWeek };
+}
+function publicLifeCommand(c: CivilizationEnlightenerActivityCommand): CivilizationEnlightenerActivityCommand {
+  switch (c.type) {
+    case 'OBSERVE': case 'REPORT': return { type: c.type, caseId: c.caseId };
+    case 'INVITE': return { type: c.type, caseId: c.caseId, method: c.method };
+    case 'MOVE': return { type: c.type, to: c.to };
+    case 'CONSENT': case 'DECLINE_CONSENT': case 'REVOKE_CONSENT': return { type: c.type, permission: c.permission };
+    default: return { type: c.type };
+  }
+}
+/** Resolved facts are public; the private journal keeps the unchanged replay inputs. */
+export function projectCivilizationEnlightenerLifeReceipt(entry: CivilizationEnlightenerLifeReceipt): CivilizationEnlightenerPublicLifeReceipt {
+  const check = entry.check;
+  return {
+    week: entry.week, date: { epoch: entry.date.epoch, year: entry.date.year, month: entry.date.month, day: entry.date.day }, revision: entry.revision,
+    checkBase: entry.checkBase, check: check ? {
+      ability: check.ability, baseAbility: check.baseAbility, modifiers: check.modifiers.map(modifier => ({ source: modifier.source, value: modifier.value })),
+      effectiveAbility: check.effectiveAbility, difficulty: check.difficulty, chance: check.chance, roll: check.roll, tier: check.tier,
+    } : null,
+    command: publicLifeCommand(entry.command), outcome: entry.outcome,
+    before: publicLifeBudget(entry.before), after: publicLifeBudget(entry.after), elapsedSeconds: entry.elapsedSeconds,
+    ownerWalkedMetres: entry.ownerWalkedMetres, veraWalkedMetres: entry.veraWalkedMetres,
+    originalsCarriedMetres: entry.originalsCarriedMetres, wrenchCarriedMetres: entry.wrenchCarriedMetres,
+    originalsBefore: entry.originalsBefore.map(publicOriginalSnapshot), originalsAfter: entry.originalsAfter.map(publicOriginalSnapshot),
+    loadTransitions: [...entry.loadTransitions],
+  };
+}
 function projectAttempts(l: CivilizationEnlightenerLifeState, id: CivilizationEnlightenerCaseId): CivilizationEnlightenerLifeProjection['cases'][number]['attempts'] {
   let model: ReplayModel = { practice: freshPractice(), cases: freshCases(), originals: structuredClone(l.sourceOriginals), reflected: false };
   const result: CivilizationEnlightenerLifeProjection['cases'][number]['attempts'] = []; let current: typeof result[number] | null = null;
   for (const entry of l.journal) {
     const next = transition(model, entry.command, entry.week, entry.outcome, entry.before, entry); if (!next) break; model = next.model;
     if (entry.command.type === 'INVITE' && entry.command.caseId === id) { current = { invitedWeek: entry.week, method: entry.command.method, outcome: null, learnerOutcome: null, evidence: { abilityAttempted: false, abilityApplied: false, returned: false, result: 'NONE', ordinaryStepLearned: false }, receipts: [] }; result.push(current); }
-    if (current) { current.receipts.push(structuredClone(entry)); const r = model.cases[id]; current.outcome = r.outcome; current.learnerOutcome = r.learnerOutcome; current.evidence = { abilityAttempted: r.abilityAttempted, abilityApplied: r.abilityApplied, returned: r.returned, result: r.result, ordinaryStepLearned: r.ordinaryStepLearned }; if (entry.command.type === 'RETURN_HOME' || entry.command.type === 'ABORT') current = null; }
+    if (current) { current.receipts.push(projectCivilizationEnlightenerLifeReceipt(entry)); const r = model.cases[id]; current.outcome = r.outcome; current.learnerOutcome = r.learnerOutcome; current.evidence = { abilityAttempted: r.abilityAttempted, abilityApplied: r.abilityApplied, returned: r.returned, result: r.result, ordinaryStepLearned: r.ordinaryStepLearned }; if (entry.command.type === 'RETURN_HOME' || entry.command.type === 'ABORT') current = null; }
   }
   return result;
 }
@@ -484,9 +527,9 @@ export function projectCivilizationEnlightenerLife(s: SliceState): CivilizationE
   const l = s.civilizationEnlightener.life, actions = civilizationEnlightenerLifeActions(s), r = l.practice.activeCase ? l.cases[l.practice.activeCase] : null;
   return { title: '同一工作台上的理解、修理与普通学习', source: '原造物、原制造记录和真实材料都继续存在；维拉逐次决定是否接受帮助，亲手完成的普通动作才是实际结果。', environment: CIVILIZATION_ENLIGHTENER_LIFE_ENVIRONMENT,
     insideCase: hasCivilizationEnlightenerLifeLock(s), reflected: l.reflected, preferredActionId: actions.find(a => a.enabled && a.preferredAction)?.id ?? actions.find(a => a.enabled)?.id ?? null,
-    practice: structuredClone(l.practice), creations: structuredClone(s.alchemist.life.creations), currentConsents: [{ id: 'KM2-VERA', consented: r?.permission.ability === 'GRANTED', teachingConsented: r?.permission.teaching === 'GRANTED' }],
+    practice: structuredClone(l.practice), creations: s.alchemist.life.creations.map(projectCivilizationEnlightenerOriginalCreation), currentConsents: [{ id: 'KM2-VERA', consented: r?.permission.ability === 'GRANTED', teachingConsented: r?.permission.teaching === 'GRANTED' }],
     cases: CASES.map(item => { const c = l.cases[item.id]; return { id: item.id, title: item.title, story: item.story, observations: c.status === 'AVAILABLE' ? [] : [...item.facts], status: c.status, permission: structuredClone(c.permission), contactOpen: c.contactOpen,
       preparation: c.status === 'OBSERVED' ? '等候本次重新邀请及逐项许可。' : c.status === 'PAUSED' ? '实际成本和失败保留；下一真实周可付费普通续办，最多两次。' : null,
       result: c.result !== 'NONE' ? `${c.result === 'ABILITY' ? '对应能力确实帮助完成了这一个实际步骤。' : '本人或维拉已按普通方法完成。'}${c.returned ? '原物已还，维拉已实际离场。' : '仍须停载还物，并沿原路走返。'}` : c.guidanceEnd === 'PENDING' ? '帮助窗口仍待真实的普通尝试，尚未完成或增加掌握。' : c.abilityAttempted ? '施术成本与结果已记录，剩余步骤可普通完成。' : null,
-      returned: c.returned, attempts: projectAttempts(l, item.id) }; }), ledger: structuredClone(l.journal) };
+      returned: c.returned, attempts: projectAttempts(l, item.id) }; }), ledger: l.journal.map(projectCivilizationEnlightenerLifeReceipt) };
 }

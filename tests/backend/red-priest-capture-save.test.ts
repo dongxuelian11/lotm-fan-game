@@ -10,8 +10,10 @@ import { assertFinalUiBoundary, finalUiProof } from '../helpers/red-priest-final
 import { projectPlayerText } from '../../src/shared/player-text.js';
 import type { RedPriestProjection } from '../../src/domain/red-priest/types.js';
 import { storyProof } from '../helpers/red-priest-story-fixture.js';
-import type { SliceState } from '../../src/domain/slice/types.js';
+import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { openRedPriestRuntimeSession } from '../../src/domain/red-priest/owned-session.js';
+import { createVisionaryState, projectVisionary } from '../../src/domain/visionary/index.js';
+import { createPerfecterState, projectPerfecter } from '../../src/domain/perfecter/index.js';
 import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   ROOT, FORK_COUNT, authenticateFixture, captureHash, checkpoint, hash, initialPlanningSeam,
@@ -37,6 +39,22 @@ function assertPlayerProjection(local: RedPriestProjection, global: RedPriestPro
   expect(global.actions.map(({ id, command, cost, enabled }) => ({ id, command, cost, enabled })))
     .toEqual(local.actions.map(({ id, command, cost, enabled }) => ({ id, command, cost, enabled })));
   expect(global.resources).toEqual(local.resources);
+}
+/** Preserve every historical public field. Only these two later chapter roots
+ * are absent from raw209; both must remain their complete fresh private and
+ * public defaults on this exact current historical state before omission. */
+function historicalPublicHash(current: SliceProjection, state: SliceState, capturedRoot: SliceState): string {
+  expect(Object.hasOwn(capturedRoot, 'visionary')).toBe(false);
+  expect(Object.hasOwn(capturedRoot, 'perfecter')).toBe(false);
+  const visionary = createVisionaryState(), perfecter = createPerfecterState();
+  expect(state.visionary).toEqual(visionary);
+  expect(state.perfecter).toEqual(perfecter);
+  const fresh = { ...state, visionary, perfecter };
+  const expected = projectPlayerText({ visionary: projectVisionary(fresh), perfecter: projectPerfecter(fresh) }, state.character.name);
+  expect(current.visionary).toEqual(expected.visionary);
+  expect(current.perfecter).toEqual(expected.perfecter);
+  const { visionary: _visionary, perfecter: _perfecter, ...historical } = current;
+  return hash(historical);
 }
 function persisted(path: string): string {
   const db = new DatabaseSync(path, { readOnly: true });
@@ -77,7 +95,7 @@ describe('Red Priest209 planned captured transition through SQLite', () => {
       before = state; publicBefore = session.project();
       const localBefore = session.projectRedPriest();
       assertFinalUiBoundary(localBefore, state, row, finalUi.replay.rows[replayed - 1]!, story.replay.rows[replayed - 1]!, 'Before');
-      expect(hash(publicBefore)).toBe(finalUi.replay.rows[replayed - 1]!.publicSliceBeforeSha256);
+      expect(historicalPublicHash(publicBefore, state, root.state)).toBe(finalUi.replay.rows[replayed - 1]!.publicSliceBeforeSha256);
       assertPlayerProjection(localBefore, publicBefore.redPriest, state);
       if (row.intent.type !== 'RED_PRIEST') throw Error('Only actual Red Priest intents belong to the planned capture');
       const command = row.intent.command;
@@ -90,7 +108,7 @@ describe('Red Priest209 planned captured transition through SQLite', () => {
       expect(captureHash(before, root.state), 'Draft leaves predecessor intact').toBe(row.beforeStateSha256);
       expect(captureHash(state, root.state)).toBe(row.afterStateSha256); expect(state.random).toEqual(row.randomAfter);
       assertFinalUiBoundary(localAfter, state, row, finalUi.replay.rows[replayed - 1]!, story.replay.rows[replayed - 1]!, 'After');
-      expect(hash(publicAfter)).toBe(finalUi.replay.rows[replayed - 1]!.publicSliceSha256);
+      expect(historicalPublicHash(publicAfter, state, root.state)).toBe(finalUi.replay.rows[replayed - 1]!.publicSliceSha256);
       assertPlayerProjection(localAfter, publicAfter.redPriest, state);
       if (row.commandCount === selected.commandCount) { after = state; break; }
     }

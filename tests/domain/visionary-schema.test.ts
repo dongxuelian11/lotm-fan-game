@@ -11,6 +11,7 @@ const fresh = () => createSliceRun('visionary-schema', sliceDefaultCreationSelec
 const same = (a: unknown,b: unknown) => expect(stableStringify(a)).toBe(stableStringify(b));
 function old(version: 205 | 206): Record<string, unknown> {
   const value = structuredClone(fresh()) as unknown as Record<string, unknown>;
+  delete value.perfecter;
   delete value.visionary;
   if(version === 205) delete value.redPriest;
   value.schemaVersion=version; value.contentVersion=version === 205 ? 'fool-v205':'red-priest-v206';
@@ -26,7 +27,7 @@ describe('Visionary exact current schema boundary', () => {
   it.each([205,206] as const)('strictly preserves every old %i field and adds only missing defaults', version => {
     const state=old(version), before=stableStringify(state), next=migrateSliceState(state), defaults=fresh();
     const additions=Object.keys(next).filter(k=>!Object.hasOwn(state,k));
-    expect(additions.sort()).toEqual((version===205?['redPriest','visionary']:['visionary']).sort());
+    expect(additions.sort()).toEqual((version===205?['perfecter','redPriest','visionary']:['perfecter','visionary']).sort());
     for(const [key,value] of Object.entries(state)) if(key!=='schemaVersion'&&key!=='contentVersion') same(next[key as keyof SliceState],value);
     for(const key of additions) same(next[key as keyof SliceState],defaults[key as keyof SliceState]);
     expect(stableStringify(state)).toBe(before);

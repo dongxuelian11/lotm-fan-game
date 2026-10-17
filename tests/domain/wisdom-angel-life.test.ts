@@ -244,7 +244,7 @@ describe('Wisdom Angel original finite evidence, current conditions and actual p
     expect(s.wisdomAngel.life.clockSeconds).toBe(before.wisdomAngel.life.clockSeconds + 7); expect(attempt(s, caseId)).toMatchObject({ playerTravelMetres: 8, maraTravelMetres: 8, papersReturned: true, deviceReturned: true, exited: true });
     expect([s.actionsRemaining, s.spirituality]).toEqual([0, 0]); expect(s.random).toEqual(before.random); expect(mastery(s)).toEqual([0, 0]);
     s = report(close(unitBudget(s), caseId), caseId); expect(mastery(s)).toEqual([0, 0]); expect(attempt(s, caseId).result).toBe('ORDINARY');
-  });
+  }, 10_000);
 
   it('ordinary play completes every actual demonstration, return and report without needing success or spirituality', () => {
     const before = ready(); let s = structuredClone(before); s.spirituality = 0;

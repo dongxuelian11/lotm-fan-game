@@ -20,9 +20,9 @@ function readEnvelope(raw: string): StoredSlice {
   return value;
 }
 function hydrateState(input: unknown): SliceState {
-  // A genuine original Fool save may cross the 205/206 -> 207 strict migration.
+  // A genuine original Fool save may cross the 205/206/207 -> 208 strict migration.
   // Other browser inputs retain their original current-format-only gate.
-  if (input && typeof input === "object" && "schemaVersion" in input && (input.schemaVersion === 205 || input.schemaVersion === 206))
+  if (input && typeof input === "object" && "schemaVersion" in input && (input.schemaVersion === 205 || input.schemaVersion === 206 || input.schemaVersion === 207))
     return migrateSliceState(input);
   assertValidSliceState(input);
   return input;
