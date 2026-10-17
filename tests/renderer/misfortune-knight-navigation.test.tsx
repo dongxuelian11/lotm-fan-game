@@ -263,7 +263,7 @@ describe('Misfortune Knight actual saved campaign navigation and reopening', () 
 
   it('reopens all honest reports and original returns without replaying costs or borrowing the sealed twelve-use leaf', async () => {
     const game = savedGame(snapshot('practiced')), before = structuredClone(game.state);
-    await mount(game); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull(); await openGrowth(); assertResources(before);
+    await mount(game); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull(); await ensurePanel(); assertResources(before);
     for (const id of ['pending-parcel', 'personal-dark-guard', 'withdrawn-path']) {
       await userEvent.selectOptions(screen.getByRole('combobox', { name: '厄难骑士目标' }), id);
       expect(screen.getByRole('region', { name: '实际位置与归还' }).textContent).toContain('本案实际还物与归程已完成');
@@ -275,7 +275,21 @@ describe('Misfortune Knight actual saved campaign navigation and reopening', () 
     expect(game.state.spiritWarlock.companion).toMatchObject({ status: 'SEALED', deployments: 12, recalls: 12 });
     expect([game.state.progression.mastery['darkness.s1.guided-mishap'], game.state.progression.mastery['darkness.s1.bounded-night-guard']]).toEqual([8, 8]);
     await userEvent.click(screen.getByRole('button', { name: '返回普通生活' }));
-    expect(await screen.findByRole('heading', { name: '人物卷宗' })).toBeTruthy(); await openGrowth();
+    expect(await screen.findByRole('heading', { name: '人物卷宗' })).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+    const darkness = await screen.findByRole('region', { name: '序列0 黑暗' });
+    const value = projectSliceState(before).darkness;
+    expect(before.progression.sequence).toBe(1); expect(value.promoted).toBe(false);
+    expect(value.abilities).toHaveLength(20);
+    await userEvent.click(within(darkness).getByText('已掌握的能力', { selector: 'summary' }));
+    for (const ability of value.abilities) {
+      expect(ability.mastery).toBe(before.progression.mastery[ability.id]);
+      expect(within(darkness).getByRole('heading', { name: `${ability.label} · 熟练 ${ability.mastery}` })).toBeTruthy();
+    }
+    expect(value.abilities.some(ability => ability.id.startsWith('darkness.s0.'))).toBe(false);
+    expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
+    await userEvent.click(within(darkness).getByRole('button', { name: '返回普通生活' }));
+    await ensurePanel(); assertResources(before);
     expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
   });
 

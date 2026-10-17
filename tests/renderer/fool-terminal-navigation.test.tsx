@@ -12,6 +12,7 @@ import { createRedPriestState, projectRedPriest } from '../../src/domain/red-pri
 import { createVisionaryState, projectVisionary } from '../../src/domain/visionary/index.js';
 import { createPerfecterState, projectPerfecter } from '../../src/domain/perfecter/index.js';
 import { createMoonState, projectMoon } from '../../src/domain/moon/index.js';
+import { createDarknessState, projectDarkness } from '../../src/domain/darkness/index.js';
 import { projectPlayerText } from '../../src/shared/player-text.js';
 import type { SliceBridge, SliceRunSummary } from '../../src/shared/slice-contracts.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
@@ -27,17 +28,22 @@ const FINAL_SHA256 = '66b91d08d03b564d4e19d8acb8bcd47ead3233da1ba39561bc3d8945ca
 const PUBLIC_SHA256 = '0e0d77363984f154ac14fc8e5260d9bda59119a582aaf8bcd7549b727f34f5b3';
 const PANEL = '愚者 · 当前现场';
 const hash = (value: unknown): string => sha256Hex(stableStringify(value));
-type OriginalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon'> & {
+type OriginalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness'> & {
   schemaVersion: 205; contentVersion: 'fool-v205';
+};
+const EMPTY_DARKNESS: SliceState['darkness'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
 };
 
 function assertExactMigration(original: OriginalFoolState, current: SliceState): void {
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  expect(Object.keys(current).sort()).toEqual([...Object.keys(original), 'redPriest', 'visionary', 'perfecter', 'moon'].sort());
+  expect(Object.keys(current).sort()).toEqual([...Object.keys(original), 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness'].sort());
   expect(current.redPriest).toStrictEqual(createRedPriestState());
   expect(current.visionary).toStrictEqual(createVisionaryState());
   expect(current.perfecter).toStrictEqual(createPerfecterState());
   expect(current.moon).toStrictEqual(createMoonState());
+  expect(current.darkness).toStrictEqual(EMPTY_DARKNESS);
   const now = current as unknown as Record<string, unknown>;
   // Every old field is covered, including all nested history, body and RNG data.
   // Hashes avoid retaining giant private trees in assertion failure diffs.
@@ -47,17 +53,35 @@ function assertExactMigration(original: OriginalFoolState, current: SliceState):
 }
 
 function historicalPublicHash(value: SliceProjection, current: SliceState): string {
-  // Remove only the four fully verified fresh-root projections. Everything else,
+  // Remove only the five fully verified fresh-root projections. Everything else,
   // including unexpected additions or missing old public fields, stays hash-bound.
   expect(current.redPriest).toStrictEqual(createRedPriestState());
   expect(current.visionary).toStrictEqual(createVisionaryState());
   expect(current.perfecter).toStrictEqual(createPerfecterState());
   expect(current.moon).toStrictEqual(createMoonState());
+  expect(current.darkness).toStrictEqual(EMPTY_DARKNESS);
+  expect(current.progression.pathwayId).toBe('diviner');
   expect(value.redPriest).toStrictEqual(projectPlayerText(projectRedPriest(current), current.character.name));
   expect(value.visionary).toStrictEqual(projectPlayerText(projectVisionary(current), current.character.name));
   expect(value.perfecter).toStrictEqual(projectPlayerText(projectPerfecter(current), current.character.name));
   expect(value.moon).toStrictEqual(projectPlayerText(projectMoon(current), current.character.name));
-  for (const root of [value.redPriest, value.visionary, value.perfecter, value.moon]) {
+  expect(Object.hasOwn(value, 'darkness')).toBe(true);
+  expect(value.darkness).toStrictEqual(projectPlayerText(projectDarkness(current), current.character.name));
+  // Independently pin every discarded field and the one disabled action.
+  expect(value.darkness).toStrictEqual({
+    title: '序列0 黑暗', guidanceKnown: false, promoted: false,
+    story: '原庭院里的人和物仍在原处。步行前往新街区，在白昼查路、问过四位成年人的意愿，入夜后用普通灯、原绳和亲身搀扶完成长夜撤离。',
+    nextStep: '四人逐一在真实夜间抵达，再亲走返程；核清三份原特性，等待1353年真实事件后才交接同一唯一性，并为同一瓶付费准备。',
+    risk: '完整准备按本人实际意志计算成功率，不改骰子。失败会留下伤势、污染并可能死亡。幸存者须原地封存、隔周付费回收，另购有限载体重新准备。',
+    resources: { health: current.health, mind: current.mind, spirituality: current.spirituality,
+      cash: `${current.cash}便士`, actionsRemaining: current.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'darkness:0:LEARN_GUIDANCE', label: '听取长夜撤离与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: current.status === 'ACTIVE' ? '须由仍活着的厄难骑士继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  for (const root of [value.redPriest, value.visionary, value.perfecter, value.moon, value.darkness]) {
     expect(Object.keys(root).sort()).toEqual(['title', 'guidanceKnown', 'promoted', 'story', 'nextStep',
       'risk', 'resources', 'abilities', 'actions', 'sections', 'insideCase'].sort());
     expect(root).toMatchObject({ guidanceKnown: false, promoted: false, insideCase: false, abilities: [] });
@@ -65,8 +89,8 @@ function historicalPublicHash(value: SliceProjection, current: SliceState): stri
     expect(root.actions.every(action => !action.enabled)).toBe(true);
     for (const key of ['source', 'frame', 'journal']) expect(Object.hasOwn(root, key)).toBe(false);
   }
-  expect(value.perfecter.sections).toEqual([]); expect(value.moon.sections).toEqual([]);
-  const { redPriest: _redPriest, visionary: _visionary, perfecter: _perfecter, moon: _moon, ...historical } = value;
+  expect(value.perfecter.sections).toEqual([]); expect(value.moon.sections).toEqual([]); expect(value.darkness.sections).toEqual([]);
+  const { redPriest: _redPriest, visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, ...historical } = value;
   return hash(historical);
 }
 
@@ -188,17 +212,21 @@ describe('Fool SliceApp actual completed S0 terminal navigation', () => {
     expect(original.lastCombatRound?.attendantMysteriesOutcome).toBeTruthy();
     expect(Object.hasOwn(original, 'redPriest')).toBe(false); expect(Object.hasOwn(original, 'visionary')).toBe(false);
     expect(Object.hasOwn(original, 'perfecter')).toBe(false); expect(Object.hasOwn(original, 'moon')).toBe(false);
+    expect(Object.hasOwn(original, 'darkness')).toBe(false);
+    expect(EMPTY_DARKNESS).toStrictEqual(createDarknessState());
     const current = migrateSliceState(original);
     assertExactMigration(original, current);
     expect(() => assertExactMigration(original, { ...current, unexpectedRoot: null } as SliceState)).toThrow();
     const missingRoot = { ...current }; Reflect.deleteProperty(missingRoot, 'fool');
     expect(() => assertExactMigration(original, missingRoot)).toThrow();
-    for (const key of ['perfecter', 'moon'] as const) {
+    for (const key of ['perfecter', 'moon', 'darkness'] as const) {
       const { [key]: _missing, ...missing } = current;
       expect(() => assertExactMigration(original, missing as SliceState)).toThrow();
       expect(() => assertExactMigration(original, { ...current, [key]: { ...current[key], guidanceKnown: true } })).toThrow();
       expect(() => assertExactMigration(original, { ...current, [key]: { ...current[key], unexpectedField: undefined } })).toThrow();
     }
+    expect(() => assertExactMigration(original, { ...current, darkness: { ...current.darkness,
+      promotionStability: { preparations: [], unexpectedField: undefined } } } as SliceState)).toThrow();
     const currentPrivateHash = hash(current);
     const value = projectSliceState(current); // Actual current production projector, exactly once.
     const currentPublicHash = hash(value);
@@ -206,12 +234,18 @@ describe('Fool SliceApp actual completed S0 terminal navigation', () => {
     expect(historicalPublicHash({ ...value, unexpectedRoot: null } as SliceProjection, current)).not.toBe(PUBLIC_SHA256);
     const missingPublicRoot = { ...value }; Reflect.deleteProperty(missingPublicRoot, 'fool');
     expect(historicalPublicHash(missingPublicRoot, current)).not.toBe(PUBLIC_SHA256);
-    for (const key of ['perfecter', 'moon'] as const) {
+    for (const key of ['perfecter', 'moon', 'darkness'] as const) {
       const { [key]: _missing, ...missing } = value;
       expect(() => historicalPublicHash(missing as SliceProjection, current)).toThrow();
       expect(() => historicalPublicHash({ ...value, [key]: { ...value[key], guidanceKnown: true } }, current)).toThrow();
       expect(() => historicalPublicHash({ ...value, [key]: { ...value[key], privateProbe: undefined } }, current)).toThrow();
     }
+    for (const actions of [[], [{ ...value.darkness.actions[0]!, enabled: true }],
+      [{ ...value.darkness.actions[0]!, reason: null }], [{ ...value.darkness.actions[0]!, privateProbe: undefined }]]) {
+      expect(() => historicalPublicHash({ ...value, darkness: { ...value.darkness, actions } }, current)).toThrow();
+    }
+    expect(() => historicalPublicHash({ ...value, darkness: { ...value.darkness,
+      resources: { ...value.darkness.resources, cash: '0便士' } } }, current)).toThrow();
     expect(hash(current)).toBe(currentPrivateHash);
     expect(value.fool).toMatchObject({ title: PANEL, guidanceKnown: true, promoted: true, insideCase: false,
       resources: { health: 65, mind: 96, spirituality: 92, cash: '71便士', actionsRemaining: 2 } });

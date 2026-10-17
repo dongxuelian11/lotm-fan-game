@@ -12,7 +12,7 @@ import type { SliceProjection, SliceState } from '../../src/domain/slice/types.j
 import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   PREFIX, actualReceipts, assertGlobalPublic, assertPublicAction, authenticateInputs, capturePublic, hash,
-  loadCapture, outcome, readBoundary, same, sha, type LoadedCapture,
+  historicalMoonState, loadCapture, migrateCapturedMoonState, outcome, readBoundary, same, sha, type LoadedCapture,
 } from '../helpers/moon-capture.js';
 
 /** Whole-input integrity plus exactly THREE reviewed, genuine captured SQLite
@@ -57,13 +57,16 @@ describe('Moon212 compressed captured transitions through real SQLite', () => {
     const count = pins.sqliteCommandCounts[sample], selected = cp.boundaries.find(item => item.commandCount === count)!;
     const row = rows[count - PREFIX - 1]!;
     expect(selected).toBeDefined(); expect(row).toBeDefined();
-    const boundary = readBoundary(selected, row), before = boundary.beforeLast, after = boundary.final;
-    expect(before.status).toBe('ACTIVE'); expect(hash(before)).toBe(row.beforeStateSha256); expect(hash(after)).toBe(row.afterStateSha256);
+    const boundary = readBoundary(selected, row);
+    expect(hash(boundary.beforeLast)).toBe(row.beforeStateSha256); expect(hash(boundary.final)).toBe(row.afterStateSha256);
+    const before = migrateCapturedMoonState(boundary.beforeLast), after = migrateCapturedMoonState(boundary.final);
+    expect(before.status).toBe('ACTIVE');
+    expect(hash(historicalMoonState(before))).toBe(row.beforeStateSha256); expect(hash(historicalMoonState(after))).toBe(row.afterStateSha256);
     const publicBefore = publicState(before), publicAfter = publicState(after);
-    expect(hash(capturePublic(publicBefore))).toBe(row.publicBeforeSha256);
-    expect(hash(capturePublic(publicAfter))).toBe(row.publicAfterSha256);
-    same(capturePublic(publicAfter), boundary.public); expect(outcome(boundary.public)).toEqual(row.selectionOutcome);
-    assertPublicAction(capturePublic(publicBefore), row); same(actualReceipts(after, before), row.receipts);
+    expect(hash(capturePublic(publicBefore, before))).toBe(row.publicBeforeSha256);
+    expect(hash(capturePublic(publicAfter, after))).toBe(row.publicAfterSha256);
+    same(capturePublic(publicAfter, after), boundary.public); expect(outcome(boundary.public)).toEqual(row.selectionOutcome);
+    assertPublicAction(capturePublic(publicBefore, before), row); same(actualReceipts(after, before), row.receipts);
     const envelope: SliceEnvelope = { intentId: `moon212-captured:${count}`, runId: before.runId,
       expectedRevision: before.revision, payload: structuredClone(boundary.lastIntent) };
     const envelopeBytes = stableStringify(envelope);

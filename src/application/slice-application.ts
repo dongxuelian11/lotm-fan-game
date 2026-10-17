@@ -198,7 +198,7 @@ export class SliceApplication {
               );
         let next: SliceState | undefined;
         let draft: OwnedRepositoryDraft | undefined;
-        const ownedChapterIntent = intent.payload.type === "RED_PRIEST" || intent.payload.type === "VISIONARY" || intent.payload.type === "PERFECTER" || intent.payload.type === "MOON";
+        const ownedChapterIntent = intent.payload.type === "RED_PRIEST" || intent.payload.type === "VISIONARY" || intent.payload.type === "PERFECTER" || intent.payload.type === "MOON" || intent.payload.type === "DARKNESS";
         let previousRevision = 0;
         if (intent.payload.type === "CREATE") {
           next = createSliceRun(
@@ -210,7 +210,7 @@ export class SliceApplication {
           // First guidance remains the original fully validated raw-state path.
           const owned = intent.payload.type === "FOOL" && intent.payload.command.type !== "LEARN_GUIDANCE"
             ? this.repository.foolHead(intent.runId!)
-            : (intent.payload.type === "RED_PRIEST" || intent.payload.type === "VISIONARY" || intent.payload.type === "PERFECTER" || intent.payload.type === "MOON") && intent.payload.command.type !== "LEARN_GUIDANCE"
+            : (intent.payload.type === "RED_PRIEST" || intent.payload.type === "VISIONARY" || intent.payload.type === "PERFECTER" || intent.payload.type === "MOON" || intent.payload.type === "DARKNESS") && intent.payload.command.type !== "LEARN_GUIDANCE"
               ? this.repository.ownedHead(intent.runId!)
               : null;
           const current = owned ? { state: owned } : this.repository.get(intent.runId!);

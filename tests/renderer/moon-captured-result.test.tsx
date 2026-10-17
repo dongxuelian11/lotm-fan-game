@@ -3,14 +3,13 @@ import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
-import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { MOON_ABILITY_IDS } from '../../src/domain/moon/types.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import type { SliceBridge } from '../../src/shared/slice-contracts.js';
 import {
   ROOT, SOURCE, SOURCE_SHA, PREFIX, PREFIX_SHA, bytes, decoded, evidence, filePin, hash, sha,
-  capturePublic, type Checkpoint, type LoadedCapture, type Manifest,
+  capturePublic, historicalMoonState, migrateCapturedMoonState, type Checkpoint, type LoadedCapture, type Manifest,
 } from '../helpers/moon-capture.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 
@@ -61,17 +60,17 @@ function capturedFinal() {
     strictFinalValidation: true, checkpoint: 'checkpoint.json.gz' });
   expect(hash(summary.public)).toBe(pins.finalPublicSha256);
 
-  const current = migrateSliceState(raw);
+  const current = migrateCapturedMoonState(raw);
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  // No new roots at this seam: future additions require explicit review rather
-  // than silently discarding a historical field or accepting an altered save.
-  expect(Object.keys(current).sort()).toEqual(Object.keys(raw).sort());
-  expect(hash({ ...current, schemaVersion: raw.schemaVersion, contentVersion: raw.contentVersion })).toBe(pins.finalStateSha256);
+  // Only the exact reviewed default Darkness root may be added. Every old
+  // field remains covered by the immutable historical capture hash.
+  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'darkness'].sort());
+  expect(hash(historicalMoonState(current))).toBe(pins.finalStateSha256);
   expect(hash(raw)).toBe(pins.finalStateSha256);
   assertValidSliceState(current);
   const value = projectSliceState(current);
-  expect(capturePublic(value)).toEqual(summary.public);
-  expect(hash(capturePublic(value))).toBe(pins.finalPublicSha256);
+  expect(capturePublic(value, current)).toEqual(summary.public);
+  expect(hash(capturePublic(value, current))).toBe(pins.finalPublicSha256);
   return { raw, current, value, pins };
 }
 

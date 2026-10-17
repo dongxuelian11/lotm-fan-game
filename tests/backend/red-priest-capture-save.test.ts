@@ -12,8 +12,10 @@ import type { RedPriestProjection } from '../../src/domain/red-priest/types.js';
 import { storyProof } from '../helpers/red-priest-story-fixture.js';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { openRedPriestRuntimeSession } from '../../src/domain/red-priest/owned-session.js';
-import { createVisionaryState, projectVisionary } from '../../src/domain/visionary/index.js';
-import { createPerfecterState, projectPerfecter } from '../../src/domain/perfecter/index.js';
+import { projectVisionary } from '../../src/domain/visionary/index.js';
+import { projectPerfecter } from '../../src/domain/perfecter/index.js';
+import { projectMoon } from '../../src/domain/moon/index.js';
+import { projectDarkness } from '../../src/domain/darkness/index.js';
 import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   ROOT, FORK_COUNT, authenticateFixture, captureHash, checkpoint, hash, initialPlanningSeam,
@@ -40,20 +42,47 @@ function assertPlayerProjection(local: RedPriestProjection, global: RedPriestPro
     .toEqual(local.actions.map(({ id, command, cost, enabled }) => ({ id, command, cost, enabled })));
   expect(global.resources).toEqual(local.resources);
 }
-/** Preserve every historical public field. Only these two later chapter roots
- * are absent from raw209; both must remain their complete fresh private and
- * public defaults on this exact current historical state before omission. */
+const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness'] as const;
+/** Independently specified complete empty roots, not a filter for arbitrary
+ * current defaults. The 0.209 capture itself uses schema206/red-priest-v206. */
+const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]> = {
+  visionary: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    era: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  perfecter: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    works: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  moon: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  darkness: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+};
+/** Preserve every historical public field. Only these four explicitly named
+ * later chapter roots may be omitted, after checking their complete empty
+ * private states and complete inactive player-facing projections. Unknown
+ * public fields remain in the historical hash and therefore cannot be hidden. */
 function historicalPublicHash(current: SliceProjection, state: SliceState, capturedRoot: SliceState): string {
-  expect(Object.hasOwn(capturedRoot, 'visionary')).toBe(false);
-  expect(Object.hasOwn(capturedRoot, 'perfecter')).toBe(false);
-  const visionary = createVisionaryState(), perfecter = createPerfecterState();
-  expect(state.visionary).toEqual(visionary);
-  expect(state.perfecter).toEqual(perfecter);
-  const fresh = { ...state, visionary, perfecter };
-  const expected = projectPlayerText({ visionary: projectVisionary(fresh), perfecter: projectPerfecter(fresh) }, state.character.name);
-  expect(current.visionary).toEqual(expected.visionary);
-  expect(current.perfecter).toEqual(expected.perfecter);
-  const { visionary: _visionary, perfecter: _perfecter, ...historical } = current;
+  expect([capturedRoot.schemaVersion, capturedRoot.contentVersion]).toEqual([206, 'red-priest-v206']);
+  expect(state.progression.pathwayId).toBe('hunter');
+  expect(Object.keys(state).sort()).toEqual([...Object.keys(capturedRoot), ...LATER_CHAPTER_ROOTS].sort());
+  for (const key of LATER_CHAPTER_ROOTS) {
+    expect(Object.hasOwn(capturedRoot, key)).toBe(false);
+    expect(state[key]).toStrictEqual(EMPTY_LATER_CHAPTERS[key]);
+  }
+  const fresh = { ...state, ...EMPTY_LATER_CHAPTERS };
+  const expected = projectPlayerText({ visionary: projectVisionary(fresh), perfecter: projectPerfecter(fresh),
+    moon: projectMoon(fresh), darkness: projectDarkness(fresh) }, state.character.name);
+  for (const key of LATER_CHAPTER_ROOTS) {
+    expect(Object.hasOwn(current, key)).toBe(true);
+    const root = current[key];
+    expect(root).toStrictEqual(expected[key]);
+    expect(Object.keys(root).sort()).toEqual(['title', 'guidanceKnown', 'promoted', 'story', 'nextStep', 'risk',
+      'resources', 'abilities', 'actions', 'sections', 'insideCase'].sort());
+    expect([root.guidanceKnown, root.promoted, root.insideCase]).toEqual([false, false, false]);
+    expect(root.abilities).toEqual([]); expect(root.sections).toEqual([]);
+    expect(root.actions).toHaveLength(1);
+    expect(root.actions[0]!.command).toEqual({ type: 'LEARN_GUIDANCE' });
+    expect(root.actions[0]!.enabled).toBe(false);
+  }
+  const { visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, ...historical } = current;
   return hash(historical);
 }
 function persisted(path: string): string {
@@ -70,6 +99,23 @@ function persisted(path: string): string {
 }
 
 describe('Red Priest209 planned captured transition through SQLite', () => {
+  it('rejects changed later roots and keeps every historical or unknown public field in the audit hash', () => {
+    const root = checkpoint<BranchRoot>('fork/original-918-checkpoint.json'), rawHash = hash(root.state);
+    const state = migrateSliceState(root.state), current = openRedPriestRuntimeSession(state).project();
+    const stateHash = hash(state), publicHash = hash(current), historical = historicalPublicHash(current, state, root.state);
+    expect(historical).toBe(finalUiProof().replay.rows[0]!.publicSliceBeforeSha256);
+    for (const key of LATER_CHAPTER_ROOTS) {
+      expect(() => historicalPublicHash(current, { ...state, [key]: { ...state[key], guidanceKnown: true } }, root.state)).toThrow();
+      expect(() => historicalPublicHash(current, { ...state, [key]: { ...state[key], privateProbe: true } }, root.state)).toThrow();
+      expect(() => historicalPublicHash({ ...current, [key]: { ...current[key], story: 'changed' } }, state, root.state)).toThrow();
+      expect(() => historicalPublicHash({ ...current, [key]: { ...current[key], publicProbe: true } }, state, root.state)).toThrow();
+      expect(() => historicalPublicHash(current, state, { ...root.state, [key]: state[key] })).toThrow();
+    }
+    expect(historicalPublicHash({ ...current, week: current.week + 1 }, state, root.state)).not.toBe(historical);
+    const unknownPublicRoot = { ...current, unexpectedPublicRoot: { value: true } };
+    expect(historicalPublicHash(unknownPublicRoot, state, root.state)).not.toBe(historical);
+    expect(hash(root.state)).toBe(rawHash); expect(hash(state)).toBe(stateHash); expect(hash(current)).toBe(publicHash);
+  }, 120_000);
   it('rolls back actual prepared battle937, retries its identical envelope, reopens and returns one durable receipt', () => {
     authenticateFixture();
     const expected = observed().sqlite, rows = ledger(), story = storyProof(), finalUi = finalUiProof();

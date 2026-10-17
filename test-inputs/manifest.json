@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.212.0",
+  "version": "0.213.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -656,6 +656,11 @@
       "name": "lotm_release_0.212.0_moon_test_inputs_1_2026-10-17.tar.gz",
       "bytes": 13926765,
       "sha256": "07ef444eecdfc17ee4f735f80ceb7a835ef3eeb55f700ed3aba32d993a13cc4e"
+    },
+    {
+      "name": "lotm_release_0.213.0_darkness_test_inputs_1_2026-10-17.tar.gz",
+      "bytes": 9950211,
+      "sha256": "9c2b94d4eab29e7a1cdaa5dd3db081b7792847b456facb607c32996542f3702d"
     }
   ],
   "fileEntries": [
@@ -29598,6 +29603,176 @@
       "path": "tests/fixtures/moon-v02120/summary.json",
       "bytes": 271247,
       "sha256": "4cd18a1488170f1ae579c5144346cd940c5536055f9b0b708662063bce0b968d"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/archived-original694.json.gz",
+      "bytes": 392877,
+      "sha256": "b018b586a14d5cea9859809610fbb9b5146702798b351fd120d3e971cbad1c2c"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundaries.index.json",
+      "bytes": 4735,
+      "sha256": "76ff41587b2dc7c2da4146927b1dd763eaac7616d53bf9d314d2582a3b321ca7"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-680-darkness-learn_guidance.json.gz",
+      "bytes": 328328,
+      "sha256": "244055724e180d9629adc945354f0e5cbe5c9624fcbe06d765f0b95264dfc1f0"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-702-evacuation-shield_false_light.json.gz",
+      "bytes": 352860,
+      "sha256": "a41444f9df83da7d482deb64c4e31f1fd696150541a64b4b6cb5dc58957a6411"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-706-evacuation-relay_instructions.json.gz",
+      "bytes": 355173,
+      "sha256": "fcf2c1f87c362f088ff2cdf4e5941aca18797d836b441ea9c983cc2b479c594d"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-718-evacuation-actual-arrival-1.json.gz",
+      "bytes": 360721,
+      "sha256": "deb5684b9beaa5fe3c94976a64ae8257d23e3cdd85e80f83b5c5cd2525160758"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-731-evacuation-actual-arrival-2.json.gz",
+      "bytes": 367246,
+      "sha256": "9d09a11ecebc8fb84b06f51e025cb4d45d19741558ea620dd477982d3ebeaecb"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-742-evacuation-actual-arrival-3.json.gz",
+      "bytes": 371098,
+      "sha256": "2d72e39aecaad9e46725eb6e90b0b6b5363a00b0e7286b6bfca130f2981efaa3"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-751-evacuation-actual-arrival-4.json.gz",
+      "bytes": 373909,
+      "sha256": "ad01adec2dd4cef19dce909dc75209ee24ac16788b71cdeeec2d87b2b5f9483c"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-753-evacuation-report.json.gz",
+      "bytes": 375348,
+      "sha256": "1daa106c1e031125e60db14d7028f3f79f5b5b55a5f429e90f4f198a4342e683"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-756-material-investigate_legacy_remains-misfortune-knight-potion-1.json.gz",
+      "bytes": 377420,
+      "sha256": "118f11ca9a4d8835e82718a6dd79344c831267e21ec5f4254181978e34f20a9f"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-759-material-recover_legacy_remains-misfortune-knight-potion-1.json.gz",
+      "bytes": 379007,
+      "sha256": "98c6c4598d23e5c38643ddc62980fbf4eff7299138f1c8151dc96277b0425389"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-760-material-investigate_legacy_remains-misfortune-knight-potion-2.json.gz",
+      "bytes": 379551,
+      "sha256": "ea15f59f66a12d3c792ec34b91245a5a34a9b1d1b1d96ea21042b082a3d8bdb3"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-763-material-recover_legacy_remains-misfortune-knight-potion-2.json.gz",
+      "bytes": 380328,
+      "sha256": "a03c4542dbead17d778ec3bd68bed4564dc4287549920cbcbdcb88a2e6004304"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-801-uniqueness-chain.json.gz",
+      "bytes": 391523,
+      "sha256": "78afddc6acded46982657926cdb57cf016b5ef3be7fd98648ff907723a087fe4"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-804-uniqueness-vacancy.json.gz",
+      "bytes": 393048,
+      "sha256": "c14f10919a86e9bfdd42e74605c03f6cbe35c99f172b8ac52290ca2328b52f0e"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-805-material-acquire_uniqueness.json.gz",
+      "bytes": 393849,
+      "sha256": "bc99524d9f8a8f2659b3bd3f1dc20373735c981672a0c3e7b01e5a2832938d08"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-810-material-compose_potion.json.gz",
+      "bytes": 396913,
+      "sha256": "fde854d1c59111a2f9e535fc4cd310be942915d9041de9219ca8acdb47100b36"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-813-darkness-stabilize_promotion.json.gz",
+      "bytes": 399138,
+      "sha256": "da708754f3e02ec45e4f13112025f59f11d38571b7997f4152b5672f92f45e21"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-814-darkness-actual-promotion.json.gz",
+      "bytes": 400832,
+      "sha256": "be716c9ac4a2d6205e62ee632dbfd9ca42ebdeafffc57cea78d40a07a267790c"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-825-darkness-start_epilogue.json.gz",
+      "bytes": 406771,
+      "sha256": "ba35380bad48283ce3fae4ad0b3b583517991edd91bbf1bd737c36491170ce35"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-830-epilogue-short_concealment.json.gz",
+      "bytes": 411778,
+      "sha256": "3bbdc50d7b915ce51e7508b56224e0ebc38a58d5fe3459969cbd2a1d34c6a677"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-831-epilogue-bounded_misfortune_diversion.json.gz",
+      "bytes": 413323,
+      "sha256": "fc3daaf9490f8ffa45c7865d4ba366ffdee985b3ad3b562ca05e2949a132ada5"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/boundary-834-epilogue-report.json.gz",
+      "bytes": 415499,
+      "sha256": "ca67121b53898e465df87400fbb9c8a2d0f6728c3db0f914599d7e72367d09b1"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/checkpoint.json.gz",
+      "bytes": 254020,
+      "sha256": "3caef6e0079f7be0b7708a10e2cc6c1bd29f2b67ec4fe0a52a432ef714213d12"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/commands.ndjson.gz",
+      "bytes": 44649,
+      "sha256": "1fe100beb7dca747cd8daf691200b4502e0457b632b51091a7cc3284753c0e59"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/input-freeze.json",
+      "bytes": 840,
+      "sha256": "0d9d278538371545015b55f9a4cb1f4640486ca76d607c4df1784ca22dabee64"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/migration-initial.json.gz",
+      "bytes": 156382,
+      "sha256": "7bffffc173330fff344a61d4a9d0700d6a690afe7fec43b7de25c473d1589253"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/natural.json.gz",
+      "bytes": 212480,
+      "sha256": "0ea275612c843ada95566cd92fef8e83910dea6602469a51bc3d727d96680501"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/producer.mjs",
+      "bytes": 48866,
+      "sha256": "8a1b38c675224a0c873aed88517408c765d5241a763b0a8a390fe450d826c83f"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/runtime-freeze.json",
+      "bytes": 604952,
+      "sha256": "afffa732d2238093d651c34e12e53ffe9b5d4f7c35b45d6b8494f9e076ed72cb"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/source-boundary679.json.gz",
+      "bytes": 294328,
+      "sha256": "a3d154ffb99df9e20a04aa9e5a1c67cd907b39695ef839351f68d1ccc9390fa5"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/source-state679.json.gz",
+      "bytes": 147446,
+      "sha256": "44d3a73ec80ae30c30ef93aa577b856b68c2a813266750e3ac8dd10caab03230"
+    },
+    {
+      "path": "tests/fixtures/darkness-v02130/summary.json",
+      "bytes": 15951,
+      "sha256": "f3d79380501b5f469da2031daa18e92f4710fa42c840b19afec8a8139b078091"
     }
   ]
 }

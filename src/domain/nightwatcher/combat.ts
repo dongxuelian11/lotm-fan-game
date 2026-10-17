@@ -2,6 +2,7 @@ import type { ActionRandomStream } from '../../resolution/deterministic-random.j
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { PYROMANIAC_COUNT_WHEEL, pyromaniacActionCount } from '../pyromaniac/combat.js';
 import type { SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
+import type { SpiritWarlockCompanion } from '../spirit-warlock/types.js';
 import { hasNightwatcherDisputeOpponent } from './encounter.js';
 
 /** S4 game budgets. Effects are finite, resisted checks do not get a consolation spell. */
@@ -71,4 +72,14 @@ export function finishNightwatcherCombatRound(s: SliceState, ctx: NightwatcherRo
   Object.assign(ctx.outcome, { enemyHealth: c.enemyHealth, enemyMind: c.enemyMind, enemyStatus: c.enemyStatus, deployments: spirit.deployments, recalls: spirit.recalls });
   return `本轮有限厄运和梦境已结束；${recalled ? '同一个SW5-LEAF-1实际回到原牙齿，召回计数+1；下一轮须重新R派出才可B协助。' : '没有仍在派出的本轮原灵，不虚记召回。'}实际原灵来源、派出与召回历史保留，回灵不增加灵体，不治疗、不复活。`;
 }
-export function projectNightwatcherCombat(s: SliceState) { return { enemyName: '原45岁布拉姆·洛', companion: { ...s.spiritWarlock.companion }, source: currentNightwatcherCombatSource(s), summary: '4阶核心1250/底线125，灵性上限120、继续回合恢复12（G）。有限厄运与梦境均可失败且仅本槽有效；同一个旧卷叶须实际取得、当轮R派出才可B付费协助，每轮实际召回。无资源仅普通观察或身体避让，付费检验失败0贡献。没有运气库、永久昏睡、免费灵、灵界旅行或复活。' }; }
+export interface PublicNightwatcherCombatProjection {
+  enemyName: string;
+  companion: Pick<SpiritWarlockCompanion, 'source' | 'status' | 'acquiredWeek' | 'invitedWeek' | 'releases' | 'deployments' | 'recalls'>;
+  summary: string;
+}
+export function projectNightwatcherCombat(s: SliceState): PublicNightwatcherCombatProjection {
+  const companion = s.spiritWarlock.companion;
+  return { enemyName: '原45岁布拉姆·洛', companion: {
+    source: companion.source, status: companion.status, acquiredWeek: companion.acquiredWeek, invitedWeek: companion.invitedWeek,
+    releases: companion.releases, deployments: companion.deployments, recalls: companion.recalls,
+  }, summary: '4阶核心1250/底线125，灵性上限120、继续回合恢复12（G）。有限厄运与梦境均可失败且仅本槽有效；同一个旧卷叶须实际取得、当轮R派出才可B付费协助，每轮实际召回。无资源仅普通观察或身体避让，付费检验失败0贡献。没有运气库、永久昏睡、免费灵、灵界旅行或复活。' }; }

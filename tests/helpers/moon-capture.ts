@@ -3,9 +3,12 @@ import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
+import { projectDarkness } from '../../src/domain/darkness/index.js';
 import { assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
+import { projectPlayerText } from '../../src/shared/player-text.js';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
 
 /** Read-only independent capture contract. Never imports or runs the producer,
  * a controlled-success helper, compiled runtime, or the SQLite verifier. */
@@ -29,6 +32,10 @@ export const INITIAL_POLICY = {
   loop: { key: null as string | null, repetitions: 0 },
 };
 export interface FilePin { bytes: number; sha256: string }
+/** Immutable capture input format, distinct from the current runtime state. */
+export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness'> & {
+  schemaVersion: 209; contentVersion: 'moon-v209';
+};
 export interface Member extends FilePin { file: string; originalBytes?: number; originalSha256?: string }
 export interface BoundaryIndex extends FilePin { file: string; kind: string; commandCount: number }
 export interface Outcome { status: SliceState['status']; beautyPromoted: boolean; moonPromoted: boolean }
@@ -43,16 +50,17 @@ export interface Row {
 export interface Checkpoint {
   format: string; source: string; sourceSha256: string; prefixSha256: string; freezeSha256: string;
   policyDefinition: typeof POLICY; policy: typeof INITIAL_POLICY; createdAt: string;
-  commandCount: number; commands: SliceIntent[]; rows: Row[]; boundaries: BoundaryIndex[]; state: SliceState;
+  commandCount: number; commands: SliceIntent[]; rows: Row[]; boundaries: BoundaryIndex[]; state: HistoricalMoonState;
   initialStateSha256: string; finalStateSha256: string; initialPublicSha256: string; publicStateSha256: string;
   initialRandomSha256: string; pending: unknown | null; terminal: { stage: string; reason: string } | null; predecessorSha256: string;
 }
 export interface Boundary {
-  commandCount: number; beforeLast: SliceState; lastIntent: SliceIntent; final: SliceState;
+  commandCount: number; beforeLast: HistoricalMoonState; lastIntent: SliceIntent; final: HistoricalMoonState;
   public: CapturedPublic; audit: Omit<Row, 'elapsedMilliseconds'> & { elapsedMilliseconds: null };
 }
 interface History { commands: SliceIntent[]; final: SliceState; creation: unknown; seed: string }
-interface Natural extends History {
+interface Natural extends Omit<History, 'final'> {
+  final: HistoricalMoonState;
   provenance: Record<string, unknown>; prefixCount: number; policy: typeof POLICY; stage: string; reason: string;
   pendingIntent: null; boundaries: BoundaryIndex[];
 }
@@ -110,6 +118,47 @@ export const same = (actual: unknown, expected: unknown, message?: string): void
 const digest = (value: unknown): void => assert(typeof value === 'string' && /^[a-f0-9]{64}$/.test(value), 'Expected reviewed SHA256');
 const whole = (value: number): void => assert(Number.isSafeInteger(value) && value >= 0);
 const exactKeys = (value: object, expected: string[]): void => assert.deepEqual(Object.keys(value).sort(), expected.sort());
+const EMPTY_DARKNESS: SliceState['darkness'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
+/** Detached audit view only. Remove exactly the independently specified default
+ * Darkness root and restore the capture's version tags. Every other field,
+ * including any unexpected root, remains covered by the historical hash. */
+export function historicalMoonState(state: SliceState): HistoricalMoonState {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  assert.deepEqual(state.darkness, EMPTY_DARKNESS);
+  const { darkness: _emptyDarkness, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 209, contentVersion: 'moon-v209' };
+}
+/** Strict current ingress must preserve every original 209 field and may add
+ * only the reviewed default Darkness root; it never rewrites the raw input. */
+export function migrateCapturedMoonState(raw: HistoricalMoonState): SliceState {
+  assert.deepEqual([raw.schemaVersion, raw.contentVersion], [209, 'moon-v209']);
+  assert.equal(Object.hasOwn(raw, 'darkness'), false);
+  const before = hash(raw), current = migrateSliceState(raw);
+  assertValidSliceState(current);
+  exactKeys(current, [...Object.keys(raw), 'darkness']);
+  same(historicalMoonState(current), raw, 'Migration changed the complete captured Moon state');
+  assert.equal(hash(raw), before, 'Migration changed the raw Moon input');
+  return current;
+}
+/** Verify the entire new inactive public root before removing just that root
+ * from a detached historical view. Unknown fields are never filtered out. */
+export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness'> {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  assert.deepEqual(state.darkness, EMPTY_DARKNESS);
+  assert.equal(state.progression.pathwayId, 'moon');
+  assert.equal(Object.hasOwn(projection, 'darkness'), true);
+  const root = projection.darkness;
+  assert.deepEqual(root, projectPlayerText(projectDarkness(state), state.character.name));
+  exactKeys(root, ['title', 'guidanceKnown', 'promoted', 'story', 'nextStep', 'risk', 'resources', 'abilities', 'actions', 'sections', 'insideCase']);
+  assert.equal(root.guidanceKnown, false); assert.equal(root.promoted, false); assert.equal(root.insideCase, false);
+  assert.deepEqual(root.abilities, []); assert.deepEqual(root.sections, []);
+  assert(root.actions.every(action => !action.enabled));
+  const { darkness: _emptyDarkness, ...originalFields } = projection;
+  return originalFields;
+}
 function relativeFile(file: string): string {
   assert(file && !file.includes('\\') && !file.includes('\0') && !file.startsWith('/') && !/^[A-Za-z]:/.test(file));
   assert(file.split('/').every(part => part && part !== '.' && part !== '..')); return file;
@@ -190,10 +239,11 @@ export function authenticateInputs(pins = evidence()): void {
 const PUBLIC_FIELDS = ['runId', 'revision', 'status', 'week', 'date', 'actionsRemaining', 'weeklyBudget', 'cash', 'weeklyWage', 'wagePaid',
   'health', 'mind', 'spirituality', 'maxHealth', 'maxMind', 'maxSpirituality', 'pollution', 'injuries', 'injuryRisk',
   'debtTotal', 'debts', 'canAct', 'actionBlockedReason', 'activeEvent', 'combat'] as const;
-export function capturePublic(projection: SliceProjection) {
-  const ordinary = Object.fromEntries(PUBLIC_FIELDS.map(key => [key, structuredClone(projection[key])])) as Pick<SliceProjection, typeof PUBLIC_FIELDS[number]>;
-  return { ...ordinary, progression: { sequence: projection.progression.sequence, acting: projection.progression.acting,
-    mastery: structuredClone(projection.progression.mastery) }, beautyGoddess: structuredClone(projection.beautyGoddess), moon: structuredClone(projection.moon) };
+export function capturePublic(projection: SliceProjection, state: SliceState) {
+  const historical = historicalMoonPublic(projection, state);
+  const ordinary = Object.fromEntries(PUBLIC_FIELDS.map(key => [key, structuredClone(historical[key])])) as Pick<SliceProjection, typeof PUBLIC_FIELDS[number]>;
+  return { ...ordinary, progression: { sequence: historical.progression.sequence, acting: historical.progression.acting,
+    mastery: structuredClone(historical.progression.mastery) }, beautyGoddess: structuredClone(historical.beautyGoddess), moon: structuredClone(historical.moon) };
 }
 /** Full current public boundary, separate from the narrower immutable chapter
  * hash captured in 212. Check the entire inherited history before release. */
@@ -267,13 +317,19 @@ export function readBoundary(item: BoundaryIndex, row: Row): Boundary {
   same(boundary.audit, { ...row, elapsedMilliseconds: null });
   assert.equal(hash(boundary.beforeLast), row.beforeStateSha256); assert.equal(hash(boundary.final), row.afterStateSha256);
   assert.equal(hash(boundary.public), row.publicAfterSha256); assert.deepEqual(outcome(boundary.public), row.selectionOutcome);
-  for (const state of [boundary.beforeLast, boundary.final]) assert.deepEqual([state.schemaVersion, state.contentVersion], [209, 'moon-v209']);
+  for (const state of [boundary.beforeLast, boundary.final]) {
+    assert.deepEqual([state.schemaVersion, state.contentVersion], [209, 'moon-v209']);
+    assert.equal(Object.hasOwn(state, 'darkness'), false);
+  }
   assert.equal(boundary.beforeLast.status, 'ACTIVE'); assert.equal(boundary.beforeLast.revision, row.commandCount);
   assert.equal(boundary.final.revision, row.revision); assert.equal(boundary.final.week, row.week);
   assert.deepEqual(boundary.beforeLast.random, row.randomBefore); assert.deepEqual(boundary.final.random, row.randomAfter);
   return boundary;
 }
-export interface LoadedCapture { pins: MoonCaptureEvidence; original: SliceState; initial: SliceState; checkpoint: Checkpoint; rows: Row[]; summary: Summary }
+export interface LoadedCapture {
+  pins: MoonCaptureEvidence; original: SliceState; prefixFinal: HistoricalMoonState; initial: SliceState;
+  checkpoint: Checkpoint; rows: Row[]; summary: Summary;
+}
 export function loadCapture(): LoadedCapture {
   const pins = evidence(); authenticateInputs(pins);
   for (const name of ['inputManifestSha256', 'freezeSha256', 'initialStateSha256', 'initialPublicSha256', 'initialRandomSha256',
@@ -296,11 +352,13 @@ export function loadCapture(): LoadedCapture {
   assert.equal(Object.keys(original.progression.mastery).length, 21);
   assert.equal(Object.values(original.progression.mastery).filter(value => value === 0).length, 7);
   const originalHash = hash(original), initial = migrateSliceState(original);
-  assert.equal(hash(original), originalHash); assert.deepEqual([initial.schemaVersion, initial.contentVersion], [209, 'moon-v209']);
+  assert.equal(hash(original), originalHash);
+  assert.deepEqual([initial.schemaVersion, initial.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   for (const [key, value] of Object.entries(original)) if (!['schemaVersion', 'contentVersion'].includes(key)) same((initial as unknown as Record<string, unknown>)[key], value, `Migration changed original670 ${key}`);
   // Strict current ingress validates the authentic original history; no old670 command replay.
-  assertValidSliceState(initial); assert.equal(hash(initial), pins.initialStateSha256); assert.equal(hash(initial.random), pins.initialRandomSha256);
-  assert.equal(hash(capturePublic(projectSliceState(initial))), pins.initialPublicSha256);
+  assertValidSliceState(initial); assert.equal(hash(historicalMoonState(initial)), pins.initialStateSha256);
+  assert.equal(hash(initial.random), pins.initialRandomSha256);
+  assert.equal(hash(capturePublic(projectSliceState(initial), initial)), pins.initialPublicSha256);
   const wrapped = json<{ sha256: string; payload: Checkpoint }>('checkpoint.json.gz'); exactKeys(wrapped, ['sha256', 'payload']);
   assert.equal(wrapped.sha256, hash(wrapped.payload)); const cp = wrapped.payload;
   exactKeys(cp, ['format', 'source', 'sourceSha256', 'prefixSha256', 'freezeSha256', 'policyDefinition', 'policy', 'createdAt', 'commandCount',
@@ -312,6 +370,14 @@ export function loadCapture(): LoadedCapture {
   assert.equal(cp.finalStateSha256, pins.finalStateSha256); assert.equal(cp.publicStateSha256, pins.finalPublicSha256);
   assert.equal(hash(cp.state), pins.finalStateSha256); assert.equal(hash(cp.state.random), pins.finalRandomSha256);
   assert.deepEqual([cp.state.schemaVersion, cp.state.contentVersion], [209, 'moon-v209']);
+  assert.equal(Object.hasOwn(cp.state, 'darkness'), false);
+  // The first captured predecessor is the exact 209 state at original670.
+  // Read it from authenticated evidence rather than manufacturing old bytes
+  // by treating today's migration output as the historical runtime's output.
+  assert.equal(cp.boundaries[0]?.commandCount, PREFIX + 1);
+  const prefixFinal = readBoundary(cp.boundaries[0]!, cp.rows[0]!).beforeLast;
+  assert.equal(hash(prefixFinal), pins.initialStateSha256);
+  same(initial, migrateCapturedMoonState(prefixFinal), 'Original670 and captured209 migrate to the same complete current state');
   const natural = json<Natural>('natural.json.gz'), summary = json<Summary>('summary.json');
   exactKeys(natural, ['provenance', 'creation', 'seed', 'prefixCount', 'commands', 'policy', 'stage', 'reason', 'pendingIntent', 'boundaries', 'final']);
   same(natural.final, cp.state); same(natural.creation, history.creation); assert.equal(natural.seed, history.seed);
@@ -370,5 +436,5 @@ export function loadCapture(): LoadedCapture {
   for (const item of cp.boundaries) { exactKeys(item, ['file', 'kind', 'commandCount', 'bytes', 'sha256']); readBoundary(item, rows[item.commandCount - PREFIX - 1]!); }
   assert.equal(cp.boundaries[0]?.commandCount, PREFIX + 1); assert.deepEqual(cp.commands[0], { type: 'ACTION', action: 'REST' });
   for (const count of pins.sqliteCommandCounts) assert(cp.boundaries.some(item => item.commandCount === count), 'SQLite sample must be an actual selected boundary');
-  return { pins, original, initial, checkpoint: cp, rows, summary };
+  return { pins, original, prefixFinal, initial, checkpoint: cp, rows, summary };
 }

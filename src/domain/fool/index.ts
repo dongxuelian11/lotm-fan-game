@@ -72,7 +72,7 @@ function assertCurrentFool(s: SliceState, root: FoolState): void {
 }
 export function validateFoolState(s: SliceState): boolean {
   try {
-    if (sameFool(s.fool, createFoolState())) return s.progression.sequence !== 0 || s.progression.pathwayId === 'hunter' || s.progression.pathwayId === 'audience' || s.progression.pathwayId === 'paragon' || s.progression.pathwayId === 'moon';
+    if (sameFool(s.fool, createFoolState())) return s.progression.sequence !== 0 || s.progression.pathwayId === 'hunter' || s.progression.pathwayId === 'audience' || s.progression.pathwayId === 'paragon' || s.progression.pathwayId === 'moon' || s.progression.pathwayId === 'darkness';
     prepare(s); return true;
   } catch { return false; }
 }

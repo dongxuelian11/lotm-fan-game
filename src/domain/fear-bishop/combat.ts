@@ -193,12 +193,72 @@ export function finishFearBishopCombatRound(s: SliceState, r: FearBishopRoundCon
 export function fearBishopRoundOutcome(r: FearBishopRoundContext): FearBishopRoundOutcome {
   if (!r.outcome) throw new Error('先实际结束当前原恐惧主教回合。'); return structuredClone(r.outcome);
 }
-export function projectFearBishopCombat(s: SliceState) {
+/** Only already-resolved display facts cross the public combat boundary. */
+function projectFearBishopCompanion(companion: SpiritWarlockCompanion) {
+  return {
+    source: companion.source, status: companion.status, acquiredWeek: companion.acquiredWeek, invitedWeek: companion.invitedWeek,
+    releases: companion.releases, deployments: companion.deployments, recalls: companion.recalls,
+  };
+}
+function projectFearBishopPowerUses(powerUses: Record<FearBishopPowerId, number>) {
+  return { DARK_BOLT: powerUses.DARK_BOLT, WARD: powerUses.WARD, FOCUS: powerUses.FOCUS };
+}
+interface PublicFearBishopActionEvidence {
+  label: string; selfGain: number; enemyReduction: number; threatens: boolean; mentalPressure: boolean;
+  order: number; paidCost: number; physicalFactor: number; rolls: number[];
+}
+export interface PublicFearBishopPlayerAction extends PublicFearBishopActionEvidence {
+  id: FearBishopMoveId; spiritOperation: 'NONE' | 'DEPLOY' | 'ASSIST'; resisted: boolean;
+}
+export interface PublicFearBishopEnemyAction extends PublicFearBishopActionEvidence {
+  planned: FearBishopEnemyIntent; actual: FearBishopEnemyIntent; focusGranted: boolean;
+}
+export function projectFearBishopPlayerAction(action: FearBishopPlayerAction): PublicFearBishopPlayerAction {
+  return {
+    label: action.label, selfGain: action.selfGain, enemyReduction: action.enemyReduction,
+    threatens: action.threatens, mentalPressure: action.mentalPressure, order: action.order,
+    paidCost: action.paidCost, physicalFactor: action.physicalFactor, rolls: action.rolls.map(roll => roll),
+    id: action.id, spiritOperation: action.spiritOperation, resisted: action.resisted,
+  };
+}
+export function projectFearBishopEnemyAction(action: FearBishopEnemyAction): PublicFearBishopEnemyAction {
+  return {
+    label: action.label, selfGain: action.selfGain, enemyReduction: action.enemyReduction,
+    threatens: action.threatens, mentalPressure: action.mentalPressure, order: action.order,
+    paidCost: action.paidCost, physicalFactor: action.physicalFactor, rolls: action.rolls.map(roll => roll),
+    planned: action.planned, actual: action.actual, focusGranted: action.focusGranted,
+  };
+}
+export interface PublicFearBishopRoundOutcome {
+  targetId: typeof FEAR_BISHOP_TARGET_ID; round: number; stance: SliceStance; continuing: boolean;
+  enemyHealth: number; enemyMind: number; enemySpirituality: number; enemyStatus: 'RESISTING' | 'SURRENDERED' | 'DEAD';
+  playerSpiritualityBefore: number; playerSpiritualityAfter: number; playerHealthAfter: number; playerMindAfter: number; enemySpiritualityBefore: number;
+  powerUses: ReturnType<typeof projectFearBishopPowerUses>; companionAfter: ReturnType<typeof projectFearBishopCompanion>;
+  recalled: boolean; focusReadyAfter: false; elapsedSeconds: 60;
+  playerActions: PublicFearBishopPlayerAction[]; enemyActions: PublicFearBishopEnemyAction[];
+}
+export function projectFearBishopRoundOutcome(outcome: FearBishopRoundOutcome): PublicFearBishopRoundOutcome {
+  return {
+    targetId: outcome.targetId, round: outcome.round, stance: outcome.stance, continuing: outcome.continuing,
+    enemyHealth: outcome.enemyHealth, enemyMind: outcome.enemyMind, enemySpirituality: outcome.enemySpirituality, enemyStatus: outcome.enemyStatus,
+    playerSpiritualityBefore: outcome.playerSpiritualityBefore, playerSpiritualityAfter: outcome.playerSpiritualityAfter,
+    playerHealthAfter: outcome.playerHealthAfter, playerMindAfter: outcome.playerMindAfter, enemySpiritualityBefore: outcome.enemySpiritualityBefore,
+    powerUses: projectFearBishopPowerUses(outcome.powerUses), companionAfter: projectFearBishopCompanion(outcome.companionAfter),
+    recalled: outcome.recalled, focusReadyAfter: outcome.focusReadyAfter, elapsedSeconds: outcome.elapsedSeconds,
+    playerActions: outcome.playerActions.map(projectFearBishopPlayerAction), enemyActions: outcome.enemyActions.map(projectFearBishopEnemyAction),
+  };
+}
+export interface PublicFearBishopCombatProjection {
+  enemyName: string; targetId: typeof FEAR_BISHOP_TARGET_ID | null; enemyMind: number | null; enemySpirituality: number | null;
+  powerUses: ReturnType<typeof projectFearBishopPowerUses> | null; companion: ReturnType<typeof projectFearBishopCompanion> | null;
+  originalExit: boolean; pursuit: boolean; distanceMetres: number; summary: string;
+}
+export function projectFearBishopCombat(s: SliceState): PublicFearBishopCombatProjection {
   const e = s.fearBishop.encounter, visible = isFearBishop(s);
   return { enemyName: visible ? '哈兰（48岁，原创有限G3非凡者）' : '', targetId: visible ? e.targetId : null,
     enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
-    powerUses: visible ? { ...e.powerUses } : null, companion: visible ? structuredClone(s.spiritWarlock.companion) : null,
-    originalExit: true, pursuit: false, distanceMetres: 2, source: visible ? currentFearBishopCombatSource(s) : null,
+    powerUses: visible ? projectFearBishopPowerUses(e.powerUses) : null, companion: visible ? projectFearBishopCompanion(s.spiritWarlock.companion) : null,
+    originalExit: true, pursuit: false, distanceMetres: 2,
     summary: visible ? '双方1–6次权重10/15/25/25/15/10；继承实际黑暗4核心35/25/25/15、1250/底125、S120，仅继续轮恢复12G。有限黑暗毁灭6S/知识18形成65×新掌握优势，睡恐5S/意志18减32可被敌专注抵抗。原厄运4S减22，同一旧卷叶先2S派出0贡献，后槽2S协助减22，轮末实际召回。共同伤势盘决定原身体后果，旧人旧物及释放史保留。' : '' };
 }
 /** Replay only finite ability costs, original-spirit operations and one-round resistance. */
