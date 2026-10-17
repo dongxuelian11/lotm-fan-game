@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.207.0",
+  "version": "0.208.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -616,6 +616,11 @@
       "name": "lotm_release_0.207.0_nature_walker_test_inputs_4_2026-10-16.tar.gz",
       "bytes": 719758,
       "sha256": "7b350174e43e1b3ffd4469b53e8591959072155a311f321c1b8530e5b253aace"
+    },
+    {
+      "name": "lotm_release_0.208.0_fool_test_inputs_1_2026-10-17.tar.gz",
+      "bytes": 2724718,
+      "sha256": "d09a51b118cde35db05da04563e74de4ba06996557584df7a132af2a22e77ba8"
     }
   ],
   "fileEntries": [
@@ -12458,6 +12463,71 @@
       "path": "tests/fixtures/fire-thief-v0840/natural.json",
       "bytes": 1554537,
       "sha256": "2a92e209d7da6fc77a0b417332f76fa8d7aafa231c6732b7bdb5754afab15826"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/boundaries.index.json",
+      "bytes": 29432,
+      "sha256": "6dbb7c177bfcd665b2122cc3744e257db45f43f341166599f19f641efea0f669"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/commands.jsonl",
+      "bytes": 183428,
+      "sha256": "479b9392dd928a3b5508541549e659ea87d7442c198bd92a34521df668c2a9f4"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/final-runtime-proof.json",
+      "bytes": 866580,
+      "sha256": "85f7992dad6feebde5ae24d51dd2eb9874737a213cf4ca08ea6df7a425fe61e1"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/freeze.json",
+      "bytes": 544257,
+      "sha256": "f0fe8a831fb2c4f68db3f9f8c610e5177ee75c6402556e1a6b8a5b4538fb1979"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/natural.json",
+      "bytes": 37252637,
+      "sha256": "8bc3141286c3ecb603410d36c4f2111ea28b3a423b6f28c44127ef16aaf72959"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/report.json",
+      "bytes": 67146,
+      "sha256": "0b7577b6d9343218288b69f9039a57386d48935d28b57bd2b4e8515f4c9c3955"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/resume-original/baseline/states.jsonl",
+      "bytes": 22268,
+      "sha256": "80bcbdde0ed4f4476420e8d156b2f34258981404712e1b24c32ce5d2e55c3853"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/resume-original/baseline/summary.json",
+      "bytes": 848,
+      "sha256": "475e33e9f5de0b1e075bacd6ff233a506005bcd866c2a5881eed568848baf8ae"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/resume-original/freeze-before-natural.json",
+      "bytes": 544258,
+      "sha256": "cb10464dcbdb5ff36ec26c4e5f4cf6db79d29e50ba510ae43d4215c1130d6689"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/resume-original/interruption.json",
+      "bytes": 2204,
+      "sha256": "04d80eeded74a63642e27941ee764b1ed1958f7397f9545c38abe8c86a96f048"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/resume-original/terminated-commands.jsonl",
+      "bytes": 36122,
+      "sha256": "09ba77d6c0edde3b6df7f0a26c625808bef3b0ca20b01d173c32d420756604b1"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/runtime-transition.json",
+      "bytes": 1106614,
+      "sha256": "32efef5fcf1b49cd01f22ec9d04ffe0e8c9e0da534f2dfc8f3c6992febd6d26f"
+    },
+    {
+      "path": "tests/fixtures/fool-v02080/states.jsonl",
+      "bytes": 28338,
+      "sha256": "b72037d8bccf5f2c3bf38b361c79a1ef612c6d4618a5f5caad78f845047cdc46"
     },
     {
       "path": "tests/fixtures/frenzy-mage-v01590/boundaries.json",

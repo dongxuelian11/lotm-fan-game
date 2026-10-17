@@ -1,3 +1,4 @@
+import type { FoolState, FoolCommand, FoolProjection } from '../fool/types.js';
 import type { NatureWalkerRoundOutcome, NatureWalkerPublicRoundOutcome, projectNatureWalkerCombat } from '../nature-walker/combat.js';
 import type { NatureWalkerState, NatureWalkerCommand, NatureWalkerProjection } from '../nature-walker/types.js';
 import type { HandOfOrderRoundOutcome, HandOfOrderPublicRoundOutcome, projectHandOfOrderCombat } from '../hand-of-order/combat.js';
@@ -23,7 +24,7 @@ import type { BeautyGoddessRoundOutcome, projectBeautyGoddessCombat } from '../b
 import type { CivilizationEnlightenerRoundOutcome, projectCivilizationEnlightenerCombat } from '../civilization-enlightener/combat.js';
 import type { WriterRoundOutcome, projectWriterCombat } from '../writer/combat.js';
 import type { ConquerorRoundOutcome, projectConquerorCombat } from '../conqueror/combat.js';
-import type { AttendantMysteriesRoundOutcome, projectAttendantMysteriesCombat } from '../attendant-mysteries/combat.js';
+import type { AttendantMysteriesRoundOutcome, AttendantMysteriesPublicRoundOutcome, projectAttendantMysteriesCombat } from '../attendant-mysteries/combat.js';
 import type { PaleEmperorState, PaleEmperorCommand, PaleEmperorProjection } from '../pale-emperor/types.js';
 import type { PureWhiteAngelState, PureWhiteAngelCommand, PureWhiteAngelProjection } from '../pure-white-angel/types.js';
 import type { ThunderGodState, ThunderGodCommand, ThunderGodProjection } from '../thunder-god/types.js';
@@ -297,6 +298,7 @@ import type { PublicCheckResult, PublicCoreStatKey, PublicGameDate } from '../..
 export type SliceLifeTier = 'DESTITUTE' | 'POOR' | 'ORDINARY' | 'RESPECTABLE' | 'LUXURIOUS';
 export type SliceStance = 'ATTACK' | 'DEFEND' | 'CONTROL' | 'PREPARE' | 'RETREAT';
 export type SliceIntent =
+  | { type: 'FOOL'; command: FoolCommand }
   | { type: 'ACTION'; action: 'WORK' | 'REST' }
   | { type: 'ACTION'; action: 'LEARN' | 'INVESTIGATE'; targetId: string }
   | { type: 'EVENT_CHOICE'; eventInstanceId: string; choiceId: string }
@@ -763,6 +765,7 @@ export interface SliceArc {
   relationship: AudreyOutcome; transferPending: boolean;
 }
 export interface SliceState {
+  fool:FoolState;
   paleEmperor:PaleEmperorState;
   pureWhiteAngel:PureWhiteAngelState;
   thunderGod:ThunderGodState;
@@ -963,7 +966,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 204; contentVersion: 'nature-walker-v204'; runId: string; revision: number;
+  schemaVersion: 205; contentVersion: 'fool-v205'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -980,8 +983,9 @@ export interface SliceState {
 }
 /** Deliberately constructed allow-list, never a spread of SliceState. */
 /** Public records keep resolved action facts; deterministic replay source stays private. */
-export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome'> & { natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome };
+export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome'> & { natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
 export interface SliceProjection {
+  fool:FoolProjection;
   recovery: SliceRecoveryProjection;
   paleEmperor:PaleEmperorProjection;
   pureWhiteAngel:PureWhiteAngelProjection;

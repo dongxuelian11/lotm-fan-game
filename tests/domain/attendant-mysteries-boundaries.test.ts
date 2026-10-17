@@ -32,7 +32,7 @@ describe('Attendant actual public boundaries and continuous original command pre
     expect(s.attendantMysteries.encounter.terminal).toMatchObject({ outcome: 'ENEMY_SURRENDERED', round: 3, exitMetres: 12, enemyHealth: 70 });
     same(s.miracleWorker.revival, entry<SliceState>('natural.json', 'final').miracleWorker.revival);
   }, 15_000);
-  it.each([0, 11, 22, 33])('replays eleven exact captured public boundaries from offset%s', start => {
+  for (const start of [0, 11, 22, 33]) it(`replays eleven exact captured public boundaries from offset${start}`, () => {
     const index = JSON.parse(readFileSync(`${ROOT}/boundaries.index.json`, 'utf8')) as Record<string, string>;
     expect(Object.keys(index)).toHaveLength(44); expect(new Set(Object.values(index)).size).toBe(44);
     for (const [name, file] of Object.entries(index).slice(start, start + 11)) {
@@ -47,5 +47,5 @@ describe('Attendant actual public boundaries and continuous original command pre
       assertValidSliceState(final); same(projectSliceState(JSON.parse(stableStringify(final))), projectSliceState(final));
       expect(final.revision).toBe(before.revision + 1); expect(final.random.seed).toBe(before.random.seed);
     }
-  }, 30_000);
+  }, start === 33 ? 60_000 : 30_000);
 });

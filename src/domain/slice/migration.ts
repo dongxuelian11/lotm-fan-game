@@ -1,3 +1,4 @@
+import { createFoolState } from '../fool/index.js';
 import { createNatureWalkerState } from '../nature-walker/index.js';
 import { createHandOfOrderState } from '../hand-of-order/index.js';
 import { createPrinceOfAbolitionState } from '../prince-of-abolition/index.js';
@@ -198,14 +199,34 @@ import {createAudienceState} from '../audience/index.js';
 import {createProvokerState} from '../provoker/index.js';
 import {createHunterState} from '../hunter/index.js';
 import {assertLegacySliceState} from './legacy-v1-validation.js';
-import {assertValidSliceState} from './validation.js';
+import {assertValidSliceState as assertValidCurrentSliceState} from './validation.js';
 import {createSeerState,emptyProgression} from '../seer/index.js';
 import {createSeerPractice} from '../seer/practice.js';
 import {createClownState} from '../clown/index.js';
 import type {SliceState} from './types.js';
 function withSupply(value:unknown){if(!value||typeof value!=='object'||Array.isArray(value)||'resupply'in value)throw new TypeError('Invalid historical potion state');return {...structuredClone(value),resupply:{requestedWeek:null,deliveries:0}};}
 function combatWithEncounter(value:unknown){return value&&typeof value==='object'?{...structuredClone(value),encounterId:'FIRST_CASE'}:value;}
+type NatureWalkerSliceState = Omit<SliceState, 'fool' | 'schemaVersion' | 'contentVersion'> & {
+ schemaVersion:204; contentVersion:'nature-walker-v204';
+};
+/** Validate old migrations through the current schema without changing their
+ * historical construction branches or the caller's original snapshot. */
+function assertValidSliceState(input:unknown):asserts input is NatureWalkerSliceState {
+ if(!input||typeof input!=='object'||Array.isArray(input))throw new TypeError('Invalid legacy slice state');
+ const old=input as Record<string,unknown>;
+ if(old.schemaVersion!==204||old.contentVersion!=='nature-walker-v204'||'fool'in old)throw new TypeError('Invalid NatureWalker save');
+ assertValidCurrentSliceState({...old,schemaVersion:205,contentVersion:'fool-v205',fool:createFoolState()});
+}
 export function migrateSliceState(input:unknown):SliceState {
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===205){
+  assertValidCurrentSliceState(input);return structuredClone(input);
+ }
+ if(input&&typeof input==='object'&&'fool'in input)throw new TypeError('Unexpected Fool state in a legacy save');
+ const old=migratePreFoolSliceState(input);
+ const next={...old,schemaVersion:205 as const,contentVersion:'fool-v205' as const,fool:createFoolState()};
+ assertValidCurrentSliceState(next);return next;
+}
+function migratePreFoolSliceState(input:unknown):NatureWalkerSliceState {
  if(input&&typeof input==='object'&&'schemaVersion'in input){
   const raw=input as Record<string,unknown>;
   if(typeof input.schemaVersion==='number'&&input.schemaVersion<204&&'natureWalker'in raw)throw new TypeError('Unexpected NatureWalker state in a legacy save');
@@ -538,7 +559,7 @@ export function migrateSliceState(input:unknown):SliceState {
   }
   if(input.schemaVersion===160){
     if(old.contentVersion!=='miracle-worker-v160'||!old.miracleWorker)throw new TypeError('Invalid initial MiracleWorker save');
-    const next=structuredClone(old) as unknown as SliceState;
+    const next=structuredClone(old) as unknown as NatureWalkerSliceState;
     next.schemaVersion=204;next.contentVersion='nature-walker-v204';next.natureWalker=createNatureWalkerState();next.handOfOrder=createHandOfOrderState();next.princeOfAbolition=createPrinceOfAbolitionState();next.mercurySnake=createMercurySnakeState();next.abomination=createAbominationState();next.uncleanMonarch=createUncleanMonarchState();next.darkAngel=createDarkAngelState();next.knowledgeEmperor=createKnowledgeEmperorState();next.apocalypseDemoness=createApocalypseDemonessState();next.divineHand=createDivineHandState();next.timeWorm=createTimeWormState();next.starKey=createStarKeyState();next.paleEmperor=createPaleEmperorState();next.pureWhiteAngel=createPureWhiteAngelState();next.thunderGod=createThunderGodState();next.allKnowingEye=createAllKnowingEyeState();next.misfortuneKnight=createMisfortuneKnightState();next.beautyGoddess=createBeautyGoddessState();next.civilizationEnlightener=createCivilizationEnlightenerState();next.writer=createWriterState();next.conqueror=createConquerorState();next.attendantMysteries=createAttendantMysteriesState();next.barrenMatriarch=createBarrenMatriarchState();next.balancer=createBalancerState();next.entropyDuke=createEntropyDukeState();next.fateProphet=createFateProphetState();next.ancientEvil=createAncientEvilState();next.bloodDuke=createBloodDukeState();next.elder=createElderState();next.sage=createSageState();next.calamityDemoness=createCalamityDemonessState();next.glory=createGloryState();next.fateTrojan=createFateTrojanState();next.planeswalker=createPlaneswalkerState();next.deathConsul=createDeathConsulState();next.lightSeeker=createLightSeekerState();next.catastrophe=createCatastropheState();next.wisdomAngel=createWisdomAngelState();next.concealmentServant=createConcealmentServantState();next.lifeGiver=createLifeGiverState();next.knowledgeMentor=createKnowledgeMentorState();next.discerner=createDiscernerState();next.weatherWarlock=createWeatherWarlockState();
     next.miracleWorker.ritual.leads=[];
     assertValidSliceState(next);return next;

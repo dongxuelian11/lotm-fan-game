@@ -33,7 +33,7 @@ const snapshot = (name: string) => {
  * repaired source history or alternate combat/life outcome. */
 function savedGame(input: unknown) {
   let state = migrateSliceState(input); assertValidSliceState(state);
-  const submit = vi.fn<SliceBridge['submitIntent']>(async envelope => {
+  const submit = vi.fn<SliceBridge['submitIntent']>().mockImplementation(async envelope => {
     if (envelope.payload.type === 'CREATE') throw new Error('The original campaign already exists.');
     expect(envelope.runId).toBe(state.runId); expect(envelope.expectedRevision).toBe(state.revision);
     state = applySliceIntent(state, envelope.payload); assertValidSliceState(state);
@@ -45,9 +45,9 @@ function savedGame(input: unknown) {
 type SavedGame = ReturnType<typeof savedGame>;
 async function mount(game: SavedGame) {
   const state = projectSliceState(game.state);
-  const loadRun = vi.fn<SliceBridge['loadRun']>(async () => ({ ok: true, value: projectSliceState(game.state) }));
+  const loadRun = vi.fn<SliceBridge['loadRun']>().mockImplementation(async () => ({ ok: true, value: projectSliceState(game.state) }));
   window.sliceGame = {
-    getBootstrap: vi.fn<SliceBridge['getBootstrap']>(async () => ({ ok: true, value: {
+    getBootstrap: vi.fn<SliceBridge['getBootstrap']>().mockImplementation(async () => ({ ok: true, value: {
       mode: 'browser', activeState: state, runs: [{ runId: state.runId, name: state.character.name, portraitId: state.character.portraitId,
         week: state.week, date: state.date, status: state.status, revision: state.revision, updatedAt: '2026-10-15T11:09:00Z' }],
     } })), loadRun, submitIntent: game.submit,
@@ -136,7 +136,9 @@ beforeEach(() => {
   Object.defineProperty(HTMLDialogElement.prototype, 'close', { configurable: true, value: function (this: HTMLDialogElement) { this.removeAttribute('open'); } });
 });
 afterEach(() => {
-  cleanup(); delete window.sliceGame; vi.restoreAllMocks();
+  // vi.fn(initialImplementation) retains that original closure on mockReset.
+  // Install implementations separately so reset releases completed saved campaigns.
+  cleanup(); delete window.sliceGame; vi.resetAllMocks(); vi.restoreAllMocks();
   if (showModal) Object.defineProperty(HTMLDialogElement.prototype, 'showModal', showModal); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal');
   if (close) Object.defineProperty(HTMLDialogElement.prototype, 'close', close); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'close');
 });

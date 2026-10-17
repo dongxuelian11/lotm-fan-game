@@ -180,15 +180,15 @@ describe('BarrenMatriarch actual SliceApp acquisition and current S2 navigation'
     expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled(); expect(oldMotherRoots(game.state)).toEqual(oldMotherRoots(before));
   }, 20_000);
 
-  it('loads current S2 growth ahead of the older saved round and shows all15 actual mastery values and untreated injury', async () => {
+  it('opens the available S1 preparation ahead of the older saved round while preserving all15 current S2 mastery values and untreated injury', async () => {
     const before = promoted(), game = savedGame(before); expect(before.lastCombatRound?.coffinBearerOutcome).toBeTruthy();
     expect(before.injuries).toEqual(originalCoffinBearer().injuries); expect(before.injuries).toHaveLength(4); expect(before.injuries.map(injury => injury.severity)).toEqual(['HEAVY', 'LIGHT', 'HEAVY', 'LIGHT']);
     await mount(game); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ })); const panel = await screen.findByRole('region', { name: PANEL });
+    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ })); const panel = await screen.findByRole('region', { name: '自然行者成长' });
     expect(screen.queryByRole('region', { name: '抬棺人', hidden: true })).toBeNull();
-    await userEvent.click(within(panel).getByText('能力、消化与继承经历', { selector: 'summary' })); expect(view(before).abilities).toHaveLength(15);
+    await userEvent.click(within(panel).getByText('能力、消化与继承经历', { selector: 'summary' })); expect(view(before).abilities).toHaveLength(15); expect(projectSliceState(before).natureWalker.abilities).toHaveLength(15);
     for (const ability of view(before).abilities) expect(panel.textContent).toContain(`${ability.label} · 掌握${before.progression.mastery[ability.id]}`);
-    expect(within(panel).getByRole('region', { name: '荒芜主母当前资源' }).textContent).toContain(`健康${before.health}/100 · 精神${before.mind}/100 · 灵性${before.spirituality}/120`);
+    expect(within(panel).getByRole('region', { name: '自然行者当前资源' }).textContent).toContain(`健康${before.health}/100 · 精神${before.mind}/100 · 灵性${before.spirituality}/120`);
     expect(panel.textContent).not.toMatch(/候选|原创G|本作G|原文未核|编号推断/); expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
   }, 20_000);
 

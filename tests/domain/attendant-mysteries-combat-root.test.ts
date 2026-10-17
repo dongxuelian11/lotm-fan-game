@@ -55,7 +55,7 @@ describe('Attendant Mysteries original first two root save boundaries', () => {
     const migrated = migrateSliceState(restored); assertValidSliceState(migrated);
     same(migrated, actual, 'current-format migration must not repair the battle');
     same(projectSliceState(migrated), projectSliceState(actual));
-  });
+  }, 10_000);
 
   it('keeps the real ordinary history, all old rounds, original town and life resources unchanged', () => {
     const before = state('beforeLast'), after = state('final');

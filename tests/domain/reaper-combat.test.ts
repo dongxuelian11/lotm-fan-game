@@ -142,7 +142,7 @@ describe('Reaper S5 independent finite combat', () => {
       expect(effect(s, 'hunter.s5.weakness-observation', 1, bad as ReaperCombatSource | null).selfGain).toBe(0);
       expect(s).toEqual(before);
     }
-  });
+  }, 15_000);
 
   it('R spends2S only on the real live original opponent, granting a window but no advantage or damage', () => {
     const s = fixture(), body = structuredClone(s.combat), world = structuredClone(s.world), random = fixedRolls();

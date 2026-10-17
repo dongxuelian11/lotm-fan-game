@@ -8,7 +8,8 @@ import {
   assertValidSliceState,
   SliceRuleError,
 } from "../domain/slice/index.js";
-import type { SliceState, SliceProjection } from "../domain/slice/types.js";
+import type { SliceState, SliceProjection, SliceIntent } from "../domain/slice/types.js";
+import type { FoolRepositoryDraft, FoolRepositoryHead } from "./slice-owned-runtime.js";
 import { validateSliceCreation } from "../content/slice-creation.js";
 import type {
   SliceBootstrap,
@@ -26,11 +27,19 @@ export interface StoredSliceReceipt {
   fingerprint: string;
   receipt: SliceReceipt;
 }
+export type RepositorySliceBootstrap = Pick<SliceBootstrap, "runs" | "activeState">;
 export interface SliceRepository {
   transaction<T>(operation: () => T): T;
+  bootstrapView(): RepositorySliceBootstrap;
   list(): StoredSlice[];
   get(runId: string): StoredSlice | null;
   put(value: StoredSlice): void;
+  foolHead(runId: string): FoolRepositoryHead | null;
+  projectFoolRun(runId: string): SliceProjection | null;
+  loadRunProjection(runId: string): SliceProjection | null;
+  prepareFool(runId: string, intent: SliceIntent, expectedRevision: number): FoolRepositoryDraft;
+  projectFoolDraft(draft: FoolRepositoryDraft): SliceProjection;
+  putFoolDraft(draft: FoolRepositoryDraft, updatedAt: string): void;
   receipt(intentId: string): StoredSliceReceipt | null;
   putReceipt(intentId: string, value: StoredSliceReceipt): void;
   activeRun(): string | null;
@@ -38,6 +47,7 @@ export interface SliceRepository {
   recoveryNotice?: string;
 }
 export class SlicePersistenceError extends Error {}
+export class SliceCommitUncertainError extends SlicePersistenceError {}
 export function failure(
   code: string,
   message: string,
@@ -101,7 +111,7 @@ export function validateSliceEnvelope(
     return failure("INVALID_INTENT", "操作数据无效，请重新选择。");
   }
 }
-export function summarizeSlice(stored: StoredSlice): SliceRunSummary {
+export function summarizeSlice(stored: StoredSlice | { state: SliceProjection; updatedAt: string }): SliceRunSummary {
   const s = stored.state;
   return {
     runId: s.runId,
@@ -123,16 +133,12 @@ export class SliceApplication {
   ) {}
   getBootstrap(): SliceResult<SliceBootstrap> {
     try {
-      const values = this.repository.list();
-      const selected = this.repository.activeRun();
-      const current =
-        values.find((v) => v.state.runId === selected) ?? values[0];
+      const view = this.repository.bootstrapView();
       return {
         ok: true,
         value: {
           mode: this.mode,
-          runs: values.map(summarizeSlice),
-          activeState: current ? projectSliceState(current.state) : null,
+          ...view,
           ...(this.repository.recoveryNotice
             ? { recoveryNotice: this.repository.recoveryNotice }
             : {}),
@@ -151,10 +157,13 @@ export class SliceApplication {
       if (typeof runId !== "string" || !/^[A-Za-z0-9_.:-]{1,128}$/.test(runId))
         return failure("INVALID_RUN", "周目编号无效。");
       return this.repository.transaction(() => {
-        const stored = this.repository.get(runId);
-        if (!stored) return failure("RUN_NOT_FOUND", "没有找到这个周目。");
+        const projection = this.repository.loadRunProjection(runId);
+        if (!projection) return failure("RUN_NOT_FOUND", "没有找到这个周目。");
         this.repository.selectRun(runId);
-        return { ok: true as const, value: projectSliceState(stored.state) };
+        return {
+          ok: true as const,
+          value: projection,
+        };
       });
     } catch {
       return failure(
@@ -182,7 +191,8 @@ export class SliceApplication {
                 "DUPLICATE_INTENT_CONFLICT",
                 "这个操作编号已用于其他选择。请重新操作。",
               );
-        let next: SliceState;
+        let next: SliceState | undefined;
+        let draft: FoolRepositoryDraft | undefined;
         let previousRevision = 0;
         if (intent.payload.type === "CREATE") {
           next = createSliceRun(
@@ -191,7 +201,10 @@ export class SliceApplication {
             this.identity(),
           );
         } else {
-          const current = this.repository.get(intent.runId!);
+          const owned = intent.payload.type === "FOOL" && intent.payload.command.type !== "LEARN_GUIDANCE"
+            ? this.repository.foolHead(intent.runId!)
+            : null;
+          const current = owned ? { state: owned } : this.repository.get(intent.runId!);
           if (!current) return failure("RUN_NOT_FOUND", "没有找到这个周目。");
           if (current.state.revision !== intent.expectedRevision)
             return failure(
@@ -201,29 +214,34 @@ export class SliceApplication {
           if (current.state.status === "DEAD")
             return failure("ARCHIVED", "这个周目已经死亡封存，只能查看卷宗。");
           previousRevision = current.state.revision;
-          next = applySliceIntent(current.state, intent.payload);
+          if (owned) draft = this.repository.prepareFool(intent.runId!, intent.payload, intent.expectedRevision);
+          else next = applySliceIntent((current as StoredSlice).state, intent.payload);
         }
-        assertValidSliceState(next);
-        if (next.revision !== previousRevision + 1)
+        if (next) assertValidSliceState(next);
+        const head = draft ?? next!;
+        if (head.revision !== previousRevision + 1)
           throw new Error("Invalid revision boundary");
         const committedAt = this.now();
         const receipt: SliceReceipt = {
           intentId: intent.intentId,
-          runId: next.runId,
+          runId: head.runId,
           previousRevision,
-          newRevision: next.revision,
+          newRevision: head.revision,
           committedAt,
           replayed: false,
-          state: projectSliceState(next),
+          state: draft ? this.repository.projectFoolDraft(draft) : projectSliceState(next!),
         };
-        this.repository.put({ state: next, updatedAt: committedAt });
+        if (draft) this.repository.putFoolDraft(draft, committedAt);
+        else this.repository.put({ state: next!, updatedAt: committedAt });
         this.repository.putReceipt(intent.intentId, { fingerprint, receipt });
-        this.repository.selectRun(next.runId);
+        this.repository.selectRun(head.runId);
         return { ok: true as const, value: structuredClone(receipt) };
       });
     } catch (error) {
       if (error instanceof SliceRuleError)
         return failure("ACTION_UNAVAILABLE", error.message);
+      if (error instanceof SliceCommitUncertainError)
+        return failure("SAVE_UNCERTAIN", "保存结果需要重新读取，请重新打开该周目后重试同一操作。", true);
       if (error instanceof SlicePersistenceError)
         return failure(
           "SAVE_FAILED",

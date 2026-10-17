@@ -2,6 +2,8 @@ import { DeterministicActionRandomStream, type ActionRandomStream } from '../../
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import type { PublicGameDate, PublicCheckResult } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
+import { ATTENDANT_MYSTERIES_INHERITED_ABILITY_IDS } from './index.js';
+import { ATTENDANT_MYSTERIES_ABILITY_IDS } from './types.js';
 import { addGameWeeks, isValidGameDate } from '../game-calendar.js';
 import { MIRACLE_WORKER_COUNT_WHEEL, miracleWorkerActionCount, miracleWorkerWinChance } from '../miracle-worker/combat.js';
 import type { SliceCombatRound, SliceInjury, SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
@@ -286,12 +288,61 @@ export function attendantMysteriesCombatConsequence(round: SliceCombatRound): st
   return text + ' 本轮实际60秒；本人在轮末收束尚未用完的局部效果，已花灵性、精神不退。全部原人物与旧记录保持原样。';
 }
 
+/** Public facts are copied through positive nested allowlists; replay inputs remain private. */
+const publicInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicPending = (p: AttendantMysteriesPendingEffect) => ({
+  id: p.id, owner: p.owner, kind: p.kind, createdAt: p.createdAt, expiresAt: p.expiresAt, remaining: p.remaining,
+  sourceId: p.sourceId, fromCoordinate: p.fromCoordinate, originalTargetCoordinate: p.originalTargetCoordinate,
+  destinationCoordinate: p.destinationCoordinate, destinationDistanceMetres: p.destinationDistanceMetres, actualBodyContinuous: p.actualBodyContinuous,
+});
+const publicRemnant = (r: AttendantMysteriesRemnant) => ({
+  id: r.id, sourceId: r.sourceId, animal: r.animal, quantity: r.quantity, owner: r.owner, holder: r.holder, location: r.location,
+  alive: r.alive, health: r.health, independentMind: r.independentMind, threadsPreviouslyLost: r.threadsPreviouslyLost,
+  lostThreadsEvidence: r.lostThreadsEvidence, acquiredWeek: r.acquiredWeek, pricePaid: r.pricePaid,
+  segments: r.segments.map(segment => ({ id: segment.id, status: segment.status })),
+});
+const publicScene = (p: AttendantMysteriesScene) => ({
+  siteId: p.siteId, playerLocation: p.playerLocation, playerCoordinate: p.playerCoordinate, enemyCoordinate: p.enemyCoordinate,
+  groundCoordinate: p.groundCoordinate, ordinaryExit: p.ordinaryExit, groundEmpty: p.groundEmpty, thirdPartiesInArea: p.thirdPartiesInArea,
+  residentsLocation: p.residentsLocation, residentsJoined: p.residentsJoined, observedSourceId: p.observedSourceId, observationWeek: p.observationWeek,
+  clockSeconds: p.clockSeconds, externalSeconds: p.externalSeconds, playerTravelMetres: p.playerTravelMetres,
+});
+const publicCheck = (c: PublicCheckResult | null): PublicCheckResult | null => c ? ({
+  ability: c.ability, baseAbility: c.baseAbility, modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+  effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier,
+}) : null;
+const publicPowerUses = (p: AttendantMysteriesCombatBody['powerUses']) => ({ ARC_BOLT: p.ARC_BOLT, WARD: p.WARD, COMPOSE: p.COMPOSE, MENTAL_PRESSURE: p.MENTAL_PRESSURE });
+const publicWheel = (w: SliceWheelEntry) => ({ id: w.id, label: w.label, weight: w.weight });
+export function projectAttendantMysteriesAction(a: AttendantMysteriesActionEvidence) { return {
+  order: a.order, actor: a.actor, id: a.id, planned: a.planned, selectedAbility: a.selectedAbility, fallbackReason: a.fallbackReason, mode: a.mode, label: a.label,
+  selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure, attackKind: a.attackKind, rawContribution: a.rawContribution, rawReduction: a.rawReduction,
+  paidCost: a.paidCost, mindCost: a.mindCost, physicalFactor: a.physicalFactor, check: publicCheck(a.check), succeeded: a.succeeded,
+  pendingBefore: a.pendingBefore.map(publicPending), pendingAfter: a.pendingAfter.map(publicPending), pendingApplied: [...a.pendingApplied], countered: [...a.countered], masteryApplied: [...a.masteryApplied],
+  remnantBefore: publicRemnant(a.remnantBefore), remnantAfter: publicRemnant(a.remnantAfter), segmentId: a.segmentId,
+  sourceId: a.sourceId, borrowedReserve: a.borrowedReserve, reserveSpent: a.reserveSpent, discardedReserve: a.discardedReserve, winChanceBonus: a.winChanceBonus,
+  atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, travelMetres: a.travelMetres,
+  playerHealthAfter: a.playerHealthAfter, playerMindAfter: a.playerMindAfter, playerSpiritualityAfter: a.playerSpiritualityAfter, enemySpiritualityAfter: a.enemySpiritualityAfter,
+}; }
+export type AttendantMysteriesPublicActionEvidence = ReturnType<typeof projectAttendantMysteriesAction>;
+export function projectAttendantMysteriesRoundOutcome(o: AttendantMysteriesRoundOutcome) { return {
+  enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+  enemyInjuries: o.enemyInjuries.map(publicInjury), enemyRisk: o.enemyRisk, weaponLocation: o.weaponLocation, powerUses: publicPowerUses(o.powerUses),
+  pendingKind: o.pendingKind, composureReady: o.composureReady, regenerationAttempts: o.regenerationAttempts, graftAttempts: o.graftAttempts, realmAttempts: o.realmAttempts,
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+  playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, playerSpiritualityAfter: o.playerSpiritualityAfter,
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicInjury), playerRiskAfter: o.playerRiskAfter, remnantAfter: publicRemnant(o.remnantAfter),
+  masteryAfter: Object.fromEntries([...ATTENDANT_MYSTERIES_INHERITED_ABILITY_IDS, ...ATTENDANT_MYSTERIES_ABILITY_IDS].filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+  rootAfter: publicScene(o.rootAfter), elapsedSeconds: o.elapsedSeconds,
+  playerActions: o.playerActions.map(projectAttendantMysteriesAction), enemyActions: o.enemyActions.map(projectAttendantMysteriesAction), expiredPending: o.expiredPending.map(publicPending),
+}; }
+export type AttendantMysteriesPublicRoundOutcome = ReturnType<typeof projectAttendantMysteriesRoundOutcome>;
+
 export function projectAttendantMysteriesCombat(s: SliceState) {
   const e = s.attendantMysteries.encounter, last = s.combat?.encounterId === 'ATTENDANT_MYSTERIES_DISPUTE' ? s.combat.lastRound?.attendantMysteriesOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.attendantMysteriesOutcome : null;
   return { enemyName: isAttendantMysteries(s) ? '埃利亚斯·维尔（47岁，序列2非凡者）' : '', targetId: e.targetId, enemyHealth: e.enemyHealth, enemyMind: e.enemyMind, enemySpirituality: e.enemySpirituality,
-    weaponLocation: e.weaponLocation, pendingKind: e.pendingKind, composureReady: e.composureReady, powerUses: { ...e.powerUses },
-    lastActionSequence: last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order) : [], countWheel: ATTENDANT_MYSTERIES_COUNT_WHEEL, enemyCountWheel: ATTENDANT_MYSTERIES_ENEMY_COUNT_WHEEL,
-    enemyAbilityWheel: ATTENDANT_MYSTERIES_ENEMY_ABILITY_WHEEL, remnant: structuredClone(e.remnant), remainingMaterialSegments: e.remnant.segments.filter(v => v.status === 'UNUSED').length,
+    weaponLocation: e.weaponLocation, pendingKind: e.pendingKind, composureReady: e.composureReady, powerUses: publicPowerUses(e.powerUses),
+    lastActionSequence: last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(projectAttendantMysteriesAction) : [], countWheel: ATTENDANT_MYSTERIES_COUNT_WHEEL.map(publicWheel), enemyCountWheel: ATTENDANT_MYSTERIES_ENEMY_COUNT_WHEEL.map(publicWheel),
+    enemyAbilityWheel: ATTENDANT_MYSTERIES_ENEMY_ABILITY_WHEEL.map(publicWheel), remnant: publicRemnant(e.remnant), remainingMaterialSegments: e.remnant.segments.filter(v => v.status === 'UNUSED').length,
     facts: ['本人沿用四项属性平均、灵性上限120与续轮恢复12。旧能力的零掌握仍代表已学；没有来源或资源时只作普通动作。',
       '身体与精神后果按实际来源分别结算；缓冲后仍为正的身体攻击仍可致伤。普通12米出口开放。',
       '原残料始终死亡，三段耗尽不补。居民留在镇中，没有免费秘偶军队。本人真实死亡即终局，本场不启动新的复活机制。'] };

@@ -1,7 +1,7 @@
 import type { AttendantMysteriesReceptionState, AttendantMysteriesReceptionCommand, AttendantMysteriesReceptionProjection } from './reception.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import type { SliceState } from '../slice/types.js';
-import type { TownState, TownCommand, HostFacts, Cost } from './town.js';
+import type { TownState, TownCommand, HostFacts, Cost, PlotId } from './town.js';
 import type { AttendantMysteriesActivityCommand, AttendantMysteriesLifeState, AttendantMysteriesLifeProjection } from './life.js';
 import type { AttendantMysteriesEncounterCommand, AttendantMysteriesEncounterState, AttendantMysteriesEncounterProjection } from './encounter.js';
 
@@ -9,13 +9,16 @@ export const ATTENDANT_MYSTERIES_ABILITY_IDS = ['diviner.s1.thread-regeneration'
 export type AttendantMysteriesAbilityId = typeof ATTENDANT_MYSTERIES_ABILITY_IDS[number];
 export type AttendantMysteriesAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'LEAVE_PREPARATION' }
+  | { type: 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'MATERIAL_WORK' | 'BUY_MATERIALS' | 'BREW'; batchId: string }
   | { type: 'PREPARE_PROMOTION'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type AttendantMysteriesTownCommand = { type: 'TOWN'; command: TownCommand };
 export type AttendantMysteriesCommand = AttendantMysteriesReceptionCommand | AttendantMysteriesAcquisitionCommand | AttendantMysteriesTownCommand | AttendantMysteriesActivityCommand | AttendantMysteriesEncounterCommand;
 export interface AttendantMysteriesMaterial { id: string; name: string; quantity: number; unit: string; source: string; holder: 'SUPPLIER' | 'PLAYER' | 'CONSUMED' }
-export interface AttendantMysteriesBatch { id: string; stockedWeek: number | null; labourSteps: number; acquiredWeek: number | null; brewedWeek: number | null; materials: AttendantMysteriesMaterial[] }
+export interface AttendantMysteriesRecoveryRequest { version: 1; sourceBottleId: string; characteristicId: string; regionId: string; plot: PlotId; requestedWeek: number }
+export interface AttendantMysteriesRecovery extends AttendantMysteriesRecoveryRequest { recoveredWeek: number }
+export interface AttendantMysteriesBatch { id: string; stockedWeek: number | null; labourSteps: number; acquiredWeek: number | null; brewedWeek: number | null; materials: AttendantMysteriesMaterial[]; recovery?: AttendantMysteriesRecovery }
 export interface AttendantMysteriesBottle { id: string; batchId: string; inputIds: string[]; brewedWeek: number; status: 'PREPARED' | 'CONSUMED'; consumedWeek: number | null; outcome: PublicResolutionTier | null; regionId: string | null }
 export interface AttendantMysteriesBudget {
   actions: number; health: number; mind: number; spirituality: number; cash: number; pollution: number;
@@ -39,7 +42,7 @@ export interface AttendantMysteriesPreparation { week: number; bottleId: string;
 export interface AttendantMysteriesState {
   guidanceKnown: boolean; guidanceWeek: number | null; sourceHistoryDigest: string | null;
   batches: AttendantMysteriesBatch[]; bottles: AttendantMysteriesBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: AttendantMysteriesRecoveryRequest };
   promotionWeek: number | null; miracleWorkerActingAtPromotion: number | null;
   preparation: AttendantMysteriesPreparation | null; acquisitionJournal: AttendantMysteriesAcquisitionEvent[];
   town: TownState | null; townJournal: AttendantMysteriesTownEvent[];
