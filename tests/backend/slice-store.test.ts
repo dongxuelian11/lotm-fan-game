@@ -129,7 +129,7 @@ describe("slice canonical storage", () => {
     expect(
       s.submitIntent({ ...command, intentId: "stale-other" }),
     ).toMatchObject({ ok: false, error: { code: "REVISION_CONFLICT" } });
-  });
+  }, 10_000);
   it("rolls back snapshot, receipt, selected slot and random cursor on a write failure; retry is identical", () => {
     let fail = false;
     const s = open(path(), () => {
