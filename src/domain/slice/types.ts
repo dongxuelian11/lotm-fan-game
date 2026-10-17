@@ -1,3 +1,5 @@
+import type { BeautyGoddessPublicRoundOutcome, projectBeautyGoddessPublicCombat } from '../beauty-goddess/public.js';
+import type { MoonState, MoonCommand, MoonProjection } from '../moon/types.js';
 import type { PerfecterState, PerfecterCommand, PerfecterProjection } from '../perfecter/types.js';
 import type { VisionaryState, VisionaryCommand, VisionaryProjection } from '../visionary/types.js';
 import type { RedPriestState, RedPriestCommand, RedPriestProjection } from '../red-priest/types.js';
@@ -23,7 +25,7 @@ import type { TimeWormRoundOutcome, projectTimeWormCombat } from '../time-worm/c
 import type { StarKeyRoundOutcome, projectStarKeyCombat } from '../star-key/combat.js';
 import type { AllKnowingEyeRoundOutcome, projectAllKnowingEyeCombat } from '../all-knowing-eye/combat.js';
 import type { MisfortuneKnightRoundOutcome, projectMisfortuneKnightCombat } from '../misfortune-knight/combat.js';
-import type { BeautyGoddessRoundOutcome, projectBeautyGoddessCombat } from '../beauty-goddess/combat.js';
+import type { BeautyGoddessRoundOutcome } from '../beauty-goddess/combat.js';
 import type { CivilizationEnlightenerRoundOutcome, CivilizationEnlightenerPublicRoundOutcome, projectCivilizationEnlightenerCombat } from '../civilization-enlightener/combat.js';
 import type { WriterRoundOutcome, WriterPublicRoundOutcome, projectWriterCombat } from '../writer/combat.js';
 import type { ConquerorRoundOutcome, ConquerorPublicRoundOutcome, projectConquerorCombat } from '../conqueror/combat.js';
@@ -301,6 +303,7 @@ import type { PublicCheckResult, PublicCoreStatKey, PublicGameDate } from '../..
 export type SliceLifeTier = 'DESTITUTE' | 'POOR' | 'ORDINARY' | 'RESPECTABLE' | 'LUXURIOUS';
 export type SliceStance = 'ATTACK' | 'DEFEND' | 'CONTROL' | 'PREPARE' | 'RETREAT';
 export type SliceIntent =
+  | { type: 'MOON'; command: MoonCommand }
   | { type: 'PERFECTER'; command: PerfecterCommand }
   | { type: 'VISIONARY'; command: VisionaryCommand }
   | { type: 'RED_PRIEST'; command: RedPriestCommand }
@@ -685,7 +688,7 @@ export interface SliceCombatProjection {
   starKey?:ReturnType<typeof projectStarKeyCombat>;
   allKnowingEye?:ReturnType<typeof projectAllKnowingEyeCombat>;
   misfortuneKnight?:ReturnType<typeof projectMisfortuneKnightCombat>;
-  beautyGoddess?:ReturnType<typeof projectBeautyGoddessCombat>;
+  beautyGoddess?:ReturnType<typeof projectBeautyGoddessPublicCombat>;
   civilizationEnlightener?:ReturnType<typeof projectCivilizationEnlightenerCombat>;
   writer?:ReturnType<typeof projectWriterCombat>;
   conqueror?:ReturnType<typeof projectConquerorCombat>;
@@ -707,7 +710,7 @@ export interface SliceCombatProjection {
   catastrophe?:ReturnType<typeof projectCatastropheCombat>;
   wisdomAngel?:ReturnType<typeof projectWisdomAngelCombat>;
   concealmentServant?:ReturnType<typeof projectConcealmentServantCombat>;
-  lifeGiver?:ReturnType<typeof projectLifeGiverCombat>;
+  lifeGiver?:Omit<ReturnType<typeof projectLifeGiverCombat>, 'source'>;
   knowledgeMentor?:ReturnType<typeof projectKnowledgeMentorCombat>;
   discerner?:ReturnType<typeof projectDiscernerCombat>;
   weatherWarlock?:ReturnType<typeof projectWeatherWarlockCombat>;
@@ -771,6 +774,7 @@ export interface SliceArc {
   relationship: AudreyOutcome; transferPending: boolean;
 }
 export interface SliceState {
+  moon:MoonState;
   perfecter:PerfecterState;
   visionary:VisionaryState;
   redPriest:RedPriestState;
@@ -975,7 +979,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 208; contentVersion: 'perfecter-v208'; runId: string; revision: number;
+  schemaVersion: 209; contentVersion: 'moon-v209'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -992,8 +996,9 @@ export interface SliceState {
 }
 /** Deliberately constructed allow-list, never a spread of SliceState. */
 /** Public records keep resolved action facts; deterministic replay source stays private. */
-export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome' | 'writerOutcome' | 'civilizationEnlightenerOutcome' | 'knowledgeMentorOutcome'> & { knowledgeMentorOutcome?: KnowledgeMentorPublicRoundOutcome; civilizationEnlightenerOutcome?: CivilizationEnlightenerPublicRoundOutcome; writerOutcome?: WriterPublicRoundOutcome; conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
+export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome' | 'writerOutcome' | 'civilizationEnlightenerOutcome' | 'knowledgeMentorOutcome' | 'beautyGoddessOutcome' | 'lifeGiverOutcome'> & { lifeGiverOutcome?: Omit<LifeGiverRoundOutcome, 'source' | 'randomCursorAfter'>; beautyGoddessOutcome?: BeautyGoddessPublicRoundOutcome; knowledgeMentorOutcome?: KnowledgeMentorPublicRoundOutcome; civilizationEnlightenerOutcome?: CivilizationEnlightenerPublicRoundOutcome; writerOutcome?: WriterPublicRoundOutcome; conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
 export interface SliceProjection {
+  moon:MoonProjection;
   perfecter:PerfecterProjection;
   visionary:VisionaryProjection;
   redPriest:RedPriestProjection;

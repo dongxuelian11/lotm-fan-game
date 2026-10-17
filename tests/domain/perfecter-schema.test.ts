@@ -14,6 +14,8 @@ const fresh = () => createSliceRun('perfecter-schema', sliceDefaultCreationSelec
 const same = (a: unknown,b: unknown) => expect(stableStringify(a)).toBe(stableStringify(b));
 function old(version: 205 | 206 | 207): Record<string, unknown> {
   const value = structuredClone(fresh()) as unknown as Record<string, unknown>;
+  // Schema209 adds Moon; a genuine205–207 input cannot already contain it.
+  delete value.moon;
   delete value.perfecter;
   if (version < 207) delete value.visionary;
   if (version < 206) delete value.redPriest;
@@ -31,7 +33,7 @@ describe('Perfecter exact current schema boundary', () => {
   it.each([205,206,207] as const)('strictly preserves every old %i field and adds only missing defaults', version => {
     const state=old(version), before=stableStringify(state), next=migrateSliceState(state), defaults=fresh();
     const additions=Object.keys(next).filter(key=>!Object.hasOwn(state,key));
-    expect(additions.sort()).toEqual((version===205?['perfecter','redPriest','visionary']:version===206?['perfecter','visionary']:['perfecter']).sort());
+    expect(additions.sort()).toEqual((version===205?['moon','perfecter','redPriest','visionary']:version===206?['moon','perfecter','visionary']:['moon','perfecter']).sort());
     for(const [key,value] of Object.entries(state)) if(key!=='schemaVersion'&&key!=='contentVersion') same(next[key as keyof SliceState],value);
     for(const key of additions) same(next[key as keyof SliceState],defaults[key as keyof SliceState]);
     expect(stableStringify(state)).toBe(before);
@@ -42,9 +44,9 @@ describe('Perfecter exact current schema boundary', () => {
     const raw=readObjectEntry<Record<string,unknown>>('tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json','final');
     expect([raw.schemaVersion,raw.contentVersion,raw.revision,raw.week]).toEqual([186,'civilization-enlightener-v186',798,188]);
     const legacy=migrateSliceState(raw) as unknown as Record<string,unknown>;
-    delete legacy.perfecter;legacy.schemaVersion=207;legacy.contentVersion='visionary-v207';
+    delete legacy.moon;delete legacy.perfecter;legacy.schemaVersion=207;legacy.contentVersion='visionary-v207';
     const before=stableStringify(legacy),next=migrateSliceState(legacy);
-    expect(Object.keys(next).filter(key=>!Object.hasOwn(legacy,key))).toEqual(['perfecter']);
+    expect(Object.keys(next).filter(key=>!Object.hasOwn(legacy,key))).toEqual(['moon','perfecter']);
     for(const [key,value] of Object.entries(raw))if(key!=='schemaVersion'&&key!=='contentVersion')same(next[key as keyof SliceState],value);
     for(const [key,value] of Object.entries(legacy))if(key!=='schemaVersion'&&key!=='contentVersion')same(next[key as keyof SliceState],value);
     same(next.perfecter,createPerfecterState());expect(stableStringify(legacy)).toBe(before);

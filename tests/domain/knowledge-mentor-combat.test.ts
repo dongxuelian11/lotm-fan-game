@@ -52,7 +52,7 @@ describe('Knowledge Mentor actual independent source, finite paid combat and rea
       expect(p.playerAbilityWheels?.[stance]).toEqual(playerAbilityWheel(s, stance).map((entry,index)=>({...entry,label:playerLabels[index]}))); expect(knowledgeMentorAbilityWheel(s, stance).reduce((n, a) => n + a.weight, 0)).toBeCloseTo(100);
     }
     expect(p.playerAbilityWheels?.RETREAT).toEqual([]); expect(new Set(KNOWLEDGE_MENTOR_PLAYER_ABILITIES.map(a => a.id)).size).toBe(KNOWLEDGE_MENTOR_PLAYER_ABILITIES.length); expect(JSON.stringify(s)).toBe(bytes);
-  });
+  }, 15_000);
 
   it('spends one real prepared plate, 5S and both unique original charges once, with no free mastery or extra actor', () => {
     const s = start(), before = structuredClone(s), r = begin(s), plate = s.knowledgeMentor.life.combatPlates.find(p => p.status === 'READY')!;

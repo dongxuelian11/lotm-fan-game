@@ -12,6 +12,8 @@ import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { projectFool, validateFoolCommand } from '../../src/domain/fool/index.js';
 import { createRedPriestState, projectRedPriest } from '../../src/domain/red-priest/index.js';
 import { createVisionaryState, projectVisionary } from '../../src/domain/visionary/index.js';
+import { createPerfecterState, projectPerfecter } from '../../src/domain/perfecter/index.js';
+import { createMoonState, projectMoon } from '../../src/domain/moon/index.js';
 import { openFoolRuntimeSession, type FoolRuntimeSession } from '../../src/domain/fool/owned-session.js';
 import { foolFrozenSourceDigest } from '../../src/domain/fool/source.js';
 import type { FoolProjection } from '../../src/domain/fool/types.js';
@@ -250,7 +252,7 @@ async function fileHash(path: string, prefixBytes?: number): Promise<string> {
 interface PriorPublicRow { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; public: { strictSha256: string } }
 interface RedactionAudit {
   prior: { rows: PriorPublicRow[] };
-  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary'>, display: typeof projectPlayerText) => unknown;
+  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon'>, display: typeof projectPlayerText) => unknown;
   assertRow: (prior: { rows: PriorPublicRow[] }, index: number, actual: { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; legacyPublicSha256: string }) => string;
 }
 let redactionAudit: RedactionAudit | null = null;
@@ -307,7 +309,7 @@ function jsonLines<T>(file: FileName): T[] {
   const text = readFileSync(fixturePath(file), 'utf8'); expect(text.endsWith('\n'), file).toBe(true);
   return text.slice(0, -1).split('\n').map(line => { expect(line.length).toBeGreaterThan(0); return JSON.parse(line) as T; });
 }
-type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
+type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
 const EMPTY_RED_PRIEST: SliceState['redPriest'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   campaign: null, materials: null, epilogue: null, journal: [],
@@ -315,6 +317,14 @@ const EMPTY_RED_PRIEST: SliceState['redPriest'] = {
 const EMPTY_VISIONARY: SliceState['visionary'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   era: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
+const EMPTY_PERFECTER: SliceState['perfecter'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  works: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
+const EMPTY_MOON: SliceState['moon'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
 };
 let originalStateKeys: readonly string[] | null = null;
 function historicalStateKeys(): readonly string[] {
@@ -324,18 +334,23 @@ function historicalStateKeys(): readonly string[] {
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([205, 'fool-v205']);
     expect(Object.hasOwn(raw, 'redPriest')).toBe(false);
     expect(Object.hasOwn(raw, 'visionary')).toBe(false);
+    expect(Object.hasOwn(raw, 'perfecter')).toBe(false);
+    expect(Object.hasOwn(raw, 'moon')).toBe(false);
     originalStateKeys = Object.keys(raw).sort();
   }
   return originalStateKeys;
 }
-/** Audit only: allow exactly the two approved new roots and two version changes.
+/** Audit only: allow exactly the four approved new roots and two version changes.
  * Every original field, including all nested history, remains in the hash. */
 function historicalStateView(state: SliceState): HistoricalFoolState {
-  keys(state, [...historicalStateKeys(), 'redPriest', 'visionary']);
+  keys(state, [...historicalStateKeys(), 'redPriest', 'visionary', 'perfecter', 'moon']);
   expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
   expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
-  const { redPriest: _emptyRedPriest, visionary: _emptyVisionary, ...originalFields } = state;
+  expect(state.perfecter).toStrictEqual(EMPTY_PERFECTER);
+  expect(state.moon).toStrictEqual(EMPTY_MOON);
+  const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
+    perfecter: _emptyPerfecter, moon: _emptyMoon, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 205, contentVersion: 'fool-v205' };
 }
 function current(raw: unknown): SliceState {
@@ -352,12 +367,14 @@ function current(raw: unknown): SliceState {
   return state;
 }
 
-/** Remove only the two verified inactive new chapters from this detached audit view.
+/** Remove only the four verified inactive new chapters from this detached audit view.
  * Its complete remaining shape/content is still bound by the old public hash. */
-function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary'> {
+function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon'> {
   expect(state.progression.pathwayId).toBe('diviner');
   expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
   expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
+  expect(state.perfecter).toStrictEqual(EMPTY_PERFECTER);
+  expect(state.moon).toStrictEqual(EMPTY_MOON);
   expect(Object.hasOwn(projection, 'redPriest')).toBe(true);
   expect(projection.redPriest).toStrictEqual(projectPlayerText(projectRedPriest(state), state.character.name));
   expect(projection.redPriest.guidanceKnown).toBe(false); expect(projection.redPriest.promoted).toBe(false);
@@ -370,7 +387,19 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
   expect(projection.visionary.insideCase).toBe(false); expect(projection.visionary.abilities).toEqual([]);
   expect(projection.visionary.actions.every(action => !action.enabled)).toBe(true);
   for (const field of ['source', 'frame', 'journal']) expect(Object.hasOwn(projection.visionary, field)).toBe(false);
-  const { redPriest: _emptyRedPriest, visionary: _emptyVisionary, ...originalFields } = projection;
+  expect(Object.hasOwn(projection, 'perfecter')).toBe(true);
+  expect(projection.perfecter).toStrictEqual(projectPlayerText(projectPerfecter(state), state.character.name));
+  expect(Object.hasOwn(projection, 'moon')).toBe(true);
+  expect(projection.moon).toStrictEqual(projectPlayerText(projectMoon(state), state.character.name));
+  for (const root of [projection.perfecter, projection.moon]) {
+    keys(root, ['title', 'guidanceKnown', 'promoted', 'story', 'nextStep', 'risk', 'resources', 'abilities', 'actions', 'sections', 'insideCase']);
+    expect(root.guidanceKnown).toBe(false); expect(root.promoted).toBe(false);
+    expect(root.insideCase).toBe(false); expect(root.abilities).toEqual([]); expect(root.sections).toEqual([]);
+    expect(root.actions.every(action => !action.enabled)).toBe(true);
+    for (const field of ['source', 'frame', 'journal']) expect(Object.hasOwn(root, field)).toBe(false);
+  }
+  const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
+    perfecter: _emptyPerfecter, moon: _emptyMoon, ...originalFields } = projection;
   return originalFields;
 }
 function budget(s: SliceState) {
@@ -516,13 +545,16 @@ async function assertTransition(e: Observation, commands: SliceIntent[], freeze:
 describe.sequential('Fool original1868 continuation with explicit original43 reconstruction evidence', () => {
   beforeAll(assertReviewedHistoricalRuntimeProof, 240_000);
   afterAll(assertReviewedHistoricalRuntimeProof, 240_000);
-  it('limits the historical audit view to the exact original keys and two strictly empty current chapters', () => {
+  it('limits the historical audit view to the exact original keys and four strictly empty current chapters', () => {
     const raw = entry<HistoricalFoolState>('final');
     expect(EMPTY_RED_PRIEST).toStrictEqual(createRedPriestState());
     expect(EMPTY_VISIONARY).toStrictEqual(createVisionaryState());
+    expect(EMPTY_PERFECTER).toStrictEqual(createPerfecterState());
+    expect(EMPTY_MOON).toStrictEqual(createMoonState());
     // This is only an audit-helper guard; actual migration/loading is tested below.
     const shape: SliceState = { ...raw, schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION,
-      redPriest: structuredClone(EMPTY_RED_PRIEST), visionary: structuredClone(EMPTY_VISIONARY) };
+      redPriest: structuredClone(EMPTY_RED_PRIEST), visionary: structuredClone(EMPTY_VISIONARY),
+      perfecter: structuredClone(EMPTY_PERFECTER), moon: structuredClone(EMPTY_MOON) };
     same(historicalStateView(shape), raw);
     expect(() => historicalStateView({ ...shape, unexpectedRoot: null } as SliceState)).toThrow();
     const { fool: _missingOriginalRoot, ...missingOriginal } = shape;
@@ -531,6 +563,14 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     expect(() => historicalStateView({ ...shape, redPriest: { ...shape.redPriest, unexpectedField: undefined } } as SliceState)).toThrow();
     expect(() => historicalStateView({ ...shape, visionary: { ...shape.visionary, guidanceKnown: true } })).toThrow();
     expect(() => historicalStateView({ ...shape, visionary: { ...shape.visionary, unexpectedField: undefined } } as SliceState)).toThrow();
+    expect(() => historicalStateView({ ...shape, perfecter: { ...shape.perfecter, guidanceKnown: true } })).toThrow();
+    expect(() => historicalStateView({ ...shape, perfecter: { ...shape.perfecter, unexpectedField: undefined } } as SliceState)).toThrow();
+    expect(() => historicalStateView({ ...shape, moon: { ...shape.moon, guidanceKnown: true } })).toThrow();
+    expect(() => historicalStateView({ ...shape, moon: { ...shape.moon, unexpectedField: undefined } } as SliceState)).toThrow();
+    const { perfecter: _missingPerfecter, ...missingPerfecter } = shape;
+    const { moon: _missingMoon, ...missingMoon } = shape;
+    expect(() => historicalStateView(missingPerfecter as SliceState)).toThrow();
+    expect(() => historicalStateView(missingMoon as SliceState)).toThrow();
     expect(() => historicalStateView({ ...shape, schemaVersion: 205 } as unknown as SliceState)).toThrow();
     expect(hash(historicalStateView({ ...shape, cash: shape.cash + 1 })), 'An old field is never normalized away').not.toBe(hash(raw));
   });

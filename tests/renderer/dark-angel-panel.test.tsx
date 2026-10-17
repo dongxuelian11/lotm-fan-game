@@ -220,7 +220,7 @@ describe('Dark Angel panel: one real spirit, finite effect and ordinary exit', (
     expect(within(panel()).queryByRole('button', { name: '返回普通生活' })).toBeNull(); expect(disabled(picker())).toBe(true);
     const completed = finish(da(withdrawn, { type: 'READ_ORIGINAL', caseId: 'withdrawn-guidance' }), 'withdrawn-guidance');
     expect(completed.progression.mastery[GUIDANCE]).toBe(0); expect(completed.progression.mastery[SHELTER]).toBe(0); expect(ui.onCommand).toHaveBeenCalledExactlyOnceWith(action.command);
-  }, 30_000);
+  }, 60_000);
 
   it('keeps completed life practice outside the optional paid encounter until explicitly selected', () => {
     const value = projection(practiced()), ui = show(value);

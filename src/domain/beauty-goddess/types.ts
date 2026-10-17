@@ -10,15 +10,29 @@ export type BeautyGoddessPreparationId = typeof BEAUTY_GODDESS_PREPARATION_IDS[n
 export type BeautyGoddessAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: BeautyGoddessPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONFIRM_TRANSFORMATION'; confirmed: true }
   | { type: 'DECLINE_TRANSFORMATION' }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type BeautyGoddessCommand = BeautyGoddessAcquisitionCommand | BeautyGoddessActivityCommand | BeautyGoddessEncounterCommand;
+/** A later drug vessel carries the same finite original; its attempt ID is not a new characteristic. */
+export interface BeautyGoddessRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number;
+}
+export interface BeautyGoddessRecovery extends BeautyGoddessRecoveryRequest { recoveredWeek: number }
+export interface BeautyGoddessOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMAINS' | 'EMBODIED';
+}
+export interface BeautyGoddessOriginalCharacteristics {
+  characteristics: BeautyGoddessOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface BeautyGoddessBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: BeautyGoddessRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface BeautyGoddessAcquisitionBudget {
@@ -46,7 +60,7 @@ export interface BeautyGoddessTransformation {
 export interface BeautyGoddessState {
   transformation: BeautyGoddessTransformation;
   guidanceKnown: boolean; bottles: BeautyGoddessBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: BeautyGoddessRecoveryRequest };
   promotionWeek: number | null; lifeGiverActingAtPromotion: number | null;
   preparations: { taskId: BeautyGoddessPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: BeautyGoddessAcquisitionEvent[];

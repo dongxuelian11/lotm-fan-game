@@ -7,7 +7,9 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { stableStringify } from '../../src/domain/canonical.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { projectSliceState } from '../../src/domain/slice/index.js';
-import { createVisionaryState } from '../../src/domain/visionary/index.js';
+import { createVisionaryState, projectVisionary } from '../../src/domain/visionary/index.js';
+import { createPerfecterState, projectPerfecter } from '../../src/domain/perfecter/index.js';
+import { createMoonState, projectMoon } from '../../src/domain/moon/index.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { RedPriestPanel } from '../../src/renderer/RedPriestPanel.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
@@ -26,24 +28,45 @@ const digest = (value: unknown) => createHash('sha256').update(stableStringify(v
 const fileDigest = () => createHash('sha256').update(readFileSync(FILE)).digest('hex');
 // Review additions here explicitly if a future format adds a default root. Never
 // normalize away an old field or infer an allowed default from migrated output.
-const NEW_DEFAULT_ROOTS: Pick<SliceState, 'visionary'> = { visionary: createVisionaryState() };
+const NEW_DEFAULT_ROOTS: Pick<SliceState, 'visionary' | 'perfecter' | 'moon'> = {
+  visionary: createVisionaryState(), perfecter: createPerfecterState(), moon: createMoonState(),
+};
 let raw: SliceState, current: SliceState, publicState: SliceProjection;
 let originalFileSha: string, originalCurrentSha: string, originalPublicSha: string;
 
-function assertCurrentMigration(): void {
+function assertCurrentMigration(state: SliceState = current): void {
   expect([raw.schemaVersion, raw.contentVersion]).toEqual([206, 'red-priest-v206']);
-  expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), ...Object.keys(NEW_DEFAULT_ROOTS)].sort());
-  for (const [key, value] of Object.entries(raw)) {
-    if (key !== 'schemaVersion' && key !== 'contentVersion') {
-      expect(digest(current[key as keyof SliceState]), `Historical field ${key}`).toBe(digest(value));
-    }
-  }
+  expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  expect(Object.keys(state).sort()).toEqual([...Object.keys(raw), ...Object.keys(NEW_DEFAULT_ROOTS)].sort());
   for (const [key, value] of Object.entries(NEW_DEFAULT_ROOTS)) {
     expect(Object.hasOwn(raw, key), `New root ${key} cannot replace an old field`).toBe(false);
-    expect(current[key as keyof SliceState], `Explicit default ${key}`).toStrictEqual(value);
+    expect(state[key as keyof SliceState], `Explicit default ${key}`).toStrictEqual(value);
+  }
+  for (const [key, value] of Object.entries(raw)) {
+    if (key !== 'schemaVersion' && key !== 'contentVersion') {
+      expect(digest(state[key as keyof SliceState]), `Historical field ${key}`).toBe(digest(value));
+    }
   }
   expect(digest(raw), 'Migration cannot rewrite the captured input').toBe(FINAL_SHA);
+}
+
+function assertInactiveCurrentChapters(state: SliceProjection): void {
+  const expected = {
+    visionary: projectPlayerText(projectVisionary(current), current.character.name),
+    perfecter: projectPlayerText(projectPerfecter(current), current.character.name),
+    moon: projectPlayerText(projectMoon(current), current.character.name),
+  };
+  for (const key of ['visionary', 'perfecter', 'moon'] as const) {
+    const root = state[key];
+    expect(Object.hasOwn(state, key)).toBe(true);
+    expect(root).toStrictEqual(expected[key]);
+    expect(Object.keys(root).sort()).toEqual(['title', 'guidanceKnown', 'promoted', 'story', 'nextStep',
+      'risk', 'resources', 'abilities', 'actions', 'sections', 'insideCase'].sort());
+    expect(root.guidanceKnown).toBe(false); expect(root.promoted).toBe(false); expect(root.insideCase).toBe(false);
+    expect(root.abilities).toEqual([]); expect(root.sections).toEqual([]);
+    expect(root.actions.every(action => !action.enabled)).toBe(true);
+    assertPublicOnly(root, key);
+  }
 }
 
 function assertPublicOnly(value: unknown, path = ''): void {
@@ -92,6 +115,7 @@ beforeAll(() => {
   assertCurrentMigration();
   originalCurrentSha = digest(current);
   publicState = projectSliceState(current); originalPublicSha = digest(publicState);
+  assertInactiveCurrentChapters(publicState);
 }, 120_000);
 beforeEach(() => { vi.spyOn(window, 'scrollTo').mockImplementation(() => {}); });
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
@@ -104,6 +128,18 @@ afterAll(() => {
 });
 
 describe('Red Priest actual final capture in the renderer', () => {
+  it('rejects missing, forged or altered newly added defaults and public chapters', () => {
+    expect(() => assertCurrentMigration({ ...current, unexpectedRoot: null } as SliceState)).toThrow();
+    for (const key of ['visionary', 'perfecter', 'moon'] as const) {
+      const { [key]: _missing, ...missing } = current;
+      expect(() => assertCurrentMigration(missing as SliceState)).toThrow();
+      expect(() => assertCurrentMigration({ ...current, [key]: { ...current[key], guidanceKnown: true } })).toThrow();
+      expect(() => assertCurrentMigration({ ...current, [key]: { ...current[key], unexpectedField: undefined } })).toThrow();
+      expect(() => assertInactiveCurrentChapters({ ...publicState, [key]: { ...publicState[key], guidanceKnown: true } })).toThrow();
+      expect(() => assertInactiveCurrentChapters({ ...publicState, [key]: { ...publicState[key], privateProbe: undefined } })).toThrow();
+    }
+  });
+
   it('shows genuine sequence-zero promotion and the actually used 8 versus unused 0 mastery', async () => {
     expect(current).toMatchObject({ status: 'ACTIVE', revision: 1052, week: 353,
       progression: { pathwayId: 'hunter', sequence: 0 }, redPriest: { promotionWeek: 341, materials: { status: 'ASCENDED' } } });

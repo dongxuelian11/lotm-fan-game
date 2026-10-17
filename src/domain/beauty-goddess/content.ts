@@ -6,7 +6,7 @@ import type { BeautyGoddessAbilityId, BeautyGoddessPreparationId } from './types
  * unknown. The porch, finite powers, checks and costs are original game design;
  * no divine Lilith power, forced love, personality rewriting or infinite life. */
 export const BEAUTY_GODDESS_GUIDE = LIFE_GIVER_GUIDE;
-export const BEAUTY_GODDESS_PRICES = { guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100 } as const;
+export const BEAUTY_GODDESS_PRICES = { guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100, recovery: 120, recoveryDrug: 900, recoveryLabourBalance: 90 } as const;
 export const BEAUTY_GODDESS_MIN_LIFE_GIVER_WEEKS = 12;
 export const BEAUTY_GODDESS_LABOUR_STEPS = 5;
 export const BEAUTY_GODDESS_BOTTLE_IDS = ['beauty-goddess-potion-1', 'beauty-goddess-potion-2', 'beauty-goddess-potion-3'] as const;
@@ -34,4 +34,4 @@ export const BEAUTY_GODDESS_INHERITED_ABILITIES = [
   ['moon.s3.bounded-summoning', '有限召唤之门', '须原来客当次愿意并沿已知两地移动同一身体。'], ['moon.s3.guest-cooperation', '来客有限合作', '同一原来客在场、自愿且实际精力足够才可合作。'],
   ['moon.s2.bounded-vitality', '有限活性支持', '须活着的同一原身体、自愿和实际未耗月珠。'], ['moon.s2.shared-shelter', '有限共同庇护', '只保护当前许可内的真实合作，消耗原月珠与实际资源。'],
 ].map(([id, label, description]) => ({ id: id!, label: label!, description: description! }));
-export const BEAUTY_GODDESS_CONSUMPTION_RISK = '创生者消化100、实际晋2后12整周、健康>20且精神>40。分别完成三项1行动专业准备，单独知情确认成功后的女性身体，再付1行动与150便士检查当周场地。0行动独立确认服所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。只有成功才成为女性，原本女性仍为女性；失败身体不变，姓名、年龄、性格与取向不改变。成功四属性各+1、原21项掌握与创生者消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。旧伤须正常休养，原来客和旧材料不补充。可以不服药并继续作为创生者生活。全部原瓶失败后须付1行动与100便士申请下一批，至少跨一真实周才有新瓶到货。';
+export const BEAUTY_GODDESS_CONSUMPTION_RISK = '创生者消化100、实际晋2后12整周、健康>20且精神>40。分别完成三项1行动专业准备，单独知情确认成功后的女性身体，再付1行动与150便士检查当周场地。0行动独立确认服所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。只有成功才成为女性，原本女性仍为女性；失败身体不变，姓名、年龄、性格与取向不改变。成功四属性各+1、原21项掌握与创生者消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。旧伤须正常休养，原来客和旧材料不补充。可以不服药并继续作为创生者生活。最初三份原特性固定，全部失败后可付1行动、120便士调查指定失败原瓶，隔一真实周另付1行动在原处回收同一份特性。每次新普通药物与调配服务另付900便士，或五项新劳动后90便士；当次场地检查仍需150便士。新载体不产生第四份特性，旧原瓶、费用与失败记录全部保留。';

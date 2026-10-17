@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { createVisionaryState } from '../../src/domain/visionary/index.js';
+import { createPerfecterState } from '../../src/domain/perfecter/index.js';
+import { createMoonState } from '../../src/domain/moon/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedVisionarySlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -11,6 +13,8 @@ const fresh = () => createSliceRun('visionary-schema', sliceDefaultCreationSelec
 const same = (a: unknown,b: unknown) => expect(stableStringify(a)).toBe(stableStringify(b));
 function old(version: 205 | 206): Record<string, unknown> {
   const value = structuredClone(fresh()) as unknown as Record<string, unknown>;
+  // Moon is a later root and cannot already exist in a genuine 205/206 input.
+  delete value.moon;
   delete value.perfecter;
   delete value.visionary;
   if(version === 205) delete value.redPriest;
@@ -27,14 +31,28 @@ describe('Visionary exact current schema boundary', () => {
   it.each([205,206] as const)('strictly preserves every old %i field and adds only missing defaults', version => {
     const state=old(version), before=stableStringify(state), next=migrateSliceState(state), defaults=fresh();
     const additions=Object.keys(next).filter(k=>!Object.hasOwn(state,k));
-    expect(additions.sort()).toEqual((version===205?['perfecter','redPriest','visionary']:['perfecter','visionary']).sort());
+    expect(additions.sort()).toEqual((version===205?['moon','perfecter','redPriest','visionary']:['moon','perfecter','visionary']).sort());
     for(const [key,value] of Object.entries(state)) if(key!=='schemaVersion'&&key!=='contentVersion') same(next[key as keyof SliceState],value);
     for(const key of additions) same(next[key as keyof SliceState],defaults[key as keyof SliceState]);
     expect(stableStringify(state)).toBe(before);
   });
-  it.each([205,206] as const)('rejects a future root smuggled into %i',version=>{
-    const state={...old(version),visionary:createVisionaryState()},before=stableStringify(state);
+  it.each([
+    [205, 'visionary'], [205, 'perfecter'], [205, 'moon'],
+    [206, 'visionary'], [206, 'perfecter'], [206, 'moon'],
+  ] as const)('rejects a future root smuggled into %i: %s',(version, root)=>{
+    const defaults = { visionary: createVisionaryState(), perfecter: createPerfecterState(), moon: createMoonState() };
+    const state={...old(version),[root]:defaults[root]},before=stableStringify(state);
     expect(()=>migrateSliceState(state)).toThrow();expect(stableStringify(state)).toBe(before);
+  });
+  it('rejects missing or altered Perfecter and Moon defaults without repairing the input',()=>{
+    const state=fresh();
+    for(const root of ['perfecter','moon'] as const){
+      const { [root]: _missing, ...missing } = state;
+      for(const value of [missing,{...state,[root]:{...state[root],guidanceKnown:true}},
+        {...state,[root]:{...state[root],unexpectedField:true}}]){
+        const before=stableStringify(value);expect(()=>migrateSliceState(value)).toThrow();expect(stableStringify(value)).toBe(before);
+      }
+    }
   });
   it('rejects missing current roots, unknown fields, mismatched and future formats',()=>{
     const state=fresh(), missing=structuredClone(state) as unknown as Record<string,unknown>;delete missing.visionary;

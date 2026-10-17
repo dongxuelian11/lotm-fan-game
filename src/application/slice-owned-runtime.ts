@@ -1,3 +1,4 @@
+import { openMoonRuntimeSession } from "../domain/moon/owned-session.js";
 import { openPerfecterRuntimeSession } from "../domain/perfecter/owned-session.js";
 import {
   openFoolRuntimeSession,
@@ -27,6 +28,8 @@ export interface OwnedRepositoryDraft extends OwnedRepositoryHead {
 // Preserve the original Fool API and its transaction-test fault injection points.
 export type FoolRepositoryHead = OwnedRepositoryHead;
 export type FoolRepositoryDraft = OwnedRepositoryDraft;
+type MoonRuntimeSession = ReturnType<typeof openMoonRuntimeSession>;
+type MoonRuntimeDraft = ReturnType<MoonRuntimeSession["prepare"]>;
 type PerfecterRuntimeSession = ReturnType<typeof openPerfecterRuntimeSession>;
 type PerfecterRuntimeDraft = ReturnType<PerfecterRuntimeSession["prepare"]>;
 type VisionaryRuntimeSession = ReturnType<typeof openVisionaryRuntimeSession>;
@@ -45,12 +48,14 @@ interface RedPriestHead {
 }
 interface VisionaryHead { readonly kind: "VISIONARY"; readonly raw: string; readonly session: VisionaryRuntimeSession }
 interface PerfecterHead { readonly kind: "PERFECTER"; readonly raw: string; readonly session: PerfecterRuntimeSession }
-type Head = FoolHead | RedPriestHead | VisionaryHead | PerfecterHead;
+interface MoonHead { readonly kind: "MOON"; readonly raw: string; readonly session: MoonRuntimeSession }
+type Head = FoolHead | RedPriestHead | VisionaryHead | PerfecterHead | MoonHead;
 type Draft = { readonly epoch: object; readonly runId: string } & (
   | { readonly kind: "FOOL"; readonly head: FoolHead; readonly domain: FoolRuntimeDraft }
   | { readonly kind: "RED_PRIEST"; readonly head: RedPriestHead; readonly domain: RedPriestRuntimeDraft }
   | { readonly kind: "VISIONARY"; readonly head: VisionaryHead; readonly domain: VisionaryRuntimeDraft }
   | { readonly kind: "PERFECTER"; readonly head: PerfecterHead; readonly domain: PerfecterRuntimeDraft }
+  | { readonly kind: "MOON"; readonly head: MoonHead; readonly domain: MoonRuntimeDraft }
 );
 interface Transaction {
   readonly epoch: object;
@@ -63,13 +68,15 @@ interface Transaction {
  * never authority. All factories must validate the entire detached current
  * slice and all predecessor history before returning a private session. */
 function openCurrentHead(raw: string, state: SliceState): Head | null {
-  if (state.schemaVersion !== 208 || state.contentVersion !== "perfecter-v208")
+  if (state.schemaVersion !== 209 || state.contentVersion !== "moon-v209")
     throw Error("Runtime head requires the current save format");
   const fool = state.fool?.guidanceKnown === true && state.fool.source !== null;
   const redPriest = state.redPriest?.guidanceKnown === true && state.redPriest.source !== null;
   const visionary = state.visionary?.guidanceKnown === true && state.visionary.source !== null;
   const perfecter = state.perfecter?.guidanceKnown === true && state.perfecter.source !== null;
-  if ([fool, redPriest, visionary, perfecter].filter(Boolean).length > 1) throw Error("Multiple current chapter sessions");
+  const moon = state.moon?.guidanceKnown === true && state.moon.source !== null;
+  if ([fool, redPriest, visionary, perfecter, moon].filter(Boolean).length > 1) throw Error("Multiple current chapter sessions");
+  if (moon) return { kind: "MOON", raw, session: openMoonRuntimeSession(state) };
   if (perfecter) return { kind: "PERFECTER", raw, session: openPerfecterRuntimeSession(state) };
   if (visionary) return { kind: "VISIONARY", raw, session: openVisionaryRuntimeSession(state) };
   if (fool) return { kind: "FOOL", raw, session: openFoolRuntimeSession(state) };
@@ -116,7 +123,7 @@ export class SliceOwnedRuntime {
     return this.#read(runId, raw, decode)?.session.project() ?? null;
   }
 
-  /** Explicit load always starts from these exact persisted bytes. Current 208
+  /** Explicit load always starts from these exact persisted bytes. Current 209
    * inputs cross the selected chapter's complete strict factory. Original 205
    * Fool fixtures must instead pass full migration before opening a current
    * session; their original bytes remain the cache identity until a real write.
@@ -140,7 +147,7 @@ export class SliceOwnedRuntime {
       transaction.heads.set(runId, head);
       return { state: projection, updatedAt: stored.updatedAt };
     };
-    if (input?.schemaVersion === 208 && input.contentVersion === "perfecter-v208") {
+    if (input?.schemaVersion === 209 && input.contentVersion === "moon-v209") {
       const head = openCurrentHead(raw, input);
       if (head) return publishLoaded(head);
     }
@@ -158,15 +165,17 @@ export class SliceOwnedRuntime {
     if (transaction.writes.has(runId)) throw Error("Run already written in this transaction");
     const head = this.#read(runId, raw, decode);
     if (!head) throw Error("No current owned chapter session");
-    // Keep the four independent domain brands correlated with their real owner.
+    // Keep the five independent domain brands correlated with their real owner.
     // The domain session itself checks the intent's chapter and exact revision.
     const draft: Draft = head.kind === "FOOL"
       ? { kind: "FOOL", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
+      : head.kind === "MOON" ? { kind: "MOON", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
       : head.kind === "PERFECTER" ? { kind: "PERFECTER", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
       : head.kind === "VISIONARY" ? { kind: "VISIONARY", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
       : { kind: "RED_PRIEST", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId };
     const identity = draft.kind === "FOOL"
       ? draft.head.session.inspectDraft(draft.domain)
+      : draft.kind === "MOON" ? draft.head.session.inspectDraft(draft.domain)
       : draft.kind === "PERFECTER" ? draft.head.session.inspectDraft(draft.domain)
       : draft.kind === "VISIONARY" ? draft.head.session.inspectDraft(draft.domain)
       : draft.head.session.inspectDraft(draft.domain);
@@ -188,6 +197,7 @@ export class SliceOwnedRuntime {
     const draft = this.#require(handle);
     return draft.kind === "FOOL"
       ? draft.head.session.projectDraft(draft.domain)
+      : draft.kind === "MOON" ? draft.head.session.projectDraft(draft.domain)
       : draft.kind === "PERFECTER" ? draft.head.session.projectDraft(draft.domain)
       : draft.kind === "VISIONARY" ? draft.head.session.projectDraft(draft.domain)
       : draft.head.session.projectDraft(draft.domain);
@@ -201,6 +211,7 @@ export class SliceOwnedRuntime {
     }
     return draft.kind === "FOOL"
       ? draft.head.session.snapshotDraft(draft.domain)
+      : draft.kind === "MOON" ? draft.head.session.snapshotDraft(draft.domain)
       : draft.kind === "PERFECTER" ? draft.head.session.snapshotDraft(draft.domain)
       : draft.kind === "VISIONARY" ? draft.head.session.snapshotDraft(draft.domain)
       : draft.head.session.snapshotDraft(draft.domain);
@@ -226,6 +237,7 @@ export class SliceOwnedRuntime {
       if (draft) {
         try {
           if (draft.kind === "FOOL") draft.head.session.commit(draft.domain);
+          else if (draft.kind === "MOON") draft.head.session.commit(draft.domain);
           else if (draft.kind === "PERFECTER") draft.head.session.commit(draft.domain);
           else if (draft.kind === "VISIONARY") draft.head.session.commit(draft.domain);
           else draft.head.session.commit(draft.domain);
@@ -248,6 +260,7 @@ export class SliceOwnedRuntime {
     if (transaction) for (const draft of transaction.drafts) {
       try {
         if (draft.kind === "FOOL") draft.head.session.discard(draft.domain);
+        else if (draft.kind === "MOON") draft.head.session.discard(draft.domain);
         else if (draft.kind === "PERFECTER") draft.head.session.discard(draft.domain);
         else if (draft.kind === "VISIONARY") draft.head.session.discard(draft.domain);
         else draft.head.session.discard(draft.domain);

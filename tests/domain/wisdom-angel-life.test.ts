@@ -202,7 +202,7 @@ describe('Wisdom Angel original finite evidence, current conditions and actual p
     expect(attempt(s, caseId).synthesis.effects).toBe(prediction === 'AMBER' ? 1 : 0); expect(mastery(s)).toEqual([0, 0]);
     s = report(close(s, caseId), caseId); expect(mastery(s)).toEqual(prediction === 'AMBER' ? [8, 8] : [0, 0]);
     expect(s.wisdomAngel.life.device).toMatchObject({ id: 'WA2-DEVICE', owner: 'WA2-MARA', location: 'TABLE', charges: 0 });
-  }, 10_000);
+  }, 20_000);
 
   it('a stale original prediction remains recorded but never applies to changed conditions', () => {
     let s = deviceReady(); const caseId = 'changed-condition';

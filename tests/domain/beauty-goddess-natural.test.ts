@@ -14,7 +14,12 @@ const SOURCE = 'tests/fixtures/life-giver-v01680/natural.json';
 const SOURCE_SHA256 = '6ae7bbe18c20979643cf881cec54e3794656701b3b962ce775f14c44d46356b1';
 const entry = <T>(key: string): T => readObjectEntry<T>(`${ROOT}/natural.json`, key);
 const captured = (key: string): SliceState => migrateSliceState(entry<unknown>(key));
-const same = (actual: unknown, expected: unknown) => expect(stableStringify(actual)).toBe(stableStringify(expected));
+const same = (actual: unknown, expected: unknown) => {
+  const actualCanonical = stableStringify(actual), expectedCanonical = stableStringify(expected);
+  const equal = actualCanonical === expectedCanonical;
+  // Compare the complete canonical strings; hashes only keep failure diagnostics bounded.
+  expect(equal, equal ? undefined : `Canonical JSON differs: actual SHA-256 ${createHash('sha256').update(actualCanonical).digest('hex')}; expected SHA-256 ${createHash('sha256').update(expectedCanonical).digest('hex')}`).toBe(true);
+};
 const index = (): Record<string, string> => JSON.parse(readFileSync(`${ROOT}/boundaries.index.json`, 'utf8'));
 const boundary = (name: string) => {
   const file = `${ROOT}/${index()[name]}`;
@@ -36,7 +41,7 @@ describe('Beauty Goddess exact original572-command public continuation', () => {
     expect(createHash('sha256').update(readFileSync(`${ROOT}/script-blocker-second.json`)).digest('hex')).toBe('84b57b129d618ea8e5dc5bfadc4e3fed50dc63126153eb39aae4173bf32c1d75');
   });
 
-  it('replays all912 commands, including the untouched572 and exact670/840 live-state resumptions', () => {
+  it('replays the exact670 source prefix and validates the unchanged912 archived branch without minting its later bottles', () => {
     const commands = entry<SliceIntent[]>('commands'), originalCommands = readObjectEntry<SliceIntent[]>(SOURCE, 'commands');
     expect(commands).toHaveLength(912); expect(originalCommands).toHaveLength(572);
     expect(entry<number>('prefixCount')).toBe(572); expect(entry<boolean>('prefixVerified')).toBe(true);
@@ -47,9 +52,23 @@ describe('Beauty Goddess exact original572-command public continuation', () => {
     same(commands.slice(0, 670), blocked('first', 'commands')); same(commands.slice(0, 840), blocked('second', 'commands'));
     const final = captured('final'), prefix = captured('prefixFinal');
     same(prefix, migrateSliceState(readObjectEntry<unknown>(SOURCE, 'final')));
+    const expected670 = migrateSliceState(blocked('first', 'final'));
+    const guidance = expected670.chronicle[902]!;
+    const oldRecoveryGuidance = '全部原瓶失败后须付1行动与100便士申请下一批，至少跨一真实周才有新瓶到货。';
+    const currentRecoveryGuidance = '最初三份原特性固定，全部失败后可付1行动、120便士调查指定失败原瓶，隔一真实周另付1行动在原处回收同一份特性。每次新普通药物与调配服务另付900便士，或五项新劳动后90便士；当次场地检查仍需150便士。新载体不产生第四份特性，旧原瓶、费用与失败记录全部保留。';
+    // Only newly replayed guidance changes. Pin the archived record and its complete
+    // text before replacing exactly its final sentence in this expected state alone.
+    expect({ id: guidance.id, week: guidance.week, title: guidance.title }).toEqual({
+      id: 'record-580-902', week: 133, title: '听取美神独立成品与专业准备指导',
+    });
+    expect(expected670.chronicle.filter(record => record.id === guidance.id)).toHaveLength(1);
+    expect(createHash('sha256').update(guidance.text).digest('hex')).toBe('6235cf2b8a0e837eaca5df53eeb97b5a185a494be52f75cdc373f87215b1428d');
+    expect(expected670.chronicle.reduce((count, record) => count + record.text.split(oldRecoveryGuidance).length - 1, 0)).toBe(1);
+    expect(guidance.text.endsWith(oldRecoveryGuidance)).toBe(true);
+    guidance.text = guidance.text.slice(0, -oldRecoveryGuidance.length) + currentRecoveryGuidance;
     let state = createSliceRun(final.runId, entry<Parameters<typeof createSliceRun>[1]>('creation'), entry<string>('seed'));
     same(state, captured('initial'));
-    for (const [i, intent] of commands.entries()) {
+    for (const [i, intent] of commands.slice(0, 670).entries()) {
       if (i >= 572 && intent.type === 'BEAUTY_GODDESS') {
         const action = projectSliceState(state).beautyGoddess.actions.find(action => stableStringify(action.command) === stableStringify(intent.command));
         expect(action, `Captured command ${i + 1} must have a current public control`).toBeDefined();
@@ -57,12 +76,15 @@ describe('Beauty Goddess exact original572-command public continuation', () => {
       }
       state = applySliceIntent(state, intent);
       if (i === 571) same(state, prefix);
-      if (i === 669) same(state, migrateSliceState(blocked('first', 'final')));
-      if (i === 839) same(state, migrateSliceState(blocked('second', 'final')));
+      if (i === 669) same(state, expected670);
     }
-    same(state, final); assertValidSliceState(state); same(migrateSliceState(state), state);
+    expect(state.chronicle[902]!.text.slice(-currentRecoveryGuidance.length)).toBe(currentRecoveryGuidance);
+    same(state, expected670); assertValidSliceState(state); same(migrateSliceState(state), state);
+    // Old 912-command history remains readable; current commands cannot issue the old fourth-plus originals.
+    assertValidSliceState(final); same(migrateSliceState(final), final);
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(state.revision).toBe(captured('initial').revision + commands.length);
+    expect(state.revision).toBe(captured('initial').revision + 670);
+    expect(final.revision).toBe(captured('initial').revision + commands.length);
     expect(entry('pendingIntent')).toBeNull(); expect(entry('error')).toBeNull();
     expect(entry('stage')).toBe('NATURAL_BEAUTY_GODDESS_PUBLIC_CONTINUATION');
     expect(Object.keys(index())).toHaveLength(102); expect(new Set(Object.values(index())).size).toBe(102);
@@ -99,7 +121,8 @@ describe('Beauty Goddess exact original572-command public continuation', () => {
     expect(first).toMatchObject({ revision: 671, week: 160, cash: 14, random: { cursor: 318 }, progression: { sequence: 2 } });
     const request = blocked('first', 'pendingIntent') as SliceIntent;
     expect(request).toEqual({ type: 'BEAUTY_GODDESS', command: { type: 'REQUEST_SUPPLY' } });
-    expect(projectSliceState(first).beautyGoddess.actions.find(action => action.command.type === 'REQUEST_SUPPLY')).toMatchObject({ enabled: false, reason: '申请下一批需要100便士实际费用。' });
+    expect(projectSliceState(first).beautyGoddess.actions.some(action => action.command.type === 'REQUEST_SUPPLY')).toBe(false);
+    expect(projectSliceState(first).beautyGoddess.actions.find(action => action.command.type === 'REQUEST_RECOVERY_V1')).toMatchObject({ enabled: false, reason: '调查原特性需要1行动、120便士；旧费用不退。' });
     expect(() => applySliceIntent(first, request)).toThrow();
     const commands = entry<SliceIntent[]>('commands');
     expect(commands[670]).toEqual({ type: 'ACTION', action: 'REST' });
