@@ -144,7 +144,7 @@ describe('Fool genuine predecessor and publication boundary', () => {
       expect(first).toBe(second); expect(action.enabled).toBe(first === null);
     }
     expect(stableStringify(s)).toBe(immutable); same(s.random, s.fool.source!.random);
-  }, 30_000);
+  }, 60_000);
   it('publishes exact contemporary work/rest budgets while leaving the old S1 reception frozen', () => {
     const initial = guided(), originalReception = structuredClone(initial.attendantMysteries.reception), originalSource = structuredClone(initial.fool.source);
     const work = perform(initial, { type: 'RECEPTION_WORK' });

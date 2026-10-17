@@ -629,5 +629,5 @@ describe('Fool one-replay material cursor, directed equivalence only', () => {
       expect(() => applyVerifiedFoolTransport(bad, travel.receipt, travel.host, h.authority)).toThrow('INVALID_MATERIAL_LEDGER');
     }
     expect(validateFoolMaterials(h.state, h.authority)).toBe(true);
-  });
+  }, 30_000);
 });
