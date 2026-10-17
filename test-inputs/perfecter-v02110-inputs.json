@@ -1,0 +1,203 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.211.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.211.0_perfecter_test_inputs_1_2026-10-17.tar.gz",
+      "bytes": 8800322,
+      "sha256": "58a02680e6496e664477dc2f693fe949362eba913f77bc6744e6cae918159494"
+    },
+    {
+      "name": "lotm_release_0.211.0_perfecter_test_inputs_2_2026-10-17.tar.gz",
+      "bytes": 4457986,
+      "sha256": "01545fb5d37e3107838d9af507b969ceef45ecb0964df6fb09c25ed3868484ef"
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundaries.index.json",
+      "bytes": 5129,
+      "sha256": "508ec05a8d6c6eadc5ad6afa807b42811a299e958483e520331d05a00cc4caee"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-798-learn_guidance.json",
+      "bytes": 3216137,
+      "sha256": "7c713fd6b70b4fd6c6a5eb9d0abe1eb782912260673db9319ecc4f2fba64f4f7"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-799-first-work.json",
+      "bytes": 3253400,
+      "sha256": "c0b3ac3d8918f785e40ba48c8aa31658801f7fb75ff3294f1c2c7e6cc9789159"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-800-first-clinic.json",
+      "bytes": 3267467,
+      "sha256": "fbc517803c12ca49911e54f029e93669346616b263d0fb822ad9e800c357985b"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-801-first-next_week.json",
+      "bytes": 3283481,
+      "sha256": "949f5ecd17b45c20d5070f797dae0626f6c1dd36dee691389edbeb1ac0007458"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-803-first-rest.json",
+      "bytes": 3312891,
+      "sha256": "caa0496a92326c0d9cc703b8beaa66e9e0301090fd57122d186b69ccb9707e6f"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-823-works_trial-archive.json",
+      "bytes": 3605256,
+      "sha256": "014d408fdbbb637ee14d0aaaaac1d245408100891b462de19cd37036837e69b6"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-835-works_trial-workshop.json",
+      "bytes": 3784222,
+      "sha256": "42de81e0c45c1e8e76e9f91d879c6c12ecb1ad9d7cce7aa3783ce163c22d7036"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-847-works_trial-south_bank.json",
+      "bytes": 3963443,
+      "sha256": "0eb145eb4f933a67ceecc9f7e995326c0cf51734a607c1a2a6d09a47f56f80bc"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-851-works_verify-archive.json",
+      "bytes": 4023444,
+      "sha256": "453682ba06f5967c048c1ee56bf9840d73373846786c46be821ed116e154044a"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-855-works_verify-workshop.json",
+      "bytes": 4083012,
+      "sha256": "aaba0f34dfec4c686cd38318b51f2acbae0887dea6a30fdac92102e17920c745"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-859-works_verify-south_bank.json",
+      "bytes": 4142170,
+      "sha256": "524ef63d501f171439f4cc01a75fa9ec74626979a8084f91062ee9eeb93a9e47"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-860-first-travel.json",
+      "bytes": 4155717,
+      "sha256": "829e173c5f669598da6f901e155ee471055c30e87110de870ac02a52b3c119e0"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-864-first-material_labour.json",
+      "bytes": 4212677,
+      "sha256": "4c315bb00d036e0728b2b10814ab4f37116bea63ff1f9a0952f0344a4722071b"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-875-first-acquire_characteristic.json",
+      "bytes": 4373884,
+      "sha256": "2981c58dc61c9c565094b73f0ccc7be4dabbb47dcef19e9954b89249c8a8d172"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-888-buy_compound.json",
+      "bytes": 4563068,
+      "sha256": "5d5bc646f5de80fa1ebd476ce0ee0f346233828a87f36aa9b1f6c1b66d154750"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-892-uniqueness-chain.json",
+      "bytes": 4619687,
+      "sha256": "1c41a247fec27074f7e80c62e9407c4109f32e9025e52e804973a4a48b5ea11a"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-896-uniqueness-vacancy.json",
+      "bytes": 4676377,
+      "sha256": "16fabc185fb88d8723492e6d39626aa4a3a8ab555e09fcdf1c5ab053930c8a67"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-905-uniqueness-seal.json",
+      "bytes": 4804611,
+      "sha256": "50c0e78d4b6111186b2ee26be8f7f7ff96848d5ca7b1066c9b428ca692bf452f"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-906-first-acquire_uniqueness.json",
+      "bytes": 4818638,
+      "sha256": "8867b4fb35a397acc116aff4baaeb01121ad423fb0f4de45ab807224daef36c7"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-912-compose_potion.json",
+      "bytes": 4905434,
+      "sha256": "453c603a371a0bb63daae7a65564e384aafe27b573a8f9c439b87da80b98881b"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-918-stabilize_promotion.json",
+      "bytes": 4993553,
+      "sha256": "d0d347d711b5edb3a56a64e214bcaf511272dee7a9f050f083e34430bb1dd8f7"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-919-consume.json",
+      "bytes": 5009886,
+      "sha256": "f1795525729ca1104d52aee06b274456d5fc628bedcf3c871cc9524b34f289d8"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-922-seal_remains.json",
+      "bytes": 5053508,
+      "sha256": "ec7fc133920a3c24904d408e12abd6bc512d57ecc3290e1a91c0fbfc24ec4f1c"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-925-recover_sealed.json",
+      "bytes": 5098286,
+      "sha256": "3ecd9e7ef0b7adf4fdf467e39c92ca57987989dd782d5d1bb804262f28d2cdbf"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-942-buy_compound.json",
+      "bytes": 5339086,
+      "sha256": "04e4311f0130473b7b64e9e67f9e0928ebb178feef4e68df70decba784ae1d36"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-948-compose_potion.json",
+      "bytes": 5426013,
+      "sha256": "09693c7b3c70f01ad9adb5320be767ca6425b96f84097b898f0a14f21abda295"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-954-stabilize_promotion.json",
+      "bytes": 5514184,
+      "sha256": "c944a7d94e69fcee3082829499c4f6aba361d572f0dfc2c1279157d14d130537"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/boundary-955-consume.json",
+      "bytes": 5531242,
+      "sha256": "acc82a170f3efad12c0253f5a226f85a015e00aa4c5b37090f3d153202d4359d"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/checkpoint.json",
+      "bytes": 3003505,
+      "sha256": "1c35b744492bfeba7ba8ee4c77f9639f2c77fef60deb5f4b74b2eb75a6c068b3"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/commands.ndjson",
+      "bytes": 229998,
+      "sha256": "0d90974a07abeb031d277e069df76f3a7715719c14c75145483be8f68ddb49af"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/freeze.json",
+      "bytes": 595136,
+      "sha256": "e44524c9a4f5dfacab59b313c69e109a66de1831f554ccc989d765513510b5fe"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/manifest.json",
+      "bytes": 6099,
+      "sha256": "8431dcbecca2ae25e3f0181d30b898d38fd8aac9b860103938a7aee5a00e580b"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/natural.json",
+      "bytes": 4898436,
+      "sha256": "0306514a38dfc2684d93f29486a9982ffcf5d4073bf7c9567d39e9b8280fccbf"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/prefix-original797.json",
+      "bytes": 2125537,
+      "sha256": "c6b6564de8525cd4f11a7fea8d28d6cc96006b81e73f0f401114784bf78fe653"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/producer.mjs",
+      "bytes": 36700,
+      "sha256": "c118cae705da083d7f903e613edb6800fafac652a3a2b619778f9c71ac01bb7e"
+    },
+    {
+      "path": "tests/fixtures/perfecter-v02110/summary.json",
+      "bytes": 28291,
+      "sha256": "9a3dc5ce4f50a860d3c8d9e076ef30415ff406a8b177e7a76ac03c5574886466"
+    }
+  ]
+}
