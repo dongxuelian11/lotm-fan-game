@@ -15,6 +15,7 @@ import { createVisionaryState, projectVisionary } from '../../src/domain/visiona
 import { createPerfecterState, projectPerfecter } from '../../src/domain/perfecter/index.js';
 import { createMoonState, projectMoon } from '../../src/domain/moon/index.js';
 import { createDarknessState, projectDarkness } from '../../src/domain/darkness/index.js';
+import { createWhiteTowerState, projectWhiteTower } from '../../src/domain/white-tower/index.js';
 import { openFoolRuntimeSession, type FoolRuntimeSession } from '../../src/domain/fool/owned-session.js';
 import { foolFrozenSourceDigest } from '../../src/domain/fool/source.js';
 import type { FoolProjection } from '../../src/domain/fool/types.js';
@@ -253,7 +254,7 @@ async function fileHash(path: string, prefixBytes?: number): Promise<string> {
 interface PriorPublicRow { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; public: { strictSha256: string } }
 interface RedactionAudit {
   prior: { rows: PriorPublicRow[] };
-  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness'>, display: typeof projectPlayerText) => unknown;
+  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower'>, display: typeof projectPlayerText) => unknown;
   assertRow: (prior: { rows: PriorPublicRow[] }, index: number, actual: { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; legacyPublicSha256: string }) => string;
 }
 let redactionAudit: RedactionAudit | null = null;
@@ -310,7 +311,7 @@ function jsonLines<T>(file: FileName): T[] {
   const text = readFileSync(fixturePath(file), 'utf8'); expect(text.endsWith('\n'), file).toBe(true);
   return text.slice(0, -1).split('\n').map(line => { expect(line.length).toBeGreaterThan(0); return JSON.parse(line) as T; });
 }
-type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
+type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
 const EMPTY_RED_PRIEST: SliceState['redPriest'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   campaign: null, materials: null, epilogue: null, journal: [],
@@ -331,6 +332,10 @@ const EMPTY_DARKNESS: SliceState['darkness'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
 };
+const EMPTY_WHITE_TOWER: SliceState['whiteTower'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
 let originalStateKeys: readonly string[] | null = null;
 function historicalStateKeys(): readonly string[] {
   if (!originalStateKeys) {
@@ -342,22 +347,24 @@ function historicalStateKeys(): readonly string[] {
     expect(Object.hasOwn(raw, 'perfecter')).toBe(false);
     expect(Object.hasOwn(raw, 'moon')).toBe(false);
     expect(Object.hasOwn(raw, 'darkness')).toBe(false);
+    expect(Object.hasOwn(raw, 'whiteTower')).toBe(false);
     originalStateKeys = Object.keys(raw).sort();
   }
   return originalStateKeys;
 }
-/** Audit only: allow exactly the five approved new roots and two version changes.
+/** Audit only: allow exactly the six approved new roots and two version changes.
  * Every original field, including all nested history, remains in the hash. */
 function historicalStateView(state: SliceState): HistoricalFoolState {
-  keys(state, [...historicalStateKeys(), 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness']);
+  keys(state, [...historicalStateKeys(), 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower']);
   expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
   expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
   expect(state.perfecter).toStrictEqual(EMPTY_PERFECTER);
   expect(state.moon).toStrictEqual(EMPTY_MOON);
   expect(state.darkness).toStrictEqual(EMPTY_DARKNESS);
+  expect(state.whiteTower).toStrictEqual(EMPTY_WHITE_TOWER);
   const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
-    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, ...originalFields } = state;
+    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 205, contentVersion: 'fool-v205' };
 }
 function current(raw: unknown): SliceState {
@@ -374,15 +381,16 @@ function current(raw: unknown): SliceState {
   return state;
 }
 
-/** Remove only the five verified inactive new chapters from this detached audit view.
+/** Remove only the six verified inactive new chapters from this detached audit view.
  * Its complete remaining shape/content is still bound by the old public hash. */
-function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness'> {
+function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower'> {
   expect(state.progression.pathwayId).toBe('diviner');
   expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
   expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
   expect(state.perfecter).toStrictEqual(EMPTY_PERFECTER);
   expect(state.moon).toStrictEqual(EMPTY_MOON);
   expect(state.darkness).toStrictEqual(EMPTY_DARKNESS);
+  expect(state.whiteTower).toStrictEqual(EMPTY_WHITE_TOWER);
   expect(Object.hasOwn(projection, 'redPriest')).toBe(true);
   expect(projection.redPriest).toStrictEqual(projectPlayerText(projectRedPriest(state), state.character.name));
   expect(projection.redPriest.guidanceKnown).toBe(false); expect(projection.redPriest.promoted).toBe(false);
@@ -401,6 +409,8 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
   expect(projection.moon).toStrictEqual(projectPlayerText(projectMoon(state), state.character.name));
   expect(Object.hasOwn(projection, 'darkness')).toBe(true);
   expect(projection.darkness).toStrictEqual(projectPlayerText(projectDarkness(state), state.character.name));
+  expect(Object.hasOwn(projection, 'whiteTower')).toBe(true);
+  expect(projection.whiteTower).toStrictEqual(projectPlayerText(projectWhiteTower(state), state.character.name));
   // Independently pin every discarded Darkness field, including the only
   // disabled control; a changed projector cannot redefine an inactive chapter.
   expect(projection.darkness).toStrictEqual({
@@ -416,7 +426,21 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
       reason: state.status === 'ACTIVE' ? '须由仍活着的厄难骑士继续。' : '已经死亡或结束的角色不能继续行动。',
       preferredAction: true }],
   });
-  for (const root of [projection.perfecter, projection.moon, projection.darkness]) {
+  // White Tower is discarded only after its entire inactive public shape is pinned.
+  expect(projection.whiteTower).toStrictEqual({
+    title: '序列0 白塔', guidanceKnown: false, promoted: false,
+    story: '原资料室、埃德温的庭院、两张原纸与停止的器材留在原处。街区接待处收到市场台阶、运河检修廊和公寓后巷三处阻路求助；分别亲自问过居民、实勘、修补和验收，再让本人真实通过，并于下一周回来复核。',
+    nextStep: '完成三处原居民的真实通过与隔周复核；核清本人已有的一份和另外两份原特性，实地确认同一唯一性空位，再为同一本人的同一瓶付费准备。',
+    risk: '成功率按本人实际意志与本瓶付费准备计算，不重掷。失败留下真实重伤和污染并可能死亡。幸存者只能在原处封存同一残余，隔周付费回收，再用剩余有价载体重配；总共只有三件载体。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'white-tower:0:LEARN_GUIDANCE', label: '听取三条通路与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的全知之眼本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  for (const root of [projection.perfecter, projection.moon, projection.darkness, projection.whiteTower]) {
     keys(root, ['title', 'guidanceKnown', 'promoted', 'story', 'nextStep', 'risk', 'resources', 'abilities', 'actions', 'sections', 'insideCase']);
     expect(root.guidanceKnown).toBe(false); expect(root.promoted).toBe(false);
     expect(root.insideCase).toBe(false); expect(root.abilities).toEqual([]); expect(root.sections).toEqual([]);
@@ -424,7 +448,7 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
     for (const field of ['source', 'frame', 'journal']) expect(Object.hasOwn(root, field)).toBe(false);
   }
   const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
-    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, ...originalFields } = projection;
+    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, ...originalFields } = projection;
   return originalFields;
 }
 function budget(s: SliceState) {
@@ -570,17 +594,19 @@ async function assertTransition(e: Observation, commands: SliceIntent[], freeze:
 describe.sequential('Fool original1868 continuation with explicit original43 reconstruction evidence', () => {
   beforeAll(assertReviewedHistoricalRuntimeProof, 240_000);
   afterAll(assertReviewedHistoricalRuntimeProof, 240_000);
-  it('limits the historical audit view to the exact original keys and five strictly empty current chapters', () => {
+  it('limits the historical audit view to the exact original keys and six strictly empty current chapters', () => {
     const raw = entry<HistoricalFoolState>('final');
     expect(EMPTY_RED_PRIEST).toStrictEqual(createRedPriestState());
     expect(EMPTY_VISIONARY).toStrictEqual(createVisionaryState());
     expect(EMPTY_PERFECTER).toStrictEqual(createPerfecterState());
     expect(EMPTY_MOON).toStrictEqual(createMoonState());
     expect(EMPTY_DARKNESS).toStrictEqual(createDarknessState());
+    expect(EMPTY_WHITE_TOWER).toStrictEqual(createWhiteTowerState());
     // This is only an audit-helper guard; actual migration/loading is tested below.
     const shape: SliceState = { ...raw, schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION,
       redPriest: structuredClone(EMPTY_RED_PRIEST), visionary: structuredClone(EMPTY_VISIONARY),
-      perfecter: structuredClone(EMPTY_PERFECTER), moon: structuredClone(EMPTY_MOON), darkness: structuredClone(EMPTY_DARKNESS) };
+      perfecter: structuredClone(EMPTY_PERFECTER), moon: structuredClone(EMPTY_MOON), darkness: structuredClone(EMPTY_DARKNESS),
+      whiteTower: structuredClone(EMPTY_WHITE_TOWER) };
     same(historicalStateView(shape), raw);
     expect(() => historicalStateView({ ...shape, unexpectedRoot: null } as SliceState)).toThrow();
     const { fool: _missingOriginalRoot, ...missingOriginal } = shape;
@@ -597,12 +623,19 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     expect(() => historicalStateView({ ...shape, darkness: { ...shape.darkness, unexpectedField: undefined } } as SliceState)).toThrow();
     expect(() => historicalStateView({ ...shape, darkness: { ...shape.darkness,
       promotionStability: { preparations: [], unexpectedField: undefined } } } as SliceState)).toThrow();
+    expect(() => historicalStateView({ ...shape, whiteTower: { ...shape.whiteTower, guidanceKnown: true } })).toThrow();
+    expect(() => historicalStateView({ ...shape, whiteTower: { ...shape.whiteTower, unexpectedField: undefined } } as SliceState)).toThrow();
+    expect(() => historicalStateView({ ...shape, whiteTower: { ...shape.whiteTower,
+      promotionStability: { preparations: [], unexpectedField: undefined } } } as SliceState)).toThrow();
+    expect(() => historicalStateView({ ...shape, whiteTower: null } as unknown as SliceState)).toThrow();
     const { perfecter: _missingPerfecter, ...missingPerfecter } = shape;
     const { moon: _missingMoon, ...missingMoon } = shape;
     const { darkness: _missingDarkness, ...missingDarkness } = shape;
+    const { whiteTower: _missingWhiteTower, ...missingWhiteTower } = shape;
     expect(() => historicalStateView(missingPerfecter as SliceState)).toThrow();
     expect(() => historicalStateView(missingMoon as SliceState)).toThrow();
     expect(() => historicalStateView(missingDarkness as SliceState)).toThrow();
+    expect(() => historicalStateView(missingWhiteTower as SliceState)).toThrow();
     expect(() => historicalStateView({ ...shape, schemaVersion: 205 } as unknown as SliceState)).toThrow();
     expect(hash(historicalStateView({ ...shape, cash: shape.cash + 1 })), 'An old field is never normalized away').not.toBe(hash(raw));
   });

@@ -4,6 +4,7 @@ import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from '
 import { join, resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { projectDarkness } from '../../src/domain/darkness/index.js';
+import { projectWhiteTower } from '../../src/domain/white-tower/index.js';
 import { assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
@@ -33,7 +34,7 @@ export const INITIAL_POLICY = {
 };
 export interface FilePin { bytes: number; sha256: string }
 /** Immutable capture input format, distinct from the current runtime state. */
-export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness'> & {
+export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower'> & {
   schemaVersion: 209; contentVersion: 'moon-v209';
 };
 export interface Member extends FilePin { file: string; originalBytes?: number; originalSha256?: string }
@@ -122,32 +123,39 @@ const EMPTY_DARKNESS: SliceState['darkness'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
 };
+const EMPTY_WHITE_TOWER: SliceState['whiteTower'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
 /** Detached audit view only. Remove exactly the independently specified default
- * Darkness root and restore the capture's version tags. Every other field,
+ * Darkness/White Tower roots and restore the capture's version tags. Every other field,
  * including any unexpected root, remains covered by the historical hash. */
 export function historicalMoonState(state: SliceState): HistoricalMoonState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(state.darkness, EMPTY_DARKNESS);
-  const { darkness: _emptyDarkness, ...originalFields } = state;
+  assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
+  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 209, contentVersion: 'moon-v209' };
 }
 /** Strict current ingress must preserve every original 209 field and may add
- * only the reviewed default Darkness root; it never rewrites the raw input. */
+ * only the reviewed default Darkness/White Tower roots; it never rewrites the raw input. */
 export function migrateCapturedMoonState(raw: HistoricalMoonState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [209, 'moon-v209']);
   assert.equal(Object.hasOwn(raw, 'darkness'), false);
+  assert.equal(Object.hasOwn(raw, 'whiteTower'), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assertValidSliceState(current);
-  exactKeys(current, [...Object.keys(raw), 'darkness']);
+  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower']);
   same(historicalMoonState(current), raw, 'Migration changed the complete captured Moon state');
   assert.equal(hash(raw), before, 'Migration changed the raw Moon input');
   return current;
 }
-/** Verify the entire new inactive public root before removing just that root
+/** Verify both entire new inactive public roots before removing just those roots
  * from a detached historical view. Unknown fields are never filtered out. */
-export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness'> {
+export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower'> {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(state.darkness, EMPTY_DARKNESS);
+  assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
   assert.equal(state.progression.pathwayId, 'moon');
   assert.equal(Object.hasOwn(projection, 'darkness'), true);
   const root = projection.darkness;
@@ -156,7 +164,35 @@ export function historicalMoonPublic(projection: SliceProjection, state: SliceSt
   assert.equal(root.guidanceKnown, false); assert.equal(root.promoted, false); assert.equal(root.insideCase, false);
   assert.deepEqual(root.abilities, []); assert.deepEqual(root.sections, []);
   assert(root.actions.every(action => !action.enabled));
-  const { darkness: _emptyDarkness, ...originalFields } = projection;
+  assert.deepEqual(root, {
+    title: '序列0 黑暗', guidanceKnown: false, promoted: false,
+    story: '原庭院里的人和物仍在原处。步行前往新街区，在白昼查路、问过四位成年人的意愿，入夜后用普通灯、原绳和亲身搀扶完成长夜撤离。',
+    nextStep: '四人逐一在真实夜间抵达，再亲走返程；核清三份原特性，等待1353年真实事件后才交接同一唯一性，并为同一瓶付费准备。',
+    risk: '完整准备按本人实际意志计算成功率，不改骰子。失败会留下伤势、污染并可能死亡。幸存者须原地封存、隔周付费回收，另购有限载体重新准备。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'darkness:0:LEARN_GUIDANCE', label: '听取长夜撤离与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的厄难骑士继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  assert.equal(Object.hasOwn(projection, 'whiteTower'), true);
+  assert.deepEqual(projection.whiteTower, projectPlayerText(projectWhiteTower(state), state.character.name));
+  assert.deepEqual(projection.whiteTower, {
+    title: '序列0 白塔', guidanceKnown: false, promoted: false,
+    story: '原资料室、埃德温的庭院、两张原纸与停止的器材留在原处。街区接待处收到市场台阶、运河检修廊和公寓后巷三处阻路求助；分别亲自问过居民、实勘、修补和验收，再让本人真实通过，并于下一周回来复核。',
+    nextStep: '完成三处原居民的真实通过与隔周复核；核清本人已有的一份和另外两份原特性，实地确认同一唯一性空位，再为同一本人的同一瓶付费准备。',
+    risk: '成功率按本人实际意志与本瓶付费准备计算，不重掷。失败留下真实重伤和污染并可能死亡。幸存者只能在原处封存同一残余，隔周付费回收，再用剩余有价载体重配；总共只有三件载体。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'white-tower:0:LEARN_GUIDANCE', label: '听取三条通路与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的全知之眼本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, ...originalFields } = projection;
   return originalFields;
 }
 function relativeFile(file: string): string {

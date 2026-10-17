@@ -309,9 +309,11 @@
 
 ### 白塔途径稳定能力记录V3
 
-状态：`WHITE_TOWER_STABLE_ABILITY_RECORDS_USER_CONFIRMED_V3 / 17_RECORDS / EVENT_AND_COMBAT_IDENTITIES_SEPARATED / KNOWLEDGE_ATTRIBUTE_PRIMARY / PRIMARY_TEXT_PENDING / NOT_IMPLEMENTED`
+V3设计底稿状态：`WHITE_TOWER_STABLE_ABILITY_RECORDS_USER_CONFIRMED_V3 / 17_RECORDS / EVENT_AND_COMBAT_IDENTITIES_SEPARATED / KNOWLEDGE_ATTRIBUTE_PRIMARY / PRIMARY_TEXT_PENDING / NOT_IMPLEMENTED`
 
-白塔采用17条稳定能力记录。每条记录可以分别声明事件身份与战斗身份，但两套结算不共享事件谜题、世界事实或长期理论状态。阅读内容、推理题目、敌方技能、秘术定义和预言候选不是新的能力经验条；它们引用下列稳定能力及自己的来源/内容ID。
+当前序列0实现口径（0.214 静态候选）：仅以 [白塔有限阶段](WHITE_TOWER_PLAYABLE_STAGE.md) 和 `src/domain/white-tower/` 为准；已有局部受控与SQLite检查通过记录，完整natural续跑证据尚未形成，不宣称本阶验收完成。以下序列9—1及历史稿保留原设计口径，本次只对齐当前 S0。 当前运行存档逐项继承21条既有`reader.*`掌握（含六个零值），实际晋升时只新增下表两条S0技巧，均从0开始；V3的17条名录不是该存档的掌握条目计数。旧纸、滑块及有限窗口保持各自已核对象边界，不泛化成施工权能；不解锁100%重演、全知结果盘或世界知识库。
+
+V3底稿原列17条稳定能力记录；下表仅将序列0两行对齐214，序列9—1设计名录不据此改写。每条记录可以分别声明事件身份与战斗身份，但两套结算不共享事件谜题、世界事实或长期理论状态。阅读内容、推理题目、敌方技能、秘术定义和预言候选不是新的能力经验条；它们引用下列稳定能力及自己的来源/内容ID。
 
 | 稳定能力ID | 首次序列 | 晋升强化边界 | 战斗/事件身份 |
 |---|---:|---|---|
@@ -330,8 +332,8 @@
 | `white-tower.wisdom-authority` | 2 | 从合法候选中预见局势变化并选择时机；不替玩家提交决定 | 战斗：每回合首次能力盘抽二选一；事件：决策和天使级博弈 |
 | `white-tower.mythical-tower` | 2 | 显露后有限抵御低位信息/精神过载，同时向所有见证者提交疯狂、毁灭和灾难风险 | 自保/意外；天使显形与知识污染事件 |
 | `white-tower.omniscient-eye` | 1 | 事件中监测过去/现在/未来信息；战斗中只预读已提交的两个结果 | 战斗：二结果预读并削弱其一；事件：人物、组织、历史和终局信息 |
-| `white-tower.knowledge-authority` | 0 | 操作知识、理解和传播，但不能把伪造来源变真 | 战斗：全知全能结果盘；事件：文明知识与世界秘密 |
-| `white-tower.white-tower-authority` | 0 | 事件中建立完整理论；战斗中不要求理论前置 | 战斗：拆解/重演/统合；事件：完整理论、知识灾难和周目终局 |
+| `reader.s0.structural-insight` | 0 | 付1行动、12灵性、8精神；观察同一可见非生命结构后尝试开启30秒窗口，仅帮助下一次独立核验 | 当前有限现场：本场只尝试一次，遮挡或版本变化失效；实际帮助核验才+8掌握，不读取未来或赠予知识 |
+| `reader.s0.bounded-weak-point` | 0 | 付1行动、16灵性、10精神；仅在同一已独立核实的非生命结构上尝试制造一处10秒弱处 | 当前有限现场：本场只尝试一次，对手可重构抵抗；用原杠杆实际利用才+8掌握，不保证破防或作用于活人 |
 
 事件用途、掌握度与十张位格锚卡见[日常技能效果](PATHWAY_DAILY_EFFECTS.md#白塔途径日常效果完整设计已确认v3)；战斗数值与知识机制见[量化与配速](PATHWAY_QUANTITATIVE_DESIGN.md#白塔途径combat-v3事件战斗分层接线已确认v3)。
 

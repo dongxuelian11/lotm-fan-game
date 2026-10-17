@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { projectSliceState } from '../../src/domain/slice/index.js';
-import { projectWisdomAngelCombat, currentWisdomAngelCombatSource,
+import { projectWisdomAngelCombat,
   WISDOM_ANGEL_COUNT_WHEEL, WISDOM_ANGEL_ENEMY_COUNT_WHEEL, WISDOM_ANGEL_ENEMY_ABILITY_WHEEL,
 } from '../../src/domain/wisdom-angel/combat.js';
 import { projectPlayerText } from '../../src/shared/player-text.js';
@@ -24,7 +24,8 @@ describe('the fixed Wisdom Angel opponent display name', () => {
     expect(detail.observations).toEqual(state.wisdomAngel.encounter.observations);
     expect(detail.room).toEqual(state.wisdomAngel.encounter.room);
     expect(detail.crafts).toEqual(state.mysticismMagister.crafts);
-    expect(detail.source).toEqual(currentWisdomAngelCombatSource(state));
+    expect(detail).not.toHaveProperty('source');
+    expect(battle?.wisdomAngel).not.toHaveProperty('source');
     expect(detail.countWheel).toEqual(WISDOM_ANGEL_COUNT_WHEEL);
     expect(detail.enemyCountWheel).toEqual(WISDOM_ANGEL_ENEMY_COUNT_WHEEL);
     expect(detail.enemyAbilityWheel).toEqual(WISDOM_ANGEL_ENEMY_ABILITY_WHEEL);

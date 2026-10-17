@@ -95,7 +95,7 @@ describe('Beauty Goddess informed body choice and finite acquisition', () => {
     expect([declined.cash, declined.actionsRemaining, declined.character.gender, declined.progression.sequence]).toEqual([ready.cash, ready.actionsRemaining, 'MALE', 2]);
     expect(declined.beautyGoddess.preparedWeek).toBeNull(); expect(declined.beautyGoddess.bottles[0]!.status).toBe('PLAYER'); rejectBeautyGoddess(declined, dose);
     expect(validateBeautyGoddessState(declined)).toBe(true);
-  });
+  }, 15_000);
   it('five actual jobs credit only that bottle5500 and leave1100 due', () => {
     let s = taught(); const before = structuredClone(s);
     for (let n = 0; n < 5; n++) s = bg(s, { type: 'POTION_WORK', bottleId: 'beauty-goddess-potion-2' });

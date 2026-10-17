@@ -1,3 +1,4 @@
+import type { WhiteTowerState, WhiteTowerCommand, WhiteTowerProjection } from '../white-tower/types.js';
 import type { DarknessState, DarknessCommand, DarknessProjection } from '../darkness/types.js';
 import type { BeautyGoddessPublicRoundOutcome, projectBeautyGoddessPublicCombat } from '../beauty-goddess/public.js';
 import type { MoonState, MoonCommand, MoonProjection } from '../moon/types.js';
@@ -24,7 +25,7 @@ import type { ApocalypseDemonessRoundOutcome, projectApocalypseDemonessCombat } 
 import type { DivineHandRoundOutcome, projectDivineHandCombat } from '../divine-hand/combat.js';
 import type { TimeWormRoundOutcome, projectTimeWormCombat } from '../time-worm/combat.js';
 import type { StarKeyRoundOutcome, projectStarKeyCombat } from '../star-key/combat.js';
-import type { AllKnowingEyeRoundOutcome, projectAllKnowingEyeCombat } from '../all-knowing-eye/combat.js';
+import type { AllKnowingEyeRoundOutcome, PublicAllKnowingEyeRoundOutcome, projectAllKnowingEyeCombat } from '../all-knowing-eye/combat.js';
 import type { MisfortuneKnightRoundOutcome, PublicMisfortuneKnightRoundOutcome, projectMisfortuneKnightCombat } from '../misfortune-knight/combat.js';
 import type { BeautyGoddessRoundOutcome } from '../beauty-goddess/combat.js';
 import type { CivilizationEnlightenerRoundOutcome, CivilizationEnlightenerPublicRoundOutcome, projectCivilizationEnlightenerCombat } from '../civilization-enlightener/combat.js';
@@ -71,7 +72,7 @@ import type {PlaneswalkerRoundOutcome,projectPlaneswalkerCombat} from '../planes
 import type {DeathConsulRoundOutcome,projectDeathConsulCombat} from '../death-consul/combat.js';
 import type {LightSeekerRoundOutcome,projectLightSeekerCombat} from '../light-seeker/combat.js';
 import type {CatastropheRoundOutcome,projectCatastropheCombat} from '../catastrophe/combat.js';
-import type {WisdomAngelRoundOutcome,projectWisdomAngelCombat} from '../wisdom-angel/combat.js';
+import type {WisdomAngelRoundOutcome,PublicWisdomAngelRoundOutcome,projectWisdomAngelCombat} from '../wisdom-angel/combat.js';
 import type {ConcealmentServantRoundOutcome,PublicConcealmentServantRoundOutcome,projectConcealmentServantCombat} from '../concealment-servant/combat.js';
 import type {LifeGiverRoundOutcome,projectLifeGiverCombat} from '../life-giver/combat.js';
 import type {KnowledgeMentorRoundOutcome,KnowledgeMentorPublicRoundOutcome,projectKnowledgeMentorCombat} from '../knowledge-mentor/combat.js';
@@ -304,6 +305,7 @@ import type { PublicCheckResult, PublicCoreStatKey, PublicGameDate } from '../..
 export type SliceLifeTier = 'DESTITUTE' | 'POOR' | 'ORDINARY' | 'RESPECTABLE' | 'LUXURIOUS';
 export type SliceStance = 'ATTACK' | 'DEFEND' | 'CONTROL' | 'PREPARE' | 'RETREAT';
 export type SliceIntent =
+  | { type: 'WHITE_TOWER'; command: WhiteTowerCommand }
   | { type: 'DARKNESS'; command: DarknessCommand }
   | { type: 'MOON'; command: MoonCommand }
   | { type: 'PERFECTER'; command: PerfecterCommand }
@@ -776,6 +778,7 @@ export interface SliceArc {
   relationship: AudreyOutcome; transferPending: boolean;
 }
 export interface SliceState {
+  whiteTower:WhiteTowerState;
   darkness:DarknessState;
   moon:MoonState;
   perfecter:PerfecterState;
@@ -982,7 +985,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 210; contentVersion: 'darkness-v210'; runId: string; revision: number;
+  schemaVersion: 211; contentVersion: 'white-tower-v211'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -999,8 +1002,9 @@ export interface SliceState {
 }
 /** Deliberately constructed allow-list, never a spread of SliceState. */
 /** Public records keep resolved action facts; deterministic replay source stays private. */
-export type SlicePublicCombatRound = Omit<SliceCombatRound, 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome' | 'writerOutcome' | 'civilizationEnlightenerOutcome' | 'knowledgeMentorOutcome' | 'beautyGoddessOutcome' | 'lifeGiverOutcome' | 'misfortuneKnightOutcome' | 'concealmentServantOutcome' | 'fearBishopOutcome'> & { misfortuneKnightOutcome?: PublicMisfortuneKnightRoundOutcome; concealmentServantOutcome?: PublicConcealmentServantRoundOutcome; fearBishopOutcome?: PublicFearBishopRoundOutcome; lifeGiverOutcome?: Omit<LifeGiverRoundOutcome, 'source' | 'randomCursorAfter'>; beautyGoddessOutcome?: BeautyGoddessPublicRoundOutcome; knowledgeMentorOutcome?: KnowledgeMentorPublicRoundOutcome; civilizationEnlightenerOutcome?: CivilizationEnlightenerPublicRoundOutcome; writerOutcome?: WriterPublicRoundOutcome; conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
+export type SlicePublicCombatRound = Omit<SliceCombatRound, 'allKnowingEyeOutcome' | 'wisdomAngelOutcome' | 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome' | 'writerOutcome' | 'civilizationEnlightenerOutcome' | 'knowledgeMentorOutcome' | 'beautyGoddessOutcome' | 'lifeGiverOutcome' | 'misfortuneKnightOutcome' | 'concealmentServantOutcome' | 'fearBishopOutcome'> & { allKnowingEyeOutcome?: PublicAllKnowingEyeRoundOutcome; wisdomAngelOutcome?: PublicWisdomAngelRoundOutcome; misfortuneKnightOutcome?: PublicMisfortuneKnightRoundOutcome; concealmentServantOutcome?: PublicConcealmentServantRoundOutcome; fearBishopOutcome?: PublicFearBishopRoundOutcome; lifeGiverOutcome?: Omit<LifeGiverRoundOutcome, 'source' | 'randomCursorAfter'>; beautyGoddessOutcome?: BeautyGoddessPublicRoundOutcome; knowledgeMentorOutcome?: KnowledgeMentorPublicRoundOutcome; civilizationEnlightenerOutcome?: CivilizationEnlightenerPublicRoundOutcome; writerOutcome?: WriterPublicRoundOutcome; conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
 export interface SliceProjection {
+  whiteTower:WhiteTowerProjection;
   darkness:DarknessProjection;
   moon:MoonProjection;
   perfecter:PerfecterProjection;

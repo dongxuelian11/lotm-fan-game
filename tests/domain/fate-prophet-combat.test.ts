@@ -188,6 +188,8 @@ describe('Fate Prophet original body combat and strict replay', () => {
     expect(validateFateProphetEncounter(s)).toBe(true); assertValidSliceState(s);
     for (const change of [(x: SliceState) => { x.cash++; }, (x: SliceState) => { x.cash--; }, (x: SliceState) => { x.actionsRemaining--; }, (x: SliceState) => { x.date.day++; }, (x: SliceState) => { x.week++; }, (x: SliceState) => { x.chronicle = x.chronicle.filter(e => e.title !== '本周生活费'); }, (x: SliceState) => { x.spirituality++; }, (x: SliceState) => { x.random.cursor++; }]) { const fake = structuredClone(s); change(fake); expect(validateFateProphetEncounter(fake), change.toString()).toBe(false); }
   });
+  // Windows CI measured the complete NOTICE scenario at 8168ms. Keep every
+  // acquisition, finance and forgery assertion within a bounded full-case budget.
   it.each([
     { name: 'same-week actions retain original debt', cash: 40, debt: 100, credit: 'SUSPENDED', missed: 4, actions: 3, paidCash: 40, remaining: [100], finalCredit: 'SUSPENDED', finalMissed: 4, event: null, advanced: false },
     { name: 'paid debt-free boundary advances unchanged', cash: 100, debt: 0, credit: 'NORMAL', missed: 0, paidCash: 70, remaining: [], finalCredit: 'NORMAL', finalMissed: 0, event: null, advanced: true },
@@ -232,7 +234,7 @@ describe('Fate Prophet original body combat and strict replay', () => {
       const forged = structuredClone(s); mutate(forged); expect(validateFateProphetEncounter(forged), mutate.toString()).toBe(false);
     }
     if (s.activeEvent) { const forged = structuredClone(s); forged.activeEvent!.instanceId += '-forged'; expect(validateFateProphetEncounter(forged)).toBe(false); }
-  });
+  }, 10_000);
   it('finishes a bounded real original-seed encounter and rejects false closure and resource/position/history forgeries', () => {
     let s = fighting(); expect(hasFateProphetDisputeOpponent(s)).toBe(true); const old = [structuredClone(s.chaosWalker.encounter), structuredClone(s.misfortuneMage.encounter), structuredClone(s.combatHistory)];
     expect(() => settleFateProphetEncounter(structuredClone(s), 'ENEMY_DEAD', { note() {} } as never)).toThrow();

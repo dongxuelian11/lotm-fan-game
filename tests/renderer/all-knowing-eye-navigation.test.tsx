@@ -244,7 +244,20 @@ describe('All-Knowing Eye actual saved campaign navigation and reopening', () =>
 
   it('reopens all honest reports and original returns, then saves the fixed ALL policy and independent fight once', async () => {
     const practiced = savedGame(snapshot('practiced')), before = structuredClone(practiced.state);
-    await mount(practiced); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull(); await openGrowth(); assertResources(before);
+    await mount(practiced); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+    const nextStage = await screen.findByRole('region', { name: '序列0 白塔' });
+    const inherited = projectSliceState(before).whiteTower.abilities;
+    expect(inherited).toHaveLength(21);
+    await userEvent.click(within(nextStage).getByText('已掌握的能力', { selector: 'summary' }));
+    for (const ability of inherited) {
+      expect(ability.mastery).toBe(before.progression.mastery[ability.id]);
+      expect(within(nextStage).getByRole('heading', { name: `${ability.label} · 熟练 ${ability.mastery}` })).toBeTruthy();
+    }
+    expect(practiced.state).toEqual(before); expect(practiced.submit).not.toHaveBeenCalled();
+    await userEvent.click(within(nextStage).getByRole('button', { name: '返回普通生活' }));
+    await userEvent.click(screen.getByRole('button', { name: ENTRY }));
+    await screen.findByRole('region', { name: PANEL }); assertResources(before);
     for (const id of ['original-paper-check', 'pending-slider', 'changed-conditions']) {
       await userEvent.selectOptions(screen.getByRole('combobox', { name: '全知之眼目标' }), id);
       expect(screen.getByRole('region', { name: '实际位置与归还' }).textContent).toContain('本案原纸、滑块与人员的实际收尾已完成');
@@ -253,7 +266,9 @@ describe('All-Knowing Eye actual saved campaign navigation and reopening', () =>
     expect(screen.getByRole('region', { name: '独立无动力滑块' }).textContent).toContain('实际移动1次、成功接取1次、手动制停1次');
     expect([practiced.state.progression.mastery[INSIGHT], practiced.state.progression.mastery[FORECAST]]).toEqual([0, 8]);
     await userEvent.click(screen.getByRole('button', { name: '返回普通生活' }));
-    expect(await screen.findByRole('heading', { name: '人物卷宗' })).toBeTruthy(); await openGrowth();
+    expect(await screen.findByRole('heading', { name: '人物卷宗' })).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+    expect(await screen.findByRole('region', { name: '序列0 白塔' })).toBeTruthy();
     expect(practiced.state).toEqual(before); expect(practiced.submit).not.toHaveBeenCalled(); cleanup();
 
     const policy = boundary('fixed-all-policy-before-fight'), fight = boundary('independent-optional-edwin-fight'), game = savedGame(policy.before);

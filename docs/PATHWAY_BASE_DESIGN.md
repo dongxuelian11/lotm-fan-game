@@ -256,7 +256,9 @@
 
 ### 白塔途径：序列9—0名册与已确认分层设计V3
 
-状态：`WHITE_TOWER_PATHWAY_DESIGN_USER_CONFIRMED_V3 / EVENT_AND_COMBAT_SEPARATED / KNOWLEDGE_ATTRIBUTE_PRIMARY / 17_STABLE_ABILITIES_READY / TEN_SEQUENCE_ANCHOR_CARDS_COMPLETE / PRIMARY_TEXT_PENDING / NOT_IMPLEMENTED`
+V3设计底稿状态：`WHITE_TOWER_PATHWAY_DESIGN_USER_CONFIRMED_V3 / EVENT_AND_COMBAT_SEPARATED / KNOWLEDGE_ATTRIBUTE_PRIMARY / 17_STABLE_ABILITIES_READY / TEN_SEQUENCE_ANCHOR_CARDS_COMPLETE / PRIMARY_TEXT_PENDING / NOT_IMPLEMENTED`
+
+当前序列0实现口径（0.214 静态候选）：仅以 [白塔有限阶段](WHITE_TOWER_PLAYABLE_STAGE.md) 和 `src/domain/white-tower/` 为准；已有局部受控与SQLite检查通过记录，完整natural续跑证据尚未形成，不宣称本阶验收完成。以下序列9—1及历史稿保留原设计口径，本次只对齐当前 S0。 当前不承诺普通能力100%重演、全知结果盘、完整世界知识或世界灾难终局；新增数值与未来保管故事均为本作原创实现边界。
 
 白塔途径采用“阅读积累—推理还原—解析模仿—预言洞悉—全知但不全能”的成长弧。知识属性是贯穿全序列的第一核心：它决定日常理解与白塔战斗检定强度；具体知识记录则决定玩家究竟知道哪些事实。V3明确分开日常事件盘与战斗盘：事件盘处理来源、推理、研发、历史、未来和世界后果，战斗盘只把开战时的知识快照转化为可在六槽中立即结算的战术能力。
 
@@ -271,7 +273,7 @@
 | 3 | 洞悉者 | 洞悉本质、规则与可利用支点 | 事件中使用真实规律支点；战斗中只建立一次弱点标记，不能临场调用世界结构事实 |
 | 2 | 智天使 | 智慧权柄、正确时机与完整神话形态 | 每回合一次从两个合法候选中选择；神话形态只有限抵御低位信息/精神过载，并同步结算污染与暴露 |
 | 1 | 全知之眼 | 过去、现在、未来的信息监测与高位全知 | 事件中查询审核信息组；战斗中只预读接下来两个已提交结果并削弱其一 |
-| 0 | 白塔 | 知识、智慧、全知、预言与规律权柄升格 | 事件完整理论处理世界知识与终局；战斗直接进入拆解/重演/统合结果盘，二者不共享前置状态 |
+| 0 | 白塔 | 当前仅新增结构洞察与有限弱处 | 三处城市通路由原居民真实通过并隔周复核；本人原一份加两份外部原特性与同一唯一性，实际付费准备后尝试晋升；成神后只处理同一机械闸的观察、核验、重构反制、实际利用与普通退场 |
 
 序列名称与能力类别由[官方世界手册](https://www.lomworld.com/handbook/en?categoryId=3)、[白塔途径能力索引](https://lordofthemysteries.fandom.com/wiki/White_Tower_Pathway/Abilities)和[晋升索引](https://lordofthemysteries.fandom.com/wiki/White_Tower_Pathway/Advancement)交叉定位。社区资料只作章节和作者补充定位；精确中文配方、材料、仪式措辞、知识范围与例外条款继续保持`PRIMARY_TEXT_PENDING`。完整[分层机制](PATHWAY_MECHANISMS.md#白塔途径事件知识与战斗知识分层已确认v3)、[战斗数值](PATHWAY_QUANTITATIVE_DESIGN.md#白塔途径combat-v3事件战斗分层接线已确认v3)、[稳定能力](ABILITY_SYSTEM.md#白塔途径稳定能力记录v3)和[事件层](PATHWAY_DAILY_EFFECTS.md#白塔途径日常效果完整设计已确认v3)分别落在对应文档。
 

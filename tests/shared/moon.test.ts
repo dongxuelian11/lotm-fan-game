@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { createMoonState } from '../../src/domain/moon/index.js';
+import { createDarknessState } from '../../src/domain/darkness/index.js';
+import { createWhiteTowerState } from '../../src/domain/white-tower/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedMoonSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -22,32 +24,43 @@ describe('Moon exact current schema and public command boundary', () => {
   it('creates one empty Moon root and a detached strictly valid current save', () => {
     const state = fresh(), before = stableStringify(state), copy = migrateSliceState(state);
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    same(state.moon, createMoonState()); same(copy, state);
+    expect(state.moon).toStrictEqual(createMoonState());
+    expect(state.darkness).toStrictEqual(createDarknessState());
+    expect(state.whiteTower).toStrictEqual(createWhiteTowerState());
+    same(copy, state);
     expect(copy).not.toBe(state); expect(copy.moon).not.toBe(state.moon);
+    expect(copy.darkness).not.toBe(state.darkness); expect(copy.whiteTower).not.toBe(state.whiteTower);
     assertValidSliceState(copy); expect(stableStringify(state)).toBe(before);
   });
 
-  it.each(['beforeLast', 'final'] as const)('migrates actual captured208 %s by adding exactly empty Moon and preserving every old field and raw byte', key => {
+  it.each(['beforeLast', 'final'] as const)('migrates actual captured208 %s by adding exactly empty Moon, Darkness and White Tower and preserving every old field and raw byte', key => {
     const bytes = readFileSync(CAPTURE), raw = readObjectEntry<Record<string, unknown>>(CAPTURE, key);
     expect(hash(bytes)).toBe(CAPTURE_SHA256);
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([208, 'perfecter-v208']);
     expect(Object.hasOwn(raw, 'moon')).toBe(false);
+    expect(Object.hasOwn(raw, 'darkness')).toBe(false); expect(Object.hasOwn(raw, 'whiteTower')).toBe(false);
     const before = stableStringify(raw), next = migrateSliceState(raw);
     expect([next.schemaVersion, next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field))).toEqual(['moon']);
-    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'moon'].sort());
+    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual(['darkness', 'moon', 'whiteTower']);
+    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'moon', 'darkness', 'whiteTower'].sort());
     for (const [field, value] of Object.entries(raw)) {
       if (field !== 'schemaVersion' && field !== 'contentVersion') same(next[field as keyof SliceState], value);
     }
-    same(next.moon, createMoonState()); same(migrateSliceState(next), next);
+    expect(next.moon).toStrictEqual(createMoonState());
+    expect(next.darkness).toStrictEqual(createDarknessState());
+    expect(next.whiteTower).toStrictEqual(createWhiteTowerState());
+    same(migrateSliceState(next), next);
     expect(stableStringify(raw)).toBe(before);
     expect(hash(readFileSync(CAPTURE))).toBe(CAPTURE_SHA256);
     expect(readFileSync(CAPTURE).equals(bytes)).toBe(true);
   }, 60_000);
 
-  it('rejects a future Moon root in actual208 rather than silently discarding it', () => {
-    for (const moon of [createMoonState(), { ...createMoonState(), guidanceKnown: true }, null]) {
-      const raw = { ...raw208(), moon }, before = stableStringify(raw);
+  it.each([
+    ['moon', createMoonState()], ['darkness', createDarknessState()], ['whiteTower', createWhiteTowerState()],
+  ] as const)('rejects a future %s root in actual208 rather than silently discarding it', (key, empty) => {
+    const original = raw208();
+    for (const root of [empty, { ...empty, guidanceKnown: true }, null]) {
+      const raw = { ...original, [key]: root }, before = stableStringify(raw);
       expect(() => migrateSliceState(raw)).toThrow(); expect(stableStringify(raw)).toBe(before);
     }
   }, 60_000);
@@ -55,12 +68,21 @@ describe('Moon exact current schema and public command boundary', () => {
   it('rejects missing roots, unknown authority, invalid nested roots and version mismatches without mutation', () => {
     const state = fresh(), missing = structuredClone(state) as unknown as Record<string, unknown>;
     delete missing.moon;
-    for (const value of [missing,
+    const missingDarkness = structuredClone(state) as unknown as Record<string, unknown>;
+    const missingWhiteTower = structuredClone(state) as unknown as Record<string, unknown>;
+    delete missingDarkness.darkness; delete missingWhiteTower.whiteTower;
+    for (const value of [missing, missingDarkness, missingWhiteTower,
       { ...state, schemaVersion: CURRENT_SCHEMA_VERSION + 1 },
       { ...state, contentVersion: 'perfecter-v208' },
       { ...raw208(), contentVersion: CURRENT_CONTENT_VERSION },
       { ...state, moon: { ...state.moon, skipValidation: true } },
       { ...state, moon: { ...state.moon, journal: [{ type: 'SUCCESS' }] } },
+      { ...state, darkness: { ...state.darkness, skipValidation: true } },
+      { ...state, whiteTower: null },
+      { ...state, whiteTower: { ...state.whiteTower, guidanceKnown: true } },
+      { ...state, whiteTower: { ...state.whiteTower, skipValidation: true } },
+      { ...state, whiteTower: { ...state.whiteTower, journal: [{ type: 'SUCCESS' }] } },
+      { ...state, whiteTower: { ...state.whiteTower, promotionStability: { preparations: [], skipValidation: true } } },
       { ...state, callerAuthority: {} },
     ]) {
       const before = stableStringify(value);

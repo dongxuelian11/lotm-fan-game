@@ -16,6 +16,7 @@ import { projectVisionary } from '../../src/domain/visionary/index.js';
 import { projectPerfecter } from '../../src/domain/perfecter/index.js';
 import { projectMoon } from '../../src/domain/moon/index.js';
 import { projectDarkness } from '../../src/domain/darkness/index.js';
+import { projectWhiteTower } from '../../src/domain/white-tower/index.js';
 import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   ROOT, FORK_COUNT, authenticateFixture, captureHash, checkpoint, hash, initialPlanningSeam,
@@ -42,7 +43,7 @@ function assertPlayerProjection(local: RedPriestProjection, global: RedPriestPro
     .toEqual(local.actions.map(({ id, command, cost, enabled }) => ({ id, command, cost, enabled })));
   expect(global.resources).toEqual(local.resources);
 }
-const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness'] as const;
+const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower'] as const;
 /** Independently specified complete empty roots, not a filter for arbitrary
  * current defaults. The 0.209 capture itself uses schema206/red-priest-v206. */
 const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]> = {
@@ -54,8 +55,10 @@ const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]>
     services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
   darkness: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  whiteTower: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
 };
-/** Preserve every historical public field. Only these four explicitly named
+/** Preserve every historical public field. Only these five explicitly named
  * later chapter roots may be omitted, after checking their complete empty
  * private states and complete inactive player-facing projections. Unknown
  * public fields remain in the historical hash and therefore cannot be hidden. */
@@ -69,7 +72,7 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
   }
   const fresh = { ...state, ...EMPTY_LATER_CHAPTERS };
   const expected = projectPlayerText({ visionary: projectVisionary(fresh), perfecter: projectPerfecter(fresh),
-    moon: projectMoon(fresh), darkness: projectDarkness(fresh) }, state.character.name);
+    moon: projectMoon(fresh), darkness: projectDarkness(fresh), whiteTower: projectWhiteTower(fresh) }, state.character.name);
   for (const key of LATER_CHAPTER_ROOTS) {
     expect(Object.hasOwn(current, key)).toBe(true);
     const root = current[key];
@@ -82,7 +85,7 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
     expect(root.actions[0]!.command).toEqual({ type: 'LEARN_GUIDANCE' });
     expect(root.actions[0]!.enabled).toBe(false);
   }
-  const { visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, ...historical } = current;
+  const { visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, whiteTower: _whiteTower, ...historical } = current;
   return hash(historical);
 }
 function persisted(path: string): string {

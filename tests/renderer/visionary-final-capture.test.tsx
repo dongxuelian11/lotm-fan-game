@@ -62,10 +62,27 @@ function capturedState(count: number, entry: 'beforeLast' | 'final' = 'final'): 
   expect([raw.schemaVersion, raw.contentVersion]).toEqual([207, 'visionary-v207']);
   const current = migrateSliceState(raw);
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  // There are no newly introduced roots at this migration seam. Future format
-  // changes must explicitly account for additions rather than ignoring fields.
-  expect(Object.keys(current).sort()).toEqual(Object.keys(raw).sort());
-  expect(hash({ ...current, schemaVersion: raw.schemaVersion, contentVersion: raw.contentVersion })).toBe(rawHash);
+  // Pin every reviewed fresh root independently, then hash every original field.
+  // Future additions must be accounted for explicitly rather than ignored.
+  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'perfecter', 'moon', 'darkness', 'whiteTower'].sort());
+  const { perfecter, moon, darkness, whiteTower, ...originalFields } = current;
+  expect(perfecter).toStrictEqual({
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    works: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+  });
+  expect(moon).toStrictEqual({
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+  });
+  expect(darkness).toStrictEqual({
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+  });
+  expect(whiteTower).toStrictEqual({
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+  });
+  expect(hash({ ...originalFields, schemaVersion: raw.schemaVersion, contentVersion: raw.contentVersion })).toBe(rawHash);
   expect(hash(raw), 'Explicit migration cannot mutate the captured raw state').toBe(rawHash);
   assertValidSliceState(current);
   return current;

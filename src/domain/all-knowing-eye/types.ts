@@ -10,13 +10,36 @@ export type AllKnowingEyePreparationId = typeof ALL_KNOWING_EYE_PREPARATION_IDS[
 export type AllKnowingEyeAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: AllKnowingEyePreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type AllKnowingEyeCommand = AllKnowingEyeAcquisitionCommand | AllKnowingEyeActivityCommand | AllKnowingEyeEncounterCommand;
+/** The vessel may change; the three finite original characteristics do not. */
+export interface AllKnowingEyeRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_READING_ROOM_EXIT'; custodian: 'WA2-MARA';
+}
+export interface AllKnowingEyeRecovery extends AllKnowingEyeRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous, named permission and physical inspection. It is never inferred from old consent. */
+export interface AllKnowingEyeRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_READING_ROOM_EXIT'; originals: AllKnowingEyeOriginals;
+  permission: { personId: 'WA2-MARA'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT'; custodyAfter: 'FAILED_REMNANT' | 'SUPPLIER';
+}
+export interface AllKnowingEyeOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface AllKnowingEyeOriginalCharacteristics {
+  characteristics: AllKnowingEyeOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface AllKnowingEyeBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: AllKnowingEyeRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface AllKnowingEyeAcquisitionBudget {
@@ -29,6 +52,7 @@ export interface AllKnowingEyeAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'white-tower'; wisdomAngelPromotionWeek: number; readerPromotionWeek: number };
   before: AllKnowingEyeAcquisitionBudget; after: AllKnowingEyeAcquisitionBudget;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: AllKnowingEyeRecoverySite;
 }
 export const ALL_KNOWING_EYE_SOURCE_KEYS = ['reader', 'reasoner', 'detective', 'polymath', 'mysticismMagister', 'prophet', 'insightScholar', 'wisdomAngel'] as const;
 export type AllKnowingEyeSourceHistory = Pick<SliceState, typeof ALL_KNOWING_EYE_SOURCE_KEYS[number]>;
@@ -41,7 +65,7 @@ export interface AllKnowingEyeSourceScene {
 }
 export interface AllKnowingEyeState {
   guidanceKnown: boolean; bottles: AllKnowingEyeBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: AllKnowingEyeRecoveryRequest };
   promotionWeek: number | null; wisdomAngelActingAtPromotion: number | null;
   preparations: { taskId: AllKnowingEyePreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: AllKnowingEyeAcquisitionEvent[];

@@ -62,9 +62,17 @@ function capturedFinal() {
 
   const current = migrateCapturedMoonState(raw);
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  // Only the exact reviewed default Darkness root may be added. Every old
-  // field remains covered by the immutable historical capture hash.
-  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'darkness'].sort());
+  // Only the exact reviewed default Darkness and White Tower roots may be added.
+  // Every old field remains covered by the immutable historical capture hash.
+  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'darkness', 'whiteTower'].sort());
+  expect(current.darkness).toStrictEqual({
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+  });
+  expect(current.whiteTower).toStrictEqual({
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+  });
   expect(hash(historicalMoonState(current))).toBe(pins.finalStateSha256);
   expect(hash(raw)).toBe(pins.finalStateSha256);
   assertValidSliceState(current);
