@@ -280,7 +280,7 @@ describe('Writer panel: original people, physical ordinary alternatives and pend
         permission: { ability: 'GRANTED', material: 'GRANTED' }, result: 'NONE' },
       // Finite public receipt fields exercise display only, not journal validation.
       receipts: [{ week: 140, date: { epoch: 'FIFTH_EPOCH', year: 1352, month: 2, day: 26 }, revision: 700,
-        randomCursor: 20, randomBefore: 20, randomAfter: 21, checkBase: 20, check: null,
+        checkBase: 20, check: null,
         command: { type: 'MUTUAL_INSIGHT' }, outcome: 'FAILURE',
         before: { health: 98, mind: 98, spirituality: 120, cash: 540, actions: 1 },
         after: { health: 98, mind: 96, spirituality: 114, cash: 540, actions: 1 },

@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.209.0",
+  "version": "0.210.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -626,6 +626,21 @@
       "name": "lotm_release_0.209.0_red_priest_test_inputs_1_2026-10-17.tar.gz",
       "bytes": 11745562,
       "sha256": "2f4f2fed314e87e658fdb89152266933c4310ccb3354f8f73605bf444c0f6dc7"
+    },
+    {
+      "name": "lotm_release_0.210.0_visionary_test_inputs_1_2026-10-17.tar.gz",
+      "bytes": 8802994,
+      "sha256": "95d5e37283db7cf76fdffa6493db1fcb863bc2b7c99191b505827acd7be69c1a"
+    },
+    {
+      "name": "lotm_release_0.210.0_visionary_test_inputs_2_2026-10-17.tar.gz",
+      "bytes": 8664229,
+      "sha256": "00e1084df9270e09fd6506623b99a0dd8e1a1458628f92fb6dee84e35f1ecfc3"
+    },
+    {
+      "name": "lotm_release_0.210.0_visionary_test_inputs_3_2026-10-17.tar.gz",
+      "bytes": 1434332,
+      "sha256": "00848211ea9e1c1553d78f7e9b630c83cb305a494d0fdc97ec3300b44fe58a76"
     }
   ],
   "fileEntries": [
@@ -27838,6 +27853,331 @@
       "path": "tests/fixtures/vampire-v0190/natural.json",
       "bytes": 478160,
       "sha256": "04720405fd47901df86c623dc8f3f4e35915093df044f498e77bd32cddd90b0e"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundaries.index.json",
+      "bytes": 6216,
+      "sha256": "d0af8bf87341a7c9092960fc291a41393990373fc2c239bdd9c56d026e66494b"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-660-learn_guidance.json",
+      "bytes": 2261974,
+      "sha256": "11268eb866d0842a91ca20fe2d2c7f032352050bcd39484231effc05260fb632"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-661-first-work.json",
+      "bytes": 2304242,
+      "sha256": "bb35b4abb5f7ae9bbaa69f423a4023311ac321caabadf24276e6fe963c37af29"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-662-era_survey-backlund.json",
+      "bytes": 2320341,
+      "sha256": "cee2d990f5b8b6fc907f910d54ebf28b9fe9a512cb6ce48f28fbd13cc964159e"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-663-first-next_week.json",
+      "bytes": 2340216,
+      "sha256": "3e47e2c3d2b45d854b5c3de7e83687055c4ecc9dfd0d7e4590c81ffc52c3de89"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-665-first-travel.json",
+      "bytes": 2373919,
+      "sha256": "df23a7580e45b77367826eba0273e64da35ccb6a414696d6980bd53fbaf201c1"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-666-first-material_labour.json",
+      "bytes": 2389763,
+      "sha256": "321cb0025fcf8b51909594445bedc933014a85b2e7dc7ec6e84b0a5c43688ac2"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-677-first-acquire_characteristic.json",
+      "bytes": 2583907,
+      "sha256": "1a55d3531f9ce2c5156ed623dba140e142626ba97e047c7eb1dee7128c1df19e"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-700-buy_compound.json",
+      "bytes": 2982685,
+      "sha256": "f32a8fd5c052b8b2b0161f8c7eae40c48c7aa2ae8f23c87e7d2c1d8af73d6088"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-704-uniqueness-chain.json",
+      "bytes": 3051200,
+      "sha256": "499eda2d71f69e2fdf152eb0d7092a81116e91689922fa1fa4bd73a5e566f0d1"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-708-uniqueness-vacancy.json",
+      "bytes": 3119669,
+      "sha256": "b9356093b15b341ddb730fdcfb642fd18ead759eefcc4eb069734a5e8b4222e0"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-731-uniqueness-seal.json",
+      "bytes": 3512780,
+      "sha256": "57a2541d848e853a4cfe4f81ba16fcdb38333463fde4cc623e215ebca70cbf5a"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-732-first-acquire_uniqueness.json",
+      "bytes": 3528612,
+      "sha256": "344846a179075e2e8019f2dee56adbe4eef19d96288d932984ed82ed9c066acc"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-738-compose_potion.json",
+      "bytes": 3633326,
+      "sha256": "40152937e27bd697d4c02b351d549c11acec1ebbf49858ef74921012a2ae03b2"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-754-first-rest.json",
+      "bytes": 3910329,
+      "sha256": "c5f9dc5ef7a0813ba276009886fb072bf9c7167eda651afa42b0ebdd67be19f9"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-765-era_survey-fenepotter.json",
+      "bytes": 4116634,
+      "sha256": "7e70ee6aab1a0078744196cb0e43a09433c36f21cb93a46ff9bb0846d732b3ac"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-768-era_forecast.json",
+      "bytes": 4171392,
+      "sha256": "afdcaf4f53d83a8838eabc2526af633a2c1cb5c811716e7dafe2592874d14bd7"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-769-era_pilot-backlund.json",
+      "bytes": 4187258,
+      "sha256": "3b7923302ca20251aa09deacb5fc980d7cfa175745c50b2312dfe21fe6c35339"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-772-era_connect-backlund.json",
+      "bytes": 4242254,
+      "sha256": "0ef4b543f10b41e2ee3e933e53871cca72845a6b873c737a3c84e32854ceb878"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-773-first-government-adopted.json",
+      "bytes": 4258127,
+      "sha256": "ee52256e79841c9e996548147fcb4f561b662cb925e9cbbd957d8a24fdae4581"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-793-era_pilot-fenepotter.json",
+      "bytes": 4626470,
+      "sha256": "802c9d87c0c97fc7d9b8b9114d2317ca506b7996ddf9aafac21895fdbc212fe4"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-794-era_connect-fenepotter.json",
+      "bytes": 4644555,
+      "sha256": "de1759de36216c76efd045886a99a77e893f0fad4e6178f4ff3021f997593b89"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-795-four-governments-adopted.json",
+      "bytes": 4660113,
+      "sha256": "c1efae99d10af6d5985fb6ae96927d9ea2d82319178c91ca108388a84d3a73b5"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-797-actual-response-tingen-rail.json",
+      "bytes": 4699641,
+      "sha256": "2ca2ac16450f2a11a2f16363d9c5ed0e5a6300a97537ed633f3fcfe5d703da23"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-807-actual-response-backlund-pump.json",
+      "bytes": 4882805,
+      "sha256": "21f5a204a54147c0307f54f48f5ec4d65bb0be737e14454467436376835e1c34"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-815-era_verify.json",
+      "bytes": 5020941,
+      "sha256": "f2e0e25d10f14276f50b1cd04c2312276df6e4bb6b8ca0eb8a80cea0a78b176c"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-819-stabilize_promotion.json",
+      "bytes": 5090726,
+      "sha256": "20ccaf87769e7f6c6478f87e838a980ffc8542a35cadb4281649d659543cf216"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-820-consume.json",
+      "bytes": 5086700,
+      "sha256": "fee4bd42b15d17bf97410b11a9bcd46883c29c013f7f2155043e009753118927"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-828-start_epilogue.json",
+      "bytes": 5225823,
+      "sha256": "646869549820ae1b1dce228869d5350518866e3d7937af7b643e162ca9c8bd2f"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-829-actual-rescue-observe.json",
+      "bytes": 5244721,
+      "sha256": "6f2bb560a3d8b07a89969b9507ac867ace0fe479d00cf51d5bc2cd79de72e3f9"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-830-actual-rescue-support_structure.json",
+      "bytes": 5263737,
+      "sha256": "6317613b544be7e884fd942f4eee844bd4776231da8648f1c68e8204735c6597"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-831-actual-rescue-guide_rescuer.json",
+      "bytes": 5283580,
+      "sha256": "a3cc19f48715b77a28af7f3c1cb8d2308415f0c787f6087a5586f34e111739a7"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-832-actual-rescue-evacuate.json",
+      "bytes": 5304362,
+      "sha256": "9246bedff4b7af0bca9e0f5b7b868d620e683e67b8e6609a2217dc647116e97a"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/boundary-833-actual-rescue-report.json",
+      "bytes": 5322461,
+      "sha256": "8d0dc798f9465c54d5c019fa7e9950b5a1d0b0486dd7c07a00a231734afdbd18"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/checkpoint.json",
+      "bytes": 2940343,
+      "sha256": "b71b8a547fb7722d491b6e7cd455c318e2b1cb36f209b92dbf9c196ac328a440"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/commands.ndjson",
+      "bytes": 262391,
+      "sha256": "930f5ed1e3f20e82de201a47683142b2b8d062b5fc5a1758f8c3016dd9f0cf69"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/continuation-proof.json",
+      "bytes": 29592,
+      "sha256": "80fbf9fb6ace57dbb109673ed012eb9e4eb5ea045f36cee31a9270107ba6bcb5"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/freeze.json",
+      "bytes": 589849,
+      "sha256": "25625f729519c4a0a3f8bd372a6e9a43f1e19a55fa811b7cd0f3d87b23b10d4a"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/manifest.json",
+      "bytes": 8951,
+      "sha256": "f57f14ae90a9c4401ef924aad65a5ce1f1af6d08dcdb69ad5f8749327ff8c24c"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/natural.json",
+      "bytes": 4299352,
+      "sha256": "af58d0b3967c11508aeb6003545600defa954c011ca66b4e1d5d23b6e6dcc71f"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prefix-original659.json",
+      "bytes": 1622177,
+      "sha256": "d1416398ebd9f558d57e0c597d043e5c781f9dbcf64592cffc2d728ddb8c92b2"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundaries.index.json",
+      "bytes": 2571,
+      "sha256": "847b9798d8c6ec7cfc6cce2766082b364a20fde7b7ad7e36c0fcf650bb90fe4f"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-660-learn_guidance.json",
+      "bytes": 2261974,
+      "sha256": "11268eb866d0842a91ca20fe2d2c7f032352050bcd39484231effc05260fb632"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-661-first-work.json",
+      "bytes": 2304242,
+      "sha256": "bb35b4abb5f7ae9bbaa69f423a4023311ac321caabadf24276e6fe963c37af29"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-662-era_survey-backlund.json",
+      "bytes": 2320341,
+      "sha256": "cee2d990f5b8b6fc907f910d54ebf28b9fe9a512cb6ce48f28fbd13cc964159e"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-663-first-next_week.json",
+      "bytes": 2340216,
+      "sha256": "3e47e2c3d2b45d854b5c3de7e83687055c4ecc9dfd0d7e4590c81ffc52c3de89"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-665-first-travel.json",
+      "bytes": 2373919,
+      "sha256": "df23a7580e45b77367826eba0273e64da35ccb6a414696d6980bd53fbaf201c1"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-666-first-material_labour.json",
+      "bytes": 2389763,
+      "sha256": "321cb0025fcf8b51909594445bedc933014a85b2e7dc7ec6e84b0a5c43688ac2"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-677-first-acquire_characteristic.json",
+      "bytes": 2583907,
+      "sha256": "1a55d3531f9ce2c5156ed623dba140e142626ba97e047c7eb1dee7128c1df19e"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-700-buy_compound.json",
+      "bytes": 2982685,
+      "sha256": "f32a8fd5c052b8b2b0161f8c7eae40c48c7aa2ae8f23c87e7d2c1d8af73d6088"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-704-uniqueness-chain.json",
+      "bytes": 3051200,
+      "sha256": "499eda2d71f69e2fdf152eb0d7092a81116e91689922fa1fa4bd73a5e566f0d1"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-708-uniqueness-vacancy.json",
+      "bytes": 3119669,
+      "sha256": "b9356093b15b341ddb730fdcfb642fd18ead759eefcc4eb069734a5e8b4222e0"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-731-uniqueness-seal.json",
+      "bytes": 3512780,
+      "sha256": "57a2541d848e853a4cfe4f81ba16fcdb38333463fde4cc623e215ebca70cbf5a"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-732-first-acquire_uniqueness.json",
+      "bytes": 3528612,
+      "sha256": "344846a179075e2e8019f2dee56adbe4eef19d96288d932984ed82ed9c066acc"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-738-compose_potion.json",
+      "bytes": 3633326,
+      "sha256": "40152937e27bd697d4c02b351d549c11acec1ebbf49858ef74921012a2ae03b2"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/boundary-754-first-rest.json",
+      "bytes": 3910329,
+      "sha256": "c5f9dc5ef7a0813ba276009886fb072bf9c7167eda651afa42b0ebdd67be19f9"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/checkpoint.json",
+      "bytes": 2113621,
+      "sha256": "98be18dec27861cf8af3cbd948f8b6b29b1fadd72fd0c7c5b06b996655d328da"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/commands.ndjson",
+      "bytes": 143280,
+      "sha256": "a404b454134bf44d9bcdada2f7be9635a6086c6b9310f428e245a9b134acdae3"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/freeze.json",
+      "bytes": 589849,
+      "sha256": "f9ff6990b1a5e9ea7dee2b91236fcb0e54eccaeb392cd046b0eef406a8136bc2"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/natural.json",
+      "bytes": 3591941,
+      "sha256": "958c1371baceddf03c5428ed3da860687c072aad9706450b1646499a2a39870e"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/prefix-original659.json",
+      "bytes": 1622177,
+      "sha256": "d1416398ebd9f558d57e0c597d043e5c781f9dbcf64592cffc2d728ddb8c92b2"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/producer.mjs",
+      "bytes": 43771,
+      "sha256": "507e26122c79ad877877a6e0a449676369e9260f153d220e8be4dc1c9fdaa2cb"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/prior-segment/summary.json",
+      "bytes": 37704,
+      "sha256": "8ee319ae4249a278778068492776041fd18d6ef8885d808f24d5c7ac5a147150"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/producer.mjs",
+      "bytes": 44044,
+      "sha256": "8fc2ddcf04c2990ab82ac2252f033fb5044339e59f82319f54689cf39b4b0b89"
+    },
+    {
+      "path": "tests/fixtures/visionary-v02100/summary.json",
+      "bytes": 17158,
+      "sha256": "b0bbb7198b60d32bddaa145d68cf575bbebc361bfa4d2c6b0adeaff7030b5eb1"
     },
     {
       "path": "tests/fixtures/wanderer-v01500/boundaries.json",

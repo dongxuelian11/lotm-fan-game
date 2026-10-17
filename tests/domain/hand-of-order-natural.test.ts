@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createSliceRun, applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
@@ -88,64 +88,92 @@ describe('Hand of Order literal same-seed natural capture', () => {
     same(capturedState('prefixFinal'), originalLivingPrefix()); same(capturedState('initial'), currentCapture(sourceEntry('initial')));
   }, 240_000);
 
-  it('replays every original801 intent through CURRENT reducers and compares all208 private/public/RNG transitions without output files', async () => {
-    const e = observedCapture(), { commands, boundaries, steps, snapshots } = captureMetadata(), filesBefore = inventory();
-    expect(commands).toHaveLength(e.commands); same(commands.slice(0, PREFIX), sourceEntry('commands'));
-    expect(naturalEntry('seed')).toBe(SEED); expect(naturalEntry('prefixVerified')).toBe(true); expect(naturalEntry('prefixCount')).toBe(PREFIX); expect(naturalEntry('inheritedPrefixCount')).toBe(INHERITED);
-    const transitions = JSON.parse(readFileSync(`${ROOT}/transitions.json`, 'utf8')) as Transition[];
-    expect(transitions).toHaveLength(e.uniqueTransitions); const byStep = new Map(transitions.map(row => [row.commandIndex, row]));
-    expect(Object.keys(boundaries)).toHaveLength(e.namedBoundaries); same(Object.keys(steps), Object.keys(boundaries)); same([...new Set(Object.values(boundaries))], transitions.map(row => row.file));
-    for (const [i, row] of transitions.entries()) { expect([row.commandIndex, row.beforeRevision, row.afterRevision]).toEqual([PREFIX + i, PREFIX + i, PREFIX + i + 1]); expect(boundaries[row.key]).toBe(row.file); expect(steps[row.key]).toBe(row.commandIndex); }
-    for (const [name, file] of Object.entries(boundaries)) expect(byStep.get(steps[name]!)?.file, name).toBe(file);
-    const original = originalLivingPrefix(), deathCommands = readObjectEntry<SliceIntent[]>(DEATH, 'commands'), recoveryCommands = readObjectEntry<SliceIntent[]>(RECOVERY, 'commands');
-    same(commands.slice(0, INHERITED), recoveryCommands); same(commands.slice(0, 474), deathCommands.slice(0, 474)); expect(commands[474]).not.toEqual(deathCommands[474]);
-    let state = createSliceRun(original.runId, sourceEntry<Parameters<typeof createSliceRun>[1]>('creation'), SEED), count = 0, oldDeathVerified = false, recoveryVerified = false, prefixVerified = false, livingContinues = 0;
-    same(state, capturedState('initial')); const publicRows = captureJsonLines<PublicRow>('public.jsonl'), stateHashes = new Map<number, string>(), treatments: unknown[] = [];
-    try {
-      for await (const row of captureJsonLines<Ledger>('commands.jsonl')) {
-        expect(row.step).toBe(++count); expect(row.sourcePrefix).toBe(count <= PREFIX); same(row.intent, commands[count - 1]); expect(validateSlicePayload(row.intent)).toBe(true);
-        same(captureBody(state), row.before); const before = state, transition = byStep.get(count); let proof: PublicRow | null = null;
-        if (count > PREFIX) {
-          expect(transition).toBeDefined(); expect(row.boundaryKey).toBe(transition!.key);
-          const control = publicCaptureControl(before, row.intent), next = await publicRows.next(); if (next.done) throw new Error(`Missing actual public row ${count}`); proof = next.value;
-          expect(proof.step).toBe(count); expect(proof.revision).toBe(before.revision); same(proof.command, row.intent); same(proof.control, control);
-          same(proof.randomBefore, before.random); same(proof.before, capturePublicBody(before));
-        } else expect(row.boundaryKey).toBeNull();
-        state = applySliceIntent(before, row.intent); assertValidSliceState(state);
-        expect(state.revision).toBe(before.revision + 1); expect(state.random.seed).toBe(SEED); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor); same(captureBody(state), row.after);
-        if (proof) { same(proof.after, capturePublicBody(state)); same(proof.randomAfter, state.random); }
-        if (count === 474) {
-          same(state, currentCapture(readObjectEntry(RECOVERY, 'initial'))); const preserved = captureValueHash(state); let dead = state;
-          for (const intent of deathCommands.slice(474)) { expect(dead.status).toBe('ACTIVE'); dead = applySliceIntent(dead, intent); assertValidSliceState(dead); }
-          same(dead, currentCapture(readObjectEntry(DEATH, 'final'))); expect(dead).toMatchObject({ status: 'DEAD', health: 0, revision: 478, random: { seed: SEED, cursor: 290 } });
-          expect(() => applySliceIntent(dead, { type: 'CONTINUE_LIFE' })).toThrow(); expect(captureValueHash(state)).toBe(preserved); oldDeathVerified = true;
-        }
-        if (count === INHERITED) { same(state, currentCapture(sourceEntry('prefixFinal'))); same(state, currentCapture(readObjectEntry(RECOVERY, 'final'))); recoveryVerified = true; }
-        if (count <= PREFIX && row.intent.type === 'CONTINUE_LIFE') { expect(before.status).toBe('SLICE_COMPLETE'); expect(state.status).toBe('ACTIVE'); livingContinues++; }
-        if (count === PREFIX) { same(state, original); prefixVerified = true; }
-        if (transition) {
-          const path = capturePath(transition.file); expect(readObjectEntry(path, 'commandCount')).toBe(count); same(readObjectEntry(path, 'lastIntent'), row.intent);
-          // Parse one raw203 root at a time; compare CURRENT migration separately from immutable raw capture pins.
-          for (const root of ['beforeLast', 'final']) {
-            const raw = readObjectEntry<SliceState>(path, root); expect([raw.schemaVersion, raw.contentVersion]).toEqual([203, 'hand-of-order-v203']);
-            same(root === 'beforeLast' ? before : state, currentCapture(raw));
-          }
-          stateHashes.set(state.revision, captureValueHash(state)); assertOriginalContinuity(state, original);
+  describe.sequential('replays every original801 intent through CURRENT reducers and compares all208 private/public/RNG transitions without output files', () => {
+    // One continuous generator owns the real state and both evidence streams.
+    // Fixed blocks bound individual CI cases; none reloads a fixture checkpoint.
+    const blockEnds: readonly number[] = [200, 400, 594, 646, 698, 750, 801];
+    let completedThrough = 0, replayFailed = false, activeSignal: AbortSignal | undefined;
+    async function* replayCommands(): AsyncGenerator<number, number, void> {
+      const e = observedCapture(), { commands, boundaries, steps, snapshots } = captureMetadata(), filesBefore = inventory();
+      expect(e.commands).toBe(blockEnds.at(-1)); expect(commands).toHaveLength(e.commands); same(commands.slice(0, PREFIX), sourceEntry('commands'));
+      expect(naturalEntry('seed')).toBe(SEED); expect(naturalEntry('prefixVerified')).toBe(true); expect(naturalEntry('prefixCount')).toBe(PREFIX); expect(naturalEntry('inheritedPrefixCount')).toBe(INHERITED);
+      const transitions = JSON.parse(readFileSync(`${ROOT}/transitions.json`, 'utf8')) as Transition[];
+      expect(transitions).toHaveLength(e.uniqueTransitions); const byStep = new Map(transitions.map(row => [row.commandIndex, row]));
+      expect(Object.keys(boundaries)).toHaveLength(e.namedBoundaries); same(Object.keys(steps), Object.keys(boundaries)); same([...new Set(Object.values(boundaries))], transitions.map(row => row.file));
+      for (const [i, row] of transitions.entries()) { expect([row.commandIndex, row.beforeRevision, row.afterRevision]).toEqual([PREFIX + i, PREFIX + i, PREFIX + i + 1]); expect(boundaries[row.key]).toBe(row.file); expect(steps[row.key]).toBe(row.commandIndex); }
+      for (const [name, file] of Object.entries(boundaries)) expect(byStep.get(steps[name]!)?.file, name).toBe(file);
+      const original = originalLivingPrefix(), deathCommands = readObjectEntry<SliceIntent[]>(DEATH, 'commands'), recoveryCommands = readObjectEntry<SliceIntent[]>(RECOVERY, 'commands');
+      same(commands.slice(0, INHERITED), recoveryCommands); same(commands.slice(0, 474), deathCommands.slice(0, 474)); expect(commands[474]).not.toEqual(deathCommands[474]);
+      let state = createSliceRun(original.runId, sourceEntry<Parameters<typeof createSliceRun>[1]>('creation'), SEED), count = 0, oldDeathVerified = false, recoveryVerified = false, prefixVerified = false, livingContinues = 0;
+      same(state, capturedState('initial')); const publicRows = captureJsonLines<PublicRow>('public.jsonl'), stateHashes = new Map<number, string>(), treatments: unknown[] = [];
+      try {
+        for await (const row of captureJsonLines<Ledger>('commands.jsonl')) {
+          if (replayFailed) throw new Error('A preceding replay block failed or timed out.');
+          activeSignal?.throwIfAborted();
+          expect(row.step).toBe(++count); expect(row.sourcePrefix).toBe(count <= PREFIX); same(row.intent, commands[count - 1]); expect(validateSlicePayload(row.intent)).toBe(true);
+          same(captureBody(state), row.before); const before = state, transition = byStep.get(count); let proof: PublicRow | null = null;
           if (count > PREFIX) {
-            expect(getHandOfOrderCurrentSite(state).clockSeconds).toBeGreaterThanOrEqual(getHandOfOrderCurrentSite(before).clockSeconds);
-            expect(getHandOfOrderCurrentSite(state).playerTravelMetres).toBeGreaterThanOrEqual(getHandOfOrderCurrentSite(before).playerTravelMetres);
-            if (row.intent.type === 'EVENT_CHOICE' && before.activeEvent?.id === 'LIFE-CARE-01') treatments.push({ paidPennies: 60, before: captureBody(before), after: captureBody(state) });
+            expect(transition).toBeDefined(); expect(row.boundaryKey).toBe(transition!.key);
+            const control = publicCaptureControl(before, row.intent), next = await publicRows.next(); if (next.done) throw new Error(`Missing actual public row ${count}`); proof = next.value;
+            expect(proof.step).toBe(count); expect(proof.revision).toBe(before.revision); same(proof.command, row.intent); same(proof.control, control);
+            same(proof.randomBefore, before.random); same(proof.before, capturePublicBody(before));
+          } else expect(row.boundaryKey).toBeNull();
+          state = applySliceIntent(before, row.intent); assertValidSliceState(state);
+          expect(state.revision).toBe(before.revision + 1); expect(state.random.seed).toBe(SEED); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor); same(captureBody(state), row.after);
+          if (proof) { same(proof.after, capturePublicBody(state)); same(proof.randomAfter, state.random); }
+          if (count === 474) {
+            same(state, currentCapture(readObjectEntry(RECOVERY, 'initial'))); const preserved = captureValueHash(state); let dead = state;
+            for (const intent of deathCommands.slice(474)) { expect(dead.status).toBe('ACTIVE'); dead = applySliceIntent(dead, intent); assertValidSliceState(dead); }
+            same(dead, currentCapture(readObjectEntry(DEATH, 'final'))); expect(dead).toMatchObject({ status: 'DEAD', health: 0, revision: 478, random: { seed: SEED, cursor: 290 } });
+            expect(() => applySliceIntent(dead, { type: 'CONTINUE_LIFE' })).toThrow(); expect(captureValueHash(state)).toBe(preserved); oldDeathVerified = true;
           }
+          if (count === INHERITED) { same(state, currentCapture(sourceEntry('prefixFinal'))); same(state, currentCapture(readObjectEntry(RECOVERY, 'final'))); recoveryVerified = true; }
+          if (count <= PREFIX && row.intent.type === 'CONTINUE_LIFE') { expect(before.status).toBe('SLICE_COMPLETE'); expect(state.status).toBe('ACTIVE'); livingContinues++; }
+          if (count === PREFIX) { same(state, original); prefixVerified = true; }
+          if (transition) {
+            const path = capturePath(transition.file); expect(readObjectEntry(path, 'commandCount')).toBe(count); same(readObjectEntry(path, 'lastIntent'), row.intent);
+            // Parse one raw203 root at a time; compare CURRENT migration separately from immutable raw capture pins.
+            for (const root of ['beforeLast', 'final']) {
+              const raw = readObjectEntry<SliceState>(path, root); expect([raw.schemaVersion, raw.contentVersion]).toEqual([203, 'hand-of-order-v203']);
+              same(root === 'beforeLast' ? before : state, currentCapture(raw));
+            }
+            stateHashes.set(state.revision, captureValueHash(state)); assertOriginalContinuity(state, original);
+            if (count > PREFIX) {
+              expect(getHandOfOrderCurrentSite(state).clockSeconds).toBeGreaterThanOrEqual(getHandOfOrderCurrentSite(before).clockSeconds);
+              expect(getHandOfOrderCurrentSite(state).playerTravelMetres).toBeGreaterThanOrEqual(getHandOfOrderCurrentSite(before).playerTravelMetres);
+              if (row.intent.type === 'EVENT_CHOICE' && before.activeEvent?.id === 'LIFE-CARE-01') treatments.push({ paidPennies: 60, before: captureBody(before), after: captureBody(state) });
+            }
+          }
+          // Suspend only after every check for this actual reducer-produced state.
+          if (count !== e.commands && blockEnds.includes(count)) yield count;
         }
-      }
-      expect((await publicRows.next()).done).toBe(true);
-    } finally { await publicRows.return(undefined); }
-    expect(count).toBe(e.commands); expect(state.revision).toBe(e.commands + 1); same(state, capturedState('final')); same(captureBody(state), e.final);
-    expect(oldDeathVerified).toBe(true); expect(recoveryVerified).toBe(true); expect(prefixVerified).toBe(true); expect(livingContinues).toBeGreaterThan(0);
-    for (const filename of new Set(Object.values(snapshots))) { const saved = currentCapture(JSON.parse(readFileSync(capturePath(filename), 'utf8'))); expect(captureValueHash(saved), filename).toBe(stateHashes.get(saved.revision)); }
-    same(treatments, e.treatments); same(treatments, naturalEntry('treatments')); same(treatments, summaryEntry('treatments')); same(inventory(), filesBefore); assertOriginalContinuity(state, original);
-    // The complete 801-command/208-state replay exceeded its initial300s budget at301.327s. Only this case receives600s; no dist/global-freeze dependency, producer invocation, RNG edits, winner choices, fixture writes or global timeout change.
-  }, 600_000);
+        expect((await publicRows.next()).done).toBe(true);
+      } finally { await publicRows.return(undefined); }
+      expect(count).toBe(e.commands); expect(state.revision).toBe(e.commands + 1); same(state, capturedState('final')); same(captureBody(state), e.final);
+      expect(oldDeathVerified).toBe(true); expect(recoveryVerified).toBe(true); expect(prefixVerified).toBe(true); expect(livingContinues).toBeGreaterThan(0);
+      for (const filename of new Set(Object.values(snapshots))) { const saved = currentCapture(JSON.parse(readFileSync(capturePath(filename), 'utf8'))); expect(captureValueHash(saved), filename).toBe(stateHashes.get(saved.revision)); }
+      same(treatments, e.treatments); same(treatments, naturalEntry('treatments')); same(treatments, summaryEntry('treatments')); same(inventory(), filesBefore); assertOriginalContinuity(state, original);
+      return count;
+    }
+    const replay = replayCommands();
+    afterAll(async () => { replayFailed = true; await replay.return(completedThrough); });
+    for (const [index, end] of blockEnds.entries()) {
+      const start = index === 0 ? 1 : blockEnds[index - 1]! + 1;
+      it(`replays contiguous commands ${start}-${end}${index === blockEnds.length - 1 ? ' and verifies all final evidence' : ''}`, async ({ signal, onTestFailed }) => {
+        const markFailed = () => { replayFailed = true; };
+        signal.addEventListener('abort', markFailed, { once: true }); onTestFailed(markFailed);
+        try {
+          expect(replayFailed, 'A preceding replay block must pass before continuing.').toBe(false);
+          expect(completedThrough, 'The next block must start at the actual prior reducer endpoint.').toBe(start - 1);
+          activeSignal = signal;
+          const result = await replay.next();
+          signal.throwIfAborted();
+          expect(result).toEqual({ value: end, done: index === blockEnds.length - 1 });
+          completedThrough = end;
+        } catch (error) { markFailed(); throw error; }
+      }, 600_000);
+    }
+  });
 
   it('accounts for actual paid wound treatment, acquisition, every finite dose and honest bounded life receipts', () => {
     const e = observedCapture(), s = capturedState('final'), original = originalLivingPrefix(), h = s.handOfOrder, life = h.life;

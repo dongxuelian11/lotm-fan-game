@@ -198,7 +198,7 @@ export class SliceApplication {
               );
         let next: SliceState | undefined;
         let draft: OwnedRepositoryDraft | undefined;
-        const redPriestIntent = intent.payload.type === "RED_PRIEST";
+        const ownedChapterIntent = intent.payload.type === "RED_PRIEST" || intent.payload.type === "VISIONARY";
         let previousRevision = 0;
         if (intent.payload.type === "CREATE") {
           next = createSliceRun(
@@ -210,7 +210,7 @@ export class SliceApplication {
           // First guidance remains the original fully validated raw-state path.
           const owned = intent.payload.type === "FOOL" && intent.payload.command.type !== "LEARN_GUIDANCE"
             ? this.repository.foolHead(intent.runId!)
-            : intent.payload.type === "RED_PRIEST" && intent.payload.command.type !== "LEARN_GUIDANCE"
+            : (intent.payload.type === "RED_PRIEST" || intent.payload.type === "VISIONARY") && intent.payload.command.type !== "LEARN_GUIDANCE"
               ? this.repository.ownedHead(intent.runId!)
               : null;
           const current = owned ? { state: owned } : this.repository.get(intent.runId!);
@@ -223,7 +223,7 @@ export class SliceApplication {
           if (current.state.status === "DEAD")
             return failure("ARCHIVED", "这个周目已经死亡封存，只能查看卷宗。");
           previousRevision = current.state.revision;
-          if (owned) draft = redPriestIntent
+          if (owned) draft = ownedChapterIntent
             ? this.repository.prepareOwned(intent.runId!, intent.payload, intent.expectedRevision)
             : this.repository.prepareFool(intent.runId!, intent.payload, intent.expectedRevision);
           else next = applySliceIntent((current as StoredSlice).state, intent.payload);
@@ -241,11 +241,11 @@ export class SliceApplication {
           committedAt,
           replayed: false,
           state: draft
-            ? redPriestIntent ? this.repository.projectOwnedDraft(draft) : this.repository.projectFoolDraft(draft)
+            ? ownedChapterIntent ? this.repository.projectOwnedDraft(draft) : this.repository.projectFoolDraft(draft)
             : projectSliceState(next!),
         };
         if (draft) {
-          if (redPriestIntent) this.repository.putOwnedDraft(draft, committedAt);
+          if (ownedChapterIntent) this.repository.putOwnedDraft(draft, committedAt);
           else this.repository.putFoolDraft(draft, committedAt);
         }
         else this.repository.put({ state: next!, updatedAt: committedAt });

@@ -404,12 +404,71 @@ export function writerCombatConsequence(round: SliceCombatRound): string {
   if (o.playerHealthAfter === 0) text += '本人的原身体真实死亡，本周目终结。'; else if (o.enemyHealth === 0) text += '卢西安原身体真实死亡，唯一原杖留地。'; else if (o.enemyStatus === 'SURRENDERED') text += '卢西安因实际伤势或精神耗尽自主停止抵抗，仍活着，原杖放在地面。';
   return text + ' 本轮实际60秒；未使用窗口到时结束，已经花费的灵性与精神不退。精神瘟疫保留，旧身份和两位生活参与者不在场。';
 }
+/** Public facts use positive nested allowlists; replay inputs stay private. */
+const publicInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicWindow = (w: WriterWindow) => ({
+  id: w.id, kind: w.kind, createdAt: w.createdAt, expiresAt: w.expiresAt, targetActionId: w.targetActionId, magnitude: w.magnitude,
+});
+const publicWindows = (w: WriterWindows) => ({
+  ward: w.ward ? publicWindow(w.ward) : null, attention: w.attention ? publicWindow(w.attention) : null,
+  reciprocal: w.reciprocal ? publicWindow(w.reciprocal) : null, arrangement: w.arrangement ? publicWindow(w.arrangement) : null,
+});
+const publicPendingAction = (p: WriterPendingAction | null) => p ? ({
+  id: p.id, planned: p.planned, actual: p.actual, declaredAt: p.declaredAt, visibleIntent: p.visibleIntent,
+}) : null;
+const publicMaterials = (m: WriterMaterials) => ({
+  weapon: { id: m.weapon.id, sourceId: m.weapon.sourceId, owner: m.weapon.owner, massKg: m.weapon.massKg, location: m.weapon.location, condition: m.weapon.condition },
+});
+const publicScene = (p: WriterScene) => ({
+  siteId: p.siteId, playerLocation: p.playerLocation, playerCoordinate: p.playerCoordinate, enemyCoordinate: p.enemyCoordinate,
+  ordinaryExit: p.ordinaryExit, thirdPartiesInArea: p.thirdPartiesInArea, presentMemberIds: [...p.presentMemberIds],
+  observedSourceId: p.observedSourceId, observationWeek: p.observationWeek, clockSeconds: p.clockSeconds,
+  externalSeconds: p.externalSeconds, playerTravelMetres: p.playerTravelMetres, knownPlayerName: p.knownPlayerName, knownEnemyName: p.knownEnemyName,
+});
+const publicCheck = (c: PublicCheckResult | null): PublicCheckResult | null => c ? ({
+  ability: c.ability, baseAbility: c.baseAbility, modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+  effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier,
+}) : null;
+const publicPowerUses = (p: WriterCombatBody['powerUses']) => ({ MIND_PULSE: p.MIND_PULSE, WARD: p.WARD, ATTENTION: p.ATTENTION });
+const publicWheel = (w: SliceWheelEntry) => ({ id: w.id, label: w.label, weight: w.weight });
+export function projectWriterAction(a: WriterActionEvidence) { return {
+  order: a.order, actor: a.actor, id: a.id, planned: a.planned, selectedAbility: a.selectedAbility, fallbackReason: a.fallbackReason, mode: a.mode, label: a.label,
+  selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure, attackKind: a.attackKind, rawContribution: a.rawContribution, rawReduction: a.rawReduction,
+  paidCost: a.paidCost, mindCost: a.mindCost, physicalFactor: a.physicalFactor, check: publicCheck(a.check),
+  resistanceRoll: a.resistanceRoll, resistanceChance: a.resistanceChance, succeeded: a.succeeded, mindDamage: a.mindDamage,
+  wardAbsorption: a.wardAbsorption, playerObservationGain: a.playerObservationGain, finiteResult: a.finiteResult,
+  windowsBefore: publicWindows(a.windowsBefore), windowsAfter: publicWindows(a.windowsAfter),
+  pendingBefore: publicPendingAction(a.pendingBefore), pendingAfter: publicPendingAction(a.pendingAfter), countered: [...a.countered], masteryApplied: [...a.masteryApplied],
+  identityCreated: a.identityCreated, identityRejoined: a.identityRejoined, knownPlayerName: a.knownPlayerName, learnedClue: a.learnedClue,
+  atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, travelMetres: a.travelMetres,
+  playerHealthAfter: a.playerHealthAfter, playerMindAfter: a.playerMindAfter, playerSpiritualityAfter: a.playerSpiritualityAfter,
+  enemyMindAfter: a.enemyMindAfter, enemySpiritualityAfter: a.enemySpiritualityAfter,
+}; }
+export type WriterPublicActionEvidence = ReturnType<typeof projectWriterAction>;
+export function projectWriterRoundOutcome(o: WriterRoundOutcome) { return {
+  enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+  enemyInjuries: o.enemyInjuries.map(publicInjury), enemyRisk: o.enemyRisk, weaponLocation: o.weaponLocation, powerUses: publicPowerUses(o.powerUses),
+  mentalPlague: o.mentalPlague, plagueApplications: o.plagueApplications, infectedRound: o.infectedRound, lastPlagueRound: o.lastPlagueRound,
+  personaGuards: o.personaGuards, identityUses: o.identityUses, wovenImageUses: o.wovenImageUses, totalOwnerMindSpent: o.totalOwnerMindSpent,
+  mentalImprintUses: o.mentalImprintUses, mentalImprintSuccesses: o.mentalImprintSuccesses, insightWindowUses: o.insightWindowUses, insightWindowSuccesses: o.insightWindowSuccesses,
+  reciprocalAttempts: o.reciprocalAttempts, reciprocalSuccesses: o.reciprocalSuccesses, arrangementAttempts: o.arrangementAttempts, arrangementSuccesses: o.arrangementSuccesses,
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+  playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, playerSpiritualityAfter: o.playerSpiritualityAfter,
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicInjury), playerRiskAfter: o.playerRiskAfter, materialsAfter: publicMaterials(o.materialsAfter),
+  masteryAfter: Object.fromEntries([...WRITER_INHERITED_SKILL_IDS, ...WRITER_NEW_ABILITY_IDS].filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+  rootAfter: publicScene(o.rootAfter), elapsedSeconds: o.elapsedSeconds,
+  playerActions: o.playerActions.map(projectWriterAction), enemyActions: o.enemyActions.map(projectWriterAction), expiredWindows: o.expiredWindows.map(publicWindow),
+  windowsAfter: publicWindows(o.windowsAfter), pendingEnemyActionAfter: o.pendingEnemyActionAfter, plagueMindDamage: o.plagueMindDamage,
+}; }
+export type WriterPublicRoundOutcome = ReturnType<typeof projectWriterRoundOutcome>;
+
 export function projectWriterCombat(s: SliceState) {
   const e = s.writer.encounter, last = s.combat?.encounterId === 'WRITER_DISPUTE' ? s.combat.lastRound?.writerOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.writerOutcome : null;
   return { enemyName: isWriter(s) ? '卢西安·维尔（46岁，独立非凡者）' : '', targetId: e.targetId, enemyHealth: e.enemyHealth, enemyMind: e.enemyMind, enemySpirituality: e.enemySpirituality,
-    weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses }, policy: e.policy, materials: structuredClone(e.materials),
-    lastActionSequence: last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order) : [], countWheel: WRITER_COUNT_WHEEL, enemyCountWheel: WRITER_ENEMY_COUNT_WHEEL,
-    enemyAbilityWheel: WRITER_ENEMY_ABILITY_WHEEL, facts: [
+    weaponLocation: e.weaponLocation, powerUses: publicPowerUses(e.powerUses), policy: e.policy, materials: publicMaterials(e.materials),
+    lastActionSequence: last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(projectWriterAction) : [],
+    countWheel: WRITER_COUNT_WHEEL.map(publicWheel), enemyCountWheel: WRITER_ENEMY_COUNT_WHEEL.map(publicWheel),
+    enemyAbilityWheel: WRITER_ENEMY_ABILITY_WHEEL.map(publicWheel), facts: [
       '本人核心仍按体质30%、感知25%、意志30%、知识15%；双方最多六动作，基础1250、最低125，灵性上限120。',
       '互知线索须真实互报姓名与当前待执行动作；合理安排只影响那一个真实动作，不改写过去，不对每个动作自动生效。',
       '两项新能力各每轮一次，实付、检定与抵抗全部保留；原23项能力与旧人物资源保持实际来源。',

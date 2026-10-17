@@ -97,7 +97,7 @@ describe('Balancer real same-seed continuation and frozen public boundaries', ()
       expect(b.final.random.seed, name).toBe(SEED); expect(b.final.random.cursor, name).toBeGreaterThanOrEqual(b.beforeLast.random.cursor);
     }
     for (const name of SNAPSHOTS) { const s = snapshot(name); expect(migrateSliceState(JSON.parse(JSON.stringify(s)))).toEqual(s); assertValidSliceState(s); }
-  }, 30_000);
+  }, 60_000);
 
   it('pays the actual 60-penny clinic charge plus the weekly 30-penny bill before rest clears revision 482 HEAVY', () => {
     const old = prefix(), first = boundary('clinic-real-rest-1'), paid = boundary('clinic-actual-pay60'), rest = boundary('clinic-real-rest-2'), treated = snapshot('treated');

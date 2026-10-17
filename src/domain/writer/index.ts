@@ -24,7 +24,7 @@ import type { PublicGameDate, PublicCheckResult } from '../../shared/contracts.j
 import { createWriterLifeState, initializeWriterLife, applyWriterActivity, projectWriterLife, writerLifeActions, validateWriterLife, validateWriterActivityCommand, hasWriterLifeLock } from './life.js';
 import { createWriterEncounterState, applyWriterEncounterCommand, projectWriterEncounter, writerEncounterActions, validateWriterEncounter, validateWriterEncounterCommand, hasWriterEncounterLock } from './encounter.js';
 import { WRITER_ABILITIES, WRITER_INHERITED_ABILITIES, WRITER_BOTTLE_IDS, WRITER_CONSUMPTION_RISK, WRITER_FORMULA_STATUS, WRITER_GUIDE, WRITER_LABOUR_STEPS, WRITER_LABOUR_TASKS, WRITER_MIN_DISCERNER_WEEKS, WRITER_POTION_SOURCES, WRITER_PREPARATIONS, WRITER_PRICES, WRITER_SOURCE_STATUS } from './content.js';
-import { WRITER_ABILITY_IDS, WRITER_PREPARATION_IDS, type WriterAcquisitionBudget, type WriterAcquisitionEvent, type WriterAcquisitionCommand, type WriterAction, type WriterBottle, type WriterCommand, type WriterProjection, type WriterState } from './types.js';
+import { WRITER_ABILITY_IDS, WRITER_PREPARATION_IDS, type WriterAcquisitionBudget, type WriterAcquisitionEvent, type WriterAcquisitionCommand, type WriterAction, type WriterBottle, type WriterCommand, type WriterProjection, type WriterState, type WriterRecoveryRequest, type WriterOriginalCharacteristics } from './types.js';
 
 const record = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const shape = (v: object, fields: readonly string[]) => Object.keys(v).sort().join('|') === [...fields].sort().join('|');
@@ -108,9 +108,43 @@ export const hasWriterOldSceneLock = hasWriterOldPractice;
 export const hasWriterRitualLock = (s: SliceState): boolean => s.writer.preparedWeek !== null;
 export const hasWriterLock = (s: SliceState): boolean => hasWriterRitualLock(s) || hasWriterLifeLock(s) || hasWriterEncounterLock(s);
 const bottleNumber = (b: Pick<WriterBottle, 'id'>) => Number(b.id.slice('writer-potion-'.length));
-const potionPrice = (b: WriterBottle) => WRITER_PRICES.potion - (b.labourSteps === WRITER_LABOUR_STEPS ? WRITER_PRICES.labourCredit : 0);
+const potionPrice = (b: WriterBottle) => b.recovery
+  ? b.labourSteps === WRITER_LABOUR_STEPS ? WRITER_PRICES.recoveryLabourBalance : WRITER_PRICES.recoveryDrug
+  : WRITER_PRICES.potion - (b.labourSteps === WRITER_LABOUR_STEPS ? WRITER_PRICES.labourCredit : 0);
+const legacySupply = (c: { type: string }) => c.type === 'REQUEST_SUPPLY' || c.type === 'RECEIVE_SUPPLY';
+const recoveryCommand = (c: { type: string }) => c.type === 'REQUEST_RECOVERY_V1' || c.type === 'RECOVER_CHARACTERISTIC_V1';
+const characteristicId = (bottleId: string) => `${bottleId}:characteristic`;
+const recoverySourceText = (id: string, recovery: WriterRecoveryRequest, week: number) => `${WRITER_GUIDE}在原安静房核验${recovery.sourceBottleId}排异后遗留的同一份作家特性${recovery.characteristicId}，第${week}周回收封存到重配瓶${id}。原特性来自${recovery.originalBottleId}；新普通药物与调配服务另付，旧原瓶及其实际结果不改写。`;
+/** Follow actual vessel ancestry without treating an attempt number as a fourth original. */
+function originalBottleId(state: WriterState, bottle: WriterBottle): string | null {
+  const seen = new Set<string>(); let current = bottle;
+  while (current.recovery) {
+    if (seen.has(current.id)) return null; seen.add(current.id);
+    const r = current.recovery, previous = state.bottles.find(b => b.id === r.sourceBottleId);
+    if (!previous || bottleNumber(previous) >= bottleNumber(current) || r.version !== 1 ||
+      !WRITER_BOTTLE_IDS.includes(r.originalBottleId as typeof WRITER_BOTTLE_IDS[number]) || r.characteristicId !== characteristicId(r.originalBottleId) ||
+      previous.status !== 'CONSUMED' || !failed(previous.outcome) || previous.consumedWeek === null || previous.consumedWeek > r.requestedWeek ||
+      r.recoveredWeek <= r.requestedWeek || current.stockedWeek !== r.recoveredWeek) return null;
+    if (previous.recovery && (previous.recovery.originalBottleId !== r.originalBottleId || previous.recovery.characteristicId !== r.characteristicId)) return null;
+    if (!previous.recovery && previous.id !== r.originalBottleId) return null;
+    current = previous;
+  }
+  return WRITER_BOTTLE_IDS.includes(current.id as typeof WRITER_BOTTLE_IDS[number]) ? current.id : null;
+}
+function recoverySource(state: WriterState, bottleId: string) {
+  const bottle = state.bottles.find(b => b.id === bottleId);
+  if (!bottle || bottle.status !== 'CONSUMED' || !failed(bottle.outcome) || bottle.consumedWeek === null) return null;
+  const original = originalBottleId(state, bottle);
+  if (!original || state.bottles.some(b => b.recovery?.sourceBottleId === bottleId)) return null;
+  // Earlier consumed rows are receipts. A live vessel or an embodied original cannot be recovered again.
+  if (state.bottles.some(b => originalBottleId(state, b) === original && (b.status !== 'CONSUMED' || success(b.outcome)))) return null;
+  const consumed = state.acquisitionJournal.filter(e => e.command.type === 'CONSUME' && e.command.bottleId === bottleId);
+  if (consumed.length !== 1 || consumed[0]!.week !== bottle.consumedWeek || consumed[0]!.check?.tier !== bottle.outcome || consumed[0]!.after.sequence !== 2) return null;
+  return { bottle, originalBottleId: original, characteristicId: characteristicId(original) };
+}
 const discernerWeeks = (s: SliceState) => Math.max(0, (s.writer.promotionWeek ?? s.week) - (s.discerner.promotionWeek ?? s.week));
 const exhaustedSupply = (state: WriterState) => state.bottles.length >= 3 && state.bottles.every(b => b.status === 'CONSUMED' && ['FAILURE', 'GREAT_FAILURE'].includes(b.outcome ?? ''));
+const originalSupplyFailed = (state: WriterState) => state.bottles.length >= 3 && state.bottles.slice(0, 3).every((b, index) => b.id === WRITER_BOTTLE_IDS[index] && !b.recovery && b.status === 'CONSUMED' && failed(b.outcome));
 const deliverySource = (number: number, week: number) => `${WRITER_GUIDE}第${Math.ceil(number / 3)}批、第${week}周实际到货的序列1作家成品，独立封存编号writer-potion-${number}。本瓶须另行取得并独立耗用。`;
 const hasPreparations = (s: SliceState) => WRITER_PREPARATION_IDS.every(id => s.writer.preparations.some(p => p.taskId === id));
 function promotionBlock(s: SliceState): string | null {
@@ -120,21 +154,24 @@ function promotionBlock(s: SliceState): string | null {
   if (!discernerReportsComplete(s)) return '先完成洞察者的三份实际报告与反思，并收好旧核验现场。';
   return hasPreparations(s) ? null : '先分别核对八阶原瓶与既往报告、互知线索及合理安排边界和普通离场路线；领取药瓶不能代做专业准备。';
 }
-export function validateWriterAcquisitionCommand(v: unknown): v is WriterAcquisitionCommand {
+function validateAcquisitionCommand(v: unknown, historicalReplay = false): v is WriterAcquisitionCommand {
   if (!record(v) || typeof v.type !== 'string') return false;
-  if (['LEARN_GUIDANCE', 'REQUEST_SUPPLY', 'RECEIVE_SUPPLY', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION'].includes(String(v.type))) return shape(v, ['type']);
+  if (legacySupply(v as { type: string })) return historicalReplay && shape(v, ['type']);
+  if (['LEARN_GUIDANCE', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION'].includes(String(v.type))) return shape(v, ['type']);
   if (v.type === 'PREPARE_TASK') return shape(v, ['type', 'taskId']) && WRITER_PREPARATION_IDS.includes(v.taskId as typeof WRITER_PREPARATION_IDS[number]);
   if (typeof v.bottleId !== 'string' || !/^writer-potion-[1-9]\d{0,14}$/.test(v.bottleId)) return false;
-  if (['POTION_WORK', 'BUY_POTION'].includes(String(v.type))) return shape(v, ['type', 'bottleId']);
+  if (['POTION_WORK', 'BUY_POTION', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1'].includes(String(v.type))) return shape(v, ['type', 'bottleId']);
   return v.type === 'CONSUME' && shape(v, ['type', 'bottleId', 'confirmed']) && v.confirmed === true;
 }
+export function validateWriterAcquisitionCommand(v: unknown): v is WriterAcquisitionCommand { return validateAcquisitionCommand(v); }
 export const isWriterAcquisitionCommand = validateWriterAcquisitionCommand;
 export function validateWriterCommand(v: unknown): v is WriterCommand {
   return validateWriterAcquisitionCommand(v) || validateWriterActivityCommand(v) || validateWriterEncounterCommand(v);
 }
 export function writerAcquisitionBlock(s: SliceState, command: WriterAcquisitionCommand): string | null { return acquisitionBlock(s, command, false); }
 function acquisitionBlock(s: SliceState, command: WriterAcquisitionCommand, historicalReplay: boolean): string | null {
-  if (!validateWriterAcquisitionCommand(command)) return '作家准备命令无效。';
+  if (legacySupply(command) && !historicalReplay) return '旧独立供货命令仅供历史回放；须调查并追回真实失败的同一份原特性。';
+  if (!validateAcquisitionCommand(command, historicalReplay)) return '作家准备命令无效。';
   if (s.status !== 'ACTIVE' || s.health <= 0 || s.mind <= 0) return '须本人仍活着且身体精神尚可；普通死亡不受指导服药保护。';
   if (s.activeEvent || s.combat || s.eventQueue.length || s.pulse !== 'NONE') return '先处理当前事件、真实战斗和未结周账。';
   if ((!historicalReplay && hasWriterOldPractice(s)) || hasWriterLifeLock(s) || hasWriterEncounterLock(s)) return '先收束旧接触和待用影响，归还原卡和保护媒介，沿普通路线离开旧现场；当前实践也须收尾。旧人物、原物、伤势与实战后果继续保留。';
@@ -145,7 +182,7 @@ function acquisitionBlock(s: SliceState, command: WriterAcquisitionCommand, hist
   const state = s.writer;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
-  const ap = ['LEARN_GUIDANCE', 'POTION_WORK', 'REQUEST_SUPPLY', 'PREPARE_TASK', 'PREPARE_PROMOTION'].includes(command.type) ? 1 : 0;
+  const ap = ['LEARN_GUIDANCE', 'POTION_WORK', 'REQUEST_SUPPLY', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1', 'PREPARE_TASK', 'PREPARE_PROMOTION'].includes(command.type) ? 1 : 0;
   if (s.actionsRemaining < ap) return '本周剩余行动不足。';
   if (command.type === 'LEARN_GUIDANCE' && !discernerReportsComplete(s)) return '先完成洞察者三份生活报告与反思，再核对这次晋升的既往记录。';
   if (command.type === 'LEARN_GUIDANCE') return state.guidanceKnown ? '已经听取成品来源、专业准备与本次风险。' : s.cash < WRITER_PRICES.guidance ? '本次专业指导需要500便士。' : null;
@@ -153,9 +190,20 @@ function acquisitionBlock(s: SliceState, command: WriterAcquisitionCommand, hist
   if (command.type === 'PREPARE_TASK') return state.preparations.some(p => p.taskId === command.taskId) ? '这一项专业准备已经真实完成，不能重复领取经历。' : null;
   if (command.type === 'PREPARE_PROMOTION') {
     const reason = promotionBlock(s); if (reason) return reason;
+    if (state.resupply.recovery) return '先完成已付费的原特性调查回收，再准备本次服药。';
     if (!state.bottles.some(b => b.status === 'PLAYER')) return '先实际取得至少一瓶尚未服用的作家原瓶。';
     return s.cash < WRITER_PRICES.preparation ? '当次场地检查需要140便士。' : null;
   }
+  if (command.type === 'REQUEST_RECOVERY_V1' || command.type === 'RECOVER_CHARACTERISTIC_V1') {
+    if (s.schemaVersion < 207) return '这一原特性回收协议须使用对应的新版本存档。';
+    const source = recoverySource(state, command.bottleId), pending = state.resupply.recovery;
+    if (!originalSupplyFailed(state)) return '最初三瓶须实际耗尽失败，才能调查并回收同一份原特性。';
+    if (!source) return '须核验真实失败原瓶、同一原特性与实际服药记录；已回收或仍被持有的特性不能重复取得。';
+    if (command.type === 'REQUEST_RECOVERY_V1') return pending ? '已有指定失败原瓶的调查委托，须先完成回收。' : s.cash < WRITER_PRICES.recovery ? '调查原特性需要1行动、120便士；旧费用不退。' : null;
+    if (!pending || pending.version !== 1 || pending.sourceBottleId !== command.bottleId || pending.originalBottleId !== source.originalBottleId || pending.characteristicId !== source.characteristicId || pending.requestedWeek !== state.resupply.requestedWeek) return '先支付对应失败原瓶的调查委托，不能更换原特性。';
+    return s.week <= pending.requestedWeek ? '调查后须隔一真实周，再到原安静房核验并封存同一份原特性。' : null;
+  }
+  if (legacySupply(command) && (state.resupply.recovery || state.bottles.some(b => b.recovery) || state.acquisitionJournal.some(e => recoveryCommand(e.command)))) return '已经开始原特性回收，不能续接独立新原瓶的旧供货记录。';
   if (command.type === 'REQUEST_SUPPLY') return state.resupply.requestedWeek !== null ? '已经申请下一批，必须等下一真实周实际到货。' : exhaustedSupply(state) ? null : '现有全部原瓶须真实服用且失败，才能申请下一批。';
   if (command.type === 'RECEIVE_SUPPLY') return state.resupply.requestedWeek === null ? '尚未申请下一批作家原瓶。' : s.week <= state.resupply.requestedWeek ? '本周刚提出申请，下一真实周起才能确认到货。' : exhaustedSupply(state) ? null : '现有原瓶尚未全部耗尽失败。';
   if (!('bottleId' in command)) return '未知的作家准备命令。';
@@ -194,12 +242,27 @@ function applyAcquisitionMutation(s: SliceState, command: WriterAcquisitionComma
     case 'POTION_WORK': {
       const bottle = state.bottles.find(b => b.id === command.bottleId)!;
       s.actionsRemaining--; bottle.labourSteps++;
-      ctx.note(WRITER_LABOUR_TASKS[bottle.labourSteps - 1]!, `实际完成原瓶${bottle.id}第${bottle.labourSteps}/5项工作，花1行动。五次只抵本瓶5500便士，余款900便士；部分劳动不折现、不转给其他原瓶，也不替代三项专业准备。`); return;
+      if (bottle.recovery) ctx.note('核验同一原特性的本次新药调配', `实际完成重配瓶${bottle.id}第${bottle.labourSteps}/5项工作，花1行动。五次只抵本次新普通药物与调配服务810便士，余款90便士；旧劳务不转用，原特性不复制。`);
+      else ctx.note(WRITER_LABOUR_TASKS[bottle.labourSteps - 1]!, `实际完成原瓶${bottle.id}第${bottle.labourSteps}/5项工作，花1行动。五次只抵本瓶5500便士，余款900便士；部分劳动不折现、不转给其他原瓶，也不替代三项专业准备。`); return;
     }
     case 'BUY_POTION': {
       const bottle = state.bottles.find(b => b.id === command.bottleId)!, paid = potionPrice(bottle);
       s.cash -= paid; bottle.status = 'PLAYER'; bottle.acquiredWeek = s.week;
-      ctx.note('作家独立原瓶实际交付', `0行动、${paid}便士，实际领取${bottle.id}。${bottle.labourSteps === 5 ? '本瓶五项劳务抵5500便士。' : '未满五项劳动不部分抵扣。'}药瓶尚未服用，三项准备与当周场地检查仍须实际完成。`); return;
+      if (bottle.recovery) ctx.note('同一原特性的新药实际重配交付', `0行动、${paid}便士支付本次新普通药物与调配服务，领取${bottle.id}；其中原特性仍为${bottle.recovery.characteristicId}。${bottle.labourSteps === 5 ? '本次五项新劳务抵810便士。' : '旧劳务和未满五项的新劳务均不抵扣。'}当周场地检查仍须另付。`);
+      else ctx.note('作家独立原瓶实际交付', `0行动、${paid}便士，实际领取${bottle.id}。${bottle.labourSteps === 5 ? '本瓶五项劳务抵5500便士。' : '未满五项劳动不部分抵扣。'}药瓶尚未服用，三项准备与当周场地检查仍须实际完成。`); return;
+    }
+    case 'REQUEST_RECOVERY_V1': {
+      const source = recoverySource(state, command.bottleId)!;
+      s.actionsRemaining--; s.cash -= WRITER_PRICES.recovery; state.resupply.requestedWeek = s.week;
+      state.resupply.recovery = { version: 1, sourceBottleId: command.bottleId, originalBottleId: source.originalBottleId, characteristicId: source.characteristicId, requestedWeek: s.week };
+      ctx.note('调查失败原瓶遗留的同一份特性', `1行动、120便士，追查${command.bottleId}的${source.characteristicId}。隔一真实周再到原安静房核验回收；旧原瓶、失败、费用与伤势全部保留，不退款。`); return;
+    }
+    case 'RECOVER_CHARACTERISTIC_V1': {
+      const recovery = { ...state.resupply.recovery!, recoveredWeek: s.week }, id = `writer-potion-${state.bottles.length + 1}`;
+      s.actionsRemaining--;
+      state.bottles.push({ ...freshBottle(id, recoverySourceText(id, recovery, s.week), s.week), recovery });
+      state.resupply.deliveries++; state.resupply.requestedWeek = null; delete state.resupply.recovery;
+      ctx.note('原处回收封存同一份作家特性', `1行动将${recovery.characteristicId}封存到重配瓶${id}，没有新增原特性。新普通药物与调配服务须另付900便士，五项新劳务后90便士；之后仍须1行动、140便士检查本次场地。`); return;
     }
     case 'REQUEST_SUPPLY':
       s.actionsRemaining--; state.resupply.requestedWeek = s.week;
@@ -278,12 +341,13 @@ export function validateWriterAcquisitionJournal(s: SliceState): boolean {
   try {
     const journal = s.writer.acquisitionJournal, expected = createWriterState();
     if (!Array.isArray(journal) || journal.length > 10000) return false;
+    if (s.schemaVersion < 207 && (s.writer.resupply.recovery || s.writer.bottles.some(b => b.recovery) || journal.some(e => recoveryCommand(e.command)))) return false;
     let previous: WriterAcquisitionEvent | null = null, nextCursor = 0;
     for (const raw of journal) {
       if (!record(raw) || !shape(raw, ['week', 'date', 'revision', 'command', 'actor', 'before', 'after', 'randomBefore', 'randomAfter', 'check']) ||
         !integer(raw.week, s.discerner.promotionWeek ?? s.week, s.week) || !integer(raw.revision, 0, s.revision) || !isValidGameDate(raw.date) ||
         compareGameDates(raw.date, s.date) > 0 || raw.week !== Math.floor(gameDaysBetween(ORIGIN, raw.date) / 7) + 1 ||
-        !validateWriterAcquisitionCommand(raw.command) || !validAcquisitionBudget(raw.before) || !validAcquisitionBudget(raw.after) || raw.before.sequence !== 2 ||
+        !validateAcquisitionCommand(raw.command, true) || !validAcquisitionBudget(raw.before) || !validAcquisitionBudget(raw.after) || raw.before.sequence !== 2 ||
         !record(raw.actor) || !shape(raw.actor, ['name', 'gender', 'age', 'sourceHistoryDigest', 'sourceIdentityDigest', 'pathwayId', 'discernerPromotionWeek', 'audiencePromotionWeek']) ||
         typeof raw.actor.name !== 'string' || raw.actor.name.length === 0 || raw.actor.name.length > 500 || typeof raw.actor.gender !== 'string' || raw.actor.gender.length === 0 || raw.actor.gender.length > 500 ||
         raw.actor.name !== s.character.name || raw.actor.gender !== raw.before.gender || raw.actor.age !== s.character.age ||
@@ -322,6 +386,7 @@ export function validateWriterAcquisitionJournal(s: SliceState): boolean {
       applyAcquisitionMutation(shadow, event.command, context, true);
       if (!same(acquisitionBudget(shadow), event.after)) return false;
       if (event.command.type === 'CONSUME' ? checks !== 1 : checks !== 0 || event.check !== null || event.randomBefore !== null || event.randomAfter !== null) return false;
+      expected.acquisitionJournal.push(event);
       previous = event;
     }
     if (!same(acquisitionState(expected), acquisitionState(s.writer))) return false;
@@ -339,6 +404,105 @@ export function validateWriterAcquisitionJournal(s: SliceState): boolean {
     } else if (s.writer.guidanceKnown || isWriter(s)) return false;
     return true;
   } catch { return false; }
+}
+
+/** Snapshot-only custody replay for later stages. The enclosing source validator
+ * owns actor/root authenticity and deterministic RNG; this replay independently
+ * proves vessel genealogy, exact drug costs, failed-remain custody and timing. */
+export function resolveWriterOriginalCharacteristicsSnapshot(snapshot: Pick<WriterState, 'bottles' | 'acquisitionJournal' | 'resupply'>): WriterOriginalCharacteristics | null {
+  try {
+    if (!record(snapshot) || !Array.isArray(snapshot.bottles) || !Array.isArray(snapshot.acquisitionJournal) || snapshot.acquisitionJournal.length > 10000 || !record(snapshot.resupply)) return null;
+    const expected = createWriterState(); let previous: WriterAcquisitionEvent | null = null;
+    for (const raw of snapshot.acquisitionJournal) {
+      if (!record(raw) || !shape(raw, ['week', 'date', 'revision', 'command', 'actor', 'before', 'after', 'randomBefore', 'randomAfter', 'check']) ||
+        !validateAcquisitionCommand(raw.command, true) || !validAcquisitionBudget(raw.before) || !validAcquisitionBudget(raw.after) || raw.before.sequence !== 2 ||
+        !integer(raw.week, 1) || !integer(raw.revision) || !isValidGameDate(raw.date) || raw.week !== Math.floor(gameDaysBetween(ORIGIN, raw.date) / 7) + 1 ||
+        !record(raw.actor) || !shape(raw.actor, ['name', 'gender', 'age', 'sourceHistoryDigest', 'sourceIdentityDigest', 'pathwayId', 'discernerPromotionWeek', 'audiencePromotionWeek']) ||
+        raw.actor.pathwayId !== 'audience' || raw.actor.gender !== raw.before.gender || !integer(raw.actor.discernerPromotionWeek, 1, raw.week) ||
+        typeof raw.actor.sourceIdentityDigest !== 'string' || !/^[0-9a-f]{64}$/.test(raw.actor.sourceIdentityDigest)) return null;
+      const e = raw as unknown as WriterAcquisitionEvent, c = e.command, budget = structuredClone(e.before);
+      if (previous && (e.revision <= previous.revision || e.week < previous.week || compareGameDates(e.date, previous.date) < 0 || previous.after.sequence === 1 ||
+        e.actor.sourceIdentityDigest !== previous.actor.sourceIdentityDigest ||
+        expected.preparedWeek !== null && (e.week !== previous.week || !same(e.date, previous.date) || !same(e.before, previous.after)) ||
+        e.revision === previous.revision + 1 && e.week === previous.week && previous.after.actions > 0 && !same(e.before, previous.after))) return null;
+      if (expected.preparedWeek !== null && c.type !== 'CONSUME' && c.type !== 'LEAVE_PREPARATION') return null;
+      if (c.type !== 'LEARN_GUIDANCE' && !expected.guidanceKnown) return null;
+      if (c.type === 'LEARN_GUIDANCE') {
+        if (expected.guidanceKnown) return null;
+        expected.guidanceKnown = true; budget.actions--; budget.cash -= WRITER_PRICES.guidance;
+      } else if (c.type === 'PREPARE_TASK') {
+        if (expected.preparations.some(p => p.taskId === c.taskId)) return null;
+        expected.preparations.push({ taskId: c.taskId, completedWeek: e.week }); budget.actions--;
+      } else if (c.type === 'PREPARE_PROMOTION') {
+        if (expected.resupply.recovery || expected.preparations.length !== 3 || !expected.bottles.some(b => b.status === 'PLAYER') ||
+          budget.health <= 20 || budget.mind <= 40 || budget.acting !== 100 || e.week < e.actor.discernerPromotionWeek + WRITER_MIN_DISCERNER_WEEKS) return null;
+        expected.preparedWeek = e.week; budget.actions--; budget.cash -= WRITER_PRICES.preparation;
+      } else if (c.type === 'LEAVE_PREPARATION') {
+        if (expected.preparedWeek === null) return null; expected.preparedWeek = null;
+      } else if (c.type === 'REQUEST_SUPPLY') {
+        // A pending archived commission may be superseded by the explicit paid investigation.
+        if (!exhaustedSupply(expected) || expected.resupply.requestedWeek !== null || expected.bottles.some(b => b.recovery) || expected.acquisitionJournal.some(j => recoveryCommand(j.command))) return null;
+        budget.actions--; expected.resupply.requestedWeek = e.week;
+      } else if (c.type === 'RECEIVE_SUPPLY') return null; // A fourth independent original is a conservation conflict.
+      else if (c.type === 'REQUEST_RECOVERY_V1' || c.type === 'RECOVER_CHARACTERISTIC_V1') {
+        const source = recoverySource(expected, c.bottleId), pending = expected.resupply.recovery;
+        if (!originalSupplyFailed(expected) || !source) return null;
+        budget.actions--;
+        if (c.type === 'REQUEST_RECOVERY_V1') {
+          if (pending) return null; budget.cash -= WRITER_PRICES.recovery; expected.resupply.requestedWeek = e.week;
+          expected.resupply.recovery = { version: 1, sourceBottleId: c.bottleId, originalBottleId: source.originalBottleId, characteristicId: source.characteristicId, requestedWeek: e.week };
+        } else {
+          if (!pending || pending.sourceBottleId !== c.bottleId || pending.originalBottleId !== source.originalBottleId || pending.characteristicId !== source.characteristicId || e.week <= pending.requestedWeek || pending.requestedWeek !== expected.resupply.requestedWeek) return null;
+          const recovery = { ...pending, recoveredWeek: e.week }, id = `writer-potion-${expected.bottles.length + 1}`;
+          expected.bottles.push({ ...freshBottle(id, recoverySourceText(id, recovery, e.week), e.week), recovery });
+          expected.resupply.deliveries++; expected.resupply.requestedWeek = null; delete expected.resupply.recovery;
+        }
+      } else {
+        if (!('bottleId' in c)) return null;
+        const bottle = expected.bottles.find(b => b.id === c.bottleId); if (!bottle) return null;
+        if (c.type === 'POTION_WORK') {
+          if (bottle.status !== 'SUPPLIER' || bottle.labourSteps >= WRITER_LABOUR_STEPS) return null;
+          bottle.labourSteps++; budget.actions--;
+        } else if (c.type === 'BUY_POTION') {
+          if (bottle.status !== 'SUPPLIER') return null;
+          budget.cash -= potionPrice(bottle); bottle.status = 'PLAYER'; bottle.acquiredWeek = e.week;
+        } else if (c.type === 'CONSUME') {
+          if (bottle.status !== 'PLAYER' || expected.preparedWeek !== e.week || !e.check || (!failed(e.check.tier) && !success(e.check.tier)) ||
+            !integer(e.randomBefore) || e.randomAfter !== e.randomBefore + 1 || budget.health <= 20 || budget.mind <= 40 || budget.acting !== 100) return null;
+          bottle.status = 'CONSUMED'; bottle.outcome = e.check.tier; bottle.consumedWeek = e.week; bottle.preparationWeek = e.week; expected.preparedWeek = null;
+          if (success(e.check.tier)) {
+            expected.promotionWeek = e.week; expected.discernerActingAtPromotion = budget.acting; budget.sequence = 1; budget.acting = 0;
+            budget.mind = Math.max(1, budget.mind - (e.check.tier === 'GREAT_SUCCESS' ? 8 : 15));
+            if (!budget.completedSources.includes('audience-s1')) budget.completedSources.push('audience-s1');
+            for (const id of WRITER_ABILITY_IDS) budget.mastery[id] = 0;
+            for (const stat of ['physique', 'perception', 'will', 'knowledge'] as const) budget.coreStats[stat] = Math.min(500, budget.coreStats[stat] + 1);
+          } else {
+            const severe = e.check.tier === 'GREAT_FAILURE'; budget.health = Math.max(1, budget.health - (severe ? 25 : 15));
+            budget.mind = Math.max(1, budget.mind - (severe ? 45 : 25)); budget.pollution = Math.min(100, budget.pollution + (severe ? 60 : 30));
+          }
+        } else return null;
+      }
+      if (budget.actions < 0 || budget.cash < 0 || !same(budget, e.after) || c.type !== 'CONSUME' && (e.check !== null || e.randomBefore !== null || e.randomAfter !== null)) return null;
+      expected.acquisitionJournal.push(e); previous = e;
+    }
+    if (!same(expected.bottles, snapshot.bottles) || !same(expected.resupply, snapshot.resupply)) return null;
+    const characteristics: WriterOriginalCharacteristics['characteristics'] = [];
+    for (const id of WRITER_BOTTLE_IDS) {
+      const attempts = expected.bottles.filter(b => originalBottleId(expected, b) === id), latest = attempts.at(-1);
+      if (!latest || attempts[0]!.id !== id) return null;
+      characteristics.push({ characteristicId: characteristicId(id), originalBottleId: id, latestBottleId: latest.id,
+        holder: latest.status === 'CONSUMED' ? success(latest.outcome) ? 'EMBODIED' : 'FAILED_REMAINS' : latest.status });
+    }
+    const embodied = characteristics.filter(c => c.holder === 'EMBODIED');
+    if (embodied.length > 1 || (expected.promotionWeek !== null) !== (embodied.length === 1)) return null;
+    return { characteristics, embodiedOriginalBottleId: embodied[0]?.originalBottleId ?? null, embodiedBottleId: embodied[0]?.latestBottleId ?? null };
+  } catch { return null; }
+}
+
+/** Read-only conservation view. Full acquisition validation owns the original
+ * source, identity and RNG before the same snapshot custody replay is used. */
+export function resolveWriterOriginalCharacteristics(s: SliceState): WriterOriginalCharacteristics | null {
+  return validateWriterAcquisitionJournal(s) ? resolveWriterOriginalCharacteristicsSnapshot(s.writer) : null;
 }
 
 export function applyWriterCommand(s: SliceState, command: WriterCommand, ctx: SeerContext): void {
@@ -363,12 +527,12 @@ export function writerAcquisitionActions(s: SliceState): WriterAction[] {
     for (const task of WRITER_PREPARATIONS) if (!state.preparations.some(p => p.taskId === task.id)) add(`writer-prepare-${task.id}`, task.title, '1行动 · 专业准备', { type: 'PREPARE_TASK', taskId: task.id });
     if (state.preparedWeek === null) add('prepare-writer-promotion', '实际检查本次服药场地', '1行动 · 140便士 · 仅本周有效', { type: 'PREPARE_PROMOTION' });
     else add('leave-writer-preparation', '沿原出口结束本次准备', '0行动 · 不退成本 · 未服原瓶保留', { type: 'LEAVE_PREPARATION' });
-    if (state.resupply.requestedWeek !== null) add('receive-writer-supply', '确认下一批三瓶实际到货', `0行动 · 最早第${state.resupply.requestedWeek + 1}周`, { type: 'RECEIVE_SUPPLY' });
-    else if (exhaustedSupply(state)) add('request-writer-supply', '申请下一批独立作家成品', '1行动 · 下一真实周起收货', { type: 'REQUEST_SUPPLY' });
+    if (state.resupply.recovery) add('recover-writer-characteristic', `回原安静房封存${state.resupply.recovery.characteristicId}`, `1行动 · 最早第${state.resupply.recovery.requestedWeek + 1}周 · 新药另付`, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: state.resupply.recovery.sourceBottleId });
+    else if (originalSupplyFailed(state)) for (const bottle of state.bottles) if (recoverySource(state, bottle.id)) add(`request-recovery-${bottle.id}`, `调查${bottle.id}的同一份原特性`, '1行动 · 120便士 · 隔周原处回收 · 旧费用不退', { type: 'REQUEST_RECOVERY_V1', bottleId: bottle.id });
     for (const bottle of state.bottles) {
       if (bottle.status === 'SUPPLIER') {
-        if (bottle.labourSteps < WRITER_LABOUR_STEPS) add(`work-${bottle.id}`, `第${bottleNumber(bottle)}瓶 · ${WRITER_LABOUR_TASKS[bottle.labourSteps]}`, `1行动 · 劳动${bottle.labourSteps}/5 · 五次抵5500便士`, { type: 'POTION_WORK', bottleId: bottle.id });
-        add(`buy-${bottle.id}`, `领取第${bottleNumber(bottle)}瓶作家魔药`, `0行动 · ${potionPrice(bottle)}便士`, { type: 'BUY_POTION', bottleId: bottle.id });
+        if (bottle.labourSteps < WRITER_LABOUR_STEPS) add(`work-${bottle.id}`, `第${bottleNumber(bottle)}瓶 · ${WRITER_LABOUR_TASKS[bottle.labourSteps]}`, `1行动 · 劳动${bottle.labourSteps}/5 · 五次抵${bottle.recovery ? 810 : 5500}便士`, { type: 'POTION_WORK', bottleId: bottle.id });
+        add(`buy-${bottle.id}`, `领取第${bottleNumber(bottle)}瓶${bottle.recovery ? '同一原特性重配' : '作家'}魔药`, `0行动 · ${potionPrice(bottle)}便士`, { type: 'BUY_POTION', bottleId: bottle.id });
       } else if (bottle.status === 'PLAYER') add(`consume-${bottle.id}`, `独立确认服用第${bottleNumber(bottle)}瓶作家魔药`, `0行动 · 洞察者消化${s.progression.acting}/100 · ${discernerWeeks(s)}/12整周`, { type: 'CONSUME', bottleId: bottle.id, confirmed: true });
     }
   }
@@ -387,7 +551,7 @@ export function projectWriter(s: SliceState): WriterProjection {
   return {
     title: '作家·观众序列1', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted,
     formulaKnown: false, formula: [], ...(available ? { story: `${WRITER_FORMULA_STATUS}${WRITER_SOURCE_STATUS}` } : {}),
-    supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6400便士，或为本瓶完成五项真实劳动后支付900便士；全部失败耗尽后才能申请下一批，跨真实周收货并逐瓶另行取得。` : '',
+    supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。初始原瓶每瓶6400便士，或为本瓶完成五项真实劳动后支付900便士。最初三瓶全部失败耗尽后，调查同一原特性需1行动、120便士；隔周原处回收另1行动。重配只付新普通药物与服务900便士，五项新劳动后90便士，不新增原特性。` : '',
     actions, nextStep: preferred ? `下一步：${preferred.label}。${preferred.cost}。` : actions.find(a => a.reason)?.reason ?? (promoted ? '已完成记录保留，可以继续正常生活。' : '先完成洞察者的实际经历。'), preferredActionId: preferred?.id ?? null,
     bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 作家成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周当次场地检查后服用。`}`,
       status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为洞察者' : '排异，仍为洞察者'}`,
@@ -486,8 +650,17 @@ export function validateWriterState(s: SliceState): boolean { try { return valid
 function validateState(s: SliceState): boolean {
   const raw: unknown = s.writer;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'discernerActingAtPromotion', 'preparations', 'preparedWeek', 'acquisitionJournal', 'sourceDiscerner', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
-  if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== WRITER_BOTTLE_IDS.length * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations) || !Array.isArray(raw.acquisitionJournal)) return false;
+  if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries', ...(Object.hasOwn(raw.resupply, 'recovery') ? ['recovery'] : [])]) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || !Array.isArray(raw.preparations) || !Array.isArray(raw.acquisitionJournal)) return false;
   const state = raw as unknown as WriterState, promoted = isWriter(s), acquisitionStage = isWriterAcquisitionStage(s);
+  const recoveryDeliveries = state.bottles.filter(b => record(b) && Object.hasOwn(b, 'recovery')).length;
+  const legacyDeliveries = state.resupply.deliveries - recoveryDeliveries;
+  if (!integer(legacyDeliveries) || state.bottles.length !== 3 + legacyDeliveries * 3 + recoveryDeliveries) return false;
+  const validRecovery = (r: unknown, recovered: boolean): r is WriterRecoveryRequest => record(r) &&
+    shape(r, ['version', 'sourceBottleId', 'originalBottleId', 'characteristicId', 'requestedWeek', ...(recovered ? ['recoveredWeek'] : [])]) &&
+    r.version === 1 && typeof r.sourceBottleId === 'string' && /^writer-potion-[1-9]\d{0,14}$/.test(r.sourceBottleId) &&
+    WRITER_BOTTLE_IDS.includes(r.originalBottleId as typeof WRITER_BOTTLE_IDS[number]) && r.characteristicId === characteristicId(String(r.originalBottleId)) &&
+    integer(r.requestedWeek, s.discerner.promotionWeek ?? s.week, s.week) && (!recovered || integer(r.recoveredWeek, r.requestedWeek + 1, s.week));
+  if (Object.hasOwn(state.resupply, 'recovery') && !validRecovery(state.resupply.recovery, false)) return false;
   const firstWeek = s.discerner.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + WRITER_MIN_DISCERNER_WEEKS, lastAcquisitionWeek = state.promotionWeek ?? s.week;
   if (state.guidanceKnown && (!knownChannel(s) || state.sourceDiscerner === null || !same(state.sourceDiscerner, s.discerner))) return false;
   if (!state.guidanceKnown && state.sourceDiscerner !== null) return false;
@@ -502,12 +675,17 @@ function validateState(s: SliceState): boolean {
   } else if (state.promotionWeek !== null || state.discernerActingAtPromotion !== null || WRITER_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {
-    if (!record(b) || !shape(b, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'preparationWeek', 'status', 'outcome']) || b.id !== `writer-potion-${index + 1}` || !integer(b.labourSteps, 0, WRITER_LABOUR_STEPS)) return false;
+    if (!record(b) || !shape(b, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'preparationWeek', 'status', 'outcome', ...(Object.hasOwn(b, 'recovery') ? ['recovery'] : [])]) || b.id !== `writer-potion-${index + 1}` || !integer(b.labourSteps, 0, WRITER_LABOUR_STEPS)) return false;
     const stockWeek = b.stockedWeek ?? firstWeek;
     if (index < WRITER_BOTTLE_IDS.length) {
-      if (b.stockedWeek !== null || b.source !== WRITER_POTION_SOURCES[index]!.source) return false;
+      if (b.stockedWeek !== null || b.source !== WRITER_POTION_SOURCES[index]!.source || Object.hasOwn(b, 'recovery')) return false;
+    } else if (b.recovery) {
+      if (!validRecovery(b.recovery, true) || !state.guidanceKnown || !integer(b.stockedWeek, firstConsumptionWeek + 1, lastAcquisitionWeek) || b.recovery.recoveredWeek !== b.stockedWeek || b.source !== recoverySourceText(b.id, b.recovery, b.stockedWeek) || !originalBottleId(state, b)) return false;
+      const prefix = { ...state, bottles: state.bottles.slice(0, index) };
+      const source = recoverySource(prefix, b.recovery.sourceBottleId);
+      if (!originalSupplyFailed(prefix) || !source || source.originalBottleId !== b.recovery.originalBottleId || source.characteristicId !== b.recovery.characteristicId || source.bottle.consumedWeek! > b.recovery.requestedWeek) return false;
     } else {
-      if (!state.guidanceKnown || !integer(b.stockedWeek, firstConsumptionWeek + 1, lastAcquisitionWeek) || b.source !== deliverySource(index + 1, b.stockedWeek)) return false;
+      if (!state.guidanceKnown || state.bottles.slice(0, index).some(previous => previous.recovery) || !integer(b.stockedWeek, firstConsumptionWeek + 1, lastAcquisitionWeek) || b.source !== deliverySource(index + 1, b.stockedWeek)) return false;
       const batchStart = index - index % WRITER_BOTTLE_IDS.length;
       if (b.stockedWeek !== state.bottles[batchStart]!.stockedWeek || state.bottles.slice(0, batchStart).some(previous => previous.status !== 'CONSUMED' || !failed(previous.outcome) || !integer(previous.consumedWeek, firstConsumptionWeek, stockWeek - 1))) return false;
     }
@@ -524,7 +702,11 @@ function validateState(s: SliceState): boolean {
       } else return false;
     }
   }
-  if (state.resupply.requestedWeek !== null && (!integer(state.resupply.requestedWeek, firstConsumptionWeek, s.week) || !state.guidanceKnown || !acquisitionStage || state.preparedWeek !== null || !exhaustedSupply(state) || state.bottles.some(b => b.consumedWeek! > state.resupply.requestedWeek!))) return false;
+  if (state.resupply.requestedWeek !== null && (!integer(state.resupply.requestedWeek, firstConsumptionWeek, s.week) || !state.guidanceKnown || !acquisitionStage || state.preparedWeek !== null || !(state.resupply.recovery ? originalSupplyFailed(state) : exhaustedSupply(state)))) return false;
+  if (state.resupply.recovery) {
+    const pending = state.resupply.recovery, source = recoverySource(state, pending.sourceBottleId);
+    if (!source || pending.requestedWeek !== state.resupply.requestedWeek || pending.originalBottleId !== source.originalBottleId || pending.characteristicId !== source.characteristicId || source.bottle.consumedWeek! > pending.requestedWeek) return false;
+  } else if (state.resupply.requestedWeek !== null && state.bottles.some(b => b.consumedWeek! > state.resupply.requestedWeek!)) return false;
   if (successes !== (promoted ? 1 : 0) || !validateWriterAcquisitionJournal(s) || !validateWriterJournalContinuity(s) || !validateWriterLife(s) || !validateWriterEncounter(s)) return false;
   if (promoted) {
     const acting = Object.values(state.life.cases).filter(c => c.status === 'RESOLVED').length * 25 + (state.life.reflected ? 25 : 0);

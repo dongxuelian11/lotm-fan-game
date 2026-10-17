@@ -33,6 +33,13 @@ export interface WriterLifeReceipt {
   before: WriterLifeBudget; after: WriterLifeBudget; elapsedSeconds: number;
   ownerWalkedMetres: number; bookTravelMetres: number; participantWalks: { id: WriterPersonId; metres: number }[];
 }
+export interface WriterPublicLifeReceipt {
+  week: number; date: PublicGameDate; revision: number;
+  checkBase: number | null; check: PublicCheckResult | null;
+  command: WriterActivityCommand; outcome: PublicResolutionTier | null;
+  before: WriterLifeBudget; after: WriterLifeBudget; elapsedSeconds: number;
+  ownerWalkedMetres: number; bookTravelMetres: number; participantWalks: { id: WriterPersonId; metres: number }[];
+}
 export interface WriterLifeCase {
   status: 'AVAILABLE' | 'OBSERVED' | 'ACTIVE' | 'PAUSED' | 'EXAMINED' | 'RESOLVED';
   observedWeek: number | null; invitedWeek: number | null; invitationWeeks: number[]; method: Method | null;
@@ -70,8 +77,8 @@ export interface WriterLifeProjection {
     permission: WriterLifeCase['permission']; preparation: string | null; result: string | null; returned: boolean;
     attempts: { invitedWeek: number; method: Method; outcome: PublicResolutionTier | null;
       evidence: { abilityAttempted: boolean; abilityApplied: boolean; returned: boolean; aborted: boolean; permission: WriterLifeCase['permission']; result: Result };
-      receipts: WriterLifeReceipt[] }[] }[];
-  ledger: WriterLifeReceipt[];
+      receipts: WriterPublicLifeReceipt[] }[] }[];
+  ledger: WriterPublicLifeReceipt[];
 }
 const ABILITIES = ['audience.s1.reciprocal-insight', 'audience.s1.plausible-arrangement'] as const;
 const SHELFMARK = '东架第三层，蓝色书脊旁的七号位。';
@@ -409,6 +416,31 @@ export function writerLifeActions(s: SliceState): WriterAction[] {
   } else if (!l.reflected) add({ type: 'REFLECT' }, '反思互知、前因与当事人的许可', '1行动 · 扮演25', false, true);
   return out;
 }
+const publicLifeBudget = (b: WriterLifeBudget): WriterLifeBudget => ({ health: b.health, mind: b.mind, spirituality: b.spirituality, cash: b.cash, actions: b.actions });
+function publicLifeCommand(c: WriterActivityCommand): WriterActivityCommand {
+  switch (c.type) {
+    case 'OBSERVE': case 'REPORT': return { type: c.type, caseId: c.caseId };
+    case 'INVITE': return { type: c.type, caseId: c.caseId, method: c.method };
+    case 'MOVE': return { type: c.type, to: c.to };
+    case 'REVOKE_CONSENT': return { type: c.type, permission: c.permission };
+    default: return { type: c.type };
+  }
+}
+/** Only resolved life facts cross the public boundary; journal replay cursors stay private. */
+export function projectWriterLifeReceipt(entry: WriterLifeReceipt): WriterPublicLifeReceipt {
+  const check = entry.check;
+  return {
+    week: entry.week, date: { epoch: entry.date.epoch, year: entry.date.year, month: entry.date.month, day: entry.date.day }, revision: entry.revision,
+    checkBase: entry.checkBase, check: check ? {
+      ability: check.ability, baseAbility: check.baseAbility, modifiers: check.modifiers.map(modifier => ({ source: modifier.source, value: modifier.value })),
+      effectiveAbility: check.effectiveAbility, difficulty: check.difficulty, chance: check.chance, roll: check.roll, tier: check.tier,
+    } : null,
+    command: publicLifeCommand(entry.command), outcome: entry.outcome,
+    before: publicLifeBudget(entry.before), after: publicLifeBudget(entry.after), elapsedSeconds: entry.elapsedSeconds,
+    ownerWalkedMetres: entry.ownerWalkedMetres, bookTravelMetres: entry.bookTravelMetres,
+    participantWalks: entry.participantWalks.map(walk => ({ id: walk.id, metres: walk.metres })),
+  };
+}
 function projectAttempts(l: WriterLifeState, id: WriterCaseId): WriterLifeProjection['cases'][number]['attempts'] {
   let model: ReplayModel | null = l.sourceRecord ? { source: structuredClone(l.sourceRecord), practice: freshPractice(l.sourceRecord), cases: freshCases(), reflected: false } : null;
   const result: WriterLifeProjection['cases'][number]['attempts'] = [];
@@ -420,7 +452,7 @@ function projectAttempts(l: WriterLifeState, id: WriterCaseId): WriterLifeProjec
       current = { invitedWeek: entry.week, method: entry.command.method, outcome: null, evidence: { abilityAttempted: false, abilityApplied: false, returned: false, aborted: false, permission: structuredClone(model.cases[id].permission), result: 'NONE' }, receipts: [] }; result.push(current);
     }
     if (current) {
-      current.receipts.push(structuredClone(entry)); const r = model.cases[id];
+      current.receipts.push(projectWriterLifeReceipt(entry)); const r = model.cases[id];
       current.outcome = r.outcome; current.evidence = { abilityAttempted: r.abilityAttempted, abilityApplied: r.abilityApplied, returned: r.returned, aborted: entry.command.type === 'ABORT', permission: structuredClone(r.permission), result: r.result };
       if (entry.command.type === 'RETURN_HOME' || entry.command.type === 'ABORT') current = null;
     }
@@ -435,5 +467,5 @@ export function projectWriterLife(s: SliceState): WriterLifeProjection {
     cases: CASES.map(item => { const r = l.cases[item.id]; return { id: item.id, title: item.title, story: item.story, observations: r.status === 'AVAILABLE' ? [] : [...item.facts], status: r.status, contactOpen: r.contactOpen, permission: structuredClone(r.permission),
       preparation: r.status === 'OBSERVED' ? '原物与通路已经观察，等待两位成年人对这一次邀请作出回应。' : r.status === 'PAUSED' ? '前次代价和结果保留，下一真实周可付费普通续办；最多两次。' : null,
       result: r.result !== 'NONE' ? `${r.result === 'ABILITY' ? '相关能力实际成功，并已完成原书核验或归还。' : '已按普通方法完成原书实践。'}${r.returned ? '两位成年人已实际离场。' : '仍须让身体沿原路离场。'}` : r.arrangementEnd === 'PENDING' ? '归还尚未发生，等待30秒期限内的实际条件。' : r.abilityAttempted ? '能力尝试及其成本已经记录；未完成的步骤仍可按当前许可普通办理。' : null,
-      returned: r.returned, attempts: projectAttempts(l, item.id) }; }), ledger: structuredClone(l.journal) };
+      returned: r.returned, attempts: projectAttempts(l, item.id) }; }), ledger: l.journal.map(projectWriterLifeReceipt) };
 }

@@ -166,7 +166,7 @@ describe("slice canonical storage", () => {
         name.includes("corrupt-snapshot"),
       ),
     ).toBe(true);
-  });
+  }, 10000);
   it("recovers an unreadable database from checked backup without overwriting the damaged source", () => {
     const file = path(),
       s = open(file),

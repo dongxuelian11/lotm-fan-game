@@ -4,10 +4,15 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { projectSliceState } from '../../src/domain/slice/index.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { sha256Hex } from '../../src/domain/checksum.js';
+import { createRedPriestState, projectRedPriest } from '../../src/domain/red-priest/index.js';
+import { createVisionaryState, projectVisionary } from '../../src/domain/visionary/index.js';
+import { projectPlayerText } from '../../src/shared/player-text.js';
 import type { SliceBridge, SliceRunSummary } from '../../src/shared/slice-contracts.js';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 
 // Actual completed 2083-command campaign, not an S1 save patched into S0.
@@ -15,11 +20,43 @@ import { readObjectEntry } from '../helpers/read-object-entry.js';
 // benchmark file, fabricated public view, new action, replay or SQLite dependency.
 const SOURCE = 'tests/fixtures/fool-v02080/natural.json';
 const FINAL_SHA256 = '66b91d08d03b564d4e19d8acb8bcd47ead3233da1ba39561bc3d8945ca998d8a';
-// Reviewed current public hash: only the historical S1 private source and random
-// cursors were removed. Original capture/private hashes remain unchanged.
+// Reviewed historical 208 public hash: only the historical S1 private source and
+// random cursors were removed. Keep this pin distinct from the full current view.
 const PUBLIC_SHA256 = '0e0d77363984f154ac14fc8e5260d9bda59119a582aaf8bcd7549b727f34f5b3';
 const PANEL = '愚者 · 当前现场';
 const hash = (value: unknown): string => sha256Hex(stableStringify(value));
+type OriginalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary'> & {
+  schemaVersion: 205; contentVersion: 'fool-v205';
+};
+
+function assertExactMigration(original: OriginalFoolState, current: SliceState): void {
+  expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  expect(Object.keys(current).sort()).toEqual([...Object.keys(original), 'redPriest', 'visionary'].sort());
+  expect(current.redPriest).toStrictEqual(createRedPriestState());
+  expect(current.visionary).toStrictEqual(createVisionaryState());
+  const now = current as unknown as Record<string, unknown>;
+  // Every old field is covered, including all nested history, body and RNG data.
+  // Hashes avoid retaining giant private trees in assertion failure diffs.
+  for (const [key, value] of Object.entries(original)) {
+    if (key !== 'schemaVersion' && key !== 'contentVersion') expect(hash(now[key]), key).toBe(hash(value));
+  }
+}
+
+function historicalPublicHash(value: SliceProjection, current: SliceState): string {
+  // Remove only the two fully verified fresh-root projections. Everything else,
+  // including unexpected additions or missing old public fields, stays hash-bound.
+  expect(current.redPriest).toStrictEqual(createRedPriestState());
+  expect(current.visionary).toStrictEqual(createVisionaryState());
+  expect(value.redPriest).toStrictEqual(projectPlayerText(projectRedPriest(current), current.character.name));
+  expect(value.visionary).toStrictEqual(projectPlayerText(projectVisionary(current), current.character.name));
+  for (const root of [value.redPriest, value.visionary]) {
+    expect(root).toMatchObject({ guidanceKnown: false, promoted: false, insideCase: false, abilities: [] });
+    expect(root.abilities).toEqual([]); expect(root.actions.every(action => !action.enabled)).toBe(true);
+    for (const key of ['source', 'frame', 'journal']) expect(Object.hasOwn(root, key)).toBe(false);
+  }
+  const { redPriest: _redPriest, visionary: _visionary, ...historical } = value;
+  return hash(historical);
+}
 
 // The bridge owns only a detached PUBLIC value. It never captures the 9 MB
 // private campaign or a game/session closure. Separate implementations and an
@@ -127,7 +164,7 @@ afterEach(() => {
 
 describe('Fool SliceApp actual completed S0 terminal navigation', () => {
   it('reopens the real injured S0 current life with both new masteries zero and never submits or changes the saved campaign', async () => {
-    const original = readObjectEntry<SliceState>(SOURCE, 'final');
+    const original = readObjectEntry<OriginalFoolState>(SOURCE, 'final');
     expect(hash(original)).toBe(FINAL_SHA256);
     expect(original).toMatchObject({ schemaVersion: 205, contentVersion: 'fool-v205', runId: 'seer-rebuild-natural', revision: 2084,
       status: 'ACTIVE', week: 16006, date: { epoch: 'FIFTH_EPOCH', year: 1656, month: 3, day: 27 },
@@ -137,8 +174,20 @@ describe('Fool SliceApp actual completed S0 terminal navigation', () => {
       } }, fool: { guidanceKnown: true }, combat: null, activeEvent: null, ending: null,
       miracleWorker: { revival: { allowance: 4, used: 0, pendingDeathId: null, records: [] } } });
     expect(original.lastCombatRound?.attendantMysteriesOutcome).toBeTruthy();
-    const value = projectSliceState(original); // Actual current production projector, exactly once.
-    expect(hash(value)).toBe(PUBLIC_SHA256); expect(hash(original)).toBe(FINAL_SHA256);
+    expect(Object.hasOwn(original, 'redPriest')).toBe(false); expect(Object.hasOwn(original, 'visionary')).toBe(false);
+    const current = migrateSliceState(original);
+    assertExactMigration(original, current);
+    expect(() => assertExactMigration(original, { ...current, unexpectedRoot: null } as SliceState)).toThrow();
+    const missingRoot = { ...current }; Reflect.deleteProperty(missingRoot, 'fool');
+    expect(() => assertExactMigration(original, missingRoot)).toThrow();
+    const currentPrivateHash = hash(current);
+    const value = projectSliceState(current); // Actual current production projector, exactly once.
+    const currentPublicHash = hash(value);
+    expect(historicalPublicHash(value, current)).toBe(PUBLIC_SHA256); expect(hash(original)).toBe(FINAL_SHA256);
+    expect(historicalPublicHash({ ...value, unexpectedRoot: null } as SliceProjection, current)).not.toBe(PUBLIC_SHA256);
+    const missingPublicRoot = { ...value }; Reflect.deleteProperty(missingPublicRoot, 'fool');
+    expect(historicalPublicHash(missingPublicRoot, current)).not.toBe(PUBLIC_SHA256);
+    expect(hash(current)).toBe(currentPrivateHash);
     expect(value.fool).toMatchObject({ title: PANEL, guidanceKnown: true, promoted: true, insideCase: false,
       resources: { health: 65, mind: 96, spirituality: 92, cash: '71便士', actionsRemaining: 2 } });
     expect(value.fool.abilities).toHaveLength(36);
@@ -151,7 +200,9 @@ describe('Fool SliceApp actual completed S0 terminal navigation', () => {
         expect(saved.bridge.loadRun).toHaveBeenCalledTimes(opening);
         expect(saved.bridge.loadRun).toHaveBeenLastCalledWith(value.runId);
         expect(saved.bridge.submitIntent).not.toHaveBeenCalled();
-        expect(hash(original)).toBe(FINAL_SHA256); expect(hash(value)).toBe(PUBLIC_SHA256); expect(saved.publicHash()).toBe(PUBLIC_SHA256);
+        expect(hash(original)).toBe(FINAL_SHA256); expect(hash(current)).toBe(currentPrivateHash);
+        expect(historicalPublicHash(value, current)).toBe(PUBLIC_SHA256);
+        expect(hash(value)).toBe(currentPublicHash); expect(saved.publicHash()).toBe(currentPublicHash);
         if (opening === 1) await userEvent.click(screen.getByRole('button', { name: '返回主菜单' }));
         if (opening === 2) { mounted.unmount(); mounted = render(<SliceApp />); }
       }

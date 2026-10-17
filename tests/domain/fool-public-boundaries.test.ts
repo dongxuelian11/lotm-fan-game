@@ -10,6 +10,7 @@ import { foolBudget, foolSourceView } from '../../src/domain/fool/source.js';
 import { FOOL_ABILITY_IDS } from '../../src/domain/fool/content.js';
 import { FOOL_SOURCE_MATERIAL_IDS } from '../../src/domain/fool/materials.js';
 import { FATE_COMMISSIONS } from '../../src/domain/fool/fate-content.js';
+import { createVisionaryState, validateVisionaryState } from '../../src/domain/visionary/index.js';
 import type { FoolCommand, FoolProjection } from '../../src/domain/fool/types.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
@@ -103,6 +104,7 @@ describe('Fool genuine predecessor and publication boundary', () => {
     for (const key of added) same(current[key], defaults[key]);
     same(migrated.fool, createFoolState()); expect(stableStringify(old)).toBe(immutable);
     expect(() => migrateSliceState({ ...old, fool: createFoolState() })).toThrow();
+    expect(() => migrateSliceState({ ...old, visionary: createVisionaryState() })).toThrow();
     expect(() => migrateSliceState({ ...migrated, schemaVersion: CURRENT_SCHEMA_VERSION + 1 })).toThrow();
   }, 30_000);
   it('does not allow an ordinary or fabricated sequence-zero actor to acquire the chapter', () => {
@@ -113,7 +115,8 @@ describe('Fool genuine predecessor and publication boundary', () => {
     expect(validateFoolState(fabricated)).toBe(false); expect(hasFoolLock(fabricated)).toBe(false);
     expect(() => assertValidSliceState(fabricated)).toThrow();
     const otherPath = structuredClone(fabricated); otherPath.progression.pathwayId = 'audience';
-    expect(validateFoolState(otherPath)).toBe(false);
+    expect(validateFoolState(otherPath)).toBe(true); expect(validateVisionaryState(otherPath)).toBe(false);
+    expect(() => assertValidSliceState(otherPath)).toThrow();
   });
   it('learns guidance from the actual final S1 state without adding mastery, resources or revivals', () => {
     const before = source(), immutable = stableStringify(before), after = perform(before, { type: 'LEARN_GUIDANCE' });

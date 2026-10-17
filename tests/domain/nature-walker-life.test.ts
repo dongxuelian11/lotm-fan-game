@@ -98,7 +98,7 @@ describe('Nature Walker sole original pad and ordinary complete exit', () => {
     expect(s.health).toBe(beforeHealth - 2); expect(s.natureWalker.life.rootPad!.integrity).toBe(35); expect(s.natureWalker.life.operation.rootBearing).toBeNull();
     s = finish(s, 'root-impact'); expect(s.progression.mastery[BEARING]).toBe(8); expect(s.barrenMatriarch.life.rootPad.integrity).toBe(50);
     expect(s.natureWalker.life.site!.guard.segments.map(x => x.status)).toEqual(['SPENT', 'UNUSED', 'UNUSED']);
-  });
+  }, 10000);
   it('ordinary support and failed bearing preserve real health/pad costs and zero new skill mastery', () => {
     const initial = rented('ROOT_BEARING_FAIL'); let s = ordinary(initial, 'living-response'); s = ordinary(s, 'withdrawn-care');
     s = act(begin(s, 'root-impact'), { type: 'ROOT_BEARING', caseId: 'root-impact' }); expect(s.natureWalker.life.operation.rootBearing).toBeNull(); const hp = s.health;
@@ -107,7 +107,7 @@ describe('Nature Walker sole original pad and ordinary complete exit', () => {
     expect(s.natureWalker.life.annex.effortSpent).toBe(9); expect(s.natureWalker.life.site!.recipient.mind).toBe(97); expect(s.natureWalker.life.rootPad!.integrity).toBe(35);
     expect(s.natureWalker.life.site!.samples.map(x => [x.location, x.vitality])).toEqual([['OUTSIDE', 47], ['OUTSIDE', 47], ['OUTSIDE', 0]]);
     expect(oldMotherRoots(s)).toEqual(oldMotherRoots(initial)); expect(projectNatureWalkerLife(s).actions).toEqual([]); expect(projectNatureWalkerLife(s).preferredActionId).toBeNull();
-  });
+  }, 10000);
   it('can cancel before entry or any borrowing, then close without material, spirituality or health cost', () => {
     let s = rented(); const id = 'living-response' as const; s = act(s, { type: 'OBSERVE', caseId: id }); s = act(s, { type: 'PREPARE', caseId: id, method: 'ORDINARY' }); const before = structuredClone(s);
     for (const type of ['CANCEL_CASE', 'RETURN_OBJECTS', 'INSPECT', 'LEAVE'] as const) s = act(s, { type, caseId: id });

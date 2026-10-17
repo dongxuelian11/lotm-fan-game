@@ -11,13 +11,27 @@ export type WriterPreparationId = typeof WRITER_PREPARATION_IDS[number];
 export type WriterAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: WriterPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type WriterCommand = WriterAcquisitionCommand | WriterActivityCommand | WriterEncounterCommand;
+/** A later drug vessel carries the same finite original; its attempt ID is not a new characteristic. */
+export interface WriterRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number;
+}
+export interface WriterRecovery extends WriterRecoveryRequest { recoveredWeek: number }
+export interface WriterOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMAINS' | 'EMBODIED';
+}
+export interface WriterOriginalCharacteristics {
+  characteristics: WriterOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface WriterBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: WriterRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface WriterAcquisitionBudget {
@@ -33,7 +47,7 @@ export interface WriterAcquisitionEvent {
 }
 export interface WriterState {
   guidanceKnown: boolean; bottles: WriterBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: WriterRecoveryRequest };
   promotionWeek: number | null; discernerActingAtPromotion: number | null;
   preparations: { taskId: WriterPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: WriterAcquisitionEvent[];

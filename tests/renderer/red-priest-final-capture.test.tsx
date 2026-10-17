@@ -7,6 +7,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { stableStringify } from '../../src/domain/canonical.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { projectSliceState } from '../../src/domain/slice/index.js';
+import { createVisionaryState } from '../../src/domain/visionary/index.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { RedPriestPanel } from '../../src/renderer/RedPriestPanel.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
@@ -25,7 +26,7 @@ const digest = (value: unknown) => createHash('sha256').update(stableStringify(v
 const fileDigest = () => createHash('sha256').update(readFileSync(FILE)).digest('hex');
 // Review additions here explicitly if a future format adds a default root. Never
 // normalize away an old field or infer an allowed default from migrated output.
-const NEW_DEFAULT_ROOTS: Partial<SliceState> = {};
+const NEW_DEFAULT_ROOTS: Pick<SliceState, 'visionary'> = { visionary: createVisionaryState() };
 let raw: SliceState, current: SliceState, publicState: SliceProjection;
 let originalFileSha: string, originalCurrentSha: string, originalPublicSha: string;
 

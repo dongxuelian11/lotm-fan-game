@@ -159,7 +159,8 @@ describe('Writer actual saved campaign navigation and reopening', () => {
   it('reopens the actual completed life reports with mastery8/0, returns to ordinary living and keeps old S2 actions closed', async () => {
     const game = savedGame(snapshot('practiced')), before = structuredClone(game.state);
     await mount(game); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
-    await openGrowth(); assertResources(before);
+    await userEvent.click(screen.getByRole('button', { name: ENTRY }));
+    expect(await screen.findByRole('region', { name: PANEL })).toBeTruthy(); assertResources(before);
     await userEvent.selectOptions(screen.getByRole('combobox', { name: '作家目标' }), 'scheduled-return');
     expect(screen.getByRole('region', { name: '本次许可与实际消耗' }).textContent).toContain('能力判定：失败');
     expect(screen.getByRole('region', { name: '合理安排的当前窗口' }).textContent).toContain('合理安排：尝试1次、成功0次、实际生效0次');
@@ -168,7 +169,10 @@ describe('Writer actual saved campaign navigation and reopening', () => {
     expect((screen.getByRole('button', { name: /^工作，1行动/ }) as HTMLButtonElement).disabled).toBe(false);
     expect((screen.getByRole('button', { name: /^休养，1行动/ }) as HTMLButtonElement).disabled).toBe(false);
     expect(projectSliceState(game.state).discerner.actions).toEqual([]);
-    await openGrowth(); expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+    const growth = await screen.findByRole('region', { name: '序列0 空想家' });
+    expect(within(growth).getByRole('button', { name: '听取四方公共救援与原特性指导' })).toBeTruthy();
+    expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
   });
 
   it.each([1, 5])('submits the exact captured round%s command once, then reopens its actual result without rerolling', async number => {

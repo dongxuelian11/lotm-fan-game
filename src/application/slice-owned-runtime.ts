@@ -3,6 +3,7 @@ import {
   type FoolRuntimeDraft,
   type FoolRuntimeSession,
 } from "../domain/fool/owned-session.js";
+import { openVisionaryRuntimeSession } from "../domain/visionary/owned-session.js";
 import { openRedPriestRuntimeSession } from "../domain/red-priest/owned-session.js";
 import type { SliceIntent, SliceProjection, SliceState } from "../domain/slice/types.js";
 import { projectSliceState } from "../domain/slice/index.js";
@@ -25,6 +26,8 @@ export interface OwnedRepositoryDraft extends OwnedRepositoryHead {
 // Preserve the original Fool API and its transaction-test fault injection points.
 export type FoolRepositoryHead = OwnedRepositoryHead;
 export type FoolRepositoryDraft = OwnedRepositoryDraft;
+type VisionaryRuntimeSession = ReturnType<typeof openVisionaryRuntimeSession>;
+type VisionaryRuntimeDraft = ReturnType<VisionaryRuntimeSession["prepare"]>;
 type RedPriestRuntimeSession = ReturnType<typeof openRedPriestRuntimeSession>;
 type RedPriestRuntimeDraft = ReturnType<RedPriestRuntimeSession["prepare"]>;
 interface FoolHead {
@@ -37,10 +40,12 @@ interface RedPriestHead {
   readonly raw: string;
   readonly session: RedPriestRuntimeSession;
 }
-type Head = FoolHead | RedPriestHead;
+interface VisionaryHead { readonly kind: "VISIONARY"; readonly raw: string; readonly session: VisionaryRuntimeSession }
+type Head = FoolHead | RedPriestHead | VisionaryHead;
 type Draft = { readonly epoch: object; readonly runId: string } & (
   | { readonly kind: "FOOL"; readonly head: FoolHead; readonly domain: FoolRuntimeDraft }
   | { readonly kind: "RED_PRIEST"; readonly head: RedPriestHead; readonly domain: RedPriestRuntimeDraft }
+  | { readonly kind: "VISIONARY"; readonly head: VisionaryHead; readonly domain: VisionaryRuntimeDraft }
 );
 interface Transaction {
   readonly epoch: object;
@@ -53,11 +58,13 @@ interface Transaction {
  * never authority. Both factories must validate the entire detached current
  * slice and all predecessor history before returning a private session. */
 function openCurrentHead(raw: string, state: SliceState): Head | null {
-  if (state.schemaVersion !== 206 || state.contentVersion !== "red-priest-v206")
+  if (state.schemaVersion !== 207 || state.contentVersion !== "visionary-v207")
     throw Error("Runtime head requires the current save format");
   const fool = state.fool?.guidanceKnown === true && state.fool.source !== null;
   const redPriest = state.redPriest?.guidanceKnown === true && state.redPriest.source !== null;
-  if (fool && redPriest) throw Error("Multiple current chapter sessions");
+  const visionary = state.visionary?.guidanceKnown === true && state.visionary.source !== null;
+  if ([fool, redPriest, visionary].filter(Boolean).length > 1) throw Error("Multiple current chapter sessions");
+  if (visionary) return { kind: "VISIONARY", raw, session: openVisionaryRuntimeSession(state) };
   if (fool) return { kind: "FOOL", raw, session: openFoolRuntimeSession(state) };
   if (redPriest) return { kind: "RED_PRIEST", raw, session: openRedPriestRuntimeSession(state) };
   return null;
@@ -102,7 +109,7 @@ export class SliceOwnedRuntime {
     return this.#read(runId, raw, decode)?.session.project() ?? null;
   }
 
-  /** Explicit load always starts from these exact persisted bytes. Current 206
+  /** Explicit load always starts from these exact persisted bytes. Current 207
    * inputs cross the selected chapter's complete strict factory. Original 205
    * Fool fixtures must instead pass full migration before opening a current
    * session; their original bytes remain the cache identity until a real write.
@@ -126,7 +133,7 @@ export class SliceOwnedRuntime {
       transaction.heads.set(runId, head);
       return { state: projection, updatedAt: stored.updatedAt };
     };
-    if (input?.schemaVersion === 206 && input.contentVersion === "red-priest-v206") {
+    if (input?.schemaVersion === 207 && input.contentVersion === "visionary-v207") {
       const head = openCurrentHead(raw, input);
       if (head) return publishLoaded(head);
     }
@@ -144,13 +151,15 @@ export class SliceOwnedRuntime {
     if (transaction.writes.has(runId)) throw Error("Run already written in this transaction");
     const head = this.#read(runId, raw, decode);
     if (!head) throw Error("No current owned chapter session");
-    // Keep the two independent domain brands correlated with their real owner.
+    // Keep the three independent domain brands correlated with their real owner.
     // The domain session itself checks the intent's chapter and exact revision.
     const draft: Draft = head.kind === "FOOL"
       ? { kind: "FOOL", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
+      : head.kind === "VISIONARY" ? { kind: "VISIONARY", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
       : { kind: "RED_PRIEST", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId };
     const identity = draft.kind === "FOOL"
       ? draft.head.session.inspectDraft(draft.domain)
+      : draft.kind === "VISIONARY" ? draft.head.session.inspectDraft(draft.domain)
       : draft.head.session.inspectDraft(draft.domain);
     const handle = Object.freeze({ ...identity }) as OwnedRepositoryDraft;
     this.#drafts.set(handle, draft);
@@ -170,6 +179,7 @@ export class SliceOwnedRuntime {
     const draft = this.#require(handle);
     return draft.kind === "FOOL"
       ? draft.head.session.projectDraft(draft.domain)
+      : draft.kind === "VISIONARY" ? draft.head.session.projectDraft(draft.domain)
       : draft.head.session.projectDraft(draft.domain);
   }
 
@@ -181,6 +191,7 @@ export class SliceOwnedRuntime {
     }
     return draft.kind === "FOOL"
       ? draft.head.session.snapshotDraft(draft.domain)
+      : draft.kind === "VISIONARY" ? draft.head.session.snapshotDraft(draft.domain)
       : draft.head.session.snapshotDraft(draft.domain);
   }
 
@@ -204,6 +215,7 @@ export class SliceOwnedRuntime {
       if (draft) {
         try {
           if (draft.kind === "FOOL") draft.head.session.commit(draft.domain);
+          else if (draft.kind === "VISIONARY") draft.head.session.commit(draft.domain);
           else draft.head.session.commit(draft.domain);
           transaction.heads.set(runId, { ...draft.head, raw: write.raw });
         } catch {
@@ -224,6 +236,7 @@ export class SliceOwnedRuntime {
     if (transaction) for (const draft of transaction.drafts) {
       try {
         if (draft.kind === "FOOL") draft.head.session.discard(draft.domain);
+        else if (draft.kind === "VISIONARY") draft.head.session.discard(draft.domain);
         else draft.head.session.discard(draft.domain);
       } catch { /* already discarded */ }
     }
