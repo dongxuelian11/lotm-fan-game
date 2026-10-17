@@ -2,11 +2,18 @@ import {
   CONTRACT_VERSION,
   type BridgeResult,
   type IntentEnvelope,
-  type R1IntentPayload,
 } from "../shared/contracts.js";
 import { makePublicError } from "../domain/public-error.js";
 
-export type ValidatedR1Intent = IntentEnvelope<R1IntentPayload>;
+// Retain the historical R1 validator without widening the current IPC contract.
+// Its payload is deliberately local: current IntentEnvelope accepts R2 intents.
+export type ValidatedR1Intent = Omit<IntentEnvelope, "payload"> & {
+  readonly payload: {
+    readonly kind: "CREATE_R1_FIXTURE_RUN";
+    readonly fixtureId: "ordinary-week-one";
+    readonly displayName: string;
+  };
+};
 
 const ENVELOPE_KEYS = ["contractVersion", "expectedRevision", "intentId", "payload", "runId"];
 const PAYLOAD_KEYS = ["displayName", "fixtureId", "kind"];
