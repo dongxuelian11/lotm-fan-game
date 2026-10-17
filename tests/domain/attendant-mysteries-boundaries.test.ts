@@ -47,5 +47,5 @@ describe('Attendant actual public boundaries and continuous original command pre
       assertValidSliceState(final); same(projectSliceState(JSON.parse(stableStringify(final))), projectSliceState(final));
       expect(final.revision).toBe(before.revision + 1); expect(final.random.seed).toBe(before.random.seed);
     }
-  }, start === 33 ? 60_000 : 30_000);
+  }, start === 22 || start === 33 ? 60_000 : 30_000);
 });
