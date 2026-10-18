@@ -65,6 +65,8 @@ function desiredCommand(root: DemonessState): DemonessCommand | null {
   const material = (command: DemonessMaterialCommand): DemonessCommand => ({ type: 'MATERIAL', command });
   const at = (to: DemonessPlace, c: DemonessCommand): DemonessCommand => f.location === to ? c : { type: 'TRAVEL', to };
   if (b.status !== 'ACTIVE' || p.phase === 'CLOSED') return null;
+  const ready = m.compounds.find(c => c.status === 'PREPARED' && getDemonessPromotionStabilityPreview(root, c.id).prepared);
+  if (ready) return { type: 'CONSUME', compoundId: ready.id, confirmed: true };
   if (!demonessInsideCase(root)) {
     const unsealed = m.compounds.find(c => c.status === 'FAILED_EXPOSED'); if (unsealed) return at(unsealed.location, material({ type: 'SEAL_REMAINS', compoundId: unsealed.id }));
     if (b.injuries.some(i => i.severity === 'HEAVY' && i.treatedRevision === null)) return { type: 'CLINIC' };
@@ -172,7 +174,7 @@ function projection(s: DemonessSlice, head: DemonessOwnedEngine | null): Demones
     '可选稳定准备：1行动、150便士、12灵性和8精神，一小时；绑定本人、同瓶与本处，七天内有效，离室或服药失效。实际意志改变时概率随之变化。',
     '独立服药：1行动、30灵性；成功再扣12精神，四属性各加1，新技巧从零开始、灵性上限150且当前值不补满。',
     '失败：45健康、40精神、35污染及真实重伤；严重失败：110健康、100精神、70污染，可以死亡。活人可原地封存同物、隔周付费回收；死亡封存周目。',
-    '没有额外性别变化、旧伤清零、NPC复活或新增原特性。所有同意、实际通行、费用和损伤均保留。',
+    '没有额外性别变化、旧伤清零、任何人的复活或新增原特性。所有同意、实际通行、费用和损伤均保留。',
   ] });
   if (promoted) result.sections.push({ id: 'return', title: '有限落石与原撑返程', lines: [
     `同一两公斤碎块：${({ LOOSE: '仍松动', FALLING: '正在缓慢剥落', CAUGHT: '已经实际接住', LANDED: '已落地待清理', CLEARED: '已普通清走' })[p.stone.state]}，实际阻力${p.stone.resistance}。同一原撑承载${p.strut.integrity}，整形阻力${p.strut.resistance}，旧裂痕保留。`,

@@ -185,8 +185,17 @@ describe('same-original Apocalypse recovery, immutable actual688 and legacy854',
     expect(resolveApocalypseDemonessOriginals(s)).toBeNull();
     expect(projectApocalypseDemoness(s).actions).toEqual([]);
     reject(s, { type: 'RECOVER_ENERGY' });
-    expect(() => applySliceIntent(s, { type: 'ACTION', action: 'WORK' })).toThrow();
-    expect(() => applySliceIntent(s, { type: 'ACTION', action: 'REST' })).toThrow();
+    // The conflicting high-tier material chain is closed, not ordinary livelihood.
+    // Working or resting cannot relabel its original six independent sources.
+    for (const action of ['WORK', 'REST'] as const) {
+      const next = applySliceIntent(s, { type: 'ACTION', action });
+      expect(next.apocalypseDemoness).toEqual(s.apocalypseDemoness);
+      expect(oldRoots(next)).toEqual(oldRoots(s));
+      expect(next.revision).toBe(s.revision + 1);
+      expect(resolveApocalypseDemonessOriginals(next)).toBeNull();
+      assertValidSliceState(next);
+    }
+    expect(() => applySliceIntent(s, { type: 'DEMONESS', command: { type: 'LEARN_GUIDANCE' } })).toThrow();
     assertValidSliceState(s);
   }, 60_000);
 });
