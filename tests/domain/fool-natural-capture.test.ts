@@ -1,5 +1,6 @@
+import { EMPTY_RED_PRIEST, EMPTY_VISIONARY, EMPTY_PERFECTER, EMPTY_MOON, EMPTY_DARKNESS, EMPTY_WHITE_TOWER, EMPTY_TYRANT, EMPTY_SUN, historicalFoolStateForEmptyRootAudit, historicalWithoutEmptyDoorPublic } from '../helpers/historical-empty-root-audit.js';
 import assert from 'node:assert/strict';
-import { assertEmptyDeathState, assertEmptyDeathPublic, assertEmptyDoorState, assertEmptyDoorPublic } from '../helpers/empty-death-capture.js';
+import { assertEmptyDeathState, assertEmptyDeathPublic, assertEmptyDoorState } from '../helpers/empty-death-capture.js';
 import { createDoorState } from '../../src/domain/door/index.js';
 import { createDeathState } from '../../src/domain/death/index.js';
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
@@ -318,39 +319,6 @@ function jsonLines<T>(file: FileName): T[] {
   return text.slice(0, -1).split('\n').map(line => { expect(line.length).toBeGreaterThan(0); return JSON.parse(line) as T; });
 }
 type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
-const EMPTY_RED_PRIEST: SliceState['redPriest'] = {
-  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
-  campaign: null, materials: null, epilogue: null, journal: [],
-};
-const EMPTY_VISIONARY: SliceState['visionary'] = {
-  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
-  era: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
-};
-const EMPTY_PERFECTER: SliceState['perfecter'] = {
-  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
-  works: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
-};
-const EMPTY_MOON: SliceState['moon'] = {
-  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
-  services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
-};
-const EMPTY_DARKNESS: SliceState['darkness'] = {
-  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
-  evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
-};
-const EMPTY_WHITE_TOWER: SliceState['whiteTower'] = {
-  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
-  passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
-};
-const EMPTY_TYRANT: SliceState['tyrant'] = {
-  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
-  coasts: null, challenge: null, materials: null, epilogue: null, seaVoyages: [], assembly: null,
-  journal: [], promotionStability: { preparations: [] },
-};
-const EMPTY_SUN: SliceState['sun'] = {
-  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
-  services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
-};
 let originalStateKeys: readonly string[] | null = null;
 function historicalStateKeys(): readonly string[] {
   if (!originalStateKeys) {
@@ -371,21 +339,9 @@ function historicalStateKeys(): readonly string[] {
 /** Audit only: allow exactly the ten approved new roots and two version changes.
  * Every original field, including all nested history, remains in the hash. */
 function historicalStateView(state: SliceState): HistoricalFoolState {
-  keys(state, [...historicalStateKeys(), 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door']);
-  expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
-  expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
-  expect(state.perfecter).toStrictEqual(EMPTY_PERFECTER);
-  expect(state.moon).toStrictEqual(EMPTY_MOON);
-  expect(state.darkness).toStrictEqual(EMPTY_DARKNESS);
-  expect(state.whiteTower).toStrictEqual(EMPTY_WHITE_TOWER);
-  expect(state.tyrant).toStrictEqual(EMPTY_TYRANT); expect(state.sun).toStrictEqual(EMPTY_SUN);
-  assertEmptyDeathState(state); assertEmptyDoorState(state);
-  const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
-    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower,
-    tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, ...originalFields } = state;
-  return { ...originalFields, schemaVersion: 205, contentVersion: 'fool-v205' };
+  return historicalFoolStateForEmptyRootAudit(state, historicalStateKeys()) as HistoricalFoolState;
 }
+
 function current(raw: unknown): SliceState {
   const before = hash(raw), state = migrateSliceState(raw);
   assertValidSliceState(state);
@@ -498,10 +454,10 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
       reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
       preferredAction: true }],
   });
-  assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state);
+  assertEmptyDeathPublic(projection, state);
   const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
     perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower,
-    tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, ...originalFields } = projection;
+    tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, ...originalFields } = historicalWithoutEmptyDoorPublic(projection, state);
   return originalFields;
 }
 function budget(s: SliceState) {

@@ -1,3 +1,4 @@
+import { historicalVisionaryStateForEmptyRootAudit } from '../helpers/historical-empty-root-audit.js';
 import { assertEmptyDeathState, assertEmptyDoorState } from '../helpers/empty-death-capture.js';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
@@ -100,6 +101,7 @@ let cp: Checkpoint, rows: Row[], boundaries: Boundary[];
  * version labels, and require each newly introduced root to equal its complete
  * fresh current default. A missing/unknown/nonempty added field is not ignored. */
 function captureHash(current: SliceState, historical: SliceState): string {
+  if (Number(historical.schemaVersion) === 207) return hash(historicalVisionaryStateForEmptyRootAudit(current, historical as unknown as Record<string, unknown>));
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   const old = historical as unknown as Record<string, unknown>, now = current as unknown as Record<string, unknown>;
   const fresh = defaults as unknown as Record<string, unknown>;
