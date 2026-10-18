@@ -1,12 +1,13 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
+import { emptyDoorPublic } from '../helpers/empty-death-capture.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { openDeathRuntimeSession, type DeathRuntimeSession } from '../../src/domain/death/owned-session.js';
 import { DEATH_ABILITY_IDS, DEATH_ORIGINAL_IDS } from '../../src/domain/death/types.js';
 import {
   FINAL_COMMAND, NEW_COMMANDS, PINS, PREFIX, actualReceipts, assertCurrentGlobal, assertGlobalPublic,
-  assertPublicAction, assertPublicOnly, authenticateInputs, capturePublic, hash, loadCapture, outcome, readAction, same,
+  assertPublicAction, assertPublicOnly, authenticateInputs, capturePublic, hash, historicalDeathState, historicalDeathPublic, loadCapture, outcome, readAction, same,
   type LoadedCapture,
 } from '../helpers/death-capture.js';
 
@@ -48,22 +49,23 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
     expect(Object.keys(data.original.progression.mastery)).toHaveLength(19);
     expect(Object.values(data.original.progression.mastery).filter(value => value === 0)).toHaveLength(7);
     const originalHash = hash(data.original), migrated = migrateSliceState(data.original);
-    same(migrated, data.initial, 'Exact192->214 migration, with every original root preserved');
+    same(historicalDeathState(migrated), data.initial, 'Current migration retains every exact192->214 captured field');
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(data.initial), 'door'].sort());
     expect(hash(data.original)).toBe(originalHash); expect(originalHash).toBe(PINS.originalStateSha256);
-    const global = projectSliceState(migrated); same(global, data.initialPublic); assertGlobalPublic(global, migrated);
-    expect(hash(global)).toBe(PINS.initialGlobalPublicSha256); expect(hash(capturePublic(global))).toBe(PINS.initialPublicSha256);
+    const global = projectSliceState(migrated); same(historicalDeathPublic(global, migrated), data.initialPublic); assertGlobalPublic(global, migrated);
+    expect(hash(historicalDeathPublic(global, migrated))).toBe(PINS.initialGlobalPublicSha256); expect(hash(capturePublic(global))).toBe(PINS.initialPublicSha256);
     expect(data.checkpoint.pending).toBeNull(); expect(data.checkpoint.terminal).toEqual({ stage: PINS.stage, reason: PINS.reason });
     expect(data.checkpoint.policy).toMatchObject({ doses: 1, carriers: ['death-carrier-1'], consumedCompounds: ['death-compound-1'],
       epilogueAttempted: ['PROPAGATION_BARRIER', 'PARTIAL_SPIRIT_PASSAGE'], reported: true });
   }, 300_000);
 
   it.each(BLOCKS)('replays actual %i..%i with complete private/RNG/chapter/global equivalence', (first, last) => {
-    let state = structuredClone(first === PREFIX + 1 ? data.initial : actionAt(first).beforeLast);
+    let state = migrateSliceState(first === PREFIX + 1 ? data.initial : actionAt(first).beforeLast);
     let session: DeathRuntimeSession | null = state.death.guidanceKnown ? openDeathRuntimeSession(state) : null;
     let global = session ? session.project() : projectSliceState(state), prepared = 0, committed = 0, ingress = 0;
     for (const row of data.rows.filter(item => item.commandCount >= first && item.commandCount <= last)) {
       const recorded = readAction(row), before = state, beforeHash = hash(before);
-      expect(beforeHash).toBe(row.beforeStateSha256); same(before, recorded.beforeLast, `Complete private before ${row.commandCount}`);
+      expect(hash(historicalDeathState(before))).toBe(row.beforeStateSha256); same(historicalDeathState(before), recorded.beforeLast, `Complete private before ${row.commandCount}`);
       assertCurrentGlobal(global, recorded, 'before'); assertPublicAction(capturePublic(global), row);
       expect(validateSlicePayload(row.intent)).toBe(true); expect(before.random).toEqual(recorded.randomBefore);
       expect(hash(before.random)).toBe(row.randomBeforeSha256); expect(before.status).toBe('ACTIVE');
@@ -72,7 +74,7 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
         state = session.snapshotDraft(draft); global = session.projectDraft(draft);
         expect(session.inspect()).toEqual({ runId: before.runId, revision: before.revision, status: before.status });
         expect(hash(before), 'Preparing cannot mutate predecessor').toBe(beforeHash);
-        same(state, recorded.final); assertCurrentGlobal(global, recorded, 'after');
+        same(historicalDeathState(state), recorded.final); assertCurrentGlobal(global, recorded, 'after');
         session.commit(draft); committed++;
         expect(session.inspect()).toEqual({ runId: state.runId, revision: state.revision, status: state.status });
       } else {
@@ -81,8 +83,8 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
         expect(state.death.guidanceKnown).toBe(true); session = openDeathRuntimeSession(state); global = session.project();
       }
       expect(hash(before), 'Committing cannot mutate predecessor').toBe(beforeHash);
-      same(state, recorded.final, `Complete private after ${row.commandCount}`); expect(hash(state)).toBe(row.afterStateSha256);
-      assertCurrentGlobal(global, recorded, 'after'); expect(hash(global)).toBe(row.globalPublicAfterSha256);
+      same(historicalDeathState(state), recorded.final, `Complete private after ${row.commandCount}`); expect(hash(historicalDeathState(state))).toBe(row.afterStateSha256);
+      assertCurrentGlobal(global, recorded, 'after'); expect(hash(historicalDeathPublic(global, state))).toBe(row.globalPublicAfterSha256);
       expect(hash(capturePublic(global))).toBe(row.publicAfterSha256);
       expect(state.random).toEqual(recorded.randomAfter); expect(hash(state.random)).toBe(row.randomAfterSha256);
       expect(state.random.seed).toBe(data.original.random.seed); expect(state.revision).toBe(before.revision + 1);
@@ -93,8 +95,8 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
     expect(prepared + ingress).toBe(last - first + 1); expect(committed).toBe(prepared);
     expect(session).not.toBeNull(); same(session!.snapshot(), state); same(session!.project(), global); preserveOriginal(state);
     if (last === FINAL_COMMAND) {
-      same(state, data.checkpoint.state); expect(hash(state)).toBe(PINS.finalStateSha256);
-      expect(hash(global)).toBe(PINS.finalGlobalPublicSha256);
+      same(historicalDeathState(state), data.checkpoint.state); expect(hash(historicalDeathState(state))).toBe(PINS.finalStateSha256);
+      expect(hash(historicalDeathPublic(global, state))).toBe(PINS.finalGlobalPublicSha256);
     }
   }, 300_000);
 
@@ -176,7 +178,9 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
   }, 300_000);
 
   it('rejects altered evidence, unknown roots, wrong sides, forged input and private leakage without editing any capture', () => {
-    const action = actionAt(1128), original = hash(action), expected = action.globalPublic;
+    const action = actionAt(1128), original = hash(action), expected = { ...action.globalPublic, door: emptyDoorPublic(action.final) };
+    assertCurrentGlobal(expected, action, 'after');
+    expect(() => assertCurrentGlobal(action.globalPublic, action, 'after')).toThrow();
     expect(() => assertCurrentGlobal({ ...expected, cash: expected.cash + 1 }, action, 'after')).toThrow();
     expect(() => assertCurrentGlobal({ ...expected, unexpectedRoot: null } as typeof expected, action, 'after')).toThrow();
     expect(() => assertCurrentGlobal({ ...expected, unexpectedRoot: undefined } as typeof expected, action, 'after')).toThrow();

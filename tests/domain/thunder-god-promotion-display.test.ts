@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { projectSliceState } from '../../src/domain/slice/index.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { projectThunderGodLastCheck } from '../../src/domain/thunder-god/index.js';
-import { assertGlobalPublic, CURRENT_SUPPORTED_PROMOTION_CHECK, expectedCurrentGlobal, filePin, hash,
+import { assertGlobalPublic, CURRENT_SUPPORTED_PROMOTION_CHECK, expectedCurrentGlobal, filePin, hash, historicalTyrantState, historicalTyrantPublic,
   json, migrateCapturedTyrantState, RAW_SUPPORTED_PROMOTION_CHECK, ROOT, type Action } from '../helpers/tyrant-capture.js';
 
 let promotion: Action, nextAction: Action;
@@ -17,7 +17,8 @@ beforeAll(() => {
 describe('Thunder God promotion display uses only the exact latest resolved receipt', () => {
   it('projects the complete actual717 supported70 check without changing any private state', () => {
     const state = migrateCapturedTyrantState(promotion.final), before = hash(state);
-    expect(before).toBe('9be5b3d7474353d105f271e4af504fe9aeb980ee40d6e8776289490527ffd8be');
+    const historicalHash = hash(historicalTyrantState(state));
+    expect(historicalHash).toBe('9be5b3d7474353d105f271e4af504fe9aeb980ee40d6e8776289490527ffd8be');
     expect(state.lastCheck).toEqual(RAW_SUPPORTED_PROMOTION_CHECK);
     expect(promotion.globalPublic.lastCheck).toEqual(RAW_SUPPORTED_PROMOTION_CHECK);
     expect(state.character.coreStats.will).toBe(28);
@@ -31,27 +32,28 @@ describe('Thunder God promotion display uses only the exact latest resolved rece
     expect(result).toEqual(CURRENT_SUPPORTED_PROMOTION_CHECK);
     expect(result).not.toBe(receipt.check);
     expect(result!.modifiers).not.toBe(receipt.check!.modifiers);
-    expect(view).toEqual(expectedCurrentGlobal(promotion, 'after'));
-    expect(Object.keys(view).filter(key => hash(view[key as keyof typeof view]) !==
-      hash(promotion.globalPublic[key as keyof typeof view]))).toEqual(['lastCheck']);
+    const historical = historicalTyrantPublic(view, state);
+    expect(historical).toEqual(expectedCurrentGlobal(promotion, 'after'));
+    expect(Object.keys(historical).filter(key => hash(historical[key as keyof typeof historical]) !==
+      hash(promotion.globalPublic[key as keyof typeof historical]))).toEqual(['lastCheck']);
     assertGlobalPublic(view, state);
     expect(hash(state)).toBe(before);
     Object.assign(result!.modifiers[0]!, { value: 999 });
     Object.assign(view.lastCheck!, { chance: 5 });
     expect(hash(state)).toBe(before);
-    expect(hash(promotion.final)).toBe(before);
+    expect(hash(promotion.final)).toBe(historicalHash);
   }, 120_000);
 
   it('keeps actual718-before corrected and actual718-after null despite its unchanged RNG cursor', () => {
     expect(hash(nextAction.beforeLast)).toBe(hash(promotion.final));
     const before = migrateCapturedTyrantState(nextAction.beforeLast), after = migrateCapturedTyrantState(nextAction.final);
     const beforeHash = hash(before), afterHash = hash(after);
-    expect(afterHash).toBe('cd99dccfa805f56fb7b8e47fa59b1a62b0c49eaa0b210275974c84e27ea7d6a7');
+    expect(hash(historicalTyrantState(after))).toBe('cd99dccfa805f56fb7b8e47fa59b1a62b0c49eaa0b210275974c84e27ea7d6a7');
     expect(nextAction.lastIntent).toEqual({ type: 'THUNDER_GOD', command: { type: 'OBSERVE', caseId: 'located-target' } });
     expect([before.revision, after.revision, before.random.cursor, after.random.cursor]).toEqual([718, 719, 271, 271]);
-    expect(projectSliceState(before)).toEqual(expectedCurrentGlobal(nextAction, 'before'));
+    expect(historicalTyrantPublic(projectSliceState(before), before)).toEqual(expectedCurrentGlobal(nextAction, 'before'));
     expect(projectThunderGodLastCheck(after)).toBeNull();
-    expect(projectSliceState(after)).toEqual(nextAction.globalPublic);
+    expect(historicalTyrantPublic(projectSliceState(after), after)).toEqual(nextAction.globalPublic);
     expect(hash(before)).toBe(beforeHash); expect(hash(after)).toBe(afterHash);
   }, 120_000);
 

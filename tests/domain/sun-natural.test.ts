@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
-import { emptyDeathPublic } from '../helpers/empty-death-capture.js';
+import { emptyDeathPublic, emptyDoorPublic } from '../helpers/empty-death-capture.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { openSunRuntimeSession, type SunRuntimeSession } from '../../src/domain/sun/owned-session.js';
 import { SUN_ABILITY_IDS, SUN_ORIGINAL_IDS } from '../../src/domain/sun/types.js';
@@ -47,7 +47,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
       epilogueAttempted: ['DIRECTED_RADIANCE', 'RADIANCE_WARD'], reported: true });
   });
 
-  it('requires exactly the empty Death addition while preserving every historical field and unknown root', () => {
+  it('requires exactly the empty Death and Door additions while preserving every historical field and unknown root', () => {
     const current = data.initial, raw = actionAt(854).beforeLast;
     same(historicalSunState(current), raw);
     const { death: _missingDeath, ...missing } = current;
@@ -57,6 +57,13 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
       { ...current.death, promotionStability: { preparations: [], unexpectedField: undefined } }])
       expect(() => historicalSunState({ ...current, death } as SliceState)).toThrow();
     expect(() => migrateCapturedSunState({ ...raw, death: current.death })).toThrow();
+    const { door: _missingDoor, ...missingDoor } = current;
+    expect(() => historicalSunState(missingDoor as SliceState)).toThrow();
+    for (const door of [null, { ...current.door, guidanceKnown: true },
+      { ...current.door, unexpectedField: undefined },
+      { ...current.door, promotionStability: { preparations: [], unexpectedField: undefined } }])
+      expect(() => historicalSunState({ ...current, door } as SliceState)).toThrow();
+    expect(() => migrateCapturedSunState({ ...raw, door: current.door })).toThrow();
     const originalHash = hash(raw);
     expect(hash(historicalSunState({ ...current, unknownRoot: null } as SliceState))).not.toBe(originalHash);
     expect(hash(historicalSunState({ ...current, cash: current.cash + 1 }))).not.toBe(originalHash);
@@ -65,6 +72,10 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
     for (const death of [null, { ...projection.death, promoted: true },
       { ...projection.death, unexpectedField: undefined }])
       expect(() => historicalSunPublic({ ...projection, death } as typeof projection, current)).toThrow();
+    expect(Object.hasOwn(historical, 'door')).toBe(false);
+    for (const door of [null, { ...projection.door, promoted: true },
+      { ...projection.door, unexpectedField: undefined }])
+      expect(() => historicalSunPublic({ ...projection, door } as typeof projection, current)).toThrow();
     expect(hash(historicalSunPublic({ ...projection, unknownRoot: null } as typeof projection, current)))
       .not.toBe(hash(historical));
   });
@@ -158,9 +169,9 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
         same(expected.recovery.actions.credit, raw.recovery.actions.credit, 'Event-choice credit gating remains frozen');
         expect(state.sun.guidanceKnown).toBe(guided); expect(state.sun.source !== null).toBe(guided);
         expect([raw.maxSpirituality, expected.maxSpirituality]).toEqual(promoted ? [30, 150] : [120, 120]);
-        const currentExpected = { ...expected, death: emptyDeathPublic(state) };
+        const currentExpected = { ...expected, death: emptyDeathPublic(state), door: emptyDoorPublic(state) };
         assertCurrentGlobal(currentExpected, action, side);
-        if (guided) expect(() => assertCurrentGlobal({ ...raw, death: emptyDeathPublic(state) }, action, side)).toThrow();
+        if (guided) expect(() => assertCurrentGlobal({ ...raw, death: emptyDeathPublic(state), door: emptyDoorPublic(state) }, action, side)).toThrow();
         else {
           same(expected, raw, '854-before remains completely unchanged');
           expect(raw.canAct).toBe(true); expect(raw.actionBlockedReason).toBeNull(); expect(state.sun.source).toBeNull();
@@ -218,7 +229,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
       if (count === 854) {
         const next = actionAt(855);
         same(action.final, next.beforeLast); same(action.globalPublic, next.globalPublicBefore);
-        expect(() => assertCurrentGlobal({ ...expectedCurrentGlobal(action, 'after'), death: emptyDeathPublic(action.final) }, next, 'after')).toThrow();
+        expect(() => assertCurrentGlobal({ ...expectedCurrentGlobal(action, 'after'), death: emptyDeathPublic(action.final), door: emptyDoorPublic(action.final) }, next, 'after')).toThrow();
         expect(() => expectedCurrentGlobal({ ...action, lastIntent: next.lastIntent }, 'after')).toThrow();
         const sourceMissing = { ...action, final: { ...action.final, sun: { ...action.final.sun, source: null } } };
         expect(() => expectedCurrentGlobal(sourceMissing, 'after')).toThrow();

@@ -7,7 +7,7 @@ import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import type { SliceBridge, SliceEnvelope, SliceReceipt } from '../../src/shared/slice-contracts.js';
 import {
-  FILE_PINS, MANIFEST, MANIFEST_SHA, ROOT, assertCurrentGlobal, assertGlobalPublic, assertPublicOnly, filePin, hash, readActionAt,
+  FILE_PINS, MANIFEST, MANIFEST_SHA, ROOT, assertCapturedGlobal, assertGlobalPublic, assertPublicOnly, filePin, hash, readActionAt,
   type Action, type FilePin,
 } from '../helpers/death-capture.js';
 
@@ -31,7 +31,7 @@ function captured(count: number) {
   const pin = filePin(path); expect(pin).toEqual(FILE_PINS[`action-${count}.json.gz`]);
   checkedFiles.set(path, pin);
   const before = action.globalPublicBefore, value = action.globalPublic;
-  assertCurrentGlobal(before, action, 'before'); assertCurrentGlobal(value, action, 'after');
+  assertCapturedGlobal(before, action, 'before'); assertCapturedGlobal(value, action, 'after');
   assertGlobalPublic(before, action.beforeLast); assertGlobalPublic(value, action.final);
   expect(value.character.name).toBe('伊莲');
   expect(value.character).toEqual(before.character);

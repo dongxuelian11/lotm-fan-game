@@ -6,11 +6,12 @@ import { DatabaseSync } from 'node:sqlite';
 import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { projectSliceState } from '../../src/domain/slice/index.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   PINS, PREFIX, assertCurrentGlobal, assertGlobalPublic, authenticateInputs, hash,
-  readAction, readCheckpoint, same, sha, type Row,
+  historicalDeathState, readAction, readCheckpoint, same, sha, type Row,
 } from '../helpers/death-capture.js';
 
 /** Three representative REAL SQLite transitions from natural1141: guidance1039,
@@ -47,7 +48,10 @@ function persisted(path: string): string {
 describe('Death217 actual natural1141 representative SQLite captures', () => {
   it.each(PINS.sqliteCommandCounts)('rolls back both write boundaries, retries once and cold-reopens actual command%i', count => {
     const row = rows[count - PREFIX - 1]!, action = readAction(row);
-    const before = action.beforeLast, after = action.final;
+    const before = migrateSliceState(action.beforeLast), after = migrateSliceState(action.final);
+    same(historicalDeathState(before), action.beforeLast); same(historicalDeathState(after), action.final);
+    expect(Object.keys(before).sort()).toEqual([...Object.keys(action.beforeLast), 'door'].sort());
+    expect(Object.keys(after).sort()).toEqual([...Object.keys(action.final), 'door'].sort());
     const beforeHash = hash(before), afterHash = hash(after), publicBefore = projectSliceState(before), publicAfter = projectSliceState(after);
     assertCurrentGlobal(publicBefore, action, 'before'); assertCurrentGlobal(publicAfter, action, 'after');
     assertGlobalPublic(publicBefore, before); assertGlobalPublic(publicAfter, after);

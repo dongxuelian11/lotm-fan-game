@@ -17,6 +17,9 @@ import { projectPerfecter } from '../../src/domain/perfecter/index.js';
 import { projectMoon } from '../../src/domain/moon/index.js';
 import { projectDarkness } from '../../src/domain/darkness/index.js';
 import { projectWhiteTower } from '../../src/domain/white-tower/index.js';
+import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
+import { assertEmptyDeathState, assertEmptyDoorState, emptyDeathPublic, emptyDoorPublic } from '../helpers/empty-death-capture.js';
 import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   ROOT, FORK_COUNT, authenticateFixture, captureHash, checkpoint, hash, initialPlanningSeam,
@@ -43,7 +46,7 @@ function assertPlayerProjection(local: RedPriestProjection, global: RedPriestPro
     .toEqual(local.actions.map(({ id, command, cost, enabled }) => ({ id, command, cost, enabled })));
   expect(global.resources).toEqual(local.resources);
 }
-const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower'] as const;
+const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'] as const;
 /** Independently specified complete empty roots, not a filter for arbitrary
  * current defaults. The 0.209 capture itself uses schema206/red-priest-v206. */
 const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]> = {
@@ -57,14 +60,26 @@ const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]>
     evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
   whiteTower: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  tyrant: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    coasts: null, challenge: null, materials: null, epilogue: null, seaVoyages: [], assembly: null,
+    journal: [], promotionStability: { preparations: [] } },
+  sun: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  death: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    services: null, materials: null, materialScene: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  door: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
 };
-/** Preserve every historical public field. Only these five explicitly named
+/** Preserve every historical public field. Only these nine explicitly named
  * later chapter roots may be omitted, after checking their complete empty
  * private states and complete inactive player-facing projections. Unknown
  * public fields remain in the historical hash and therefore cannot be hidden. */
 function historicalPublicHash(current: SliceProjection, state: SliceState, capturedRoot: SliceState): string {
   expect([capturedRoot.schemaVersion, capturedRoot.contentVersion]).toEqual([206, 'red-priest-v206']);
   expect(state.progression.pathwayId).toBe('hunter');
+  expect(createTyrantState()).toStrictEqual(EMPTY_LATER_CHAPTERS.tyrant);
+  expect(createSunState()).toStrictEqual(EMPTY_LATER_CHAPTERS.sun);
+  assertEmptyDeathState(state); assertEmptyDoorState(state);
   expect(Object.keys(state).sort()).toEqual([...Object.keys(capturedRoot), ...LATER_CHAPTER_ROOTS].sort());
   for (const key of LATER_CHAPTER_ROOTS) {
     expect(Object.hasOwn(capturedRoot, key)).toBe(false);
@@ -72,20 +87,52 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
   }
   const fresh = { ...state, ...EMPTY_LATER_CHAPTERS };
   const expected = projectPlayerText({ visionary: projectVisionary(fresh), perfecter: projectPerfecter(fresh),
-    moon: projectMoon(fresh), darkness: projectDarkness(fresh), whiteTower: projectWhiteTower(fresh) }, state.character.name);
+    moon: projectMoon(fresh), darkness: projectDarkness(fresh), whiteTower: projectWhiteTower(fresh),
+    tyrant: {
+      title: '序列0 暴君', guidanceKnown: false, promoted: false,
+      story: '原小湾与旧人原物继续保留。三岸共二十七万原居民各有当前意愿与有限粮食；履约、隔周复核和真实航运不能用证书代替。另一位太阳真神独立敌对，单独挑战并真实存活才计入晋升经历。',
+      nextStep: state.progression.sequence === 1
+        ? '维持至少二十万同一在世居民同时恐惧、服从并信仰；本人单独挑战另一位真神后存活，取得原三份特性与同一唯一性，在当前氛围中完成同瓶付费准备。'
+        : '先继续雷神的真实原三份续筹、晋升和三案反思；历史独立第四份不能改写为同根回收件。',
+      risk: '晋升成功率按当前意志与本次付费准备计算；失败实际重伤、污染或死亡，没有免费重试。药液与普通载体耗用，原特性仍守恒，回收必须按真实原处和隔周条件完成。',
+      resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+        cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+      abilities: [], sections: [], insideCase: false,
+      actions: [{ id: 'tyrant:0:LEARN_GUIDANCE', label: '听取暴君晋升与三岸原人群指导', cost: '1行动、100便士',
+        command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+        reason: state.status === 'ACTIVE' ? '须由仍活着的雷神本人继续。' : '已经死亡或结束的角色不能继续行动。',
+        preferredAction: true }],
+    },
+    sun: {
+      title: '序列0 太阳', guidanceKnown: false, promoted: false,
+      story: '玛拉与芦影、原采光廊和投降的西拉斯都留在原处，旧许可、伤势和耗料继续保留。街区接待处有洗衣房与邻楼后阶两件居民求助；须亲自问清情况、处理实际原物并完成交接，普通手段也能完成。',
+      nextStep: '完成两件居民服务与现场核验；核清本人已有的一份和另外两份原特性，实地确认同一太阳唯一性空位，再为同一本人的同一瓶付费准备。实际晋1满十二周才可服药。',
+      risk: '成功率按本人实际意志与本瓶付费准备计算，不重掷。失败留下真实重伤和污染并可能死亡。幸存者只能在原处封存同一残余，隔周付费回收，再用剩余有价载体重配；总共只有三件载体。',
+      resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+        cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+      abilities: [], sections: [], insideCase: false,
+      actions: [{ id: 'sun:0:LEARN_GUIDANCE', label: '听取两件服务与三份原特性指导', cost: '1行动、100便士',
+        command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+        reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
+        preferredAction: true }],
+    },
+    death: emptyDeathPublic(state), door: emptyDoorPublic(state),
+  }, state.character.name);
   for (const key of LATER_CHAPTER_ROOTS) {
     expect(Object.hasOwn(current, key)).toBe(true);
     const root = current[key];
     expect(root).toStrictEqual(expected[key]);
     expect(Object.keys(root).sort()).toEqual(['title', 'guidanceKnown', 'promoted', 'story', 'nextStep', 'risk',
-      'resources', 'abilities', 'actions', 'sections', 'insideCase'].sort());
+      'resources', 'abilities', 'actions', 'sections', 'insideCase',
+      ...(['death', 'door'].includes(key) ? ['injuries', 'injuryRisk'] : [])].sort());
     expect([root.guidanceKnown, root.promoted, root.insideCase]).toEqual([false, false, false]);
     expect(root.abilities).toEqual([]); expect(root.sections).toEqual([]);
     expect(root.actions).toHaveLength(1);
     expect(root.actions[0]!.command).toEqual({ type: 'LEARN_GUIDANCE' });
     expect(root.actions[0]!.enabled).toBe(false);
   }
-  const { visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, whiteTower: _whiteTower, ...historical } = current;
+  const { visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, whiteTower: _whiteTower,
+    tyrant: _tyrant, sun: _sun, death: _death, door: _door, ...historical } = current;
   return hash(historical);
 }
 function persisted(path: string): string {
@@ -108,6 +155,12 @@ describe('Red Priest209 planned captured transition through SQLite', () => {
     const stateHash = hash(state), publicHash = hash(current), historical = historicalPublicHash(current, state, root.state);
     expect(historical).toBe(finalUiProof().replay.rows[0]!.publicSliceBeforeSha256);
     for (const key of LATER_CHAPTER_ROOTS) {
+      const missingState = { ...state }; Reflect.deleteProperty(missingState, key);
+      const missingPublic = { ...current }; Reflect.deleteProperty(missingPublic, key);
+      expect(() => historicalPublicHash(current, missingState, root.state)).toThrow();
+      expect(() => historicalPublicHash(missingPublic, state, root.state)).toThrow();
+      expect(() => historicalPublicHash(current, { ...state, [key]: { ...state[key], unexpected: undefined } }, root.state)).toThrow();
+      expect(() => historicalPublicHash({ ...current, [key]: { ...current[key], unexpected: undefined } }, state, root.state)).toThrow();
       expect(() => historicalPublicHash(current, { ...state, [key]: { ...state[key], guidanceKnown: true } }, root.state)).toThrow();
       expect(() => historicalPublicHash(current, { ...state, [key]: { ...state[key], privateProbe: true } }, root.state)).toThrow();
       expect(() => historicalPublicHash({ ...current, [key]: { ...current[key], story: 'changed' } }, state, root.state)).toThrow();

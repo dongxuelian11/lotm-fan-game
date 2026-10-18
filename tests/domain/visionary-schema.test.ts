@@ -10,6 +10,7 @@ import { createDarknessState } from '../../src/domain/darkness/index.js';
 import { createWhiteTowerState } from '../../src/domain/white-tower/index.js';
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
 import { createSunState } from '../../src/domain/sun/index.js';
+import { createDoorState } from '../../src/domain/door/index.js';
 import { createDeathState } from '../../src/domain/death/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
@@ -33,8 +34,8 @@ const historicalCaptures = {
   },
 } as const;
 const introducedRoots = {
-  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death'],
-  206: ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death'],
+  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'],
+  206: ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'],
 } as const;
 const historicalStates = new Map<205 | 206, Record<string, unknown>>();
 function old(version: 205 | 206): Record<string, unknown> {
@@ -57,8 +58,8 @@ describe('Visionary exact current schema boundary', () => {
   it('creates one exact empty root and a detached valid current save', () => {
     const state=fresh(), before=stableStringify(state), copy=migrateSliceState(state);
     expect([state.schemaVersion,state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
-    same(state.visionary,createVisionaryState());same(state.tyrant,createTyrantState());same(state.sun,createSunState());same(state.death,createDeathState());same(state,copy);expect(copy).not.toBe(state);
-    expect(copy.visionary).not.toBe(state.visionary);expect(copy.tyrant).not.toBe(state.tyrant);expect(copy.sun).not.toBe(state.sun);expect(copy.death).not.toBe(state.death);assertValidSliceState(copy);expect(stableStringify(state)).toBe(before);
+    same(state.visionary,createVisionaryState());same(state.tyrant,createTyrantState());same(state.sun,createSunState());same(state.death,createDeathState());expect(state.door).toStrictEqual(createDoorState());same(state,copy);expect(copy).not.toBe(state);
+    expect(copy.visionary).not.toBe(state.visionary);expect(copy.tyrant).not.toBe(state.tyrant);expect(copy.sun).not.toBe(state.sun);expect(copy.death).not.toBe(state.death);expect(copy.door).not.toBe(state.door);assertValidSliceState(copy);expect(stableStringify(state)).toBe(before);
   });
   for (const version of [205,206] as const) {
   it(`strictly preserves every old ${version} field and adds only missing defaults`, () => {
@@ -69,19 +70,19 @@ describe('Visionary exact current schema boundary', () => {
     expect(Object.keys(next).sort()).toEqual([...Object.keys(state), ...introducedRoots[version]].sort());
     for(const [key,value] of Object.entries(state)) if(key!=='schemaVersion'&&key!=='contentVersion') same(next[key as keyof SliceState],value);
     for(const key of introducedRoots[version]) same(next[key],defaults[key]);
-    same(next.tyrant,createTyrantState());same(next.sun,createSunState());same(next.death,createDeathState());
+    same(next.tyrant,createTyrantState());same(next.sun,createSunState());same(next.death,createDeathState());expect(next.door).toStrictEqual(createDoorState());
     expect(stableStringify(state)).toBe(before);
     expect(hash(readFileSync(historicalCaptures[version].path))).toBe(historicalCaptures[version].sha256);
   }, version === 205 ? 60_000 : 5_000);
   }
   it.each([
     [205, 'visionary'], [205, 'perfecter'], [205, 'moon'],
-    [205, 'darkness'], [205, 'whiteTower'], [205, 'tyrant'], [205, 'sun'], [205, 'death'],
+    [205, 'darkness'], [205, 'whiteTower'], [205, 'tyrant'], [205, 'sun'], [205, 'death'], [205, 'door'],
     [206, 'visionary'], [206, 'perfecter'], [206, 'moon'],
-    [206, 'darkness'], [206, 'whiteTower'], [206, 'tyrant'], [206, 'sun'], [206, 'death'],
+    [206, 'darkness'], [206, 'whiteTower'], [206, 'tyrant'], [206, 'sun'], [206, 'death'], [206, 'door'],
   ] as const)('rejects a future root smuggled into %i: %s',(version, root)=>{
     const defaults = { visionary: createVisionaryState(), perfecter: createPerfecterState(), moon: createMoonState(),
-      darkness: createDarknessState(), whiteTower: createWhiteTowerState(), tyrant: createTyrantState(), sun: createSunState(), death: createDeathState() };
+      darkness: createDarknessState(), whiteTower: createWhiteTowerState(), tyrant: createTyrantState(), sun: createSunState(), death: createDeathState(), door: createDoorState() };
     for (const value of [defaults[root], { ...defaults[root], guidanceKnown: true }, null]) {
       const state={...old(version),[root]:value},before=stableStringify(state);
       expect(()=>migrateSliceState(state)).toThrow();expect(stableStringify(state)).toBe(before);
@@ -89,7 +90,7 @@ describe('Visionary exact current schema boundary', () => {
   });
   it('rejects missing or altered later roots without repairing the input',()=>{
     const state=fresh();
-    for(const root of ['perfecter','moon','darkness','whiteTower','tyrant','sun','death'] as const){
+    for(const root of ['perfecter','moon','darkness','whiteTower','tyrant','sun','death','door'] as const){
       const { [root]: _missing, ...missing } = state;
       for(const value of [missing,{...state,[root]:{...state[root],guidanceKnown:true}},
         {...state,[root]:{...state[root],unexpectedField:true}}]){
@@ -108,6 +109,15 @@ describe('Visionary exact current schema boundary', () => {
     for (const value of [missing, { ...state, death: null },
       { ...state, death: { ...state.death, guidanceKnown: true } },
       { ...state, death: { ...state.death, unexpectedField: true } }]) {
+      const before = stableStringify(value);
+      expect(() => migrateSliceState(value)).toThrow(); expect(stableStringify(value)).toBe(before);
+    }
+  });
+  it('rejects a missing or altered current Door root without repair', () => {
+    const state = fresh(), { door: _missingDoor, ...missing } = state;
+    for (const value of [missing, { ...state, door: null },
+      { ...state, door: { ...state.door, guidanceKnown: true } },
+      { ...state, door: { ...state.door, unexpectedField: true } }]) {
       const before = stableStringify(value);
       expect(() => migrateSliceState(value)).toThrow(); expect(stableStringify(value)).toBe(before);
     }

@@ -144,9 +144,9 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
     }
   }, 240_000);
 
-  it('allows only verified empty Sun and Death roots when comparing captured212', () => {
+  it('allows only verified empty Sun, Death and Door roots when comparing captured212', () => {
     const state = data.initial, historical = historicalTyrantState(state);
-    for (const root of ['sun', 'death'] as const) {
+    for (const root of ['sun', 'death', 'door'] as const) {
       const { [root]: _missing, ...missing } = state;
       expect(() => historicalTyrantState(missing as SliceState)).toThrow();
       for (const value of [null, { ...state[root], guidanceKnown: true },
@@ -156,7 +156,7 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
     }
     expect(hash(historicalTyrantState({ ...state, unknownRoot: null } as SliceState))).not.toBe(hash(historical));
     const projection = projectSliceState(state), oldPublic = historicalTyrantPublic(projection, state);
-    for (const root of ['sun', 'death'] as const) {
+    for (const root of ['sun', 'death', 'door'] as const) {
       const { [root]: _missing, ...missing } = projection;
       expect(() => historicalTyrantPublic(missing as SliceProjection, state)).toThrow();
       for (const value of [null, { ...projection[root], promoted: true },
@@ -184,8 +184,8 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
     same(capturePublic(expected), promoted.public);
     const current = migrateCapturedTyrantState(promoted.final), actual = projectSliceState(current);
     assertCurrentGlobal(actual, promoted, 'after'); assertCurrentGlobal(actual, next, 'before');
-    const currentExpected = { ...expected, sun: actual.sun, death: actual.death };
-    expect(() => assertCurrentGlobal({ ...promoted.globalPublic, sun: actual.sun, death: actual.death }, promoted, 'after')).toThrow();
+    const currentExpected = { ...expected, sun: actual.sun, death: actual.death, door: actual.door };
+    expect(() => assertCurrentGlobal({ ...promoted.globalPublic, sun: actual.sun, death: actual.death, door: actual.door }, promoted, 'after')).toThrow();
     const extraChange = structuredClone(currentExpected); extraChange.cash++;
     expect(() => assertCurrentGlobal(extraChange, promoted, 'after')).toThrow();
     const extraField = { ...currentExpected, unexpectedPromotionField: true };

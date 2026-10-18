@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { projectSliceState } from '../../src/domain/slice/index.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import type { SliceBridge } from '../../src/shared/slice-contracts.js';
-import { assertGlobalPublic, CURRENT_SUPPORTED_PROMOTION_CHECK, expectedCurrentGlobal, filePin, hash,
+import { assertGlobalPublic, CURRENT_SUPPORTED_PROMOTION_CHECK, expectedCurrentGlobal, filePin, hash, historicalTyrantState, historicalTyrantPublic,
   json, migrateCapturedTyrantState, RAW_SUPPORTED_PROMOTION_CHECK, ROOT, type Action } from '../helpers/tyrant-capture.js';
 
 const showModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal');
@@ -31,7 +31,7 @@ describe('actual717 promotion check in the reachable weekly dashboard', () => {
     expect(filePin(`${ROOT}/action-717.json.gz`)).toEqual(capturePin);
     const action = json<Action>('action-717.json.gz'), state = migrateCapturedTyrantState(action.final), before = hash(state);
     const value = projectSliceState(state);
-    expect(value).toEqual(expectedCurrentGlobal(action, 'after'));
+    expect(historicalTyrantPublic(value, state)).toEqual(expectedCurrentGlobal(action, 'after'));
     expect(value.lastCheck).toEqual(CURRENT_SUPPORTED_PROMOTION_CHECK);
     expect(value.thunderGod.insideCase).toBe(false);
     assertGlobalPublic(value, state);
@@ -63,7 +63,7 @@ describe('actual717 promotion check in the reachable weekly dashboard', () => {
     expect(details.textContent).not.toContain('成功率 44%');
     expect(submitIntent).not.toHaveBeenCalled(); expect(loadRun).toHaveBeenCalledExactlyOnceWith(value.runId);
     expect(state.lastCheck).toEqual(RAW_SUPPORTED_PROMOTION_CHECK);
-    expect(hash(state)).toBe(before); expect(hash(action.final)).toBe(before);
+    expect(hash(state)).toBe(before); expect(hash(action.final)).toBe(hash(historicalTyrantState(state)));
     expect(filePin(`${ROOT}/action-717.json.gz`)).toEqual(capturePin);
   }, 120_000);
 });

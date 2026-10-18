@@ -58,7 +58,7 @@ describe('Darkness213 complete immutable natural capture', () => {
     expect(counts).toEqual(rows.map(row => row.commandCount)); expect(new Set(counts).size).toBe(NEW_COMMANDS);
   });
 
-  it('removes Death only after exact private and public default verification', () => {
+  it('removes Death and Door only after exact private and public default verification', () => {
     const state = data.initial, expected = historicalDarknessState(state);
     const { death: _missingDeath, ...missing } = state;
     expect(() => historicalDarknessState(missing as SliceState)).toThrow();
@@ -66,6 +66,12 @@ describe('Darkness213 complete immutable natural capture', () => {
       { ...state.death, unexpectedField: undefined }])
       expect(() => historicalDarknessState({ ...state, death } as SliceState)).toThrow();
     expect(() => migrateCapturedDarknessState({ ...expected, death: state.death } as HistoricalDarknessState)).toThrow();
+    const { door: _missingDoor, ...missingDoor } = state;
+    expect(() => historicalDarknessState(missingDoor as SliceState)).toThrow();
+    for (const door of [null, { ...state.door, guidanceKnown: true },
+      { ...state.door, unexpectedField: undefined }])
+      expect(() => historicalDarknessState({ ...state, door } as SliceState)).toThrow();
+    expect(() => migrateCapturedDarknessState({ ...expected, door: state.door } as HistoricalDarknessState)).toThrow();
     expect(hash(historicalDarknessState({ ...state, unknownRoot: null } as SliceState))).not.toBe(hash(expected));
     const projection = projectSliceState(state), historical = historicalDarknessPublic(projection, state);
     expect(Object.hasOwn(historical, 'death')).toBe(false);
@@ -74,6 +80,12 @@ describe('Darkness213 complete immutable natural capture', () => {
     for (const death of [null, { ...projection.death, promoted: true },
       { ...projection.death, unexpectedField: undefined }])
       expect(() => historicalDarknessPublic({ ...projection, death } as SliceProjection, state)).toThrow();
+    expect(Object.hasOwn(historical, 'door')).toBe(false);
+    const { door: _missingDoorPublic, ...missingDoorPublic } = projection;
+    expect(() => historicalDarknessPublic(missingDoorPublic as SliceProjection, state)).toThrow();
+    for (const door of [null, { ...projection.door, promoted: true },
+      { ...projection.door, unexpectedField: undefined }])
+      expect(() => historicalDarknessPublic({ ...projection, door } as SliceProjection, state)).toThrow();
     expect(hash(historicalDarknessPublic({ ...projection, unknownRoot: null } as SliceProjection, state)))
       .not.toBe(hash(historical));
   });

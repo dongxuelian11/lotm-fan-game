@@ -8,7 +8,7 @@ import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
 import { createSunState } from '../../src/domain/sun/index.js';
-import { assertEmptyDeathState, assertEmptyDeathPublic } from './empty-death-capture.js';
+import { assertEmptyDeathState, assertEmptyDeathPublic, assertEmptyDoorState, assertEmptyDoorPublic } from './empty-death-capture.js';
 
 /** Read-only NEW215 evidence consumer. No producer imports, compiled runtime,
  * controlled-success fixture, random seam, alternate root or lost215 fallback. */
@@ -253,15 +253,15 @@ const EMPTY_SUN: SliceState['sun'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
 };
-export type HistoricalTyrantState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'sun' | 'death'> & {
+export type HistoricalTyrantState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'sun' | 'death' | 'door'> & {
   schemaVersion: 212; contentVersion: 'tyrant-v212';
 };
-export type HistoricalTyrantPublic = Omit<SliceProjection, 'sun' | 'death'>;
+export type HistoricalTyrantPublic = Omit<SliceProjection, 'sun' | 'death' | 'door'>;
 export function historicalTyrantState(state: SliceState): HistoricalTyrantState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(createSunState(), EMPTY_SUN); assert.deepEqual(state.sun, EMPTY_SUN);
-  assertEmptyDeathState(state);
-  const { sun: _emptySun, death: _emptyDeath, ...originalFields } = state;
+  assertEmptyDeathState(state); assertEmptyDoorState(state);
+  const { sun: _emptySun, death: _emptyDeath, door: _emptyDoor, ...originalFields } = state;
   return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
 }
 function assertPostTyrantPublic(projection: SliceProjection, state: SliceState): void {
@@ -280,11 +280,11 @@ function assertPostTyrantPublic(projection: SliceProjection, state: SliceState):
       reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
       preferredAction: true }],
   });
-  assertEmptyDeathPublic(projection, state);
+  assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state);
 }
 export function historicalTyrantPublic(projection: SliceProjection, state: SliceState): HistoricalTyrantPublic {
   historicalTyrantState(state); assertPostTyrantPublic(projection, state);
-  const { sun: _emptySun, death: _emptyDeath, ...originalFields } = projection;
+  const { sun: _emptySun, death: _emptyDeath, door: _emptyDoor, ...originalFields } = projection;
   return originalFields;
 }
 /** Raw capture hashes always refer to212; current strict admission is a separate
@@ -294,8 +294,8 @@ export function migrateCapturedTyrantState(raw: SliceState): SliceState {
   const before = hash(raw), current = migrateSliceState(raw);
   assert.deepEqual([current.schemaVersion, current.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assertValidSliceState(current); assert.equal(hash(raw), before);
-  assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false);
-  exactKeys(current, [...Object.keys(raw), 'sun', 'death']);
+  assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false);
+  exactKeys(current, [...Object.keys(raw), 'sun', 'death', 'door']);
   same(historicalTyrantState(current), raw, 'Current ingress changed complete captured212 state');
   assert.equal(current.runId, raw.runId); same(current.random, raw.random); return current;
 }
@@ -348,7 +348,7 @@ export function assertCurrentGlobal(actual: SliceProjection, action: Action, sid
   const state = side === 'before' ? action.beforeLast : action.final;
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
   assertPostTyrantPublic(actual, state);
-  const { sun: _emptySun, death: _emptyDeath, ...historicalPublic } = actual;
+  const { sun: _emptySun, death: _emptyDeath, door: _emptyDoor, ...historicalPublic } = actual;
   same(historicalPublic, expectedCurrentGlobal(action, side), `Only the exact supported717 public check may differ (${action.commandCount} ${side})`);
   same(capturePublic(actual), side === 'before' ? action.publicBefore : action.public, 'The complete chapter capture remains unchanged');
 }

@@ -4,9 +4,12 @@ import { lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
+import { assertEmptyDoorState, assertEmptyDoorPublic } from './empty-death-capture.js';
 
 /** Independent immutable NEW217 reader. Never imports/executes the producer,
- * game runtime, migration, SQLite or controlled scenario builders. */
+ * gameplay replay, migration, SQLite or controlled scenario builders.
+ * Current comparisons independently verify only the introduced empty Door root. */
 export const ROOT = process.env.DEATH_CAPTURE_ROOT ?? 'tests/fixtures/death-v02170';
 export const SOURCE = 'tests/fixtures/pale-emperor-v01950/natural.json';
 export const SOURCE_SHA = '14be49645e7fa18b4127c7ec34b39875eff1302fbba8052b9037ed149a42d66c';
@@ -299,16 +302,44 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   assert(!before.death.guidanceKnown && after.death.guidanceKnown);
   return { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
-/** Whole current214 projection, no corrected fields or removed roots. */
-export function assertCurrentGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
+export type HistoricalDeathState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'door'> & {
+  schemaVersion: 214; contentVersion: 'death-v214';
+};
+export type HistoricalDeathPublic = Omit<SliceProjection, 'door'>;
+/** Exactly the schema215 Door default may be omitted. Every original field and
+ * unknown root remains in the historical hash; raw schema/content never move. */
+export function historicalDeathState(state: SliceState): HistoricalDeathState {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  assertEmptyDoorState(state);
+  const { door: _emptyDoor, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
+}
+export function historicalDeathPublic(projection: SliceProjection, state: SliceState): HistoricalDeathPublic {
+  historicalDeathState(state); assertEmptyDoorPublic(projection, state);
+  const { door: _emptyDoor, ...originalFields } = projection;
+  return originalFields;
+}
+/** Raw214 authentication stays independent of current projection admission. */
+export function assertCapturedGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
   const state = side === 'before' ? action.beforeLast : action.final;
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
   assert.equal(state.revision, action.commandCount + (side === 'after' ? 1 : 0));
+  assert.equal(Object.hasOwn(state, 'door'), false); assert.equal(Object.hasOwn(actual, 'door'), false);
   const expected = side === 'before' ? action.globalPublicBefore : action.globalPublic;
-  same(actual, expected, `Complete global public ${action.commandCount} ${side}`);
+  same(actual, expected, `Complete captured global public ${action.commandCount} ${side}`);
   assert.equal(hash(actual), side === 'before' ? action.audit.globalPublicBeforeSha256 : action.audit.globalPublicAfterSha256);
   same(capturePublic(actual), side === 'before' ? action.publicBefore : action.public); assertGlobalPublic(actual, state);
 }
+/** Current projection requires the exact empty Door root before comparison of
+ * every historical public leaf. Missing roots never select a permissive path. */
+export function assertCurrentGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
+  const state = side === 'before' ? action.beforeLast : action.final;
+  assertEmptyDoorPublic(actual, state);
+  const { door: _emptyDoor, ...historicalPublic } = actual;
+  assertCapturedGlobal(historicalPublic as SliceProjection, action, side);
+  assertGlobalPublic(actual, state);
+}
+
 function assertPolicyTransition(action: Action): void {
   const before = action.publicBefore, after = action.public, prior = action.policyBefore, next = structuredClone(prior);
   assert(action.lastIntent.type === 'DEATH'); const command = action.lastIntent.command;
@@ -365,7 +396,7 @@ export function readAction(row: Row): Action {
   assert.equal(action.beforeLast.revision, row.commandCount); assert.equal(action.final.revision, row.commandCount + 1);
   same(action.randomBefore, row.randomBefore); same(action.randomAfter, row.randomAfter);
   same(action.beforeLast.random, row.randomBefore); same(action.final.random, row.randomAfter);
-  assertCurrentGlobal(action.globalPublicBefore, action, 'before'); assertCurrentGlobal(action.globalPublic, action, 'after');
+  assertCapturedGlobal(action.globalPublicBefore, action, 'before'); assertCapturedGlobal(action.globalPublic, action, 'after');
   same(actualReceipts(action.final, action.beforeLast), row.receipts); same(outcome(action.public), row.selectionOutcome);
   assertPublicAction(action.publicBefore, row);
   assert.equal(row.reason, 'Follow the exact enabled runtime-preferred public action; retain its actual costs and outcome');

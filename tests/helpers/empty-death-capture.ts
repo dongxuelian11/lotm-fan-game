@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createDoorState } from '../../src/domain/door/index.js';
 import { createDeathState } from '../../src/domain/death/index.js';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 
@@ -40,4 +41,41 @@ export function emptyDeathPublic(state: SliceState): SliceProjection['death'] {
 export function assertEmptyDeathPublic(projection: Pick<SliceProjection, 'death'>, state: SliceState): void {
   assert.equal(Object.hasOwn(projection, 'death'), true);
   assert.deepEqual(projection.death, emptyDeathPublic(state));
+}
+
+/** Independently pinned schema215 addition, separate from every raw capture.
+ * Validate all leaves before omitting this root from a historical comparison. */
+export function assertEmptyDoorState(state: Pick<SliceState, 'door'>): void {
+  const empty: SliceState['door'] = {
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    services: null, materials: null, epilogue: null, journal: [],
+    promotionStability: { preparations: [] },
+  };
+  assert.deepEqual(createDoorState(), empty);
+  assert.equal(Object.hasOwn(state, 'door'), true);
+  assert.deepEqual(state.door, empty);
+}
+
+/** Only non-Door historical pathways use this exact inactive projection. */
+export function emptyDoorPublic(state: SliceState): SliceProjection['door'] {
+  assert.notEqual(state.progression.pathwayId, 'door');
+  return {
+    title: '序列0 门', guidanceKnown: false, promoted: false,
+    story: '旧通行室与玛拉、入口架上的原包、异星封包和已经归档的保护装具各留原处。街区有三处被损坏门槛、空车和门销阻断的日常通路：先问过原人、查看两端，用普通器具修通，再把同一人或货送到接收人面前。',
+    nextStep: '完成三处真实通行与彼端核收，核清本人融合的原份、另一原供应瓶与失败残余的去向，再取得同一封存唯一性；晋1满十二周并完成同瓶有价准备后，才能独立确认服药。',
+    risk: '服药按实际意志和同瓶准备检定，不能重掷。失败可致重伤、污染或死亡；幸存者只可在原处封存同一残余，隔周付费回收，用剩余有限载体重新调配。旧死者不会复活，也不产生第四份特性。',
+    resources: { health: state.health, maxHealth: 100, mind: state.mind, maxMind: 100,
+      spirituality: state.spirituality, maxSpirituality: 120, cash: `${state.cash}便士`,
+      actionsRemaining: state.actionsRemaining, weeklyBudget: state.weeklyBudget },
+    injuries: state.injuries.map(injury => ({ id: injury.id, severity: injury.severity,
+      treated: injury.treatedRevision !== null })), injuryRisk: state.injuryRisk,
+    abilities: [], actions: [{ id: 'door:0:LEARN_GUIDANCE', label: '听取三件服务与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的星之匙本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }], sections: [], insideCase: false,
+  };
+}
+export function assertEmptyDoorPublic(projection: Pick<SliceProjection, 'door'>, state: SliceState): void {
+  assert.equal(Object.hasOwn(projection, 'door'), true);
+  assert.deepEqual(projection.door, emptyDoorPublic(state));
 }

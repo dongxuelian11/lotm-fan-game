@@ -7,7 +7,7 @@ import { assertValidSliceState, projectSliceState } from '../../src/domain/slice
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
-import { assertEmptyDeathState, assertEmptyDeathPublic } from './empty-death-capture.js';
+import { assertEmptyDeathState, assertEmptyDeathPublic, assertEmptyDoorState, assertEmptyDoorPublic } from './empty-death-capture.js';
 
 /** Independent read-only consumer of the actual NEW216 natural934. An explicit
  * root permits pre-publication validation of the exact same pinned bytes. No
@@ -187,30 +187,30 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   return { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
 
-export type HistoricalSunState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'death'> & {
+export type HistoricalSunState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'death' | 'door'> & {
   schemaVersion: 213; contentVersion: 'sun-v213';
 };
-export type HistoricalSunPublic = Omit<SliceProjection, 'death'>;
-/** Only the independently verified empty Death root may be removed. All old
+export type HistoricalSunPublic = Omit<SliceProjection, 'death' | 'door'>;
+/** Only the independently verified empty Death and Door roots may be removed. All old
  * fields and every unrecognized future root remain in the historical hash. */
 export function historicalSunState(state: SliceState): HistoricalSunState {
-  assert.deepEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION], [214, 'death-v214'],
-    'Review and explicitly pin each post214 migration addition before accepting a new schema');
+  assert.deepEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION], [215, 'door-v215'],
+    'Review and explicitly pin each post215 migration addition before accepting a new schema');
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assertEmptyDeathState(state);
-  const { death: _emptyDeath, ...originalFields } = state;
+  assertEmptyDeathState(state); assertEmptyDoorState(state);
+  const { death: _emptyDeath, door: _emptyDoor, ...originalFields } = state;
   return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
 }
 export function historicalSunPublic(projection: SliceProjection, state: SliceState): HistoricalSunPublic {
-  historicalSunState(state); assertEmptyDeathPublic(projection, state);
-  const { death: _emptyDeath, ...originalFields } = projection;
+  historicalSunState(state); assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state);
+  const { death: _emptyDeath, door: _emptyDoor, ...originalFields } = projection;
   return originalFields;
 }
 export function migrateCapturedSunState(raw: SliceState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
-  assert.equal(Object.hasOwn(raw, 'death'), false);
+  assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false);
   const before = hash(raw), current = migrateSliceState(raw); assertValidSliceState(current);
-  exactKeys(current, [...Object.keys(raw), 'death']); same(historicalSunState(current), raw, 'Current ingress changed a complete captured state');
+  exactKeys(current, [...Object.keys(raw), 'death', 'door']); same(historicalSunState(current), raw, 'Current ingress changed a complete captured state');
   assert.equal(hash(raw), before, 'Migration mutated the original capture'); return current;
 }
 /** Reviewed public corrections: the genuine Sun0 maximum30→150 from923-after,
@@ -268,8 +268,8 @@ export function assertCurrentGlobal(actual: SliceProjection, action: Action, sid
   const state = side === 'before' ? action.beforeLast : action.final;
   const expected = expectedCurrentGlobal(action, side);
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
-  assertEmptyDeathPublic(actual, state);
-  const { death: _emptyDeath, ...historicalPublic } = actual;
+  assertEmptyDeathPublic(actual, state); assertEmptyDoorPublic(actual, state);
+  const { death: _emptyDeath, door: _emptyDoor, ...historicalPublic } = actual;
   same(historicalPublic, expected,
     `Complete global public ${action.commandCount} ${side}`);
   same(capturePublic(actual), capturePublic(expected));

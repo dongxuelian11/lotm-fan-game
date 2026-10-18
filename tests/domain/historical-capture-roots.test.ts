@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { projectSliceState } from '../../src/domain/slice/index.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import {
   hash, sha, same, historicalDarknessPublic, historicalDarknessState, migrateCapturedDarknessState,
@@ -11,8 +12,12 @@ import {
   capturePublic, historicalMoonPublic, historicalMoonState, migrateCapturedMoonState,
   type Boundary as MoonBoundary, type HistoricalMoonState,
 } from '../helpers/moon-capture.js';
+import {
+  assertCapturedGlobal as assertCapturedDeathGlobal, assertCurrentGlobal as assertCurrentDeathGlobal,
+  historicalDeathPublic, historicalDeathState, readActionAt as readDeathActionAt,
+} from '../helpers/death-capture.js';
 
-// The two published members are sufficient to exercise the comparison adapters.
+// Published members exercise exact comparison adapters without campaign replay.
 // Full campaign authentication/replay remains mandatory in the existing suites.
 describe('Exact historical capture root adapters', () => {
   it('preserves raw210 Darkness680 and rejects every altered addition or historical field', () => {
@@ -23,7 +28,7 @@ describe('Exact historical capture root adapters', () => {
     const raw = boundary.beforeLast, rawHash = hash(raw);
     expect(rawHash).toBe(boundary.audit.beforeStateSha256);
     const current = migrateCapturedDarknessState(raw), currentHash = hash(current);
-    const additions = ['whiteTower', 'tyrant', 'sun', 'death'] as const;
+    const additions = ['whiteTower', 'tyrant', 'sun', 'death', 'door'] as const;
     expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), ...additions].sort());
     same(historicalDarknessState(current), raw);
     for (const root of additions) {
@@ -68,7 +73,7 @@ describe('Exact historical capture root adapters', () => {
     const raw = boundary.final, rawHash = hash(raw);
     expect(rawHash).toBe(boundary.audit.afterStateSha256);
     const current = migrateCapturedMoonState(raw), currentHash = hash(current);
-    const additions = ['darkness', 'whiteTower', 'tyrant', 'sun', 'death'] as const;
+    const additions = ['darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'] as const;
     expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), ...additions].sort());
     same(historicalMoonState(current), raw);
     for (const root of additions) {
@@ -103,4 +108,42 @@ describe('Exact historical capture root adapters', () => {
     expect(hash(raw)).toBe(rawHash); expect(hash(current)).toBe(currentHash); expect(hash(projection)).toBe(publicHash);
     expect(sha(readFileSync(path))).toBe(pin);
   }, 60_000);
+
+  it('preserves raw214 Death1039 and admits only the exact schema215 Door addition', () => {
+    const action = readDeathActionAt(1039), raw = action.beforeLast, rawHash = hash(raw);
+    expect([raw.schemaVersion, raw.contentVersion]).toEqual([214, 'death-v214']);
+    expect(rawHash).toBe(action.audit.beforeStateSha256); expect(Object.hasOwn(raw, 'door')).toBe(false);
+    const current = migrateSliceState(raw), currentHash = hash(current);
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'door'].sort());
+    same(historicalDeathState(current), raw);
+    const missing = { ...current }; Reflect.deleteProperty(missing, 'door');
+    expect(() => historicalDeathState(missing)).toThrow();
+    for (const door of [null, { ...current.door, guidanceKnown: true },
+      { ...current.door, unexpected: undefined },
+      { ...current.door, promotionStability: { preparations: [], unexpected: undefined } }])
+      expect(() => historicalDeathState({ ...current, door } as SliceState)).toThrow();
+    expect(() => migrateSliceState({ ...raw, door: current.door })).toThrow();
+    expect(() => same(historicalDeathState({ ...current, cash: current.cash + 1 }), raw)).toThrow();
+    expect(() => same(historicalDeathState({ ...current, unexpectedRoot: null } as SliceState), raw)).toThrow();
+    const projection = projectSliceState(current), publicHash = hash(projection);
+    same(historicalDeathPublic(projection, current), action.globalPublicBefore);
+    expect(hash(historicalDeathPublic(projection, current))).toBe(action.audit.globalPublicBeforeSha256);
+    assertCapturedDeathGlobal(action.globalPublicBefore, action, 'before');
+    assertCurrentDeathGlobal(projection, action, 'before');
+    expect(() => assertCapturedDeathGlobal(projection, action, 'before')).toThrow();
+    expect(() => assertCurrentDeathGlobal(action.globalPublicBefore, action, 'before')).toThrow();
+    const missingPublic = { ...projection }; Reflect.deleteProperty(missingPublic, 'door');
+    expect(() => historicalDeathPublic(missingPublic, current)).toThrow();
+    for (const door of [null, { ...projection.door, promoted: true },
+      { ...projection.door, unexpected: undefined },
+      { ...projection.door, actions: [{ ...projection.door.actions[0]!, enabled: true }] },
+      { ...projection.door, resources: { ...projection.door.resources, cash: 'forged' } }]) {
+      expect(() => historicalDeathPublic({ ...projection, door } as SliceProjection, current)).toThrow();
+      expect(() => assertCurrentDeathGlobal({ ...projection, door } as SliceProjection, action, 'before')).toThrow();
+    }
+    expect(() => assertCurrentDeathGlobal({ ...projection, cash: projection.cash + 1 }, action, 'before')).toThrow();
+    expect(() => assertCurrentDeathGlobal({ ...projection, unexpectedRoot: null } as SliceProjection, action, 'before')).toThrow();
+    expect(hash(raw)).toBe(rawHash); expect(hash(current)).toBe(currentHash); expect(hash(projection)).toBe(publicHash);
+  }, 120_000);
+
 });

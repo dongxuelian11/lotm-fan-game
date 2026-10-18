@@ -1,4 +1,4 @@
-import { assertEmptyDeathState } from '../helpers/empty-death-capture.js';
+import { assertEmptyDeathState, assertEmptyDoorState } from '../helpers/empty-death-capture.js';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, readdirSync } from 'node:fs';
@@ -121,11 +121,11 @@ function captureHash(current: SliceState, historical: SliceState): string {
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   const old = historical as unknown as Record<string, unknown>, now = current as unknown as Record<string, unknown>;
   const fresh = defaults as unknown as Record<string, unknown>;
-  const laterRoots = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death'] as const;
+  const laterRoots = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'] as const;
   expect([186, 208]).toContain(historical.schemaVersion);
   const added = Number(historical.schemaVersion) === 186 ? [...ADDED_ROOTS, ...laterRoots] : [...laterRoots];
   for (const key of added) expect(Object.hasOwn(old, key), `Unexpected historical root ${key}`).toBe(false);
-  assertEmptyDeathState(current);
+  assertEmptyDeathState(current); assertEmptyDoorState(current);
   expect(Object.keys(now).sort()).toEqual([...Object.keys(old), ...added].sort());
   for (const key of added) same(now[key], fresh[key]);
   return hash({ ...Object.fromEntries(Object.keys(old).map(key => [key, now[key]])),
