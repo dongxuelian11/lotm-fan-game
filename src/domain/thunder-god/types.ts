@@ -10,13 +10,36 @@ export type ThunderGodPreparationId = typeof THUNDER_GOD_PREPARATION_IDS[number]
 export type ThunderGodAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: ThunderGodPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1' | 'STABILIZE_PROMOTION'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type ThunderGodCommand = ThunderGodAcquisitionCommand | ThunderGodActivityCommand | ThunderGodEncounterCommand;
+/** The vessel may change; the three finite original characteristics do not. */
+export interface ThunderGodRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_COVE_EXIT'; custodian: 'CT2-NORA';
+}
+export interface ThunderGodRecovery extends ThunderGodRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous, named permission and physical inspection. It is never inferred from old consent. */
+export interface ThunderGodRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_COVE_EXIT'; originals: ThunderGodOriginals;
+  permission: { personId: 'CT2-NORA'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT'; custodyAfter: 'FAILED_REMNANT' | 'SUPPLIER';
+}
+export interface ThunderGodOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface ThunderGodOriginalCharacteristics {
+  characteristics: ThunderGodOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface ThunderGodBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: ThunderGodRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface ThunderGodAcquisitionBudget {
@@ -29,6 +52,7 @@ export interface ThunderGodAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'tyrant'; catastrophePromotionWeek: number; sailorPromotionWeek: number };
   before: ThunderGodAcquisitionBudget; after: ThunderGodAcquisitionBudget;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: ThunderGodRecoverySite;
 }
 export const THUNDER_GOD_SOURCE_KEYS = ['sailor', 'rager', 'navigator', 'windBlessed', 'oceanSinger', 'cataclysmPriest', 'seaKing', 'catastrophe'] as const;
 export type ThunderGodSourceHistory = Pick<SliceState, typeof THUNDER_GOD_SOURCE_KEYS[number]>;
@@ -41,9 +65,10 @@ export interface ThunderGodSourceScene {
 }
 export interface ThunderGodState {
   guidanceKnown: boolean; bottles: ThunderGodBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: ThunderGodRecoveryRequest };
   promotionWeek: number | null; catastropheActingAtPromotion: number | null;
   preparations: { taskId: ThunderGodPreparationId; completedWeek: number }[];
+  promotionStability?: { preparations: ThunderGodPromotionStability[] };
   preparedWeek: number | null; acquisitionJournal: ThunderGodAcquisitionEvent[];
   /** Single frozen eight-root history; only authoritative original resource fields can evolve. */
   sourceHistory: ThunderGodSourceHistory | null; sourceScene: ThunderGodSourceScene | null;
@@ -70,3 +95,9 @@ export interface ThunderGodProjection {
 export type ThunderGodPublicView = ThunderGodProjection;
 export type { ThunderGodActivityCommand, ThunderGodLifeProjection, ThunderGodLifeState } from './life.js';
 export type { ThunderGodEncounterCommand, ThunderGodEncounterProjection, ThunderGodEncounterState } from './encounter.js';
+
+/** Future-only paid support bound to the exact vessel and original site. */
+export interface ThunderGodPromotionStability {
+  id: string; bottleId: string; week: number; revision: number; actorDigest: string; sourceDigest: string;
+  location: 'BACKLUND_ORIGINAL_COVE_EXIT'; status: 'READY' | 'SPENT' | 'INVALIDATED';
+}
