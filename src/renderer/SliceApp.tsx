@@ -5307,6 +5307,7 @@ export function SliceApp() {
         <StarKeyPanel value={state.starKey} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
           onCommand={c => command({type:"STAR_KEY",command:c})}
           {...(!state.starKey.insideCase ? {onClose:() => setDrawer(null)} : {})}/>}
+        {doorPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DOOR")}>查看门晋升准备</button>}
       </main>
     </div>{eventDialog}{combat && <Combat state={state} reveal={roundReveal} onAcknowledge={() => setRoundReveal(null)} onCommand={command} busy={busy} error={error} onRetry={retryLast} fast={fast} onFastChange={setFast}/>}</Fragment>;
   }
@@ -5322,8 +5323,6 @@ export function SliceApp() {
         <PaleEmperorPanel value={state.paleEmperor} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
           onCommand={c => command({type:"PALE_EMPEROR",command:c})}
           {...(!state.paleEmperor.insideCase ? {onClose:() => setDrawer(state.ferryman?.era.available ? "FERRYMAN" : null)} : {})}/>}
-        {doorPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DOOR")}>查看门晋升准备</button>}
-        {doorPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DOOR")}>查看门晋升准备</button>}
         {deathPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DEATH")}>查看死神晋升准备</button>}
       </main>
     </div>{eventDialog}{combat && <Combat state={state} reveal={roundReveal} onAcknowledge={() => setRoundReveal(null)} onCommand={command} busy={busy} error={error} onRetry={retryLast} fast={fast} onFastChange={setFast}/>}</Fragment>;
@@ -5514,8 +5513,6 @@ export function SliceApp() {
         <FerrymanPanel value={state.ferryman} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat} error={error?.message ?? null}
           onCommand={c => command({type:"FERRYMAN",command:c})}
           {...(!state.ferryman.insideCase && !state.ferryman.era.available ? {onClose:() => setDrawer(null)} : {})}/> }
-        {doorPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DOOR")}>查看门晋升准备</button>}
-        {doorPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DOOR")}>查看门晋升准备</button>}
         {deathPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DEATH")}>查看死神晋升准备</button>}
         {paleEmperorPageAvailable(state) && !state.ferryman.insideCase && !combat && <button className="slice-button quiet" disabled={busy || pending.current !== null} onClick={() => setDrawer("PALE_EMPEROR")}>苍白皇帝与当代附廊</button>}
         {state.deathConsul?.discovered && !state.ferryman.insideCase && !combat && <button className="slice-button quiet" disabled={busy || pending.current !== null} onClick={() => setDrawer("DEATH_CONSUL")}>死亡执政官与封存室</button>}

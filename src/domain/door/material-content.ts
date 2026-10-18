@@ -13,7 +13,7 @@ export const DOOR_FUTURE_BRANCH = {
   custodianId: 'DR0-UNIQUENESS-CUSTODIAN', custodianName: '原封存处保管人',
   terminationDate: { epoch: 'FIFTH_EPOCH', year: 1353, month: 4, day: 21 },
   transferDate: { epoch: 'FIFTH_EPOCH', year: 1353, month: 4, day: 22 },
-  story: '这条独立原创后续的现存档案记载，前任于1353年4月21日实际死亡，同一门唯一性析出后在4月22日转入未容纳它的保管人手中，神位空缺。三份原序列1特性的封签分别对应原供货的三瓶，不另造第四份。玩家现在才调查这条记录，须核对原始损失证据、逐次保管交接、当前实物与许可；旧指导和旧纪事不倒填这些信息。',
+  story: '现存封存档案记载，前任于1353年4月21日实际死亡，同一门唯一性析出后在4月22日转入未容纳它的保管人手中，神位空缺。三份原序列1特性的封签分别对应原供货的三瓶，不另造第四份。你需要亲自调查这条记录，核对当时的损失证据、逐次保管交接，以及当前实物与许可。',
 } as const;
 const branch = DOOR_FUTURE_BRANCH;
 const succession: DoorSuccession = {

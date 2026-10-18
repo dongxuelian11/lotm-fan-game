@@ -163,11 +163,11 @@ async function mount(game: ReturnType<typeof publicAdapter>) {
   await userEvent.click(screen.getByRole('button', { name: name => name.includes(game.current.character.name) }));
   await waitFor(() => expect(game.bridge.loadRun).toHaveBeenLastCalledWith(game.current.runId));
   if (!game.current.door.guidanceKnown) {
-    // This is the real post-cycle reception, not an invented ordinary dashboard.
+    // This is the actual living Star Key source with its ordinary street reception.
     // Its historical battle acknowledgement, if shown, is readonly navigation.
     const oldRound = screen.queryByRole('dialog', { name: '战斗回合结果' });
     if (oldRound) await userEvent.click(within(oldRound).getByRole('button', { name: '返回生活' }));
-    await screen.findByRole('button', { name: '苍白皇帝与当代附廊' });
+    await screen.findByRole('button', { name: '星之匙与通行室' });
   } else {
     await screen.findByRole('region', { name: game.current.door.title });
   }
@@ -186,7 +186,7 @@ function assertPage(value: SliceProjection) {
   const topbar = screen.getByRole('button', { name: '返回主菜单' }).closest('header');
   expect(topbar?.textContent).toContain(`${value.character.name} · ${value.door.title}`);
   expect(screen.queryByRole('heading', { name: '人物卷宗' })).toBeNull();
-  expect(screen.queryByRole('region', { name: '苍白皇帝成长' })).toBeNull();
+  expect(screen.queryByRole('region', { name: '星之匙成长' })).toBeNull();
   expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
   expect(panel.textContent).not.toMatch(/原创|G\d+|randomCursor|sourceDigest|seed|cursor/);
   return panel;
@@ -216,16 +216,16 @@ describe('Door SliceApp navigation from the authentic source and controlled real
     const { source } = saved(), game = publicAdapter(source);
     await mount(game);
     expect(source.progression).toMatchObject({ pathwayId: 'door', sequence: 1, acting: 100 });
-    await userEvent.click(screen.getByRole('button', { name: '苍白皇帝与当代附廊' }));
-    expect(await screen.findByRole('region', { name: '苍白皇帝成长' })).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: '星之匙与通行室' }));
+    expect(await screen.findByRole('region', { name: '星之匙成长' })).toBeTruthy();
     await userEvent.click(screen.getByRole('button', { name: '查看门晋升准备' }));
     let panel = assertPage(source);
     expect((within(panel).getByRole('button', { name: actionFor(source, 'LEARN_GUIDANCE').label }) as HTMLButtonElement).disabled).toBe(false);
     await userEvent.click(within(panel).getByRole('button', { name: '返回普通生活' }));
-    expect(await screen.findByRole('button', { name: '苍白皇帝与当代附廊' })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: '星之匙与通行室' })).toBeTruthy();
     await userEvent.click(screen.getByRole('button', { name: '查看门晋升准备' }));
     panel = assertPage(source);
-    expect(panel.textContent).toContain('健康 50/100');
+    expect(panel.textContent).toContain('健康 80/100');
     expect(game.current.revision).toBe(source.revision);
     expect(game.bridge.submitIntent).not.toHaveBeenCalled();
   });
@@ -303,11 +303,11 @@ describe('Door SliceApp navigation from the authentic source and controlled real
       for (const ability of success.door.abilities) {
         expect(within(panel).getByRole('heading', { name: `${ability.label} · 熟练 ${ability.mastery}` })).toBeTruthy();
       }
-      expect(success.door.abilities).toHaveLength(21);
+      expect(success.door.abilities).toHaveLength(19);
       for (const ability of source.door.abilities) {
         expect(success.progression.mastery[ability.id]).toBe(ability.mastery);
       }
-      for (const id of ['door.s0.partial-spirit-passage', 'door.s0.residual-propagation-barrier']) {
+      for (const id of ['door.s0.bounded-conceptual-escape', 'door.s0.single-exit-seal']) {
         expect(success.progression.mastery[id]).toBe(0);
       }
       const calls = game.bridge.submitIntent.mock.calls;
