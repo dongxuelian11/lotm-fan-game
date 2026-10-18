@@ -38,7 +38,7 @@ function savedGame(input: unknown, failFirst = false) {
   assertValidSliceState(state);
   expect(state.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
   expect(state.contentVersion).toBe(CURRENT_CONTENT_VERSION);
-  const submit = vi.fn<SliceBridge['submitIntent']>(async envelope => {
+  const submit = vi.fn<SliceBridge['submitIntent']>().mockImplementation(async envelope => {
     if (envelope.payload.type === 'CREATE') throw new Error('The actual campaign already exists.');
     expect(envelope.runId).toBe(state.runId);
     expect(envelope.expectedRevision).toBe(state.revision);
@@ -58,9 +58,9 @@ function savedGame(input: unknown, failFirst = false) {
 type SavedGame = ReturnType<typeof savedGame>;
 async function mount(game: SavedGame) {
   const state = projectSliceState(game.state);
-  const loadRun = vi.fn<SliceBridge['loadRun']>(async () => ({ ok: true, value: projectSliceState(game.state) }));
+  const loadRun = vi.fn<SliceBridge['loadRun']>().mockImplementation(async () => ({ ok: true, value: projectSliceState(game.state) }));
   window.sliceGame = {
-    getBootstrap: vi.fn<SliceBridge['getBootstrap']>(async () => ({ ok: true, value: {
+    getBootstrap: vi.fn<SliceBridge['getBootstrap']>().mockImplementation(async () => ({ ok: true, value: {
       mode: 'desktop', activeState: state, runs: [{ runId: state.runId, name: state.character.name,
         portraitId: state.character.portraitId, week: state.week, date: state.date, status: state.status,
         revision: state.revision, updatedAt: '2026-10-15T17:29:00Z' }],
@@ -188,7 +188,8 @@ beforeEach(() => {
   Object.defineProperty(HTMLDialogElement.prototype, 'close', { configurable: true, value: function (this: HTMLDialogElement) { this.removeAttribute('open'); } });
 });
 afterEach(() => {
-  cleanup(); delete window.sliceGame; vi.restoreAllMocks();
+  // Release each mock implementation's large private save after the test.
+  cleanup(); delete window.sliceGame; vi.resetAllMocks(); vi.restoreAllMocks();
   if (showModal) Object.defineProperty(HTMLDialogElement.prototype, 'showModal', showModal); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal');
   if (close) Object.defineProperty(HTMLDialogElement.prototype, 'close', close); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'close');
 });

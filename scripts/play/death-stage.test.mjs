@@ -250,3 +250,27 @@ test('resume accepts only the exact boundary and preserves pending over zero-com
   for (const args of [['--max-new-commands'], ['--max-new-commands','1.5'], ['--max-new-actions','1','--max-new-commands','1'], ['--strategy','try-again'], ['--stop-after-command','1037']])
     assert.throws(() => parseOptions(args));
 });
+
+
+test('selected samples reserve the 64th slot for one actual terminal boundary', () => {
+  assert.equal(POLICY.selectedBoundaryLimit, 64);
+  assert.equal(POLICY.selectedBoundaryTerminalReserve, 1);
+  const intent = { type: 'DEATH', command: { type: 'WORK' } };
+  const active = selectionOutcome(owned([])), dead = { ...active, status: 'DEAD' };
+  const first62 = Array.from({ length: 62 }, (_, index) => ({ kind: `synthetic-ordinary-${index}`, commandCount: PREFIX_COUNT + index + 1 }));
+  assert.equal(selectedBoundary(intent, active, first62), 'death-work');
+  const ordinary63 = [...first62, { kind: 'death-work', commandCount: PREFIX_COUNT + 63 }];
+  assert.equal(selectedBoundary(intent, active, ordinary63), null, 'An existing sample is never selected twice');
+  assert.equal(selectedBoundary({ type: 'DEATH', command: { type: 'REST' } }, active, ordinary63), null, 'Active samples cannot consume the reserved slot');
+  assert.equal(selectedBoundary(intent, dead, ordinary63), 'death-actual-terminal');
+  assert.equal(selectedBoundary(intent, owned([], { status: 'DEAD' }), ordinary63), 'death-actual-terminal');
+  const complete64 = [...ordinary63, { kind: 'death-actual-terminal', commandCount: PREFIX_COUNT + 64 }];
+  assert.equal(complete64.length, 64);
+  assert.equal(selectedBoundary(intent, dead, complete64), null);
+  assert.equal(selectedBoundary(intent, active, complete64), null);
+  const earlierTerminal63 = [...first62, { kind: 'death-actual-terminal', commandCount: PREFIX_COUNT + 63 }];
+  assert.equal(selectedBoundary(intent, dead, earlierTerminal63), null, 'A prior terminal sample is not duplicated even below the cap');
+  assert.equal(selectedBoundary(intent, dead, []), 'death-actual-terminal');
+  assert.equal(selectedBoundary(intent, active, [{ kind: 'death-work', commandCount: PREFIX_COUNT + 1 }]), null, 'An existing ordinary name is not duplicated below the cap');
+  assert.equal(selectedBoundary(intent, active, []), 'death-work', 'Normal active sample selection is unchanged');
+});

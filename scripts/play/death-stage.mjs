@@ -35,7 +35,7 @@ export const FORMAT = 'NEW217_RESTORED195_LIVING1038_DURABLE_PUBLIC_ACTION_BOUND
 export const OUTPUT = 'output/rebuild-0217/natural-v1';
 export const INPUTS = Object.freeze([{ file: SOURCE, sha256: SOURCE_SHA256 }]);
 export const POLICY = Object.freeze({ id: 'NEW217_SAME_THREE_ORIGINALS_OWNED_PUBLIC_V1', startWeek: 3323,
-  defaultObservationActions: 32, selectedBoundaryLimit: 64, carrierLimit: 3,
+  defaultObservationActions: 32, selectedBoundaryLimit: 64, selectedBoundaryTerminalReserve: 1, carrierLimit: 3,
   selection: 'EXACT_ENABLED_RUNTIME_PREFERRED_DEATH_CONTROL',
   ordinary: 'ACTUAL_WORK_REST_CLINIC_NEXT_WEEK_AND_PHYSICAL_EXITS',
   epilogue: 'TWO_FINITE_TECHNIQUE_ATTEMPTS_ACTUAL_APPLICATION_OR_ORDINARY_EXIT_HONEST_REPORT',
@@ -291,17 +291,21 @@ export function checkOriginals(state, original, before) {
 export function selectionOutcome(after) {
   return { status: after.status, sequence: after.progression.sequence, promoted: after.death.promoted, guidance: after.death.guidanceKnown };
 }
-/** Sampling for later SQLite checks never removes any full action capture. */
+/** Sampling never removes full captures. Reserve one of the 64 selected
+ * boundaries for actual terminal status; ordinary named samples use at most 63. */
 export function selectedBoundary(intent, after, previous) {
   if (previous.length >= POLICY.selectedBoundaryLimit) return null;
   const c = intent.command, outcome = 'death' in after ? selectionOutcome(after) : after; let key = null;
+  if (outcome.status !== 'ACTIVE')
+    return previous.some(boundary => boundary.kind === 'death-actual-terminal') ? null : 'death-actual-terminal';
+  if (previous.filter(boundary => boundary.kind !== 'death-actual-terminal').length >=
+      POLICY.selectedBoundaryLimit - POLICY.selectedBoundaryTerminalReserve) return null;
   if (['LEARN_GUIDANCE','WORK','REST','CLINIC','NEXT_WEEK','STABILIZE_PROMOTION','START_EPILOGUE','RETURN_ON_FOOT'].includes(c.type)) key = `death-${c.type.toLowerCase()}`;
   if (c.type === 'TRAVEL') key = `death-travel-${c.to}`;
   if (c.type === 'SERVICE') key = `service-${c.command.serviceId}-${c.command.type.toLowerCase()}`;
   if (c.type === 'MATERIAL') key = `material-${c.command.type.toLowerCase()}-${c.command.bottleId ?? c.command.step ?? c.command.batchId ?? c.command.compoundId ?? 'unique'}`;
-  if (c.type === 'CONSUME') key = outcome.status !== 'ACTIVE' ? 'death-actual-terminal-dose' : outcome.promoted ? 'death-actual-promotion' : `death-failed-dose-${c.compoundId}`;
+  if (c.type === 'CONSUME') key = outcome.promoted ? 'death-actual-promotion' : `death-failed-dose-${c.compoundId}`;
   if (c.type === 'EPILOGUE') key = `epilogue-${c.command.type.toLowerCase()}`;
-  if (outcome.status !== 'ACTIVE') key = 'death-actual-terminal';
   return key && !previous.some(boundary => boundary.kind === key) ? key : null;
 }
 export function verifyCheckpoint(payload, freeze, initialStateSha256, inputFreeze) {
