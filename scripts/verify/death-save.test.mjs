@@ -161,18 +161,26 @@ test('finite selection reserves slot 64 for actual terminal and keeps all later 
   assert.throws(() => assertBoundarySelection([...rows, terminal], selected));
   assertBoundarySelection([...rows, terminal], [...selected, { commandCount: 1109, kinds: ['death-actual-terminal'] }]);
 });
-function actionContract() {
-  const content = boundary(1039), randomBefore = { seed: 'opaque-contract', cursor: 1 }, randomAfter = { seed: 'opaque-contract', cursor: 2 };
-  const state = { schemaVersion: 214, contentVersion: 'death-v214', runId: 'corpsecollector-rebuild-natural', status: 'ACTIVE',
-    progression: { sequence: 1 }, death: { promoted: false, guidanceKnown: true } };
-  content.beforeLast = { ...state, revision: 1039, random: randomBefore }; content.final = { ...state, revision: 1040, random: randomAfter };
-  content.randomBefore = randomBefore; content.randomAfter = randomAfter;
-  const row = { commandCount: 1039, intent: content.lastIntent, randomBefore, randomAfter, elapsedMilliseconds: 7,
-    selectionOutcome: { status: 'ACTIVE', sequence: 1, promoted: false, guidance: true }, capture: evidence('action-1039.json.gz') };
+function bindActionAudit(content, row) {
   for (const [field, hash] of [['beforeLast','beforeStateSha256'], ['final','afterStateSha256'], ['publicBefore','publicBeforeSha256'],
     ['public','publicAfterSha256'], ['globalPublicBefore','globalPublicBeforeSha256'], ['globalPublic','globalPublicAfterSha256'],
     ['policyBefore','policyBeforeSha256'], ['policyAfter','policyAfterSha256']]) row[hash] = stateHash(content[field]);
-  const { capture, ...audit } = row; content.audit = { ...audit, elapsedMilliseconds: null }; return { content, row };
+  const { capture, ...audit } = row; content.audit = { ...audit, elapsedMilliseconds: null };
+}
+function actionContract(promoted = false) {
+  const content = boundary(1039), randomBefore = { seed: 'opaque-contract', cursor: 1 }, randomAfter = { seed: 'opaque-contract', cursor: 2 };
+  const state = { schemaVersion: 214, contentVersion: 'death-v214', runId: 'corpsecollector-rebuild-natural', status: 'ACTIVE',
+    progression: { sequence: 1 }, death: { promotionWeek: null, guidanceKnown: true } };
+  content.beforeLast = { ...state, revision: 1039, random: randomBefore };
+  content.final = { ...state, revision: 1040, random: randomAfter, progression: { sequence: promoted ? 0 : 1 },
+    death: { promotionWeek: promoted ? 3335 : null, guidanceKnown: true } };
+  content.publicBefore = { status: 'ACTIVE', progression: { sequence: 1 }, death: { promoted: false, guidanceKnown: true } };
+  content.public = { status: 'ACTIVE', progression: { sequence: promoted ? 0 : 1 }, death: { promoted, guidanceKnown: true } };
+  content.globalPublicBefore = structuredClone(content.publicBefore); content.globalPublic = structuredClone(content.public);
+  content.randomBefore = randomBefore; content.randomAfter = randomAfter;
+  const row = { commandCount: 1039, intent: content.lastIntent, randomBefore, randomAfter, elapsedMilliseconds: 7,
+    selectionOutcome: { status: 'ACTIVE', sequence: promoted ? 0 : 1, promoted, guidance: true }, capture: evidence('action-1039.json.gz') };
+  bindActionAudit(content, row); return { content, row };
 }
 test('full actual action contract binds both private, RNG, chapter, whole-public and policy sides', () => {
   const { content, row } = actionContract(); assertActionCapture(content, row);
@@ -180,6 +188,41 @@ test('full actual action contract binds both private, RNG, chapter, whole-public
     const altered = structuredClone(content); altered[key].extra = 'altered'; assert.throws(() => assertActionCapture(altered, row));
   }
   assert.throws(() => assertActionCapture({ ...content, commandCount: 1040 }, row));
+});
+test('selection outcome reads actual false and true from public projection, never nonexistent private promoted', () => {
+  for (const promoted of [false, true]) {
+    const { content, row } = actionContract(promoted);
+    assert.equal(Object.hasOwn(content.final.death, 'promoted'), false);
+    assert.equal(content.final.death.promotionWeek, promoted ? 3335 : null);
+    assert.equal(content.public.death.promoted, promoted); assertActionCapture(content, row);
+  }
+});
+test('selection outcome rejects either boolean disagreement even with otherwise rebound audit hashes', () => {
+  for (const promoted of [false, true]) {
+    const { content, row } = actionContract(promoted); row.selectionOutcome.promoted = !promoted;
+    bindActionAudit(content, row); assert.throws(() => assertActionCapture(content, row));
+  }
+});
+test('missing, undefined, null and nonboolean public promoted cannot pass as a false outcome', () => {
+  for (const value of [undefined, null, 'false', 0]) {
+    const { content, row } = actionContract(false);
+    if (value === undefined) {
+      delete content.public.death.promoted; bindActionAudit(content, row);
+      assert.throws(() => assertActionCapture(content, row), /Captured public promoted must be boolean/);
+      content.public.death.promoted = undefined;
+      assert.throws(() => assertActionCapture(content, row));
+    } else {
+      content.public.death.promoted = value; bindActionAudit(content, row);
+      assert.throws(() => assertActionCapture(content, row), /Captured public promoted must be boolean/);
+    }
+  }
+});
+test('public outcome status, sequence and guidance must still match the captured private final', () => {
+  for (const mutate of [value => { value.public.status = 'DEAD'; }, value => { value.public.progression.sequence = 0; },
+    value => { value.public.death.guidanceKnown = false; }]) {
+    const { content, row } = actionContract(false); mutate(content); bindActionAudit(content, row);
+    assert.throws(() => assertActionCapture(content, row));
+  }
 });
 test('live PID is never ignored even with exact stale-lock approval', () => workspace(root => {
   const hash = 'a'.repeat(64), lock = join(root, 'audit.lock.json');

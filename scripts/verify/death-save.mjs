@@ -183,8 +183,14 @@ export function assertActionCapture(content, row) {
   }
   assert.equal(content.beforeLast.status, 'ACTIVE'); assert.equal(content.beforeLast.revision, row.commandCount);
   assert.equal(content.final.revision, row.commandCount + 1);
-  assert.deepEqual(row.selectionOutcome, { status: content.final.status, sequence: content.final.progression.sequence,
-    promoted: content.final.death.promoted, guidance: content.final.death.guidanceKnown });
+  // The producer records selectionOutcome(content.public). DeathState owns
+  // promotionWeek; promoted is a required boolean on the captured projection.
+  assert.equal(typeof content.public.death.promoted, 'boolean', 'Captured public promoted must be boolean');
+  assert.equal(content.public.status, content.final.status);
+  assert.equal(content.public.progression.sequence, content.final.progression.sequence);
+  assert.equal(content.public.death.guidanceKnown, content.final.death.guidanceKnown);
+  assert.deepEqual(row.selectionOutcome, { status: content.public.status, sequence: content.public.progression.sequence,
+    promoted: content.public.death.promoted, guidance: content.public.death.guidanceKnown });
 }
 function readCapture(root, repo, freeze, inputs) {
   for (const row of inputs.files) assert(!row.file.endsWith('.next') && !row.file.endsWith('.derived-next'),
