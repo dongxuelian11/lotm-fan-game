@@ -1,3 +1,4 @@
+import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -19,7 +20,11 @@ export const TWILIGHT220_FROZEN_ROOTS = ['warrior', 'gladiator', 'weaponmaster',
   'guardian', 'demonHunter', 'silverKnight', 'glory', 'divineHand'] as const;
 export const twilightNaturalSha = (bytes: string | Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 export const twilightNaturalHash = (value: unknown) => twilightNaturalSha(stableStringify(value));
-export const twilightNaturalAnchor = (state: SliceState, view: SliceProjection) => ({
+type HistoricalTwilightNaturalState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'demoness'> & {
+  schemaVersion: 217; contentVersion: 'twilight-giant-v217';
+};
+type HistoricalTwilightNaturalPublic = Omit<SliceProjection, 'demoness'>;
+export const twilightNaturalAnchor = (state: SliceState | HistoricalTwilightNaturalState, view: SliceProjection | HistoricalTwilightNaturalPublic) => ({
   revision: state.revision, privateStateSha256: twilightNaturalHash(state),
   publicStateSha256: twilightNaturalHash(view), random: state.random, randomSha256: twilightNaturalHash(state.random),
 });
@@ -112,6 +117,8 @@ export function readTwilightNaturalSnapshot(which: 'initial' | 'terminal'): Twil
   const value: TwilightNaturalSnapshot = JSON.parse(gunzipSync(readFileSync(join(directory, item.file))).toString('utf8'));
   assert.equal(twilightNaturalHash(value), item.contentSha256);
   assert.deepEqual([value.final.schemaVersion, value.final.contentVersion], [217, 'twilight-giant-v217']);
+  assert.equal(Object.hasOwn(value.final, 'demoness'), false);
+  assert.equal(Object.hasOwn(value.public, 'demoness'), false);
   assert.equal(value.commandCount, initial ? 287 : summary.commandCount);
   assert.equal(value.newCount, initial ? 0 : summary.newCount);
   assert.deepEqual(value.anchor, twilightNaturalAnchor(value.final, value.public));
@@ -124,20 +131,26 @@ export function readTwilightNaturalSnapshot(which: 'initial' | 'terminal'): Twil
   assert.equal(value.anchor.publicStateSha256, item.publicSha256);
   return value;
 }
-/** No future roots exist yet. Add only explicitly verified empty migration
- * roots here when a later schema introduces them; never strip arbitrary keys. */
-export function historicalTwilightNaturalState(state: SliceState, originalKeys: readonly string[]): SliceState {
+/** Raw217 evidence remains untouched. Remove only the independently pinned
+ * schema218 Demoness default and metadata; never strip arbitrary keys. */
+export function historicalTwilightNaturalState(state: SliceState, originalKeys: readonly string[]): HistoricalTwilightNaturalState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assert.deepEqual(Object.keys(state).sort(), [...originalKeys].sort());
-  return { ...state, schemaVersion: 217, contentVersion: 'twilight-giant-v217' };
+  assert.equal(originalKeys.includes('demoness'), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, 'demoness'].sort());
+  assertEmptyDemonessState(state);
+  const { demoness: _emptyDemoness, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 217, contentVersion: 'twilight-giant-v217' };
 }
-export function historicalTwilightNaturalPublic(view: SliceProjection, originalKeys: readonly string[]): SliceProjection {
-  assert.deepEqual(Object.keys(view).sort(), [...originalKeys].sort());
-  return view;
+export function historicalTwilightNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]): HistoricalTwilightNaturalPublic {
+  assert.equal(originalKeys.includes('demoness'), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, 'demoness'].sort());
+  assertEmptyDemonessState(state); assertEmptyDemonessPublic(view, state);
+  const { demoness: _emptyDemoness, ...originalFields } = view;
+  return originalFields;
 }
 export function currentTwilightNaturalAnchor(state: SliceState, view: SliceProjection, original: TwilightNaturalSnapshot): Anchor {
   return twilightNaturalAnchor(historicalTwilightNaturalState(state, Object.keys(original.final)),
-    historicalTwilightNaturalPublic(view, Object.keys(original.public)));
+    historicalTwilightNaturalPublic(view, state, Object.keys(original.public)));
 }
 
 /** A retained actual command boundary for the separate last-command save test. */

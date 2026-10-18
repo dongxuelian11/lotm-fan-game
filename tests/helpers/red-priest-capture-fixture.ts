@@ -1,3 +1,4 @@
+import { assertEmptyDemonessState } from './empty-demoness-capture.js';
 import { assertEmptyTwilightGiantState } from './empty-twilight-giant-capture.js';
 import { assertEmptyErrorAscentState } from './empty-error-ascent-capture.js';
 import { assertEmptyDeathState, assertEmptyDoorState } from './empty-death-capture.js';
@@ -155,11 +156,11 @@ export function captureHash(current: SliceState, capturedRoot: SliceState): stri
   defaults ??= createSliceRun(capturedRoot.runId, readObjectEntry<Parameters<typeof createSliceRun>[1]>(SOURCE, 'creation'), capturedRoot.random.seed);
   const old = capturedRoot as unknown as Record<string, unknown>, now = current as unknown as Record<string, unknown>,
     base = defaults as unknown as Record<string, unknown>;
-  const laterRoots = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant'] as const;
+  const laterRoots = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
   expect(capturedRoot.schemaVersion).toBe(206);
   const added = [...laterRoots];
   for (const key of added) expect(Object.hasOwn(old, key), `Unexpected historical root ${key}`).toBe(false);
-  assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current); assertEmptyTwilightGiantState(current);
+  assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current); assertEmptyTwilightGiantState(current); assertEmptyDemonessState(current);
   expect(Object.keys(now).sort()).toEqual([...Object.keys(old), ...added].sort());
   for (const key of added) same(now[key], base[key]);
   const historical = Object.fromEntries(Object.keys(old).map(key => [key, now[key]]));

@@ -1,3 +1,4 @@
+import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -15,10 +16,10 @@ export const ERROR219_FINAL_PRIVATE_SHA = 'cfddaa10b540c53d07e47cb5c0cf0567a6a53
 export const ERROR219_FINAL_PUBLIC_SHA = 'b4ee0850c98a43923a2e74c7b5038380e1bcafe803711e6dc092ec412c13a37d';
 export const errorNaturalSha = (bytes: string | Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 export const errorNaturalHash = (value: unknown) => errorNaturalSha(stableStringify(value));
-type HistoricalErrorNaturalState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'twilightGiant'> & {
+type HistoricalErrorNaturalState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'twilightGiant' | 'demoness'> & {
   schemaVersion: 216; contentVersion: 'error-ascent-v216';
 };
-type HistoricalErrorNaturalPublic = Omit<SliceProjection, 'twilightGiant'>;
+type HistoricalErrorNaturalPublic = Omit<SliceProjection, 'twilightGiant' | 'demoness'>;
 export const errorNaturalAnchor = (state: SliceState | HistoricalErrorNaturalState, view: SliceProjection | HistoricalErrorNaturalPublic) => ({
   revision: state.revision, privateStateSha256: errorNaturalHash(state),
   publicStateSha256: errorNaturalHash(view), random: state.random, randomSha256: errorNaturalHash(state.random),
@@ -51,8 +52,8 @@ export function readErrorNaturalSnapshot(which: 'initial' | 'terminal'): Snapsho
   const file = initial ? 'key-656-initial.json.gz' : 'key-730-terminal.json.gz';
   const value: Snapshot = JSON.parse(gunzipSync(readFileSync(join(directory(), file))).toString('utf8'));
   assert.deepEqual([value.final.schemaVersion, value.final.contentVersion], [216, 'error-ascent-v216']);
-  assert.equal(Object.hasOwn(value.final, 'twilightGiant'), false);
-  assert.equal(Object.hasOwn(value.public, 'twilightGiant'), false);
+  assert.equal(Object.hasOwn(value.final, 'twilightGiant'), false); assert.equal(Object.hasOwn(value.final, 'demoness'), false);
+  assert.equal(Object.hasOwn(value.public, 'twilightGiant'), false); assert.equal(Object.hasOwn(value.public, 'demoness'), false);
   assert.equal(value.commandCount, initial ? 656 : 730);
   assert.equal(value.newCount, initial ? 0 : 74);
   assert.deepEqual(value.anchor, errorNaturalAnchor(value.final, value.public));
@@ -64,22 +65,22 @@ export function readErrorNaturalSnapshot(which: 'initial' | 'terminal'): Snapsho
   return value;
 }
 
-/** Raw216 evidence remains untouched. Current replay may add only this exact
- * schema217 default and metadata; every original/private/RNG/public leaf stays
+/** Raw216 evidence remains untouched. Current replay may add only the exact schema217
+ * Twilight Giant and schema218 Demoness defaults and metadata; every original/private/RNG/public leaf stays
  * in its complete historical hash. Exact keys also reject undefined extras. */
 export function historicalErrorNaturalState(state: SliceState, originalKeys: readonly string[]): HistoricalErrorNaturalState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assert.equal(originalKeys.includes('twilightGiant'), false);
-  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, 'twilightGiant'].sort());
-  assertEmptyTwilightGiantState(state);
-  const { twilightGiant: _emptyTwilightGiant, ...originalFields } = state;
+  assert.equal(originalKeys.includes('twilightGiant'), false); assert.equal(originalKeys.includes('demoness'), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, 'twilightGiant', 'demoness'].sort());
+  assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
+  const { twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 216 as const, contentVersion: 'error-ascent-v216' as const };
 }
 export function historicalErrorNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]): HistoricalErrorNaturalPublic {
-  assert.equal(originalKeys.includes('twilightGiant'), false);
-  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, 'twilightGiant'].sort());
-  assertEmptyTwilightGiantState(state); assertEmptyTwilightGiantPublic(view, state);
-  const { twilightGiant: _emptyTwilightGiant, ...originalFields } = view;
+  assert.equal(originalKeys.includes('twilightGiant'), false); assert.equal(originalKeys.includes('demoness'), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, 'twilightGiant', 'demoness'].sort());
+  assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state); assertEmptyTwilightGiantPublic(view, state); assertEmptyDemonessPublic(view, state);
+  const { twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = view;
   return originalFields;
 }
 export function currentErrorNaturalAnchor(state: SliceState, view: SliceProjection, original: Snapshot): Anchor {

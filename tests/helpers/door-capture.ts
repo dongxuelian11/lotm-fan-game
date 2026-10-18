@@ -1,3 +1,4 @@
+import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
@@ -311,30 +312,30 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   assert(!before.door.guidanceKnown && after.door.guidanceKnown);
   return { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
-export type HistoricalDoorState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'errorAscent' | 'twilightGiant'> & {
+export type HistoricalDoorState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'errorAscent' | 'twilightGiant' | 'demoness'> & {
   schemaVersion: 215; contentVersion: 'door-v215';
 };
-export type HistoricalDoorPublic = Omit<SliceProjection, 'errorAscent' | 'twilightGiant'>;
-/** Only the independently pinned schema216 Error and schema217 Twilight Giant defaults may be omitted.
+export type HistoricalDoorPublic = Omit<SliceProjection, 'errorAscent' | 'twilightGiant' | 'demoness'>;
+/** Only the independently pinned schema216 Error, schema217 Twilight Giant and schema218 Demoness defaults may be omitted.
  * Every historical field and unknown addition stays covered by the raw215 pins. */
 export function historicalDoorState(state: SliceState): HistoricalDoorState {
-  assert.deepEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION], [217, 'twilight-giant-v217'],
+  assert.deepEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION], [218, 'demoness-v218'],
     'A future schema requires a separate exact-empty-root migration adapter');
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state);
-  const { errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...originalFields } = state;
+  assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
+  const { errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = state;
   return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
 }
 export function historicalDoorPublic(projection: SliceProjection, state: SliceState): HistoricalDoorPublic {
-  historicalDoorState(state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state);
-  const { errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...originalFields } = projection;
+  historicalDoorState(state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state); assertEmptyDemonessPublic(projection, state);
+  const { errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = projection;
   return originalFields;
 }
 export function assertCapturedGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
   const state = side === 'before' ? action.beforeLast : action.final;
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
   assert.equal(state.revision, revisionAt(action.commandCount, side));
-  assert.equal(Object.hasOwn(state, 'errorAscent'), false); assert.equal(Object.hasOwn(state, 'twilightGiant'), false); assert.equal(Object.hasOwn(actual, 'errorAscent'), false); assert.equal(Object.hasOwn(actual, 'twilightGiant'), false);
+  assert.equal(Object.hasOwn(state, 'errorAscent'), false); assert.equal(Object.hasOwn(state, 'twilightGiant'), false); assert.equal(Object.hasOwn(state, 'demoness'), false); assert.equal(Object.hasOwn(actual, 'errorAscent'), false); assert.equal(Object.hasOwn(actual, 'twilightGiant'), false); assert.equal(Object.hasOwn(actual, 'demoness'), false);
   const expected = side === 'before' ? action.globalPublicBefore : action.globalPublic;
   exactKeys(actual, Object.keys(expected));
   same(actual, expected, `Complete captured global public ${action.commandCount} ${side}`);
@@ -343,8 +344,8 @@ export function assertCapturedGlobal(actual: SliceProjection, action: Action, si
 }
 export function assertCurrentGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
   const state = side === 'before' ? action.beforeLast : action.final;
-  assertEmptyErrorAscentPublic(actual, state); assertEmptyTwilightGiantPublic(actual, state);
-  const { errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...historicalPublic } = actual;
+  assertEmptyErrorAscentPublic(actual, state); assertEmptyTwilightGiantPublic(actual, state); assertEmptyDemonessPublic(actual, state);
+  const { errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...historicalPublic } = actual;
   assertCapturedGlobal(historicalPublic as SliceProjection, action, side); assertGlobalPublic(actual, state);
 }
 

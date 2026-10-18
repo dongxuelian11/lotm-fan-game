@@ -1,3 +1,4 @@
+import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
@@ -39,7 +40,7 @@ export const INITIAL_POLICY = {
 };
 export interface FilePin { bytes: number; sha256: string }
 /** Immutable capture input format, distinct from the current runtime state. */
-export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant'> & {
+export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'> & {
   schemaVersion: 209; contentVersion: 'moon-v209';
 };
 export interface Member extends FilePin { file: string; originalBytes?: number; originalSha256?: string }
@@ -150,33 +151,33 @@ export function historicalMoonState(state: SliceState): HistoricalMoonState {
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
   assert.deepEqual(createTyrantState(), EMPTY_TYRANT); assert.deepEqual(createSunState(), EMPTY_SUN);
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
-  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state);
-  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...originalFields } = state;
+  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
+  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 209, contentVersion: 'moon-v209' };
 }
 /** Strict current ingress must preserve every original 209 field and may add
- * only the reviewed default Darkness/White Tower/Tyrant/Sun/Death/Door/Error/Twilight Giant roots; it never rewrites the raw input. */
+ * only the reviewed default Darkness/White Tower/Tyrant/Sun/Death/Door/Error/Twilight Giant/Demoness roots; it never rewrites the raw input. */
 export function migrateCapturedMoonState(raw: HistoricalMoonState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [209, 'moon-v209']);
   assert.equal(Object.hasOwn(raw, 'darkness'), false);
   assert.equal(Object.hasOwn(raw, 'whiteTower'), false);
-  assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false); assert.equal(Object.hasOwn(raw, 'errorAscent'), false); assert.equal(Object.hasOwn(raw, 'twilightGiant'), false);
+  assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false); assert.equal(Object.hasOwn(raw, 'errorAscent'), false); assert.equal(Object.hasOwn(raw, 'twilightGiant'), false); assert.equal(Object.hasOwn(raw, 'demoness'), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assertValidSliceState(current);
-  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant']);
+  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness']);
   same(historicalMoonState(current), raw, 'Migration changed the complete captured Moon state');
   assert.equal(hash(raw), before, 'Migration changed the raw Moon input');
   return current;
 }
-/** Verify all eight entire new inactive public roots before removing just those roots
+/** Verify all nine entire new inactive public roots before removing just those roots
  * from a detached historical view. Unknown fields are never filtered out. */
-export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant'> {
+export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'> {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(state.darkness, EMPTY_DARKNESS);
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
   assert.deepEqual(createTyrantState(), EMPTY_TYRANT); assert.deepEqual(createSunState(), EMPTY_SUN);
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
-  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state);
+  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
   assert.equal(state.progression.pathwayId, 'moon');
   assert.equal(Object.hasOwn(projection, 'darkness'), true);
   const root = projection.darkness;
@@ -243,8 +244,8 @@ export function historicalMoonPublic(projection: SliceProjection, state: SliceSt
       reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
       preferredAction: true }],
   });
-  assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state);
-  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...originalFields } = projection;
+  assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state); assertEmptyDemonessPublic(projection, state);
+  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = projection;
   return originalFields;
 }
 function relativeFile(file: string): string {

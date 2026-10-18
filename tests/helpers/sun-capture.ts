@@ -1,3 +1,4 @@
+import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
@@ -189,30 +190,30 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   return { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
 
-export type HistoricalSunState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'death' | 'door' | 'errorAscent' | 'twilightGiant'> & {
+export type HistoricalSunState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'> & {
   schemaVersion: 213; contentVersion: 'sun-v213';
 };
-export type HistoricalSunPublic = Omit<SliceProjection, 'death' | 'door' | 'errorAscent' | 'twilightGiant'>;
-/** Only the independently verified empty Death, Door, Error and Twilight Giant roots may be removed. All old
+export type HistoricalSunPublic = Omit<SliceProjection, 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'>;
+/** Only the independently verified empty Death, Door, Error, Twilight Giant and Demoness roots may be removed. All old
  * fields and every unrecognized future root remain in the historical hash. */
 export function historicalSunState(state: SliceState): HistoricalSunState {
-  assert.deepEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION], [217, 'twilight-giant-v217'],
-    'Review and explicitly pin each post217 migration addition before accepting a new schema');
+  assert.deepEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION], [218, 'demoness-v218'],
+    'Review and explicitly pin each post218 migration addition before accepting a new schema');
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state);
-  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...originalFields } = state;
+  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
+  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = state;
   return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
 }
 export function historicalSunPublic(projection: SliceProjection, state: SliceState): HistoricalSunPublic {
-  historicalSunState(state); assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state);
-  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...originalFields } = projection;
+  historicalSunState(state); assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state); assertEmptyDemonessPublic(projection, state);
+  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = projection;
   return originalFields;
 }
 export function migrateCapturedSunState(raw: SliceState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
-  assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false); assert.equal(Object.hasOwn(raw, 'errorAscent'), false); assert.equal(Object.hasOwn(raw, 'twilightGiant'), false);
+  assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false); assert.equal(Object.hasOwn(raw, 'errorAscent'), false); assert.equal(Object.hasOwn(raw, 'twilightGiant'), false); assert.equal(Object.hasOwn(raw, 'demoness'), false);
   const before = hash(raw), current = migrateSliceState(raw); assertValidSliceState(current);
-  exactKeys(current, [...Object.keys(raw), 'death', 'door', 'errorAscent', 'twilightGiant']); same(historicalSunState(current), raw, 'Current ingress changed a complete captured state');
+  exactKeys(current, [...Object.keys(raw), 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness']); same(historicalSunState(current), raw, 'Current ingress changed a complete captured state');
   assert.equal(hash(raw), before, 'Migration mutated the original capture'); return current;
 }
 /** Reviewed public corrections: the genuine Sun0 maximum30→150 from923-after,
@@ -270,8 +271,8 @@ export function assertCurrentGlobal(actual: SliceProjection, action: Action, sid
   const state = side === 'before' ? action.beforeLast : action.final;
   const expected = expectedCurrentGlobal(action, side);
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
-  assertEmptyDeathPublic(actual, state); assertEmptyDoorPublic(actual, state); assertEmptyErrorAscentPublic(actual, state); assertEmptyTwilightGiantPublic(actual, state);
-  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...historicalPublic } = actual;
+  assertEmptyDeathPublic(actual, state); assertEmptyDoorPublic(actual, state); assertEmptyErrorAscentPublic(actual, state); assertEmptyTwilightGiantPublic(actual, state); assertEmptyDemonessPublic(actual, state);
+  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...historicalPublic } = actual;
   same(historicalPublic, expected,
     `Complete global public ${action.commandCount} ${side}`);
   same(capturePublic(actual), capturePublic(expected));

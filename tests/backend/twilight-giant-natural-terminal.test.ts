@@ -48,7 +48,7 @@ function replayCapturedNatural() {
   }
   let state = migrateSliceState(structuredClone(source)), view = projectSliceState(state);
   expect(historicalTwilightNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
-  expect(historicalTwilightNaturalPublic(view, Object.keys(initial.public))).toEqual(initial.public);
+  expect(historicalTwilightNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
   let anchor = currentTwilightNaturalAnchor(state, view, initial), before = state;
   expect(anchor).toEqual(initial.anchor);
   const actions = rows.slice(287) as TwilightNaturalActionRow[];
@@ -83,7 +83,7 @@ function replayCapturedNatural() {
   }
   const terminal = readTwilightNaturalSnapshot('terminal');
   expect(historicalTwilightNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
-  expect(historicalTwilightNaturalPublic(view, Object.keys(terminal.public))).toEqual(terminal.public);
+  expect(historicalTwilightNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
   for (const key of [...TWILIGHT220_FROZEN_ROOTS, 'world', 'combatHistory'] as const)
     expect(state[key], `original ${key}`).toEqual(source[key]);
   expect(state.twilightGiant.source!.character).toEqual(source.character);

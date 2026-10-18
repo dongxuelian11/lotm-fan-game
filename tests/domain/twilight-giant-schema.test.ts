@@ -1,3 +1,5 @@
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
 import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createTwilightGiantState, validateTwilightGiantState } from '../../src/domain/twilight-giant/index.js';
@@ -9,26 +11,27 @@ import type { SliceState } from '../../src/domain/slice/types.js';
 
 const fresh = (): SliceState => createSliceRun('twilight-schema-run', sliceDefaultCreationSelection, 'twilight-schema-seed');
 const legacy216 = () => {
-  const { twilightGiant: _root, ...state } = fresh();
+  const { twilightGiant: _root, demoness: _demoness, ...state } = fresh();
   return { ...state, schemaVersion: 216 as const, contentVersion: 'error-ascent-v216' as const };
 };
 
 describe('TwilightGiant schema217 exact additive admission', () => {
   it('creates the precise empty current root without granting session authority', () => {
     const state = fresh();
-    expect([state.schemaVersion, state.contentVersion]).toEqual([217, 'twilight-giant-v217']);
+    expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(state.twilightGiant).toStrictEqual(createTwilightGiantState());
     expect(validateTwilightGiantState(state)).toBe(true);
     expect(() => assertValidSliceState(state)).not.toThrow();
     expect(() => openTwilightGiantRuntimeSession(state)).toThrow();
   });
 
-  it('upgrades216 by adding only the empty root and format while preserving all old fields', () => {
+  it('upgrades216 by adding only the explicit empty roots and format while preserving all old fields', () => {
     const source = legacy216(), before = structuredClone(source), current = migrateSliceState(source);
     expect(source).toStrictEqual(before);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'twilightGiant'].sort());
-    expect([current.schemaVersion, current.contentVersion]).toEqual([217, 'twilight-giant-v217']);
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'twilightGiant', 'demoness'].sort());
+    expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.twilightGiant).toStrictEqual(createTwilightGiantState());
+    assertEmptyDemonessState(current);
     for (const [key, value] of Object.entries(source)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(current[key as keyof SliceState], `Changed original ${key}`).toStrictEqual(value);
@@ -46,8 +49,8 @@ describe('TwilightGiant schema217 exact additive admission', () => {
       { ...current, twilightGiant: { ...current.twilightGiant, authority: true } },
       { ...current, twilightGiant: { ...current.twilightGiant, unknown: undefined } },
       { ...current, futureChapter: {} },
-      { ...current, schemaVersion: 218 },
-      { ...current, contentVersion: 'future-v218' },
+      { ...current, schemaVersion: CURRENT_SCHEMA_VERSION + 1 },
+      { ...current, contentVersion: `future-v${CURRENT_SCHEMA_VERSION + 1}` },
       { ...current, contentVersion: 'error-ascent-v216' },
       { ...legacy, twilightGiant: createTwilightGiantState() },
       { ...legacy, twilightGiant: undefined },

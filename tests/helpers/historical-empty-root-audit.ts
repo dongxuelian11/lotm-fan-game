@@ -1,3 +1,4 @@
+import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
@@ -48,9 +49,9 @@ const EARLY_EMPTY_ROOTS = {
   moon: EMPTY_MOON, darkness: EMPTY_DARKNESS, whiteTower: EMPTY_WHITE_TOWER,
   tyrant: EMPTY_TYRANT, sun: EMPTY_SUN,
 };
-const FOOL_ADDITIONS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant'] as const;
-const VISIONARY_ADDITIONS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant'] as const;
-const PERFECTER_ADDITIONS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant'] as const;
+const FOOL_ADDITIONS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
+const VISIONARY_ADDITIONS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
+const PERFECTER_ADDITIONS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
 type AddedRoot = typeof FOOL_ADDITIONS[number];
 
 function exactView(current: SliceState, originalKeys: readonly string[], additions: readonly AddedRoot[],
@@ -61,8 +62,8 @@ function exactView(current: SliceState, originalKeys: readonly string[], additio
   for (const root of additions) assert.equal(originalKeys.includes(root), false, `Unexpected historical root ${root}`);
   // Exact keys FIRST: an unknown/extra key, even undefined, must never disappear.
   assert.deepEqual(Object.keys(current).sort(), [...originalKeys, ...additions].sort());
-  assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current); assertEmptyTwilightGiantState(current);
-  for (const root of additions) if (root !== 'death' && root !== 'door' && root !== 'errorAscent' && root !== 'twilightGiant') {
+  assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current); assertEmptyTwilightGiantState(current); assertEmptyDemonessState(current);
+  for (const root of additions) if (root !== 'death' && root !== 'door' && root !== 'errorAscent' && root !== 'twilightGiant' && root !== 'demoness') {
     assert.equal(Object.hasOwn(current, root), true);
     assert.deepEqual(current[root], EARLY_EMPTY_ROOTS[root]);
   }
@@ -85,12 +86,13 @@ export function historicalPerfecterStateForEmptyRootAudit(current: SliceState, h
   return exactView(current, Object.keys(historical), PERFECTER_ADDITIONS, [208, 'perfecter-v208']);
 }
 
-/** Remove only these THREE independently pinned empty public roots. All other public
+/** Remove only these FOUR independently pinned empty public roots. All other public
  * fields, including unknown additions, stay in the caller's complete hash. */
-export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant'> {
+export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'> {
   assertEmptyDoorState(state); assertEmptyDoorPublic(projection, state);
   assertEmptyErrorAscentState(state); assertEmptyErrorAscentPublic(projection, state);
   assertEmptyTwilightGiantState(state); assertEmptyTwilightGiantPublic(projection, state);
-  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, ...allOtherFields } = projection;
+  assertEmptyDemonessState(state); assertEmptyDemonessPublic(projection, state);
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...allOtherFields } = projection;
   return allOtherFields;
 }
