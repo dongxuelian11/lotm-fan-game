@@ -1,0 +1,207 @@
+{
+  "format": "DEATH217_PUBLIC_INPUT_STREAM_PROOF_V1",
+  "exit": 0,
+  "allRequiredArchiveAndMemberHashesVerified": true,
+  "requiredFiles": 354,
+  "newFiles": 115,
+  "newBytes": 133515074,
+  "fixtureWrites": 0,
+  "representativeExtraction": "NOT_RUN; full independent parser streamed every member",
+  "stdout": "Checking 354 fixture files (960827437 bytes) to /workspace/scratch/25a15120163a/recovery-20261018/pr38-baseline/tests/fixtures\nVerified archive: lotm_release_0.195.0_pale_emperor_test_inputs_1_2026-10-15.tar.gz\nVerified archive: lotm_release_0.195.0_pale_emperor_test_inputs_2_2026-10-15.tar.gz\nVerified archive: lotm_release_0.195.0_pale_emperor_test_inputs_3_2026-10-15.tar.gz\nVerified archive: lotm_release_0.195.0_pale_emperor_test_inputs_4_2026-10-15.tar.gz\nVerified archive: lotm_release_0.195.0_pale_emperor_test_inputs_5_2026-10-15.tar.gz\nVerified archive: lotm_release_0.217.0_death_source173_test_inputs_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_1_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_2_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_3_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_4_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_5_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_6_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_7_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_8_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_9_2026-10-18.tar.gz\nVerified archive: lotm_release_0.217.0_death_test_inputs_10_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.195.0_pale_emperor_test_inputs_1_2026-10-15.tar.gz\nValidated fixture contents: lotm_release_0.195.0_pale_emperor_test_inputs_2_2026-10-15.tar.gz\nValidated fixture contents: lotm_release_0.195.0_pale_emperor_test_inputs_3_2026-10-15.tar.gz\nValidated fixture contents: lotm_release_0.195.0_pale_emperor_test_inputs_4_2026-10-15.tar.gz\nValidated fixture contents: lotm_release_0.195.0_pale_emperor_test_inputs_5_2026-10-15.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_source173_test_inputs_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_1_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_2_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_3_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_4_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_5_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_6_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_7_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_8_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_9_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.217.0_death_test_inputs_10_2026-10-18.tar.gz\nCheck complete: all 354 fixture hashes verified; 354 files selected; no files written.\n",
+  "stderr": "",
+  "parts": [
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_1_2026-10-18.tar.gz",
+      "bytes": 14561239,
+      "sha256": "30d7abe92506ec489a55a0dd90f668df15e8fad0e2e20f613bb5e342b61a8a2e",
+      "members": [
+        "tests/fixtures/death-v02170/action-1039.json.gz",
+        "tests/fixtures/death-v02170/action-1040.json.gz",
+        "tests/fixtures/death-v02170/action-1041.json.gz",
+        "tests/fixtures/death-v02170/action-1042.json.gz",
+        "tests/fixtures/death-v02170/action-1043.json.gz",
+        "tests/fixtures/death-v02170/action-1044.json.gz",
+        "tests/fixtures/death-v02170/action-1045.json.gz",
+        "tests/fixtures/death-v02170/action-1046.json.gz",
+        "tests/fixtures/death-v02170/action-1047.json.gz",
+        "tests/fixtures/death-v02170/action-1048.json.gz",
+        "tests/fixtures/death-v02170/action-1049.json.gz",
+        "tests/fixtures/death-v02170/action-1050.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_2_2026-10-18.tar.gz",
+      "bytes": 14702046,
+      "sha256": "e79f033b332d5f216b246195221bbc3122c03673f8262eeecd97cc5d9fa6676b",
+      "members": [
+        "tests/fixtures/death-v02170/action-1051.json.gz",
+        "tests/fixtures/death-v02170/action-1052.json.gz",
+        "tests/fixtures/death-v02170/action-1053.json.gz",
+        "tests/fixtures/death-v02170/action-1054.json.gz",
+        "tests/fixtures/death-v02170/action-1055.json.gz",
+        "tests/fixtures/death-v02170/action-1056.json.gz",
+        "tests/fixtures/death-v02170/action-1057.json.gz",
+        "tests/fixtures/death-v02170/action-1058.json.gz",
+        "tests/fixtures/death-v02170/action-1059.json.gz",
+        "tests/fixtures/death-v02170/action-1060.json.gz",
+        "tests/fixtures/death-v02170/action-1061.json.gz",
+        "tests/fixtures/death-v02170/action-1062.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_3_2026-10-18.tar.gz",
+      "bytes": 13610325,
+      "sha256": "f8ab08a8182a542a2ce6100d1929796902008a0764605a66213e6518d7813306",
+      "members": [
+        "tests/fixtures/death-v02170/action-1063.json.gz",
+        "tests/fixtures/death-v02170/action-1064.json.gz",
+        "tests/fixtures/death-v02170/action-1065.json.gz",
+        "tests/fixtures/death-v02170/action-1066.json.gz",
+        "tests/fixtures/death-v02170/action-1067.json.gz",
+        "tests/fixtures/death-v02170/action-1068.json.gz",
+        "tests/fixtures/death-v02170/action-1069.json.gz",
+        "tests/fixtures/death-v02170/action-1070.json.gz",
+        "tests/fixtures/death-v02170/action-1071.json.gz",
+        "tests/fixtures/death-v02170/action-1072.json.gz",
+        "tests/fixtures/death-v02170/action-1073.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_4_2026-10-18.tar.gz",
+      "bytes": 13723983,
+      "sha256": "5b68c5b4b355e275b8c1080f7498f171fccde488aacea19c48c4a85b2910db77",
+      "members": [
+        "tests/fixtures/death-v02170/action-1074.json.gz",
+        "tests/fixtures/death-v02170/action-1075.json.gz",
+        "tests/fixtures/death-v02170/action-1076.json.gz",
+        "tests/fixtures/death-v02170/action-1077.json.gz",
+        "tests/fixtures/death-v02170/action-1078.json.gz",
+        "tests/fixtures/death-v02170/action-1079.json.gz",
+        "tests/fixtures/death-v02170/action-1080.json.gz",
+        "tests/fixtures/death-v02170/action-1081.json.gz",
+        "tests/fixtures/death-v02170/action-1082.json.gz",
+        "tests/fixtures/death-v02170/action-1083.json.gz",
+        "tests/fixtures/death-v02170/action-1084.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_5_2026-10-18.tar.gz",
+      "bytes": 13789645,
+      "sha256": "3dbcbf6e98d63e95562de489d3d9446b90d165a6f587460733a50bb1964d16b3",
+      "members": [
+        "tests/fixtures/death-v02170/action-1085.json.gz",
+        "tests/fixtures/death-v02170/action-1086.json.gz",
+        "tests/fixtures/death-v02170/action-1087.json.gz",
+        "tests/fixtures/death-v02170/action-1088.json.gz",
+        "tests/fixtures/death-v02170/action-1089.json.gz",
+        "tests/fixtures/death-v02170/action-1090.json.gz",
+        "tests/fixtures/death-v02170/action-1091.json.gz",
+        "tests/fixtures/death-v02170/action-1092.json.gz",
+        "tests/fixtures/death-v02170/action-1093.json.gz",
+        "tests/fixtures/death-v02170/action-1094.json.gz",
+        "tests/fixtures/death-v02170/action-1095.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_6_2026-10-18.tar.gz",
+      "bytes": 13849408,
+      "sha256": "1a76a445067793d4a21645d7108eaf07edd4d15706abc883ec30b91fc540fc8e",
+      "members": [
+        "tests/fixtures/death-v02170/action-1096.json.gz",
+        "tests/fixtures/death-v02170/action-1097.json.gz",
+        "tests/fixtures/death-v02170/action-1098.json.gz",
+        "tests/fixtures/death-v02170/action-1099.json.gz",
+        "tests/fixtures/death-v02170/action-1100.json.gz",
+        "tests/fixtures/death-v02170/action-1101.json.gz",
+        "tests/fixtures/death-v02170/action-1102.json.gz",
+        "tests/fixtures/death-v02170/action-1103.json.gz",
+        "tests/fixtures/death-v02170/action-1104.json.gz",
+        "tests/fixtures/death-v02170/action-1105.json.gz",
+        "tests/fixtures/death-v02170/action-1106.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_7_2026-10-18.tar.gz",
+      "bytes": 13912499,
+      "sha256": "647b60a884f31bcb2f9ba1e8bccfcd99593f67f397a1c5a550efee1e728aa46d",
+      "members": [
+        "tests/fixtures/death-v02170/action-1107.json.gz",
+        "tests/fixtures/death-v02170/action-1108.json.gz",
+        "tests/fixtures/death-v02170/action-1109.json.gz",
+        "tests/fixtures/death-v02170/action-1110.json.gz",
+        "tests/fixtures/death-v02170/action-1111.json.gz",
+        "tests/fixtures/death-v02170/action-1112.json.gz",
+        "tests/fixtures/death-v02170/action-1113.json.gz",
+        "tests/fixtures/death-v02170/action-1114.json.gz",
+        "tests/fixtures/death-v02170/action-1115.json.gz",
+        "tests/fixtures/death-v02170/action-1116.json.gz",
+        "tests/fixtures/death-v02170/action-1117.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_8_2026-10-18.tar.gz",
+      "bytes": 13983149,
+      "sha256": "ed653080d02c5d5274a61dd03b1fc5d120c3fc574b9b8a51248c22bed54823ea",
+      "members": [
+        "tests/fixtures/death-v02170/action-1118.json.gz",
+        "tests/fixtures/death-v02170/action-1119.json.gz",
+        "tests/fixtures/death-v02170/action-1120.json.gz",
+        "tests/fixtures/death-v02170/action-1121.json.gz",
+        "tests/fixtures/death-v02170/action-1122.json.gz",
+        "tests/fixtures/death-v02170/action-1123.json.gz",
+        "tests/fixtures/death-v02170/action-1124.json.gz",
+        "tests/fixtures/death-v02170/action-1125.json.gz",
+        "tests/fixtures/death-v02170/action-1126.json.gz",
+        "tests/fixtures/death-v02170/action-1127.json.gz",
+        "tests/fixtures/death-v02170/action-1128.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_9_2026-10-18.tar.gz",
+      "bytes": 14181025,
+      "sha256": "1158bef56d494f789d56e1cfd088f35ce4d7995be98e180bc03d038d32ec3176",
+      "members": [
+        "tests/fixtures/death-v02170/action-1129.json.gz",
+        "tests/fixtures/death-v02170/action-1130.json.gz",
+        "tests/fixtures/death-v02170/action-1131.json.gz",
+        "tests/fixtures/death-v02170/action-1132.json.gz",
+        "tests/fixtures/death-v02170/action-1133.json.gz",
+        "tests/fixtures/death-v02170/action-1134.json.gz",
+        "tests/fixtures/death-v02170/action-1135.json.gz",
+        "tests/fixtures/death-v02170/action-1136.json.gz",
+        "tests/fixtures/death-v02170/action-1137.json.gz",
+        "tests/fixtures/death-v02170/action-1138.json.gz",
+        "tests/fixtures/death-v02170/action-1139.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_10_2026-10-18.tar.gz",
+      "bytes": 4928014,
+      "sha256": "ffe21f7901db91b2cea1b45b7a8012863c244a90882d9dbe0090f5ca8f2d3fd2",
+      "members": [
+        "tests/fixtures/death-v02170/action-1140.json.gz",
+        "tests/fixtures/death-v02170/action-1141.json.gz",
+        "tests/fixtures/death-v02170/archived-original195-natural.json.gz",
+        "tests/fixtures/death-v02170/boundaries.index.json",
+        "tests/fixtures/death-v02170/checkpoint.json.gz",
+        "tests/fixtures/death-v02170/commands.ndjson.gz",
+        "tests/fixtures/death-v02170/input-freeze.json",
+        "tests/fixtures/death-v02170/migration-initial.json.gz",
+        "tests/fixtures/death-v02170/natural.json.gz",
+        "tests/fixtures/death-v02170/producer-tests.mjs",
+        "tests/fixtures/death-v02170/producer.mjs",
+        "tests/fixtures/death-v02170/recovery-manifest.json",
+        "tests/fixtures/death-v02170/runtime-freeze.json",
+        "tests/fixtures/death-v02170/summary.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_source173_test_inputs_2026-10-18.tar.gz",
+      "bytes": 869016,
+      "sha256": "64051793f901d9c261c6c374f813b63f794a70ffe485dd61180e17320c59db8b",
+      "members": [
+        "tests/fixtures/death-consul-v01730/natural.json"
+      ]
+    }
+  ]
+}

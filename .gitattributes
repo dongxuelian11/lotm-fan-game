@@ -17,3 +17,4 @@ src/renderer/styles.css text eol=crlf
 *.ico binary
 *.woff binary
 *.woff2 binary
+test-inputs/reproduce-death217.py text eol=lf

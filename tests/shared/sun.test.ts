@@ -37,7 +37,7 @@ describe('Sun exact current schema and command boundary',()=>{
   const bytes=readFileSync(CAPTURE),s=JSON.parse(gunzipSync(bytes).toString('utf8'))[key] as Record<string,unknown>;
   expect(hash(bytes)).toBe(SHA);expect([s.schemaVersion,s.contentVersion]).toEqual([212,'tyrant-v212']);
   const before=stableStringify(s),copy=migrateSliceState(s);
-  expect(Object.keys(copy).filter(k=>!Object.hasOwn(s,k))).toEqual(['sun', 'death']);same(copy.sun,createSunState());same(copy.death,createDeathState());
+  expect(Object.keys(copy).filter(k=>!Object.hasOwn(s,k)).sort()).toEqual(['death', 'sun']);same(copy.sun,createSunState());same(copy.death,createDeathState());
   for(const [k,v]of Object.entries(s))if(!['schemaVersion','contentVersion'].includes(k))same(copy[k as keyof SliceState],v);
   same(migrateSliceState(copy),copy);expect(stableStringify(s)).toBe(before);expect(readFileSync(CAPTURE).equals(bytes)).toBe(true);
  },60_000);
