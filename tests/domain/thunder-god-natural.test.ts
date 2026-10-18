@@ -4,7 +4,7 @@ import { createReadStream, readFileSync } from 'node:fs';
 import { applySliceIntent, assertValidSliceState, createSliceRun, projectSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { stableStringify } from '../../src/domain/canonical.js';
-import { validateThunderGodSource } from '../../src/domain/thunder-god/index.js';
+import { validateThunderGodAcquisitionJournal, validateThunderGodSource } from '../../src/domain/thunder-god/index.js';
 import { THUNDER_GOD_ABILITY_IDS, THUNDER_GOD_SOURCE_KEYS } from '../../src/domain/thunder-god/types.js';
 import { thunderGodExpectedOriginals, thunderGodLifeMasteryGains } from '../../src/domain/thunder-god/life.js';
 import { currentThunderGodCombatSource, replayThunderGodCombatRound, thunderGodActionCount, thunderGodEnemyActionCount } from '../../src/domain/thunder-god/combat.js';
@@ -19,7 +19,12 @@ const SOURCE_SHA = 'cb8649c4d3dc15b5fa61601591eaed3f99579082f01bffa4f566afbf7ed8
 const PEACEFUL_SHA = '3ee5d4bfb9582aabb88a477bd5f0b5a47c335e8dbe5074b0eafbafff35d8b448';
 const [GUIDED, GUARD] = THUNDER_GOD_ABILITY_IDS;
 const entry = <T>(key: string): T => readObjectEntry<T>(`${ROOT}/natural.json`, key);
-const same = (actual: unknown, expected: unknown) => expect(stableStringify(actual)).toBe(stableStringify(expected));
+const same = (actual: unknown, expected: unknown) => {
+  const actualCanonical = stableStringify(actual), expectedCanonical = stableStringify(expected);
+  const equal = actualCanonical === expectedCanonical;
+  // Compare every canonical byte; hashes keep failure diagnostics bounded.
+  expect(equal, equal ? undefined : `Canonical JSON differs: actual SHA-256 ${createHash('sha256').update(actualCanonical).digest('hex')}; expected SHA-256 ${createHash('sha256').update(expectedCanonical).digest('hex')}`).toBe(true);
+};
 const canonicalHash = (value: unknown) => createHash('sha256').update(stableStringify(value)).digest('hex');
 const boundaryFiles: Record<string, string> = JSON.parse(readFileSync(`${ROOT}/boundaries.index.json`, 'utf8'));
 const snapshotFiles = entry<Record<string, string>>('snapshots');
@@ -43,6 +48,27 @@ const boundary = (name: string) => {
   return { before: migrateSliceState(readObjectEntry<unknown>(path, 'beforeLast')),
     intent: readObjectEntry<SliceIntent>(path, 'lastIntent'), final: migrateSliceState(readObjectEntry<unknown>(path, 'final')) };
 };
+/** Only new guidance prose changes in current replay. The archived checkpoint,
+ * its pinned bytes and every gameplay/random field remain untouched. */
+const withCurrentGuidance = (archived: SliceState): SliceState => {
+  const expected = structuredClone(archived);
+  const guidance = expected.chronicle.filter(record => record.id === 'record-602-918');
+  expect(guidance).toHaveLength(1);
+  const record = guidance[0]!;
+  expect({ id: record.id, week: record.week, title: record.title }).toEqual({
+    id: 'record-602-918', week: 138, title: '听取雷神独立成品与专业准备指导',
+  });
+  expect(createHash('sha256').update(record.text).digest('hex')).toBe('84722ec4896f6a4751ee7ef3cd2e4ac489d24b0412835a655ce57f330d9c07c8');
+  const oldGuidance = '全部原瓶失败后须付1行动与100便士申请下一批，至少跨一真实周才有新三瓶到货。';
+  const currentGuidance = '最初三瓶失败后，可实付1行动与120便士调查同一原特性，隔真实一周再付1行动回原处封存交接；新普通药物900便士或五项新劳动后90便士，原特性总量不增加。另可在当周已检查的同一场地为指定未服瓶支付60便士、8灵性、6精神，获得仅本瓶本周有效的意志+13支持；离场、跨周或服用即失效，仍可失败。';
+  expect(record.text.endsWith(oldGuidance)).toBe(true);
+  expect(expected.chronicle.reduce((count, row) => count + row.text.split(oldGuidance).length - 1, 0)).toBe(1);
+  const latestGuidance = expected.lastResult?.id === record.id ? expected.lastResult : null;
+  if (latestGuidance) same(latestGuidance, record);
+  record.text = record.text.slice(0, -oldGuidance.length) + currentGuidance;
+  if (latestGuidance) latestGuidance.text = record.text;
+  return expected;
+};
 const publicControl = (state: SliceState, intent: SliceIntent) => {
   const view = projectSliceState(state);
   if (intent.type === 'THUNDER_GOD') {
@@ -63,7 +89,30 @@ const publicControl = (state: SliceState, intent: SliceIntent) => {
 };
 const replayBoundary = (name: string) => {
   const save = boundary(name); publicControl(save.before, save.intent);
-  same(applySliceIntent(save.before, save.intent), save.final); return save;
+  const expected = save.intent.type === 'THUNDER_GOD' && save.intent.command.type === 'LEARN_GUIDANCE'
+    ? withCurrentGuidance(save.final) : save.final;
+  same(applySliceIntent(save.before, save.intent), expected); return save;
+};
+/** Legacy independent fourth-plus bottles are admitted only by strict journal
+ * validation. They are not a current public continuation or a replay bypass. */
+const archivedAcquisitionBoundary = (name: string) => {
+  const save = boundary(name);
+  expect(save.intent.type).toBe('THUNDER_GOD');
+  assertValidSliceState(save.before); assertValidSliceState(save.final);
+  expect(validateThunderGodAcquisitionJournal(save.before)).toBe(true);
+  expect(validateThunderGodAcquisitionJournal(save.final)).toBe(true);
+  const receipt = save.final.thunderGod.acquisitionJournal.at(-1)!;
+  expect(receipt.revision).toBe(save.before.revision);
+  expect(save.final.revision).toBe(save.before.revision + 1);
+  same({ type: 'THUNDER_GOD', command: receipt.command }, save.intent);
+  same(save.final.thunderGod.acquisitionJournal.slice(0, -1), save.before.thunderGod.acquisitionJournal);
+  expect([receipt.cursorBefore, receipt.cursorAfter]).toEqual([save.before.random.cursor, save.final.random.cursor]);
+  expect(projectSliceState(save.before).thunderGod.actions.some(action =>
+    action.enabled && stableStringify({ type: 'THUNDER_GOD', command: action.command }) === stableStringify(save.intent))).toBe(false);
+  const before = stableStringify(save.before);
+  expect(() => applySliceIntent(save.before, save.intent)).toThrow();
+  expect(stableStringify(save.before)).toBe(before);
+  return save;
 };
 async function fileHash(path: string) {
   const digest = createHash('sha256');
@@ -71,10 +120,11 @@ async function fileHash(path: string) {
   return digest.digest('hex');
 }
 
-// Frozen actual route: the original599 living prefix, three failed bottles,
-// a paid later-week fourth bottle, three honest life reports and ten fixed
-// ALL/CONTROL rounds ending in death. No seed search or post-death continuation.
-describe('Thunder God exact original599-command public continuation', () => {
+// Frozen historical route: the original599 living prefix, three failed bottles,
+// an independent fourth bottle, three honest life reports and ten fixed
+// ALL/CONTROL rounds ending in death. Current replay stops before legacy supply;
+// the full archive remains readable without seed search or altered old bytes.
+describe('Thunder God immutable820-command archive and current701-command prefix', () => {
   it('pins raw168 sources and raw190 capture independently of current migration', async () => {
     expect(await fileHash(SOURCE)).toBe(SOURCE_SHA); expect(await fileHash(PEACEFUL)).toBe(PEACEFUL_SHA);
     expect(await fileHash(`${ROOT}/natural.json`)).toBe('d682e3656fa4f8fb70f09e38b71355c50b4657c5ab7263201afa3c97b2c3f8b1');
@@ -90,7 +140,7 @@ describe('Thunder God exact original599-command public continuation', () => {
     same(captured('prefixFinal'), migrateSliceState(rawSource));
   }, 60_000);
 
-  it('replays all820 same-seed commands with every continuation control publicly available', () => {
+  it('replays701 current commands and validates the unchanged820-command archive without minting later originals', () => {
     const commands = entry<SliceIntent[]>('commands'), oldCommands = readObjectEntry<SliceIntent[]>(SOURCE, 'commands');
     expect(commands).toHaveLength(820); expect(oldCommands).toHaveLength(602);
     expect(entry('prefixCount')).toBe(599); expect(entry('prefixVerified')).toBe(true);
@@ -104,19 +154,29 @@ describe('Thunder God exact original599-command public continuation', () => {
       rawSchemaVersion: 168, rawContentVersion: 'catastrophe-v168', original602CommandDeathPreserved: true, newRandomChanges: false });
     expect(entry('strategy')).toMatchObject({ caseMethod: 'ABILITY', encounterPolicy: 'ALL', combatStance: 'CONTROL',
       combatRoundCap: 90, potionAttemptCap: 12, ordinaryActions: 'WORK_ONCE_PER_WEEK_THEN_REST', potionLabourSteps: 5 });
-    const final = captured('final');
+    const final = captured('final'), legacyRequest = boundary('request-real-supply-after-3-failures');
+    expect(commands[701]).toEqual({ type: 'THUNDER_GOD', command: { type: 'REQUEST_SUPPLY' } });
+    same(commands[701], legacyRequest.intent);
+    const expected701 = withCurrentGuidance(legacyRequest.before);
     let state = createSliceRun(final.runId, entry<Parameters<typeof createSliceRun>[1]>('creation'), entry<string>('seed'));
     same(state, captured('initial'));
-    for (const [i, intent] of commands.entries()) {
+    for (const [i, intent] of commands.slice(0, 701).entries()) {
       if (i >= 599) publicControl(state, intent);
       const previousRevision = state.revision; state = applySliceIntent(state, intent);
       expect(state.revision).toBe(previousRevision + 1);
       if (i === 598) same(state, captured('prefixFinal'));
-      if (i >= 599 && i < commands.length - 1) expect(state.status, `No early death at command ${i + 1}`).toBe('ACTIVE');
+      if (i >= 599) expect(state.status, `No early death at command ${i + 1}`).toBe('ACTIVE');
     }
-    same(state, final); assertValidSliceState(state); same(migrateSliceState(state), state);
+    same(state, expected701); assertValidSliceState(state); same(migrateSliceState(state), state);
+    expect(state.thunderGod.bottles.map(bottle => bottle.outcome)).toEqual(['FAILURE', 'FAILURE', 'FAILURE']);
+    expect(state.random).toEqual({ seed: 'sailor-natural-v026', cursor: 270 });
+    expect(() => applySliceIntent(state, legacyRequest.intent)).toThrow();
+    expect(projectSliceState(state).thunderGod.actions.some(action => action.command.type === 'REQUEST_SUPPLY' || action.command.type === 'RECEIVE_SUPPLY')).toBe(false);
+    assertValidSliceState(final); expect(validateThunderGodAcquisitionJournal(final)).toBe(true);
+    same(migrateSliceState(final), final);
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(state.revision).toBe(captured('initial').revision + commands.length);
+    expect(state.revision).toBe(captured('initial').revision + 701);
+    expect(final.revision).toBe(captured('initial').revision + commands.length);
     expect(entry('pendingIntent')).toBeNull(); expect(entry('error')).toBeNull(); expect(entry('continuationSource')).toBeNull();
     expect(entry('treatments')).toEqual([]); expect(entry('stage')).toBe('NATURAL_ACTUAL_TERMINAL');
     expect(Object.keys(boundaryFiles)).toHaveLength(222);
@@ -151,13 +211,14 @@ describe('Thunder God exact original599-command public continuation', () => {
     expect(validateThunderGodSource(final)).toBe(true);
   }, 60_000);
 
-  it('replays three failed bottles, paid next-week resupply and the fourth actual successful bottle', () => {
+  it('preserves three failures, archived paid resupply and fourth-bottle success while live legacy acquisition stays closed', () => {
     const guidance = replayBoundary('actual500p-guidance-and-frozen-eight-root-source');
     expect(guidance.before.cash - guidance.final.cash).toBe(500);
     for (let n = 1; n <= 4; n++) {
       const bottleId = `thunder-god-potion-${n}`;
-      const buy = replayBoundary(`actual1100p-buy-${bottleId}`), prepared = replayBoundary(`actual150p-current-week-preparation-${bottleId}`);
-      const dose = replayBoundary(`actual-consumption-${bottleId}`);
+      const checkBoundary = n <= 3 ? replayBoundary : archivedAcquisitionBoundary;
+      const buy = checkBoundary(`actual1100p-buy-${bottleId}`), prepared = checkBoundary(`actual150p-current-week-preparation-${bottleId}`);
+      const dose = checkBoundary(`actual-consumption-${bottleId}`);
       expect(buy.before.cash - buy.final.cash).toBe(1100); expect(prepared.before.cash - prepared.final.cash).toBe(150);
       expect(dose.before).toMatchObject({ health: 100, mind: 100, spirituality: 120, seer: { pollution: 0 } });
       expect(dose.before.thunderGod.preparedWeek).toBe(dose.before.week); expect(dose.final.thunderGod.preparedWeek).toBeNull();
@@ -166,12 +227,12 @@ describe('Thunder God exact original599-command public continuation', () => {
         : { health: 85, mind: 75, seer: { pollution: 30 }, progression: { sequence: 2 } });
       expect(() => applySliceIntent(dose.final, dose.intent)).toThrow();
     }
-    const request = replayBoundary('request-real-supply-after-3-failures');
+    const request = archivedAcquisitionBoundary('request-real-supply-after-3-failures');
     expect(request.before.thunderGod.bottles.map(bottle => bottle.outcome)).toEqual(['FAILURE', 'FAILURE', 'FAILURE']);
     expect([request.before.cash - request.final.cash, request.before.actionsRemaining - request.final.actionsRemaining]).toEqual([100, 1]);
     expect(request.final.thunderGod.resupply).toEqual({ requestedWeek: 169, deliveries: 0 });
     expect(() => applySliceIntent(request.final, { type: 'THUNDER_GOD', command: { type: 'RECEIVE_SUPPLY' } })).toThrow();
-    const received = replayBoundary('actual-later-week-new-supply-3');
+    const received = archivedAcquisitionBoundary('actual-later-week-new-supply-3');
     expect(received.before.week).toBe(170); expect(received.before.week).toBeGreaterThan(request.final.week);
     same(received.final.thunderGod.bottles.slice(0, 3), received.before.thunderGod.bottles);
     expect(received.final.thunderGod.bottles.slice(3).map(bottle => [bottle.id, bottle.stockedWeek, bottle.status, bottle.labourSteps]))

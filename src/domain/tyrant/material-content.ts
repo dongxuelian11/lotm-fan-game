@@ -10,15 +10,15 @@ export const TYRANT_MATERIAL_LOCATIONS = {
 } as const;
 export const TYRANT_FUTURE_BRANCH = {
   id: 'tyrant-original-future-1352', custodianId: 'TY0-CUSTODIAN', custodianName: '伊诺·格雷',
-  vacancyDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 7, day: 8 },
-  transferDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 7, day: 9 },
-  story: '本原创未来分支中的暴君空位与TY0-U1原封签须实际核验。同一暴君唯一性封存在保管室，成年保管人伊诺·格雷仅保管原物，没有容纳。太阳真神拥有自己独立的完整材料，挑战不会移交、击杀复制或借用其原件。',
+  vacancyDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 1, day: 8 },
+  transferDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 1, day: 9 },
+  story: '北海保管档记载，上一任暴君于1352年1月8日陨落，早于本地原三份雷神特性的供货。唯一性次日被封存在保管室；成年保管人伊诺·格雷只保管这件原物，没有容纳。本人仍须查验空位与原封签。太阳真神拥有自己的独立神位，挑战不会移交或复制其原件。',
 } as const;
 const branch = TYRANT_FUTURE_BRANCH;
 const succession: TyrantSuccession = {
   branchId: branch.id, uniquenessId: 'TY0-U1', seal: 'TY0-U1-ORIGINAL-SEAL', objectCount: 1,
-  vacancy: { eventId: 'TY0-VACANCY-1352-0708', date: { ...branch.vacancyDate }, verifiedVacant: true },
-  transfer: { eventId: 'TY0-CUSTODY-1352-0709', date: { ...branch.transferDate }, objectId: 'TY0-U1', toActorId: branch.custodianId, custodyOnly: true },
+  vacancy: { eventId: 'TY0-VACANCY-1352-0108', date: { ...branch.vacancyDate }, verifiedVacant: true },
+  transfer: { eventId: 'TY0-CUSTODY-1352-0109', date: { ...branch.transferDate }, objectId: 'TY0-U1', toActorId: branch.custodianId, custodyOnly: true },
   incumbentActorId: null, custodianActorId: branch.custodianId, custodianEmbodied: false,
   location: TYRANT_MATERIAL_LOCATIONS.vault, permission: 'ALLOW', conditionVersion: 1,
 };

@@ -5253,6 +5253,7 @@ export function SliceApp() {
         <ThunderGodPanel value={state.thunderGod} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
           onCommand={c => command({type:"THUNDER_GOD",command:c})}
           {...(!state.thunderGod.insideCase ? {onClose:() => setDrawer(null)} : {})}/>}
+        {tyrantPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("TYRANT")}>查看暴君晋升准备</button>}
       </main>
     </div>{eventDialog}{combat && <Combat state={state} reveal={roundReveal} onAcknowledge={() => setRoundReveal(null)} onCommand={command} busy={busy} error={error} onRetry={retryLast} fast={fast} onFastChange={setFast}/>}</Fragment>;
   }
@@ -5268,7 +5269,6 @@ export function SliceApp() {
         <AllKnowingEyePanel value={state.allKnowingEye} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
           onCommand={c => command({type:"ALL_KNOWING_EYE",command:c})}
           {...(!state.allKnowingEye.insideCase ? {onClose:() => setDrawer(null)} : {})}/>}
-        {tyrantPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("TYRANT")}>查看暴君晋升准备</button>}
         {whiteTowerPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("WHITE_TOWER")}>查看白塔晋升准备</button>}
       </main>
     </div>{eventDialog}{combat && <Combat state={state} reveal={roundReveal} onAcknowledge={() => setRoundReveal(null)} onCommand={command} busy={busy} error={error} onRetry={retryLast} fast={fast} onFastChange={setFast}/>}</Fragment>;

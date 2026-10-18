@@ -51,6 +51,15 @@ function harness(source = componentSource(1, 'SUPPLIER')) {
 }
 
 describe('Tyrant finite original materials: controlled component evidence, not a natural promotion', () => {
+  it('places the original future succession before the first attested three-bottle supply', () => {
+    const day = (month: number, day: number) => ({ epoch: 'FIFTH_EPOCH' as const, year: 1352, month, day });
+    expect(tyrantSuccessionAt(day(1, 8))).toBeNull();
+    const custody = tyrantSuccessionAt(day(1, 9));
+    expect(custody).toMatchObject({ objectCount: 1, incumbentActorId: null, custodianEmbodied: false,
+      vacancy: { date: day(1, 8) }, transfer: { date: day(1, 9), custodyOnly: true } });
+    expect(tyrantSuccessionAt(day(2, 12))).toEqual(custody);
+    expect(tyrantSuccessionAt(day(1, 9))).not.toBe(custody);
+  });
   for (const n of [1, 2, 3] as const) for (const mode of ['SUPPLIER', 'PLAYER', 'FAILED_REMAINS', 'RECOVERED_SUCCESS', 'RECOVERED_SUPPLIER'] as const) {
     it(`retains original${n} embodied with ${mode} external custody`, () => {
       const source = componentSource(n, mode), old = stableStringify(source), h = harness(source);
