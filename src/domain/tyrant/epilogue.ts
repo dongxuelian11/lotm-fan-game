@@ -13,7 +13,7 @@ export interface TyrantEpilogueResident {
   id: ResidentId; name: string; age: number; position: number; location: string;
   injury: { id: string; severity: 'LIGHT' | 'HEAVY'; description: string; active: true };
   permission: (Receipt & { answer: 'ACCEPT' }) | null;
-  arrival: (Receipt & { from: number; to: 0; walkedMeters: number; route: 'DIVERTED_WATER' | 'ORDINARY_SHORE' | 'ORIGINAL_ROPE'; diversionEventId: string | null }) | null;
+  arrival: (Receipt & { from: number; to: 0; travelledMeters: number; playerWalkedMeters: number; route: 'DIVERTED_WATER' | 'ORDINARY_SHORE' | 'ORIGINAL_ROPE'; diversionEventId: string | null }) | null;
 }
 export interface TyrantEpilogueState {
   version: 1; id: string; actorId: string; location: typeof TYRANT_EPILOGUE_LOCATION;
@@ -168,7 +168,7 @@ export function applyTyrantEpilogue(previous: TyrantEpilogueState, c: TyrantEpil
     const route = assisted ? 'DIVERTED_WATER' : s.water.isolated ? 'ORDINARY_SHORE' : 'ORIGINAL_ROPE';
     const oldPosition = resident.position; walkedMeters = oldPosition * 2;
     resident.position = 0; resident.location = 'TYRANT0-SAFE-SHORE';
-    resident.arrival = { ...done, from: oldPosition, to: 0, walkedMeters, route, diversionEventId: assisted ? s.diversion.receipt!.eventId : null };
+    resident.arrival = { ...done, from: oldPosition, to: 0, travelledMeters: oldPosition, playerWalkedMeters: walkedMeters, route, diversionEventId: assisted ? s.diversion.receipt!.eventId : null };
     if (route === 'ORIGINAL_ROPE') { s.rope.condition -= 3; s.rope.uses++; }
     if (assisted) {
       s.diversion.assists.push({ ...done, residentId: resident.id });

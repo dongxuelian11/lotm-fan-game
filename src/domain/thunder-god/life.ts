@@ -53,6 +53,17 @@ export interface ThunderGodLifeReceipt {
     bonus: 0 | 10; effectType: 'TARGET' | 'BODY'; rawHealthLoss: 0 | 5; preventedHealthLoss: 0 | 5 } | null;
   objectTransitions: ('PLACE' | 'OBSERVE' | 'TARGET_HIT' | 'TARGET_MISS' | 'MANUAL_INSPECT' | 'WEAR' | 'REGISTER' | 'IMPACT' | 'HAND_RESET' | 'CLOSE_HOOD' | 'STOP' | 'CLEAR_HOOD' | 'RETRIEVE_TARGET' | 'RETURN_PAD')[];
 }
+/** Public resolved facts exclude replay authority and random-stream positions. */
+export type ThunderGodPublicLifeReceipt = Pick<ThunderGodLifeReceipt,
+ 'week'|'date'|'revision'|'command'|'check'|'outcome'|'before'|'after'|'elapsedSeconds'|
+ 'playerWalkedMetres'|'keeperWalkedMetres'|'finnWalkedMetres'|'keeperEnergySpent'|
+ 'originalsBefore'|'originalsAfter'|'objectTransitions'>;
+export function projectThunderGodLifeReceipt(r: ThunderGodLifeReceipt): ThunderGodPublicLifeReceipt {
+ return structuredClone({week:r.week,date:r.date,revision:r.revision,command:r.command,check:r.check,outcome:r.outcome,
+ before:r.before,after:r.after,elapsedSeconds:r.elapsedSeconds,playerWalkedMetres:r.playerWalkedMetres,
+ keeperWalkedMetres:r.keeperWalkedMetres,finnWalkedMetres:r.finnWalkedMetres,keeperEnergySpent:r.keeperEnergySpent,
+ originalsBefore:r.originalsBefore,originalsAfter:r.originalsAfter,objectTransitions:r.objectTransitions});
+}
 export interface ThunderGodLifeState {
   sourceWeek: number | null; activeCase: ThunderGodCaseId | null; reflected: boolean;
   clockSeconds: number; elapsedSeconds: number; playerLocation: 'OUTSIDE' | 'EXIT' | 'CONTROL' | 'TARGET'; playerTravelMetres: number; keeperPresent: boolean; keeperReturnPosition: 'CONTROL' | 'EXIT';
@@ -69,7 +80,7 @@ export interface ThunderGodLifeProjection {
   clockSeconds: number; elapsedSeconds: number; playerLocation: ThunderGodLifeState['playerLocation']; playerTravelMetres: number;
   site: ThunderGodOriginals; keeperPresent: boolean; finn: ThunderGodLifeState['finn']; target: ThunderGodLifeState['target']; pad: ThunderGodLifeState['pad']; pending: ThunderGodLifeState['pending']; currentAttempt: ThunderGodAttempt | null;
   cases: { id: ThunderGodCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: ThunderGodAttempt[] }[];
-  ledger: ThunderGodLifeReceipt[]; actions: ThunderGodLifeAction[];
+  ledger: ThunderGodPublicLifeReceipt[]; actions: ThunderGodLifeAction[];
 }
 const GUIDED = 'tyrant.s1.guided-thunder', GUARD = 'tyrant.s1.storm-brace';
 const same = (a: unknown, b: unknown): boolean => { try { return stableStringify(a) === stableStringify(b); } catch { return false; } };
@@ -475,5 +486,5 @@ export function projectThunderGodLife(s: SliceState): ThunderGodLifeProjection {
   const l = s.thunderGod.life, actions = thunderGodLifeActions(s);
   return { title: '原靶、本人护持与普通归还', story: '雷势引导与风雷护持都是有限虚构能力。施用成功只开窗口，真正后续应用才增加掌握；失效、拒绝、健康损失和原物磨损如实保留。三案报告各25扮演，反思25；两项能力分别仅有一次对应实际应用可得8掌握。', source: '同一诺拉45岁、原小湾和20单位原水；原闸、系索、绞盘、轮保持各自真实磨损。另有44岁的独立成年人芬恩、本人实付购得的唯一原靶及护垫。', environment: '原小湾边界12米；原出口0米、控制点6米、原靶位置12米。诺拉和芬恩须实际走到出口避开作用线。每案当前邀请10便士、1行动；原靶40便士、护垫20便士，各1行动。每次约定诺拉耗1精力。释放本人冲击耗护垫10耐久、无有效护持时本人5健康；普通手柄同耗10耐久但健康0损失。没有电气或现实工程施工。', activeCase: l.activeCase, inside: locked(l), insideCase: locked(l), reflected: l.reflected, preferredActionId: actions.find(x => x.preferredAction)?.id ?? null,
     clockSeconds: l.clockSeconds, elapsedSeconds: l.elapsedSeconds, playerLocation: l.playerLocation, playerTravelMetres: l.playerTravelMetres, site: thunderGodOriginalSnapshot(s), keeperPresent: l.keeperPresent, finn: structuredClone(l.finn), target: structuredClone(l.target), pad: structuredClone(l.pad), pending: structuredClone(l.pending), currentAttempt: structuredClone(current(l)),
-    cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '当前许可可撤回；普通停止、真实取还原物和沿原路离开始终保留。'], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限窗口已经通过后续真实作用应用；原物已实取归还。' : '普通完成，保留真实失败、失效和代价，没有能力掌握奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }), ledger: structuredClone(l.journal), actions };
+    cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '当前许可可撤回；普通停止、真实取还原物和沿原路离开始终保留。'], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限窗口已经通过后续真实作用应用；原物已实取归还。' : '普通完成，保留真实失败、失效和代价，没有能力掌握奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }), ledger: l.journal.map(projectThunderGodLifeReceipt), actions };
 }

@@ -4,12 +4,26 @@ import { createHash } from 'node:crypto';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { projectSliceState } from '../../src/domain/slice/index.js';
 import { stableStringify } from '../../src/domain/canonical.js';
+import { projectSeaKingRoundOutcome } from '../../src/domain/sea-king/combat.js';
+import { projectThunderGodLifeReceipt } from '../../src/domain/thunder-god/life.js';
 import { projectThunderGodAction, projectThunderGodRoundOutcome } from '../../src/domain/thunder-god/combat.js';
 const hash=(x:unknown)=>createHash('sha256').update(stableStringify(x)).digest('hex');
 const load=(name:string)=>migrateSliceState(JSON.parse(readFileSync(`tests/fixtures/thunder-god-v01930/${name}`,'utf8')).final);
-function privatePaths(value:unknown){const result:string[]=[];const forbidden=new Set(['seed','cursor','randomSeed','randomCursor','randomCursorBefore','randomCursorAfter','cursorBefore','cursorAfter','futureRoll','nextRoll']);function walk(v:unknown,p:string){if(!v||typeof v!=='object')return;for(const[k,x]of Object.entries(v)){const at=`${p}.${k}`;if(forbidden.has(k)||k==='source'&&x!==null&&typeof x==='object')result.push(at);walk(x,at);}}walk(value,'$');return result;}
+function privatePaths(value:unknown){const result:string[]=[];const forbidden=new Set(['seed','cursor','randomSeed','randomCursor','randomCursorBefore','randomCursorAfter','cursorBefore','cursorAfter','randomBefore','randomAfter','futureRoll','nextRoll']);function walk(v:unknown,p:string){if(!v||typeof v!=='object')return;for(const[k,x]of Object.entries(v)){const at=`${p}.${k}`;if(forbidden.has(k)||k==='source'&&x!==null&&typeof x==='object')result.push(at);walk(x,at);}}walk(value,'$');return result;}
 describe('Tyrant inherited public facts before natural continuation',()=>{
  it('keeps the real701 predecessor exact while scanning full visible inherited history',()=>{const s=load('boundary-step-701-action.json'),before=hash(s),p=projectSliceState(s);expect(s).toMatchObject({revision:702,week:169,status:'ACTIVE',health:93,mind:85,spirituality:120,cash:210,actionsRemaining:2,progression:{pathwayId:'tyrant',sequence:2}});expect(p.progression.mastery).toEqual(s.progression.mastery);expect(privatePaths(p)).toEqual([]);expect(JSON.stringify(p)).not.toContain(s.random.seed);expect(hash(s)).toBe(before);},60_000);
  it('keeps oldS1 original round private state and all three visible entries without source or cursor',()=>{const s=load('boundary-combat-round-1.json'),before=hash(s),p=projectSliceState(s);expect(s.lastCombatRound?.thunderGodOutcome?.source).toBeTruthy();expect(p.lastCombatRound?.thunderGodOutcome).toBeTruthy();expect(p.combatHistory.at(-1)?.thunderGodOutcome).toEqual(p.lastCombatRound?.thunderGodOutcome);expect(privatePaths(p)).toEqual([]);expect(hash(s)).toBe(before);},60_000);
  it('selects resolved facts and legitimate modifier descriptions without copying injected top-level authority',()=>{const s=load('boundary-combat-round-1.json'),o=s.lastCombatRound!.thunderGodOutcome!,before=hash(s);const visible=projectThunderGodRoundOutcome({...o,seed:'injected'} as typeof o);expect(privatePaths(visible)).toEqual([]);expect(visible.materialsAfter).toEqual(o.materialsAfter);expect(visible.playerHealthAfter).toBe(o.playerHealthAfter);expect(visible.playerActions.map(a=>a.paidCost)).toEqual(o.playerActions.map(a=>a.paidCost));const a=o.playerActions.find(a=>a.check);if(a?.check){const modified={...a,check:{...a.check,modifiers:[{source:'原物实际辅助',value:3}]}};expect(projectThunderGodAction(modified).check?.modifiers).toEqual(modified.check.modifiers);}expect(hash(s)).toBe(before);},60_000);
+ it('preserves every allowed historical ledger and sea round fact while selecting no unknown authority fields',()=>{
+  const s=load('boundary-combat-round-1.json'),before=hash(s);
+  const r=s.thunderGod.life.journal[15]!;
+  const visible=projectThunderGodLifeReceipt({...r,seed:'private',futureRoll:99} as typeof r);
+  const {randomCursor,randomBefore,randomAfter,checkBase,source,...allowed}=r;
+  expect(visible).toEqual(allowed);expect(privatePaths(visible)).toEqual([]);
+  const o=s.combatHistory.find(x=>x.seaKingOutcome)!.seaKingOutcome!;
+  const {source:originalSource,...roundFacts}=o;
+  expect(projectSeaKingRoundOutcome({...o,seed:'private',randomCursorAfter:100} as typeof o)).toEqual(roundFacts);
+  expect(originalSource).toBeTruthy();expect(hash(s)).toBe(before);
+ },60_000);
+
 });

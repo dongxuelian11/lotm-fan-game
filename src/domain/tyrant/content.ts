@@ -17,7 +17,7 @@ export const TYRANT_RESCUE = 'TYRANT0-RESCUE';
 export const TYRANT_CITY_PLACES = [
   { id: TYRANT_HOME, title: '原港接待处' }, { id: TYRANT_SUPPLIER, title: '原供货交接处' },
   { id: TYRANT_MATERIAL_LOCATIONS.originalCove, title: '原小湾出口' },
-  { id: TYRANT_WORKSHOP, title: '暴君调配室' }, { id: TYRANT_ARCHIVE, title: '封存档案室' },
+  { id: TYRANT_WORKSHOP, title: '北岸集会调配场' }, { id: TYRANT_ARCHIVE, title: '封存档案室' },
   { id: TYRANT_VAULT, title: '原唯一性保管室' },
   ...TYRANT_COASTS.map(c => ({ id: c.location, title: c.title })),
   { id: TYRANT_CHALLENGE_LOCATION, title: '太阳真神敌对现场' }, { id: TYRANT_RESCUE, title: '有限海岸救援现场' },

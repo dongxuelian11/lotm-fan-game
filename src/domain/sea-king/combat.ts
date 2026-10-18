@@ -160,6 +160,16 @@ export interface SeaKingRoundOutcome {
   powerUses: Record<SeaKingPowerId, number>; waterSource: 'SEAWATER' | 'NONE'; focusReadyAfter: false; elapsedSeconds: 60;
   playerActions: SeaKingPlayerAction[]; enemyActions: SeaKingEnemyAction[];
 }
+export type SeaKingPublicRoundOutcome = Omit<SeaKingRoundOutcome, 'source'>;
+export function projectSeaKingRoundOutcome(o: SeaKingRoundOutcome): SeaKingPublicRoundOutcome {
+  return structuredClone({targetId:o.targetId,round:o.round,stance:o.stance,continuing:o.continuing,
+    enemyHealth:o.enemyHealth,enemyMind:o.enemyMind,enemySpirituality:o.enemySpirituality,enemyStatus:o.enemyStatus,
+    enemyInjuriesAfter:o.enemyInjuriesAfter,enemyRiskAfter:o.enemyRiskAfter,
+    playerSpiritualityBefore:o.playerSpiritualityBefore,playerSpiritualityAfter:o.playerSpiritualityAfter,
+    playerHealthAfter:o.playerHealthAfter,playerMindAfter:o.playerMindAfter,enemySpiritualityBefore:o.enemySpiritualityBefore,
+    powerUses:o.powerUses,waterSource:o.waterSource,focusReadyAfter:o.focusReadyAfter,elapsedSeconds:o.elapsedSeconds,
+    playerActions:o.playerActions,enemyActions:o.enemyActions});
+}
 export function finishSeaKingCombatRound(s: SliceState, r: SeaKingRoundContext, continuing = true): SeaKingRoundOutcome {
   const e = s.seaKing.encounter, c = s.combat;
   if (r.finished || !c || c.encounterId !== 'SEA_KING_DISPUTE' || c.round !== r.source.round || r.liveState !== liveState(s))
@@ -183,7 +193,7 @@ export function projectSeaKingCombat(s: SliceState) {
   return { enemyName: visible ? '昆廷（49岁，原创有限G3非凡者）' : '', targetId: visible ? e.targetId : null,
     enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
     powerUses: visible ? { ...e.powerUses } : null, waterSource: visible ? e.waterSource : null,
-    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, source: visible ? currentSeaKingCombatSource(s) : null,
+    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false,
     summary: visible ? '海王序列3有限G战斗。双方1–6次权重10/15/25/25/15/10；继承实际4核心35/25/25/15、1250/底125、S120，仅继续轮恢复12G。玩家六槽25/20/15/20/15/5，敌五类35/25/20/15/5。远风6S/意志18为65×新掌握；海域6S/知识18减32且须真实海水；旧控风4S/意志16减18×旧掌握，旧强雷6S/意志18为38×旧掌握，系数均0.65+0.35×掌握/500。灵性或水源不足仅普通0S回退。共同伤势盘决定原身体后果；旧本尼迪克特实际死亡与原物保留，无免费艇、海生物或自动友军免疫。' : '' };
 }
 /** Replays actual ordered paid actions and one-round resistance; never awards free spell effects. */

@@ -11,7 +11,7 @@ import { createTyrantSource, validateTyrantSource, tyrantBudget, type TyrantSour
 import { createTyrantCoasts, applyTyrantCoast, tyrantCoastBlock, tyrantCoastNeedsCheck, validateTyrantCoastCommand, tyrantCoastEvidence, canLeaveTyrantCoasts, carriedTyrantParcel, loseTyrantCargo } from './coasts.js';
 import { createTyrantChallenge, applyTyrantChallenge, tyrantChallengeBlock, validateTyrantChallengeCommand, tyrantChallengeReceipt, canLeaveTyrantChallenge } from './challenge.js';
 import { TYRANT_MATERIAL_POLICY, tyrantSuccessionAt } from './material-content.js';
-import { createTyrantMaterials, tyrantMaterialBlock, applyTyrantMaterial, transportTyrantMaterials, settleTyrantConsumption, validateTyrantMaterialCommand, tyrantRitualReceiptsComplete } from './materials.js';
+import { createTyrantMaterials, tyrantMaterialBlock, applyTyrantMaterial, transportTyrantMaterials, settleTyrantConsumption, settleTyrantDeath, validateTyrantMaterialCommand, tyrantRitualReceiptsComplete } from './materials.js';
 import { TYRANT_CITY_PLACES, TYRANT_HOME, TYRANT_WORKSHOP, TYRANT_GUIDANCE, TYRANT_CONSUMPTION, TYRANT_PROMOTION_STABILITY, TYRANT_EPILOGUE_BONUS, TYRANT_SPIRITUALITY_CAP, TYRANT_RESCUE } from './content.js';
 import { TYRANT_ABILITY_IDS, type TyrantState, type TyrantCommand, type TyrantFrame, type TyrantEvent, type TyrantCheckReceipt, type TyrantPromotionPreparation } from './types.js';
 import { createTyrantEpilogue, applyTyrantEpilogue, tyrantEpilogueBlock, validateTyrantEpilogueCommand, tyrantEpilogueNeedsCheck } from './epilogue.js';
@@ -231,7 +231,7 @@ function reduce(root: TyrantState,c: TyrantCommand,revision: number): TyrantEven
   for(const injury of result.injuries){b.injuries.push(clone(injury));b.injuryRisk+=injury.severity==='HEAVY'?2:1;}
   notes.push(...result.notes);
  }
- if(b.status!=='ACTIVE'){root.coasts=loseTyrantCargo(root.coasts!,eventId,'DEATH');for(const item of [...root.materials!.characteristics,root.materials!.uniqueness])if(['EMBODIED','FUSED','PLAYER','COMPOUND'].includes(item.holder)){item.holder='UNAVAILABLE';item.location=f.location;}root.materials!.uniqueness.incumbentActorId=null;root.materials!.uniqueness.custodianActorId=null;}
+ if(b.status!=='ACTIVE'){root.coasts=loseTyrantCargo(root.coasts!,eventId,'DEATH');root.materials=settleTyrantDeath(root.materials!,{eventId,week:b.week,location:f.location});}
  for(const p of root.promotionStability.preparations)if(p.status==='READY'&&preparation(root,p.compoundId)?.id!==p.id){p.status='INVALIDATED';p.invalidatedEventId=eventId;}
  const event:TyrantEvent={id:eventId,revision,command:clone(c),before,after:clone(f),randomReceipts:clone(random.receipts),financeReceipts,notes,beforeDigest,afterDigest:dataDigest(root)};root.journal.push(event);return event;
 }

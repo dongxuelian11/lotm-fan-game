@@ -4,7 +4,7 @@ import { resolveTyrantOriginals, isTyrantOriginal } from './originals.js';
 import type { ThunderGodOriginals } from '../thunder-god/types.js';
 import { TYRANT_ORIGINAL_IDS, TYRANT_CARRIER_IDS, TYRANT_UNIQUENESS_ID, TYRANT_LABOUR_IDS,
   type TyrantMaterialsState, type TyrantMaterialCommand, type TyrantMaterialHost, type TyrantMaterialPolicy,
-  type TyrantMaterialEffect, type TyrantMaterialSettlement, type TyrantCharacteristic, type TyrantHolder,
+  type TyrantMaterialEffect, type TyrantMaterialSettlement, type TyrantMaterialDeathInput, type TyrantCharacteristic, type TyrantHolder,
   type TyrantCompound, type TyrantOriginalId, type TyrantRitualReceipt } from './material-types.js';
 const clone = <T>(v: T): T => structuredClone(v);
 const same = (a: unknown, b: unknown) => stableStringify(a) === stableStringify(b);
@@ -70,8 +70,43 @@ export function createTyrantMaterials(origin: TyrantMaterialsState['origin'], po
     batches: TYRANT_CARRIER_IDS.map(id => ({ id, status: 'SUPPLIER', location: policy.supplierLocation, acquiredEventId: null, uses: 0 })),
     compounds: [], receipts: [], settlements: [] };
 }
+const deathObjects = (s: TyrantMaterialsState) => [...s.characteristics, s.uniqueness];
+const movesWithDeath = (item: Pick<TyrantCharacteristic, 'holder' | 'location'>, location: string) =>
+  ['EMBODIED', 'FUSED'].includes(item.holder) || ['PLAYER', 'COMPOUND'].includes(item.holder) && item.location === location;
+function deathConservationBlock(s: TyrantMaterialsState): string | null {
+  const death = s.death!;
+  if (!text(death.eventId) || !positive(death.week) || !text(death.location) || !Array.isArray(death.dispositions) ||
+    death.week < Math.max(s.origin.promotionWeek, ...s.receipts.map(r => r.week), ...s.settlements.map(r => r.week)) ||
+    new Set(death.dispositions.map(d => d.id)).size !== death.dispositions.length ||
+    death.previousIncumbentActorId !== null && death.previousIncumbentActorId !== s.origin.actorId || s.uniqueness.incumbentActorId !== null) return '实际死亡的原物去向回执不完整。';
+  const previous = clone(s); delete previous.death;
+  for (const d of death.dispositions) {
+    const current = deathObjects(s).find(x => x.id === d.id), prior = deathObjects(previous).find(x => x.id === d.id);
+    if (!current || !prior || current.holder !== 'UNAVAILABLE' || current.location !== death.location || current.compoundId !== d.compoundId ||
+      !movesWithDeath(d, death.location)) return '死亡不能移动不在现场的残余、改写旧成药位置或制造额外原件。';
+    Object.assign(prior, { holder: d.holder, location: d.location, compoundId: d.compoundId });
+  }
+  previous.uniqueness.incumbentActorId = death.previousIncumbentActorId;
+  if (!same(deathObjects(previous).filter(x => movesWithDeath(x, death.location)).map(x => x.id), death.dispositions.map(d => d.id)))
+    return '随本人身体或同场携带的原件须全部记录实际死亡去向。';
+  return tyrantMaterialConservationBlock(previous);
+}
+/** Called once by the private engine after actual death. This never revives the
+ * actor, destroys a uniqueness, consumes an undrunk potion or moves offsite remains. */
+export function settleTyrantDeath(s: TyrantMaterialsState, input: TyrantMaterialDeathInput): TyrantMaterialsState {
+  const invariant = tyrantMaterialConservationBlock(s); if (invariant) throw Error(invariant);
+  if (s.death || !text(input.eventId) || !positive(input.week) || !text(input.location)) throw Error('实际死亡结算缺失或重复。');
+  const n = clone(s), dispositions = deathObjects(n).filter(x => movesWithDeath(x, input.location)).map(x => ({
+    id: x.id, holder: x.holder, location: x.location, compoundId: x.compoundId,
+  }));
+  n.death = { ...clone(input), previousIncumbentActorId: n.uniqueness.incumbentActorId, dispositions };
+  for (const d of dispositions) Object.assign(deathObjects(n).find(x => x.id === d.id)!, { holder: 'UNAVAILABLE', location: input.location });
+  n.uniqueness.incumbentActorId = null;
+  const nextInvariant = tyrantMaterialConservationBlock(n); if (nextInvariant) throw Error(nextInvariant); return n;
+}
 /** Constant-sized original/custody invariant, not a raw-load validator. */
 export function tyrantMaterialConservationBlock(s: TyrantMaterialsState): string | null {
+  if (s.death) return deathConservationBlock(s);
   if (s.version !== 1 || !isTyrantOriginal(s.embodiedOriginalBottleId) || s.characteristics.length !== 3 ||
       !same(s.characteristics.map(c => c.originBottleId), TYRANT_ORIGINAL_IDS) ||
       s.characteristics.some(c => c.id !== `${c.originBottleId}:characteristic`) || s.uniqueness.id !== TYRANT_UNIQUENESS_ID ||
@@ -136,7 +171,7 @@ export function tyrantPrecomposeReceiptsComplete(receipts: TyrantRitualReceipt[]
       positive(r.week) && r.week <= week && positive(r.conditionVersion));
 }
 export function tyrantMaterialBlock(s: TyrantMaterialsState, c: TyrantMaterialCommand, h: TyrantMaterialHost, p: TyrantMaterialPolicy): string | null {
-  if (!validateTyrantMaterialCommand(c) || h.status !== 'ACTIVE' || h.sequence !== 1 || h.actorId !== s.origin.actorId || h.sourceDigest !== s.origin.sourceDigest) return '须由同一仍活着的雷神本人处置原物。';
+  if (s.death || !validateTyrantMaterialCommand(c) || h.status !== 'ACTIVE' || h.sequence !== 1 || h.actorId !== s.origin.actorId || h.sourceDigest !== s.origin.sourceDigest) return '须由同一仍活着的雷神本人处置原物。';
   const invariant = tyrantMaterialConservationBlock(s); if (invariant) return invariant;
   if (s.receipts.some(r => r.eventId === h.eventId) || s.settlements.some(r => r.eventId === h.eventId)) return '同一动作已结算，不能重复收费、领料或增加载体。';
   let place = p.supplierLocation;

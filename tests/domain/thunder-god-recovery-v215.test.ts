@@ -1,3 +1,4 @@
+import { THUNDER_GOD_RECOVERY_SCHEMA_VERSION } from '../../src/domain/thunder-god/content.js';
 import { describe, expect, it } from 'vitest';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { addGameWeeks } from '../../src/domain/game-calendar.js';
@@ -14,7 +15,7 @@ import { actualFailedTyrantSource } from './tyrant-material-fixtures.js';
 /** Port-budget gaps are explicit unit-test inputs, not ordinary-life trace proof.
  * The source itself, its old outcomes and the future random stream are untouched. */
 function harness() {
-  const s = actualFailedTyrantSource(); s.schemaVersion = 215;
+  const s = actualFailedTyrantSource(); s.schemaVersion = THUNDER_GOD_RECOVERY_SCHEMA_VERSION;
   const apply = (c: ThunderGodAcquisitionCommand) => {
     applyThunderGodAcquisition(s, c, { note() {}, roll() { throw Error('No extra draw'); }, check(ability, difficulty) {
       const stream = new DeterministicActionRandomStream(s.random.seed, s.random.cursor), roll = stream.nextInt(1, 100); s.random.cursor = stream.cursor;

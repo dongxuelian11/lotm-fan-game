@@ -3,7 +3,7 @@ import { addGameWeeks } from '../../src/domain/game-calendar.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { resolveTyrantOriginals } from '../../src/domain/tyrant/originals.js';
 import { TYRANT_MATERIAL_POLICY as POLICY, TYRANT_MATERIAL_LOCATIONS as LOC, tyrantSuccessionAt } from '../../src/domain/tyrant/material-content.js';
-import { applyTyrantMaterial, createTyrantMaterials, getTyrantMaterialActions, projectTyrantMaterials, settleTyrantConsumption,
+import { applyTyrantMaterial, createTyrantMaterials, getTyrantMaterialActions, projectTyrantMaterials, settleTyrantConsumption, settleTyrantDeath,
   transportTyrantMaterials, tyrantMaterialBlock, tyrantMaterialConservationBlock, tyrantPrecomposeReceiptsComplete,
   tyrantRitualReceiptsComplete, validateTyrantMaterialCommand, validateTyrantMaterialPolicy } from '../../src/domain/tyrant/materials.js';
 import { TYRANT_ORIGINAL_IDS, TYRANT_CARRIER_IDS, type TyrantCarrierId, type TyrantMaterialHost,
@@ -109,4 +109,43 @@ describe('Tyrant finite original materials: controlled component evidence, not a
     expect(Object.keys(projectTyrantMaterials(h.state)).sort()).toEqual(['lines', 'title']);
     expect(validateTyrantMaterialPolicy(POLICY)).toBe(true);
   });
+  it('records actual death before any compound without moving supplier originals', () => {
+    const h = harness(), before = structuredClone(h.state);
+    const dead = settleTyrantDeath(h.state, { eventId: 'component:death-before', week: h.host.week, location: 'component:sun-site' });
+    expect(tyrantMaterialConservationBlock(dead)).toBeNull();
+    expect(dead.characteristics[0]).toMatchObject({ holder: 'UNAVAILABLE', location: 'component:sun-site' });
+    expect(dead.characteristics.slice(1)).toEqual(before.characteristics.slice(1)); expect(dead.uniqueness).toEqual(before.uniqueness);
+    expect(dead.death!.dispositions).toHaveLength(1); expect(h.state).toEqual(before);
+    expect(tyrantMaterialBlock(dead, { type: 'ACQUIRE_CHARACTERISTIC', bottleId: original(2) }, h.host, POLICY)).not.toBeNull();
+    expect(() => settleTyrantDeath(dead, { eventId: 'component:repeat', week: h.host.week, location: 'component:sun-site' })).toThrow();
+  });
+  it('records actual death carrying a prepared dose without inventing consumption', () => {
+    const h = harness(); h.acquire(); h.compose(); h.move('component:death-site'); const before = structuredClone(h.state);
+    const dead = settleTyrantDeath(h.state, { eventId: 'component:death-prepared', week: h.host.week, location: h.host.location });
+    expect(tyrantMaterialConservationBlock(dead)).toBeNull(); expect(dead.death!.dispositions).toHaveLength(4);
+    expect(dead.compounds).toEqual(before.compounds); expect(dead.compounds[0]!.consumedWeek).toBeNull();
+    expect(dead.batches).toEqual(before.batches); expect(dead.settlements).toEqual([]);
+    expect([...dead.characteristics, dead.uniqueness].every(x => x.holder === 'UNAVAILABLE' && x.location === h.host.location)).toBe(true);
+  });
+  it('preserves successful promotion history when the embodied S0 actor later dies elsewhere', () => {
+    const h = harness(); h.acquire(); h.compose(); h.settle(true, true); const before = structuredClone(h.state);
+    const dead = settleTyrantDeath(h.state, { eventId: 'component:death-after-s0', week: h.host.week + 1, location: 'component:rescue-site' });
+    expect(tyrantMaterialConservationBlock(dead)).toBeNull(); expect(dead.compounds).toEqual(before.compounds);
+    expect(dead.compounds[0]).toMatchObject({ status: 'SUCCESS', location: LOC.workshop });
+    expect(dead.settlements).toEqual(before.settlements); expect(dead.uniqueness.incumbentActorId).toBeNull();
+    expect([...dead.characteristics, dead.uniqueness].every(x => x.holder === 'UNAVAILABLE' && x.location === 'component:rescue-site')).toBe(true);
+    // The source/engine replay also seals original compound history; the death
+    // reducer itself never writes that historical location.
+    expect(dead.death!.previousIncumbentActorId).toBe(h.host.actorId);
+  });
+  it.each([false, true])('leaves offsite failed remains unmoved on later death; sealed=%s', sealed => {
+    const h = harness(); h.acquire(); h.compose(); h.settle(false, true);
+    if (sealed) h.run({ type: 'SEAL_REMAINS', compoundId: h.state.compounds[0]!.id });
+    const before = structuredClone(h.state); h.move('component:elsewhere');
+    const dead = settleTyrantDeath(h.state, { eventId: `component:death-offsite:${sealed}`, week: h.host.week, location: h.host.location });
+    expect(tyrantMaterialConservationBlock(dead)).toBeNull(); expect(dead.death!.dispositions).toHaveLength(1);
+    expect(dead.characteristics.slice(1)).toEqual(before.characteristics.slice(1)); expect(dead.uniqueness).toEqual(before.uniqueness);
+    expect(dead.compounds).toEqual(before.compounds);
+  });
+
 });

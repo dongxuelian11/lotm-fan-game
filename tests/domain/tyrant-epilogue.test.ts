@@ -85,7 +85,7 @@ describe('Tyrant finite original-water rescue and original-energy release', () =
     expect(r.state.diversion.expiresSecond).toBe(r.h.nowSecond + 90);
     expect(r.state.residents.map(p => p.position)).toEqual([8, 14]); expect(r.mastery[DIVERSION]).toBe(0);
     const first = r.step('RESCUE_IVA'); expect(first.masteryGains).toEqual({ [DIVERSION]: 8 });
-    expect(r.state.residents[0]!.arrival).toMatchObject({ from: 8, to: 0, walkedMeters: 16, route: 'DIVERTED_WATER', diversionEventId: begun.state.diversion.receipt!.eventId });
+    expect(r.state.residents[0]!.arrival).toMatchObject({ from: 8, to: 0, travelledMeters: 8, playerWalkedMeters: 16, route: 'DIVERTED_WATER', diversionEventId: begun.state.diversion.receipt!.eventId });
     expect(r.state.residents[1]!.position).toBe(14);
     const second = r.step('RESCUE_TOMAS'); expect(second.masteryGains).toEqual({});
     expect(r.state.diversion.assists).toHaveLength(2); expect(r.mastery[DIVERSION]).toBe(8);

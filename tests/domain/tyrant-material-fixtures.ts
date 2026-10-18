@@ -1,3 +1,4 @@
+import { THUNDER_GOD_RECOVERY_SCHEMA_VERSION } from '../../src/domain/thunder-god/content.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { addGameWeeks } from '../../src/domain/game-calendar.js';
 import { stableStringify } from '../../src/domain/canonical.js';
@@ -27,7 +28,7 @@ export function componentSource(n: 1 | 2 | 3, mode: SourceMode): SliceState {
   const key = `${n}:${mode}`, cached = cache.get(key); if (cached) return structuredClone(cached);
   const s = readObjectEntry<SliceState>('tests/fixtures/thunder-god-v01930/boundary-actual500p-guidance-and-frozen-eight-root-source.json', 'beforeLast');
   const weeks = 169 - s.week; s.week += weeks; s.date = addGameWeeks(s.date, weeks); s.revision += 2;
-  s.schemaVersion = 215; s.cash = 100000; s.actionsRemaining = s.weeklyBudget = 100;
+  s.schemaVersion = THUNDER_GOD_RECOVERY_SCHEMA_VERSION; s.cash = 100000; s.actionsRemaining = s.weeklyBudget = 100;
   const apply = (command: ThunderGodAcquisitionCommand, roll = 30) => {
     applyThunderGodAcquisition(s, command, { note() {}, roll() { throw Error('No auxiliary draw'); }, check(ability, difficulty) {
       s.random.cursor++; return resolveNormalCheck({ ability, baseAbility: s.character.coreStats[ability], difficulty, modifiers: [], roll });

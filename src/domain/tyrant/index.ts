@@ -1,6 +1,6 @@
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
-import type { TyrantCommand, TyrantProjection, TyrantState } from './types.js';
+import type { TyrantAction, TyrantCommand, TyrantProjection, TyrantState } from './types.js';
 import {
   createTyrantState, startTyrant, sameTyrant, tyrantDigest,
   validateTyrantCommand, openTyrantOwnedEngine, snapshotTyrantOwnedEngine,
@@ -159,9 +159,16 @@ export function projectOwnedTyrant(s: SliceState, head: TyrantOwnedEngine): Tyra
 }
 
 const safetyTypes = new Set(['RETURN_TO_HARBOR', 'WITHDRAW', 'RETREAT', 'BREAK_CONTACT', 'STOP_EFFECTS']);
+/** Keep the actual target and blocker visible. A disabled goal is not evidence
+ * that working or waiting will solve a refusal, exhausted original or expiry. */
+export function selectTyrantPreferredAction(actions: TyrantAction[], desired: TyrantCommand | null): TyrantAction | undefined {
+ return actions.find(action=>sameTyrant(action.command,desired));
+}
 function desiredCommand(root: TyrantState): TyrantCommand | null {
  const f=root.frame!,b=f.budget,m=root.materials!,h=tyrantHost(root,`R215:${root.source!.runId}:${root.source!.revision+2+root.journal.length}`,root.source!.revision+2+root.journal.length);
  const at=(to:string,c:TyrantCommand):TyrantCommand=>f.location===to?c:{type:'TRAVEL',to};
+ if(b.status!=='ACTIVE')return null;
+ if(root.epilogue?.status==='WITHDRAWN'&&!root.epilogue.reported)return {type:'EPILOGUE',command:{type:'REPORT'}};
  if(root.epilogue?.status==='ACTIVE'){
   const a=getTyrantEpilogueActions(root.epilogue,h).find(a=>a.preferredAction&&a.enabled);
   return a?{type:'EPILOGUE',command:a.command}:null;
@@ -245,6 +252,7 @@ function projection(s:SliceState,head:TyrantOwnedEngine|null):TyrantProjection {
  result.sections.push(projectTyrantCoasts(root.coasts!,b.week));
  result.sections.push(projectTyrantChallenge(root.challenge!));
  result.sections.push({id:'materials',...projectTyrantMaterials(root.materials!)});
+ result.sections.push({id:'vacancy',title:'原唯一性与真实未来分支',lines:[TYRANT_FUTURE_BRANCH.story,tyrantSuccessionAt(h.date)?'当前日期已经到达原保管链发生之后，仍须本人分别实查保管链、当周空位并付费当面交接。':'当前日期尚未到原保管链发生之时。等待不会提前产生原件，也不会发工资或免除生活费。']});
  result.sections.push({id:'finance',title:'实际工资、生活费与旧债',lines:[`现款${b.cash}便士；原职业每周${root.source!.character.weeklyWage}便士，须本人实际工作一次。`,`未付本金${f!.finance.debts.reduce((sum,d)=>sum+d.remaining,0)}便士；下次约定还款${f!.finance.debts.reduce((sum,d)=>sum+Math.min(d.remaining,d.weeklyPayment),0)}便士。`,'等待不发工资、不补粮、不恢复身体；不足生活费如实计欠，之后按赤贫生活。']});
  result.sections.push({id:'body',title:'当前身体与同一原掌握',lines:[`${s.character.name}，${s.character.age}岁；健康${b.health}，精神${b.mind}，灵性${b.spirituality}/${promoted?TYRANT_SPIRITUALITY_CAP:120}，污染${b.pollution}，意志${b.coreStats.will}。`,...(b.injuries.length?b.injuries.map(i=>`${i.severity==='HEAVY'?'重伤':'轻伤'}：${i.treatedRevision===null?'尚未处置':'已普通处置，仍须之后实际休养'}。`):['当前没有实际伤势。']),'水手至雷神24项原掌握逐值保留，包括原零值；两项暴君新技巧只在真实晋升后从零开始。','普通重伤处置实付60便士、1行动；之后仍须实际休养。原小湾水量、旧闸、原靶与旧人物不修复或复制。']});
  const latest=root.journal.at(-1);
@@ -272,12 +280,10 @@ function projection(s:SliceState,head:TyrantOwnedEngine|null):TyrantProjection {
  add({type:'CLINIC'},'付费普通处置真实重伤','1行动、60便士、1小时，之后仍须休养');
  add({type:'REST'},'按实际生活档休养','1行动、8小时，未处置的重伤保留');
  add({type:'NEXT_WEEK'},'走到下一真实周界','结生活费与约定还款；没有工资或恢复');
- const desired=desiredCommand(root);let preferred=result.actions.find(a=>sameTyrant(a.command,desired));
- if(preferred&&!preferred.enabled&&!result.insideCase){
-  preferred=result.actions.find(a=>a.command.type==='WORK'&&a.enabled)??result.actions.find(a=>a.command.type==='NEXT_WEEK'&&a.enabled)??preferred;
- }
+ const desired=desiredCommand(root),preferred=selectTyrantPreferredAction(result.actions,desired);
  if(preferred){preferred.preferredAction=true;result.nextStep=`${preferred.label}。${preferred.reason??'按实际成本与时间完成这一步。'}`;}
  else if(!promoted&&!result.insideCase)result.nextStep='当前有限材料或原居民条件不再支持继续晋升。可查看实际记录并选择普通生活；等待不会补粮、补原物或清除拒绝。';
+ if(b.status!=='ACTIVE')result.nextStep='本人已死亡，周目停止。原伤、原物所在与实际失败记录保留，不能继续行动或回收。';
  return result;
 }
 

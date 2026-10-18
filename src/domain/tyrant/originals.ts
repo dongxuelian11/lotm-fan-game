@@ -6,7 +6,8 @@ export const isTyrantOriginal = (id: unknown): id is TyrantOriginalId => TYRANT_
  * accepted here as a fourth characteristic or relabelled as recovered stock. */
 export function resolveTyrantOriginals(snapshot: TyrantOriginSnapshot): TyrantOriginalResolution | null {
   try {
-    const result = resolveThunderGodOriginalsSnapshot(snapshot);
+    const result = resolveThunderGodOriginalsSnapshot({ bottles: snapshot.bottles, acquisitionJournal: snapshot.acquisitionJournal, resupply: snapshot.resupply,
+      ...(snapshot.promotionStability ? { promotionStability: snapshot.promotionStability } : {}) });
     if (!result || !isTyrantOriginal(result.embodiedOriginalBottleId) || !result.embodiedBottleId || result.characteristics.length !== 3) return null;
     const characteristics: TyrantOriginalResolution['characteristics'] = [];
     for (const originalBottleId of TYRANT_ORIGINAL_IDS) {

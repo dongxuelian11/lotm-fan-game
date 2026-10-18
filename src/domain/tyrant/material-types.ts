@@ -17,7 +17,7 @@ export interface TyrantOriginSnapshot {
   acquisitionJournal: ThunderGodAcquisitionEvent[];
   promotionWeek: number;
   resupply: import('../thunder-god/types.js').ThunderGodState['resupply'];
-  promotionStability?: import('../thunder-god/types.js').ThunderGodState['promotionStability'];
+  promotionStability?: NonNullable<import('../thunder-god/types.js').ThunderGodState['promotionStability']>;
 }
 export interface TyrantOriginalResolution {
   embodiedOriginalBottleId: TyrantOriginalId;
@@ -104,11 +104,19 @@ export interface TyrantMaterialSettlement {
   eventId: string; week: number; compoundId: string; success: boolean; alive: boolean; location: string;
   residualPresent: boolean;
 }
+export interface TyrantMaterialDeathInput { eventId: string; week: number; location: string }
+/** Current physical disposition after actual actor death; previous compounds
+ * and successful promotion remain immutable historical records. */
+export interface TyrantMaterialDeath extends TyrantMaterialDeathInput {
+  previousIncumbentActorId: string | null;
+  dispositions: { id: string; holder: TyrantHolder; location: string | null; compoundId: string | null }[];
+}
 export interface TyrantMaterialsState {
   version: 1; origin: TyrantOriginSnapshot & { actorId: string; sourceDigest: string; inheritanceLocation: string };
   embodiedOriginalBottleId: TyrantOriginalId; characteristics: TyrantCharacteristic[];
   legacyRemains: TyrantLegacyRemains[]; uniqueness: TyrantUniqueness; batches: TyrantCarrier[];
   compounds: TyrantCompound[];
+  death?: TyrantMaterialDeath;
   receipts: { eventId: string; revision: number; week: number; location: string; command: TyrantMaterialCommand; effect: TyrantMaterialEffect }[];
   settlements: TyrantMaterialSettlement[];
   /** Current custody of actual failed original doses, never a public certificate. */

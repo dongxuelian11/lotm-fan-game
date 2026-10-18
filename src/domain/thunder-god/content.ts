@@ -50,6 +50,6 @@ export const THUNDER_GOD_INHERITED_ABILITIES = [
 ].map(([id, label, description]) => ({ id: id!, label: label!, description: description! }));
 export const THUNDER_GOD_CONSUMPTION_RISK = '天灾消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原22项掌握和天灾消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通休养。原湾水量、闸与轮具损耗、诺拉原精力均保留，不复制、修复或补充。最初三瓶失败后，可实付1行动与120便士调查同一原特性，隔真实一周再付1行动回原处封存交接；新普通药物900便士或五项新劳动后90便士，原特性总量不增加。另可在当周已检查的同一场地为指定未服瓶支付60便士、8灵性、6精神，获得仅本瓶本周有效的意志+13支持；离场、跨周或服用即失效，仍可失败。';
 
-export const THUNDER_GOD_RECOVERY_SCHEMA_VERSION = 215;
+export const THUNDER_GOD_RECOVERY_SCHEMA_VERSION = 212;
 export const THUNDER_GOD_RECOVERY_SITE_ID = 'BACKLUND_ORIGINAL_COVE_EXIT' as const;
 export const THUNDER_GOD_PROMOTION_STABILITY = { cash: 60, spirituality: 8, mind: 6, bonus: 13 } as const;

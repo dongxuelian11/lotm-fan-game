@@ -35,7 +35,7 @@ export const tyrantHistoryDigest = (s: SliceState) => digest(Object.fromEntries(
 export function tyrantAcquisitionSnapshot(s: SliceState): TyrantOriginSnapshot {
   if (s.thunderGod.promotionWeek === null) throw Error('缺少本人真实雷神晋升。');
   const a = s.thunderGod;
-  return { bottles: structuredClone(a.bottles), resupply: structuredClone(a.resupply), promotionStability: structuredClone(a.promotionStability), promotionWeek: a.promotionWeek!, acquisitionJournal: structuredClone(a.acquisitionJournal) };
+  return { bottles: structuredClone(a.bottles), resupply: structuredClone(a.resupply), ...(a.promotionStability ? { promotionStability: structuredClone(a.promotionStability) } : {}), promotionWeek: a.promotionWeek!, acquisitionJournal: structuredClone(a.acquisitionJournal) };
 }
 /** Strict cold admission only. Must never be called from an owned hot step. */
 export function tyrantSourceBlock(s: SliceState): string | null {
