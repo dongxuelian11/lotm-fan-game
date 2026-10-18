@@ -1,3 +1,4 @@
+export type { DemonessCommand, DemonessProjection } from '../domain/demoness/types.js';
 export type { TwilightGiantCommand, TwilightGiantProjection } from '../domain/twilight-giant/types.js';
 export type { ErrorAscentCommand, ErrorAscentProjection } from '../domain/error-ascent/types.js';
 export type { DoorCommand, DoorProjection } from '../domain/door/types.js';

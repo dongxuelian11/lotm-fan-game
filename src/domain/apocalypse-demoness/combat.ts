@@ -1,3 +1,5 @@
+import { projectDemonessPublicFields, projectDemonessPublicCheck, projectDemonessPublicInjury } from '../calamity-demoness/life.js';
+import { projectApocalypseDemonessOriginals, type ApocalypseDemonessPublicOriginals } from './life.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import type { PublicCheckResult, PublicGameDate } from '../../shared/contracts.js';
@@ -5,7 +7,7 @@ import { stableStringify } from '../canonical.js';
 import { isValidGameDate } from '../game-calendar.js';
 import { CALAMITY_DEMONESS_COUNT_WHEEL, calamityDemonessActionCount } from '../calamity-demoness/combat.js';
 import type { SliceCombatRound, SliceInjury, SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
-import { APOCALYPSE_DEMONESS_TARGET_ID, APOCALYPSE_DEMONESS_SITE, APOCALYPSE_DEMONESS_POWER_IDS, APOCALYPSE_DEMONESS_POWERS, APOCALYPSE_DEMONESS_POLICIES,
+import { projectApocalypseDemonessScene, projectApocalypseDemonessMaterials, projectApocalypseDemonessPendingSource, projectApocalypseDemonessPowerUses, APOCALYPSE_DEMONESS_TARGET_ID, APOCALYPSE_DEMONESS_SITE, APOCALYPSE_DEMONESS_POWER_IDS, APOCALYPSE_DEMONESS_POWERS, APOCALYPSE_DEMONESS_POLICIES,
  combatBody, initialApocalypseDemonessBody, hasApocalypseDemonessDisputeOpponent, validateApocalypseDemonessPreparation, validApocalypseDemonessMaterials, validApocalypseDemonessScene,
  apocalypseDemonessOriginalSnapshot, validApocalypseDemonessCombatOriginals, apocalypseDemonessPlayerWeapon,
  type ApocalypseDemonessCombatBody, type ApocalypseDemonessEnemyIntent, type ApocalypseDemonessPreparation, type ApocalypseDemonessMaterials, type ApocalypseDemonessScene, type ApocalypseDemonessPolicy, type ApocalypseDemonessCombatOriginals, type ApocalypseDemonessPendingSource } from './encounter.js';
@@ -239,9 +241,42 @@ export function apocalypseDemonessCombatConsequence(round:SliceCombatRound):stri
  if(o.playerHealthAfter===0)text+='本人的原身体真实死亡，本周目终结。';else if(o.enemyHealth===0)text+='莱奥娜原身体真实死亡，唯一原棍留地。';else if(o.enemyStatus==='SURRENDERED')text+='莱奥娜因实际伤势或精神耗尽停止抵抗，仍活着，原棍放下。';
  return text+' 本轮实际60秒，过期或未用窗口结束，已付费用不退。真实旧伤、新伤、新片耗次与磨损、往返精力和有限印记保留；未释放来源轮末消散而资源仍实耗。维瑞娜、马库斯已在场外，伊瑞丝与旧人物结果不变。';
 }
+export type ApocalypseDemonessPublicActionEvidence = Omit<ApocalypseDemonessActionEvidence, 'randomCursorBefore' | 'randomCursorAfter' | 'originalsBefore' | 'originalsAfter'> &
+  { originalsBefore: ApocalypseDemonessPublicOriginals; originalsAfter: ApocalypseDemonessPublicOriginals };
+export type ApocalypseDemonessPublicRoundOutcome = Omit<ApocalypseDemonessRoundOutcome, 'source' | 'randomCursorAfter' | 'originalsAfter' | 'playerActions' | 'enemyActions'> &
+  { originalsAfter: ApocalypseDemonessPublicOriginals; playerActions: ApocalypseDemonessPublicActionEvidence[]; enemyActions: ApocalypseDemonessPublicActionEvidence[] };
+const publicApocalypseWindow = (w: ApocalypseDemonessWindow): ApocalypseDemonessWindow =>
+  projectDemonessPublicFields(w, ['id', 'kind', 'createdAt', 'expiresAt', 'openedOrder', 'conditionVersion', 'targetId', 'enemyCoordinate', 'playerCoordinate', 'magnitude']);
+function publicApocalypseWindows(w: ApocalypseDemonessWindows): ApocalypseDemonessWindows {
+  return { pulseContainment: w.pulseContainment ? publicApocalypseWindow(w.pulseContainment) : null,
+    mirrorBuffer: w.mirrorBuffer ? publicApocalypseWindow(w.mirrorBuffer) : null, mirrorScreen: w.mirrorScreen ? publicApocalypseWindow(w.mirrorScreen) : null };
+}
+export function projectApocalypseDemonessAction(a: ApocalypseDemonessActionEvidence): ApocalypseDemonessPublicActionEvidence {
+  return { ...projectDemonessPublicFields(a, ['order', 'actor', 'id', 'planned', 'selectedAbility', 'fallbackReason', 'label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure',
+    'attackKind', 'rawContribution', 'rawReduction', 'paidCost', 'mindCost', 'healthPaid', 'energyPaid', 'plateWear', 'physicalFactor', 'resistanceRoll', 'resistanceChance', 'succeeded',
+    'finiteResult', 'appliedWindowId', 'consumedMarkId', 'declaredSourceId', 'releasedSourceId', 'plateChargeSpent', 'conditionVersionBefore', 'conditionVersionAfter', 'atSeconds',
+    'completedAtSeconds', 'elapsedSeconds', 'travelMetres', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'enemyMindAfter', 'enemySpiritualityAfter']),
+    check: projectDemonessPublicCheck(a.check), windowsBefore: publicApocalypseWindows(a.windowsBefore), windowsAfter: publicApocalypseWindows(a.windowsAfter),
+    masteryApplied: [...a.masteryApplied], countered: [...a.countered], pendingSourceBefore: projectApocalypseDemonessPendingSource(a.pendingSourceBefore),
+    pendingSourceAfter: projectApocalypseDemonessPendingSource(a.pendingSourceAfter), materialsBefore: projectApocalypseDemonessMaterials(a.materialsBefore), materialsAfter: projectApocalypseDemonessMaterials(a.materialsAfter),
+    originalsBefore: projectApocalypseDemonessOriginals(a.originalsBefore), originalsAfter: projectApocalypseDemonessOriginals(a.originalsAfter), travelPath: [...a.travelPath], lateralTravelPath: [...a.lateralTravelPath] };
+}
+export function projectApocalypseDemonessRoundOutcome(o: ApocalypseDemonessRoundOutcome): ApocalypseDemonessPublicRoundOutcome {
+  return { ...projectDemonessPublicFields(o, ['targetId', 'round', 'stance', 'continuing', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'playerRiskAfter', 'elapsedSeconds',
+    'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'enemyRisk', 'weaponLocation', 'totalOwnerMindSpent', 'pulseContainmentAttempts', 'pulseContainmentChecks',
+    'pulseContainmentSuccesses', 'mirrorBufferAttempts', 'mirrorBufferChecks', 'mirrorBufferSuccesses', 'mirrorScreenAttempts', 'mirrorScreenChecks', 'blackFlameAttempts']),
+    enemyInjuries: o.enemyInjuries.map(projectDemonessPublicInjury), playerInjuriesAfter: o.playerInjuriesAfter.map(projectDemonessPublicInjury), powerUses: projectApocalypseDemonessPowerUses(o.powerUses),
+    observations: o.observations.map(a => projectDemonessPublicFields(a, ['power', 'conditionVersion', 'round', 'order', 'atSeconds', 'paidCost'])),
+    pendingSource: projectApocalypseDemonessPendingSource(o.pendingSource), expiredSourceIds: [...o.expiredSourceIds], releasedSourceIds: [...o.releasedSourceIds],
+    inheritedSuccesses: projectDemonessPublicFields(o.inheritedSuccesses, ['mirrorScreen', 'blackFlame', 'frost']),
+    materialsAfter: projectApocalypseDemonessMaterials(o.materialsAfter), originalsAfter: projectApocalypseDemonessOriginals(o.originalsAfter),
+    masteryAfter: Object.fromEntries([...APOCALYPSE_DEMONESS_INHERITED_SKILL_IDS, ...APOCALYPSE_DEMONESS_NEW_ABILITY_IDS].filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+    rootAfter: projectApocalypseDemonessScene(o.rootAfter), playerActions: o.playerActions.map(projectApocalypseDemonessAction), enemyActions: o.enemyActions.map(projectApocalypseDemonessAction),
+    expiredWindows: o.expiredWindows.map(publicApocalypseWindow), windowsAfter: publicApocalypseWindows(o.windowsAfter) };
+}
 export function projectApocalypseDemonessCombat(s:SliceState){
  const e=s.apocalypseDemoness.encounter,known=e.scene.knownEnemyName!==null,last=s.combat?.encounterId==='APOCALYPSE_DEMONESS_DISPUTE'?s.combat.lastRound?.apocalypseDemonessOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.apocalypseDemonessOutcome:null,site=s.apocalypseDemoness.life.site;
- return{enemyName:known?'莱奥娜·布莱克（43岁）':null,targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,scene:structuredClone(e.scene),materials:structuredClone(e.materials),remainingMarkIds:e.materials.marks.filter(m=>m.status==='HELD').map(m=>m.id).sort(),pendingSource:structuredClone(e.pendingSource),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],windows:last?structuredClone(last.windowsAfter):{pulseContainment:null,mirrorBuffer:null,mirrorScreen:null},constants:APOCALYPSE_DEMONESS_COMBAT_CONSTANTS,countWheel:APOCALYPSE_DEMONESS_COUNT_WHEEL,enemyCountWheel:APOCALYPSE_DEMONESS_ENEMY_COUNT_WHEEL,abilityWheel:apocalypseDemonessAbilityWheel(s,null),enemyAbilityWheel:APOCALYPSE_DEMONESS_ENEMY_ABILITY_WHEEL,facts:[
+ return{enemyName:known?'莱奥娜·布莱克（43岁）':null,targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:projectApocalypseDemonessPowerUses(e.powerUses),policy:e.policy,scene:projectApocalypseDemonessScene(e.scene),materials:projectApocalypseDemonessMaterials(e.materials),remainingMarkIds:e.materials.marks.filter(m=>m.status==='HELD').map(m=>m.id).sort(),pendingSource:projectApocalypseDemonessPendingSource(e.pendingSource),lastActionSequence:last?[...last.playerActions.map(projectApocalypseDemonessAction),...last.enemyActions.map(projectApocalypseDemonessAction)].sort((a,b)=>a.order-b.order):[],windows:last?publicApocalypseWindows(last.windowsAfter):{pulseContainment:null,mirrorBuffer:null,mirrorScreen:null},constants:APOCALYPSE_DEMONESS_COMBAT_CONSTANTS,countWheel:APOCALYPSE_DEMONESS_COUNT_WHEEL,enemyCountWheel:APOCALYPSE_DEMONESS_ENEMY_COUNT_WHEEL,abilityWheel:apocalypseDemonessAbilityWheel(s,null),enemyAbilityWheel:APOCALYPSE_DEMONESS_ENEMY_ABILITY_WHEEL,facts:[
  '体25%、感30%、意30%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、灵性上限120，仅继续轮恢复12。',
  '脉冲收束8灵性2精神、知识18；只借实际观察且尚未释放的同一枚印记辅助下一普通打击30一次。对手攻击继续，不撤销旧伤、不影响其它来源。',
  '镜面缓冲8灵性2精神、意志18；仅下一可见身体冲击减势30，实耗新片一次并磨损5。精神攻击不耗缓冲、不受保护。',

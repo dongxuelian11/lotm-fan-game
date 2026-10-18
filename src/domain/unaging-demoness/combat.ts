@@ -1,3 +1,4 @@
+import { projectDemonessPublicFields, projectDemonessPublicInjury } from '../calamity-demoness/life.js';
 import type { ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -211,11 +212,27 @@ export function finishUnagingDemonessCombatRound(s: SliceState, r: UnagingDemone
   return structuredClone(r.outcome);
 }
 export function unagingDemonessRoundOutcome(r: UnagingDemonessRoundContext): UnagingDemonessRoundOutcome { if (!r.outcome) throw new Error('先实际结束原回合。'); return structuredClone(r.outcome); }
+export type UnagingDemonessPublicRoundOutcome = Omit<UnagingDemonessRoundOutcome, 'source'>;
+const publicUnagingPowers = (p: Record<UnagingDemonessPowerId, number>) => ({ FORCE_STRIKE: p.FORCE_STRIKE, SEAL_MIRROR: p.SEAL_MIRROR, BREAK_MIRROR: p.BREAK_MIRROR });
+function publicUnagingScene(p: UnagingDemonessEncounterScene): UnagingDemonessEncounterScene {
+  return { ...projectDemonessPublicFields(p, ['courtId', 'ordinaryExit', 'thirdPartiesInArea', 'clearanceConfirmed', 'playerPosition', 'mirrorsDistanceMetres', 'ordinaryWalkedMetres', 'mirrorPassedMetres']),
+    mirrorA: { id: p.mirrorA.id, intact: p.mirrorA.intact }, mirrorB: { id: p.mirrorB.id, intact: p.mirrorB.intact }, exits: { A: p.exits.A, B: p.exits.B } };
+}
+const publicUnagingAction = (a: ActionEvidence) => ({ ...projectDemonessPublicFields(a,
+  ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'order', 'paidCost', 'physicalFactor', 'mode']), rolls: [...a.rolls] });
+export function projectUnagingDemonessRoundOutcome(o: UnagingDemonessRoundOutcome): UnagingDemonessPublicRoundOutcome {
+  return { ...projectDemonessPublicFields(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'enemyRiskAfter',
+    'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'sealReadyAfter', 'silkPreparedAfter', 'boundReadyAfter', 'elapsedSeconds', 'lifeClockSecondsAfter']),
+    enemyInjuriesAfter: o.enemyInjuriesAfter.map(projectDemonessPublicInjury), powerUses: publicUnagingPowers(o.powerUses), sceneAfter: publicUnagingScene(o.sceneAfter),
+    toolsAfter: projectDemonessPublicFields(o.toolsAfter, ['kitsBought', 'powderHeld', 'powderUsed', 'mirrorsHeld', 'mirrorsUsed', 'lastPurchaseWeek', 'mirrorPrepared']),
+    playerActions: o.playerActions.map(a => ({ ...publicUnagingAction(a), id: a.id, from: a.from, to: a.to })),
+    enemyActions: o.enemyActions.map(a => ({ ...publicUnagingAction(a), planned: a.planned, actual: a.actual, boundConsumed: a.boundConsumed })) };
+}
 export function projectUnagingDemonessCombat(s: SliceState) {
   const e = s.unagingDemoness.encounter, visible = isUnagingDemoness(s);
   return { enemyName: visible ? '科宾·里德（49岁，原创有限G3非凡者）' : '', targetId: visible ? e.targetId : null,
-    enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null, powerUses: visible ? { ...e.powerUses } : null,
-    scene: visible ? structuredClone(e.scene) : null, source: visible ? currentUnagingDemonessCombatSource(s) : null,
+    enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null, powerUses: visible ? publicUnagingPowers(e.powerUses) : null,
+    scene: visible ? publicUnagingScene(e.scene) : null,
     summary: visible ? '双方1–6次10/15/25/25/15/10，继承绝望4真实核心25/30/30/15；1250/底125、S120，只有CONTINUE恢复12。六槽黑焰30/冰霜15/原替身20/镜路20/丝线10/失衡5。唯一新镜路6S/知识18，实际A↔B2米，成功只减势36G；失败原地实耗，封/碎镜0S普通回退。敌冲击5S、封镜4S最多三次、碎B5S只一次，无免费修镜、治疗或复活。院内两镜不替代原女巫消耗品；旧瓦伦投降与疾病照护历史不改。' : '' };
 }
 export function validateUnagingDemonessRoundOutcome(value: unknown): value is UnagingDemonessRoundOutcome {

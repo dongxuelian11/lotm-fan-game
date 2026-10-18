@@ -91,9 +91,48 @@ export interface CalamityDemonessLifeState { activeCase: CalamityDemonessCaseId 
 export interface CalamityDemonessLifeAction { id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: CalamityDemonessActivityCommand }
 export interface CalamityDemonessLifeProjection {
   title: string; story: string; environment: string; activeCase: CalamityDemonessCaseId | null; inside: boolean; insideCase: boolean; reflected: boolean;
-  site: CalamityDemonessSiteState; clockSeconds: number; playerLocation: CalamityDemonessLocation; playerTravelMetres: number; currentAttempt: CalamityDemonessAttempt | null;
-  cases: { id: CalamityDemonessCaseId; title: string; story: string; observations: string[]; status: string; method: 'ABILITY' | 'ORDINARY' | null; result: string | null; contactOpen: boolean; returned: boolean; closes: number; attempts: CalamityDemonessAttempt[] }[];
+  site: CalamityDemonessPublicSite; clockSeconds: number; playerLocation: CalamityDemonessLocation; playerTravelMetres: number; currentAttempt: CalamityDemonessPublicAttempt | null;
+  cases: { id: CalamityDemonessCaseId; title: string; story: string; observations: string[]; status: string; method: 'ABILITY' | 'ORDINARY' | null; result: string | null; contactOpen: boolean; returned: boolean; closes: number; attempts: CalamityDemonessPublicAttempt[] }[];
   actions: CalamityDemonessLifeAction[];
+}
+/** Public projections enumerate known facts. Internal roots and replay provenance never cross this boundary. */
+type PublicScalarKey<T> = { [K in keyof T]-?: T[K] extends string | number | boolean | null | undefined ? K : never }[keyof T];
+export function projectDemonessPublicFields<T, K extends PublicScalarKey<T>>(value: T, keys: readonly K[]): Pick<T, K> {
+  return Object.fromEntries(keys.map(key => [key, value[key]])) as Pick<T, K>;
+}
+export function projectDemonessPublicCheck(c: PublicCheckResult | null): PublicCheckResult | null {
+  return c ? { ...projectDemonessPublicFields(c, ['ability', 'baseAbility', 'effectiveAbility', 'difficulty', 'chance', 'roll', 'tier']),
+    modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })) } : null;
+}
+export const projectDemonessPublicDate = (d: PublicGameDate): PublicGameDate => ({ epoch: d.epoch, year: d.year, month: d.month, day: d.day });
+export const projectDemonessPublicInjury = (i: SliceState['injuries'][number]): SliceState['injuries'][number] =>
+  ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+export type CalamityDemonessPublicSite = Omit<CalamityDemonessSiteState, 'source'>;
+export type CalamityDemonessPublicAttempt = Omit<CalamityDemonessAttempt, 'siteAtStart' | 'siteAtClose'> &
+  { siteAtStart: CalamityDemonessPublicSite; siteAtClose: CalamityDemonessPublicSite | null };
+const publicMovement = (m: CalamityDemonessMovement): CalamityDemonessMovement =>
+  projectDemonessPublicFields(m, ['from', 'to', 'mode', 'metres', 'seconds', 'actorId']);
+export function projectCalamityDemonessPublicSite(p: CalamityDemonessSiteState): CalamityDemonessPublicSite {
+  const adult = (a: CalamityDemonessAdult | null) => a ? projectDemonessPublicFields(a,
+    ['id', 'name', 'age', 'alive', 'willing', 'location', 'energy', 'travelMetres', 'mirrorConsent', 'boxConsent']) : null;
+  const mirror = (m: CalamityDemonessMirror | null) => m ? projectDemonessPublicFields(m, ['id', 'owner', 'quantity', 'location', 'intact']) : null;
+  return { ...projectDemonessPublicFields(p, ['siteId', 'introducedWeek', 'clockSeconds', 'playerLocation', 'playerTravelMetres', 'playerEnergy']),
+    introducedDate: p.introducedDate ? projectDemonessPublicDate(p.introducedDate) : null,
+    vera: adult(p.vera), marcus: adult(p.marcus), mirrorA: mirror(p.mirrorA), mirrorB: mirror(p.mirrorB),
+    load: projectDemonessPublicFields(p.load, ['id', 'location', 'enclosed', 'initialForce', 'remainingLoads', 'appliedLoads', 'finalForce', 'bufferedForce']),
+    box: projectDemonessPublicFields(p.box, ['id', 'ownerId', 'location', 'state', 'scorched', 'pulses', 'pulseSeconds', 'handovers']),
+    residue: p.residue ? projectDemonessPublicFields(p.residue, ['id', 'ownerId', 'quantity', 'fictional', 'biological', 'origin', 'acquiredWithPlateId', 'sealed', 'status', 'location', 'acquiredWeek']) : null,
+    screen: projectDemonessPublicFields(p.screen, ['active', 'mirrorId', 'expiresAt', 'plateId']),
+    plates: p.plates.map(a => projectDemonessPublicFields(a, ['id', 'caseId', 'ownerId', 'quantity', 'status', 'location', 'charges', 'wear', 'scorched', 'paidPennies', 'preparedWeek'])),
+    actorMoves: p.actorMoves.map(publicMovement) };
+}
+export function projectCalamityDemonessPublicAttempt(a: CalamityDemonessAttempt): CalamityDemonessPublicAttempt {
+  return { ...projectDemonessPublicFields(a, ['week', 'method', 'closed', 'result', 'stopped', 'inspected', 'permissionWithdrawn',
+    'elapsedSeconds', 'playerTravelMetres', 'energySpent', 'spiritualitySpent', 'penniesSpent', 'operatorConsent', 'ownerConsent', 'routeConsent', 'consentWeek',
+    'plateId', 'plateInstalled', 'plateReturned', 'abilityTier', 'window', 'windowExpiresAt', 'loadApplied', 'bufferedForce', 'plateWear', 'pulseApplied',
+    'residueHandedOver', 'boxClosed', 'clearanceConfirmed', 'adultsReturned', 'routeWalked', 'routeReturned', 'waits']),
+    appliedAbilityIds: [...a.appliedAbilityIds], playerMoves: a.playerMoves.map(publicMovement), actorMoves: a.actorMoves.map(publicMovement),
+    siteAtStart: projectCalamityDemonessPublicSite(a.siteAtStart), siteAtClose: a.siteAtClose ? projectCalamityDemonessPublicSite(a.siteAtClose) : null };
 }
 const ORIGIN: PublicGameDate = { epoch: 'FIFTH_EPOCH', year: 1349, month: 6, day: 28 };
 const POSITION: Record<CalamityDemonessLocation, number> = { ENTRY: 0, A: 4, BOX: 8, B: 12, OUTSIDE: -2, YARD: -4 };
@@ -380,10 +419,10 @@ export function calamityDemonessLifeActions(s: SliceState): CalamityDemonessLife
 export function projectCalamityDemonessLife(s: SliceState): CalamityDemonessLifeProjection {
   const l = s.calamityDemoness.life, p = s.calamityDemoness.encounter.currentSite ?? l.site;
   return { title: '原馆舍附廊的有限镜幕与闭箱', story: CALAMITY_DEMONESS_LIFE_STORY, environment: '门口0米，原镜A4米，收容箱8米，原镜B12米，区外−2米，后院−4米。附廊普通A至B路线8米；旧馆外廊18米仍是既往记录。初始精力100，普通步行每米耗1，换案不补。两名原成人各有独立位置与有限精力；既往素描、封包、登记和旧遭遇不改。',
-    activeCase: l.activeCase, inside: hasCalamityDemonessLifeLock(s), insideCase: contactOpen(l), reflected: l.reflected, site: structuredClone(p), clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: structuredClone(current(l)),
+    activeCase: l.activeCase, inside: hasCalamityDemonessLifeLock(s), insideCase: contactOpen(l), reflected: l.reflected, site: projectCalamityDemonessPublicSite(p), clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: current(l) ? projectCalamityDemonessPublicAttempt(current(l)!) : null,
     cases: CASES.map(d => { const r = l.cases[d.id], a = r.attempts.at(-1); return { id: d.id, title: d.title, story: d.story,
       observations: [ ...(r.observation ? ['已普通步行8米核对两面原镜、原箱和现实退路。'] : []), ...(a ? [`本案实付${a.penniesSpent}便士、${a.spiritualitySpent}灵性，步行${a.playerTravelMetres}米、经过${a.elapsedSeconds}秒，耗${a.energySpent}精力。`, ...(a.abilityTier ? [`检定${TIER_LABELS[a.abilityTier]}；实际应用${a.appliedAbilityIds.length}项技巧。`] : []), ...(a.loadApplied ? [`封闭负载已使用，实际减势${a.bufferedForce}；原护片磨损${a.plateWear}并消耗。`] : []), ...(a.pulseApplied ? ['同一封装残留经过10秒脉冲，原护片和箱体焦痕持久保留。'] : []), ...(a.residueHandedOver ? ['同一封装残留已由本人携回并当面交还原保管者。'] : []), ...(a.permissionWithdrawn ? ['当前镜面许可已撤回，普通路线许可独立记录；未施术。'] : [])] : []) ],
-      status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限能力已真实应用，原人原物与实际成本保留。' : '按普通方法或停止结果收尾，不增加未应用能力的掌握。', contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: structuredClone(r.attempts) }; }), actions: calamityDemonessLifeActions(s) };
+      status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限能力已真实应用，原人原物与实际成本保留。' : '按普通方法或停止结果收尾，不增加未应用能力的掌握。', contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: r.attempts.map(projectCalamityDemonessPublicAttempt) }; }), actions: calamityDemonessLifeActions(s) };
 }
 export function validateCalamityDemonessSceneSource(v: unknown): v is CalamityDemonessSceneSource {
   try {
