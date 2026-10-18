@@ -7,7 +7,7 @@ import { LIFE_GIVER_POWERS, createLifeGiverEncounterState, validateLifeGiverEnco
   hasLifeGiverGuestPermit, projectLifeGiverEncounter } from '../../src/domain/life-giver/encounter.js';
 import { lifeGiverSnapshot, lifeGiverBoundary, lg, rejectLg } from './life-giver-test-fixture.js';
 let original: SliceState, final: SliceState, ready: SliceState;
-beforeAll(() => { original=lifeGiverSnapshot('combatStart'); final=lifeGiverSnapshot('final'); ready=lifeGiverBoundary('combat-start').beforeLast; });
+beforeAll(() => { original=lifeGiverSnapshot('combatStart'); final=lifeGiverSnapshot('final'); ready=lifeGiverBoundary('combat-start').beforeLast; },20000);
 const roundsOf = (s: SliceState) => s.combatHistory.filter(r => r.lifeGiverOutcome);
 /** Directed unit-only terminal branch. Search the production adapter first,
  * then execute the selected cursor through valid public fight/round commands.

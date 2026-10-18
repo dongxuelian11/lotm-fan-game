@@ -337,9 +337,16 @@ describe('DeathConsul genuine entry, whole public rounds and immutable historica
   });
   it('projections detach the current site, immutable start site, counts and ordered evidence without further random draws',()=>{
     const frozen=structuredClone(terminal),view=projectDeathConsulCombat(terminal),o=outcome(recordedRounds.at(-1)!);
-    expect(view.lastActionSequence).toEqual([...o.playerActions.map(a=>({...a,actor:'PLAYER'})),...o.enemyActions.map(a=>({...a,actor:'ENEMY'}))].sort((a,b)=>a.order-b.order));
+    // Only the private RNG cursors are omitted; every allowed field remains part of the exact ordered comparison.
+    expect(view.lastActionSequence).toEqual([
+      ...o.playerActions.map(({randomCursorBefore:_before,randomCursorAfter:_after,...a})=>({...a,actor:'PLAYER'})),
+      ...o.enemyActions.map(({randomCursorBefore:_before,randomCursorAfter:_after,...a})=>({...a,actor:'ENEMY'})),
+    ].sort((a,b)=>a.order-b.order));
+    for(const a of view.lastActionSequence){expect(a).not.toHaveProperty('randomCursorBefore');expect(a).not.toHaveProperty('randomCursorAfter');}
+    for(const a of ordered(o)){expect(a).toHaveProperty('randomCursorBefore');expect(a).toHaveProperty('randomCursorAfter');}
     expect(view.enemyAbilityWheel).toEqual(DEATH_CONSUL_ENEMY_ABILITY_WHEEL);expect(view.enemyCountWheel).toEqual(DEATH_CONSUL_ENEMY_COUNT_WHEEL);
     view.site!.door.operations++;view.startSite!.playerMetres++;view.lastActionSequence[0]!.paidCost++;expect(terminal).toEqual(frozen);
+    expect(terminal.random).toEqual(frozen.random);expect(o).toEqual(outcome(frozen.combatHistory.at(-1)!));
   });
 });
 
