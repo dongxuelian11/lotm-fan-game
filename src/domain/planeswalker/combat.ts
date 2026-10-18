@@ -5,6 +5,7 @@ import { PYROMANIAC_COUNT_WHEEL, pyromaniacActionCount } from '../pyromaniac/com
 import type { SliceCombatRound, SliceInjury, SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
 import { PLANESWALKER_TARGET, PLANESWALKER_POWER_IDS, PLANESWALKER_POWERS, hasPlaneswalkerDisputeOpponent,
   type PlaneswalkerTargetId, type PlaneswalkerEnemyIntent, type PlaneswalkerPowerId } from './encounter.js';
+import { projectPlaneswalkerSite } from './life.js';
 import { validatePlaneswalkerSiteState, advancePlaneswalkerTime, stopPlaneswalkerEffects, PLANESWALKER_POSITION_METRES, type PlaneswalkerSiteState } from './resources.js';
 
 /** Bounded original game mechanics. The existing S3 core, resource budget and physical injury wheel are retained. */
@@ -236,12 +237,45 @@ export function finishPlaneswalkerCombatRound(s:SliceState,r:PlaneswalkerRoundCo
     playerActions:structuredClone(r.playerActions),enemyActions:structuredClone(r.enemyActions)};return structuredClone(r.outcome);
 }
 export function planeswalkerRoundOutcome(r:PlaneswalkerRoundContext):PlaneswalkerRoundOutcome{if(!r.outcome)throw new Error('回合尚未结束。');return structuredClone(r.outcome);}
+/** Public action rolls are resolved checks; stream offsets and replay roots stay private. */
+const publicPlaneswalkerInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicPlaneswalkerPowerUses = (p: Record<PlaneswalkerPowerId, number>) => ({ VECTOR_STRIKE: p.VECTOR_STRIKE, REFRACT_WARD: p.REFRACT_WARD, CLOSE_DOOR: p.CLOSE_DOOR });
+function projectPlaneswalkerAction(a: ActionEvidence) { return {
+  label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure,
+  order: a.order, atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, paidCost: a.paidCost, physicalFactor: a.physicalFactor,
+  rolls: [...a.rolls], playerSpiritualityAfter: a.playerSpiritualityAfter, enemySpiritualityAfter: a.enemySpiritualityAfter,
+  siteBefore: projectPlaneswalkerSite(a.siteBefore), siteAfter: projectPlaneswalkerSite(a.siteAfter), doorOperationSeconds: a.doorOperationSeconds,
+  symbolicMetres: a.symbolicMetres, chargeGranted: a.chargeGranted, chargeConsumedByOrder: a.chargeConsumedByOrder,
+  appliedAmount: a.appliedAmount, consumedTransitOrder: a.consumedTransitOrder, consumedWardOrder: a.consumedWardOrder,
+}; }
+export function projectPlaneswalkerPlayerAction(a: PlaneswalkerPlayerAction) { return {
+  ...projectPlaneswalkerAction(a), id: a.id, attempted: a.attempted, succeeded: a.succeeded, applied: a.applied, fallback: a.fallback,
+}; }
+export function projectPlaneswalkerEnemyAction(a: PlaneswalkerEnemyAction) { return {
+  ...projectPlaneswalkerAction(a), planned: a.planned, actual: a.actual, doorChanged: a.doorChanged,
+}; }
+export type PlaneswalkerPublicPlayerAction = ReturnType<typeof projectPlaneswalkerPlayerAction>;
+export type PlaneswalkerPublicEnemyAction = ReturnType<typeof projectPlaneswalkerEnemyAction>;
+export function projectPlaneswalkerRoundOutcome(o: PlaneswalkerRoundOutcome) { return {
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing, enemyHealth: o.enemyHealth,
+  enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+  playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter,
+  playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, enemySpiritualityBefore: o.enemySpiritualityBefore,
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicPlaneswalkerInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicPlaneswalkerInjury),
+  playerRiskAfter: o.playerRiskAfter, enemyRiskAfter: o.enemyRiskAfter, powerUses: publicPlaneswalkerPowerUses(o.powerUses),
+  doorClosed: o.doorClosed, playerDoorOpened: o.playerDoorOpened, transitAttempted: o.transitAttempted, wardAttempted: o.wardAttempted,
+  expiredTransitChargeOrder: o.expiredTransitChargeOrder, expiredWardChargeOrder: o.expiredWardChargeOrder,
+  siteAfter: projectPlaneswalkerSite(o.siteAfter), elapsedSeconds: o.elapsedSeconds, exitMetres: o.exitMetres,
+  playerActions: o.playerActions.map(projectPlaneswalkerPlayerAction), enemyActions: o.enemyActions.map(projectPlaneswalkerEnemyAction),
+}; }
+export type PlaneswalkerPublicRoundOutcome = ReturnType<typeof projectPlaneswalkerRoundOutcome>;
+
 export function projectPlaneswalkerCombat(s:SliceState){
   const e=s.planeswalker.encounter,visible=isPlaneswalker(s),target=e.targetId?PLANESWALKER_TARGET:null,last=s.combat?.encounterId==='PLANESWALKER_DISPUTE'?s.combat.lastRound?.planeswalkerOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.planeswalkerOutcome:null;
   return{enemyName:visible&&target?`${target.name}（${target.age}岁）`:'',targetId:visible?e.targetId:null,playerHealth:s.health,playerMind:s.mind,playerSpirituality:s.spirituality,maxSpirituality:120,
-    enemyHealth:visible?e.enemyHealth:null,enemyMind:visible?e.enemyMind:null,enemySpirituality:visible?e.enemySpirituality:null,powerUses:visible?{...e.powerUses}:null,
-    site:visible?structuredClone(s.planeswalker.life.site):null,startSite:visible?structuredClone(e.startSite):null,originalExit:true,pursuit:false,distanceMetres:visible&&s.planeswalker.life.site.playerLocation!=='REMOTE'?Math.abs(6-PLANESWALKER_POSITION_METRES[s.planeswalker.life.site.playerLocation]):null,automaticAllyImmunity:false,
-    source:visible?currentPlaneswalkerCombatSource(s):null,lastActionSequence:visible&&last?[...last.playerActions.map(a=>({...structuredClone(a),actor:'PLAYER' as const})),...last.enemyActions.map(a=>({...structuredClone(a),actor:'ENEMY' as const}))].sort((a,b)=>a.order-b.order):[],
+    enemyHealth:visible?e.enemyHealth:null,enemyMind:visible?e.enemyMind:null,enemySpirituality:visible?e.enemySpirituality:null,powerUses:visible?publicPlaneswalkerPowerUses(e.powerUses):null,
+    site:visible?projectPlaneswalkerSite(s.planeswalker.life.site):null,startSite:visible&&e.startSite?projectPlaneswalkerSite(e.startSite):null,originalExit:true,pursuit:false,distanceMetres:visible&&s.planeswalker.life.site.playerLocation!=='REMOTE'?Math.abs(6-PLANESWALKER_POSITION_METRES[s.planeswalker.life.site.playerLocation]):null,automaticAllyImmunity:false,
+    lastActionSequence:visible&&last?[...last.playerActions.map(a=>({...projectPlaneswalkerPlayerAction(a),actor:'PLAYER' as const})),...last.enemyActions.map(a=>({...projectPlaneswalkerEnemyAction(a),actor:'ENEMY' as const}))].sort((a,b)=>a.order-b.order):[],
     countWheel:PLANESWALKER_COUNT_WHEEL.map(x=>({...x})),enemyCountWheel:PLANESWALKER_ENEMY_COUNT_WHEEL.map(x=>({...x})),enemyAbilityWheel:PLANESWALKER_ENEMY_ABILITY_WHEEL.map(x=>({...x})),
     summary:visible?'已知光纹复现须原门开启，7灵性/知识20成功取得优势90；旧小电击须同样开启线路。象征通行6灵性/知识20，每轮最多一次付费尝试，在本人实查的两垫间实际移动4米，普通关门仍可通行，受阻则不施法。成功只准备削弱随后一次实际持棍攻击45，不抵折光法术。敌屏护4灵性、本轮一次，仅抵下一成功光纹复现45。普通开关门各占一次动作，无附带攻击。每动作5秒、每轮60秒；继续时仅你恢复12灵性，上限120；敌人不回灵。原人、原物、伤势与实际移动保留，战斗不增长掌握。':''};
 }

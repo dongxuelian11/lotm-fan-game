@@ -1,3 +1,4 @@
+import { openDoorRuntimeSession } from "../domain/door/owned-session.js";
 import { openDeathRuntimeSession } from "../domain/death/owned-session.js";
 import { openSunRuntimeSession } from "../domain/sun/owned-session.js";
 import { openTyrantRuntimeSession } from "../domain/tyrant/owned-session.js";
@@ -33,6 +34,8 @@ export interface OwnedRepositoryDraft extends OwnedRepositoryHead {
 // Preserve the original Fool API and its transaction-test fault injection points.
 export type FoolRepositoryHead = OwnedRepositoryHead;
 export type FoolRepositoryDraft = OwnedRepositoryDraft;
+type DoorRuntimeSession = ReturnType<typeof openDoorRuntimeSession>;
+type DoorRuntimeDraft = ReturnType<DoorRuntimeSession["prepare"]>;
 type DeathRuntimeSession = ReturnType<typeof openDeathRuntimeSession>;
 type SunRuntimeSession = ReturnType<typeof openSunRuntimeSession>;
 type TyrantRuntimeSession = ReturnType<typeof openTyrantRuntimeSession>;
@@ -64,18 +67,20 @@ interface RedPriestHead {
 interface VisionaryHead { readonly kind: "VISIONARY"; readonly raw: string; readonly session: VisionaryRuntimeSession }
 interface PerfecterHead { readonly kind: "PERFECTER"; readonly raw: string; readonly session: PerfecterRuntimeSession }
 interface MoonHead { readonly kind: "MOON"; readonly raw: string; readonly session: MoonRuntimeSession }
+interface DoorHead { readonly kind: "DOOR"; readonly raw: string; readonly session: DoorRuntimeSession }
 interface DeathHead { readonly kind: "DEATH"; readonly raw: string; readonly session: DeathRuntimeSession }
 interface SunHead { readonly kind: "SUN"; readonly raw: string; readonly session: SunRuntimeSession }
 interface TyrantHead { readonly kind: "TYRANT"; readonly raw: string; readonly session: TyrantRuntimeSession }
 interface WhiteTowerHead { readonly kind: "WHITE_TOWER"; readonly raw: string; readonly session: WhiteTowerRuntimeSession }
 interface DarknessHead { readonly kind: "DARKNESS"; readonly raw: string; readonly session: DarknessRuntimeSession }
-type Head = FoolHead | RedPriestHead | VisionaryHead | PerfecterHead | MoonHead | DarknessHead | WhiteTowerHead | TyrantHead | SunHead | DeathHead;
+type Head = FoolHead | RedPriestHead | VisionaryHead | PerfecterHead | MoonHead | DarknessHead | WhiteTowerHead | TyrantHead | SunHead | DeathHead | DoorHead;
 type Draft = { readonly epoch: object; readonly runId: string } & (
   | { readonly kind: "FOOL"; readonly head: FoolHead; readonly domain: FoolRuntimeDraft }
   | { readonly kind: "RED_PRIEST"; readonly head: RedPriestHead; readonly domain: RedPriestRuntimeDraft }
   | { readonly kind: "VISIONARY"; readonly head: VisionaryHead; readonly domain: VisionaryRuntimeDraft }
   | { readonly kind: "PERFECTER"; readonly head: PerfecterHead; readonly domain: PerfecterRuntimeDraft }
   | { readonly kind: "MOON"; readonly head: MoonHead; readonly domain: MoonRuntimeDraft }
+  | { readonly kind: "DOOR"; readonly head: DoorHead; readonly domain: DoorRuntimeDraft }
   | { readonly kind: "DEATH"; readonly head: DeathHead; readonly domain: DeathRuntimeDraft }
   | { readonly kind: "SUN"; readonly head: SunHead; readonly domain: SunRuntimeDraft }
   | { readonly kind: "TYRANT"; readonly head: TyrantHead; readonly domain: TyrantRuntimeDraft }
@@ -93,19 +98,21 @@ interface Transaction {
  * never authority. All factories must validate the entire detached current
  * slice and all predecessor history before returning a private session. */
 function openCurrentHead(raw: string, state: SliceState): Head | null {
-  if (state.schemaVersion !== 214 || state.contentVersion !== "death-v214")
+  if (state.schemaVersion !== 215 || state.contentVersion !== "door-v215")
     throw Error("Runtime head requires the current save format");
   const fool = state.fool?.guidanceKnown === true && state.fool.source !== null;
   const redPriest = state.redPriest?.guidanceKnown === true && state.redPriest.source !== null;
   const visionary = state.visionary?.guidanceKnown === true && state.visionary.source !== null;
   const perfecter = state.perfecter?.guidanceKnown === true && state.perfecter.source !== null;
   const moon = state.moon?.guidanceKnown === true && state.moon.source !== null;
+  const door = state.door?.guidanceKnown === true && state.door.source !== null;
   const death = state.death?.guidanceKnown === true && state.death.source !== null;
   const sun = state.sun?.guidanceKnown === true && state.sun.source !== null;
   const tyrant = state.tyrant?.guidanceKnown === true && state.tyrant.source !== null;
   const whiteTower = state.whiteTower?.guidanceKnown === true && state.whiteTower.source !== null;
   const darkness = state.darkness?.guidanceKnown === true && state.darkness.source !== null;
-  if ([fool, redPriest, visionary, perfecter, moon, darkness, whiteTower, tyrant, sun, death].filter(Boolean).length > 1) throw Error("Multiple current chapter sessions");
+  if ([fool, redPriest, visionary, perfecter, moon, darkness, whiteTower, tyrant, sun, death, door].filter(Boolean).length > 1) throw Error("Multiple current chapter sessions");
+  if (door) return { kind: "DOOR", raw, session: openDoorRuntimeSession(state) };
   if (death) return { kind: "DEATH", raw, session: openDeathRuntimeSession(state) };
   if (sun) return { kind: "SUN", raw, session: openSunRuntimeSession(state) };
   if (tyrant) return { kind: "TYRANT", raw, session: openTyrantRuntimeSession(state) };
@@ -158,7 +165,7 @@ export class SliceOwnedRuntime {
     return this.#read(runId, raw, decode)?.session.project() ?? null;
   }
 
-  /** Explicit load always starts from these exact persisted bytes. Current 214
+  /** Explicit load always starts from these exact persisted bytes. Current 215
    * inputs cross the selected chapter's complete strict factory. Original 205
    * Fool fixtures must instead pass full migration before opening a current
    * session; their original bytes remain the cache identity until a real write.
@@ -182,7 +189,7 @@ export class SliceOwnedRuntime {
       transaction.heads.set(runId, head);
       return { state: projection, updatedAt: stored.updatedAt };
     };
-    if (input?.schemaVersion === 214 && input.contentVersion === "death-v214") {
+    if (input?.schemaVersion === 215 && input.contentVersion === "door-v215") {
       const head = openCurrentHead(raw, input);
       if (head) return publishLoaded(head);
     }
@@ -204,6 +211,7 @@ export class SliceOwnedRuntime {
     // The domain session itself checks the intent's chapter and exact revision.
     const draft: Draft = head.kind === "FOOL"
       ? { kind: "FOOL", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
+      : head.kind === "DOOR" ? { kind: "DOOR", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
       : head.kind === "DEATH" ? { kind: "DEATH", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
       : head.kind === "SUN" ? { kind: "SUN", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
       : head.kind === "TYRANT" ? { kind: "TYRANT", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId }
@@ -215,6 +223,7 @@ export class SliceOwnedRuntime {
       : { kind: "RED_PRIEST", epoch: transaction.epoch, head, domain: head.session.prepare(intent, expectedRevision), runId };
     const identity = draft.kind === "FOOL"
       ? draft.head.session.inspectDraft(draft.domain)
+      : draft.kind === "DOOR" ? draft.head.session.inspectDraft(draft.domain)
       : draft.kind === "DEATH" ? draft.head.session.inspectDraft(draft.domain)
       : draft.kind === "SUN" ? draft.head.session.inspectDraft(draft.domain)
       : draft.kind === "TYRANT" ? draft.head.session.inspectDraft(draft.domain)
@@ -242,6 +251,7 @@ export class SliceOwnedRuntime {
     const draft = this.#require(handle);
     return draft.kind === "FOOL"
       ? draft.head.session.projectDraft(draft.domain)
+      : draft.kind === "DOOR" ? draft.head.session.projectDraft(draft.domain)
       : draft.kind === "DEATH" ? draft.head.session.projectDraft(draft.domain)
       : draft.kind === "SUN" ? draft.head.session.projectDraft(draft.domain)
       : draft.kind === "TYRANT" ? draft.head.session.projectDraft(draft.domain)
@@ -261,6 +271,7 @@ export class SliceOwnedRuntime {
     }
     return draft.kind === "FOOL"
       ? draft.head.session.snapshotDraft(draft.domain)
+      : draft.kind === "DOOR" ? draft.head.session.snapshotDraft(draft.domain)
       : draft.kind === "DEATH" ? draft.head.session.snapshotDraft(draft.domain)
       : draft.kind === "SUN" ? draft.head.session.snapshotDraft(draft.domain)
       : draft.kind === "TYRANT" ? draft.head.session.snapshotDraft(draft.domain)
@@ -292,6 +303,7 @@ export class SliceOwnedRuntime {
       if (draft) {
         try {
           if (draft.kind === "FOOL") draft.head.session.commit(draft.domain);
+          else if (draft.kind === "DOOR") draft.head.session.commit(draft.domain);
           else if (draft.kind === "DEATH") draft.head.session.commit(draft.domain);
           else if (draft.kind === "SUN") draft.head.session.commit(draft.domain);
           else if (draft.kind === "TYRANT") draft.head.session.commit(draft.domain);
@@ -320,6 +332,7 @@ export class SliceOwnedRuntime {
     if (transaction) for (const draft of transaction.drafts) {
       try {
         if (draft.kind === "FOOL") draft.head.session.discard(draft.domain);
+        else if (draft.kind === "DOOR") draft.head.session.discard(draft.domain);
         else if (draft.kind === "DEATH") draft.head.session.discard(draft.domain);
         else if (draft.kind === "SUN") draft.head.session.discard(draft.domain);
         else if (draft.kind === "TYRANT") draft.head.session.discard(draft.domain);

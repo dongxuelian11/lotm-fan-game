@@ -8,6 +8,8 @@ import { resolveSliceWeeklyFinance } from '../slice/weekly-finance.js';
 import type { StarKeyFinanceSnapshot } from './types.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceState } from '../slice/types.js';
+import { projectPlaneswalkerSite } from '../planeswalker/life.js';
+import { projectStarKeyCheck } from './combat.js';
 import { PLANESWALKER_POSITION_METRES, validatePlaneswalkerSiteState, type PlaneswalkerSiteState, type PlaneswalkerLocalLocation } from '../planeswalker/resources.js';
 
 /** Finite original design. The original PW2 site stays authoritative. This
@@ -75,7 +77,7 @@ export interface StarKeyLifeProjection {
   clockSeconds: number; elapsedSeconds: number; playerLocation: PlaneswalkerLocalLocation; playerTravelMetres: number; maraTravelMetres: number; conditionVersion: number;
   site: PlaneswalkerSiteState; maraPresent: boolean; pending: StarKeyLifeState['pending']; pendingUsable: boolean; pendingRemainingSeconds: number; currentAttempt: StarKeyAttempt | null;
   cases: { id: StarKeyCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: StarKeyAttempt[] }[];
-  ledger: StarKeyLifeReceipt[]; actions: StarKeyLifeAction[];
+  ledger: StarKeyPublicLifeReceipt[]; actions: StarKeyLifeAction[];
 }
 const ENDPOINT = 'door.s1.endpoint-location', ANCHOR = 'door.s1.anchor-maintenance';
 const same = (a: unknown, b: unknown): boolean => { try { return stableStringify(a) === stableStringify(b); } catch { return false; } };
@@ -543,6 +545,49 @@ export function starKeyLifeActions(s: SliceState): StarKeyLifeAction[] {
   step('ABORT', false, true);
   return out;
 }
+/** Historical costs and physical evidence are public; replay roots and finances are not. */
+const publicStarKeyLifeCommand = (c: StarKeyActivityCommand): StarKeyActivityCommand => {
+  switch (c.type) {
+    case 'OBSERVE': case 'REPORT': return { type: c.type, caseId: c.caseId };
+    case 'INVITE': return { type: c.type, caseId: c.caseId, method: c.method };
+    case 'CONSENT': case 'DECLINE_CONSENT': case 'WITHDRAW_CONSENT': return { type: c.type, permission: c.permission };
+    default: return { type: c.type };
+  }
+};
+const publicStarKeyBudget = (b: StarKeyLifeBudget) => ({ health: b.health, mind: b.mind, spirituality: b.spirituality, cash: b.cash, actions: b.actions });
+const publicStarKeyObservation = (o: StarKeyEndpointObservation | null): StarKeyEndpointObservation | null => o ? ({
+  atSeconds: o.atSeconds, conditionVersion: o.conditionVersion, from: o.from, to: o.to, distanceMetres: o.distanceMetres, parcelId: o.parcelId, doorOperations: o.doorOperations,
+}) : null;
+const publicStarKeyAbilityUse = (a: StarKeyAbilityUse): StarKeyAbilityUse => ({
+  attempts: a.attempts, successes: a.successes, effects: a.effects, tier: a.tier, state: a.state,
+  remainingSeconds: a.remainingSeconds, conditionVersion: a.conditionVersion, clue: a.clue,
+});
+const publicStarKeyLifePending = (p: StarKeyLifeState['pending']): StarKeyLifeState['pending'] => p ? ({
+  kind: p.kind, caseId: p.caseId, createdAt: p.createdAt, expiresAt: p.expiresAt, conditionVersion: p.conditionVersion,
+  permissionVersion: p.permissionVersion, from: p.from, to: p.to, parcelId: p.parcelId, bonus: p.bonus,
+}) : null;
+export function projectStarKeyAttempt(a: StarKeyAttempt): StarKeyAttempt { return {
+  week: a.week, method: a.method, closed: a.closed, result: a.result, elapsedSeconds: a.elapsedSeconds,
+  playerTravelMetres: a.playerTravelMetres, maraTravelMetres: a.maraTravelMetres, operatorEnergySpent: a.operatorEnergySpent,
+  penniesSpent: a.penniesSpent, spiritualitySpent: a.spiritualitySpent, mindSpent: a.mindSpent,
+  permission: { owner: a.permission.owner, operator: a.permission.operator, ability: a.permission.ability }, permissionVersion: a.permissionVersion,
+  sourceRead: a.sourceRead, returnAgreed: a.returnAgreed, padsChecked: a.padsChecked, returnMarkerChecked: a.returnMarkerChecked,
+  parcelTaken: a.parcelTaken, parcelReturned: a.parcelReturned, doorOperations: a.doorOperations,
+  observedVersions: [...a.observedVersions], endpointObservation: publicStarKeyObservation(a.endpointObservation),
+  walkVerifyAttempted: a.walkVerifyAttempted, verifyTier: a.verifyTier, walkVerified: a.walkVerified, manualVerified: a.manualVerified,
+  walkCarryAttempted: a.walkCarryAttempted, carryTier: a.carryTier, walkCarried: a.walkCarried, exited: a.exited,
+  endpoint: publicStarKeyAbilityUse(a.endpoint), anchor: publicStarKeyAbilityUse(a.anchor),
+}; }
+export function projectStarKeyLifeReceipt(e: StarKeyLifeReceipt) { return {
+  week: e.week, date: { epoch: e.date.epoch, year: e.date.year, month: e.date.month, day: e.date.day }, revision: e.revision,
+  command: publicStarKeyLifeCommand(e.command), checkBase: e.checkBase, check: projectStarKeyCheck(e.check), outcome: e.outcome,
+  before: publicStarKeyBudget(e.before), after: publicStarKeyBudget(e.after), elapsedSeconds: e.elapsedSeconds,
+  playerWalkedMetres: e.playerWalkedMetres, maraWalkedMetres: e.maraWalkedMetres, operatorEnergySpent: e.operatorEnergySpent,
+  moves: e.moves.map(m => ({ actor: m.actor, from: m.from, to: m.to, mode: m.mode, metres: m.metres, seconds: m.seconds, originalBody: m.originalBody, parcelId: m.parcelId })),
+  originalsBefore: { site: projectPlaneswalkerSite(e.originalsBefore.site) }, originalsAfter: { site: projectPlaneswalkerSite(e.originalsAfter.site) },
+}; }
+export type StarKeyPublicLifeReceipt = ReturnType<typeof projectStarKeyLifeReceipt>;
+
 export function projectStarKeyLife(s: SliceState): StarKeyLifeProjection {
   const l = s.starKey.life, originals = starKeyOriginalSnapshot(s), actions = starKeyLifeActions(s), model = { life: l, originals };
   return { title: '原通行室、四米端点与普通归还', story: '端点定位与锚点维系都只帮助下一次实际行动。施用成功后仍须本人真实走四米；失败、过期、视线改变和撤回保留真实结果。三案报告各25扮演，反思25；对应新能力只有成功且实际应用才增加8掌握。',
@@ -550,9 +595,9 @@ export function projectStarKeyLife(s: SliceState): StarKeyLifeProjection {
     environment: '本地入口0米、近垫2米、远垫6米、门外负2米；近远垫相隔4米。每次邀请10便士、1行动；普通步行每米1秒，玛拉每走2米消耗1精力，实际核对视线另耗1精力。门外出口始终开放。',
     activeCase: l.activeCase, inside: locked(l), insideCase: locked(l), reflected: l.reflected, preferredActionId: actions.find(x => x.preferredAction)?.id ?? null,
     clockSeconds: l.clockSeconds, elapsedSeconds: l.elapsedSeconds, playerLocation: l.playerLocation, playerTravelMetres: l.playerTravelMetres, maraTravelMetres: l.maraTravelMetres, conditionVersion: l.conditionVersion,
-    site: originals.site, maraPresent: originals.site.operatorLocation !== 'OUTSIDE', pending: structuredClone(l.pending), pendingUsable: !!l.pending && validPending(model, l.pending.kind),
-    pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - l.clockSeconds) : 0, currentAttempt: structuredClone(current(l)),
+    site: projectPlaneswalkerSite(originals.site), maraPresent: originals.site.operatorLocation !== 'OUTSIDE', pending: publicStarKeyLifePending(l.pending), pendingUsable: !!l.pending && validPending(model, l.pending.kind),
+    pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - l.clockSeconds) : 0, currentAttempt: current(l) ? projectStarKeyAttempt(current(l)!) : null,
     cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '原人原物保持连续位置；窗口不会代替走路、恢复精力或补充旧资源。'], status: r.status, method: r.method,
-      result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限帮助已在下一次真实四米行动中应用；同一原包已实际归还。' : '以普通动作完成或尊重当前拒绝、撤回；保留真实失败和失效，没有未应用的能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }),
-    ledger: structuredClone(l.journal), actions };
+      result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限帮助已在下一次真实四米行动中应用；同一原包已实际归还。' : '以普通动作完成或尊重当前拒绝、撤回；保留真实失败和失效，没有未应用的能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(projectStarKeyAttempt) }; }),
+    ledger: l.journal.map(projectStarKeyLifeReceipt), actions };
 }

@@ -273,9 +273,78 @@ export function starKeyCombatConsequence(round: SliceCombatRound): string {
   return text + ' 本轮实际60秒；未使用窗口到时结束，已经花费的灵性与精神不退。同一原棍和三枚印记的实际消耗保留，玛拉与旧遭遇人物均不在场；旧记录与原通行室物件没有补发或改写。';
 }
 
+/** Positive nested public allowlists expose resolved facts, never replay sources. */
+export const projectStarKeyCheck = (c: PublicCheckResult | null): PublicCheckResult | null => c ? ({
+  ability: c.ability, baseAbility: c.baseAbility, effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance,
+  roll: c.roll, tier: c.tier, modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+}) : null;
+const publicStarKeyInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicStarKeyPowerUses = (p: StarKeyCombatBody['powerUses']) => ({ SPATIAL_MARK: p.SPATIAL_MARK, MENTAL_MARK: p.MENTAL_MARK, FEINT: p.FEINT });
+const publicStarKeyWindow = (w: StarKeyWindow) => ({
+  id: w.id, kind: w.kind, createdAt: w.createdAt, expiresAt: w.expiresAt, openedOrder: w.openedOrder,
+  conditionVersion: w.conditionVersion, targetActionId: w.targetActionId, targetId: w.targetId,
+  enemyCoordinate: w.enemyCoordinate, playerCoordinate: w.playerCoordinate, magnitude: w.magnitude,
+});
+const publicStarKeyWindows = (w: StarKeyWindows) => ({
+  endpointLocation: w.endpointLocation ? publicStarKeyWindow(w.endpointLocation) : null,
+  anchorMaintenance: w.anchorMaintenance ? publicStarKeyWindow(w.anchorMaintenance) : null,
+});
+const publicStarKeyPending = (p: StarKeyPendingAction | null) => p ? ({
+  id: p.id, planned: p.planned, actual: p.actual, declaredAt: p.declaredAt, observedAt: p.observedAt, observationSeconds: p.observationSeconds,
+  conditionVersion: p.conditionVersion, visible: p.visible, targetId: p.targetId,
+  enemyCoordinate: p.enemyCoordinate, playerCoordinate: p.playerCoordinate, attackKind: p.attackKind,
+}) : null;
+export const projectStarKeyMaterials = (m: StarKeyMaterials) => ({
+  weapon: { id: m.weapon.id, sourceId: m.weapon.sourceId, owner: m.weapon.owner, massKg: m.weapon.massKg, location: m.weapon.location, condition: m.weapon.condition, visible: m.weapon.visible },
+  marks: m.marks.map(p => ({ id: p.id, owner: p.owner, status: p.status, usedRound: p.usedRound })),
+});
+export const projectStarKeyScene = (p: StarKeyScene) => ({
+  siteId: p.siteId, playerLocation: p.playerLocation, playerCoordinate: p.playerCoordinate, enemyCoordinate: p.enemyCoordinate,
+  ordinaryExit: p.ordinaryExit, visibleBodyLine: p.visibleBodyLine, conditionVersion: p.conditionVersion,
+  observedConditionVersion: p.observedConditionVersion, thirdPartiesInArea: p.thirdPartiesInArea,
+  presentMemberIds: [...p.presentMemberIds], observedSourceId: p.observedSourceId, observationWeek: p.observationWeek,
+  clockSeconds: p.clockSeconds, externalSeconds: p.externalSeconds, playerTravelMetres: p.playerTravelMetres,
+  enemyTravelMetres: p.enemyTravelMetres, knownPlayerName: p.knownPlayerName, knownEnemyName: p.knownEnemyName,
+});
+export function projectStarKeyAction(a: StarKeyActionEvidence) { return {
+  order: a.order, actor: a.actor, id: a.id, planned: a.planned, selectedAbility: a.selectedAbility, fallbackReason: a.fallbackReason,
+  label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure,
+  attackKind: a.attackKind, rawContribution: a.rawContribution, rawReduction: a.rawReduction, paidCost: a.paidCost, mindCost: a.mindCost,
+  physicalFactor: a.physicalFactor, check: projectStarKeyCheck(a.check), resistanceRoll: a.resistanceRoll,
+  resistanceChance: a.resistanceChance, succeeded: a.succeeded, finiteResult: a.finiteResult,
+  windowsBefore: publicStarKeyWindows(a.windowsBefore), windowsAfter: publicStarKeyWindows(a.windowsAfter),
+  pendingBefore: publicStarKeyPending(a.pendingBefore), pendingAfter: publicStarKeyPending(a.pendingAfter),
+  masteryApplied: [...a.masteryApplied], countered: [...a.countered], consumedMarkId: a.consumedMarkId,
+  materialsBefore: projectStarKeyMaterials(a.materialsBefore), materialsAfter: projectStarKeyMaterials(a.materialsAfter),
+  conditionVersionBefore: a.conditionVersionBefore, conditionVersionAfter: a.conditionVersionAfter, atSeconds: a.atSeconds,
+  elapsedSeconds: a.elapsedSeconds, travelMetres: a.travelMetres, travelPath: [...a.travelPath], lateralTravelPath: [...a.lateralTravelPath],
+  playerMindAfter: a.playerMindAfter, playerSpiritualityAfter: a.playerSpiritualityAfter,
+  enemyMindAfter: a.enemyMindAfter, enemySpiritualityAfter: a.enemySpiritualityAfter,
+}; }
+export type StarKeyPublicActionEvidence = ReturnType<typeof projectStarKeyAction>;
+export function projectStarKeyRoundOutcome(o: StarKeyRoundOutcome) { return {
+  enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+  enemyInjuries: o.enemyInjuries.map(publicStarKeyInjury), enemyRisk: o.enemyRisk, weaponLocation: o.weaponLocation,
+  powerUses: publicStarKeyPowerUses(o.powerUses),
+  observations: o.observations.map(p => ({ power: p.power, conditionVersion: p.conditionVersion, round: p.round, order: p.order, atSeconds: p.atSeconds, paidCost: p.paidCost })),
+  totalOwnerMindSpent: o.totalOwnerMindSpent, endpointLocationAttempts: o.endpointLocationAttempts,
+  endpointLocationChecks: o.endpointLocationChecks, endpointLocationSuccesses: o.endpointLocationSuccesses,
+  anchorMaintenanceAttempts: o.anchorMaintenanceAttempts, anchorMaintenanceChecks: o.anchorMaintenanceChecks,
+  anchorMaintenanceSuccesses: o.anchorMaintenanceSuccesses, inheritedSuccesses: { tricks: o.inheritedSuccesses.tricks, travel: o.inheritedSuccesses.travel },
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing, playerHealthAfter: o.playerHealthAfter,
+  playerMindAfter: o.playerMindAfter, playerSpiritualityAfter: o.playerSpiritualityAfter,
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicStarKeyInjury), playerRiskAfter: o.playerRiskAfter,
+  materialsAfter: projectStarKeyMaterials(o.materialsAfter),
+  masteryAfter: Object.fromEntries([...STAR_KEY_INHERITED_SKILL_IDS, ...STAR_KEY_NEW_ABILITY_IDS].filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+  rootAfter: projectStarKeyScene(o.rootAfter), elapsedSeconds: o.elapsedSeconds,
+  playerActions: o.playerActions.map(projectStarKeyAction), enemyActions: o.enemyActions.map(projectStarKeyAction),
+  expiredWindows: o.expiredWindows.map(publicStarKeyWindow), windowsAfter: publicStarKeyWindows(o.windowsAfter), pendingEnemyActionAfter: o.pendingEnemyActionAfter,
+}; }
+export type StarKeyPublicRoundOutcome = ReturnType<typeof projectStarKeyRoundOutcome>;
+
 export function projectStarKeyCombat(s:SliceState){
  const e=s.starKey.encounter,last=s.combat?.encounterId==='STAR_KEY_DISPUTE'?s.combat.lastRound?.starKeyOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.starKeyOutcome:null;
- return{enemyName:'罗温·维尔（44岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,scene:structuredClone(e.scene),materials:structuredClone(e.materials),remainingMarkIds:e.materials.marks.filter(m=>m.status==='HELD').map(m=>m.id),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],windows:last?structuredClone(last.windowsAfter):{endpointLocation:null,anchorMaintenance:null},constants:STAR_KEY_COMBAT_CONSTANTS,countWheel:STAR_KEY_COUNT_WHEEL,enemyCountWheel:STAR_KEY_ENEMY_COUNT_WHEEL,abilityWheel:starKeyAbilityWheel(s,null),enemyAbilityWheel:STAR_KEY_ENEMY_ABILITY_WHEEL,facts:[
+ return{enemyName:'罗温·维尔（44岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:publicStarKeyPowerUses(e.powerUses),policy:e.policy,scene:projectStarKeyScene(e.scene),materials:projectStarKeyMaterials(e.materials),remainingMarkIds:e.materials.marks.filter(m=>m.status==='HELD').map(m=>m.id),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order).map(projectStarKeyAction):[],windows:last?publicStarKeyWindows(last.windowsAfter):{endpointLocation:null,anchorMaintenance:null},constants:STAR_KEY_COMBAT_CONSTANTS,countWheel:STAR_KEY_COUNT_WHEEL,enemyCountWheel:STAR_KEY_ENEMY_COUNT_WHEEL,abilityWheel:starKeyAbilityWheel(s,null),enemyAbilityWheel:STAR_KEY_ENEMY_ABILITY_WHEEL,facts:[
  '体35%、感25%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。',
  '端点定位辅助下一合格独立自身行动30；锚点维系只削弱已观察的同一次未来空间或精神印记贡献30，不能挡原棍身体攻击。',
  '每轮各一次，失败照付；移位、遮挡、离场或满20秒使窗口失效，开窗本身不涨掌握。',
