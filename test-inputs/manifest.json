@@ -1200,6 +1200,35 @@
         "tests/fixtures/error-v02190/source-natural.json.gz",
         "tests/fixtures/error-v02190/summary.json"
       ]
+    },
+    {
+      "name": "lotm_release_0.220.0_twilight_giant_test_inputs_1_2026-10-18.tar.gz",
+      "bytes": 8263395,
+      "sha256": "4cddcf98f3103c91f0dfd62ebd85dee94f0025cd66090f2b1611a0aa0964c04d",
+      "members": [
+        "tests/fixtures/twilight-giant-v02200/checkpoint.json.gz",
+        "tests/fixtures/twilight-giant-v02200/commands.jsonl",
+        "tests/fixtures/twilight-giant-v02200/key-287-initial.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-303-periodic.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-319-periodic.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-335-periodic.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-351-periodic.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-367-periodic.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-370-before-consume.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-371-after-consume.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-383-periodic.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-392-before-consume.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-393-after-consume.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-399-periodic.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-415-periodic.json.gz",
+        "tests/fixtures/twilight-giant-v02200/key-416-terminal.json.gz",
+        "tests/fixtures/twilight-giant-v02200/original297-natural.json.gz",
+        "tests/fixtures/twilight-giant-v02200/producer-tests.mjs",
+        "tests/fixtures/twilight-giant-v02200/producer.mjs",
+        "tests/fixtures/twilight-giant-v02200/runtime-freeze.json",
+        "tests/fixtures/twilight-giant-v02200/source-snapshot.json.gz",
+        "tests/fixtures/twilight-giant-v02200/summary.json"
+      ]
     }
   ],
   "fileEntries": [
@@ -34352,6 +34381,116 @@
       "path": "tests/fixtures/error-v02190/summary.json",
       "bytes": 4895,
       "sha256": "b21097e46c1012f77fb2d1c84f329cd5370adc469742a99208a6dda43f797266"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/checkpoint.json.gz",
+      "bytes": 241201,
+      "sha256": "70c5033f18c3144468b2ca881c7d96bb01488e9bb621e91e803fe2ed8d5346cf"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/commands.jsonl",
+      "bytes": 366791,
+      "sha256": "fcd8fdcd160eb5f2f8577be23226b4e0f93e9f6d15d7f0df1627c9a11a8ad4a8"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-287-initial.json.gz",
+      "bytes": 423519,
+      "sha256": "6be2debaff93f856f2bfaf117f0c4a5f06df59bd11d64434fc4c8b9902e4a785"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-303-periodic.json.gz",
+      "bytes": 475576,
+      "sha256": "c1709ba80fd1c33e7aff1ab76188a7204de44a57c49257bd7f95864d228a6c16"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-319-periodic.json.gz",
+      "bytes": 481672,
+      "sha256": "1b3a8e59af4ad81d11bebf43a6b434d8d75eac05a20de4b7007f92e176005bff"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-335-periodic.json.gz",
+      "bytes": 485980,
+      "sha256": "f4699ae1745ac840fece16efc93eaa0e620c6438b549490485676e2e7afa1df2"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-351-periodic.json.gz",
+      "bytes": 489313,
+      "sha256": "e58494bcbc0b900220747705194ce40c47a9a2e64a11195fb47cb63db82b4cd5"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-367-periodic.json.gz",
+      "bytes": 492651,
+      "sha256": "60b01e975811bbb06db409a0e06b968704d9be626009929cdbd55ca73535c53b"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-370-before-consume.json.gz",
+      "bytes": 493823,
+      "sha256": "d26393d6c74d8edef66b7edba356823ec7b03c2f1f95bf622e4b318fb8b11d3a"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-371-after-consume.json.gz",
+      "bytes": 494935,
+      "sha256": "d673ba93bf9fbe0c77e3f2d0b7e6e0ece92a89e91dc556897a08e6f0aeaf4143"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-383-periodic.json.gz",
+      "bytes": 496441,
+      "sha256": "999ab629a06d8d31d3dd58eeed87dd7e513bc990f22c27d4945ad43ea55fccb4"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-392-before-consume.json.gz",
+      "bytes": 498501,
+      "sha256": "ae1dcfbe29db2f9462cbd9f6f4f727cccc221be368310d5d7a7b717142527a23"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-393-after-consume.json.gz",
+      "bytes": 498132,
+      "sha256": "407b492bfe699450a4710d3e651c8a68d094698ea1dfecf375185cd98d2ce626"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-399-periodic.json.gz",
+      "bytes": 507047,
+      "sha256": "cce65a93da57c06c21ec572facaa29eee60cd594a5d48bd57ce36b98609f7259"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-415-periodic.json.gz",
+      "bytes": 514925,
+      "sha256": "23d13a5d41c8cc5edb2318edd0fcc2e6898566a66f7e55a1626fe7aeefed8aeb"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/key-416-terminal.json.gz",
+      "bytes": 515547,
+      "sha256": "97db531bc5dbda58120e280bbcb952fc56ecb42e71f7158ebbac48819329f5a5"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/original297-natural.json.gz",
+      "bytes": 746580,
+      "sha256": "1d5ca0d2a3a01b2d31234a103fa03352dd601a75645c6793d5aab4da8e9789f6"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/producer-tests.mjs",
+      "bytes": 10000,
+      "sha256": "3ab452da06512a577e93805ddc7af44aa939c224fe6fd7b1f66d32190cd81263"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/producer.mjs",
+      "bytes": 43031,
+      "sha256": "7f3446175d1badffeb0ac602deee5d34466086f310548a3d21570fc9ec2fcee7"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/runtime-freeze.json",
+      "bytes": 653976,
+      "sha256": "d23098afcc859a42b5436a4e49ada094a5982333701de36bac52fc69a0421d5f"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/source-snapshot.json.gz",
+      "bytes": 172458,
+      "sha256": "c5472bde4e1c2c80771e5e3118622f5cef503210d039988b20053e57b703b149"
+    },
+    {
+      "path": "tests/fixtures/twilight-giant-v02200/summary.json",
+      "bytes": 11815,
+      "sha256": "b5d2a2782899cf866804b02f60a2aa00990dc89005ad21a557e3f77ae90a9c46"
     }
   ]
 }
