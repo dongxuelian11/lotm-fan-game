@@ -2,7 +2,10 @@
 *.md text eol=lf
 *.ts text eol=lf
 *.tsx text eol=lf
+*.css text eol=lf
+src/renderer/styles.css text eol=crlf
 *.js text eol=lf
+*.mjs text eol=lf
 *.json text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
@@ -14,3 +17,4 @@
 *.ico binary
 *.woff binary
 *.woff2 binary
+test-inputs/reproduce-death217.py text eol=lf

@@ -1,30 +1,14 @@
 # Contributing
 
-本项目由用户把控总设计。工程贡献不能自行补完未锁定的玩法、原著事实、能力数值或内容规模。
+本项目使用 React、TypeScript、Vite 和 Electron/SQLite。请先阅读 README、docs/GAME_DESIGN.md 和与修改直接相关的设计、源码与测试。
 
-## 开工前
+- 每次修改聚焦一个可审查的问题，保留已有存档、随机重放及失败分支。重大玩法或内容方向先讨论。
+- 领域规则保持纯 TypeScript；界面只显示公开投影、提交类型化意图；桌面持久化由 Main/SQLite 负责。
+- 不提交小说全文、私人语料、用户存档、凭据、node_modules 或生成输出。测试输入通过 test-inputs 的清单和压缩包恢复。
+- 使用独立分支提交，避免覆盖他人改动；不要强制推送或批量加入无关文件。
 
-1. 阅读 `AGENTS.md`、`PROJECT_STATE_LEDGER.md`、`docs/MASTER_DEVELOPMENT_PLAN.md`、当前 `docs/rounds/*.md` 和自己的工作流状态文件。
-2. 确认本轮合同、依赖、精确写集和目标提交头；没有轮次合同就不开始生产实现。
-3. 发现设计空缺时提交 `DESIGN_GAP=<decision>:<reason>`，不要猜测。
-4. 需要修改主任务拥有的文件时提交 `NEEDS_MASTER_CHANGE=<file>:<reason>:<required contract>`。
+## 验证
 
-## Git 规则
+安装锁定依赖后运行 `npm run typecheck:main`、`npm run typecheck:renderer`、`npm run build` 和修改相关的测试。完整测试前执行 `npm run fixtures:restore`，然后运行 `npm test -- --maxWorkers=1 --no-file-parallelism`。恢复脚本本身可用 `npm run test:fixture-restore` 验证。
 
-- `main` 由主任务维护；前端和后端在独立 worktree/分支开发。
-- 分支名使用 `work/frontend-rNN-*` 或 `work/backend-rNN-*`。
-- 禁止 force-push、破坏性 reset、覆盖或重排他人改动；禁止无边界的 `git add -A`。
-- 每个提交只包含声明写集中的一项可审查工作，并在消息中带轮次号。
-- 工作流到达 `READY_FOR_INTEGRATION` 后停止；主任务锁定提交头并负责接线。
-- 不自动合并。自动测试、接线、玩家验收、打包和发布分别记录。
-
-## 内容与知识库规则
-
-- 不提交原著正文、私人 RAG 语料、用户数据、凭据或来源不明素材。
-- 事件/能力数据必须有 schema、版本、来源状态、可见层和失败行为。
-- 小模型只可在作者/构建期生成待审文本变体；运行时规则、数值、选项和后果由确定性引擎控制。
-- 涉及具体途径能力、魔药、晋升或原著旁线内容时，先通过对应 Grill 决定与原著审查。
-
-## 完成回执
-
-每次交付至少报告：`ROUND_ID`、`CONTRACT_VERSION`、`HEAD`、`WRITE_SET`、`TESTS`、`KNOWN_GAPS`、`STATUS`。状态模板见 `docs/THREAD_HANDOFF_PROTOCOL.md`。
+提交说明应列出改动、实际执行的测试、失败或未验证项。自动测试、可见界面检查和 Windows 实机运行分别记录，不能互相替代。
