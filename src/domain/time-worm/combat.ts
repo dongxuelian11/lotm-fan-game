@@ -1,3 +1,5 @@
+import { projectTimeWormRoundOutcome, projectTimeWormPowerUses, projectTimeWormScene, projectTimeWormMaterials } from './public.js';
+import { projectFateTrojanWheel } from '../fate-trojan/public.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import type { PublicCheckResult, PublicGameDate } from '../../shared/contracts.js';
@@ -301,7 +303,8 @@ export function timeWormCombatConsequence(round: SliceCombatRound): string {
 
 export function projectTimeWormCombat(s:SliceState){
  const e=s.timeWorm.encounter,known=e.scene.knownEnemyName!==null,last=s.combat?.encounterId==='TIME_WORM_DISPUTE'?s.combat.lastRound?.timeWormOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.timeWormOutcome:null;
- return{enemyName:known?'艾德里安·凯斯（45岁）':null,targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,scene:structuredClone(e.scene),materials:structuredClone(e.materials),remainingMarkIds:e.materials.marks.filter(m=>m.status==='HELD').map(m=>m.id),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],windows:last?structuredClone(last.windowsAfter):{shortTimeTheft:null,timeRelease:null},waits:last?structuredClone(last.waits):[],targetDelays:last?structuredClone(last.targetDelays):[],constants:TIME_WORM_COMBAT_CONSTANTS,countWheel:TIME_WORM_COUNT_WHEEL,enemyCountWheel:TIME_WORM_ENEMY_COUNT_WHEEL,abilityWheel:timeWormAbilityWheel(s,null),enemyAbilityWheel:TIME_WORM_ENEMY_ABILITY_WHEEL,facts:[
+ const publicLast=last?projectTimeWormRoundOutcome(last):null;
+ return{enemyName:known?'艾德里安·凯斯（45岁）':null,targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:projectTimeWormPowerUses(e.powerUses),policy:e.policy,scene:projectTimeWormScene(e.scene),materials:projectTimeWormMaterials(e.materials),remainingMarkIds:e.materials.marks.filter(m=>m.status==='HELD').map(m=>m.id),lastActionSequence:publicLast?[...publicLast.playerActions,...publicLast.enemyActions].sort((a,b)=>a.order-b.order):[],windows:publicLast?publicLast.windowsAfter:{shortTimeTheft:null,timeRelease:null},waits:publicLast?publicLast.waits:[],targetDelays:publicLast?publicLast.targetDelays:[],constants:structuredClone(TIME_WORM_COMBAT_CONSTANTS),countWheel:TIME_WORM_COUNT_WHEEL.map(projectFateTrojanWheel),enemyCountWheel:TIME_WORM_ENEMY_COUNT_WHEEL.map(projectFateTrojanWheel),abilityWheel:timeWormAbilityWheel(s,null),enemyAbilityWheel:TIME_WORM_ENEMY_ABILITY_WHEEL.map(projectFateTrojanWheel),facts:[
  '体35%、感25%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。',
  '短时窃取8灵性2精神、感知18并受30%抵抗；未来原动作实际推迟3秒，只削弱其实际身体或精神贡献30。',
  '暂存时段释放6灵性2精神、意志18；只消费本人实际储备，下一原普通打击必须在原到期时刻之前实际完成，辅助30。',

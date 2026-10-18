@@ -1,3 +1,4 @@
+import { projectTimeWormLifeReceipt, type TimeWormPublicLifeReceipt } from './public.js';
 import type { PublicCheckResult, PublicCoreStatKey, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { DeterministicActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
@@ -75,7 +76,7 @@ export interface TimeWormLifeProjection {
   clockSeconds: number; elapsedSeconds: number; playerLocation: FateTrojanLocation; playerTravelMetres: number; linaTravelMetres: number; victorTravelMetres: number;
   site: FateTrojanSiteState; declaration: TimeWormDeclaration | null; pending: TimeWormLifeState['pending']; pendingUsable: boolean; pendingRemainingSeconds: number; targetRemainingSeconds: number; currentAttempt: TimeWormAttempt | null;
   cases: { id: TimeWormCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: TimeWormAttempt[] }[];
-  ledger: TimeWormLifeReceipt[]; actions: TimeWormLifeAction[];
+  ledger: TimeWormPublicLifeReceipt[]; actions: TimeWormLifeAction[];
 }
 const THEFT = 'error.s1.short-time-theft', RELEASE = 'error.s1.time-release';
 const POSITION: Record<FateTrojanLocation, number> = { OUTSIDE: -2, ENTRY: 0, DESK: 2, CABINET: 6, YARD: -4 };
@@ -514,5 +515,5 @@ export function projectTimeWormLife(s: SliceState): TimeWormLifeProjection {
     targetRemainingSeconds: d?.state === 'DELAYED' ? Math.max(0, d.dueAt - l.clockSeconds) : 0, currentAttempt: structuredClone(a),
     cases: CASES.map(def => { const r = l.cases[def.id]; return { id: def.id, title: def.title, story: def.story, observations: r.observedWeek === null ? [] : [def.story, '不复制原包、不重开搬运报酬、不挪用莉娜原封签；精力与当地时间连续。'], status: r.status, method: r.method,
       result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限效果已实际应用，原人仍沿普通道路离场；已付费用与等待保留。' : '以普通动作完成，或尊重当前拒绝、撤回与取消；没有未应用的能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }),
-    ledger: structuredClone(l.journal), actions };
+    ledger: l.journal.map(projectTimeWormLifeReceipt), actions };
 }
