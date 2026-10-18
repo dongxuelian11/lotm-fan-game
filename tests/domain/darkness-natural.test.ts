@@ -58,6 +58,26 @@ describe('Darkness213 complete immutable natural capture', () => {
     expect(counts).toEqual(rows.map(row => row.commandCount)); expect(new Set(counts).size).toBe(NEW_COMMANDS);
   });
 
+  it('removes Death only after exact private and public default verification', () => {
+    const state = data.initial, expected = historicalDarknessState(state);
+    const { death: _missingDeath, ...missing } = state;
+    expect(() => historicalDarknessState(missing as SliceState)).toThrow();
+    for (const death of [null, { ...state.death, guidanceKnown: true },
+      { ...state.death, unexpectedField: undefined }])
+      expect(() => historicalDarknessState({ ...state, death } as SliceState)).toThrow();
+    expect(() => migrateCapturedDarknessState({ ...expected, death: state.death } as HistoricalDarknessState)).toThrow();
+    expect(hash(historicalDarknessState({ ...state, unknownRoot: null } as SliceState))).not.toBe(hash(expected));
+    const projection = projectSliceState(state), historical = historicalDarknessPublic(projection, state);
+    expect(Object.hasOwn(historical, 'death')).toBe(false);
+    const { death: _missingDeathPublic, ...missingPublic } = projection;
+    expect(() => historicalDarknessPublic(missingPublic as SliceProjection, state)).toThrow();
+    for (const death of [null, { ...projection.death, promoted: true },
+      { ...projection.death, unexpectedField: undefined }])
+      expect(() => historicalDarknessPublic({ ...projection, death } as SliceProjection, state)).toThrow();
+    expect(hash(historicalDarknessPublic({ ...projection, unknownRoot: null } as SliceProjection, state)))
+      .not.toBe(hash(historical));
+  });
+
   it('rejects missing, additional or rewritten historical evidence without modifying inputs', () => {
     const manifest = JSON.parse(bytes(INPUT_MANIFEST).toString('utf8')) as Manifest;
     const names = manifest.files.map(item => item.file), beforeManifest = hash(manifest);

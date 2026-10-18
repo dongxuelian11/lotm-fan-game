@@ -8,7 +8,12 @@ import * as predecessor from '../../src/domain/pale-emperor/index.js';
 import { authenticDeathSource, controlledDeathSuccess, installControlledDeathPromotion, deathScenarioHash,
   assertDeathPublicBoundary, assertUnmodifiedDeathInput, type ControlledDeathSuccess } from '../helpers/death-scenario.js';
 let seam:ReturnType<typeof installControlledDeathPromotion>,scenario:ControlledDeathSuccess;
-beforeAll(()=>{seam=installControlledDeathPromotion();scenario=controlledDeathSuccess(seam);},300_000);
+beforeAll(()=>{seam=installControlledDeathPromotion();scenario=controlledDeathSuccess(seam);
+  console.info('CONTROLLED_DEATH_ROUTE',JSON.stringify({sourceCommands:1038,newCommands:scenario.commands.length,
+    week:scenario.success.week,health:scenario.success.health,mind:scenario.success.mind,spirituality:scenario.success.spirituality,
+    cash:scenario.success.cash,actions:scenario.success.actionsRemaining,cursor:scenario.success.random.cursor,
+    privateSha256:deathScenarioHash(scenario.success),natural:false}));
+},300_000);
 afterAll(()=>{try{assertUnmodifiedDeathInput();}finally{seam?.restore();}});
 describe('Death original injured source and controlled complete success',()=>{
   it('keeps original three failures/success,19 masteries,old dead opponent and all ten roots',()=>{

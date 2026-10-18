@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
+import { emptyDeathPublic } from '../helpers/empty-death-capture.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { openSunRuntimeSession, type SunRuntimeSession } from '../../src/domain/sun/owned-session.js';
 import { SUN_ABILITY_IDS, SUN_ORIGINAL_IDS } from '../../src/domain/sun/types.js';
@@ -46,6 +47,28 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
       epilogueAttempted: ['DIRECTED_RADIANCE', 'RADIANCE_WARD'], reported: true });
   });
 
+  it('requires exactly the empty Death addition while preserving every historical field and unknown root', () => {
+    const current = data.initial, raw = actionAt(854).beforeLast;
+    same(historicalSunState(current), raw);
+    const { death: _missingDeath, ...missing } = current;
+    expect(() => historicalSunState(missing as SliceState)).toThrow();
+    for (const death of [null, { ...current.death, guidanceKnown: true },
+      { ...current.death, unexpectedField: undefined },
+      { ...current.death, promotionStability: { preparations: [], unexpectedField: undefined } }])
+      expect(() => historicalSunState({ ...current, death } as SliceState)).toThrow();
+    expect(() => migrateCapturedSunState({ ...raw, death: current.death })).toThrow();
+    const originalHash = hash(raw);
+    expect(hash(historicalSunState({ ...current, unknownRoot: null } as SliceState))).not.toBe(originalHash);
+    expect(hash(historicalSunState({ ...current, cash: current.cash + 1 }))).not.toBe(originalHash);
+    const projection = projectSliceState(current), historical = historicalSunPublic(projection, current);
+    expect(Object.hasOwn(historical, 'death')).toBe(false);
+    for (const death of [null, { ...projection.death, promoted: true },
+      { ...projection.death, unexpectedField: undefined }])
+      expect(() => historicalSunPublic({ ...projection, death } as typeof projection, current)).toThrow();
+    expect(hash(historicalSunPublic({ ...projection, unknownRoot: null } as typeof projection, current)))
+      .not.toBe(hash(historical));
+  });
+
   it.each(BLOCKS)('replays actual %i..%i with complete private/RNG/chapter/global equivalence', (first, last) => {
     let state = first === PREFIX + 1 ? structuredClone(data.initial) : migrateCapturedSunState(actionAt(first).beforeLast);
     let session: SunRuntimeSession | null = state.sun.guidanceKnown ? openSunRuntimeSession(state) : null;
@@ -53,7 +76,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
     for (const row of data.rows.filter(item => item.commandCount >= first && item.commandCount <= last)) {
       const recorded = readAction(row), before = state, beforeHash = hash(before);
       expect(hash(historicalSunState(before))).toBe(row.beforeStateSha256);
-      same(before, recorded.beforeLast, `Complete private before ${row.commandCount}`);
+      same(historicalSunState(before), recorded.beforeLast, `Complete private before ${row.commandCount}`);
       assertCurrentGlobal(global, recorded, 'before'); assertGlobalPublic(global, before);
       expect(hash(historicalSunPublic(global, before))).toBe(hash(expectedCurrentGlobal(recorded, 'before')));
       assertPublicAction(capturePublic(global), row); expect(validateSlicePayload(row.intent)).toBe(true);
@@ -64,7 +87,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
         state = session.snapshotDraft(draft); global = session.projectDraft(draft);
         expect(session.inspect()).toEqual({ runId: before.runId, revision: before.revision, status: before.status });
         expect(hash(before), 'Preparing cannot mutate predecessor').toBe(beforeHash);
-        same(state, recorded.final); assertCurrentGlobal(global, recorded, 'after');
+        same(historicalSunState(state), recorded.final); assertCurrentGlobal(global, recorded, 'after');
         session.commit(draft); committed++;
         expect(session.inspect()).toEqual({ runId: state.runId, revision: state.revision, status: state.status });
       } else {
@@ -73,7 +96,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
         expect(state.sun.guidanceKnown).toBe(true); session = openSunRuntimeSession(state); global = session.project();
       }
       expect(hash(before), 'Committing cannot mutate predecessor').toBe(beforeHash);
-      same(state, recorded.final, `Complete private after ${row.commandCount}`);
+      same(historicalSunState(state), recorded.final, `Complete private after ${row.commandCount}`);
       expect(hash(historicalSunState(state))).toBe(row.afterStateSha256);
       assertCurrentGlobal(global, recorded, 'after'); assertGlobalPublic(global, state);
       expect(hash(historicalSunPublic(global, state))).toBe(hash(expectedCurrentGlobal(recorded, 'after')));
@@ -87,7 +110,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
     expect(prepared + ingress).toBe(27); expect(committed).toBe(prepared);
     expect(session).not.toBeNull(); same(session!.snapshot(), state); same(session!.project(), global);
     preserveOriginal(state);
-    if (last === 934) { same(state, data.checkpoint.state); expect(hash(state)).toBe(PINS.finalStateSha256); }
+    if (last === 934) { same(historicalSunState(state), data.checkpoint.state); expect(hash(historicalSunState(state))).toBe(PINS.finalStateSha256); }
   }, 120_000);
 
   it('retains exactly three actual draws and their paid, non-rerolled outcomes', () => {
@@ -135,18 +158,19 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
         same(expected.recovery.actions.credit, raw.recovery.actions.credit, 'Event-choice credit gating remains frozen');
         expect(state.sun.guidanceKnown).toBe(guided); expect(state.sun.source !== null).toBe(guided);
         expect([raw.maxSpirituality, expected.maxSpirituality]).toEqual(promoted ? [30, 150] : [120, 120]);
-        assertCurrentGlobal(expected, action, side);
-        if (guided) expect(() => assertCurrentGlobal(raw, action, side)).toThrow();
+        const currentExpected = { ...expected, death: emptyDeathPublic(state) };
+        assertCurrentGlobal(currentExpected, action, side);
+        if (guided) expect(() => assertCurrentGlobal({ ...raw, death: emptyDeathPublic(state) }, action, side)).toThrow();
         else {
           same(expected, raw, '854-before remains completely unchanged');
           expect(raw.canAct).toBe(true); expect(raw.actionBlockedReason).toBeNull(); expect(state.sun.source).toBeNull();
-          expect(() => assertCurrentGlobal({ ...expected, canAct: false }, action, side)).toThrow();
-          expect(() => assertCurrentGlobal({ ...expected, actionBlockedReason: '请在当前街区与筹备处继续行动。' }, action, side)).toThrow();
+          expect(() => assertCurrentGlobal({ ...currentExpected, canAct: false }, action, side)).toThrow();
+          expect(() => assertCurrentGlobal({ ...currentExpected, actionBlockedReason: '请在当前街区与筹备处继续行动。' }, action, side)).toThrow();
         }
         for (const field of fields) {
           if (raw[field] !== expected[field])
-            expect(() => assertCurrentGlobal({ ...expected, [field]: raw[field] }, action, side), `Missing correction: ${field}`).toThrow();
-          const missing = { ...expected }; Reflect.deleteProperty(missing, field);
+            expect(() => assertCurrentGlobal({ ...currentExpected, [field]: raw[field] }, action, side), `Missing correction: ${field}`).toThrow();
+          const missing = { ...currentExpected }; Reflect.deleteProperty(missing, field);
           expect(() => assertCurrentGlobal(missing, action, side), `Missing public key: ${field}`).toThrow();
         }
         // Cover every newly allowed leaf at the exact guidance boundary, and
@@ -164,37 +188,37 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
             const actualValue = parent(expected)[key], rawValue = parent(raw)[key];
             const name = `recovery.${path.join('.')}`;
             if (actualValue !== rawValue) {
-              const omitted = structuredClone(expected); parent(omitted)[key] = rawValue;
+              const omitted = structuredClone(currentExpected); parent(omitted)[key] = rawValue;
               expect(() => assertCurrentGlobal(omitted, action, side), `Missing correction: ${name}`).toThrow();
             }
-            const missing = structuredClone(expected); Reflect.deleteProperty(parent(missing), key);
+            const missing = structuredClone(currentExpected); Reflect.deleteProperty(parent(missing), key);
             expect(() => assertCurrentGlobal(missing, action, side), `Missing public key: ${name}`).toThrow();
-            const extra = structuredClone(expected);
+            const extra = structuredClone(currentExpected);
             parent(extra)[key] = typeof actualValue === 'boolean' ? !actualValue : 'Unexpected recovery reason';
             expect(() => assertCurrentGlobal(extra, action, side), `Extra change: ${name}`).toThrow();
           }
           for (const name of ['pay', 'credit'] as const) {
-            const changed = structuredClone(expected);
+            const changed = structuredClone(currentExpected);
             changed.recovery.actions[name] = { enabled: true, reason };
             expect(() => assertCurrentGlobal(changed, action, side), `Unreviewed event choice: ${name}`).toThrow();
           }
-          const extraRecovery = structuredClone(expected);
+          const extraRecovery = structuredClone(currentExpected);
           Reflect.set(extraRecovery.recovery, 'unexpectedRecoveryField', null);
           expect(() => assertCurrentGlobal(extraRecovery, action, side)).toThrow();
-          const changedGuidance = structuredClone(expected); changedGuidance.recovery.guidance += ' changed';
+          const changedGuidance = structuredClone(currentExpected); changedGuidance.recovery.guidance += ' changed';
           expect(() => assertCurrentGlobal(changedGuidance, action, side)).toThrow();
         }
-        expect(() => assertCurrentGlobal({ ...expected, cash: expected.cash + 1 }, action, side)).toThrow();
-        expect(() => assertCurrentGlobal({ ...expected, unexpectedRoot: null } as typeof expected, action, side)).toThrow();
-        const missingOther = { ...expected }; Reflect.deleteProperty(missingOther, 'cash');
+        expect(() => assertCurrentGlobal({ ...currentExpected, cash: expected.cash + 1 }, action, side)).toThrow();
+        expect(() => assertCurrentGlobal({ ...currentExpected, unexpectedRoot: null } as typeof expected, action, side)).toThrow();
+        const missingOther = { ...currentExpected }; Reflect.deleteProperty(missingOther, 'cash');
         expect(() => assertCurrentGlobal(missingOther, action, side)).toThrow();
-        expect(() => assertCurrentGlobal(expected, action, side === 'before' ? 'after' : 'before')).toThrow();
+        expect(() => assertCurrentGlobal(currentExpected, action, side === 'before' ? 'after' : 'before')).toThrow();
         expect(() => expectedCurrentGlobal({ ...action, commandCount: count + 1 }, side)).toThrow();
       }
       if (count === 854) {
         const next = actionAt(855);
         same(action.final, next.beforeLast); same(action.globalPublic, next.globalPublicBefore);
-        expect(() => assertCurrentGlobal(expectedCurrentGlobal(action, 'after'), next, 'after')).toThrow();
+        expect(() => assertCurrentGlobal({ ...expectedCurrentGlobal(action, 'after'), death: emptyDeathPublic(action.final) }, next, 'after')).toThrow();
         expect(() => expectedCurrentGlobal({ ...action, lastIntent: next.lastIntent }, 'after')).toThrow();
         const sourceMissing = { ...action, final: { ...action.final, sun: { ...action.final.sun, source: null } } };
         expect(() => expectedCurrentGlobal(sourceMissing, 'after')).toThrow();
@@ -295,9 +319,9 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
 
   it('rejects forged results, unknown roots, repeated finite attempts and private projection leakage without editing evidence', () => {
     const final = migrateCapturedSunState(data.checkpoint.state), before = hash(final), session = openSunRuntimeSession(final), global = session.project();
-    expect(() => migrateCapturedSunState({ ...final, unexpectedRoot: null } as SliceState)).toThrow();
-    expect(() => same(historicalSunState({ ...final, cash: final.cash + 1 }), final)).toThrow();
-    expect(() => same(historicalSunPublic({ ...global, unexpectedRoot: null } as typeof global, final), global)).toThrow();
+    expect(() => migrateCapturedSunState({ ...data.checkpoint.state, unexpectedRoot: null } as SliceState)).toThrow();
+    expect(() => same(historicalSunState({ ...final, cash: final.cash + 1 }), historicalSunState(final))).toThrow();
+    expect(() => same(historicalSunPublic({ ...global, unexpectedRoot: null } as typeof global, final), historicalSunPublic(global, final))).toThrow();
     expect(() => assertGlobalPublic({ ...global, nextRoll: 1 } as typeof global, final)).toThrow();
     expect(() => assertGlobalPublic({ ...global, privateSource: final.sun.source } as typeof global, final)).toThrow();
     expect(validateSlicePayload({ type: 'SUN', command: { type: 'EPILOGUE', command: { type: 'RADIANCE_WARD', success: true } } })).toBe(false);

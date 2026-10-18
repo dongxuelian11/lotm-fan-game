@@ -13,7 +13,7 @@ import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import {
   PINS, PREFIX, actualReceipts, assertGlobalPublic, assertPublicAction, authenticateInputs, capturePublic, hash,
-  expectedCurrentGlobal, loadCapture, migrateCapturedTyrantState, outcome, readAction, same, sha, type LoadedCapture,
+  expectedCurrentGlobal, historicalTyrantPublic, loadCapture, migrateCapturedTyrantState, outcome, readAction, same, sha, type LoadedCapture,
 } from '../helpers/tyrant-capture.js';
 
 /** NEW215 natural864: exactly FOUR representative actual SQLite transitions,
@@ -74,8 +74,8 @@ describe('Tyrant215 rebuilt actual natural864 representative SQLite captures', (
     same(after.thunderGod.bottles.slice(0, 3), original.thunderGod.bottles);
     expect(after.thunderGod.bottles.map(bottle => bottle.outcome)).toEqual(['FAILURE', 'FAILURE', 'FAILURE', 'SUCCESS']);
     const publicBefore = publicState(before), publicAfter = publicState(after);
-    same(publicBefore, projectPlayerText(expectedCurrentGlobal(boundary, 'before'), before.character.name));
-    same(publicAfter, projectPlayerText(expectedCurrentGlobal(boundary, 'after'), after.character.name));
+    same(historicalTyrantPublic(publicBefore, before), projectPlayerText(expectedCurrentGlobal(boundary, 'before'), before.character.name));
+    same(historicalTyrantPublic(publicAfter, after), projectPlayerText(expectedCurrentGlobal(boundary, 'after'), after.character.name));
     same(capturePublic(publicAfter), boundary.public); expect(outcome(boundary.public)).toEqual(row.selectionOutcome);
     assertPublicAction(capturePublic(publicBefore), row); same(actualReceipts(after, before), row.receipts);
     if (count === 717) {

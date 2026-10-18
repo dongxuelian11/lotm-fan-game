@@ -1,3 +1,8 @@
+import assert from 'node:assert/strict';
+import { assertEmptyDeathState, assertEmptyDeathPublic } from '../helpers/empty-death-capture.js';
+import { createDeathState } from '../../src/domain/death/index.js';
+import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
 import { projectPlayerText } from '../../src/shared/player-text.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
@@ -254,7 +259,7 @@ async function fileHash(path: string, prefixBytes?: number): Promise<string> {
 interface PriorPublicRow { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; public: { strictSha256: string } }
 interface RedactionAudit {
   prior: { rows: PriorPublicRow[] };
-  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower'>, display: typeof projectPlayerText) => unknown;
+  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death'>, display: typeof projectPlayerText) => unknown;
   assertRow: (prior: { rows: PriorPublicRow[] }, index: number, actual: { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; legacyPublicSha256: string }) => string;
 }
 let redactionAudit: RedactionAudit | null = null;
@@ -311,7 +316,7 @@ function jsonLines<T>(file: FileName): T[] {
   const text = readFileSync(fixturePath(file), 'utf8'); expect(text.endsWith('\n'), file).toBe(true);
   return text.slice(0, -1).split('\n').map(line => { expect(line.length).toBeGreaterThan(0); return JSON.parse(line) as T; });
 }
-type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
+type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
 const EMPTY_RED_PRIEST: SliceState['redPriest'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   campaign: null, materials: null, epilogue: null, journal: [],
@@ -336,6 +341,15 @@ const EMPTY_WHITE_TOWER: SliceState['whiteTower'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
 };
+const EMPTY_TYRANT: SliceState['tyrant'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  coasts: null, challenge: null, materials: null, epilogue: null, seaVoyages: [], assembly: null,
+  journal: [], promotionStability: { preparations: [] },
+};
+const EMPTY_SUN: SliceState['sun'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
 let originalStateKeys: readonly string[] | null = null;
 function historicalStateKeys(): readonly string[] {
   if (!originalStateKeys) {
@@ -348,14 +362,15 @@ function historicalStateKeys(): readonly string[] {
     expect(Object.hasOwn(raw, 'moon')).toBe(false);
     expect(Object.hasOwn(raw, 'darkness')).toBe(false);
     expect(Object.hasOwn(raw, 'whiteTower')).toBe(false);
+    for (const root of ['tyrant', 'sun', 'death']) expect(Object.hasOwn(raw, root)).toBe(false);
     originalStateKeys = Object.keys(raw).sort();
   }
   return originalStateKeys;
 }
-/** Audit only: allow exactly the six approved new roots and two version changes.
+/** Audit only: allow exactly the nine approved new roots and two version changes.
  * Every original field, including all nested history, remains in the hash. */
 function historicalStateView(state: SliceState): HistoricalFoolState {
-  keys(state, [...historicalStateKeys(), 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower']);
+  keys(state, [...historicalStateKeys(), 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death']);
   expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
   expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
@@ -363,8 +378,11 @@ function historicalStateView(state: SliceState): HistoricalFoolState {
   expect(state.moon).toStrictEqual(EMPTY_MOON);
   expect(state.darkness).toStrictEqual(EMPTY_DARKNESS);
   expect(state.whiteTower).toStrictEqual(EMPTY_WHITE_TOWER);
+  expect(state.tyrant).toStrictEqual(EMPTY_TYRANT); expect(state.sun).toStrictEqual(EMPTY_SUN);
+  assertEmptyDeathState(state);
   const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
-    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, ...originalFields } = state;
+    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower,
+    tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 205, contentVersion: 'fool-v205' };
 }
 function current(raw: unknown): SliceState {
@@ -381,9 +399,9 @@ function current(raw: unknown): SliceState {
   return state;
 }
 
-/** Remove only the six verified inactive new chapters from this detached audit view.
+/** Remove only the nine verified inactive new chapters from this detached audit view.
  * Its complete remaining shape/content is still bound by the old public hash. */
-function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower'> {
+function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death'> {
   expect(state.progression.pathwayId).toBe('diviner');
   expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
   expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
@@ -391,6 +409,8 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
   expect(state.moon).toStrictEqual(EMPTY_MOON);
   expect(state.darkness).toStrictEqual(EMPTY_DARKNESS);
   expect(state.whiteTower).toStrictEqual(EMPTY_WHITE_TOWER);
+  expect(state.tyrant).toStrictEqual(EMPTY_TYRANT); expect(state.sun).toStrictEqual(EMPTY_SUN);
+  assertEmptyDeathState(state);
   expect(Object.hasOwn(projection, 'redPriest')).toBe(true);
   expect(projection.redPriest).toStrictEqual(projectPlayerText(projectRedPriest(state), state.character.name));
   expect(projection.redPriest.guidanceKnown).toBe(false); expect(projection.redPriest.promoted).toBe(false);
@@ -447,8 +467,40 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
     expect(root.actions.every(action => !action.enabled)).toBe(true);
     for (const field of ['source', 'frame', 'journal']) expect(Object.hasOwn(root, field)).toBe(false);
   }
+  assert.equal(Object.hasOwn(projection, 'tyrant'), true);
+  assert.deepEqual(projection.tyrant, {
+    title: '序列0 暴君', guidanceKnown: false, promoted: false,
+    story: '原小湾与旧人原物继续保留。三岸共二十七万原居民各有当前意愿与有限粮食；履约、隔周复核和真实航运不能用证书代替。另一位太阳真神独立敌对，单独挑战并真实存活才计入晋升经历。',
+    nextStep: state.progression.sequence === 1
+      ? '维持至少二十万同一在世居民同时恐惧、服从并信仰；本人单独挑战另一位真神后存活，取得原三份特性与同一唯一性，在当前氛围中完成同瓶付费准备。'
+      : '先继续雷神的真实原三份续筹、晋升和三案反思；历史独立第四份不能改写为同根回收件。',
+    risk: '晋升成功率按当前意志与本次付费准备计算；失败实际重伤、污染或死亡，没有免费重试。药液与普通载体耗用，原特性仍守恒，回收必须按真实原处和隔周条件完成。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'tyrant:0:LEARN_GUIDANCE', label: '听取暴君晋升与三岸原人群指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的雷神本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  assert.equal(Object.hasOwn(projection, 'sun'), true);
+  assert.deepEqual(projection.sun, {
+    title: '序列0 太阳', guidanceKnown: false, promoted: false,
+    story: '玛拉与芦影、原采光廊和投降的西拉斯都留在原处，旧许可、伤势和耗料继续保留。街区接待处有洗衣房与邻楼后阶两件居民求助；须亲自问清情况、处理实际原物并完成交接，普通手段也能完成。',
+    nextStep: '完成两件居民服务与现场核验；核清本人已有的一份和另外两份原特性，实地确认同一太阳唯一性空位，再为同一本人的同一瓶付费准备。实际晋1满十二周才可服药。',
+    risk: '成功率按本人实际意志与本瓶付费准备计算，不重掷。失败留下真实重伤和污染并可能死亡。幸存者只能在原处封存同一残余，隔周付费回收，再用剩余有价载体重配；总共只有三件载体。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'sun:0:LEARN_GUIDANCE', label: '听取两件服务与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  assertEmptyDeathPublic(projection, state);
   const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
-    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, ...originalFields } = projection;
+    perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower,
+    tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, ...originalFields } = projection;
   return originalFields;
 }
 function budget(s: SliceState) {
@@ -594,7 +646,7 @@ async function assertTransition(e: Observation, commands: SliceIntent[], freeze:
 describe.sequential('Fool original1868 continuation with explicit original43 reconstruction evidence', () => {
   beforeAll(assertReviewedHistoricalRuntimeProof, 240_000);
   afterAll(assertReviewedHistoricalRuntimeProof, 240_000);
-  it('limits the historical audit view to the exact original keys and six strictly empty current chapters', () => {
+  it('limits the historical audit view to the exact original keys and nine strictly empty current chapters', () => {
     const raw = entry<HistoricalFoolState>('final');
     expect(EMPTY_RED_PRIEST).toStrictEqual(createRedPriestState());
     expect(EMPTY_VISIONARY).toStrictEqual(createVisionaryState());
@@ -602,11 +654,13 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     expect(EMPTY_MOON).toStrictEqual(createMoonState());
     expect(EMPTY_DARKNESS).toStrictEqual(createDarknessState());
     expect(EMPTY_WHITE_TOWER).toStrictEqual(createWhiteTowerState());
+    expect(EMPTY_TYRANT).toStrictEqual(createTyrantState()); expect(EMPTY_SUN).toStrictEqual(createSunState());
     // This is only an audit-helper guard; actual migration/loading is tested below.
     const shape: SliceState = { ...raw, schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION,
       redPriest: structuredClone(EMPTY_RED_PRIEST), visionary: structuredClone(EMPTY_VISIONARY),
       perfecter: structuredClone(EMPTY_PERFECTER), moon: structuredClone(EMPTY_MOON), darkness: structuredClone(EMPTY_DARKNESS),
-      whiteTower: structuredClone(EMPTY_WHITE_TOWER) };
+      whiteTower: structuredClone(EMPTY_WHITE_TOWER), tyrant: structuredClone(EMPTY_TYRANT),
+      sun: structuredClone(EMPTY_SUN), death: createDeathState() };
     same(historicalStateView(shape), raw);
     expect(() => historicalStateView({ ...shape, unexpectedRoot: null } as SliceState)).toThrow();
     const { fool: _missingOriginalRoot, ...missingOriginal } = shape;
@@ -636,6 +690,14 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     expect(() => historicalStateView(missingMoon as SliceState)).toThrow();
     expect(() => historicalStateView(missingDarkness as SliceState)).toThrow();
     expect(() => historicalStateView(missingWhiteTower as SliceState)).toThrow();
+    for (const root of ['tyrant', 'sun', 'death'] as const) {
+      const { [root]: _missing, ...missing } = shape;
+      expect(() => historicalStateView(missing as SliceState)).toThrow();
+      for (const value of [null, { ...shape[root], guidanceKnown: true },
+        { ...shape[root], unexpectedField: undefined },
+        { ...shape[root], promotionStability: { preparations: [], unexpectedField: undefined } }])
+        expect(() => historicalStateView({ ...shape, [root]: value } as SliceState)).toThrow();
+    }
     expect(() => historicalStateView({ ...shape, schemaVersion: 205 } as unknown as SliceState)).toThrow();
     expect(hash(historicalStateView({ ...shape, cash: shape.cash + 1 })), 'An old field is never normalized away').not.toBe(hash(raw));
   });

@@ -7,7 +7,7 @@ import {
   CURRENT_IS_CAPTURE_FORMAT, CURRENT_SUPPORTED_PROMOTION_CHECK, RAW_SUPPORTED_PROMOTION_CHECK,
   INPUT_MANIFEST, NEW_COMMANDS, PINS, PREFIX, actualReceipts, assertCaptureFreeze, assertCurrentGlobal,
   assertCaptureManifest, assertGlobalPublic, assertPublicAction, authenticateInputs, bytes, captureFiles, capturePublic,
-  compactHash, expectedCurrentGlobal, hash, json, loadCapture, migrateCapturedTyrantState, outcome, readAction, same,
+  compactHash, expectedCurrentGlobal, hash, historicalTyrantState, historicalTyrantPublic, json, loadCapture, migrateCapturedTyrantState, outcome, readAction, same,
   type Freeze, type LoadedCapture, type Manifest,
 } from '../helpers/tyrant-capture.js';
 
@@ -93,6 +93,7 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
       const expectedGlobalAfter = CURRENT_IS_CAPTURE_FORMAT ? expectedCurrentGlobal(recorded, 'after') : projectSliceState(expectedAfter);
       same(before, expectedBefore, `Complete private before ${row.commandCount}`);
       same(global, expectedGlobalBefore, `Complete global before ${row.commandCount}`);
+      assertCurrentGlobal(global, recorded, 'before');
       same(view, capturePublic(expectedGlobalBefore), `Complete chapter before ${row.commandCount}`);
       expect(before.random).toEqual(recorded.randomBefore); expect(hash(before.random)).toBe(row.randomBeforeSha256);
       assertGlobalPublic(global, before); assertPublicAction(recorded.publicBefore, row); assertPublicAction(view, row);
@@ -118,12 +119,11 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
       same(state, expectedAfter, `Complete private after ${row.commandCount}`);
       same(global, expectedGlobalAfter, `Complete global after ${row.commandCount}`);
       same(view, capturePublic(expectedGlobalAfter), `Complete chapter after ${row.commandCount}`);
-      if (CURRENT_IS_CAPTURE_FORMAT) {
-        expect(hash(before)).toBe(row.beforeStateSha256); expect(hash(state)).toBe(row.afterStateSha256);
-        assertCurrentGlobal(global, recorded, 'after');
-        if (row.commandCount !== 717) expect(hash(global)).toBe(row.globalPublicAfterSha256);
-        expect(hash(view)).toBe(row.publicAfterSha256);
-      }
+      expect(hash(historicalTyrantState(before))).toBe(row.beforeStateSha256);
+      expect(hash(historicalTyrantState(state))).toBe(row.afterStateSha256);
+      assertCurrentGlobal(global, recorded, 'after');
+      if (row.commandCount !== 717) expect(hash(historicalTyrantPublic(global, state))).toBe(row.globalPublicAfterSha256);
+      expect(hash(view)).toBe(row.publicAfterSha256);
       expect(state.random).toEqual(recorded.randomAfter); expect(hash(state.random)).toBe(row.randomAfterSha256);
       expect(state.random.seed).toBe(data.original.random.seed);
       expect([state.revision, state.week]).toEqual([row.revision, row.week]); expect(state.revision).toBe(before.revision + 1);
@@ -144,6 +144,29 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
     }
   }, 240_000);
 
+  it('allows only verified empty Sun and Death roots when comparing captured212', () => {
+    const state = data.initial, historical = historicalTyrantState(state);
+    for (const root of ['sun', 'death'] as const) {
+      const { [root]: _missing, ...missing } = state;
+      expect(() => historicalTyrantState(missing as SliceState)).toThrow();
+      for (const value of [null, { ...state[root], guidanceKnown: true },
+        { ...state[root], unexpectedField: undefined }])
+        expect(() => historicalTyrantState({ ...state, [root]: value } as SliceState)).toThrow();
+      expect(() => migrateCapturedTyrantState({ ...historical, [root]: state[root] } as SliceState)).toThrow();
+    }
+    expect(hash(historicalTyrantState({ ...state, unknownRoot: null } as SliceState))).not.toBe(hash(historical));
+    const projection = projectSliceState(state), oldPublic = historicalTyrantPublic(projection, state);
+    for (const root of ['sun', 'death'] as const) {
+      const { [root]: _missing, ...missing } = projection;
+      expect(() => historicalTyrantPublic(missing as SliceProjection, state)).toThrow();
+      for (const value of [null, { ...projection[root], promoted: true },
+        { ...projection[root], unexpectedField: undefined }])
+        expect(() => historicalTyrantPublic({ ...projection, [root]: value } as SliceProjection, state)).toThrow();
+    }
+    expect(hash(historicalTyrantPublic({ ...projection, unknownRoot: null } as SliceProjection, state)))
+      .not.toBe(hash(oldPublic));
+  });
+
   it('changes only the full717-after/718-before public check from legacy44 to the actual paid70 receipt', () => {
     const promoted = actionAt(717), next = actionAt(718), rawHash = hash(promoted.globalPublic), privateHash = hash(promoted.final);
     expect(promoted.globalPublic.lastCheck).toEqual(RAW_SUPPORTED_PROMOTION_CHECK);
@@ -159,16 +182,17 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
     same(expectedCurrentGlobal(promoted, 'before'), promoted.globalPublicBefore);
     same(expectedCurrentGlobal(next, 'after'), next.globalPublic);
     same(capturePublic(expected), promoted.public);
-    expect(() => assertCurrentGlobal(promoted.globalPublic, promoted, 'after')).toThrow();
-    const extraChange = structuredClone(expected); extraChange.cash++;
-    expect(() => assertCurrentGlobal(extraChange, promoted, 'after')).toThrow();
-    const extraField = { ...expected, unexpectedPromotionField: true };
-    expect(() => assertCurrentGlobal(extraField, promoted, 'after')).toThrow();
-    const wrongSupport = structuredClone(expected);
-    wrongSupport.lastCheck = { ...wrongSupport.lastCheck!, modifiers: [{ source: '同瓶同场当周有价支持', value: 14 }] };
-    expect(() => assertCurrentGlobal(wrongSupport, promoted, 'after')).toThrow();
     const current = migrateCapturedTyrantState(promoted.final), actual = projectSliceState(current);
     assertCurrentGlobal(actual, promoted, 'after'); assertCurrentGlobal(actual, next, 'before');
+    const currentExpected = { ...expected, sun: actual.sun, death: actual.death };
+    expect(() => assertCurrentGlobal({ ...promoted.globalPublic, sun: actual.sun, death: actual.death }, promoted, 'after')).toThrow();
+    const extraChange = structuredClone(currentExpected); extraChange.cash++;
+    expect(() => assertCurrentGlobal(extraChange, promoted, 'after')).toThrow();
+    const extraField = { ...currentExpected, unexpectedPromotionField: true };
+    expect(() => assertCurrentGlobal(extraField, promoted, 'after')).toThrow();
+    const wrongSupport = structuredClone(currentExpected);
+    wrongSupport.lastCheck = { ...wrongSupport.lastCheck!, modifiers: [{ source: '同瓶同场当周有价支持', value: 14 }] };
+    expect(() => assertCurrentGlobal(wrongSupport, promoted, 'after')).toThrow();
     expect(hash(promoted.globalPublic)).toBe(rawHash); expect(hash(promoted.final)).toBe(privateHash);
     expect(promoted.final.random).toEqual({ seed: 'sailor-natural-v026', cursor: 271 });
     expect(current.lastCheck).toEqual(RAW_SUPPORTED_PROMOTION_CHECK);

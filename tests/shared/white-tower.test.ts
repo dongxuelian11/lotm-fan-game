@@ -7,6 +7,7 @@ import { stableStringify } from '../../src/domain/canonical.js';
 import { createWhiteTowerState } from '../../src/domain/white-tower/index.js';
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
 import { createSunState } from '../../src/domain/sun/index.js';
+import { createDeathState } from '../../src/domain/death/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedWhiteTowerSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -22,12 +23,22 @@ const fresh = () => createSliceRun('whiteTower-schema', sliceDefaultCreationSele
 const raw210 = () => JSON.parse(gunzipSync(readFileSync(CAPTURE)).toString('utf8')).beforeLast as Record<string, unknown>;
 
 describe('WhiteTower exact current schema and public command boundary', () => {
+  it('rejects a missing, nonempty or extended current Death root', () => {
+    const state = fresh(), { death: _missingDeath, ...missing } = state;
+    for (const value of [missing, { ...state, death: null },
+      { ...state, death: { ...state.death, guidanceKnown: true } },
+      { ...state, death: { ...state.death, unexpectedField: true } }]) {
+      const before = stableStringify(value);
+      expect(() => migrateSliceState(value)).toThrow(); expect(stableStringify(value)).toBe(before);
+    }
+  });
+
   it('creates one empty WhiteTower root and a detached strictly valid current save', () => {
     const state = fresh(), before = stableStringify(state), copy = migrateSliceState(state);
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    same(state.whiteTower, createWhiteTowerState()); same(state.tyrant, createTyrantState()); same(state.sun, createSunState()); same(copy, state);
+    same(state.whiteTower, createWhiteTowerState()); same(state.tyrant, createTyrantState()); same(state.sun, createSunState());same(state.death,createDeathState()); same(copy, state);
     expect(copy).not.toBe(state); expect(copy.whiteTower).not.toBe(state.whiteTower);
-    expect(copy.tyrant).not.toBe(state.tyrant); expect(copy.sun).not.toBe(state.sun);
+    expect(copy.tyrant).not.toBe(state.tyrant); expect(copy.sun).not.toBe(state.sun);expect(copy.death).not.toBe(state.death);
     assertValidSliceState(copy); expect(stableStringify(state)).toBe(before);
   });
 
@@ -35,22 +46,22 @@ describe('WhiteTower exact current schema and public command boundary', () => {
     const bytes = readFileSync(CAPTURE), raw = JSON.parse(gunzipSync(readFileSync(CAPTURE)).toString('utf8'))[key] as Record<string, unknown>;
     expect(hash(bytes)).toBe(CAPTURE_SHA256);
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([210, 'darkness-v210']);
-    expect(Object.hasOwn(raw, 'whiteTower')).toBe(false); expect(Object.hasOwn(raw, 'tyrant')).toBe(false); expect(Object.hasOwn(raw, 'sun')).toBe(false);
+    expect(Object.hasOwn(raw, 'whiteTower')).toBe(false); expect(Object.hasOwn(raw, 'tyrant')).toBe(false); expect(Object.hasOwn(raw, 'sun')).toBe(false); expect(Object.hasOwn(raw, 'death')).toBe(false);
     const before = stableStringify(raw), next = migrateSliceState(raw);
     expect([next.schemaVersion, next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual(['sun', 'tyrant', 'whiteTower']);
-    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'whiteTower', 'tyrant', 'sun'].sort());
+    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual(['death', 'sun', 'tyrant', 'whiteTower']);
+    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'whiteTower', 'tyrant', 'sun', 'death'].sort());
     for (const [field, value] of Object.entries(raw)) {
       if (field !== 'schemaVersion' && field !== 'contentVersion') same(next[field as keyof SliceState], value);
     }
-    same(next.whiteTower, createWhiteTowerState()); same(next.tyrant, createTyrantState()); same(next.sun, createSunState()); same(migrateSliceState(next), next);
+    same(next.whiteTower, createWhiteTowerState()); same(next.tyrant, createTyrantState()); same(next.sun, createSunState());same(next.death,createDeathState()); same(migrateSliceState(next), next);
     expect(stableStringify(raw)).toBe(before);
     expect(hash(readFileSync(CAPTURE))).toBe(CAPTURE_SHA256);
     expect(readFileSync(CAPTURE).equals(bytes)).toBe(true);
   }, 60_000);
 
   it.each([
-    ['whiteTower', createWhiteTowerState()], ['tyrant', createTyrantState()], ['sun', createSunState()],
+    ['whiteTower', createWhiteTowerState()], ['tyrant', createTyrantState()], ['sun', createSunState()], ['death', createDeathState()],
   ] as const)('rejects a future %s root in actual210 rather than silently discarding it', (key, empty) => {
     for (const root of [empty, { ...empty, guidanceKnown: true }, null]) {
       const raw = { ...raw210(), [key]: root }, before = stableStringify(raw);

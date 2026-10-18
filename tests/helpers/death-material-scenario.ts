@@ -72,16 +72,18 @@ export function deathMaterialScenario() {
       const found = state.legacySites.find(x => x.originalBottleId === command.bottleId && x.location === h.location);
       if (found) {
         out.legacyAccess = structuredClone(found);
-        if (command.type === 'ASK_LEGACY_PERMISSION') for (const [key, purpose] of [['investigation', 'INVESTIGATE'], ['handover', 'HANDOVER']] as const)
+        // A dead fixture must reach the formal module guard unchanged; it
+        // cannot manufacture a fresh permission while constructing its host.
+        if (out.status === 'ACTIVE' && command.type === 'ASK_LEGACY_PERMISSION') for (const [key, purpose] of [['investigation', 'INVESTIGATE'], ['handover', 'HANDOVER']] as const)
           out.legacyAccess[key] = deathMaterialPermissionReply(scene.legacy.response, found[key], out, purpose, found.custodianId, found.location, found.physicalVersion);
       }
     }
-    if (command?.type === 'ASK_UNIQUENESS_PERMISSION') out.succession.permission = deathMaterialPermissionReply(unique.response, unique.permission, out, 'HANDOVER', unique.custodianId, unique.location, unique.physicalVersion);
+    if (out.status === 'ACTIVE' && command?.type === 'ASK_UNIQUENESS_PERMISSION') out.succession.permission = deathMaterialPermissionReply(unique.response, unique.permission, out, 'HANDOVER', unique.custodianId, unique.location, unique.physicalVersion);
     if (command && 'compoundId' in command) {
       const access = state.recoverySites.find(x => x.compoundId === command.compoundId && x.location === h.location);
       if (access) {
         out.compoundAccess = structuredClone(access);
-        if (command.type === 'ASK_RECOVERY_PERMISSION') out.compoundAccess.handover = deathMaterialPermissionReply(scene.workshop.response, access.handover, out, 'HANDOVER', access.custodianId, access.location, access.physicalVersion);
+        if (out.status === 'ACTIVE' && command.type === 'ASK_RECOVERY_PERMISSION') out.compoundAccess.handover = deathMaterialPermissionReply(scene.workshop.response, access.handover, out, 'HANDOVER', access.custodianId, access.location, access.physicalVersion);
         out.recoveryPermission = structuredClone(out.compoundAccess.handover);
       }
     }

@@ -160,7 +160,16 @@ function desiredCommand(root: DeathRuntimeState): DeathCommand | null {
   const at=(to:string,c:DeathCommand):DeathCommand=>{
     if(f.location===to)return c;
     if(f.location===DEATH_HOME&&to!==DEATH_HOME){
-      const need=c.type==='MATERIAL'?deathMaterialEffect(m,c.command,DEATH_RUNTIME_MATERIAL_POLICY)
+      let paid=c.type==='MATERIAL'?c.command:null;
+      // Permission itself is free, but a fresh visit cannot finance its next
+      // real task. Leaving invalidates permission, so plan that task now.
+      if(paid?.type==='ASK_LEGACY_PERMISSION'){
+        const bottleId=paid.bottleId,item=m.characteristics.find(i=>i.originBottleId===bottleId)!;
+        const type=item.holder==='UNLOCATED'?'INVESTIGATE_LEGACY_REMAINS':item.holder==='LOCATED'?'SEAL_LEGACY_REMAINS':!item.legacyLabour?'LEGACY_LABOUR':'RECOVER_LEGACY_REMAINS';
+        paid={type,bottleId:item.originBottleId};
+      }else if(paid?.type==='ASK_UNIQUENESS_PERMISSION')paid=m.uniqueness.checks.some(x=>x.step==='VACANCY'&&x.week===b.week)?{type:'ACQUIRE_UNIQUENESS'}:{type:'VERIFY_UNIQUENESS',step:'VACANCY'};
+      else if(paid?.type==='ASK_RECOVERY_PERMISSION')paid={type:'RECOVER_SEALED',compoundId:paid.compoundId};
+      const need=paid?deathMaterialEffect(m,paid,DEATH_RUNTIME_MATERIAL_POLICY)
         :c.type==='STABILIZE_PROMOTION'?{actions:2,cashCost:12}:null;
       if(need&&b.actions<need.actions){
         if(b.actions>0||b.cash<24&&!f.economy.emergencyWorkUsed)return {type:'WORK'};
@@ -182,12 +191,12 @@ function desiredCommand(root: DeathRuntimeState): DeathCommand | null {
   }
   const exposed=m.compounds.find(p=>p.status==='FAILED_EXPOSED');
   if(exposed)return at(exposed.location,{type:'MATERIAL',command:{type:'SEAL_REMAINS',compoundId:exposed.id}});
+  if(f.economy.livingArrears>0)return home({type:'WORK'});
+  if(b.sequence===0)return at('DE0-OLD-WHARF',{type:'START_EPILOGUE'});
   if(b.injuries.some(i=>i.severity==='HEAVY'&&i.treatedRevision===null))return home({type:'CLINIC'});
   const prepared=m.compounds.find(p=>p.status==='PREPARED');
   const readyToConsume=prepared?getDeathPromotionStabilityPreview(root,prepared.id).prepared:false;
   if(b.health<80||b.mind<(readyToConsume?70:78)||b.spirituality<(readyToConsume?30:42)||b.injuries.length)return home({type:'REST'});
-  if(f.economy.livingArrears>0)return home({type:'WORK'});
-  if(b.sequence===0)return at('DE0-OLD-WHARF',{type:'START_EPILOGUE'});
   if(deathServiceVerifiedReceipts(root.services!).length<2){
     const required=deathServiceRequiredResources(root.services!,f.location);
     if(required&&b.actions<required.actions)return home(b.cash<24&&!f.economy.emergencyWorkUsed?{type:'WORK'}:{type:'NEXT_WEEK'});

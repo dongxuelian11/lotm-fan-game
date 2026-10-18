@@ -12,6 +12,7 @@ import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { projectPlayerText } from '../../src/shared/player-text.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
+import { assertEmptyDeathState, assertEmptyDeathPublic } from './empty-death-capture.js';
 
 /** Read-only independent capture contract. Never imports or runs the producer,
  * a controlled-success helper, compiled runtime, or the SQLite verifier. */
@@ -36,7 +37,7 @@ export const INITIAL_POLICY = {
 };
 export interface FilePin { bytes: number; sha256: string }
 /** Immutable capture input format, distinct from the current runtime state. */
-export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun'> & {
+export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death'> & {
   schemaVersion: 209; contentVersion: 'moon-v209';
 };
 export interface Member extends FilePin { file: string; originalBytes?: number; originalSha256?: string }
@@ -147,7 +148,8 @@ export function historicalMoonState(state: SliceState): HistoricalMoonState {
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
   assert.deepEqual(createTyrantState(), EMPTY_TYRANT); assert.deepEqual(createSunState(), EMPTY_SUN);
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
-  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, ...originalFields } = state;
+  assertEmptyDeathState(state);
+  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 209, contentVersion: 'moon-v209' };
 }
 /** Strict current ingress must preserve every original 209 field and may add
@@ -156,22 +158,23 @@ export function migrateCapturedMoonState(raw: HistoricalMoonState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [209, 'moon-v209']);
   assert.equal(Object.hasOwn(raw, 'darkness'), false);
   assert.equal(Object.hasOwn(raw, 'whiteTower'), false);
-  assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false);
+  assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assertValidSliceState(current);
-  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower', 'tyrant', 'sun']);
+  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower', 'tyrant', 'sun', 'death']);
   same(historicalMoonState(current), raw, 'Migration changed the complete captured Moon state');
   assert.equal(hash(raw), before, 'Migration changed the raw Moon input');
   return current;
 }
 /** Verify all four entire new inactive public roots before removing just those roots
  * from a detached historical view. Unknown fields are never filtered out. */
-export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower' | 'tyrant' | 'sun'> {
+export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death'> {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(state.darkness, EMPTY_DARKNESS);
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
   assert.deepEqual(createTyrantState(), EMPTY_TYRANT); assert.deepEqual(createSunState(), EMPTY_SUN);
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
+  assertEmptyDeathState(state);
   assert.equal(state.progression.pathwayId, 'moon');
   assert.equal(Object.hasOwn(projection, 'darkness'), true);
   const root = projection.darkness;
@@ -238,7 +241,8 @@ export function historicalMoonPublic(projection: SliceProjection, state: SliceSt
       reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
       preferredAction: true }],
   });
-  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, ...originalFields } = projection;
+  assertEmptyDeathPublic(projection, state);
+  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, ...originalFields } = projection;
   return originalFields;
 }
 function relativeFile(file: string): string {

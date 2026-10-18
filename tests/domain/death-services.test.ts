@@ -110,4 +110,55 @@ describe('Death finite original services', () => {
     expect(result.effect).toMatchObject({ cashCost: 0, actions: 0, seconds: 23 });
     expect(r.state.wharf.playerPosition).toBe(12); expect(r.state.wharf.workers.every(p => p.position === 0)).toBe(true);
   });
+  it('derives unpaid resource needs from the current unfinished job without changing its state', () => {
+    const r = scene(), before = structuredClone(r.state);
+    expect(deathServiceRequiredResources(r.state, 'DE0-RECEPTION')).toEqual({ serviceId: 'residue-sealing', location: 'DE0-RESIDUE-ROOM', cash: 4, actions: 1 });
+    expect(deathServiceRequiredResources(r.state, 'DE0-OLD-WHARF')).toEqual({ serviceId: 'old-wharf-exit', location: 'DE0-OLD-WHARF', cash: 4, actions: 1 });
+    expect(r.state).toEqual(before);
+    r.run(['ASK_PERMISSION', 'SURVEY', 'OBSERVE_PROPAGATION', 'BUY_SUPPLIES'], 'residue-sealing');
+    expect(deathServiceRequiredResources(r.state, 'DE0-RECEPTION')).toMatchObject({ serviceId: 'residue-sealing', cash: 0, actions: 1 });
+    r.step({ type: 'POSITION_SCREEN', serviceId: 'residue-sealing' });
+    expect(deathServiceRequiredResources(r.state, r.h.location)).toMatchObject({ cash: 0, actions: 1 });
+  });
+  it('requires no fresh AP or purchase after the residue principal work has actually finished', () => {
+    const r = scene();
+    r.run(['ASK_PERMISSION', 'SURVEY', 'OBSERVE_PROPAGATION', 'BUY_SUPPLIES', 'POSITION_SCREEN', 'CLOSE_LID', 'SEAL_CONTAINER'], 'residue-sealing');
+    r.h.cash = 0; r.h.actions = 0;
+    expect(deathServiceRequiredResources(r.state, r.h.location)).toMatchObject({ serviceId: 'residue-sealing', cash: 0, actions: 0 });
+    expect(nextDeathServiceCommand(r.state, r.h)).toEqual({ type: 'RETURN_CONTAINER', serviceId: 'residue-sealing' });
+    r.step({ type: 'RETURN_CONTAINER', serviceId: 'residue-sealing' });
+    expect(deathServiceRequiredResources(r.state, r.h.location)).toMatchObject({ cash: 0, actions: 0 });
+    r.step({ type: 'VERIFY_SERVICE', serviceId: 'residue-sealing' });
+    expect(r.h).toMatchObject({ cash: 0, actions: 0 });
+    expect(deathServiceRequiredResources(r.state, r.h.location)).toMatchObject({ serviceId: 'old-wharf-exit', cash: 4, actions: 1 });
+  });
+  it('keeps the second escort as real work but allows final review and complete closure with no AP or cash', () => {
+    const r = scene(); r.residue(); r.h.location = 'DE0-OLD-WHARF';
+    r.run(['ASK_PERMISSION', 'SURVEY', 'BUY_SUPPLIES', 'LAY_ROPE', 'SUPPORT_BRIDGE'], 'old-wharf-exit');
+    r.step({ type: 'ESCORT_WORKER', serviceId: 'old-wharf-exit', workerId: 'DE0-WHARF-WORKER-1' });
+    expect(deathServiceRequiredResources(r.state, 'DE0-RECEPTION')).toMatchObject({ serviceId: 'old-wharf-exit', cash: 0, actions: 1 });
+    r.step({ type: 'ESCORT_WORKER', serviceId: 'old-wharf-exit', workerId: 'DE0-WHARF-WORKER-2' });
+    r.h.cash = 0; r.h.actions = 0;
+    expect(deathServiceRequiredResources(r.state, r.h.location)).toMatchObject({ serviceId: 'old-wharf-exit', cash: 0, actions: 0 });
+    expect(r.state.wharf.playerPosition).toBe(12);
+    expect(r.state.wharf.workers.map(p => [p.position, p.consent])).toEqual([[12, null], [12, null]]);
+    const bodies = structuredClone(r.state.wharf.workers.map(p => ({ ...p, consent: null })));
+    const bridge = structuredClone(r.state.wharf.bridge), rope = structuredClone(r.state.wharf.rope);
+    // Arrival consumes the escort permissions. Review is already legal, but
+    // the finite recommendation first offers a fresh face-to-face answer at
+    // this same safe shore. Neither step buys supplies or repeats the crossing.
+    expect(deathServicesBlock(r.state, { type: 'VERIFY_SERVICE', serviceId: 'old-wharf-exit' }, r.h)).toBeNull();
+    expect(nextDeathServiceCommand(r.state, r.h)).toEqual({ type: 'ASK_PERMISSION', serviceId: 'old-wharf-exit' });
+    const reply = r.step({ type: 'ASK_PERMISSION', serviceId: 'old-wharf-exit' });
+    expect(reply.effect).toMatchObject({ cashCost: 0, actions: 0 }); expect(reply.movements).toEqual([]);
+    expect(nextDeathServiceCommand(r.state, r.h)).toEqual({ type: 'VERIFY_SERVICE', serviceId: 'old-wharf-exit' });
+    const review = r.step({ type: 'VERIFY_SERVICE', serviceId: 'old-wharf-exit' });
+    expect(review.effect).toMatchObject({ cashCost: 0, actions: 0 }); expect(review.movements).toEqual([]);
+    expect(r.state.wharf.workers.map(p => ({ ...p, consent: null }))).toEqual(bodies);
+    expect(r.state.wharf.bridge).toEqual(bridge); expect(r.state.wharf.rope).toEqual(rope);
+    expect(deathServiceRequiredResources(r.state, r.h.location)).toBeNull();
+    expect(deathServiceRequiredResources(r.state, 'DE0-RECEPTION')).toBeNull();
+    expect(nextDeathServiceCommand(r.state, r.h)).toBeNull();
+    expect(r.h).toMatchObject({ cash: 0, actions: 0 });
+  });
 });

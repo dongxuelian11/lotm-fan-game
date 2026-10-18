@@ -50,12 +50,13 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
     expect(counts).toEqual(data.rows.map(row => row.commandCount)); expect(new Set(counts).size).toBe(137);
   });
 
-  it('admits only the exact empty Tyrant and Sun additions while retaining every raw211 private and public field', () => {
+  it('admits only the exact empty Tyrant, Sun and Death additions while retaining every raw211 private and public field', () => {
     const current = data.initial, raw = actionAt(667).beforeLast, originalHash = hash(raw), currentHash = hash(current);
     same(historicalWhiteTowerState(current), raw);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'tyrant', 'sun'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'tyrant', 'sun', 'death'].sort());
     expect(current.sun).toStrictEqual(createSunState());
-    expect(Object.hasOwn(raw, 'sun')).toBe(false);
+    expect(Object.hasOwn(raw, 'sun')).toBe(false); expect(Object.hasOwn(raw, 'death')).toBe(false);
+    expect(() => migrateCapturedWhiteTowerState({ ...raw, death: current.death } as HistoricalWhiteTowerState)).toThrow();
     expect(Object.hasOwn(raw, 'tyrant')).toBe(false);
     expect(() => migrateCapturedWhiteTowerState({ ...raw, tyrant: current.tyrant } as HistoricalWhiteTowerState)).toThrow();
     expect(() => migrateCapturedWhiteTowerState({ ...raw, unexpectedRoot: null } as HistoricalWhiteTowerState)).toThrow();
@@ -65,10 +66,20 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
       { ...current.tyrant, promotionStability: { preparations: [], unexpectedField: undefined } }]) {
       expect(() => historicalWhiteTowerState({ ...current, tyrant } as SliceState)).toThrow();
     }
+    const { death: _missingDeath, ...missingDeath } = current;
+    expect(() => historicalWhiteTowerState(missingDeath as SliceState)).toThrow();
+    for (const death of [null, { ...current.death, guidanceKnown: true },
+      { ...current.death, unexpectedField: undefined }])
+      expect(() => historicalWhiteTowerState({ ...current, death } as SliceState)).toThrow();
     expect(hash(historicalWhiteTowerState({ ...current, unexpectedRoot: null } as SliceState))).not.toBe(originalHash);
     expect(hash(historicalWhiteTowerState({ ...current, cash: current.cash + 1 }))).not.toBe(originalHash);
     const publicValue = projectSliceState(current), publicHash = hash(publicValue);
     expect(hash(historicalWhiteTowerPublic(publicValue, current))).toBe(PINS.initialGlobalPublicSha256);
+    const { death: _missingDeathPublic, ...missingDeathPublic } = publicValue;
+    expect(() => historicalWhiteTowerPublic(missingDeathPublic as typeof publicValue, current)).toThrow();
+    for (const death of [null, { ...publicValue.death, promoted: true },
+      { ...publicValue.death, unexpectedField: undefined }])
+      expect(() => historicalWhiteTowerPublic({ ...publicValue, death } as typeof publicValue, current)).toThrow();
     expect(() => historicalWhiteTowerPublic({ ...publicValue, tyrant: null } as unknown as typeof publicValue, current)).toThrow();
     const { tyrant: _missingPublic, ...missingPublic } = publicValue;
     expect(() => historicalWhiteTowerPublic(missingPublic as typeof publicValue, current)).toThrow();

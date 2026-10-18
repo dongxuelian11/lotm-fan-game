@@ -7,6 +7,8 @@ import { assertValidSliceState, projectSliceState } from '../../src/domain/slice
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
+import { createSunState } from '../../src/domain/sun/index.js';
+import { assertEmptyDeathState, assertEmptyDeathPublic } from './empty-death-capture.js';
 
 /** Read-only NEW215 evidence consumer. No producer imports, compiled runtime,
  * controlled-success fixture, random seam, alternate root or lost215 fallback. */
@@ -247,6 +249,44 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   return { checks: [...acquisition, ...life].filter(row => row.check).map(row => row.check), acquisition, life,
     finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
+const EMPTY_SUN: SliceState['sun'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
+export type HistoricalTyrantState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'sun' | 'death'> & {
+  schemaVersion: 212; contentVersion: 'tyrant-v212';
+};
+export type HistoricalTyrantPublic = Omit<SliceProjection, 'sun' | 'death'>;
+export function historicalTyrantState(state: SliceState): HistoricalTyrantState {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  assert.deepEqual(createSunState(), EMPTY_SUN); assert.deepEqual(state.sun, EMPTY_SUN);
+  assertEmptyDeathState(state);
+  const { sun: _emptySun, death: _emptyDeath, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
+}
+function assertPostTyrantPublic(projection: SliceProjection, state: SliceState): void {
+  assert.notEqual(state.progression.pathwayId, 'sun');
+  assert.equal(Object.hasOwn(projection, 'sun'), true);
+  assert.deepEqual(projection.sun, {
+    title: '序列0 太阳', guidanceKnown: false, promoted: false,
+    story: '玛拉与芦影、原采光廊和投降的西拉斯都留在原处，旧许可、伤势和耗料继续保留。街区接待处有洗衣房与邻楼后阶两件居民求助；须亲自问清情况、处理实际原物并完成交接，普通手段也能完成。',
+    nextStep: '完成两件居民服务与现场核验；核清本人已有的一份和另外两份原特性，实地确认同一太阳唯一性空位，再为同一本人的同一瓶付费准备。实际晋1满十二周才可服药。',
+    risk: '成功率按本人实际意志与本瓶付费准备计算，不重掷。失败留下真实重伤和污染并可能死亡。幸存者只能在原处封存同一残余，隔周付费回收，再用剩余有价载体重配；总共只有三件载体。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'sun:0:LEARN_GUIDANCE', label: '听取两件服务与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  assertEmptyDeathPublic(projection, state);
+}
+export function historicalTyrantPublic(projection: SliceProjection, state: SliceState): HistoricalTyrantPublic {
+  historicalTyrantState(state); assertPostTyrantPublic(projection, state);
+  const { sun: _emptySun, death: _emptyDeath, ...originalFields } = projection;
+  return originalFields;
+}
 /** Raw capture hashes always refer to212; current strict admission is a separate
  * fact. Future migrations may add fields, but may never rewrite the input. */
 export function migrateCapturedTyrantState(raw: SliceState): SliceState {
@@ -254,7 +294,9 @@ export function migrateCapturedTyrantState(raw: SliceState): SliceState {
   const before = hash(raw), current = migrateSliceState(raw);
   assert.deepEqual([current.schemaVersion, current.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assertValidSliceState(current); assert.equal(hash(raw), before);
-  if (CURRENT_IS_CAPTURE_FORMAT) same(current, raw, 'Current212 ingress changed complete captured state');
+  assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false);
+  exactKeys(current, [...Object.keys(raw), 'sun', 'death']);
+  same(historicalTyrantState(current), raw, 'Current ingress changed complete captured212 state');
   assert.equal(current.runId, raw.runId); same(current.random, raw.random); return current;
 }
 export function readAction(row: Row): Action {
@@ -303,7 +345,11 @@ export function expectedCurrentGlobal(action: Action, side: 'before' | 'after'):
   return expected;
 }
 export function assertCurrentGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
-  same(actual, expectedCurrentGlobal(action, side), `Only the exact supported717 public check may differ (${action.commandCount} ${side})`);
+  const state = side === 'before' ? action.beforeLast : action.final;
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
+  assertPostTyrantPublic(actual, state);
+  const { sun: _emptySun, death: _emptyDeath, ...historicalPublic } = actual;
+  same(historicalPublic, expectedCurrentGlobal(action, side), `Only the exact supported717 public check may differ (${action.commandCount} ${side})`);
   same(capturePublic(actual), side === 'before' ? action.publicBefore : action.public, 'The complete chapter capture remains unchanged');
 }
 function assertContinuation(cp: Checkpoint): void {
@@ -367,7 +413,8 @@ export function loadCapture(): LoadedCapture {
   same(initial, migrateCapturedTyrantState(migrated.final));
   const initialGlobal = projectSliceState(initial); assertGlobalPublic(initialGlobal, initial);
   assertGlobalPublic(migrated.globalPublic, migrated.final); same(capturePublic(migrated.globalPublic), migrated.public);
-  if (CURRENT_IS_CAPTURE_FORMAT) { same(initialGlobal, migrated.globalPublic); assert.equal(hash(initial), PINS.initialStateSha256); }
+  same(historicalTyrantPublic(initialGlobal, initial), migrated.globalPublic);
+  assert.equal(hash(historicalTyrantState(initial)), PINS.initialStateSha256);
   const wrapper = json<{ sha256: string; payload: Checkpoint }>('checkpoint.json.gz');
   assert.equal(wrapper.sha256, hash(wrapper.payload)); const cp = wrapper.payload;
   assert.equal(cp.format, 'NEW215_RESTORED193_LIVING701_DURABLE_PUBLIC_ACTION_BOUNDARY_V1'); assert.equal(cp.source, SOURCE); assert.equal(cp.sourceSha256, SOURCE_SHA);

@@ -67,7 +67,7 @@ describe('Death public panel', () => {
     expect(screen.getByRole('region', { name: '三份原特性与唯一性' }).textContent).toContain('隔周交接余4便士');
     const clinic = screen.getByRole('button', { name: '诊疗伤势' });
     expect((clinic as HTMLButtonElement).disabled).toBe(true);
-    expect(document.getElementById(clinic.getAttribute('aria-describedby')!.split(' ')[1])?.textContent).toContain('不会立即恢复健康');
+    expect(document.getElementById(clinic.getAttribute('aria-describedby')!.split(' ')[1]!)?.textContent).toContain('不会立即恢复健康');
   });
 
   it('retains every one of the 19 inherited masteries including all zeros and readonly history', async () => {
@@ -207,7 +207,7 @@ describe('Death public panel', () => {
   });
 
   it('locks every action for death or a parent blocker and keeps treatment distinct from healing', () => {
-    const current = value(); current.resources.health = 0; current.injuries[0].treated = true;
+    const current = value(); current.resources.health = 0; current.injuries[0]!.treated = true;
     const command = vi.fn(), close = vi.fn();
     const view = render(<DeathPanel value={current} busy={false} onCommand={command} onClose={close} />);
     expect(screen.getByRole('region', { name: '当前伤势' }).textContent).toContain('重伤 · 已处理');

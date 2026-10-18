@@ -62,8 +62,14 @@ describe('Death bounded same-compound recovery', () => {
   it('hard-locks true severe death and never extracts the embodied characteristic', () => {
     const r = failed(true), p = r.state.compounds[0]!;
     expect(r.h.status).toBe('DEAD'); expect(p.status).toBe('FAILED_LOST');
-    for (const command of [{ type: 'SEAL_REMAINS', compoundId: p.id }, { type: 'ASK_RECOVERY_PERMISSION', compoundId: p.id }, { type: 'RECOVER_SEALED', compoundId: p.id }] as DeathMaterialCommand[])
-      expect(r.block(command)).not.toBeNull();
+    const before = structuredClone(r.state);
+    for (const command of [{ type: 'SEAL_REMAINS', compoundId: p.id }, { type: 'ASK_RECOVERY_PERMISSION', compoundId: p.id }, { type: 'RECOVER_SEALED', compoundId: p.id }] as DeathMaterialCommand[]) {
+      const host = r.host(command);
+      expect(host.status).toBe('DEAD'); expect(host.recoveryPermission).toBeNull();
+      expect(r.block(command, host)).toContain('仍活着');
+      expect(() => r.step(command)).toThrow(/仍活着/);
+    }
+    expect(r.state).toEqual(before);
     expect(r.state.characteristics[2]).toMatchObject({ holder: 'EMBODIED', location: r.h.actorId, compoundId: null });
     expect(() => transportDeathMaterials(r.state, r.h.location, 'DE0-RECEPTION')).toThrow(/死亡/);
   });

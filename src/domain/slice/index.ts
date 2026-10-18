@@ -1006,7 +1006,9 @@ function applyMoonSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type
 }
 function applyDeathSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'DEATH'}>,head?:DeathOwnedEngine):{state:SliceState;head:DeathOwnedEngine|undefined}{
   requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
-  const next=clone(state);next.lastCheck=null;
+  // Validate the untouched prior receipt first; Death.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
   let nextHead:DeathOwnedEngine|undefined;
   try{
     if(head)nextHead=applyOwnedDeathCommand(next,payload.command,seerContext(next),head);

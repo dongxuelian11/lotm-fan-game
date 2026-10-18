@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { createSunState } from '../../src/domain/sun/index.js';
+import { createDeathState } from '../../src/domain/death/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedSunSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -17,22 +18,32 @@ const same=(a:unknown,b:unknown)=>expect(stableStringify(a)).toBe(stableStringif
 const fresh=()=>createSliceRun('sun-schema',sliceDefaultCreationSelection,'sun-schema');
 const raw=()=>JSON.parse(gunzipSync(readFileSync(CAPTURE)).toString('utf8')).beforeLast as Record<string,unknown>;
 describe('Sun exact current schema and command boundary',()=>{
+  it('rejects a missing, nonempty or extended current Death root', () => {
+    const state = fresh(), { death: _missingDeath, ...missing } = state;
+    for (const value of [missing, { ...state, death: null },
+      { ...state, death: { ...state.death, guidanceKnown: true } },
+      { ...state, death: { ...state.death, unexpectedField: true } }]) {
+      const before = stableStringify(value);
+      expect(() => migrateSliceState(value)).toThrow(); expect(stableStringify(value)).toBe(before);
+    }
+  });
+
  it('creates a detached strict empty root and preserves current version',()=>{
   const s=fresh(),before=stableStringify(s),copy=migrateSliceState(s);
   expect([s.schemaVersion,s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
-  same(s.sun,createSunState());same(copy,s);expect(copy.sun).not.toBe(s.sun);assertValidSliceState(copy);expect(stableStringify(s)).toBe(before);
+  same(s.sun,createSunState());same(s.death,createDeathState());same(copy,s);expect(copy.sun).not.toBe(s.sun);expect(copy.death).not.toBe(s.death);assertValidSliceState(copy);expect(stableStringify(s)).toBe(before);
  });
- it.each(['beforeLast','final'] as const)('migrates actual captured212 %s with only the named empty Sun root',key=>{
+ it.each(['beforeLast','final'] as const)('migrates actual captured212 %s with only the named empty Sun and Death roots',key=>{
   const bytes=readFileSync(CAPTURE),s=JSON.parse(gunzipSync(bytes).toString('utf8'))[key] as Record<string,unknown>;
   expect(hash(bytes)).toBe(SHA);expect([s.schemaVersion,s.contentVersion]).toEqual([212,'tyrant-v212']);
   const before=stableStringify(s),copy=migrateSliceState(s);
-  expect(Object.keys(copy).filter(k=>!Object.hasOwn(s,k))).toEqual(['sun']);same(copy.sun,createSunState());
+  expect(Object.keys(copy).filter(k=>!Object.hasOwn(s,k))).toEqual(['sun', 'death']);same(copy.sun,createSunState());same(copy.death,createDeathState());
   for(const [k,v]of Object.entries(s))if(!['schemaVersion','contentVersion'].includes(k))same(copy[k as keyof SliceState],v);
   same(migrateSliceState(copy),copy);expect(stableStringify(s)).toBe(before);expect(readFileSync(CAPTURE).equals(bytes)).toBe(true);
  },60_000);
  it('rejects future root in real212 and undeclared current fields without mutation',()=>{
   const s=fresh(),missing=structuredClone(s) as unknown as Record<string,unknown>;delete missing.sun;
-  for(const v of [{...raw(),sun:createSunState()},{...raw(),sun:null},missing,{...s,schemaVersion:214},{...s,contentVersion:'tyrant-v212'},
+  for(const v of [{...raw(),sun:createSunState()},{...raw(),sun:null},{...raw(),death:createDeathState()},{...raw(),death:null},missing,{...s,schemaVersion:CURRENT_SCHEMA_VERSION+1},{...s,contentVersion:'tyrant-v212'},
    {...s,sun:{...s.sun,skipValidation:true}},{...s,unrecognizedAuthority:{}}]){
    const before=stableStringify(v);expect(()=>migrateSliceState(v)).toThrow();expect(stableStringify(v)).toBe(before);
   }
