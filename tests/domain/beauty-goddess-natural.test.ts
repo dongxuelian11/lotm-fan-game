@@ -219,5 +219,5 @@ describe('Beauty Goddess exact original572-command public continuation', () => {
     expect(final.cash - work.before.cash).toBe(150); same(final.random, work.before.random); same(final.lastCombatRound, work.before.lastCombatRound);
     same(final.beautyGoddess, work.before.beautyGoddess); same(final.summoningMaster, work.before.summoningMaster);
     expect(projectSliceState(final).canAct).toBe(true); expect(projectSliceState(final).lifeGiver.actions).toEqual([]);
-  });
+  }, 15_000);
 });

@@ -41,7 +41,7 @@ function beforeCommand(predicate: (command: SliceIntent, state: SliceState) => b
 }
 
 describe('Reader actual documents, bounded conclusions and original first-case route', () => {
-  it('replays every original creation command and all milestones without replacing the seed or outcome', () => {
+  it('replays every original creation command and all milestones without replacing the seed or outcome', { tags: ['historical-replay'] }, () => {
     const c = capture();
     let s = createSliceRun(c.final.runId, c.creation, c.seed);
     const milestones = [c.promoted, c.practiced, c.combatStart, c.terminal, c.final];

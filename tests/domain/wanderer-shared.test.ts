@@ -141,7 +141,7 @@ describe('Wanderer explicitly directed S4 prefix followed by actual public conti
     expect(state.wanderer.preparedWeek).toBeNull(); expect(state.wanderer.preparations).toHaveLength(3);
   });
 
-  it('replays the separately declared offworld success from the real predeparture boundary with only its explicit RNG change', () => {
+  it('replays the separately declared offworld success from the real predeparture boundary with only its explicit RNG change', { tags: ['historical-replay'] }, () => {
     const data = JSON.parse(readFileSync('tests/fixtures/wanderer-v01500/offworld-directed.json', 'utf8')) as {
       provenance: { kind: string; originalRandom: SliceState['random']; directedRandom: SliceState['random'] };
       initial: SliceState; commands: SliceIntent[]; final: SliceState;

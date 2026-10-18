@@ -41,7 +41,7 @@ function beforeCommand(predicate: (command: SliceIntent) => boolean): SliceState
 }
 
 describe('Midnight Poet actual public acquisition, poetry and growth route', () => {
-  it('replays the original creation and seed through every recorded command and milestone', () => {
+  it('replays the original creation and seed through every recorded command and milestone', { tags: ['historical-replay'] }, () => {
     const c = capture();
     let s = createSliceRun(c.final.runId, c.creation, c.seed);
     const milestones = [c.promoted, c.practiced, c.combatStart, c.terminal, c.final];

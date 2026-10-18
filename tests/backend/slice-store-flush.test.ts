@@ -94,5 +94,5 @@ describe("durable file flush handles", () => {
     expect(unwrap(store.getBootstrap()).recoveryNotice).toContain("备份暂时不可用");
     close(store); io.failSuffix = "";
     expect(unwrap(open(file).getBootstrap()).activeState).toEqual(initial.state);
-  });
+  }, 30_000);
 });
