@@ -13,8 +13,10 @@ import { ERROR_ASCENT_ABILITY_IDS } from '../../src/domain/error-ascent/types.js
 import { ERROR_ASCENT_HOME } from '../../src/domain/error-ascent/content.js';
 import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import type { SliceResult } from '../../src/shared/slice-contracts.js';
+import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import {
-  ERROR219_FINAL_PRIVATE_SHA, ERROR219_FINAL_PUBLIC_SHA, errorNaturalAnchor, errorNaturalHash,
+  ERROR219_FINAL_PRIVATE_SHA, ERROR219_FINAL_PUBLIC_SHA, currentErrorNaturalAnchor, errorNaturalHash,
+  historicalErrorNaturalState, historicalErrorNaturalPublic,
   readErrorNaturalRows, readErrorNaturalSnapshot, readErrorNaturalSource, type ErrorNaturalActionRow,
 } from '../helpers/error-natural-capture.js';
 
@@ -28,7 +30,9 @@ describe('Error219 completed natural route', () => {
     const source = readErrorNaturalSource(), initial = readErrorNaturalSnapshot('initial');
     expect(source.commands).toHaveLength(656);
     expect(errorNaturalHash(source.final)).toBe('abfce49e9f21e1599f4b9abb1c2e34e15afeb8a2fbe177e2926b3ac4f2d49191');
-    expect(migrateSliceState(structuredClone(source.final))).toEqual(initial.final);
+    const initialState = migrateSliceState(structuredClone(initial.final));
+    expect(migrateSliceState(structuredClone(source.final))).toEqual(initialState);
+    expect(historicalErrorNaturalState(initialState, Object.keys(initial.final))).toEqual(initial.final);
     const rows = readErrorNaturalRows();
     expect(rows).toHaveLength(730);
     let previous: string | null = null;
@@ -45,8 +49,32 @@ describe('Error219 completed natural route', () => {
       previous = rowSha256;
     }
 
-    let state = initial.final, view = projectSliceState(state), anchor = errorNaturalAnchor(state, view);
-    expect(view).toEqual(initial.public);
+    let state = initialState, view = projectSliceState(state), anchor = currentErrorNaturalAnchor(state, view, initial);
+    expect(historicalErrorNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
+    expect(() => migrateSliceState({ ...initial.final, twilightGiant: state.twilightGiant })).toThrow();
+    const missingRoot = { ...state }; Reflect.deleteProperty(missingRoot, 'twilightGiant');
+    expect(() => currentErrorNaturalAnchor(missingRoot, view, initial)).toThrow();
+    for (const twilightGiant of [null, { ...state.twilightGiant, guidanceKnown: true },
+      { ...state.twilightGiant, unexpected: undefined },
+      { ...state.twilightGiant, promotionStability: { preparations: [], unexpected: undefined } }])
+      expect(() => currentErrorNaturalAnchor({ ...state, twilightGiant } as SliceState, view, initial)).toThrow();
+    const missingPublic = { ...view }; Reflect.deleteProperty(missingPublic, 'twilightGiant');
+    expect(() => currentErrorNaturalAnchor(state, missingPublic, initial)).toThrow();
+    for (const twilightGiant of [null, { ...view.twilightGiant, promoted: true },
+      { ...view.twilightGiant, unexpected: undefined },
+      { ...view.twilightGiant, actions: [{ ...view.twilightGiant.actions[0]!, enabled: true }] },
+      { ...view.twilightGiant, resources: { ...view.twilightGiant.resources, cash: 'forged' } }])
+      expect(() => currentErrorNaturalAnchor(state, { ...view, twilightGiant } as SliceProjection, initial)).toThrow();
+    for (const unexpectedRoot of [null, undefined]) {
+      expect(() => currentErrorNaturalAnchor({ ...state, unexpectedRoot } as SliceState, view, initial)).toThrow();
+      expect(() => currentErrorNaturalAnchor(state, { ...view, unexpectedRoot } as SliceProjection, initial)).toThrow();
+    }
+    expect(errorNaturalHash(historicalErrorNaturalState({ ...state, cash: state.cash + 1 }, Object.keys(initial.final))))
+      .not.toBe(initial.anchor.privateStateSha256);
+    expect(errorNaturalHash(historicalErrorNaturalState({ ...state, random: { ...state.random, cursor: state.random.cursor + 1 } }, Object.keys(initial.final))))
+      .not.toBe(initial.anchor.privateStateSha256);
+    expect(errorNaturalHash(historicalErrorNaturalPublic({ ...view, cash: view.cash + 1 }, state, Object.keys(initial.public))))
+      .not.toBe(initial.anchor.publicStateSha256);
     let session: ErrorAscentRuntimeSession | undefined;
     const actions = rows.slice(656) as ErrorNaturalActionRow[];
     for (const [index, row] of actions.entries()) {
@@ -74,14 +102,14 @@ describe('Error219 completed natural route', () => {
           notes: last.notes, beforeDigest: last.beforeDigest, afterDigest: last.afterDigest });
       }
       view = session.project();
-      anchor = errorNaturalAnchor(state, view);
+      anchor = currentErrorNaturalAnchor(state, view, initial);
       expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
       if (row.commandCount === 723) expect(state.lastCheck).toMatchObject({ chance: 68, roll: 8, tier: 'SUCCESS' });
       if (row.commandCount === 727) expect(state.lastCheck).toMatchObject({ chance: 72, roll: 99, tier: 'GREAT_FAILURE' });
     }
     const terminal = readErrorNaturalSnapshot('terminal');
-    expect(state).toEqual(terminal.final);
-    expect(view).toEqual(terminal.public);
+    expect(historicalErrorNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+    expect(historicalErrorNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
     expect(state).toMatchObject({ revision: 731, status: 'ACTIVE', week: 165, health: 86, mind: 78,
       spirituality: 64, cash: 127, actionsRemaining: 1, progression: { pathwayId: 'error', sequence: 0 },
       random: { seed: source.final.random.seed, cursor: 399 }, errorAscent: {
@@ -93,10 +121,17 @@ describe('Error219 completed natural route', () => {
     for (const id of ERROR_ASCENT_ABILITY_IDS) expect(state.progression.mastery[id]).toBe(0);
     expect(state.errorAscent.journal.flatMap(entry => entry.randomReceipts)).toHaveLength(2);
     expect(errorNaturalHash(readErrorNaturalSource().final)).toBe(errorNaturalHash(source.final));
+    expect(errorNaturalHash(initial.final)).toBe(initial.anchor.privateStateSha256);
+    expect(errorNaturalHash(initial.public)).toBe(initial.anchor.publicStateSha256);
+    expect(errorNaturalHash(terminal.final)).toBe(ERROR219_FINAL_PRIVATE_SHA);
+    expect(errorNaturalHash(terminal.public)).toBe(ERROR219_FINAL_PUBLIC_SHA);
   }, 180_000);
 
   it('imports actual730 through strict SQLite admission and cold reopens one equal private/public terminal', () => {
-    const terminal = readErrorNaturalSnapshot('terminal'), state = terminal.final;
+    const terminal = readErrorNaturalSnapshot('terminal'), state = migrateSliceState(terminal.final);
+    const publicState = projectSliceState(state);
+    expect(historicalErrorNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+    expect(historicalErrorNaturalPublic(publicState, state, Object.keys(terminal.public))).toEqual(terminal.public);
     const directory = mkdtempSync(join(tmpdir(), 'lotm-error219-natural-')), file = join(directory, 'save.sqlite');
     const updatedAt = '2026-10-18T22:00:00.000Z';
     let store: SqliteSliceStore | undefined;
@@ -118,16 +153,18 @@ describe('Error219 completed natural route', () => {
       expect(store.repository.ownedHead(state.runId)?.revision).toBe(731);
       const imported = readPrivate();
       expect(imported.value).toEqual({ state, updatedAt });
-      expect(errorNaturalHash(imported.value.state)).toBe(ERROR219_FINAL_PRIVATE_SHA);
+      expect(errorNaturalHash(historicalErrorNaturalState(imported.value.state, Object.keys(terminal.final)))).toBe(ERROR219_FINAL_PRIVATE_SHA);
       store.close(); store = undefined;
 
       store = new SqliteSliceStore(file, { now: () => updatedAt });
       const loaded = unwrap(store.loadRun(state.runId));
-      expect(loaded).toEqual(terminal.public);
-      expect(errorNaturalHash(loaded)).toBe(ERROR219_FINAL_PUBLIC_SHA);
-      expect(unwrap(store.getBootstrap()).activeState).toEqual(terminal.public);
+      expect(loaded).toEqual(publicState);
+      expect(errorNaturalHash(historicalErrorNaturalPublic(loaded, state, Object.keys(terminal.public)))).toBe(ERROR219_FINAL_PUBLIC_SHA);
+      expect(unwrap(store.getBootstrap()).activeState).toEqual(publicState);
       expect(store.repository.ownedHead(state.runId)?.revision).toBe(731);
       expect(readPrivate()).toEqual(imported);
+      expect(errorNaturalHash(terminal.final)).toBe(ERROR219_FINAL_PRIVATE_SHA);
+      expect(errorNaturalHash(terminal.public)).toBe(ERROR219_FINAL_PUBLIC_SHA);
     } finally { store?.close(); rmSync(directory, { recursive: true, force: true }); }
   }, 60_000);
 });

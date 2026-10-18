@@ -41,7 +41,8 @@ function getOwned(h: TwilightGiantOwnedEngine): TwilightGiantState { const r = o
 function retain(root: TwilightGiantState): TwilightGiantOwnedEngine { const h = Object.freeze({}) as TwilightGiantOwnedEngine; owned.set(h, root); return h; }
 function start(source: TwilightGiantSource): TwilightGiantState {
  const root = createTwilightGiantState(); root.guidanceKnown = true; root.source = clone(source);
- root.frame = { budget: clone(source.budget), finance: clone(source.finance), random: { ...source.random }, location: TWILIGHT_GIANT_HOME, nowSecond: Math.max(36000,source.originals.registry.site.clockSeconds), weekAnchor: 0 };
+ const nowSecond=Math.max(36000,source.originals.registry.site.clockSeconds);
+ root.frame = { budget: clone(source.budget), finance: clone(source.finance), random: { ...source.random }, location: TWILIGHT_GIANT_HOME, nowSecond, weekAnchor: Math.floor(nowSecond/604800)*604800 };
  pay(root.frame.budget, TWILIGHT_GIANT_GUIDANCE);
  root.works = createTwilightWorksFromOrigin({actorId:source.actorId,sourceDigest:source.historyDigest,week:source.budget.week,second:root.frame.nowSecond,revision:source.revision,site:clone(source.originals.registry.site)});
  root.materials = createTwilightGiantMaterials({ ...clone(source.acquisition), actorId: source.actorId,

@@ -5337,6 +5337,7 @@ export function SliceApp() {
         <button className="slice-button quiet" disabled={busy || pending.current !== null} onClick={() => {setDrawer(null);setScreen("TITLE");}}>返回主菜单</button></header>
       <main className="slice-main"><p className="slice-notice">{browserNotice}</p>
         {recoveryNotice}
+        {twilightGiantPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("TWILIGHT_GIANT")}>查看黄昏巨人晋升准备</button>}
         <p className="slice-muted">健康{state.health} / 精神{state.mind} / 灵性{state.spirituality} · 本周行动{state.actionsRemaining}</p>
         {error && <ErrorNotice error={error} onRetry={retryLast} busy={busy}/>}
         {isEnding ? <Ending state={state} onInspect={() => setInspect(true)} onTitle={title} onContinue={() => command({type:"CONTINUE_LIFE"})} busy={busy} error={error} onRetry={retryLast}/> :
@@ -5358,7 +5359,6 @@ export function SliceApp() {
         <TimeWormPanel value={state.timeWorm} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
           onCommand={c => command({type:"TIME_WORM",command:c})}
           {...(!state.timeWorm.insideCase ? {onClose:() => setDrawer(null)} : {})}/>}
-        {twilightGiantPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("TWILIGHT_GIANT")}>查看黄昏巨人晋升准备</button>}
         {errorAscentPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("ERROR_ASCENT")}>查看错误晋升准备</button>}
       </main>
     </div>{eventDialog}{combat && <Combat state={state} reveal={roundReveal} onAcknowledge={() => setRoundReveal(null)} onCommand={command} busy={busy} error={error} onRetry={retryLast} fast={fast} onFastChange={setFast}/>}</Fragment>;
@@ -6869,7 +6869,7 @@ export function SliceApp() {
                 {state.barrenMatriarch?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("BARREN_MATRIARCH")}>荒芜主母与当前动作</button>}
                 {state.balancer?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("BALANCER")}>平衡者与当前动作</button>}
                 {state.entropyDuke?.discovered && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null} onClick={() => setDrawer("ENTROPY_DUKE")}>熵之公爵与当前动作</button>}
-                {twilightGiantPageAvailable(state) && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("TWILIGHT_GIANT")}>黄昏巨人晋升与当前仪式</button>}
+                {twilightGiantPageAvailable(state) && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("TWILIGHT_GIANT")}>黄昏巨人晋升与桥面通行</button>}
                 {errorAscentPageAvailable(state) && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("ERROR_ASCENT")}>错误晋升与当前仪式</button>}
                 {doorPageAvailable(state) && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DOOR")}>门晋升与居民事务</button>}
                 {deathPageAvailable(state) && !state.ending && <button className="slice-button quiet" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("DEATH")}>死神晋升与居民事务</button>}

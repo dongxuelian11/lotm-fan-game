@@ -267,9 +267,10 @@ function applyAcquisitionMutation(s: SliceState, command: DivineHandAcquisitionC
     }
     case 'REQUEST_RECOVERY_V1': {
       const source = recoverySource(state, command.bottleId)!;
+      const supersededLegacyRequest = state.resupply.requestedWeek !== null && !state.resupply.recovery;
       s.actionsRemaining--; s.cash -= DIVINE_HAND_RECOVERY_PRICES.recovery; state.resupply.requestedWeek = s.week;
       state.resupply.recovery = { version: 1, sourceBottleId: command.bottleId, originalBottleId: source.originalBottleId, characteristicId: source.characteristicId, requestedWeek: s.week, sourceReceiptRevision: source.receipt.revision, siteId: DIVINE_HAND_RECOVERY_SITE_ID, custodian: 'TG220-DIVINE-HAND-SUPPLIER' as const };
-      ctx.note('调查失败原瓶遗留的同一份特性', `1行动、120便士，本人在原服药准备与支持交接处重新向交接处保管方询问本次许可，获准后当面按第${source.receipt.week}周同次真实失败回执逐一核对，实际检查原物状况、独立核验原封签，并新封存仍由交接处保管方保管的${source.characteristicId}，本次尚未交付。此项是现在发生的调查，不改写旧失败记载。隔一真实周再到同一原处当面复核、交接同一封存原件；原出口受阻或交接处保管方不在原处时不能回收。旧原瓶、失败、费用与伤势全部保留，不退款。`); return;
+      ctx.note('调查失败原瓶遗留的同一份特性', `1行动、120便士，本人在原服药准备与支持交接处重新向交接处保管方询问本次许可，获准后当面按第${source.receipt.week}周同次真实失败回执逐一核对，实际检查原物状况、独立核验原封签，并新封存仍由交接处保管方保管的${source.characteristicId}，本次尚未交付。此项是现在发生的调查，不改写旧失败记载。隔一真实周再到同一原处当面复核、交接同一封存原件；原出口受阻或交接处保管方不在原处时不能回收。旧原瓶、失败、费用与伤势全部保留，不退款。${supersededLegacyRequest ? '本次同原特性调查明确接替先前尚未交付的旧供货申请，原100便士与申请回执保留，不再接收独立新特性。' : ''}`); return;
     }
     case 'RECOVER_CHARACTERISTIC_V1': {
       const recovery = { ...state.resupply.recovery!, recoveredWeek: s.week }, id = recoveryBottleId(state);

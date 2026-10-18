@@ -109,6 +109,12 @@ function expectHistoryRetained(s: SliceState): void {
 describe('Divine Hand controlled future same-original recovery through legal actions', () => {
   it('pays 120/1 AP, waits an ordinary week, pays 30/1 AP and 900 for the same original; rejects early, duplicate and reused claims', () => {
     let s = ready(structuredClone(threeFailures), { ap: 2, cash: 1200 });
+    // Reuse the same genuine three-failure state before any recovery exists.
+    // Current play never issues an independent fourth original.
+    expect(s.divineHand.bottles).toHaveLength(3);
+    expect(s.divineHand.resupply).toEqual({ requestedWeek: null, deliveries: 0 });
+    for (const command of [{ type: 'REQUEST_SUPPLY' }, { type: 'RECEIVE_SUPPLY' },
+      { type: 'BUY_POTION', bottleId: originalId(4) }]) rejectDivineHand(s, command);
     const before = { cash: s.cash, ap: s.actionsRemaining, random: { ...s.random } };
     const failed = journal(s).find(e => e.command.type === 'CONSUME' && e.command.bottleId === originalId(1))!;
     s = ae(s, recovery('REQUEST_RECOVERY_V1'));

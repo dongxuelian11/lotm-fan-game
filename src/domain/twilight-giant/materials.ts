@@ -1,7 +1,7 @@
 import { stableStringify } from '../canonical.js';
 import { compareGameDates, isValidGameDate } from '../game-calendar.js';
 import { twilightGiantCharacteristicId } from './originals.js';
-import { validateGlorySiteState } from '../glory/life.js';
+import { validDivineHandCombatOriginals } from '../divine-hand/encounter.js';
 import { DIVINE_HAND_PRICES } from '../divine-hand/content.js';
 import { resolveTwilightGiantOriginals, isTwilightGiantOriginal } from './originals.js';
 import type { DivineHandOriginals } from '../divine-hand/types.js';
@@ -71,7 +71,7 @@ export function createTwilightGiantMaterials(origin: TwilightGiantMaterialsState
       originalBottleId: c.originalBottleId, latestBottleId: c.latestBottleId, consumeRevision: c.consumeRevision!,
       sceneId: 'BACKLUND_ORIGINAL_DIVINE_HAND_PREPARATION', location: policy.legacyLocation,
       custodianId: 'TG220-DIVINE-HAND-SUPPLIER', custodianPresent: true,
-      accessible: validateGlorySiteState(originals.site) && originals.site.playerLocation === 'OUTSIDE' &&
+      accessible: validDivineHandCombatOriginals(originals) && originals.site.playerLocation === 'OUTSIDE' &&
         originals.site.bridge.ordinaryPath === 'OPEN' && !originals.site.temper.active && !originals.site.guard.active,
       // Newly authored present custody at the preparation/support place. The old
       // failure receipt establishes identity only, never prior player possession.
@@ -105,7 +105,7 @@ export function twilightGiantMaterialConservationBlock(s: TwilightGiantMaterials
     const holder = holders[p.status as Exclude<TwilightGiantCompound['status'], 'RECOVERED'>];
     if ([...external(s), s.uniqueness].some(x => x.holder !== holder || x.compoundId !== p.id || x.location !== (holder === 'FUSED' ? s.origin.actorId : p.location))) return '同一成药中的两份外部特性或唯一性去向冲突。';
     // Failed but living consumption never extracts the already embodied S1 original.
-    const dead = s.settlements.find(x => x.compoundId === p.id)?.alive === false;
+    const dead = s.settlements.filter(x => x.compoundId === p.id).at(-1)?.alive === false;
     const expected = p.status === 'SUCCESS' ? 'FUSED' : dead ? 'EXPOSED' : 'EMBODIED';
     if (own.holder !== expected || own.location !== (dead ? p.location : s.origin.actorId) ||
         own.compoundId !== (dead || p.status === 'SUCCESS' ? p.id : null)) return '本人已融合原份被重复发放或移出实际身体。';
@@ -291,8 +291,8 @@ export function projectTwilightGiantMaterials(s: TwilightGiantMaterialsState) {
     UNLOCATED: '须实地查残余', LOCATED: '已定位尚未封存', LEGACY_SEALED: '原处封存待隔周交接', UNVERIFIED: '保管现状待核',
     CUSTODIAN: '唯一原件由非容纳保管人持有', COMPOUND: '同一成药中', EXPOSED: '原处残余尚未封存', SEALED: '原处封存待隔周回收', FUSED: '同一本人融合' };
   return { title: '三份原特性与同一黄昏巨人唯一性', lines: [
-    ...s.characteristics.map(c => `${c.originBottleId}：${labels[c.holder]}；${c.holder === 'UNLOCATED' ? '地点尚未核实' : c.location === s.origin.actorId ? '本人' : c.location}；当前载体劳动${c.inheritedLabourSteps + c.labour.length}/5。`),
-    `${TWILIGHT_GIANT_UNIQUENESS_ID}：${labels[s.uniqueness.holder]}。`,
+    ...s.characteristics.map(c => `${TWILIGHT_GIANT_ORIGINAL_IDS.indexOf(c.originBottleId)+1}号原特性：${labels[c.holder]}；${c.holder === 'UNLOCATED' ? '地点尚未核实' : c.location === s.origin.actorId ? '本人' : c.holder === 'SUPPLIER' ? '原供应方' : c.holder === 'PLAYER' ? '本人当前所在地' : c.holder === 'FUSED' ? '本人' : c.holder === 'COMPOUND' ? '同一成药所在地' : '原件实际保管处'}；当前载体劳动${c.inheritedLabourSteps + c.labour.length}/5。`),
+    `同一黄昏巨人唯一性：${labels[s.uniqueness.holder]}。`,
     `三件有限普通载体尚有${s.batches.filter(b => b.uses === 0).length}件未使用；已用药液不补回，重配前须隔周真实回收同一残余。`,
     '三份总量包括原体内一份，以上列当前去向为准。回收只改变同一残余的保管；再尝试须另付未用载体与调配费，不产生新原件。',
   ] };

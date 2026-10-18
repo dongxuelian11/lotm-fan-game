@@ -134,7 +134,7 @@ export function applyTwilightEpilogue(previous: TwilightEpilogueState, c: Twilig
     if (c.type === 'FIT_BRACE_IN_WINDOW') { s.giant.applied = true; masteryGains[GIANT] = 8; notes.push('本人持续接触并用4精力、8秒真实装好同一已购新支撑；巨人形只完成这次局部短时承重，掌握增8，原梁磨损1。'); }
     else notes.push('用普通长柄夹具花180秒、6精力与1行动装好同一已购新支撑；原梁磨损1，没有施术掌握收益。'); stop(s);
   }
-  else if (c.type === 'OBSERVE_AXLE') { s.sight = { targetId: s.cart.axle.id, version: s.cart.axle.version, observedEventId: h.eventId, clearUntilSecond: end + 30 }; notes.push(`在三米内亲眼查明同一${s.cart.axle.id}，当前尚需${s.cart.axle.remainingPush}推力、${s.cart.axle.strain}应变；看清窗口30秒。`); }
+  else if (c.type === 'OBSERVE_AXLE') { s.sight = { targetId: s.cart.axle.id, version: s.cart.axle.version, observedEventId: h.eventId, clearUntilSecond: end + 30 }; notes.push(`在三米内亲眼查明同一根原车卡轴，当前尚需${s.cart.axle.remainingPush}推力、${s.cart.axle.strain}应变；看清窗口30秒。`); }
   else if (c.type === 'APPLY_TWILIGHT') { const push = Math.min(4, s.cart.axle.remainingPush), strain = Math.min(3, s.cart.axle.strain); s.cart.axle.remainingPush -= push; s.cart.axle.strain -= strain; s.cart.axle.version++; s.twilight.applied = true; s.twilight.expiresSecond = null; s.sight = null; masteryGains[TWILIGHT] = 8;
     notes.push(`只对该根真实卡轴应用一次，尚需推力减少${push}、应变减少${strain}，掌握增8；车未移动、裂损未修，剩余阻力仍须普通推车承担。`); }
   else if (c.type === 'STEP_TO_CART') { s.position = 8; s.playerTravelMetres += 3; s.sight = null; s.twilight.expiresSecond = null; notes.push('本人实际走回原车，离开原梁即失去接触；变化站位中断旧观察和窗口，必要时重新观察。'); }
@@ -164,7 +164,8 @@ export function twilightEpilogueCurrentOriginals(s: TwilightEpilogueState) {
   original.site.playerLocation = s.position === -2 ? 'OUTSIDE' : s.position === 2 ? 'BENCH' : 'BRIDGE'; return { site: original.site, exactPlayerPosition: s.position, beam: clone(s.beam), cart: clone(s.cart), workers: clone(s.workers) };
 }
 export function projectTwilightEpilogue(s: TwilightEpilogueState) {
-  return { title: '原梁与卡轴：有限序列0后日谈', status: s.status, lines: [`本人${s.position}米、精力${s.playerEnergy}；原梁${s.beam.integrity}完整度。`, `原车${s.cart.position}米；卡轴${s.cart.axle.jammed ? '尚卡住' : '已解卡'}，尚需${s.cart.axle.remainingPush}推力、${s.cart.axle.strain}应变。`, ...s.workers.map(w => `${w.name}仍为同一成人，${w.position}米、精力${w.energy}、${w.consent}。`), `巨人形尝试${s.giant.attempts}/2，实际承重安装${s.giant.applied ? 1 : 0}次；黄昏尝试${s.twilight.attempts}/2，实际减负${s.twilight.applied ? 1 : 0}次。`, '两种技巧只作用于近处指定原件；失败实耗且可致死。普通支撑、手动推车与普通侧路退出始终是独立路径。'] };
+  const consent = { UNASKED:'尚未询问', GRANTED:'本次已同意', WITHDRAWN:'本人已撤回', CLOSED:'本次已结束' };
+  return { title: '原梁与卡轴：有限序列0后日谈', status: s.status, lines: [`本人${s.position}米、精力${s.playerEnergy}；原梁${s.beam.integrity}完整度。`, `原车${s.cart.position}米；卡轴${s.cart.axle.jammed ? '尚卡住' : '已解卡'}，尚需${s.cart.axle.remainingPush}推力、${s.cart.axle.strain}应变。`, ...s.workers.map(w => `${w.name}仍为同一成人，${w.position}米、精力${w.energy}、${consent[w.consent]}。`), `巨人形尝试${s.giant.attempts}/2，实际承重安装${s.giant.applied ? 1 : 0}次；黄昏尝试${s.twilight.attempts}/2，实际减负${s.twilight.applied ? 1 : 0}次。`, '两种技巧只作用于近处指定原件；失败实耗且可致死。普通支撑、手动推车与普通侧路退出始终是独立路径。'] };
 }
 export function getTwilightEpilogueActions(s: TwilightEpilogueState, h: TwilightWorksHost) {
   const commands: TwilightEpilogueCommand[] = [...SIMPLE.map(type => ({ type })), ...TWILIGHT_WORKER_IDS.flatMap(workerId => [{ type: 'ASK_WORKER' as const, workerId }, { type: 'WITHDRAW_CONSENT' as const, workerId }])];

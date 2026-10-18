@@ -1,5 +1,5 @@
 import { stableStringify } from '../canonical.js';
-import { validateGlorySiteState } from '../glory/life.js';
+import { validDivineHandCombatOriginals } from '../divine-hand/encounter.js';
 import type { SliceState } from '../slice/types.js';
 import { TWILIGHT_WORKER_IDS, TWILIGHT_SEGMENTS, emptyTwilightWorksEffect, type TwilightWorksState, type TwilightWorksOrigin, type TwilightWorksCommand, type TwilightWorksHost, type TwilightWorkerId, type TwilightSegment, type TwilightPassageReceipt } from './works-types.js';
 export * from './works-types.js';
@@ -21,7 +21,7 @@ export function validateTwilightWorksCommand(v: unknown): v is TwilightWorksComm
   return c.type === 'CROSS_SEGMENT' && keys === 'segment|type|workerId' && TWILIGHT_SEGMENTS.includes(c.segment as TwilightSegment) && TWILIGHT_WORKER_IDS.includes(c.workerId as TwilightWorkerId);
 }
 export function createTwilightWorksFromOrigin(o: TwilightWorksOrigin): TwilightWorksState {
-  if (!o.actorId || !/^[a-f0-9]{64}$/.test(o.sourceDigest) || !validateGlorySiteState(o.site) || o.site.playerLocation !== 'OUTSIDE' || o.site.bridge.ordinaryPath !== 'OPEN' || o.site.temper.active || o.site.guard.active || !Number.isSafeInteger(o.week) || o.week < 1 || !Number.isSafeInteger(o.second) || o.second < o.site.clockSeconds || !Number.isSafeInteger(o.revision) || o.revision < 0) throw Error('须从已核验、已离场的同一神明之手当前原现场接续。');
+  if (!o.actorId || !/^[a-f0-9]{64}$/.test(o.sourceDigest) || !validDivineHandCombatOriginals({site:o.site}) || o.site.playerLocation !== 'OUTSIDE' || o.site.bridge.ordinaryPath !== 'OPEN' || o.site.temper.active || o.site.guard.active || !Number.isSafeInteger(o.week) || o.week < 1 || !Number.isSafeInteger(o.second) || o.second < o.site.clockSeconds || !Number.isSafeInteger(o.revision) || o.revision < 0) throw Error('须从已核验、已离场的同一神明之手当前原现场接续。');
   return { id: 'TG220-BRIDGE-WORKS', location: 'GL2-REPAIR-ROOM', actorId: o.actorId, sourceDigest: o.sourceDigest, origin: clone(o), lastSecond: o.second,
     position: -2, playerEnergy: o.site.playerEnergy, playerTravelMetres: 0, investigationEventId: null, routeEventId: null, reviewedEventId: null,
     beam: { id: 'TG220-BRIDGE-BEAM', originalBridgeId: o.site.bridge.id, position: 5, introducedEventId: null, surveyedIntegrity: 60, integrity: 60, version: 0, restoredOrdinaryCeiling: 70, repairEventIds: [] },
@@ -136,7 +136,9 @@ export function twilightWorksCurrentOriginals(s: TwilightWorksState) {
   return { site, exactPlayerPosition: s.position };
 }
 export function projectTwilightWorks(s: TwilightWorksState) {
-  return { title: '原桥两段普通工作', lines: [`同一${s.origin.site.bridge.id}，原梁${s.beam.integrity}/70；本人${s.position}米，精力${s.playerEnergy}。`, ...s.workers.map(w => `${w.name}，${w.age}岁，${w.position}米，精力${w.energy}；${w.consent}；${safeCompleted(s, w.id) ? '实际完成并安全退出' : '尚未形成完整通行'}`), ...s.supports.map(p => `${p.id}：实付24便士，${p.holder}，完整度${p.integrity}，额定通行剩余${p.passagesRemaining}。`), `复核安全通行${twilightWorksVerifiedPassages(s).length}/2。旧银甲${s.origin.site.armor?.integrity ?? 0}、旧垫片${s.origin.site.pads.remaining}、旧负载${s.origin.site.load.remainingLoads}保持原值。`] };
+  const consent = { UNASKED:'尚未询问', GRANTED:'本次已同意', WITHDRAWN:'本人已撤回', CLOSED:'本次已结束' };
+  const holder = { PLAYER:'本人实际持有', FITTED:'已真实安装', RETIRED:'已退役保留损耗' };
+  return { title: '原桥两段普通工作', lines: [`同一六米短桥，原梁${s.beam.integrity}/70；本人${s.position}米，精力${s.playerEnergy}。`, ...s.workers.map(w => `${w.name}，${w.age}岁，${w.position}米，精力${w.energy}；${consent[w.consent]}；${safeCompleted(s, w.id) ? '实际完成并安全退出' : '尚未形成完整通行'}`), ...s.supports.map(p => `${p.segment==='A'?'前段':'后段'}新支撑：实付24便士，${holder[p.holder]}，完整度${p.integrity}，额定通行剩余${p.passagesRemaining}。`), `复核安全通行${twilightWorksVerifiedPassages(s).length}/2。旧银甲${s.origin.site.armor?.integrity ?? 0}、旧垫片${s.origin.site.pads.remaining}、旧负载${s.origin.site.load.remainingLoads}保持原值。`] };
 }
 export function getTwilightWorksActions(s: TwilightWorksState, h: TwilightWorksHost) {
   const commands: TwilightWorksCommand[] = [
