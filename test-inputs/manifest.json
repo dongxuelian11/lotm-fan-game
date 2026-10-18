@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.218.0",
+  "version": "0.219.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -1177,6 +1177,28 @@
         "tests/fixtures/door-v02180/recovery-manifest.json",
         "tests/fixtures/door-v02180/runtime-freeze.json",
         "tests/fixtures/door-v02180/summary.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.219.0_error_test_inputs_1_2026-10-18.tar.gz",
+      "bytes": 5350750,
+      "sha256": "075841046528f5990df7ab9a4b6cf305944fcfb3ac7ec37b8ba4b9e1b752e88e",
+      "members": [
+        "tests/fixtures/error-v02190/checkpoint.json.gz",
+        "tests/fixtures/error-v02190/commands.jsonl",
+        "tests/fixtures/error-v02190/key-656-initial.json.gz",
+        "tests/fixtures/error-v02190/key-672-periodic.json.gz",
+        "tests/fixtures/error-v02190/key-688-periodic.json.gz",
+        "tests/fixtures/error-v02190/key-704-periodic.json.gz",
+        "tests/fixtures/error-v02190/key-720-periodic.json.gz",
+        "tests/fixtures/error-v02190/key-722-before-replace.json.gz",
+        "tests/fixtures/error-v02190/key-723-after-replace.json.gz",
+        "tests/fixtures/error-v02190/key-730-terminal.json.gz",
+        "tests/fixtures/error-v02190/producer-tests.mjs",
+        "tests/fixtures/error-v02190/producer.mjs",
+        "tests/fixtures/error-v02190/runtime-freeze.json",
+        "tests/fixtures/error-v02190/source-natural.json.gz",
+        "tests/fixtures/error-v02190/summary.json"
       ]
     }
   ],
@@ -34255,6 +34277,81 @@
       "path": "tests/fixtures/zombie-v0900/natural.json",
       "bytes": 1652689,
       "sha256": "e2da75d46550ba57a199329e073b504cf258eefa343d3c86b1f34bf4f9c1ca46"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/checkpoint.json.gz",
+      "bytes": 273058,
+      "sha256": "769a57fee39ea3c174cb20f14961cf9769f963a34947694a211b160c5d9f0f9b"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/commands.jsonl",
+      "bytes": 389905,
+      "sha256": "bc69ef8890dce8ba8983298ee1201ff9aca679a5283e53686c49bbbfac844a7d"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/key-656-initial.json.gz",
+      "bytes": 447529,
+      "sha256": "59a32fb2798e05efc55b7a549844a94e980772c6bdd52f994f4f4f27f7cdd258"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/key-672-periodic.json.gz",
+      "bytes": 522383,
+      "sha256": "d1f95eadd5091a12979a706ee3d4868bb534b954a7e541c75e9601d49f589c2e"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/key-688-periodic.json.gz",
+      "bytes": 525489,
+      "sha256": "83c6788a0d25768c9c814573ea45d32e18dfbd7f5e79c0af7426f3633e0e62d0"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/key-704-periodic.json.gz",
+      "bytes": 528906,
+      "sha256": "0f2f4ca0bba372c781e1c0140f548be3ad75edff2914fc10c3c8991af9880c54"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/key-720-periodic.json.gz",
+      "bytes": 533509,
+      "sha256": "e1894e9487feb1d2fc31425f6cb4033172bec26597fce098b17561defc01ca1f"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/key-722-before-replace.json.gz",
+      "bytes": 534981,
+      "sha256": "585a96a996f2781c4abf8048affda00c7195f03bfc8bb7e48beb72529bc2693f"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/key-723-after-replace.json.gz",
+      "bytes": 535921,
+      "sha256": "e7a703811c640f721daa62864beeca6323e20c5cb33f65414c8aec7b9ddf1abd"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/key-730-terminal.json.gz",
+      "bytes": 541440,
+      "sha256": "3dd5061d0f08b9213a32ef8ad0ddd468eb54fb7f2db43ad03577ebcea4df52e7"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/producer-tests.mjs",
+      "bytes": 5050,
+      "sha256": "0be5aa32d36b0c3e96be3ee8bb5deeb7777815138fbd393b76f14ab0e9e0249a"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/producer.mjs",
+      "bytes": 35687,
+      "sha256": "ae46f47c574d6c9e7fab8c4e47ec36d6dafe37db9ee49036a34d896ee996b7b8"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/runtime-freeze.json",
+      "bytes": 646890,
+      "sha256": "5828ad92e766f4d91c7ed0e44c943b28cb73930b0e373d1755a5f9a618ac1950"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/source-natural.json.gz",
+      "bytes": 617807,
+      "sha256": "c4e1bc1693200c4f9b0c4669d44203f703503b4f448c7cee29a518952a999624"
+    },
+    {
+      "path": "tests/fixtures/error-v02190/summary.json",
+      "bytes": 4895,
+      "sha256": "b21097e46c1012f77fb2d1c84f329cd5370adc469742a99208a6dda43f797266"
     }
   ]
 }
