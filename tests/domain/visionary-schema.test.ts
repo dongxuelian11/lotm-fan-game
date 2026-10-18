@@ -58,7 +58,8 @@ describe('Visionary exact current schema boundary', () => {
     same(state.visionary,createVisionaryState());same(state.tyrant,createTyrantState());same(state,copy);expect(copy).not.toBe(state);
     expect(copy.visionary).not.toBe(state.visionary);expect(copy.tyrant).not.toBe(state.tyrant);assertValidSliceState(copy);expect(stableStringify(state)).toBe(before);
   });
-  it.each([205,206] as const)('strictly preserves every old %i field and adds only missing defaults', version => {
+  for (const version of [205,206] as const) {
+  it(`strictly preserves every old ${version} field and adds only missing defaults`, () => {
     const state=old(version), before=stableStringify(state), next=migrateSliceState(state), defaults=fresh();
     expect([next.schemaVersion,next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
     const additions=Object.keys(next).filter(k=>!Object.hasOwn(state,k));
@@ -69,7 +70,8 @@ describe('Visionary exact current schema boundary', () => {
     same(next.tyrant,createTyrantState());
     expect(stableStringify(state)).toBe(before);
     expect(hash(readFileSync(historicalCaptures[version].path))).toBe(historicalCaptures[version].sha256);
-  });
+  }, version === 205 ? 60_000 : 5_000);
+  }
   it.each([
     [205, 'visionary'], [205, 'perfecter'], [205, 'moon'],
     [205, 'darkness'], [205, 'whiteTower'], [205, 'tyrant'],

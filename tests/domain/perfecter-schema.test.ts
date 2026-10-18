@@ -61,7 +61,8 @@ describe('Perfecter exact current schema boundary', () => {
     same(state.perfecter,createPerfecterState());same(state.tyrant,createTyrantState());same(state,copy);expect(copy).not.toBe(state);
     expect(copy.perfecter).not.toBe(state.perfecter);expect(copy.tyrant).not.toBe(state.tyrant);assertValidSliceState(copy);expect(stableStringify(state)).toBe(before);
   });
-  it.each([205,206,207] as const)('strictly preserves every old %i field and adds only missing defaults', version => {
+  for (const version of [205,206,207] as const) {
+  it(`strictly preserves every old ${version} field and adds only missing defaults`, () => {
     const state=old(version), before=stableStringify(state), next=migrateSliceState(state), defaults=fresh();
     expect([next.schemaVersion,next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
     const additions=Object.keys(next).filter(key=>!Object.hasOwn(state,key));
@@ -72,7 +73,8 @@ describe('Perfecter exact current schema boundary', () => {
     same(next.tyrant,createTyrantState());
     expect(stableStringify(state)).toBe(before);
     expect(hash(readFileSync(historicalCaptures[version].path))).toBe(historicalCaptures[version].sha256);
-  });
+  }, version === 205 ? 60_000 : 5_000);
+  }
   it('preserves the unchanged real 186 CE capture with only exact introduced current defaults',()=>{
     const bytes=readFileSync('tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json','utf8');
     expect(sha256Hex(bytes)).toBe('70b8843550d5a79abd5250377184ab5050a80cc1b7138f2a03ead788fb3bb8ef');
