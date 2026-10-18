@@ -1,0 +1,127 @@
+{
+  "kind": "PRINCE205_REVIEWED_INITIALIZATION_DEPENDENCY",
+  "captureFreezeSha256": "4d272242b746a5bd57b1c477a9082c5c9051cc4dc26e569305bb3aff2ec0374d",
+  "runtimeFreezeSha256": "ae6a384e04b681a6f814bc2502c2c70c2e9502b405773dd7258d4d0275601338",
+  "changes": [
+    {
+      "before": {
+        "file": "src/domain/entropy-duke/index.ts",
+        "bytes": 55466,
+        "sha256": "feef107bdf3869e030cc120249a0763c726d819ec047664e237c42eee8239eca"
+      },
+      "after": {
+        "file": "src/domain/entropy-duke/index.ts",
+        "bytes": 54850,
+        "sha256": "fe098107edc42076dfc94d7beb55b29a1937e910e72a53a3c24f8878695c84c7"
+      }
+    },
+    {
+      "before": {
+        "file": "src/domain/entropy-duke/types.ts",
+        "bytes": 4695,
+        "sha256": "3087f02c6b7f1e112ce14ddf3e393a8ff52df9208b94952db638f5e215a43130"
+      },
+      "after": {
+        "file": "src/domain/entropy-duke/types.ts",
+        "bytes": 5493,
+        "sha256": "65d0e50762a2f65261f68ca26e2b83e2aa6a51a3139a0d2fbb9d9e9ca095ea44"
+      }
+    },
+    {
+      "before": {
+        "file": "src/domain/prince-of-abolition/index.ts",
+        "bytes": 72369,
+        "sha256": "7eeb031e4f4f1c108a3d06291e0095a4585a269378dab10bff7cd8aa7b8395a0"
+      },
+      "after": {
+        "file": "src/domain/prince-of-abolition/index.ts",
+        "bytes": 72369,
+        "sha256": "cf0bea45f56441f4f6d9e36a589263a2cb9ca6f8127f4747d01cff1fb6e7d01d"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/entropy-duke/index.js",
+        "bytes": 58863,
+        "sha256": "20f2063762c4edffca6d5f2091fa5e63a79798739c6ae98035e7357dcc6d0e5d"
+      },
+      "after": {
+        "file": "dist/domain/entropy-duke/index.js",
+        "bytes": 58375,
+        "sha256": "86ba0fe0dd37e3c0d1c6e2463c0185ecf597053b2d9b42fb3362fbc85c2d6dad"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/entropy-duke/index.js.map",
+        "bytes": 53476,
+        "sha256": "c41d2137bd2cdab2ab105cc5623a13fc11068ccc818b78c2d99e95c91f79bb41"
+      },
+      "after": {
+        "file": "dist/domain/entropy-duke/index.js.map",
+        "bytes": 53265,
+        "sha256": "f0178be388a85126cb16a62df7797eb983c1e1965b434f1e6d1790d2872c1092"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/entropy-duke/types.js",
+        "bytes": 398,
+        "sha256": "b730bb3ad3152703584df95a12f2e249916cc1162c412f3b94e7c0b84fb0460e"
+      },
+      "after": {
+        "file": "dist/domain/entropy-duke/types.js",
+        "bytes": 1221,
+        "sha256": "af1a8f4f8148886dec01bf2fc4fdfc160c1ccb8eb4575c4f84458fa2b3c77767"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/entropy-duke/types.js.map",
+        "bytes": 251,
+        "sha256": "bb5a892c919079553d2a7c4e1af5f9d21f43c9356e181b3adfd85391f8cc2eb7"
+      },
+      "after": {
+        "file": "dist/domain/entropy-duke/types.js.map",
+        "bytes": 507,
+        "sha256": "98dfc83bd038bd75898e0be2ec6195342729afa146cbe5f7a979174850d5448d"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/prince-of-abolition/index.js",
+        "bytes": 76759,
+        "sha256": "a108c33649466aa374e026c378c1bc90efc1381480007600ea9ec6c21345d16d"
+      },
+      "after": {
+        "file": "dist/domain/prince-of-abolition/index.js",
+        "bytes": 76759,
+        "sha256": "ab94cd1f966a3d8897848bec9610817cb0c9258e4ef0e4ba99dadea3c86128fc"
+      }
+    },
+    {
+      "before": {
+        "file": "dist/domain/prince-of-abolition/index.js.map",
+        "bytes": 70578,
+        "sha256": "69335a5ce667212df75a726df57ab8040df913b465a215d68668423878015d66"
+      },
+      "after": {
+        "file": "dist/domain/prince-of-abolition/index.js.map",
+        "bytes": 70578,
+        "sha256": "5a7eed4df829222ab351aa2f30a3ade2b1b129ac3917e60850cf7aa8cc47e0ed"
+      }
+    },
+    {
+      "before": {
+        "file": "scripts/play/prince-of-abolition-save.mjs",
+        "bytes": 47477,
+        "sha256": "e7c7ecbc1ef8465726a5a84b82d5a518cb681fe1f40bd55f04ee858cba85ae65"
+      },
+      "after": {
+        "file": "scripts/play/prince-of-abolition-save.mjs",
+        "bytes": 49554,
+        "sha256": "c44ef376e516af2d4129a40110eea50834ed6c6a6b6150f0a4bfddefbe30f9a6"
+      }
+    }
+  ]
+}

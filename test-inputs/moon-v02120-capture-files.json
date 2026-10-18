@@ -1,0 +1,235 @@
+{
+  "format": "MOON212_CAPTURE_FILES_V1",
+  "files": [
+    {
+      "file": "boundaries.index.json",
+      "bytes": 5079,
+      "sha256": "868f41175f488668c01090fea9b40e691ccb52006bc977ea14cc9666c230396c"
+    },
+    {
+      "file": "boundary-671-first-ordinary-rest.json.gz",
+      "bytes": 442484,
+      "sha256": "7ef790a4d05422e4743293771f613198198437ca8f0576ce09d8a41bb770991d",
+      "originalBytes": 6380891,
+      "originalSha256": "60eda153b023076031042c0cf1cf863afa177857974246c88608f49d9c3720f8"
+    },
+    {
+      "file": "boundary-672-first-original-finance-event.json.gz",
+      "bytes": 442149,
+      "sha256": "1f865cc6bd05f1c968c133b437239c0195b48288cb4540a5722ce6a393a5d262",
+      "originalBytes": 6380690,
+      "originalSha256": "432246c4944d2f9b0e868f4258450baad1758bf4427ca9320add8d765e404255"
+    },
+    {
+      "file": "boundary-673-first-ordinary-work.json.gz",
+      "bytes": 441968,
+      "sha256": "2e23885f0bc23fe507bde356dd07f5fd0f56cf863bf6e9940b1436d37cd3d2d4",
+      "originalBytes": 6380578,
+      "originalSha256": "2da4a740454e4ac4b9a688c22b792991a8473da46c80fe1ff56608dcbcfb9bd5"
+    },
+    {
+      "file": "boundary-674-s1-request_recovery_v1.json.gz",
+      "bytes": 442520,
+      "sha256": "6bbabf041f70f08eab4746d3dcc88cdf9036f4114db5414953afd9ccdb0528ca",
+      "originalBytes": 6385538,
+      "originalSha256": "1ba92c28cf450cc584cf6dd69edf7ffd27cf92570652f2197d312a4fdf8e6be9"
+    },
+    {
+      "file": "boundary-677-s1-recover_characteristic_v1.json.gz",
+      "bytes": 443537,
+      "sha256": "95a88baba6416257fc4753ca92d0435d62b83268f3dcad9e9263ff33f93575a9",
+      "originalBytes": 6398111,
+      "originalSha256": "628f05a6af09f2245834ead3263c1d84e22dfbaa30e26f5e8f2dfa6db9c26770"
+    },
+    {
+      "file": "boundary-678-s1-potion_work.json.gz",
+      "bytes": 444228,
+      "sha256": "5bb67d2533d65ee789065a6ee3dc36f86916dcab1a603e5e1efcb9b222bea943",
+      "originalBytes": 6407963,
+      "originalSha256": "1142cbf1380fa2af801a654afc9732855b99a568133ad70435f23156f7f258ff"
+    },
+    {
+      "file": "boundary-686-s1-buy_potion.json.gz",
+      "bytes": 445525,
+      "sha256": "d60c2fd6fc65dfd5a9075219d1d00b5c548abd8d9fa6f0d85dd2c5d89c9c9c9e",
+      "originalBytes": 6453526,
+      "originalSha256": "61c751d7870751db191928da39dd8c3571e0827beb2b5c4c59689f68b9d93de2"
+    },
+    {
+      "file": "boundary-688-s1-prepare_promotion.json.gz",
+      "bytes": 445934,
+      "sha256": "c57ee64960b3e2fe34988b7c0e3ff6c064e2f76e5d9e0aa3ee58101b9987facd",
+      "originalBytes": 6462764,
+      "originalSha256": "5b51f2fca9aa0be793b4886b49f1d8f8683e50e6568ab18196de023ba9cca43a"
+    },
+    {
+      "file": "boundary-689-s1-first-recovery-failure.json.gz",
+      "bytes": 446422,
+      "sha256": "be7f58b66471ee35caa879bf7291fb1d9cd0a4672fd57cd6f34b2de13707b81a",
+      "originalBytes": 6472807,
+      "originalSha256": "9a3a4c65ebd41c8697dd387e641aca2cfa0fb7ec436824e0ae3ef48bf82aab18"
+    },
+    {
+      "file": "boundary-763-s1-actual-promotion.json.gz",
+      "bytes": 457794,
+      "sha256": "c61980b1353a7aa90c13bd72a46a375d7ef3e44ddbe7768f6ffea5a8e41d94be",
+      "originalBytes": 6868353,
+      "originalSha256": "58e77b9a270854e7155734e841ab0816b6bc43f36a2033f21e9c55fd75b1fd61"
+    },
+    {
+      "file": "boundary-830-s1-reflect.json.gz",
+      "bytes": 479080,
+      "sha256": "e1041296785032ed476dba7bce2adbde1cccaa83c1b7b9c30755b9d746e7e716",
+      "originalBytes": 7377459,
+      "originalSha256": "9ecb05cd3c4ee5740386888260841aebcc8a0443c1e2a324311fdfd9ae0cfbb4"
+    },
+    {
+      "file": "boundary-831-moon-learn_guidance.json.gz",
+      "bytes": 500879,
+      "sha256": "31ef31fa2cd08950082736b954b15f5939c260a1ba51f3836ad6800211571f62",
+      "originalBytes": 8113551,
+      "originalSha256": "c3f88e744d1ac00ebbdf9dd465627b723f9df62dc8d65fdfbac53232cc7c8762"
+    },
+    {
+      "file": "boundary-842-night-NORTH-conduct_service.json.gz",
+      "bytes": 529770,
+      "sha256": "690507b1fb4487409231d615ce72fed6a54da61fbc79ca328ed826b77c3f3d7a",
+      "originalBytes": 9003976,
+      "originalSha256": "51de4781c9b2fdacea11e782bf86fba44affa6bca876798ff418adbeea2e6fe4"
+    },
+    {
+      "file": "boundary-845-night-NORTH-repair_damage.json.gz",
+      "bytes": 532026,
+      "sha256": "6b2029792741a136df0f9a8903ac50c54d35e9ed4787d34d9e7ab16c06b21a5c",
+      "originalBytes": 9051676,
+      "originalSha256": "483b800f1e099e139e13261e094532fedc8eb711a9cb0e1021f230685de20f77"
+    },
+    {
+      "file": "boundary-849-night-NORTH-verify.json.gz",
+      "bytes": 535166,
+      "sha256": "91007b4f8430c96c365a1b3a48136857eaf401ad1b5e78fe9757eb3e0ac6da13",
+      "originalBytes": 9120508,
+      "originalSha256": "d90447557e2338a67d084a2b5c96a9513cff19cf3fa37efb289c66f3966fd6f5"
+    },
+    {
+      "file": "boundary-859-night-REED-conduct_service.json.gz",
+      "bytes": 541453,
+      "sha256": "607c514f46e0ede2f347e97c1ae29db2ee269b7f98b99b1ce2fad2afb1bde54f",
+      "originalBytes": 9278089,
+      "originalSha256": "515dcf32472a79b4a92c133257c789d49cd7188a3d722040d72c501c491a2029"
+    },
+    {
+      "file": "boundary-866-night-REED-verify.json.gz",
+      "bytes": 547710,
+      "sha256": "537a144d669c2f947f26d4d013324c54b49a6f09a848465e7d362e60c73ea5b3",
+      "originalBytes": 9397363,
+      "originalSha256": "daa39eee007e9428ce324698f2d8605cd0906f6bf491ff7a3852f0c131c8bf0d"
+    },
+    {
+      "file": "boundary-874-night-EAST-conduct_service.json.gz",
+      "bytes": 553235,
+      "sha256": "d013d16c119f4a247aeffec72e5139bbe30fa4a94b4a140413682b5f09dde17f",
+      "originalBytes": 9525849,
+      "originalSha256": "b77506ad59b72d44ff5371d07507f3a80e33ac6bdb4f2ec0f0183917809250a7"
+    },
+    {
+      "file": "boundary-875-night-EAST-verify.json.gz",
+      "bytes": 553734,
+      "sha256": "1be10e6ea8fb7e667bc9135ab0a514366b5ca1859dcded0f38dceccfa930a9e9",
+      "originalBytes": 9544251,
+      "originalSha256": "70df0aa6cbc21324a073cbbb5ec6010425afb6f3777eb17018486f202ace5de9"
+    },
+    {
+      "file": "boundary-881-moon-recover_legacy_remains.json.gz",
+      "bytes": 556719,
+      "sha256": "d59fa6ad7429abb130d4fb2f4123ecbff9f0070aeb87efc4359f4e40355f5658",
+      "originalBytes": 9631314,
+      "originalSha256": "6504a3e7607f8540cb21d05e59a8e5539027889add686a569df07b7458f06337"
+    },
+    {
+      "file": "boundary-891-moon-acquire_uniqueness.json.gz",
+      "bytes": 562200,
+      "sha256": "4aead522d337f99546cc61e383f4f0fde3d25e1d36a04bc7ded61868c216dcf1",
+      "originalBytes": 9785798,
+      "originalSha256": "31dde764638307f099b34d5ab2a991c0a513dee88b120b303790fb28b9e9564c"
+    },
+    {
+      "file": "boundary-899-moon-compose_potion.json.gz",
+      "bytes": 566871,
+      "sha256": "a33d66a89f7aff9ea594a44a0aa4a964b2f7ae1af3998cc4cd91bc149a6c334b",
+      "originalBytes": 9907591,
+      "originalSha256": "f775ca882c56ac6dbdccf03d2bfe75eff5b050af79cfc191c6174e7b39a37cf3"
+    },
+    {
+      "file": "boundary-902-moon-stabilize_promotion.json.gz",
+      "bytes": 568630,
+      "sha256": "6a666845fd9f9075338d8eec3ba024b1e138dea24a684d06d709aae8627a46fd",
+      "originalBytes": 9954682,
+      "originalSha256": "46ae39b113b28f5cbdb814d0d2c2a6a39d3b6df681872c0dd8e15ee06cb7a4bd"
+    },
+    {
+      "file": "boundary-903-moon-actual-promotion.json.gz",
+      "bytes": 570096,
+      "sha256": "06341cd452a2efd7c7e8a90edb0a9723315baa76f7eb2518bcbb01cb6ce6ebf0",
+      "originalBytes": 9972060,
+      "originalSha256": "76e56725db69f51adbee8f1c912ef9801b7c52a20b10959f646590715248e9fd"
+    },
+    {
+      "file": "boundary-917-moon-start_epilogue.json.gz",
+      "bytes": 574889,
+      "sha256": "611889cebaeb29799b4cded49e4b9501d79b78423487964f55f2e743a00b8496",
+      "originalBytes": 10185806,
+      "originalSha256": "9878298c2f393bb45515a3e8ef18414fbc46c042467252bfc220f5b4751018b6"
+    },
+    {
+      "file": "boundary-924-moon-finite-actual-report.json.gz",
+      "bytes": 583056,
+      "sha256": "5f21f3bb66678f3db5695ed0e19a653428f2a48f972142d9a2a434a8ef0c0c20",
+      "originalBytes": 10306669,
+      "originalSha256": "2fd0d587302399aa88d6509c913cfbd4f5e9a4d2d01b5be20d878c2cf3a0772c"
+    },
+    {
+      "file": "checkpoint.json.gz",
+      "bytes": 356127,
+      "sha256": "ef16bbad7b44310377b870a7510c8f96efa1289c160130937bbcbb9971001ae4",
+      "originalBytes": 5469760,
+      "originalSha256": "929bc7a49a0fe3ebf910c402c530272879096f9ab482c2101ad5dc36b402ff60"
+    },
+    {
+      "file": "commands.ndjson.gz",
+      "bytes": 69960,
+      "sha256": "5f8f6f7fdd9862eaaea8c53c69522e3d20d8f15aaa02c61d9c31adb46e72c9b8",
+      "originalBytes": 423706,
+      "originalSha256": "42521267e9dd69d42169b81464acfd2a63544c83a120ad80e9e2241e24534791"
+    },
+    {
+      "file": "freeze.json",
+      "bytes": 599994,
+      "sha256": "43cde75b1ce66e67b3c940d669bfb3b79704c7448d0521ab1a4c159d679795f3"
+    },
+    {
+      "file": "natural.json.gz",
+      "bytes": 288749,
+      "sha256": "fe7192e07a3e0e66aa634403f42f9e924fb21a762a85c57be528cd39b4e9f395",
+      "originalBytes": 5087933,
+      "originalSha256": "feeabc4261f50f56e616eb8e9af2dc4f4d2ba23291e746b428908b8628d9ccb1"
+    },
+    {
+      "file": "prefix-original670.json.gz",
+      "bytes": 471131,
+      "sha256": "312b5c7981a0f7352499c4102dbe4e05b7388ca7da2d2e7c933efd192afda1fc",
+      "originalBytes": 6260272,
+      "originalSha256": "195064d584c3fa6bb7c87584970ab5e2a43d5493613cb66afa3252902fc453eb"
+    },
+    {
+      "file": "producer.mjs",
+      "bytes": 48422,
+      "sha256": "6ce650b68ca33165e7f6fabdc886fd10c3c28858e24ea80fb391b68517fcf572"
+    },
+    {
+      "file": "summary.json",
+      "bytes": 271247,
+      "sha256": "4cd18a1488170f1ae579c5144346cd940c5536055f9b0b708662063bce0b968d"
+    }
+  ]
+}
