@@ -10,6 +10,7 @@ import type { SeerContext } from '../seer/index.js';
 import type { SliceState } from '../slice/types.js';
 import { validateGlorySiteState, type GlorySiteState, type GloryLocation } from '../glory/life.js';
 import { divineHandEncounterOriginalEvents } from './encounter.js';
+import { projectGloryPublicSite } from '../glory/index.js';
 
 /** The authoritative repair-room objects are never recreated. New load metadata
  * identifies one paid delivery; it cannot replenish the exhausted original rig. */
@@ -70,7 +71,7 @@ export interface DivineHandLifeProjection {
   clockSeconds: number; elapsedSeconds: number; playerLocation: GloryLocation; playerTravelMetres: number; celiaTravelMetres: number; evanTravelMetres: number;
   site: GlorySiteState; pending: DivineHandLifeState['pending']; pendingUsable: boolean; pendingRemainingSeconds: number; currentAttempt: DivineHandAttempt | null;
   cases: { id: DivineHandCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: DivineHandAttempt[] }[];
-  ledger: DivineHandLifeReceipt[]; actions: DivineHandLifeAction[];
+  ledger: DivineHandPublicLifeReceipt[]; actions: DivineHandLifeAction[];
 }
 const BEAM = 'warrior.s1.beam-stabilize', ARMOR = 'warrior.s1.armor-convergence';
 const POSITION: Record<GloryLocation, number> = { OUTSIDE: -2, ENTRY: 0, BENCH: 2, BRIDGE: 8, YARD: -4 };
@@ -511,6 +512,39 @@ export function divineHandLifeActions(s: SliceState): DivineHandLifeAction[] {
   step('ABORT', false, true); return out;
 }
 export const divineHandActivityActions = divineHandLifeActions;
+export type DivineHandPublicLifeReceipt = Omit<DivineHandLifeReceipt, 'source' | 'randomCursor' | 'randomBefore' | 'randomAfter'>;
+/** Resolved checks and physical costs are public; check inputs and random-stream positions are not. */
+export function projectDivineHandLifeReceipt(r: DivineHandLifeReceipt): DivineHandPublicLifeReceipt {
+  const budget = (b: DivineHandLifeBudget) => ({ health: b.health, mind: b.mind, spirituality: b.spirituality, cash: b.cash, actions: b.actions });
+  const c = r.command, command: DivineHandActivityCommand = 'method' in c ? { type: c.type, caseId: c.caseId, method: c.method }
+    : 'permission' in c ? { type: c.type, permission: c.permission } : 'caseId' in c ? { type: c.type, caseId: c.caseId } : { type: c.type };
+  const check = r.check;
+  return {
+    week: r.week, date: { epoch: r.date.epoch, year: r.date.year, month: r.date.month, day: r.date.day }, revision: r.revision, command,
+    checkBase: r.checkBase, check: check ? { ability: check.ability, baseAbility: check.baseAbility, modifiers: check.modifiers.map(m => ({ source: m.source, value: m.value })), effectiveAbility: check.effectiveAbility, difficulty: check.difficulty, chance: check.chance, roll: check.roll, tier: check.tier } : null, outcome: r.outcome,
+    before: budget(r.before), after: budget(r.after),
+    finance: { weeklyBudget: r.finance.weeklyBudget, lifeTier: r.finance.lifeTier, nextLifeTier: r.finance.nextLifeTier,
+      debts: r.finance.debts.map(d => ({ id: d.id, source: d.source, remaining: d.remaining, weeklyPayment: d.weeklyPayment, createdWeek: d.createdWeek })), missedWeeks: r.finance.missedWeeks, credit: r.finance.credit },
+    elapsedSeconds: r.elapsedSeconds, playerWalkedMetres: r.playerWalkedMetres, celiaWalkedMetres: r.celiaWalkedMetres, evanWalkedMetres: r.evanWalkedMetres,
+    playerEnergySpent: r.playerEnergySpent, celiaEnergySpent: r.celiaEnergySpent, evanEnergySpent: r.evanEnergySpent, playerEnergyRecovered: r.playerEnergyRecovered,
+    moves: r.moves.map(m => ({ actor: m.actor, from: m.from, to: m.to, mode: m.mode, metres: m.metres, seconds: m.seconds, originalBody: m.originalBody })),
+    originalsBefore: { site: projectGloryPublicSite(r.originalsBefore.site) }, originalsAfter: { site: projectGloryPublicSite(r.originalsAfter.site) },
+  };
+}
+function projectDivineHandPublicAttempt(a: DivineHandAttempt): DivineHandAttempt {
+  const use = (u: DivineHandAbilityUse) => ({ attempts: u.attempts, successes: u.successes, effects: u.effects, tier: u.tier, state: u.state });
+  const l = a.load;
+  return {
+    week: a.week, method: a.method, closed: a.closed, result: a.result, elapsedSeconds: a.elapsedSeconds,
+    playerTravelMetres: a.playerTravelMetres, celiaTravelMetres: a.celiaTravelMetres, evanTravelMetres: a.evanTravelMetres,
+    playerEnergySpent: a.playerEnergySpent, penniesSpent: a.penniesSpent, spiritualitySpent: a.spiritualitySpent, mindSpent: a.mindSpent, healthSpent: a.healthSpent,
+    permission: { owner: a.permission.owner, operator: a.permission.operator, participant: a.permission.participant, ability: a.permission.ability }, permissionVersion: a.permissionVersion,
+    siteAtStart: projectGloryPublicSite(a.siteAtStart), approached: a.approached, contact: a.contact, stopped: a.stopped, exited: a.exited,
+    inspectionAt: a.inspectionAt, inspectionTier: a.inspectionTier, inspectionBonus: a.inspectionBonus,
+    load: l ? { id: l.id, ownerId: l.ownerId, paidPennies: l.paidPennies, boughtWeek: l.boughtWeek, location: l.location, arrivedAt: l.arrivedAt, preparedAt: l.preparedAt, kilograms: l.kilograms, remaining: l.remaining, consumed: l.consumed, appliedAt: l.appliedAt, safetyStop: l.safetyStop } : null,
+    padRetrieved: a.padRetrieved, padReturned: a.padReturned, armorWear: a.armorWear, impactDamage: a.impactDamage, impactReduction: a.impactReduction, beam: use(a.beam), armor: use(a.armor),
+  };
+}
 export function projectDivineHandLife(s: SliceState): DivineHandLifeProjection {
   const l = s.divineHand.life, originals = divineHandOriginalSnapshot(s), actions = divineHandLifeActions(s), model = { life: l, originals }, a = current(l);
   return { title: '原修理室、同一银甲与有限接触', story: '本人接触原梁后的有限稳持只帮助下一次实际检查；护甲合势只减轻下一次可见的本人受力。失败、到期和撤回均保留代价，磨损与耗材不会复原。',
@@ -518,9 +552,9 @@ export function projectDivineHandLife(s: SliceState): DivineHandLifeProjection {
     environment: '室外负2米、入口0米、工作台2米、原桥另一端8米。三人各走四米到工作台；本次检查不算过桥，原桥通行计数不变。普通出口始终开放。',
     activeCase: l.activeCase, inside: locked(l), insideCase: locked(l), reflected: l.reflected, preferredActionId: actions.find(x => x.preferredAction)?.id ?? null,
     clockSeconds: originals.site.clockSeconds, elapsedSeconds: l.elapsedSeconds, playerLocation: originals.site.playerLocation, playerTravelMetres: l.playerTravelMetres, celiaTravelMetres: l.celiaTravelMetres, evanTravelMetres: l.evanTravelMetres,
-    site: originals.site, pending: structuredClone(l.pending), pendingUsable: !!l.pending && validPending(model, l.pending.kind), pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - originals.site.clockSeconds) : 0,
-    currentAttempt: structuredClone(a), cases: CASES.map(def => { const r = l.cases[def.id]; return { id: def.id, title: def.title, story: def.story,
+    site: projectGloryPublicSite(originals.site), pending: l.pending ? { kind: l.pending.kind, caseId: l.pending.caseId, createdAt: l.pending.createdAt, expiresAt: l.pending.expiresAt, permissionVersion: l.pending.permissionVersion, bridgeId: l.pending.bridgeId, armorId: l.pending.armorId } : null, pendingUsable: !!l.pending && validPending(model, l.pending.kind), pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - originals.site.clockSeconds) : 0,
+    currentAttempt: a ? projectDivineHandPublicAttempt(a) : null, cases: CASES.map(def => { const r = l.cases[def.id]; return { id: def.id, title: def.title, story: def.story,
       observations: r.observedWeek === null ? [] : [def.story, '使用同一原物，旧负载不重置，原甲不修复；未实际应用的能力没有掌握奖励。'], status: r.status, method: r.method,
-      result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限效果已实际应用；原人普通离场，代价与磨损保留。' : '完成普通操作，或如实记录失败、拒绝、停止与撤回；没有未应用的能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }),
-    ledger: structuredClone(l.journal), actions };
+      result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限效果已实际应用；原人普通离场，代价与磨损保留。' : '完成普通操作，或如实记录失败、拒绝、停止与撤回；没有未应用的能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(projectDivineHandPublicAttempt) }; }),
+    ledger: l.journal.map(projectDivineHandLifeReceipt), actions };
 }

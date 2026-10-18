@@ -163,6 +163,10 @@ function desiredCommand(root: TwilightGiantState): TwilightGiantCommand | null {
  const at=(to:string,c:TwilightGiantCommand):TwilightGiantCommand=>f.location===to?c:{type:'TRAVEL',to};
  const work=(command:import('./works-types.js').TwilightWorksCommand):TwilightGiantCommand=>({type:'WORKS',command});
  const ep=(type:import('./epilogue.js').TwilightEpilogueCommand['type']):TwilightGiantCommand=>({type:'EPILOGUE',command:{type} as import('./epilogue.js').TwilightEpilogueCommand});
+ if(root.epilogue&&root.epilogue.status!=='ACTIVE'){
+  if(root.epilogue.workers.some(w=>w.position!==-2))return ep('ORDINARY_EXIT');
+  return root.epilogue.reported?null:ep('REPORT');
+ }
  if(!twilightGiantInsideCase(root)){
   if(b.injuries.some(i=>i.severity==='HEAVY'&&i.treatedRevision===null))return {type:'CLINIC'};
   if(b.health<80||b.mind<78||b.spirituality<42||b.injuries.length||b.pollution>20)return {type:'REST'};
@@ -209,6 +213,7 @@ function desiredCommand(root: TwilightGiantState): TwilightGiantCommand | null {
    if(worker.position===8)return work({type:'SAFE_EXIT',workerId:worker.id});
    if(worker.position===5)return work({type:'CROSS_SEGMENT',workerId:worker.id,segment:'B'});
   }
+  if(w.workers.every(worker=>w.exits.some(e=>e.workerId===worker.id&&e.arrivalEventId===worker.arrivalEventId&&e.from===8&&e.safe)))return w.position!==-2?work({type:'RETREAT'}):work({type:'REVIEW'});
   for(const segment of ['A','B'] as const){
    const support=w.supports.find(p=>p.segment===segment&&p.holder==='FITTED');
    if(!support||support.passagesRemaining===0){

@@ -109,7 +109,7 @@ export function applyTwilightWorks(previous: TwilightWorksState, c: TwilightWork
     s.exits.push({ workerId: w.id, arrivalEventId: w.arrivalEventId!, eventId: h.eventId, second: h.nowSecond + e.seconds, from, metres, safe: w.alive && w.health > 0 }); notes.push(`${w.name}自主沿普通退路实走${metres}米到室外；本人和其他人的位置不随之改变。中途撤回不冒充完整通行。`); }
   else if (c.type === 'RETREAT') { const metres = returnMetres(s.position); s.playerTravelMetres += metres; s.position = -2; notes.push(`本人停止工作并实走${metres}米普通退路；精力不足时慢行。未移动任何其他人，材料和损坏保留。`); }
   else if (c.type === 'REST_OUTSIDE') notes.push(`本人在室外实际休息1800秒恢复${e.playerEnergyRecovered}精力；不回血、不修甲、不替别人恢复精力。`);
-  else { s.reviewedEventId = h.eventId; notes.push('复核两位成人各自的本次到场、两段真实通行和普通安全退出。仅形成两份本作内部准备事实，不自动晋升。'); }
+  else { s.reviewedEventId = h.eventId; notes.push('复核两位成人各自的本次到场、两段真实通行和普通安全退出。这两份已核实的通行记录将用于服药前准备。'); }
   s.playerEnergy = s.playerEnergy - e.playerEnergy + e.playerEnergyRecovered; s.lastSecond = h.nowSecond + e.seconds;
   s.journal.push({ command: clone(c), host: clone(h), effect: clone(e), notes: [...notes] }); return { state: s, effect: e, notes };
 }

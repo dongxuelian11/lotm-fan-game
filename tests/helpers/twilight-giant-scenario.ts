@@ -40,9 +40,16 @@ export function controlledTwilightRolls(rolls:Readonly<Record<number,number>>){
  const spy=vi.spyOn(DeterministicActionRandomStream.prototype,'nextInt').mockImplementation(function(this:DeterministicActionRandomStream,min:number,max:number){const cursor=this.cursor,actual=original.call(this,min,max);return this.seed==='warrior-natural-v042'&&min===1&&max===100&&Object.hasOwn(rolls,cursor)?rolls[cursor]!:actual;});
  return ()=>spy.mockRestore();
 }
+/** These old public references name actual on-screen bodies, never chapter admission identity. */
+export function twilightPublicPhysicalActor(path:string,value:unknown):boolean {
+ const resident=value===null||value==='GL2-CELIA'||value==='GL2-EVAN';
+ if(/^\$\.(?:divineHand|glory)\.(?:life\.(?:site|currentAttempt\.siteAt(?:Start|Close)|cases\.\d+\.attempts\.\d+\.siteAt(?:Start|Close)|ledger\.\d+\.originals(?:Before|After)\.site)|encounter\.(?:site|startSite))\.guard\.actorId$/.test(path))return resident;
+ if(/^\$\.glory\.life\.(?:currentAttempt|cases\.\d+\.attempts\.\d+)\.actorId$/.test(path))return resident;
+ return /^\$\.glory\.life\.(?:currentAttempt|cases\.\d+\.attempts\.\d+)\.(?:playerMoves|actorMoves)\.\d+\.actorId$/.test(path)&&(value==='PLAYER'||value==='GL2-CELIA'||value==='GL2-EVAN');
+}
 export function twilightPublicLeaks(view:unknown):string[]{
  const forbidden=new Set(['random','seed','cursor','randomSeed','randomCursor','randomCursorBefore','randomCursorAfter','cursorBefore','cursorAfter','randomBefore','randomAfter','randomReceipts','sourceDigest','historyDigest','originalWorldDigest','combatHistoryDigest','originalsDigest','acquisitionDigest','compoundDigest','beforeDigest','afterDigest','actorId','predecessorActorId','incumbentActorId','custodianActorId','preparationRoll']);
- const errors:string[]=[];const visit=(v:unknown,path:string)=>{if(!v||typeof v!=='object')return;for(const[k,x]of Object.entries(v)){const p=`${path}.${k}`,oldNull=k==='actorId'&&x===null&&['$.divineHand.life.site.guard.actorId','$.glory.life.site.guard.actorId'].includes(p);if(forbidden.has(k)&&!oldNull||k==='source'&&x!==null&&typeof x==='object')errors.push(p);visit(x,p);}};visit(view,'$');return errors;
+ const errors:string[]=[];const visit=(v:unknown,path:string)=>{if(!v||typeof v!=='object')return;for(const[k,x]of Object.entries(v)){const p=`${path}.${k}`,physicalActor=k==='actorId'&&twilightPublicPhysicalActor(p,x);if(forbidden.has(k)&&!physicalActor||k==='source'&&x!==null&&typeof x==='object')errors.push(p);visit(x,p);}};visit(view,'$');return errors;
 }
 /** Caller keeps controlledTwilightRolls({481:1}) active through cold validation. */
 export function controlledTwilightSuccess(){

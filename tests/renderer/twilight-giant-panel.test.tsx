@@ -31,6 +31,7 @@ beforeAll(() => {
     const source = projectSliceState(route.source), guided = projectSliceState(route.guided);
     const beforeConsume = session.project();
     const consume = beforeConsume.twilightGiant.actions.find(action => action.enabled && action.command.type === 'CONSUME')!.command;
+    if (consume.type !== 'CONSUME') throw Error('The real prepared dose has no enabled consumption command.');
     executeTwilight(session, consume);
     const success = session.project();
     for (const view of [source, guided, beforeConsume, success]) expect(twilightPublicLeaks(view)).toEqual([]);
@@ -39,8 +40,14 @@ beforeAll(() => {
     expect(success).toMatchObject({ maxSpirituality: 150, canAct: false,
       progression: { pathwayId: 'warrior', sequence: 0 }, lastCheck: { roll: 1, tier: 'GREAT_SUCCESS' } });
     expect(success.lastCheck).toMatchObject({ chance: 70, roll: 1 });
-    const preparation = route.beforeConsume.twilightGiant.journal.at(-1)!;
-    expect(preparation.command.type).toBe('STABILIZE_PROMOTION');
+    const root = route.beforeConsume.twilightGiant;
+    const ready = root.promotionStability.preparations.find(item => item.compoundId === consume.compoundId && item.status === 'READY')!;
+    expect(ready).toMatchObject({ compoundId: consume.compoundId, location: root.frame!.location,
+      status: 'READY', spentEventId: null, invalidatedEventId: null });
+    expect(root.frame!.nowSecond).toBeGreaterThanOrEqual(ready.preparedSecond);
+    expect(root.frame!.nowSecond).toBeLessThanOrEqual(ready.expiresSecond);
+    const preparation = root.journal.find(event => event.id === ready.eventId)!;
+    expect(preparation.command).toEqual({ type: 'STABILIZE_PROMOTION', compoundId: consume.compoundId });
     for (const [key, cost] of [['cash', 150], ['actions', 1], ['spirituality', 12], ['mind', 8]] as const)
       expect(preparation.after.budget[key]).toBe(preparation.before.budget[key] - cost);
     // Keep only public projections between cases, never the multi-megabyte private route.
