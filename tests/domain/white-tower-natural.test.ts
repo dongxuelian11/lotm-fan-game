@@ -50,14 +50,14 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
     expect(counts).toEqual(data.rows.map(row => row.commandCount)); expect(new Set(counts).size).toBe(137);
   });
 
-  it('admits only the exact empty Tyrant, Sun, Death and Door additions while retaining every raw211 private and public field', () => {
+  it('admits only the exact empty Tyrant, Sun, Death, Door and Error additions while retaining every raw211 private and public field', () => {
     const current = data.initial, raw = actionAt(667).beforeLast, originalHash = hash(raw), currentHash = hash(current);
     same(historicalWhiteTowerState(current), raw);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'tyrant', 'sun', 'death', 'door'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'tyrant', 'sun', 'death', 'door', 'errorAscent'].sort());
     expect(current.sun).toStrictEqual(createSunState());
     expect(Object.hasOwn(raw, 'sun')).toBe(false); expect(Object.hasOwn(raw, 'death')).toBe(false);
     expect(() => migrateCapturedWhiteTowerState({ ...raw, death: current.death } as HistoricalWhiteTowerState)).toThrow();
-    expect(Object.hasOwn(raw, 'door')).toBe(false);
+    expect(Object.hasOwn(raw, 'door')).toBe(false); expect(Object.hasOwn(raw, 'errorAscent')).toBe(false);
     expect(() => migrateCapturedWhiteTowerState({ ...raw, door: current.door } as HistoricalWhiteTowerState)).toThrow();
     expect(Object.hasOwn(raw, 'tyrant')).toBe(false);
     expect(() => migrateCapturedWhiteTowerState({ ...raw, tyrant: current.tyrant } as HistoricalWhiteTowerState)).toThrow();

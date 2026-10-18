@@ -1,3 +1,4 @@
+import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
@@ -38,9 +39,9 @@ const historicalSnapshots = {
   },
 } as const;
 const introducedRoots = {
-  203: ['natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'],
-  204: ['fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'],
-  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'],
+  203: ['natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
+  204: ['fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
+  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
 } as const;
 const historicalStates = new Map<203 | 204 | 205, Record<string, unknown>>();
 function legacy(version: 203 | 204 | 205): Record<string, unknown> {
@@ -72,9 +73,9 @@ describe('Red Priest exact slice schema and migration boundary', () => {
   it('creates the exact current empty root and returns a detached current save', () => {
     const input = fresh(), bytes = stableStringify(input), copy = migrateSliceState(input);
     expect([input.schemaVersion, input.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    same(input.redPriest, createRedPriestState()); same(input.tyrant, createTyrantState()); same(input.sun, createSunState());same(input.death,createDeathState());expect(input.door).toStrictEqual(createDoorState()); same(input, copy);
+    same(input.redPriest, createRedPriestState()); same(input.tyrant, createTyrantState()); same(input.sun, createSunState());same(input.death,createDeathState());expect(input.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(input); same(input, copy);
     expect(copy).not.toBe(input); expect(copy.redPriest).not.toBe(input.redPriest);
-    expect(copy.tyrant).not.toBe(input.tyrant); expect(copy.sun).not.toBe(input.sun);expect(copy.death).not.toBe(input.death);expect(copy.door).not.toBe(input.door);
+    expect(copy.tyrant).not.toBe(input.tyrant); expect(copy.sun).not.toBe(input.sun);expect(copy.death).not.toBe(input.death);expect(copy.door).not.toBe(input.door);expect(copy.errorAscent).not.toBe(input.errorAscent);
     expect(stableStringify(input)).toBe(bytes); assertValidSliceState(copy);
   });
 
@@ -90,7 +91,7 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     }
     for (const key of introducedRoots[205]) same(migrated[key], defaults[key]);
     same(migrated.redPriest, createRedPriestState()); same(migrated.fool, input.fool);
-    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState()); same(migrated.sun, createSunState());same(migrated.death,createDeathState());expect(migrated.door).toStrictEqual(createDoorState());
+    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState()); same(migrated.sun, createSunState());same(migrated.death,createDeathState());expect(migrated.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(migrated);
     expect(stableStringify(input)).toBe(bytes);
     expect(hash(readFileSync(foolCapture.path))).toBe(foolCapture.sha256);
   }, 120_000);
@@ -108,7 +109,7 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     }
     for (const key of introducedRoots[version]) same(migrated[key], defaults[key]);
     same(migrated.fool, createFoolState()); same(migrated.redPriest, createRedPriestState());
-    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState()); same(migrated.sun, createSunState());same(migrated.death,createDeathState());expect(migrated.door).toStrictEqual(createDoorState());
+    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState()); same(migrated.sun, createSunState());same(migrated.death,createDeathState());expect(migrated.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(migrated);
     expect(stableStringify(input)).toBe(bytes);
     expect(hash(readFileSync(historicalSnapshots[version].path))).toBe(historicalSnapshots[version].sha256);
   }, 60_000);

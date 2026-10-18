@@ -1,3 +1,4 @@
+import { emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { emptyDeathPublic, emptyDoorPublic } from '../helpers/empty-death-capture.js';
@@ -169,9 +170,9 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
         same(expected.recovery.actions.credit, raw.recovery.actions.credit, 'Event-choice credit gating remains frozen');
         expect(state.sun.guidanceKnown).toBe(guided); expect(state.sun.source !== null).toBe(guided);
         expect([raw.maxSpirituality, expected.maxSpirituality]).toEqual(promoted ? [30, 150] : [120, 120]);
-        const currentExpected = { ...expected, death: emptyDeathPublic(state), door: emptyDoorPublic(state) };
+        const currentExpected = { ...expected, death: emptyDeathPublic(state), door: emptyDoorPublic(state), errorAscent: emptyErrorAscentPublic(state) };
         assertCurrentGlobal(currentExpected, action, side);
-        if (guided) expect(() => assertCurrentGlobal({ ...raw, death: emptyDeathPublic(state), door: emptyDoorPublic(state) }, action, side)).toThrow();
+        if (guided) expect(() => assertCurrentGlobal({ ...raw, death: emptyDeathPublic(state), door: emptyDoorPublic(state), errorAscent: emptyErrorAscentPublic(state) }, action, side)).toThrow();
         else {
           same(expected, raw, '854-before remains completely unchanged');
           expect(raw.canAct).toBe(true); expect(raw.actionBlockedReason).toBeNull(); expect(state.sun.source).toBeNull();
@@ -229,7 +230,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
       if (count === 854) {
         const next = actionAt(855);
         same(action.final, next.beforeLast); same(action.globalPublic, next.globalPublicBefore);
-        expect(() => assertCurrentGlobal({ ...expectedCurrentGlobal(action, 'after'), death: emptyDeathPublic(action.final), door: emptyDoorPublic(action.final) }, next, 'after')).toThrow();
+        expect(() => assertCurrentGlobal({ ...expectedCurrentGlobal(action, 'after'), death: emptyDeathPublic(action.final), door: emptyDoorPublic(action.final), errorAscent: emptyErrorAscentPublic(action.final) }, next, 'after')).toThrow();
         expect(() => expectedCurrentGlobal({ ...action, lastIntent: next.lastIntent }, 'after')).toThrow();
         const sourceMissing = { ...action, final: { ...action.final, sun: { ...action.final.sun, source: null } } };
         expect(() => expectedCurrentGlobal(sourceMissing, 'after')).toThrow();

@@ -207,7 +207,26 @@ function desiredCommand(root: ErrorAscentState): ErrorAscentCommand | null {
   if (r.player.outcome !== null || r.phase === 'SETTLED' || r.phase === 'CANCELLED')
     return f.location === ERROR_ASCENT_HOME ? null : { type: 'RETURN_ON_FOOT' };
   if (!r.booking) return at(ERROR_ASCENT_GATE, { type: 'RITUAL', command: { type: 'BRIEF' } });
-  if (!r.player.surveyed) return at(ERROR_ASCENT_GATE, { type: 'RITUAL', command: { type: 'SURVEY' } });
+  if (!r.player.surveyed) return b.actions < 1 ? nextIncome(root)
+    : at(ERROR_ASCENT_GATE, { type: 'RITUAL', command: { type: 'SURVEY' } });
+  // Keep the paid workday that the fixed appointment's route budget allows.
+  // Free labour still uses AP; spending the whole week on it would silently
+  // forfeit the wage needed to buy those same originals later.
+  const waitingWeeks = Math.max(0, Math.floor((r.booking.consumeAt - f.weekAnchor) / 604800));
+  const livingReserve = waitingWeeks * SLICE_LIFE[f.finance.lifeTier].cost
+    + f.finance.debts.reduce((sum, debt) => sum + Math.min(debt.remaining, waitingWeeks * debt.weeklyPayment), 0);
+  const originalCosts = m.characteristics.reduce((sum, item) => sum +
+    (['EMBODIED', 'COMPOUND', 'FUSED'].includes(item.holder) || item.holder === 'PLAYER' && item.acquiredEventId ? 0
+      : item.holder === 'SUPPLIER' ? item.recoveredVessel ? 90 : 1100
+        : item.holder === 'PLAYER' ? 90 : ERROR_ASCENT_MATERIAL_POLICY.investigateFee + ERROR_ASCENT_MATERIAL_POLICY.legacyRecoveryFee + 90), 0);
+  const uniqueCosts = ['UNVERIFIED', 'CUSTODIAN'].includes(m.uniqueness.holder)
+    ? ERROR_ASCENT_MATERIAL_POLICY.uniquenessHandoverFee + (m.uniqueness.checks.some(c => c.step === 'CHAIN') ? 0 : ERROR_ASCENT_MATERIAL_POLICY.uniquenessCheckFee) : 0;
+  const hasCompound = m.compounds.some(p => p.status === 'PREPARED');
+  const carrierCosts = hasCompound ? 0 : ERROR_ASCENT_MATERIAL_POLICY.composeFee
+    + (m.batches.some(batch => batch.status === 'PLAYER') ? 0 : ERROR_ASCENT_MATERIAL_POLICY.carrierPrices['error-ascent-carrier-1']);
+  const preparationCosts = (preparedForAttempt ? 0 : 150) + (r.player.linePrepared ? 0 : 50);
+  if (f.finance.wagePaidWeek !== b.week && b.actions > 0 && b.cash < originalCosts + uniqueCosts + carrierCosts + preparationCosts + livingReserve)
+    return { type: 'WORK' };
   const item = m.characteristics.find(i => !['EMBODIED', 'COMPOUND', 'FUSED'].includes(i.holder)
     && (i.holder !== 'PLAYER' || !i.acquiredEventId));
   if (item) {
@@ -232,12 +251,14 @@ function desiredCommand(root: ErrorAscentState): ErrorAscentCommand | null {
   }
   if (['UNVERIFIED', 'CUSTODIAN'].includes(m.uniqueness.holder)) {
     if (!m.uniqueness.checks.some(c => c.step === 'CHAIN')) {
-      if (b.cash < ERROR_ASCENT_MATERIAL_POLICY.uniquenessCheckFee) return nextIncome(root);
+      if (b.cash < ERROR_ASCENT_MATERIAL_POLICY.uniquenessCheckFee || b.actions < 1) return nextIncome(root);
       return at(ERROR_ASCENT_ARCHIVE, { type: 'MATERIAL', command: { type: 'VERIFY_UNIQUENESS', step: 'CHAIN' } });
     }
-    if (b.cash < ERROR_ASCENT_MATERIAL_POLICY.uniquenessHandoverFee) return nextIncome(root);
-    if (!m.uniqueness.checks.some(c => c.step === 'VACANCY' && c.week === b.week))
+    if (b.cash < ERROR_ASCENT_MATERIAL_POLICY.uniquenessHandoverFee || b.actions < 1) return nextIncome(root);
+    if (!m.uniqueness.checks.some(c => c.step === 'VACANCY' && c.week === b.week)) {
+      if (f.location === ERROR_ASCENT_VAULT && b.actions < 2) return nextIncome(root);
       return at(ERROR_ASCENT_VAULT, { type: 'MATERIAL', command: { type: 'VERIFY_UNIQUENESS', step: 'VACANCY' } });
+    }
     return at(ERROR_ASCENT_VAULT, { type: 'MATERIAL', command: { type: 'ACQUIRE_UNIQUENESS' } });
   }
   const compound = m.compounds.find(p => p.status === 'PREPARED');
@@ -250,13 +271,14 @@ function desiredCommand(root: ErrorAscentState): ErrorAscentCommand | null {
       if (b.cash < 150 + (r.player.linePrepared ? 0 : 50) + waitingBills) return nextIncome(root);
       if (f.location !== ERROR_ASCENT_WORKSHOP) return at(ERROR_ASCENT_WORKSHOP, { type: 'WAIT_FOR_PREPARATION' });
       if (r.booking.consumeAt - f.nowSecond > 86400) return { type: 'WAIT_FOR_PREPARATION' };
-      return { type: 'STABILIZE_PROMOTION', compoundId: compound.id };
+      return b.actions < 1 ? nextIncome(root) : { type: 'STABILIZE_PROMOTION', compoundId: compound.id };
     }
-    if (!r.player.linePrepared) return at(ERROR_ASCENT_GATE, { type: 'RITUAL', command: { type: 'PREPARE_LINE' } });
+    if (!r.player.linePrepared) return b.actions < 1 ? nextIncome(root)
+      : at(ERROR_ASCENT_GATE, { type: 'RITUAL', command: { type: 'PREPARE_LINE' } });
     return at(ERROR_ASCENT_GATE, { type: 'RITUAL', command: { type: 'ENTER' } });
   }
   const held = m.batches.find(x => x.status === 'PLAYER');
-  if (held) return b.cash < ERROR_ASCENT_MATERIAL_POLICY.composeFee ? nextIncome(root)
+  if (held) return b.cash < ERROR_ASCENT_MATERIAL_POLICY.composeFee || b.actions < 1 ? nextIncome(root)
     : at(ERROR_ASCENT_WORKSHOP, { type: 'MATERIAL', command: { type: 'COMPOSE_POTION', batchId: held.id } });
   const supplier = m.batches.find(x => x.status === 'SUPPLIER');
   if (supplier) return b.cash < ERROR_ASCENT_MATERIAL_POLICY.carrierPrices[supplier.id] ? nextIncome(root)
@@ -389,8 +411,8 @@ function projection(s: SliceState, head: ErrorAscentOwnedEngine | null): ErrorAs
   let preferred = chosen?.enabled && (chosen.command.type !== 'NEXT_WEEK' || safeWeek) ? chosen : undefined;
   if (chosen && !preferred && !result.insideCase) {
     preferred = result.actions.find(a => a.command.type === 'WORK' && a.enabled)
-      ?? result.actions.find(a => a.command.type === 'RETURN_ON_FOOT' && a.enabled)
-      ?? (safeWeek ? result.actions.find(a => a.command.type === 'NEXT_WEEK' && a.enabled) : undefined);
+      ?? (safeWeek ? result.actions.find(a => a.command.type === 'NEXT_WEEK' && a.enabled) : undefined)
+      ?? result.actions.find(a => a.command.type === 'RETURN_ON_FOOT' && a.enabled);
   }
   if (preferred) { preferred.preferredAction = true; result.nextStep = `${preferred.label}。${preferred.cost}。`; }
   else if (chosen?.command.type === 'NEXT_WEEK' && !safeWeek) result.nextStep = '下一周会越过本次仪式时刻。当前资源不足时可退出，但不能靠周结重开日程。';

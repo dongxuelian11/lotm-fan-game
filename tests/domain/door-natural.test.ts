@@ -1,3 +1,4 @@
+import { emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
@@ -51,7 +52,7 @@ describe('Door218 actual natural928 from unchanged original196 living823', () =>
     expect(Object.values(data.original.progression.mastery).filter(value => value === 0)).toHaveLength(8);
     const originalHash = hash(data.original), migrated = migrateSliceState(data.original);
     same(historicalDoorState(migrated), data.initial, 'Current migration retains every exact193->215 captured field');
-    expect(Object.keys(migrated).sort()).toEqual(Object.keys(data.initial).sort());
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(data.initial), 'errorAscent'].sort());
     expect(hash(data.original)).toBe(originalHash); expect(originalHash).toBe(PINS.originalStateSha256);
     const global = projectSliceState(migrated); same(historicalDoorPublic(global, migrated), data.initialPublic); assertGlobalPublic(global, migrated);
     expect(hash(historicalDoorPublic(global, migrated))).toBe(PINS.initialGlobalPublicSha256); expect(hash(capturePublic(global))).toBe(PINS.initialPublicSha256);
@@ -182,7 +183,7 @@ describe('Door218 actual natural928 from unchanged original196 living823', () =>
   }, 300_000);
 
   it('rejects altered evidence, unknown roots, wrong revision offsets, forged input and private leakage', () => {
-    const action = actionAt(916), original = hash(action), expected = action.globalPublic;
+    const action = actionAt(916), original = hash(action), expected = { ...action.globalPublic, errorAscent: emptyErrorAscentPublic(action.final) };
     assertCurrentGlobal(expected, action, 'after');
     expect(() => assertCurrentGlobal({ ...expected, cash: expected.cash + 1 }, action, 'after')).toThrow();
     expect(() => assertCurrentGlobal({ ...expected, unexpectedRoot: null } as typeof expected, action, 'after')).toThrow();

@@ -9,6 +9,7 @@ import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
 import { createSunState } from '../../src/domain/sun/index.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
+import { assertEmptyErrorAscentState, assertEmptyErrorAscentPublic } from './empty-error-ascent-capture.js';
 import { assertEmptyDeathState, assertEmptyDeathPublic, assertEmptyDoorState, assertEmptyDoorPublic } from './empty-death-capture.js';
 
 /** Read-only consumer of the original complete137-action capture. Never imports
@@ -44,11 +45,11 @@ export interface Manifest { format: string; files: Member[] }
 export interface Freeze { sha256: string; nodeVersion: string; files: Array<FilePin & { file: string }> }
 export interface BoundaryIndex extends FilePin { file: string; kind: string; commandCount: number }
 export interface Outcome { status: SliceState['status']; promoted: boolean; passages: number; reviews: number }
-/** Raw211 evidence is immutable and has none of the Tyrant, Sun or Death roots. */
-export type HistoricalWhiteTowerState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'tyrant' | 'sun' | 'death' | 'door'> & {
+/** Raw211 evidence is immutable and has none of the Tyrant, Sun, Death, Door or Error roots. */
+export type HistoricalWhiteTowerState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent'> & {
   schemaVersion: 211; contentVersion: 'white-tower-v211';
 };
-export type HistoricalWhiteTowerPublic = Omit<SliceProjection, 'tyrant' | 'sun' | 'death' | 'door'>;
+export type HistoricalWhiteTowerPublic = Omit<SliceProjection, 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent'>;
 export interface Row {
   commandCount: number; intent: SliceIntent; commandSha256: string; reason: string; publicLabel: string; publicCost: string;
   startedAt: string; elapsedMilliseconds: number; revision: number; week: number;
@@ -208,16 +209,16 @@ export function historicalWhiteTowerState(state: SliceState): HistoricalWhiteTow
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(createTyrantState(), EMPTY_TYRANT); assert.deepEqual(createSunState(), EMPTY_SUN);
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
-  assertEmptyDeathState(state); assertEmptyDoorState(state);
-  const { tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, ...originalFields } = state;
+  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state);
+  const { tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 211, contentVersion: 'white-tower-v211' };
 }
-/** Pin all four entire inactive public additions before removing only those roots.
+/** Pin all five entire inactive public additions before removing only those roots.
  * No old prose, chronicle, command, resource or unknown root is normalized. */
 export function historicalWhiteTowerPublic(projection: SliceProjection, state: SliceState): HistoricalWhiteTowerPublic {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
-  assertEmptyDeathState(state); assertEmptyDoorState(state);
+  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state);
   assert.equal(state.progression.pathwayId, 'white-tower');
   assert.equal(Object.hasOwn(projection, 'tyrant'), true);
   assert.deepEqual(projection.tyrant, {
@@ -249,16 +250,16 @@ export function historicalWhiteTowerPublic(projection: SliceProjection, state: S
       reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
       preferredAction: true }],
   });
-  assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state);
-  const { tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, ...originalFields } = projection;
+  assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state);
+  const { tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, ...originalFields } = projection;
   return originalFields;
 }
 export function migrateCapturedWhiteTowerState(raw: HistoricalWhiteTowerState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [211, 'white-tower-v211']);
-  assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false);
+  assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false); assert.equal(Object.hasOwn(raw, 'errorAscent'), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assert.deepEqual([current.schemaVersion, current.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assertValidSliceState(current); exactKeys(current, [...Object.keys(raw), 'tyrant', 'sun', 'death', 'door']);
+  assertValidSliceState(current); exactKeys(current, [...Object.keys(raw), 'tyrant', 'sun', 'death', 'door', 'errorAscent']);
   same(historicalWhiteTowerState(current), raw, 'Strict current ingress changed full original capture');
   assert.equal(hash(raw), before); return current;
 }
@@ -291,8 +292,8 @@ export function loadCapture(): LoadedCapture {
   const migrated = json<{ final: HistoricalWhiteTowerState; random: SliceState['random']; public: CapturedPublic; globalPublic: HistoricalWhiteTowerPublic }>('migration-initial.json.gz');
   assert.equal(hash(migrated.final), PINS.initialStateSha256);
   assert.deepEqual([migrated.final.schemaVersion, migrated.final.contentVersion], [211, 'white-tower-v211']);
-  assert.equal(Object.hasOwn(migrated.final, 'tyrant'), false); assert.equal(Object.hasOwn(migrated.final, 'sun'), false); assert.equal(Object.hasOwn(migrated.final, 'death'), false); assert.equal(Object.hasOwn(migrated.final, 'door'), false);
-  exactKeys(initial, [...Object.keys(migrated.final), 'tyrant', 'sun', 'death', 'door']);
+  assert.equal(Object.hasOwn(migrated.final, 'tyrant'), false); assert.equal(Object.hasOwn(migrated.final, 'sun'), false); assert.equal(Object.hasOwn(migrated.final, 'death'), false); assert.equal(Object.hasOwn(migrated.final, 'door'), false); assert.equal(Object.hasOwn(migrated.final, 'errorAscent'), false);
+  exactKeys(initial, [...Object.keys(migrated.final), 'tyrant', 'sun', 'death', 'door', 'errorAscent']);
   same(historicalWhiteTowerState(initial), migrated.final); same(migrated.random, initial.random);
   const initialGlobal = projectSliceState(initial); assertGlobalPublic(initialGlobal, initial);
   same(historicalWhiteTowerPublic(initialGlobal, initial), migrated.globalPublic); same(capturePublic(initialGlobal), migrated.public);

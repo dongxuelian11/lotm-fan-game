@@ -1,3 +1,4 @@
+import { assertEmptyErrorAscentState } from './empty-error-ascent-capture.js';
 import { assertEmptyDeathState, assertEmptyDoorState } from './empty-death-capture.js';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -44,11 +45,11 @@ function captureHash(current: SliceState, historical: SliceState): string {
     readObjectEntry<Parameters<typeof createSliceRun>[1]>(ORIGINAL, 'creation'), historical.random.seed);
   const old = historical as unknown as Record<string, unknown>, now = current as unknown as Record<string, unknown>;
   const fresh = defaults as unknown as Record<string, unknown>;
-  const laterRoots = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'] as const;
+  const laterRoots = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'] as const;
   expect(historical.schemaVersion).toBe(208);
   const added = [...laterRoots];
   for (const key of added) expect(Object.hasOwn(old, key), `Unexpected historical root ${key}`).toBe(false);
-  assertEmptyDeathState(current); assertEmptyDoorState(current);
+  assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current);
   expect(Object.keys(now).sort()).toEqual([...Object.keys(old), ...added].sort());
   for (const key of added) expect(now[key], `New root ${key} must remain the complete fresh current default`).toEqual(fresh[key]);
   return captureValueHash({ ...Object.fromEntries(Object.keys(old).map(key => [key, now[key]])),

@@ -1,3 +1,4 @@
+import { assertEmptyErrorAscentState, emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
 import { describe, expect, it } from 'vitest';
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -46,7 +47,7 @@ function assertPlayerProjection(local: RedPriestProjection, global: RedPriestPro
     .toEqual(local.actions.map(({ id, command, cost, enabled }) => ({ id, command, cost, enabled })));
   expect(global.resources).toEqual(local.resources);
 }
-const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door'] as const;
+const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'] as const;
 /** Independently specified complete empty roots, not a filter for arbitrary
  * current defaults. The 0.209 capture itself uses schema206/red-priest-v206. */
 const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]> = {
@@ -69,8 +70,10 @@ const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]>
     services: null, materials: null, materialScene: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
   door: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  errorAscent: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    ritual: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
 };
-/** Preserve every historical public field. Only these nine explicitly named
+/** Preserve every historical public field. Only these ten explicitly named
  * later chapter roots may be omitted, after checking their complete empty
  * private states and complete inactive player-facing projections. Unknown
  * public fields remain in the historical hash and therefore cannot be hidden. */
@@ -79,7 +82,7 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
   expect(state.progression.pathwayId).toBe('hunter');
   expect(createTyrantState()).toStrictEqual(EMPTY_LATER_CHAPTERS.tyrant);
   expect(createSunState()).toStrictEqual(EMPTY_LATER_CHAPTERS.sun);
-  assertEmptyDeathState(state); assertEmptyDoorState(state);
+  assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state);
   expect(Object.keys(state).sort()).toEqual([...Object.keys(capturedRoot), ...LATER_CHAPTER_ROOTS].sort());
   for (const key of LATER_CHAPTER_ROOTS) {
     expect(Object.hasOwn(capturedRoot, key)).toBe(false);
@@ -116,7 +119,7 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
         reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
         preferredAction: true }],
     },
-    death: emptyDeathPublic(state), door: emptyDoorPublic(state),
+    death: emptyDeathPublic(state), door: emptyDoorPublic(state), errorAscent: emptyErrorAscentPublic(state),
   }, state.character.name);
   for (const key of LATER_CHAPTER_ROOTS) {
     expect(Object.hasOwn(current, key)).toBe(true);
@@ -124,7 +127,7 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
     expect(root).toStrictEqual(expected[key]);
     expect(Object.keys(root).sort()).toEqual(['title', 'guidanceKnown', 'promoted', 'story', 'nextStep', 'risk',
       'resources', 'abilities', 'actions', 'sections', 'insideCase',
-      ...(['death', 'door'].includes(key) ? ['injuries', 'injuryRisk'] : [])].sort());
+      ...(['death', 'door', 'errorAscent'].includes(key) ? ['injuries', 'injuryRisk'] : [])].sort());
     expect([root.guidanceKnown, root.promoted, root.insideCase]).toEqual([false, false, false]);
     expect(root.abilities).toEqual([]); expect(root.sections).toEqual([]);
     expect(root.actions).toHaveLength(1);
@@ -132,7 +135,7 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
     expect(root.actions[0]!.enabled).toBe(false);
   }
   const { visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, whiteTower: _whiteTower,
-    tyrant: _tyrant, sun: _sun, death: _death, door: _door, ...historical } = current;
+    tyrant: _tyrant, sun: _sun, death: _death, door: _door, errorAscent: _errorAscent, ...historical } = current;
   return hash(historical);
 }
 function persisted(path: string): string {

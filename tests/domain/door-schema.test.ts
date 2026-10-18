@@ -1,3 +1,4 @@
+import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -32,7 +33,7 @@ describe('Door schema215 exact additive admission', () => {
   it('creates exactly the empty Door root in the current default run', () => {
     const state = fresh();
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(state.door).toEqual(createDoorState());
+    expect(state.door).toEqual(createDoorState()); assertEmptyErrorAscentState(state);
     expect(validateDoorState(state)).toBe(true);
     expect(() => assertValidSliceState(state)).not.toThrow();
     // An empty root is a save field, never an owned-session authority.
@@ -47,12 +48,12 @@ describe('Door schema215 exact additive admission', () => {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(doorScenarioHash(current[key as keyof SliceState]), `Changed original ${key}`).toBe(doorScenarioHash(value));
     }
-    expect(current.door).toEqual(createDoorState());
+    expect(current.door).toEqual(createDoorState()); assertEmptyErrorAscentState(current);
     for (const key of [
       'timeWorm', 'divineHand', 'apocalypseDemoness', 'knowledgeEmperor', 'darkAngel',
       'uncleanMonarch', 'abomination', 'mercurySnake', 'princeOfAbolition', 'handOfOrder',
       'natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness',
-      'whiteTower', 'tyrant', 'sun', 'death', 'door',
+      'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent',
     ] as const) {
       expect(Object.hasOwn(source, key), `Original193 unexpectedly contains ${key}`).toBe(false);
       expect(current[key], `Nonempty migrated ${key}`).toEqual(defaults[key]);

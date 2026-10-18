@@ -5,6 +5,7 @@ import { join, resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
+import { assertEmptyErrorAscentState, assertEmptyErrorAscentPublic } from './empty-error-ascent-capture.js';
 import { assertEmptyDoorState, assertEmptyDoorPublic } from './empty-death-capture.js';
 
 /** Independent immutable NEW217 reader. Never imports/executes the producer,
@@ -302,21 +303,21 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   assert(!before.death.guidanceKnown && after.death.guidanceKnown);
   return { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
-export type HistoricalDeathState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'door'> & {
+export type HistoricalDeathState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'door' | 'errorAscent'> & {
   schemaVersion: 214; contentVersion: 'death-v214';
 };
-export type HistoricalDeathPublic = Omit<SliceProjection, 'door'>;
-/** Exactly the schema215 Door default may be omitted. Every original field and
+export type HistoricalDeathPublic = Omit<SliceProjection, 'door' | 'errorAscent'>;
+/** Exactly the schema215 Door and schema216 Error defaults may be omitted. Every original field and
  * unknown root remains in the historical hash; raw schema/content never move. */
 export function historicalDeathState(state: SliceState): HistoricalDeathState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assertEmptyDoorState(state);
-  const { door: _emptyDoor, ...originalFields } = state;
+  assertEmptyDoorState(state); assertEmptyErrorAscentState(state);
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, ...originalFields } = state;
   return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
 }
 export function historicalDeathPublic(projection: SliceProjection, state: SliceState): HistoricalDeathPublic {
-  historicalDeathState(state); assertEmptyDoorPublic(projection, state);
-  const { door: _emptyDoor, ...originalFields } = projection;
+  historicalDeathState(state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state);
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, ...originalFields } = projection;
   return originalFields;
 }
 /** Raw214 authentication stays independent of current projection admission. */
@@ -325,17 +326,18 @@ export function assertCapturedGlobal(actual: SliceProjection, action: Action, si
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
   assert.equal(state.revision, action.commandCount + (side === 'after' ? 1 : 0));
   assert.equal(Object.hasOwn(state, 'door'), false); assert.equal(Object.hasOwn(actual, 'door'), false);
+  assert.equal(Object.hasOwn(state, 'errorAscent'), false); assert.equal(Object.hasOwn(actual, 'errorAscent'), false);
   const expected = side === 'before' ? action.globalPublicBefore : action.globalPublic;
   same(actual, expected, `Complete captured global public ${action.commandCount} ${side}`);
   assert.equal(hash(actual), side === 'before' ? action.audit.globalPublicBeforeSha256 : action.audit.globalPublicAfterSha256);
   same(capturePublic(actual), side === 'before' ? action.publicBefore : action.public); assertGlobalPublic(actual, state);
 }
-/** Current projection requires the exact empty Door root before comparison of
+/** Current projection requires the exact empty Door and Error roots before comparison of
  * every historical public leaf. Missing roots never select a permissive path. */
 export function assertCurrentGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
   const state = side === 'before' ? action.beforeLast : action.final;
-  assertEmptyDoorPublic(actual, state);
-  const { door: _emptyDoor, ...historicalPublic } = actual;
+  assertEmptyDoorPublic(actual, state); assertEmptyErrorAscentPublic(actual, state);
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, ...historicalPublic } = actual;
   assertCapturedGlobal(historicalPublic as SliceProjection, action, side);
   assertGlobalPublic(actual, state);
 }

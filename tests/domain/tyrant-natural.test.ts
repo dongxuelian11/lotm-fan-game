@@ -144,9 +144,9 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
     }
   }, 240_000);
 
-  it('allows only verified empty Sun, Death and Door roots when comparing captured212', () => {
+  it('allows only verified empty Sun, Death, Door and Error roots when comparing captured212', () => {
     const state = data.initial, historical = historicalTyrantState(state);
-    for (const root of ['sun', 'death', 'door'] as const) {
+    for (const root of ['sun', 'death', 'door', 'errorAscent'] as const) {
       const { [root]: _missing, ...missing } = state;
       expect(() => historicalTyrantState(missing as SliceState)).toThrow();
       for (const value of [null, { ...state[root], guidanceKnown: true },
@@ -156,7 +156,7 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
     }
     expect(hash(historicalTyrantState({ ...state, unknownRoot: null } as SliceState))).not.toBe(hash(historical));
     const projection = projectSliceState(state), oldPublic = historicalTyrantPublic(projection, state);
-    for (const root of ['sun', 'death', 'door'] as const) {
+    for (const root of ['sun', 'death', 'door', 'errorAscent'] as const) {
       const { [root]: _missing, ...missing } = projection;
       expect(() => historicalTyrantPublic(missing as SliceProjection, state)).toThrow();
       for (const value of [null, { ...projection[root], promoted: true },

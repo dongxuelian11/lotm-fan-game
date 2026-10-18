@@ -1,3 +1,4 @@
+import { emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
@@ -50,7 +51,7 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
     expect(Object.values(data.original.progression.mastery).filter(value => value === 0)).toHaveLength(7);
     const originalHash = hash(data.original), migrated = migrateSliceState(data.original);
     same(historicalDeathState(migrated), data.initial, 'Current migration retains every exact192->214 captured field');
-    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(data.initial), 'door'].sort());
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(data.initial), 'door', 'errorAscent'].sort());
     expect(hash(data.original)).toBe(originalHash); expect(originalHash).toBe(PINS.originalStateSha256);
     const global = projectSliceState(migrated); same(historicalDeathPublic(global, migrated), data.initialPublic); assertGlobalPublic(global, migrated);
     expect(hash(historicalDeathPublic(global, migrated))).toBe(PINS.initialGlobalPublicSha256); expect(hash(capturePublic(global))).toBe(PINS.initialPublicSha256);
@@ -178,7 +179,7 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
   }, 300_000);
 
   it('rejects altered evidence, unknown roots, wrong sides, forged input and private leakage without editing any capture', () => {
-    const action = actionAt(1128), original = hash(action), expected = { ...action.globalPublic, door: emptyDoorPublic(action.final) };
+    const action = actionAt(1128), original = hash(action), expected = { ...action.globalPublic, door: emptyDoorPublic(action.final), errorAscent: emptyErrorAscentPublic(action.final) };
     assertCurrentGlobal(expected, action, 'after');
     expect(() => assertCurrentGlobal(action.globalPublic, action, 'after')).toThrow();
     expect(() => assertCurrentGlobal({ ...expected, cash: expected.cash + 1 }, action, 'after')).toThrow();

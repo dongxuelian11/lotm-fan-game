@@ -1,4 +1,5 @@
-import { EMPTY_RED_PRIEST, EMPTY_VISIONARY, EMPTY_PERFECTER, EMPTY_MOON, EMPTY_DARKNESS, EMPTY_WHITE_TOWER, EMPTY_TYRANT, EMPTY_SUN, historicalFoolStateForEmptyRootAudit, historicalWithoutEmptyDoorPublic } from '../helpers/historical-empty-root-audit.js';
+import { createErrorAscentState } from '../../src/domain/error-ascent/index.js';
+import { EMPTY_RED_PRIEST, EMPTY_VISIONARY, EMPTY_PERFECTER, EMPTY_MOON, EMPTY_DARKNESS, EMPTY_WHITE_TOWER, EMPTY_TYRANT, EMPTY_SUN, historicalFoolStateForEmptyRootAudit, historicalWithoutEmptyDoorAndErrorPublic } from '../helpers/historical-empty-root-audit.js';
 import assert from 'node:assert/strict';
 import { assertEmptyDeathState, assertEmptyDeathPublic, assertEmptyDoorState } from '../helpers/empty-death-capture.js';
 import { createDoorState } from '../../src/domain/door/index.js';
@@ -261,7 +262,7 @@ async function fileHash(path: string, prefixBytes?: number): Promise<string> {
 interface PriorPublicRow { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; public: { strictSha256: string } }
 interface RedactionAudit {
   prior: { rows: PriorPublicRow[] };
-  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door'>, display: typeof projectPlayerText) => unknown;
+  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent'>, display: typeof projectPlayerText) => unknown;
   assertRow: (prior: { rows: PriorPublicRow[] }, index: number, actual: { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; legacyPublicSha256: string }) => string;
 }
 let redactionAudit: RedactionAudit | null = null;
@@ -318,7 +319,7 @@ function jsonLines<T>(file: FileName): T[] {
   const text = readFileSync(fixturePath(file), 'utf8'); expect(text.endsWith('\n'), file).toBe(true);
   return text.slice(0, -1).split('\n').map(line => { expect(line.length).toBeGreaterThan(0); return JSON.parse(line) as T; });
 }
-type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
+type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
 let originalStateKeys: readonly string[] | null = null;
 function historicalStateKeys(): readonly string[] {
   if (!originalStateKeys) {
@@ -331,12 +332,12 @@ function historicalStateKeys(): readonly string[] {
     expect(Object.hasOwn(raw, 'moon')).toBe(false);
     expect(Object.hasOwn(raw, 'darkness')).toBe(false);
     expect(Object.hasOwn(raw, 'whiteTower')).toBe(false);
-    for (const root of ['tyrant', 'sun', 'death', 'door']) expect(Object.hasOwn(raw, root)).toBe(false);
+    for (const root of ['tyrant', 'sun', 'death', 'door', 'errorAscent']) expect(Object.hasOwn(raw, root)).toBe(false);
     originalStateKeys = Object.keys(raw).sort();
   }
   return originalStateKeys;
 }
-/** Audit only: allow exactly the ten approved new roots and two version changes.
+/** Audit only: allow exactly the eleven approved new roots and two version changes.
  * Every original field, including all nested history, remains in the hash. */
 function historicalStateView(state: SliceState): HistoricalFoolState {
   return historicalFoolStateForEmptyRootAudit(state, historicalStateKeys()) as HistoricalFoolState;
@@ -356,9 +357,9 @@ function current(raw: unknown): SliceState {
   return state;
 }
 
-/** Remove only the ten verified inactive new chapters from this detached audit view.
+/** Remove only the eleven verified inactive new chapters from this detached audit view.
  * Its complete remaining shape/content is still bound by the old public hash. */
-function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door'> {
+function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent'> {
   expect(state.progression.pathwayId).toBe('diviner');
   expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
   expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
@@ -457,7 +458,7 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
   assertEmptyDeathPublic(projection, state);
   const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
     perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower,
-    tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, ...originalFields } = historicalWithoutEmptyDoorPublic(projection, state);
+    tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, ...originalFields } = historicalWithoutEmptyDoorAndErrorPublic(projection, state);
   return originalFields;
 }
 function budget(s: SliceState) {
@@ -603,7 +604,7 @@ async function assertTransition(e: Observation, commands: SliceIntent[], freeze:
 describe.sequential('Fool original1868 continuation with explicit original43 reconstruction evidence', () => {
   beforeAll(assertReviewedHistoricalRuntimeProof, 240_000);
   afterAll(assertReviewedHistoricalRuntimeProof, 240_000);
-  it('limits the historical audit view to the exact original keys and ten strictly empty current chapters', () => {
+  it('limits the historical audit view to the exact original keys and eleven strictly empty current chapters', () => {
     const raw = entry<HistoricalFoolState>('final');
     expect(EMPTY_RED_PRIEST).toStrictEqual(createRedPriestState());
     expect(EMPTY_VISIONARY).toStrictEqual(createVisionaryState());
@@ -617,7 +618,7 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
       redPriest: structuredClone(EMPTY_RED_PRIEST), visionary: structuredClone(EMPTY_VISIONARY),
       perfecter: structuredClone(EMPTY_PERFECTER), moon: structuredClone(EMPTY_MOON), darkness: structuredClone(EMPTY_DARKNESS),
       whiteTower: structuredClone(EMPTY_WHITE_TOWER), tyrant: structuredClone(EMPTY_TYRANT),
-      sun: structuredClone(EMPTY_SUN), death: createDeathState(), door: createDoorState() };
+      sun: structuredClone(EMPTY_SUN), death: createDeathState(), door: createDoorState(), errorAscent: createErrorAscentState() };
     same(historicalStateView(shape), raw);
     expect(() => historicalStateView({ ...shape, unexpectedRoot: null } as SliceState)).toThrow();
     const { fool: _missingOriginalRoot, ...missingOriginal } = shape;
@@ -647,7 +648,7 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     expect(() => historicalStateView(missingMoon as SliceState)).toThrow();
     expect(() => historicalStateView(missingDarkness as SliceState)).toThrow();
     expect(() => historicalStateView(missingWhiteTower as SliceState)).toThrow();
-    for (const root of ['tyrant', 'sun', 'death', 'door'] as const) {
+    for (const root of ['tyrant', 'sun', 'death', 'door', 'errorAscent'] as const) {
       const { [root]: _missing, ...missing } = shape;
       expect(() => historicalStateView(missing as SliceState)).toThrow();
       for (const value of [null, { ...shape[root], guidanceKnown: true },

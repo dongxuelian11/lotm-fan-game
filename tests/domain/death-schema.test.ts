@@ -1,3 +1,4 @@
+import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -16,12 +17,12 @@ describe('Death schema214 exact additive admission',()=>{
   it('migrates original192 with all old fields exact and a precise empty current root',()=>{
     const before=deathScenarioHash(source),current=migrateSliceState(source);
     expect([source.schemaVersion,source.contentVersion]).toEqual([192,'pale-emperor-v192']);
-    const additions=['abomination','apocalypseDemoness','darkAngel','darkness','death','divineHand','door',
+    const additions=['abomination','apocalypseDemoness','darkAngel','darkness','death','divineHand','door','errorAscent',
       'fool','handOfOrder','knowledgeEmperor','mercurySnake','moon','natureWalker','perfecter','princeOfAbolition',
       'redPriest','starKey','sun','timeWorm','tyrant','uncleanMonarch','visionary','whiteTower'] as const;
     for(const root of additions)expect(Object.hasOwn(source,root)).toBe(false);
     expect(Object.keys(current).sort()).toEqual([...Object.keys(source),...additions].sort());
-    expect(deathScenarioHash(source)).toBe(before);expect([current.schemaVersion,current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);expect(current.death).toEqual(createDeathState());expect(current.door).toStrictEqual(createDoorState());
+    expect(deathScenarioHash(source)).toBe(before);expect([current.schemaVersion,current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);expect(current.death).toEqual(createDeathState());expect(current.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(current);
     for(const[key,value]of Object.entries(source))if(!['schemaVersion','contentVersion'].includes(key))expect(deathScenarioHash(current[key as keyof SliceState]),key).toBe(deathScenarioHash(value));assertValidSliceState(current);
   },120_000);
   it('rejects a legacy injected root,missing current root and unimplemented future format',()=>{
