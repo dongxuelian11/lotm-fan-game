@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { createWhiteTowerState } from '../../src/domain/white-tower/index.js';
+import { createTyrantState } from '../../src/domain/tyrant/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedWhiteTowerSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -23,32 +24,35 @@ describe('WhiteTower exact current schema and public command boundary', () => {
   it('creates one empty WhiteTower root and a detached strictly valid current save', () => {
     const state = fresh(), before = stableStringify(state), copy = migrateSliceState(state);
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    same(state.whiteTower, createWhiteTowerState()); same(copy, state);
+    same(state.whiteTower, createWhiteTowerState()); same(state.tyrant, createTyrantState()); same(copy, state);
     expect(copy).not.toBe(state); expect(copy.whiteTower).not.toBe(state.whiteTower);
+    expect(copy.tyrant).not.toBe(state.tyrant);
     assertValidSliceState(copy); expect(stableStringify(state)).toBe(before);
   });
 
-  it.each(['beforeLast', 'final'] as const)('migrates actual captured210 %s by adding exactly empty WhiteTower and preserving every old field and raw byte', key => {
+  it.each(['beforeLast', 'final'] as const)('migrates actual captured210 %s by adding exactly empty WhiteTower and Tyrant and preserving every old field and raw byte', key => {
     const bytes = readFileSync(CAPTURE), raw = JSON.parse(gunzipSync(readFileSync(CAPTURE)).toString('utf8'))[key] as Record<string, unknown>;
     expect(hash(bytes)).toBe(CAPTURE_SHA256);
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([210, 'darkness-v210']);
-    expect(Object.hasOwn(raw, 'whiteTower')).toBe(false);
+    expect(Object.hasOwn(raw, 'whiteTower')).toBe(false); expect(Object.hasOwn(raw, 'tyrant')).toBe(false);
     const before = stableStringify(raw), next = migrateSliceState(raw);
     expect([next.schemaVersion, next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field))).toEqual(['whiteTower']);
-    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'whiteTower'].sort());
+    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual(['tyrant', 'whiteTower']);
+    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'whiteTower', 'tyrant'].sort());
     for (const [field, value] of Object.entries(raw)) {
       if (field !== 'schemaVersion' && field !== 'contentVersion') same(next[field as keyof SliceState], value);
     }
-    same(next.whiteTower, createWhiteTowerState()); same(migrateSliceState(next), next);
+    same(next.whiteTower, createWhiteTowerState()); same(next.tyrant, createTyrantState()); same(migrateSliceState(next), next);
     expect(stableStringify(raw)).toBe(before);
     expect(hash(readFileSync(CAPTURE))).toBe(CAPTURE_SHA256);
     expect(readFileSync(CAPTURE).equals(bytes)).toBe(true);
   }, 60_000);
 
-  it('rejects a future WhiteTower root in actual210 rather than silently discarding it', () => {
-    for (const whiteTower of [createWhiteTowerState(), { ...createWhiteTowerState(), guidanceKnown: true }, null]) {
-      const raw = { ...raw210(), whiteTower }, before = stableStringify(raw);
+  it.each([
+    ['whiteTower', createWhiteTowerState()], ['tyrant', createTyrantState()],
+  ] as const)('rejects a future %s root in actual210 rather than silently discarding it', (key, empty) => {
+    for (const root of [empty, { ...empty, guidanceKnown: true }, null]) {
+      const raw = { ...raw210(), [key]: root }, before = stableStringify(raw);
       expect(() => migrateSliceState(raw)).toThrow(); expect(stableStringify(raw)).toBe(before);
     }
   }, 60_000);
@@ -56,12 +60,15 @@ describe('WhiteTower exact current schema and public command boundary', () => {
   it('rejects missing roots, unknown authority, invalid nested roots and version mismatches without mutation', () => {
     const state = fresh(), missing = structuredClone(state) as unknown as Record<string, unknown>;
     delete missing.whiteTower;
-    for (const value of [missing,
+    const missingTyrant = structuredClone(state) as unknown as Record<string, unknown>;
+    delete missingTyrant.tyrant;
+    for (const value of [missing, missingTyrant,
       { ...state, schemaVersion: CURRENT_SCHEMA_VERSION + 1 },
       { ...state, contentVersion: 'darkness-v210' },
       { ...raw210(), contentVersion: CURRENT_CONTENT_VERSION },
       { ...state, whiteTower: { ...state.whiteTower, skipValidation: true } },
       { ...state, whiteTower: { ...state.whiteTower, journal: [{ type: 'SUCCESS' }] } },
+      { ...state, tyrant: { ...state.tyrant, skipValidation: true } },
       { ...state, callerAuthority: {} },
     ]) {
       const before = stableStringify(value);

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -6,6 +7,7 @@ import { sha256Hex } from '../../src/domain/checksum.js';
 import { createFoolState, validateFoolState } from '../../src/domain/fool/index.js';
 import { createRedPriestState, validateRedPriestState } from '../../src/domain/red-priest/index.js';
 import { createVisionaryState, validateVisionaryState } from '../../src/domain/visionary/index.js';
+import { createTyrantState } from '../../src/domain/tyrant/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedFoolSlice, openValidatedRedPriestSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -15,6 +17,11 @@ import { readObjectEntry } from '../helpers/read-object-entry.js';
 
 const fresh = (): SliceState => createSliceRun('red-priest-schema', sliceDefaultCreationSelection, 'red-priest-schema');
 const same = (a: unknown, b: unknown): void => expect(stableStringify(a)).toBe(stableStringify(b));
+const hash = (bytes: string | Buffer): string => createHash('sha256').update(bytes).digest('hex');
+const foolCapture = {
+  path: 'tests/fixtures/fool-v02080/natural.json',
+  sha256: '8bc3141286c3ecb603410d36c4f2111ea28b3a423b6f28c44127ef16aaf72959',
+};
 const historicalSnapshots = {
   203: {
     path: 'tests/fixtures/hand-of-order-v02060/snapshot-departure.json',
@@ -27,6 +34,11 @@ const historicalSnapshots = {
     contentVersion: 'nature-walker-v204', revision: 852, week: 212,
   },
 } as const;
+const introducedRoots = {
+  203: ['natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
+  204: ['fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
+  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
+} as const;
 const historicalStates = new Map<203 | 204 | 205, Record<string, unknown>>();
 function legacy(version: 203 | 204 | 205): Record<string, unknown> {
   let captured = historicalStates.get(version);
@@ -35,7 +47,8 @@ function legacy(version: 203 | 204 | 205): Record<string, unknown> {
     // Read their actual historical shape; never downgrade a fresh current save.
     if (version === 205) {
       // Stream only the final state, not the large natural capture's other trees.
-      captured = readObjectEntry<Record<string, unknown>>('tests/fixtures/fool-v02080/natural.json', 'final');
+      expect(hash(readFileSync(foolCapture.path))).toBe(foolCapture.sha256);
+      captured = readObjectEntry<Record<string, unknown>>(foolCapture.path, 'final');
       expect(sha256Hex(stableStringify(captured))).toBe('66b91d08d03b564d4e19d8acb8bcd47ead3233da1ba39561bc3d8945ca998d8a');
       expect([captured.schemaVersion, captured.contentVersion, captured.revision, captured.week]).toEqual([205, 'fool-v205', 2084, 16006]);
     } else {
@@ -46,6 +59,7 @@ function legacy(version: 203 | 204 | 205): Record<string, unknown> {
         [version, source.contentVersion, source.revision, source.week],
       );
     }
+    for (const root of introducedRoots[version]) expect(Object.hasOwn(captured, root)).toBe(false);
     historicalStates.set(version, captured);
   }
   return structuredClone(captured);
@@ -55,8 +69,9 @@ describe('Red Priest exact slice schema and migration boundary', () => {
   it('creates the exact current empty root and returns a detached current save', () => {
     const input = fresh(), bytes = stableStringify(input), copy = migrateSliceState(input);
     expect([input.schemaVersion, input.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    same(input.redPriest, createRedPriestState()); same(input, copy);
+    same(input.redPriest, createRedPriestState()); same(input.tyrant, createTyrantState()); same(input, copy);
     expect(copy).not.toBe(input); expect(copy.redPriest).not.toBe(input.redPriest);
+    expect(copy.tyrant).not.toBe(input.tyrant);
     expect(stableStringify(input)).toBe(bytes); assertValidSliceState(copy);
   });
 
@@ -65,14 +80,16 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     expect([input.schemaVersion, input.contentVersion]).toEqual([205, 'fool-v205']);
     expect([migrated.schemaVersion, migrated.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     const additions = Object.keys(migrated).filter(key => !Object.hasOwn(input, key));
-    expect(additions.sort()).toEqual(['moon', 'perfecter', 'redPriest', 'visionary']);
+    expect(additions.sort()).toEqual([...introducedRoots[205]].sort());
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(input), ...introducedRoots[205]].sort());
     for (const [key, value] of Object.entries(input)) {
       if (key !== 'schemaVersion' && key !== 'contentVersion') same(migrated[key as keyof SliceState], value);
     }
-    for (const key of additions) same(migrated[key as keyof SliceState], defaults[key as keyof SliceState]);
+    for (const key of introducedRoots[205]) same(migrated[key], defaults[key]);
     same(migrated.redPriest, createRedPriestState()); same(migrated.fool, input.fool);
-    same(migrated.visionary, createVisionaryState());
+    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState());
     expect(stableStringify(input)).toBe(bytes);
+    expect(hash(readFileSync(foolCapture.path))).toBe(foolCapture.sha256);
   }, 120_000);
 
   it.each([203, 204] as const)('preserves the %i migration and adds only exact missing defaults', version => {
@@ -80,15 +97,17 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     expect([input.schemaVersion, input.contentVersion]).toEqual([version, version === 204 ? 'nature-walker-v204' : 'hand-of-order-v203']);
     expect([migrated.schemaVersion, migrated.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(Object.keys(migrated).filter(key => !Object.hasOwn(input, key)).sort()).toEqual(
-      (version === 203 ? ['natureWalker', 'fool', 'moon', 'perfecter', 'redPriest', 'visionary'] : ['fool', 'moon', 'perfecter', 'redPriest', 'visionary']).sort(),
+      [...introducedRoots[version]].sort(),
     );
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(input), ...introducedRoots[version]].sort());
     for (const [key, value] of Object.entries(input)) {
       if (key !== 'schemaVersion' && key !== 'contentVersion') same(migrated[key as keyof SliceState], value);
     }
-    for (const key of Object.keys(migrated) as (keyof SliceState)[]) if (!Object.hasOwn(input, key)) same(migrated[key], defaults[key]);
+    for (const key of introducedRoots[version]) same(migrated[key], defaults[key]);
     same(migrated.fool, createFoolState()); same(migrated.redPriest, createRedPriestState());
-    same(migrated.visionary, createVisionaryState());
+    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState());
     expect(stableStringify(input)).toBe(bytes);
+    expect(hash(readFileSync(historicalSnapshots[version].path))).toBe(historicalSnapshots[version].sha256);
   }, 60_000);
 
   it.each([203, 204, 205] as const)('rejects a future root in legacy %i, even when it is empty', version => {
@@ -103,12 +122,24 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     expect(stableStringify(input)).toBe(bytes);
   });
 
+  it.each([203, 204, 205] as const)('rejects a Tyrant root smuggled into legacy %i without discarding it', version => {
+    const original = legacy(version), empty = createTyrantState();
+    for (const tyrant of [empty, { ...empty, guidanceKnown: true }, null]) {
+      const input = { ...original, tyrant }, bytes = stableStringify(input);
+      expect(() => migrateSliceState(input)).toThrow('Unexpected Tyrant state');
+      expect(stableStringify(input)).toBe(bytes);
+    }
+  });
+
   it('rejects incorrect versions, unknown roots and missing current fields without repairs', () => {
     const current = fresh(), missing = structuredClone(current) as unknown as Record<string, unknown>;
     delete missing.redPriest;
-    const badInputs = [missing, { ...legacy(205), contentVersion: 'fool-v204' },
+    const missingTyrant = structuredClone(current) as unknown as Record<string, unknown>;
+    delete missingTyrant.tyrant;
+    const badInputs = [missing, missingTyrant, { ...legacy(205), contentVersion: 'fool-v204' },
       { ...current, schemaVersion: CURRENT_SCHEMA_VERSION + 1 }, { ...current, contentVersion: 'red-priest-v206' },
       { ...current, redPriest: { ...current.redPriest, skipValidation: true } },
+      { ...current, tyrant: { ...current.tyrant, skipValidation: true } },
       { ...legacy(205), unknownAuthority: {} }];
     for (const input of badInputs) {
       const bytes = stableStringify(input);

@@ -12,7 +12,8 @@ import { WHITE_TOWER_ABILITY_IDS } from '../../src/domain/white-tower/types.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { projectPlayerText } from '../../src/shared/player-text.js';
 import type { SliceBridge, SliceEnvelope } from '../../src/shared/slice-contracts.js';
-import { migrateCapturedWhiteTowerState } from '../helpers/white-tower-capture.js';
+import { historicalWhiteTowerPublic, migrateCapturedWhiteTowerState,
+  type HistoricalWhiteTowerPublic, type HistoricalWhiteTowerState } from '../helpers/white-tower-capture.js';
 
 // Original natural803 captures (666 archived commands + 137 actual new commands).
 // Only these five boundaries are read; no producer, controlled route, RNG choice,
@@ -34,11 +35,11 @@ const PINS = {
 } as const;
 interface CapturedBoundary {
   commandCount: number;
-  beforeLast: SliceState;
+  beforeLast: HistoricalWhiteTowerState;
   lastIntent: SliceIntent;
-  final: SliceState;
-  globalPublicBefore: SliceProjection;
-  globalPublic: SliceProjection;
+  final: HistoricalWhiteTowerState;
+  globalPublicBefore: HistoricalWhiteTowerPublic;
+  globalPublic: HistoricalWhiteTowerPublic;
   audit: { beforeStateSha256: string; afterStateSha256: string;
     globalPublicBeforeSha256: string; globalPublicAfterSha256: string };
 }
@@ -62,14 +63,14 @@ function captured(name: keyof typeof PINS) {
   expect(hash(boundary.globalPublicBefore)).toBe(boundary.audit.globalPublicBeforeSha256);
   expect(hash(boundary.globalPublic)).toBe(pin.publicSha256);
   expect(boundary.audit.globalPublicAfterSha256).toBe(pin.publicSha256);
-  const value = projectSliceState(migrateCapturedWhiteTowerState(boundary.final));
-  // Compare the entire projection; only the existing display-prose adapter is
-  // allowed. Identifiers, commands, numbers, order and player name stay exact.
-  expect(value).toEqual(projectPlayerText(boundary.globalPublic, boundary.final.character.name));
+  const current = migrateCapturedWhiteTowerState(boundary.final), value = projectSliceState(current);
+  // Verify the whole new inactive Tyrant root, then compare every historical
+  // public field through only the existing display-prose adapter.
+  expect(historicalWhiteTowerPublic(value, current)).toStrictEqual(projectPlayerText(boundary.globalPublic, boundary.final.character.name));
   return { boundary, value };
 }
 
-function assertPublicOnly(value: unknown, state: SliceState) {
+function assertPublicOnly(value: unknown, state: SliceState | HistoricalWhiteTowerState) {
   const forbidden = /^(?:random|seed|cursor|randomSeed|randomCursor|randomCursorBefore|randomCursorAfter|randomBefore|randomAfter|cursorBefore|cursorAfter|preparedRoll|futureRoll|futureRolls|nextRoll|unrolledResult|sourceDigest|sourceIdentityDigest|historyDigest|originalsDigest|acquisitionDigest|beforeDigest|afterDigest|randomReceipts)$/;
   const privatePaths: string[] = [];
   function visit(node: unknown, path: string): void {
@@ -129,7 +130,7 @@ async function openPage(game: ReturnType<typeof publicAdapter>) {
   return view;
 }
 
-function assertCurrentPage(value: SliceProjection, state: SliceState) {
+function assertCurrentPage(value: SliceProjection, state: SliceState | HistoricalWhiteTowerState) {
   const panel = screen.getByRole('region', { name: PANEL });
   const banner = screen.getAllByRole('banner').find(item => within(item).queryByRole('button', { name: '返回主菜单' }))!;
   expect(banner.textContent).toContain(`${state.character.name} · ${value.whiteTower.title}`);
@@ -145,7 +146,7 @@ function assertCurrentPage(value: SliceProjection, state: SliceState) {
   return panel;
 }
 
-async function assertAbilities(value: SliceProjection, state: SliceState, newMastery: number[] | null) {
+async function assertAbilities(value: SliceProjection, state: SliceState | HistoricalWhiteTowerState, newMastery: number[] | null) {
   const panel = screen.getByRole('region', { name: PANEL });
   const summary = within(panel).getByText('已掌握的能力', { selector: 'summary' });
   if (!(summary.closest('details') as HTMLDetailsElement).open) await userEvent.click(summary);
@@ -170,8 +171,8 @@ afterEach(() => {
 
 describe('White Tower actual natural803 saved public pages', () => {
   it('displays promotion775 once after same-envelope receipt retry and reopens identical saved S0 facts', async () => {
-    const { boundary, value } = captured('promotion'), before = projectSliceState(migrateCapturedWhiteTowerState(boundary.beforeLast));
-    expect(before).toEqual(projectPlayerText(boundary.globalPublicBefore, boundary.beforeLast.character.name));
+    const { boundary, value } = captured('promotion'), currentBefore = migrateCapturedWhiteTowerState(boundary.beforeLast), before = projectSliceState(currentBefore);
+    expect(historicalWhiteTowerPublic(before, currentBefore)).toStrictEqual(projectPlayerText(boundary.globalPublicBefore, boundary.beforeLast.character.name));
     expect(boundary.lastIntent).toEqual({ type: 'WHITE_TOWER', command: { type: 'CONSUME', compoundId: 'white-tower-compound-1', confirmed: true } });
     expect(boundary.final).toMatchObject({ revision: 776, week: 170, status: 'ACTIVE', health: 100,
       mind: 80, spirituality: 78, cash: 40, actionsRemaining: 1, injuryRisk: 0, injuries: [], ending: null,

@@ -6,6 +6,7 @@ import { gunzipSync } from 'node:zlib';
 import { assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
+import { createTyrantState } from '../../src/domain/tyrant/index.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
 
 /** Read-only consumer of the original complete137-action capture. Never imports
@@ -41,6 +42,11 @@ export interface Manifest { format: string; files: Member[] }
 export interface Freeze { sha256: string; nodeVersion: string; files: Array<FilePin & { file: string }> }
 export interface BoundaryIndex extends FilePin { file: string; kind: string; commandCount: number }
 export interface Outcome { status: SliceState['status']; promoted: boolean; passages: number; reviews: number }
+/** Raw211 evidence is immutable and has no current212 Tyrant root. */
+export type HistoricalWhiteTowerState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'tyrant'> & {
+  schemaVersion: 211; contentVersion: 'white-tower-v211';
+};
+export type HistoricalWhiteTowerPublic = Omit<SliceProjection, 'tyrant'>;
 export interface Row {
   commandCount: number; intent: SliceIntent; commandSha256: string; reason: string; publicLabel: string; publicCost: string;
   startedAt: string; elapsedMilliseconds: number; revision: number; week: number;
@@ -54,21 +60,21 @@ export interface Checkpoint {
   format: string; source: string; sourceSha256: string; prefixSha256: string; inputFreezeSha256: string; runtimeFreezeSha256: string;
   migration: { originalStateSha256: string; migratedStateSha256: string; fromSchema: number; toSchema: number };
   policyDefinition: Record<string, unknown>; policy: { week: number; doses: number; carriers: string[]; epilogueAttempted: string[]; reported: boolean };
-  commandCount: number; commands: SliceIntent[]; rows: Row[]; boundaries: BoundaryIndex[]; state: SliceState;
+  commandCount: number; commands: SliceIntent[]; rows: Row[]; boundaries: BoundaryIndex[]; state: HistoricalWhiteTowerState;
   initialStateSha256: string; finalStateSha256: string; initialPublicSha256: string; publicStateSha256: string;
   initialGlobalPublicSha256: string; globalPublicStateSha256: string; initialRandomSha256: string;
   pending: unknown | null; terminal: { stage: string; reason: string } | null;
 }
 export interface Action {
-  commandCount: number; beforeLast: SliceState; lastIntent: SliceIntent; final: SliceState;
+  commandCount: number; beforeLast: HistoricalWhiteTowerState; lastIntent: SliceIntent; final: HistoricalWhiteTowerState;
   randomBefore: SliceState['random']; randomAfter: SliceState['random']; publicBefore: CapturedPublic; public: CapturedPublic;
-  globalPublicBefore: SliceProjection; globalPublic: SliceProjection;
+  globalPublicBefore: HistoricalWhiteTowerPublic; globalPublic: HistoricalWhiteTowerPublic;
   audit: Omit<Row, 'elapsedMilliseconds' | 'capture'> & { elapsedMilliseconds: null };
 }
 export type HistoricalSource = Omit<SliceState, 'schemaVersion' | 'contentVersion'> & { schemaVersion: 189; contentVersion: 'all-knowing-eye-v189' };
 interface History { commands: SliceIntent[]; final: HistoricalSource; creation: unknown; seed: string }
 interface Natural extends Omit<History, 'final'> {
-  final: SliceState; provenance: Record<string, unknown>; prefixCount: number; policy: Record<string, unknown>;
+  final: HistoricalWhiteTowerState; provenance: Record<string, unknown>; prefixCount: number; policy: Record<string, unknown>;
   stage: string; reason: string; pendingIntent: null; boundaries: BoundaryIndex[];
 }
 export interface Summary {
@@ -142,7 +148,7 @@ export function authenticateInputs(): void {
 const PUBLIC_FIELDS = ['runId', 'revision', 'status', 'week', 'date', 'actionsRemaining', 'weeklyBudget', 'cash', 'weeklyWage', 'wagePaid',
   'health', 'mind', 'spirituality', 'maxHealth', 'maxMind', 'maxSpirituality', 'pollution', 'injuries', 'injuryRisk',
   'debtTotal', 'debts', 'canAct', 'actionBlockedReason', 'activeEvent', 'combat'] as const;
-export function capturePublic(projection: SliceProjection) {
+export function capturePublic(projection: Pick<SliceProjection, typeof PUBLIC_FIELDS[number] | 'progression' | 'whiteTower'>) {
   const ordinary = Object.fromEntries(PUBLIC_FIELDS.map(key => [key, structuredClone(projection[key])])) as Pick<SliceProjection, typeof PUBLIC_FIELDS[number]>;
   return { ...ordinary, progression: { sequence: projection.progression.sequence, acting: projection.progression.acting,
     mastery: structuredClone(projection.progression.mastery) }, whiteTower: structuredClone(projection.whiteTower) };
@@ -185,11 +191,52 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   return latest?.revision === after.revision ? { checks: latest.randomReceipts, finance: latest.financeReceipts, notes: latest.notes }
     : { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
-export function migrateCapturedWhiteTowerState(raw: SliceState): SliceState {
+const EMPTY_TYRANT: SliceState['tyrant'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  coasts: null, challenge: null, materials: null, epilogue: null, seaVoyages: [], assembly: null,
+  journal: [], promotionStability: { preparations: [] },
+};
+/** Detached comparison only: verify and remove exactly the introduced empty root.
+ * Every original field and any unexpected future root stays in the full hash. */
+export function historicalWhiteTowerState(state: SliceState): HistoricalWhiteTowerState {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  assert.deepEqual(createTyrantState(), EMPTY_TYRANT);
+  assert.deepEqual(state.tyrant, EMPTY_TYRANT);
+  const { tyrant: _emptyTyrant, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 211, contentVersion: 'white-tower-v211' };
+}
+/** Pin the entire inactive public addition before removing only that root.
+ * No old prose, chronicle, command, resource or unknown root is normalized. */
+export function historicalWhiteTowerPublic(projection: SliceProjection, state: SliceState): HistoricalWhiteTowerPublic {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  assert.deepEqual(state.tyrant, EMPTY_TYRANT);
+  assert.equal(state.progression.pathwayId, 'white-tower');
+  assert.equal(Object.hasOwn(projection, 'tyrant'), true);
+  assert.deepEqual(projection.tyrant, {
+    title: '序列0 暴君', guidanceKnown: false, promoted: false,
+    story: '原小湾与旧人原物继续保留。三岸共二十七万原居民各有当前意愿与有限粮食；履约、隔周复核和真实航运不能用证书代替。另一位太阳真神独立敌对，单独挑战并真实存活才计入晋升经历。',
+    nextStep: state.progression.sequence === 1
+      ? '维持至少二十万同一在世居民同时恐惧、服从并信仰；本人单独挑战另一位真神后存活，取得原三份特性与同一唯一性，在当前氛围中完成同瓶付费准备。'
+      : '先继续雷神的真实原三份续筹、晋升和三案反思；历史独立第四份不能改写为同根回收件。',
+    risk: '晋升成功率按当前意志与本次付费准备计算；失败实际重伤、污染或死亡，没有免费重试。药液与普通载体耗用，原特性仍守恒，回收必须按真实原处和隔周条件完成。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'tyrant:0:LEARN_GUIDANCE', label: '听取暴君晋升与三岸原人群指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的雷神本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  const { tyrant: _emptyTyrant, ...originalFields } = projection;
+  return originalFields;
+}
+export function migrateCapturedWhiteTowerState(raw: HistoricalWhiteTowerState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [211, 'white-tower-v211']);
+  assert.equal(Object.hasOwn(raw, 'tyrant'), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assert.deepEqual([current.schemaVersion, current.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assertValidSliceState(current); same(current, raw, 'Strict current ingress changed full original capture');
+  assertValidSliceState(current); exactKeys(current, [...Object.keys(raw), 'tyrant']);
+  same(historicalWhiteTowerState(current), raw, 'Strict current ingress changed full original capture');
   assert.equal(hash(raw), before); return current;
 }
 export function readAction(row: Row): Action {
@@ -215,14 +262,18 @@ export function loadCapture(): LoadedCapture {
   assert.deepEqual([original.schemaVersion, original.contentVersion], [189, 'all-knowing-eye-v189']);
   assert.equal(compactHash(original), PINS.originalStateSha256);
   const initial = migrateSliceState(original); assertValidSliceState(initial);
-  assert.equal(compactHash(original), PINS.originalStateSha256); assert.equal(hash(initial), PINS.initialStateSha256);
+  assert.equal(compactHash(original), PINS.originalStateSha256); assert.equal(hash(historicalWhiteTowerState(initial)), PINS.initialStateSha256);
   for (const [key, value] of Object.entries(original)) if (!['schemaVersion', 'contentVersion'].includes(key))
     same(initial[key as keyof SliceState], value, `Migration altered original666 field ${key}`);
-  const migrated = json<{ final: SliceState; random: SliceState['random']; public: CapturedPublic; globalPublic: SliceProjection }>('migration-initial.json.gz');
-  same(migrated.final, initial); same(migrated.random, initial.random);
+  const migrated = json<{ final: HistoricalWhiteTowerState; random: SliceState['random']; public: CapturedPublic; globalPublic: HistoricalWhiteTowerPublic }>('migration-initial.json.gz');
+  assert.equal(hash(migrated.final), PINS.initialStateSha256);
+  assert.deepEqual([migrated.final.schemaVersion, migrated.final.contentVersion], [211, 'white-tower-v211']);
+  assert.equal(Object.hasOwn(migrated.final, 'tyrant'), false);
+  exactKeys(initial, [...Object.keys(migrated.final), 'tyrant']);
+  same(historicalWhiteTowerState(initial), migrated.final); same(migrated.random, initial.random);
   const initialGlobal = projectSliceState(initial); assertGlobalPublic(initialGlobal, initial);
-  same(initialGlobal, migrated.globalPublic); same(capturePublic(initialGlobal), migrated.public);
-  assert.equal(hash(initialGlobal), PINS.initialGlobalPublicSha256); assert.equal(hash(migrated.public), PINS.initialPublicSha256);
+  same(historicalWhiteTowerPublic(initialGlobal, initial), migrated.globalPublic); same(capturePublic(initialGlobal), migrated.public);
+  assert.equal(hash(migrated.globalPublic), PINS.initialGlobalPublicSha256); assert.equal(hash(migrated.public), PINS.initialPublicSha256);
   const wrapper = json<{ sha256: string; payload: Checkpoint }>('checkpoint.json.gz');
   assert.equal(wrapper.sha256, hash(wrapper.payload)); const cp = wrapper.payload;
   assert.equal(cp.format, 'WHITE_TOWER666_DURABLE_PUBLIC_ACTION_BOUNDARY_V1'); assert.equal(cp.source, SOURCE); assert.equal(cp.sourceSha256, SOURCE_SHA);

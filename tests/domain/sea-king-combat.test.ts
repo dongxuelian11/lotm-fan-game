@@ -171,7 +171,7 @@ describe('Sea King finite G combat with actual original water and separately pai
   });
   it('hides new opponent and resources before actual Sea King3', () => {
     const s = fixture(); s.progression.sequence = 4; const view = projectSeaKingCombat(s);
-    expect(view.source).toBeNull(); expect(view.targetId).toBeNull(); expect(view.enemySpirituality).toBeNull(); expect(view.waterSource).toBeNull();
+    expect(Object.hasOwn(view, 'source')).toBe(false); expect(view.targetId).toBeNull(); expect(view.enemySpirituality).toBeNull(); expect(view.waterSource).toBeNull();
     expect(JSON.stringify(view)).not.toMatch(/QUENTIN|昆廷/);
   });
 });

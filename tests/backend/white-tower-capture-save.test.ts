@@ -12,7 +12,8 @@ import type { SliceProjection, SliceState } from '../../src/domain/slice/types.j
 import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   PINS, PREFIX, actualReceipts, assertGlobalPublic, assertPublicAction, authenticateInputs, capturePublic, hash,
-  loadCapture, migrateCapturedWhiteTowerState, outcome, readAction, same, sha, type LoadedCapture,
+  historicalWhiteTowerPublic, historicalWhiteTowerState, loadCapture, migrateCapturedWhiteTowerState,
+  outcome, readAction, same, sha, type LoadedCapture,
 } from '../helpers/white-tower-capture.js';
 
 /** Complete immutable input integrity plus exactly THREE actual captured
@@ -62,9 +63,11 @@ describe('WhiteTower214 compressed actual captured transitions through real SQLi
     expect(hash(boundary.beforeLast)).toBe(row.beforeStateSha256); expect(hash(boundary.final)).toBe(row.afterStateSha256);
     const before = migrateCapturedWhiteTowerState(boundary.beforeLast), after = migrateCapturedWhiteTowerState(boundary.final);
     expect(before.status).toBe('ACTIVE');
-    expect(hash(before)).toBe(row.beforeStateSha256); expect(hash(after)).toBe(row.afterStateSha256);
+    expect(hash(historicalWhiteTowerState(before))).toBe(row.beforeStateSha256);
+    expect(hash(historicalWhiteTowerState(after))).toBe(row.afterStateSha256);
     const publicBefore = publicState(before), publicAfter = publicState(after);
-    expect(hash(publicBefore)).toBe(row.globalPublicBeforeSha256); expect(hash(publicAfter)).toBe(row.globalPublicAfterSha256);
+    expect(hash(historicalWhiteTowerPublic(publicBefore, before))).toBe(row.globalPublicBeforeSha256);
+    expect(hash(historicalWhiteTowerPublic(publicAfter, after))).toBe(row.globalPublicAfterSha256);
     expect(hash(capturePublic(publicBefore))).toBe(row.publicBeforeSha256);
     expect(hash(capturePublic(publicAfter))).toBe(row.publicAfterSha256);
     same(capturePublic(publicAfter), boundary.public); expect(outcome(boundary.public)).toEqual(row.selectionOutcome);

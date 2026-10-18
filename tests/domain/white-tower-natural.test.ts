@@ -1,13 +1,16 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { openWhiteTowerRuntimeSession, type WhiteTowerRuntimeSession } from '../../src/domain/white-tower/owned-session.js';
 import { WHITE_TOWER_FROZEN_SOURCE_KEYS } from '../../src/domain/white-tower/source.js';
 import {
   INPUT_MANIFEST, NEW_COMMANDS, PINS, PREFIX, actualReceipts, assertCaptureFreeze, assertCaptureManifest,
   assertGlobalPublic, assertPublicAction, authenticateInputs, bytes, capturePublic, compactHash, hash, json,
-  loadCapture, migrateCapturedWhiteTowerState, outcome, readAction, same, type Freeze, type LoadedCapture, type Manifest,
+  historicalWhiteTowerPublic, historicalWhiteTowerState, loadCapture, migrateCapturedWhiteTowerState,
+  outcome, readAction, same, type Freeze, type HistoricalWhiteTowerState, type LoadedCapture, type Manifest,
 } from '../helpers/white-tower-capture.js';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 
 /** Exactly137 new commands, once, in four contiguous disjoint blocks. Original666
  * is byte-authenticated and admitted through strict migration, never replayed as
@@ -18,7 +21,7 @@ let data: LoadedCapture;
 beforeAll(() => { data = loadCapture(); }, 180_000);
 afterAll(() => { authenticateInputs(); }, 180_000);
 const actionAt = (count: number) => readAction(data.rows[count - PREFIX - 1]!);
-function preserveOriginal(state: SliceState): void {
+function preserveOriginal(state: SliceState | HistoricalWhiteTowerState): void {
   const original = data.original;
   expect(state.runId).toBe(original.runId); expect(state.random.seed).toBe(original.random.seed);
   same(state.character, original.character);
@@ -29,7 +32,7 @@ function preserveOriginal(state: SliceState): void {
 }
 
 describe('WhiteTower214 complete immutable natural803 capture', () => {
-  it('authenticates all147 members and complete137 actual captures, retaining original666 and exact current211 ingress', () => {
+  it('authenticates all147 members and complete137 actual captures, retaining original666 and exact current212 ingress', () => {
     expect(data.rows).toHaveLength(NEW_COMMANDS); expect(data.checkpoint.boundaries).toHaveLength(26);
     expect(data.checkpoint.pending).toBeNull(); expect(data.checkpoint.terminal).toEqual({ stage: PINS.stage, reason: PINS.reason });
     expect(data.original).toMatchObject({ revision: 667, status: 'ACTIVE', week: 146, health: 70, mind: 86,
@@ -39,11 +42,45 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
       severity: 'HEAVY', acquiredRevision: 664, treatedRevision: null }]);
     expect(Object.keys(data.original.progression.mastery)).toHaveLength(21);
     expect(Object.values(data.original.progression.mastery).filter(value => value === 0)).toHaveLength(6);
-    expect([data.initial.schemaVersion, data.initial.contentVersion]).toEqual([211, 'white-tower-v211']);
+    expect([data.initial.schemaVersion, data.initial.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     const counts = BLOCKS.flatMap(([first, last, size]) => {
       expect(last - first + 1).toBe(size); return Array.from({ length: size }, (_, index) => first + index);
     });
     expect(counts).toEqual(data.rows.map(row => row.commandCount)); expect(new Set(counts).size).toBe(137);
+  });
+
+  it('admits only the exact empty Tyrant addition while retaining every raw211 private and public field', () => {
+    const current = data.initial, raw = actionAt(667).beforeLast, originalHash = hash(raw), currentHash = hash(current);
+    same(historicalWhiteTowerState(current), raw);
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'tyrant'].sort());
+    expect(Object.hasOwn(raw, 'tyrant')).toBe(false);
+    expect(() => migrateCapturedWhiteTowerState({ ...raw, tyrant: current.tyrant } as HistoricalWhiteTowerState)).toThrow();
+    expect(() => migrateCapturedWhiteTowerState({ ...raw, unexpectedRoot: null } as HistoricalWhiteTowerState)).toThrow();
+    const { tyrant: _missing, ...missing } = current;
+    expect(() => historicalWhiteTowerState(missing as SliceState)).toThrow();
+    for (const tyrant of [null, { ...current.tyrant, guidanceKnown: true }, { ...current.tyrant, unexpectedField: undefined },
+      { ...current.tyrant, promotionStability: { preparations: [], unexpectedField: undefined } }]) {
+      expect(() => historicalWhiteTowerState({ ...current, tyrant } as SliceState)).toThrow();
+    }
+    expect(hash(historicalWhiteTowerState({ ...current, unexpectedRoot: null } as SliceState))).not.toBe(originalHash);
+    expect(hash(historicalWhiteTowerState({ ...current, cash: current.cash + 1 }))).not.toBe(originalHash);
+    const publicValue = projectSliceState(current), publicHash = hash(publicValue);
+    expect(hash(historicalWhiteTowerPublic(publicValue, current))).toBe(PINS.initialGlobalPublicSha256);
+    expect(() => historicalWhiteTowerPublic({ ...publicValue, tyrant: null } as unknown as typeof publicValue, current)).toThrow();
+    const { tyrant: _missingPublic, ...missingPublic } = publicValue;
+    expect(() => historicalWhiteTowerPublic(missingPublic as typeof publicValue, current)).toThrow();
+    for (const actions of [[], [{ ...publicValue.tyrant.actions[0]!, enabled: true }],
+      [{ ...publicValue.tyrant.actions[0]!, reason: null }], [{ ...publicValue.tyrant.actions[0]!, privateProbe: undefined }],
+      [{ ...publicValue.tyrant.actions[0]!, command: { type: 'LEARN_GUIDANCE' as const, privateProbe: undefined } }]]) {
+      expect(() => historicalWhiteTowerPublic({ ...publicValue, tyrant: { ...publicValue.tyrant, actions } }, current)).toThrow();
+    }
+    expect(() => historicalWhiteTowerPublic({ ...publicValue, tyrant: { ...publicValue.tyrant,
+      resources: { ...publicValue.tyrant.resources, cash: '0便士' } } }, current)).toThrow();
+    expect(hash(historicalWhiteTowerPublic({ ...publicValue, unexpectedRoot: null } as typeof publicValue, current)))
+      .not.toBe(PINS.initialGlobalPublicSha256);
+    const missingOldPublic = { ...publicValue }; Reflect.deleteProperty(missingOldPublic, 'whiteTower');
+    expect(hash(historicalWhiteTowerPublic(missingOldPublic, current))).not.toBe(PINS.initialGlobalPublicSha256);
+    expect(hash(raw)).toBe(originalHash); expect(hash(current)).toBe(currentHash); expect(hash(publicValue)).toBe(publicHash);
   });
 
   it('rejects missing, extra, duplicated or rewritten evidence without modifying any capture', () => {
@@ -61,15 +98,15 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
   });
 
   it.each(BLOCKS)('replays only recorded %i..%i (%i commands) with every complete private/RNG/chapter/global boundary', (first, last, size) => {
-    let state = first === PREFIX + 1 ? structuredClone(data.initial) : actionAt(first).beforeLast;
+    let state = first === PREFIX + 1 ? structuredClone(data.initial) : migrateCapturedWhiteTowerState(actionAt(first).beforeLast);
     let session: WhiteTowerRuntimeSession | null = state.whiteTower.guidanceKnown ? openWhiteTowerRuntimeSession(state) : null;
     let global = session ? session.project() : projectSliceState(state), view = capturePublic(global);
     const rows = data.rows.filter(row => row.commandCount >= first && row.commandCount <= last);
     expect(rows).toHaveLength(size); let prepared = 0, committed = 0;
     for (const row of rows) {
       const before = state, recorded = readAction(row);
-      expect(hash(before), `Private before ${row.commandCount}`).toBe(row.beforeStateSha256);
-      expect(hash(global), `Global before ${row.commandCount}`).toBe(row.globalPublicBeforeSha256);
+      expect(hash(historicalWhiteTowerState(before)), `Private before ${row.commandCount}`).toBe(row.beforeStateSha256);
+      expect(hash(historicalWhiteTowerPublic(global, before)), `Global before ${row.commandCount}`).toBe(row.globalPublicBeforeSha256);
       expect(hash(view), `Chapter before ${row.commandCount}`).toBe(row.publicBeforeSha256);
       expect(before.random).toEqual(recorded.randomBefore); expect(hash(before.random)).toBe(row.randomBeforeSha256);
       assertGlobalPublic(global, before); assertPublicAction(view, row); expect(validateSlicePayload(row.intent)).toBe(true);
@@ -78,8 +115,9 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
         const draft = session.prepare(row.intent, before.revision); prepared++;
         state = session.snapshotDraft(draft); global = session.projectDraft(draft);
         expect(session.inspect()).toEqual({ runId: before.runId, revision: before.revision, status: before.status });
-        expect(hash(before), 'Prepare cannot mutate predecessor').toBe(row.beforeStateSha256);
-        expect(hash(state)).toBe(row.afterStateSha256); expect(hash(global)).toBe(row.globalPublicAfterSha256);
+        expect(hash(historicalWhiteTowerState(before)), 'Prepare cannot mutate predecessor').toBe(row.beforeStateSha256);
+        expect(hash(historicalWhiteTowerState(state))).toBe(row.afterStateSha256);
+        expect(hash(historicalWhiteTowerPublic(global, state))).toBe(row.globalPublicAfterSha256);
         session.commit(draft); committed++;
         expect(session.inspect()).toEqual({ runId: state.runId, revision: state.revision, status: state.status });
       } else {
@@ -87,9 +125,9 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
         state = applySliceIntent(before, row.intent); session = openWhiteTowerRuntimeSession(state); global = session.project();
       }
       view = capturePublic(global); assertGlobalPublic(global, state);
-      expect(hash(before), 'Commit cannot rewrite predecessor').toBe(row.beforeStateSha256);
-      expect(hash(state), `Private after ${row.commandCount}`).toBe(row.afterStateSha256);
-      expect(hash(global), `Global after ${row.commandCount}`).toBe(row.globalPublicAfterSha256);
+      expect(hash(historicalWhiteTowerState(before)), 'Commit cannot rewrite predecessor').toBe(row.beforeStateSha256);
+      expect(hash(historicalWhiteTowerState(state)), `Private after ${row.commandCount}`).toBe(row.afterStateSha256);
+      expect(hash(historicalWhiteTowerPublic(global, state)), `Global after ${row.commandCount}`).toBe(row.globalPublicAfterSha256);
       expect(hash(view), `Chapter after ${row.commandCount}`).toBe(row.publicAfterSha256);
       expect(state.random).toEqual(recorded.randomAfter); expect(hash(state.random)).toBe(row.randomAfterSha256);
       expect([state.revision, state.week]).toEqual([row.revision, row.week]); expect(state.revision).toBe(before.revision + 1);
@@ -98,11 +136,13 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
     }
     expect(prepared).toBe(size - (first === 667 ? 1 : 0)); expect(committed).toBe(prepared);
     same(session!.snapshot(), state); same(session!.project(), global);
-    same(migrateCapturedWhiteTowerState(state), state); preserveOriginal(state);
-    const end = actionAt(last); same(state, end.final); same(view, end.public); same(global, end.globalPublic);
+    same(migrateSliceState(state), state); preserveOriginal(state);
+    const end = actionAt(last); same(historicalWhiteTowerState(state), end.final); same(view, end.public);
+    same(historicalWhiteTowerPublic(global, state), end.globalPublic);
     if (last === 803) {
-      same(state, data.checkpoint.state); same(view, data.summary.public);
-      expect(hash(state)).toBe(PINS.finalStateSha256); expect(hash(global)).toBe(PINS.finalGlobalPublicSha256);
+      same(historicalWhiteTowerState(state), data.checkpoint.state); same(view, data.summary.public);
+      expect(hash(historicalWhiteTowerState(state))).toBe(PINS.finalStateSha256);
+      expect(hash(historicalWhiteTowerPublic(global, state))).toBe(PINS.finalGlobalPublicSha256);
     }
   }, 180_000);
 

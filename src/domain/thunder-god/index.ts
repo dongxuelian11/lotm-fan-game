@@ -370,6 +370,18 @@ export function applyThunderGodAcquisition(s: SliceState, command: ThunderGodAcq
   s.thunderGod.acquisitionJournal.push({ week: s.week, date: structuredClone(s.date), revision: s.revision,
     command: structuredClone(command), actor, before, after: acquisitionBudget(s), cursorBefore, cursorAfter: s.random.cursor, randomBefore, randomAfter, check: result, ...(recoverySite ? { recoverySite } : {}) });
 }
+/** Display the resolved dose receipt only while it owns this exact latest check.
+ * Historical private lastCheck, the acquisition journal and RNG stay untouched. */
+export function projectThunderGodLastCheck(s: SliceState): PublicCheckResult | null {
+  const current = s.lastCheck, event = s.thunderGod.acquisitionJournal.at(-1);
+  if (!current || event?.command.type !== 'CONSUME' || !event.check || event.revision + 1 !== s.revision ||
+    event.randomBefore === null || event.randomBefore !== event.cursorBefore ||
+    event.randomAfter !== event.randomBefore + 1 || event.randomAfter !== event.cursorAfter || event.randomAfter !== s.random.cursor)
+    return structuredClone(current);
+  const raw = resolveNormalCheck({ ability: 'will', baseAbility: event.before.coreStats.will, difficulty: 30,
+    modifiers: [], roll: event.check.roll });
+  return structuredClone(same(current, raw) ? event.check : current);
+}
 function validAcquisitionBudget(v: unknown): v is ThunderGodAcquisitionBudget {
   if (!record(v) || !shape(v, ['actions', 'health', 'mind', 'spirituality', 'cash', 'pollution', 'gender', 'sequence', 'acting', 'coreStats', 'mastery', 'completedSources', 'injuries', 'injuryRisk']) ||
     !integer(v.actions, 0, 100) || !integer(v.health, 1, 100) || !integer(v.mind, 1, 100) || !integer(v.spirituality, 0, 120) || !integer(v.cash) || !integer(v.pollution, 0, 100) ||
