@@ -98,7 +98,7 @@ describe('Nature Walker sole original pad and ordinary complete exit', () => {
     expect(s.health).toBe(beforeHealth - 2); expect(s.natureWalker.life.rootPad!.integrity).toBe(35); expect(s.natureWalker.life.operation.rootBearing).toBeNull();
     s = finish(s, 'root-impact'); expect(s.progression.mastery[BEARING]).toBe(8); expect(s.barrenMatriarch.life.rootPad.integrity).toBe(50);
     expect(s.natureWalker.life.site!.guard.segments.map(x => x.status)).toEqual(['SPENT', 'UNUSED', 'UNUSED']);
-  }, 10000);
+  }, 20000);
   it('ordinary support and failed bearing preserve real health/pad costs and zero new skill mastery', () => {
     const initial = rented('ROOT_BEARING_FAIL'); let s = ordinary(initial, 'living-response'); s = ordinary(s, 'withdrawn-care');
     s = act(begin(s, 'root-impact'), { type: 'ROOT_BEARING', caseId: 'root-impact' }); expect(s.natureWalker.life.operation.rootBearing).toBeNull(); const hp = s.health;

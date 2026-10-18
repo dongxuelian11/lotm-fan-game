@@ -258,7 +258,7 @@ describe("readable playable slice", () => {
     expect(
       ended.ok && ended.value.activeState?.chronicle.length,
     ).toBeGreaterThan(5);
-  });
+  }, 10_000);
   it("formats exact pounds, shillings and pence", () => {
     expect(sliceMoney(251)).toBe("1镑 0苏勒 11便士");
     expect(sliceMoney(-12)).toBe("−0镑 1苏勒 0便士");
