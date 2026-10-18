@@ -1,3 +1,4 @@
+export type { ErrorAscentCommand, ErrorAscentProjection } from '../domain/error-ascent/types.js';
 export type { DoorCommand, DoorProjection } from '../domain/door/types.js';
 export type { DeathCommand, DeathProjection } from '../domain/death/types.js';
 import type { SliceCreationSelection } from "../content/slice-creation.js";

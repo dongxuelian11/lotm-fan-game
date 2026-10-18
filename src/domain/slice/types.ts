@@ -1,3 +1,4 @@
+import type { ErrorAscentState, ErrorAscentCommand, ErrorAscentProjection } from '../error-ascent/types.js';
 import type { DoorState, DoorCommand, DoorProjection } from '../door/types.js';
 import type { DeathRuntimeState } from '../death/engine.js';
 import type { DeathCommand, DeathProjection } from '../death/types.js';
@@ -313,6 +314,7 @@ import type { PublicCheckResult, PublicCoreStatKey, PublicGameDate } from '../..
 export type SliceLifeTier = 'DESTITUTE' | 'POOR' | 'ORDINARY' | 'RESPECTABLE' | 'LUXURIOUS';
 export type SliceStance = 'ATTACK' | 'DEFEND' | 'CONTROL' | 'PREPARE' | 'RETREAT';
 export type SliceIntent =
+  | { type: 'ERROR_ASCENT'; command: ErrorAscentCommand }
   | { type: 'DOOR'; command: DoorCommand }
   | { type: 'DEATH'; command: DeathCommand }
   | { type: 'SUN'; command: SunCommand }
@@ -790,6 +792,7 @@ export interface SliceArc {
   relationship: AudreyOutcome; transferPending: boolean;
 }
 export interface SliceState {
+  errorAscent:ErrorAscentState;
   door:DoorState;
   death:DeathRuntimeState;
   sun:SunState;
@@ -1001,7 +1004,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 215; contentVersion: 'door-v215'; runId: string; revision: number;
+  schemaVersion: 216; contentVersion: 'error-ascent-v216'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -1020,6 +1023,7 @@ export interface SliceState {
 /** Public records keep resolved action facts; deterministic replay source stays private. */
 export type SlicePublicCombatRound = Omit<SliceCombatRound, 'starKeyOutcome' | 'planeswalkerOutcome' | 'ferrymanOutcome' | 'deathConsulOutcome' | 'paleEmperorOutcome' | 'pureWhiteAngelOutcome' | 'lightSeekerOutcome' | 'seaKingOutcome' | 'thunderGodOutcome' | 'allKnowingEyeOutcome' | 'wisdomAngelOutcome' | 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome' | 'writerOutcome' | 'civilizationEnlightenerOutcome' | 'knowledgeMentorOutcome' | 'beautyGoddessOutcome' | 'lifeGiverOutcome' | 'misfortuneKnightOutcome' | 'concealmentServantOutcome' | 'fearBishopOutcome'> & { starKeyOutcome?:StarKeyPublicRoundOutcome; planeswalkerOutcome?:PlaneswalkerPublicRoundOutcome; ferrymanOutcome?:FerrymanPublicRoundOutcome; deathConsulOutcome?:DeathConsulPublicRoundOutcome; paleEmperorOutcome?:PaleEmperorPublicRoundOutcome; pureWhiteAngelOutcome?:PublicPureWhiteAngelRoundOutcome; lightSeekerOutcome?:PublicLightSeekerRoundOutcome; seaKingOutcome?:SeaKingPublicRoundOutcome; thunderGodOutcome?:ThunderGodPublicRoundOutcome; allKnowingEyeOutcome?: PublicAllKnowingEyeRoundOutcome; wisdomAngelOutcome?: PublicWisdomAngelRoundOutcome; misfortuneKnightOutcome?: PublicMisfortuneKnightRoundOutcome; concealmentServantOutcome?: PublicConcealmentServantRoundOutcome; fearBishopOutcome?: PublicFearBishopRoundOutcome; lifeGiverOutcome?: Omit<LifeGiverRoundOutcome, 'source' | 'randomCursorAfter'>; beautyGoddessOutcome?: BeautyGoddessPublicRoundOutcome; knowledgeMentorOutcome?: KnowledgeMentorPublicRoundOutcome; civilizationEnlightenerOutcome?: CivilizationEnlightenerPublicRoundOutcome; writerOutcome?: WriterPublicRoundOutcome; conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
 export interface SliceProjection {
+  errorAscent:ErrorAscentProjection;
   door:DoorProjection;
   death:DeathProjection;
   sun:SunProjection;
