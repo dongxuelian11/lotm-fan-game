@@ -33,3 +33,15 @@ main 与 renderer-app 类型检查已通过；完整 renderer 检查发现旧灾
 远端PR44的后续CI诊断：Door保存测试硬编码新增根漏了twilightGiant，当前明确加errorAscent/twilightGiant/demoness并保原字段hash及默认根核验；Fool冷加载坏档测试同时持四份完整历史及实例spy强引用导致768MB OOM，改为逐项构造和等价原型观察，仅测试生命周期。两项修复尚未执行当前聚焦，不计通过，不改PR32的独立208产品。
 
 最终main/完整renderer类型检查及生产build均exit0（23:46 UTC），只保Vite既有大bundle提示。当前生产冻结后开始0/1动作安全检查与独立恢复，尚无自然终态。
+
+### Actual708 producer handoff
+The first20 new commands reached the paid S1 preparation at708, then the
+producer incorrectly checked the old-scene lock before the prepared-dose
+controls. No709 action was submitted. The original capture and producer remain
+in natural-v1. Only selector ordering and its pure test changed; all11 pure
+tests pass. The exact20 current-runtime actions were replayed with every private,
+whole-public and RNG anchor equal, and both policies selected identical prior
+commands. The final private state is fully equal. The explicit708 handoff copies
+this state into natural-v2 with a new producer fingerprint; product/runtime/source
+bytes remain exact. Zero-action strict reopening passed. Continuation uses the
+already enabled, paid same-bottle support, then real consumption; no reroll.

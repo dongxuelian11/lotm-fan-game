@@ -103,13 +103,13 @@ export function chooseAction(view, lastIntent = null) {
   const use = (action, rule) => action?.enabled ? selected('APOCALYPSE_DEMONESS', action, rule) : block(action?.reason ?? `Missing public action: ${rule}`);
   if (view.progression.pathwayId !== 'demoness') return block('The original demoness pathway must remain unchanged');
   if (view.progression.sequence === 2) {
-    if (apoc.insideCase) return block('S2 recovery cannot bypass an inherited physical scene');
     if (apoc.preparedWeek !== null) {
       const consume = byType('CONSUME').find(a => a.enabled);
       if (!consume) return block('Prepared original dose has no enabled public consumption control');
       const supported = lastIntent?.type === 'APOCALYPSE_DEMONESS' && lastIntent.command.type === 'STABILIZE_PROMOTION' && lastIntent.command.bottleId === consume.command.bottleId;
       return supported ? use(consume, 'PAID_SUPPORTED_SAME_ORIGINAL_CONSUMPTION') : use(byType('STABILIZE_PROMOTION').find(a => a.command.bottleId === consume.command.bottleId), 'PAY_SAME_BOTTLE_STABILITY');
     }
+    if (apoc.insideCase) return block('S2 recovery cannot bypass an inherited physical scene');
     if (view.pollution > 0) return ordinary(view, 'ACTUAL_S2_PURIFICATION_REST', true);
     const recover = byType('RECOVER_CHARACTERISTIC_V1')[0];
     if (recover) return recover.enabled ? use(recover, 'ACTUAL_PAID_SAME_ORIGINAL_RECOVERY') : ordinary(view, 'REAL_WEEK_AND_AP_FOR_PENDING_RECOVERY');

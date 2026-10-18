@@ -53,7 +53,7 @@ test('public resource policy purifies first then pays latest same-original recov
 test('prepared dose gets actual paid same-bottle support before consumption, never an unfunded fallback', () => {
   const consume = bottleAction('CONSUME', 4, { command: { type: 'CONSUME', bottleId: 'apocalypse-demoness-potion-4', confirmed: true } });
   const support = bottleAction('STABILIZE_PROMOTION', 4);
-  const prepared = withApoc(publicView(), { preparedWeek: 174, actions: [consume, support] });
+  const prepared = withApoc(publicView({ canAct: false }), { insideCase: true, preparedWeek: 174, actions: [consume, support] });
   const chosen = chooseAction(prepared);
   assert.equal(chosen.intent.command.type, 'STABILIZE_PROMOTION');
   const after = withApoc(prepared, { actions: [consume, { ...support, enabled: false, reason: 'Already supported' }] });
@@ -61,6 +61,9 @@ test('prepared dose gets actual paid same-bottle support before consumption, nev
   assert.equal(chooseAction(after).stop, 'PUBLIC_ACTION_BLOCKED');
   assert.equal(chooseAction(after, { type: 'APOCALYPSE_DEMONESS', command: { type: 'STABILIZE_PROMOTION', bottleId: 'apocalypse-demoness-potion-3' } }).stop, 'PUBLIC_ACTION_BLOCKED');
   assert.equal(chooseAction(withApoc(prepared, { actions: [consume, { ...support, enabled: false, reason: 'Insufficient actual cash' }] })).stop, 'PUBLIC_ACTION_BLOCKED');
+  const unrelatedScene = withApoc(prepared, { preparedWeek: null, actions: [bottleAction('REQUEST_RECOVERY_V1', 4)] });
+  assert.equal(chooseAction(unrelatedScene).stop, 'PUBLIC_ACTION_BLOCKED');
+  assert.equal(chooseAction({ ...unrelatedScene, pollution: 50 }).stop, 'PUBLIC_ACTION_BLOCKED');
 });
 
 test('real S1 preferred life and reflection precede guidance; locked scenes cannot be bypassed', () => {
