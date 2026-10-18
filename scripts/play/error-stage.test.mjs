@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { chooseAction, parseOptions, sealRow, snapshotReasons, stable, stateHash, verifyCommandChain, verifyRow } from './error-stage.mjs';
+import { chooseAction, parseOptions, portableSourcePath, sealRow, snapshotReasons, SOURCE, stable, stateHash, verifyCommandChain, verifyRow } from './error-stage.mjs';
 
 // Pure helpers only: no dist import, original archive, build, session or action.
 test('canonical hashes retain meaning and reject non-JSON values', () => {
@@ -49,6 +49,10 @@ test('only the exact enabled public preferred action can be selected', () => {
 });
 
 test('explicit source/output and zero/one/N boundaries allow no policy overrides', () => {
+  assert.equal(portableSourcePath('/tmp/original', `/tmp/original/${SOURCE}`), SOURCE);
+  assert.equal(portableSourcePath('/tmp/restored', SOURCE), SOURCE);
+  assert.throws(() => portableSourcePath('/tmp/restored', `/tmp/original/${SOURCE}`));
+  assert.throws(() => portableSourcePath('/tmp/restored', 'different-natural.json'));
   for (const n of [0, 1, 32]) {
     const options = parseOptions(['--source=input.json', '--out', 'capture', `--max-new-actions=${n}`, '--resume'], '/tmp/example');
     assert.equal(options.maxNewActions, n); assert.equal(options.resume, true); assert.equal(options.source, '/tmp/example/input.json');

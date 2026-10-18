@@ -116,7 +116,7 @@ function assertPage(value: SliceProjection) {
   expect(screen.getByRole('button', { name: '返回主菜单' }).closest('header')?.textContent)
     .toContain(value.character.name + ' · ' + value.errorAscent.title);
   expect(screen.queryByRole('heading', { name: '人物卷宗' })).toBeNull();
-  expect(screen.queryByRole('region', { name: value.timeWorm.title })).toBeNull();
+  expect(screen.queryByRole('region', { name: '时之虫成长' })).toBeNull();
   expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
   expect(panel.textContent).not.toMatch(/sourceDigest|randomCursor|seed|cursor|原创|G\d+/);
   return panel;
@@ -141,7 +141,8 @@ describe('Error219 real public SliceApp entry and controlled replacement', () =>
     const game = publicAdapter(source, { command: learn.command, after: guided });
     await mount(game);
     await userEvent.click(screen.getByRole('button', { name: '时之虫与登记室' }));
-    expect(await screen.findByRole('region', { name: source.timeWorm.title })).toBeTruthy();
+    const timeWormPanel = await screen.findByRole('region', { name: '时之虫成长' });
+    expect(within(timeWormPanel).getByRole('heading', { level: 2, name: source.timeWorm.title })).toBeTruthy();
     await userEvent.click(screen.getByRole('button', { name: '查看错误晋升准备' }));
     let panel = assertPage(source);
     expect(panel.textContent).toContain('健康 70/100 · 精神 96/100 · 灵性 112/120 · 现金 867便士 · 本周行动 3/3');

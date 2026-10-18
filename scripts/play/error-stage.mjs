@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { closeSync, existsSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, readSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve, sep } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { gzipSync, gunzipSync } from 'node:zlib';
 
@@ -26,6 +26,7 @@ import { gzipSync, gunzipSync } from 'node:zlib';
  */
 export const FORMAT = 'NEW219_RESTORED197_LIVING656_COMPACT_OWNED_V1';
 export const HASH_ENCODING = 'SORTED_KEYS_CANONICAL_JSON_UTF8_SHA256';
+export const SOURCE = 'tests/fixtures/time-worm-v01970/natural.json';
 export const SOURCE_SHA256 = 'e9920991623fdd3f1b8ecf4e5c8049720f362145462703d6b804afa9dfd390cf';
 export const SOURCE_STATE_SHA256 = 'abfce49e9f21e1599f4b9abb1c2e34e15afeb8a2fbe177e2926b3ac4f2d49191';
 export const PREFIX_COUNT = 656;
@@ -46,6 +47,12 @@ export function stable(value) {
   return JSON.stringify(canonical(value));
 }
 export const stateHash = value => sha(stable(value));
+export function portableSourcePath(root, source) {
+  const name = relative(resolve(root), resolve(root, source)).split(sep).join('/');
+  assert(name && name !== '..' && !name.startsWith('../') && !isAbsolute(name), 'Source must remain inside the repository');
+  assert.equal(name, SOURCE, 'Use the canonical original197 source location');
+  return name;
+}
 export function sealRow(payload) { return { ...payload, rowSha256: stateHash(payload) }; }
 export function verifyRow(row) {
   const { rowSha256, ...payload } = row;
@@ -149,11 +156,11 @@ function inspectFreeze(root, source) {
   };
   assert(existsSync(join(root, 'dist/domain/error-ascent/owned-session.js')), 'Build and freeze the reviewed runtime first; this producer never builds');
   for (const name of ['package.json', 'package-lock.json', 'src', 'dist', 'node_modules/@noble/hashes', 'scripts/play/error-stage.mjs', TEST]) walk(name);
-  const payload = { nodeVersion: process.version, source: { path: source, ...fileEvidence(source) }, files };
+  const payload = { nodeVersion: process.version, source: { path: portableSourcePath(root, source), ...fileEvidence(source) }, files };
   assert.equal(payload.source.sha256, SOURCE_SHA256); return { ...payload, sha256: stateHash(payload) };
 }
 function stamps(root, freeze) {
-  return [...freeze.files.map(file => join(root, file.file)), freeze.source.path].map(path => {
+  return [...freeze.files.map(file => join(root, file.file)), join(root, freeze.source.path)].map(path => {
     const s = lstatSync(path, { bigint: true }); return { path, size: s.size, mtimeNs: s.mtimeNs, ctimeNs: s.ctimeNs, ino: s.ino };
   });
 }
@@ -315,6 +322,7 @@ function writeSummary(out, summary) {
 export async function main(args = process.argv.slice(2)) {
   const root = process.cwd(), options = parseOptions(args, root);
   assert.equal(resolve(root, 'scripts/play/error-stage.mjs'), SELF, 'Run the reviewed producer from its matching repository root');
+  portableSourcePath(root, options.source);
   const old = readSource(options.source), freeze = inspectFreeze(root, options.source), frozen = stamps(root, freeze);
   const runtime = await loadRuntime(root), initialState = migrate(runtime, old.source), initialView = runtime.projectSliceState(initialState);
   auditPublic(initialView, initialState); const initial = anchor(initialState, initialView); safeOutput(root, options);

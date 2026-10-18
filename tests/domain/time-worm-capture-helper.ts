@@ -12,6 +12,7 @@ import { TIME_WORM_SOURCE_KEYS, TIME_WORM_ABILITY_IDS } from '../../src/domain/t
 import { timeWormExpectedOriginals, timeWormLifeMasteryGains } from '../../src/domain/time-worm/life.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentTimeWormReplayExpectation } from '../helpers/time-worm-current-replay.js';
 
 export const TIME_WORM_ROOT = 'tests/fixtures/time-worm-v01970';
 export const TIME_WORM_SOURCE = 'tests/fixtures/fate-trojan-v01750/natural.json';
@@ -95,7 +96,11 @@ export function assertPublicCaptureControl(state: SliceState, intent: SliceInten
 export function replayCaptureBoundary(name: string) {
   const save = namedBoundary(name);
   if (save.count > TIME_WORM_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-  sameCaptureValue(applySliceIntent(save.before, save.intent), save.final);
+  // A single restored boundary retains its old guide unless this command
+  // actually writes guidance; only a fresh whole-history replay rewrites it.
+  const expected = save.intent.type === 'TIME_WORM' && save.intent.command.type === 'LEARN_GUIDANCE'
+    ? currentTimeWormReplayExpectation(save.final) : save.final;
+  sameCaptureValue(applySliceIntent(save.before, save.intent), expected);
   return save;
 }
 export const captureBody = (s: SliceState) => ({ status: s.status, revision: s.revision, week: s.week, date: s.date,
