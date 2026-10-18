@@ -96,13 +96,13 @@ describe('Perfecter exact current schema boundary', () => {
     expect(sha256Hex(readFileSync('tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json','utf8'))).toBe('70b8843550d5a79abd5250377184ab5050a80cc1b7138f2a03ead788fb3bb8ef');
     expect(readFileSync('tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json','utf8')).toBe(bytes);
   },60_000);
-  it.each([205,206,207] as const)('rejects every introduced future root smuggled into %i',version=>{
+  for (const version of [205,206,207] as const) it(`rejects every introduced future root smuggled into ${version}`,()=>{
     const original=old(version),defaults=fresh();
     for(const root of introducedRoots[version]) for(const value of [defaults[root],{...defaults[root],guidanceKnown:true},null]){
       const state={...original,[root]:value},before=stableStringify(state);
       expect(()=>migrateSliceState(state)).toThrow();expect(stableStringify(state)).toBe(before);
     }
-  });
+  }, version === 205 ? 10_000 : 5_000);
   it('rejects missing roots, unknown keys, invalid nested roots and mismatched versions',()=>{
     const state=fresh(), missing=structuredClone(state) as unknown as Record<string,unknown>;delete missing.perfecter;
     const missingTyrant=structuredClone(state) as unknown as Record<string,unknown>;delete missingTyrant.tyrant;

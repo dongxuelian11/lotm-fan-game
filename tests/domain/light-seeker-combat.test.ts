@@ -444,7 +444,15 @@ describe('LightSeeker actual complete public rounds and original shared-site con
     const frozen = structuredClone(terminal), view = projectLightSeekerCombat(terminal), o = outcome(naturalRounds.at(-1)!);
     expect(view.enemySpirituality).toBe(terminal.lightSeeker.encounter.enemySpirituality); expect(view.playerSpirituality).toBe(terminal.spirituality);
     expect(view.site).toEqual(terminal.lightSeeker.life.site); expect(view.startSite).toEqual(terminal.lightSeeker.encounter.startSite);
-    expect(view.lastActionSequence).toEqual([...o.playerActions.map(a => ({ ...a, actor: 'PLAYER' })), ...o.enemyActions.map(a => ({ ...a, actor: 'ENEMY' }))].sort((a, b) => a.order - b.order));
+    const actions = [...o.playerActions.map(a => ({ ...a, actor: 'PLAYER' })), ...o.enemyActions.map(a => ({ ...a, actor: 'ENEMY' }))].sort((a, b) => a.order - b.order);
+    expect(view.lastActionSequence).toEqual(actions.map(({ randomCursorBefore, randomCursorAfter, ...publicAction }) => {
+      expect(Number.isInteger(randomCursorBefore)).toBe(true); expect(Number.isInteger(randomCursorAfter)).toBe(true);
+      return publicAction;
+    }));
+    for (const action of view.lastActionSequence) {
+      expect(Object.hasOwn(action, 'randomCursorBefore')).toBe(false);
+      expect(Object.hasOwn(action, 'randomCursorAfter')).toBe(false);
+    }
     expect(view.enemyCountWheel).toEqual(LIGHT_SEEKER_ENEMY_COUNT_WHEEL); expect(view.enemyAbilityWheel).toEqual(LIGHT_SEEKER_ENEMY_ABILITY_WHEEL);
     const publicCombat = projectSliceState(original).combat!;
     expect(publicCombat.enemyCountWheel).toEqual(LIGHT_SEEKER_ENEMY_COUNT_WHEEL);

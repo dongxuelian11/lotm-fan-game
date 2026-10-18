@@ -73,8 +73,14 @@ async function acknowledgeRound() {
   const reveal = screen.queryByRole('dialog', { name: '战斗回合结果' });
   if (reveal) await userEvent.click(within(reveal).getByRole('button', { name: /^(返回生活|进入下一回合|查看收尾卷宗)$/ }));
 }
-async function openGrowth() {
+async function openGrowth(viaSunPreparation = false) {
   await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+  if (viaSunPreparation) {
+    // Completed S1 now opens S0 preparation; the original S1 records remain reachable from ordinary life.
+    const preparation = await screen.findByRole('region', { name: '序列0 太阳' });
+    await userEvent.click(within(preparation).getByRole('button', { name: '返回普通生活' }));
+    await userEvent.click(screen.getByRole('button', { name: ENTRY }));
+  }
   return screen.findByRole('region', { name: PANEL });
 }
 async function ensurePanel() {
@@ -368,7 +374,7 @@ describe('Pure White Angel actual saved campaign navigation and reopening', () =
   it('reopens all three honest reports and the same returned originals with only the one actual focused application rewarded', async () => {
     const practiced = snapshot('practiced'), game = savedGame(practiced);
     await mount(game); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
-    await openGrowth(); assertResources(practiced);
+    await openGrowth(true); assertResources(practiced);
     expect(screen.getByRole('region', { name: '纯白天使阶段总览' }).textContent).toContain('生活报告3/3 · 反思已完成 · 纯白天使扮演100/100');
     for (const id of ['residue-trace', 'personal-impact', 'screened-return']) {
       await userEvent.selectOptions(screen.getByRole('combobox', { name: '纯白天使目标' }), id);
@@ -452,7 +458,7 @@ describe('Pure White Angel actual saved campaign navigation and reopening', () =
     expect(natural('final')).toEqual(save.final);
     expect(readObjectEntry<SliceIntent[]>(`${ROOT}/natural.json`, 'commands')).toHaveLength(853);
     cleanup(); await mount(game); assertRound(await screen.findByRole('dialog', { name: '战斗回合结果' }), game.state);
-    await acknowledgeRound(); await openGrowth(); assertResources(save.final);
+    await acknowledgeRound(); await openGrowth(true); assertResources(save.final);
     const encounter = screen.getByRole('region', { name: '纯白天使可选真实交战' });
     expect(encounter.textContent).toContain('健康70/100、精神100/100、灵性99/120');
     expect(encounter.textContent).toContain('已投降'); expect(encounter.textContent).toContain('光击储能3/4');
