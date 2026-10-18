@@ -1,3 +1,4 @@
+export type { DeathCommand, DeathProjection } from '../domain/death/types.js';
 import type { SliceCreationSelection } from "../content/slice-creation.js";
 import type { SliceIntent, SliceProjection } from "../domain/slice/types.js";
 
