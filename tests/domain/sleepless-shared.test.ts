@@ -27,7 +27,7 @@ const capture = (): NaturalCapture => currentCapture(JSON.parse(readFileSync(new
 const boundary = (name: 'watch' | 'combat'): BoundaryCapture => currentCapture(JSON.parse(readFileSync(new URL(`../fixtures/sleepless-v0200/shared-${name}-save-boundary.json`, import.meta.url), 'utf8')));
 
 describe('Sleepless actual public watch and growth route', () => {
-  it('replays every original public command and reaches all captured milestones without changing the seed', () => {
+  it('replays every original public command and reaches all captured milestones without changing the seed', { tags: ['historical-replay'] }, () => {
     const c = capture();
     let s = createSliceRun(c.final.runId, c.creation, c.seed);
     const milestones = [c.promoted, c.practiced, c.combatStart, c.terminal, c.final];

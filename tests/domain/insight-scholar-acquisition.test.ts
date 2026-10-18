@@ -243,7 +243,7 @@ describe('Insight Scholar candidate S3 original bottles and explicitly G profess
     reject(t, { type: 'PREPARE_TASK', taskId: 'CHECK_RECORDS' }); reject(t, { type: 'POTION_WORK', bottleId: t.insightScholar.bottles[0]!.id });
     const u = qualify(taught()); buy(u); u.actionsRemaining = 0; reject(u, { type: 'PREPARE_PROMOTION' });
   });
-  it('requires old rituals, open fragments, prepared scenes and the actual contact cloth to be closed', () => {
+  it('requires old rituals, open fragments, prepared scenes and the actual contact cloth to be closed', { tags: ['historical-replay'] }, () => {
     const s = qualify(taught()); buy(s);
     const malformed = structuredClone(s); malformed.prophet.ritual.playerLocation = 'HALL';
     expect(validateProphetRitualState(malformed)).toBe(false);

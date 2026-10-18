@@ -242,7 +242,7 @@ describe('Fear Bishop S3 original bottles and explicitly G professional preparat
     reject(t, { type: 'PREPARE_TASK', taskId: 'CHECK_RESIDUE' }); reject(t, { type: 'POTION_WORK', bottleId: t.fearBishop.bottles[0]!.id });
     const u = qualify(taught()); buy(u); u.actionsRemaining = 0; reject(u, { type: 'PREPARE_PROMOTION' });
   });
-  it('requires old rituals, dreams, prepared scenes, original objects and Leaf deployment to be closed', () => {
+  it('requires old rituals, dreams, prepared scenes, original objects and Leaf deployment to be closed', { tags: ['historical-replay'] }, () => {
     const s = qualify(taught()); buy(s);
     // HALL alone with a closed visit is a malformed old save, not an active ritual.
     const malformed = structuredClone(s); malformed.nightwatcher.ritual.playerLocation = 'HALL';

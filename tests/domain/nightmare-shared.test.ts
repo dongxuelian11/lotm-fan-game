@@ -56,7 +56,7 @@ function firstVerifiedDream(): BoundaryCapture {
 }
 
 describe('Nightmare actual public acquisition, dream records and waking verification', () => {
-  it('replays every original command and milestone through peaceful growth and the actual encounter', () => {
+  it('replays every original command and milestone through peaceful growth and the actual encounter', { tags: ['historical-replay'] }, () => {
     const c = capture();
     let s = createSliceRun(c.final.runId, c.creation, c.seed);
     const milestones = [c.promoted, c.practiced, c.combatStart, c.terminal, c.final];
@@ -83,7 +83,7 @@ describe('Nightmare actual public acquisition, dream records and waking verifica
     expect(c.terminal.nightmare.encounter).toMatchObject({ pressure: 0, dreamLocked: false });
     expect(c.terminal.combatHistory.length).toBeGreaterThan(c.combatStart.combatHistory.length);
     expect(c.terminal.nightmare.cases).toEqual(c.practiced.nightmare.cases);
-  }, 10_000);
+  });
 
   it('migrates frozen 0.21 facts while preserving original fields and adding missing stage defaults', () => {
     const old = JSON.parse(readFileSync(new URL('../fixtures/midnight-v0210/natural.json', import.meta.url), 'utf8')).final;

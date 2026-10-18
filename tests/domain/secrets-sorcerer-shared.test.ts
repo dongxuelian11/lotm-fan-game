@@ -39,13 +39,13 @@ describe('Secrets Sorcerer original hostile target, seal and real space route',(
 
 
 describe('honest natural failure branches and directed continuation',()=>{
- it.each(['natural-first-death','natural-failure'])('replays %s without changing its seed, resources or lethal outcome',name=>{
+ it.each(['natural-first-death','natural-failure'])('replays %s without changing its seed, resources or lethal outcome',{ tags: ['historical-replay'] }, name=>{
   const c=JSON.parse(readFileSync(`tests/fixtures/secrets-sorcerer-v01270/${name}.json`,'utf8'));
   let s=createSliceRun(c.final.runId,c.creation,c.seed);for(const command of c.commands)s=applySliceIntent(s,command);
   expect(s).toEqual(migrateSliceState(c.final));expect(s.status).toBe('DEAD');expect(s.progression.sequence).toBe(5);
   if(name==='natural-failure'){expect(c.sealed.secretsSorcerer.ritual.phase).toBe('SEALED');expect(s.secretsSorcerer.bottles[0].outcome).toBe('FAILURE');}
  });
- it('replays every subsequent public command from the explicitly directed pre-potion start',()=>{
+ it('replays every subsequent public command from the explicitly directed pre-potion start',{ tags: ['historical-replay'] }, ()=>{
   const c=read('stage-directed'),b=read('promotion-save-boundary');expect(c.provenance.kind).toBe('DIRECTED_PROMOTION_THEN_PUBLIC_COMMANDS');
   let s=b.beforeLast;for(const command of c.commands)s=applySliceIntent(s,command);expect(s).toEqual(c.final);
   expect(c.practiced.progression.acting).toBe(100);expect(s.status).toBe('ACTIVE');expect(s.secretsSorcerer.ritual.attempts.at(-1).outcome).toBe('RETREATED');

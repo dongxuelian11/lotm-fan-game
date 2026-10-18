@@ -224,7 +224,7 @@ describe('Sea King S3 original bottles and explicitly G professional preparation
     reject(t, { type: 'PREPARE_TASK', taskId: 'CHECK_CHART' }); reject(t, { type: 'POTION_WORK', bottleId: t.seaKing.bottles[0]!.id });
     const u = qualify(taught()); buy(u); u.actionsRemaining = 0; reject(u, { type: 'PREPARE_PROMOTION' });
   });
-  it('requires old rituals and prepared or open original scenes to close while allowing the real completed ridge', () => {
+  it('requires old rituals and prepared or open original scenes to close while allowing the real completed ridge', { tags: ['historical-replay'] }, () => {
     const s = qualify(taught()); buy(s);
     expect(s.cataclysmPriest.ritual.playerLocation).toBe('RIDGE'); expect(s.cataclysmPriest.ritual.activeVisitId).toBeNull();
     expect(seaKingAcquisitionBlock(s, { type: 'PREPARE_PROMOTION' })).toBeNull();
