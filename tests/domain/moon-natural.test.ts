@@ -13,7 +13,7 @@ import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/curr
 /** One exact replay of every NEW command. Original670 is byte-authenticated
  * and strictly migrated/validated, never rerun. No producer/dist import, die
  * substitution, outcome search, fixture writes or skips. Historical private
- * hashes permit only reviewed version tags and the exact empty Darkness/White Tower roots. */
+ * hashes permit only reviewed version tags and the exact empty Darkness/White Tower/Tyrant/Sun roots. */
 let data: LoadedCapture | undefined;
 beforeAll(() => { data = loadCapture(); }, 180_000);
 afterAll(() => { if (data) authenticateInputs(data.pins); }, 180_000);
@@ -84,13 +84,14 @@ describe('Moon212 compressed exact original670 natural continuation', () => {
     expect(hash(manifest)).toBe(unchangedManifest);
   });
 
-  it('keeps raw209 separate from current migration and removes only the exact inactive Darkness and White Tower roots from audit views', () => {
+  it('keeps raw209 separate from current migration and removes only the exact inactive Darkness, White Tower, Tyrant and Sun roots from audit views', () => {
     const { prefixFinal, initial, pins } = data!, rawHash = hash(prefixFinal), currentHash = hash(initial);
     expect([prefixFinal.schemaVersion, prefixFinal.contentVersion]).toEqual([209, 'moon-v209']);
     expect(Object.hasOwn(prefixFinal, 'darkness')).toBe(false);
     expect(Object.hasOwn(prefixFinal, 'whiteTower')).toBe(false);
+    expect(Object.hasOwn(prefixFinal, 'tyrant')).toBe(false); expect(Object.hasOwn(prefixFinal, 'sun')).toBe(false);
     expect([initial.schemaVersion, initial.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(Object.keys(initial).sort()).toEqual([...Object.keys(prefixFinal), 'darkness', 'whiteTower'].sort());
+    expect(Object.keys(initial).sort()).toEqual([...Object.keys(prefixFinal), 'darkness', 'whiteTower', 'tyrant', 'sun'].sort());
     same(historicalMoonState(initial), prefixFinal);
     expect(capturedHash(initial)).toBe(pins.initialStateSha256);
     expect(currentHash).not.toBe(rawHash);
@@ -109,11 +110,18 @@ describe('Moon212 compressed exact original670 natural continuation', () => {
     expect(() => migrateCapturedMoonState(injectedLegacy)).toThrow();
     const injectedWhiteTowerLegacy = { ...prefixFinal, whiteTower: initial.whiteTower };
     expect(() => migrateCapturedMoonState(injectedWhiteTowerLegacy)).toThrow();
+    for (const root of ['tyrant', 'sun'] as const) {
+      expect(() => historicalMoonState({ ...initial, [root]: { ...initial[root], guidanceKnown: true } })).toThrow();
+      expect(() => historicalMoonState({ ...initial, [root]: { ...initial[root], unexpected: undefined } })).toThrow();
+      expect(() => migrateCapturedMoonState({ ...prefixFinal, [root]: initial[root] })).toThrow();
+    }
+    expect(capturedHash({ ...initial, cash: initial.cash + 1 })).not.toBe(pins.initialStateSha256);
     const projection = projectSliceState(initial), publicHash = hash(projection);
     const historical = historicalMoonPublic(projection, initial);
     expect(Object.hasOwn(historical, 'darkness')).toBe(false);
     expect(Object.hasOwn(historical, 'whiteTower')).toBe(false);
-    expect(Object.keys(historical).sort()).toEqual(Object.keys(projection).filter(key => key !== 'darkness' && key !== 'whiteTower').sort());
+    expect(Object.hasOwn(historical, 'tyrant')).toBe(false); expect(Object.hasOwn(historical, 'sun')).toBe(false);
+    expect(Object.keys(historical).sort()).toEqual(Object.keys(projection).filter(key => !['darkness', 'whiteTower', 'tyrant', 'sun'].includes(key)).sort());
     const unexpectedPublic = { ...projection, unexpectedPublicRoot: { retained: true } };
     expect(Object.hasOwn(historicalMoonPublic(unexpectedPublic, initial), 'unexpectedPublicRoot')).toBe(true);
     const alteredPublic = { ...projection, darkness: { ...projection.darkness, promoted: true } };
@@ -124,6 +132,10 @@ describe('Moon212 compressed exact original670 natural continuation', () => {
     const extendedWhiteTowerPublic = { ...projection, whiteTower: { ...projection.whiteTower, unexpected: true } };
     expect(() => capturePublic(extendedWhiteTowerPublic, initial)).toThrow();
     expect(() => capturePublic(projection, alteredWhiteTower)).toThrow();
+    for (const root of ['tyrant', 'sun'] as const) {
+      expect(() => capturePublic({ ...projection, [root]: { ...projection[root], promoted: true } }, initial)).toThrow();
+      expect(() => capturePublic({ ...projection, [root]: { ...projection[root], unexpected: undefined } }, initial)).toThrow();
+    }
     expect(hash(prefixFinal)).toBe(rawHash); expect(hash(initial)).toBe(currentHash); expect(hash(projection)).toBe(publicHash);
   });
 

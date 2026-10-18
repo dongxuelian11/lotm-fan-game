@@ -11,6 +11,8 @@ import { projectSliceState } from '../../src/domain/slice/index.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import type { SliceBridge } from '../../src/shared/slice-contracts.js';
+import { historicalDarknessPublic, historicalDarknessState, migrateCapturedDarknessState,
+  type HistoricalDarknessState } from '../helpers/darkness-capture.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 
 // Immutable natural834 snapshots, not a second producer or domain replay. The
@@ -32,9 +34,9 @@ const PINS = {
 } as const;
 interface CapturedBoundary {
   commandCount: number;
-  beforeLast: SliceState;
+  beforeLast: HistoricalDarknessState;
   lastIntent: SliceIntent;
-  final: SliceState;
+  final: HistoricalDarknessState;
   public: Omit<Partial<SliceProjection>, 'progression'> & {
     progression: Pick<SliceProjection['progression'], 'sequence' | 'acting' | 'mastery'>;
   };
@@ -52,14 +54,18 @@ function captured(name: keyof typeof PINS) {
   const pin = PINS[name], path = `${ROOT}/${pin.file}`, bytes = readFileSync(path);
   expect(bytes.length).toBe(pin.bytes); expect(sha(bytes)).toBe(pin.sha256);
   checkedFiles.set(path, pin.sha256);
-  const boundary = JSON.parse(gunzipSync(bytes).toString('utf8')) as CapturedBoundary;
+  const raw = JSON.parse(gunzipSync(bytes).toString('utf8')) as CapturedBoundary;
+  expect(hash(raw.beforeLast)).toBe(raw.audit.beforeStateSha256);
+  expect(hash(raw.final)).toBe(raw.audit.afterStateSha256);
+  const boundary = { ...raw, beforeLast: migrateCapturedDarknessState(raw.beforeLast),
+    final: migrateCapturedDarknessState(raw.final) };
   expect(boundary.commandCount).toBe(pin.count);
-  expect(hash(boundary.beforeLast)).toBe(boundary.audit.beforeStateSha256);
-  expect(hash(boundary.final)).toBe(boundary.audit.afterStateSha256);
+  expect(hash(historicalDarknessState(boundary.beforeLast))).toBe(boundary.audit.beforeStateSha256);
+  expect(hash(historicalDarknessState(boundary.final))).toBe(boundary.audit.afterStateSha256);
   expect([boundary.final.schemaVersion, boundary.final.contentVersion])
     .toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   const value = projectSliceState(boundary.final);
-  expect(hash(value)).toBe(pin.publicSha256);
+  expect(hash(historicalDarknessPublic(value, boundary.final))).toBe(pin.publicSha256);
   expect(boundary.globalPublicSha256).toBe(pin.publicSha256);
   // The captured policy window intentionally omits pathwayId/promotionWeek;
   // the independently pinned global hash above still covers the entire view.
@@ -180,7 +186,7 @@ afterEach(() => {
 describe('Darkness actual natural834 saved public pages', () => {
   it('shows the real command814 promotion immediately after its captured receipt and reopens the identical S0', async () => {
     const { boundary, value } = captured('promotion'), before = projectSliceState(boundary.beforeLast);
-    expect(hash(before)).toBe(boundary.audit.globalPublicBeforeSha256);
+    expect(hash(historicalDarknessPublic(before, boundary.beforeLast))).toBe(boundary.audit.globalPublicBeforeSha256);
     expect(boundary.lastIntent).toEqual({ type: 'DARKNESS', command: {
       type: 'CONSUME', compoundId: 'darkness-compound-1', confirmed: true } });
     expect(boundary.final).toMatchObject({ revision: 815, week: 189, status: 'ACTIVE', health: 100,
@@ -219,9 +225,9 @@ describe('Darkness actual natural834 saved public pages', () => {
     await openPage(game); assertCurrentPage(value, boundary.final); await assertAbilities(value, boundary.final, true);
     expect(screen.getByRole('region', { name: PANEL }).textContent).toBe(immediateText);
     expect(game.bridge.submitIntent).toHaveBeenCalledTimes(1); expect(game.receipts).toBe(1);
-    expect(hash(boundary.beforeLast)).toBe(boundary.audit.beforeStateSha256);
-    expect(hash(boundary.final)).toBe(boundary.audit.afterStateSha256);
-    expect(hash(value)).toBe(PINS.promotion.publicSha256);
+    expect(hash(historicalDarknessState(boundary.beforeLast))).toBe(boundary.audit.beforeStateSha256);
+    expect(hash(historicalDarknessState(boundary.final))).toBe(boundary.audit.afterStateSha256);
+    expect(hash(historicalDarknessPublic(value, boundary.final))).toBe(PINS.promotion.publicSha256);
   }, 120_000);
 
   it('displays the actual command831 failed diversion, spent resources and untreated recoil instead of an invented skill success', async () => {
@@ -251,8 +257,8 @@ describe('Darkness actual natural834 saved public pages', () => {
     expect(sideExit.closest('details')).toBeNull(); expect(disabled(sideExit)).toBe(false);
     expect(descriptions(sideExit)).toEqual(['0行动、0便士；按实际位置慢行']);
     expect(game.bridge.submitIntent).not.toHaveBeenCalled();
-    expect(hash(state)).toBe(boundary.audit.afterStateSha256);
-    expect(hash(value)).toBe(PINS.failure.publicSha256);
+    expect(hash(historicalDarknessState(state))).toBe(boundary.audit.afterStateSha256);
+    expect(hash(historicalDarknessPublic(value, boundary.final))).toBe(PINS.failure.publicSha256);
   }, 60_000);
 
   it('opens and reopens the actual command834 report with two ordinary returns, preserved four-person history and zero new mastery', async () => {
@@ -310,7 +316,7 @@ describe('Darkness actual natural834 saved public pages', () => {
     for (const mock of [game.bridge.getBootstrap, game.bridge.loadRun]) {
       for (const result of mock.mock.results) assertPublicOnly(await result.value, state);
     }
-    expect(hash(state)).toBe(boundary.audit.afterStateSha256);
-    expect(hash(value)).toBe(PINS.report.publicSha256);
+    expect(hash(historicalDarknessState(state))).toBe(boundary.audit.afterStateSha256);
+    expect(hash(historicalDarknessPublic(value, boundary.final))).toBe(PINS.report.publicSha256);
   }, 120_000);
 });

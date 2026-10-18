@@ -4,6 +4,8 @@ import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from '
 import { join, resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { projectDarkness } from '../../src/domain/darkness/index.js';
+import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
 import { projectWhiteTower } from '../../src/domain/white-tower/index.js';
 import { assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
@@ -34,7 +36,7 @@ export const INITIAL_POLICY = {
 };
 export interface FilePin { bytes: number; sha256: string }
 /** Immutable capture input format, distinct from the current runtime state. */
-export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower'> & {
+export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun'> & {
   schemaVersion: 209; contentVersion: 'moon-v209';
 };
 export interface Member extends FilePin { file: string; originalBytes?: number; originalSha256?: string }
@@ -127,35 +129,49 @@ const EMPTY_WHITE_TOWER: SliceState['whiteTower'] = {
   version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
   passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
 };
+const EMPTY_TYRANT: SliceState['tyrant'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  coasts: null, challenge: null, materials: null, epilogue: null, seaVoyages: [], assembly: null,
+  journal: [], promotionStability: { preparations: [] },
+};
+const EMPTY_SUN: SliceState['sun'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
 /** Detached audit view only. Remove exactly the independently specified default
- * Darkness/White Tower roots and restore the capture's version tags. Every other field,
+ * Darkness/White Tower/Tyrant/Sun roots and restore the capture's version tags. Every other field,
  * including any unexpected root, remains covered by the historical hash. */
 export function historicalMoonState(state: SliceState): HistoricalMoonState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(state.darkness, EMPTY_DARKNESS);
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
-  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, ...originalFields } = state;
+  assert.deepEqual(createTyrantState(), EMPTY_TYRANT); assert.deepEqual(createSunState(), EMPTY_SUN);
+  assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
+  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 209, contentVersion: 'moon-v209' };
 }
 /** Strict current ingress must preserve every original 209 field and may add
- * only the reviewed default Darkness/White Tower roots; it never rewrites the raw input. */
+ * only the reviewed default Darkness/White Tower/Tyrant/Sun roots; it never rewrites the raw input. */
 export function migrateCapturedMoonState(raw: HistoricalMoonState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [209, 'moon-v209']);
   assert.equal(Object.hasOwn(raw, 'darkness'), false);
   assert.equal(Object.hasOwn(raw, 'whiteTower'), false);
+  assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assertValidSliceState(current);
-  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower']);
+  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower', 'tyrant', 'sun']);
   same(historicalMoonState(current), raw, 'Migration changed the complete captured Moon state');
   assert.equal(hash(raw), before, 'Migration changed the raw Moon input');
   return current;
 }
-/** Verify both entire new inactive public roots before removing just those roots
+/** Verify all four entire new inactive public roots before removing just those roots
  * from a detached historical view. Unknown fields are never filtered out. */
-export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower'> {
+export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower' | 'tyrant' | 'sun'> {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(state.darkness, EMPTY_DARKNESS);
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
+  assert.deepEqual(createTyrantState(), EMPTY_TYRANT); assert.deepEqual(createSunState(), EMPTY_SUN);
+  assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
   assert.equal(state.progression.pathwayId, 'moon');
   assert.equal(Object.hasOwn(projection, 'darkness'), true);
   const root = projection.darkness;
@@ -192,7 +208,37 @@ export function historicalMoonPublic(projection: SliceProjection, state: SliceSt
       reason: state.status === 'ACTIVE' ? '须由仍活着的全知之眼本人继续。' : '已经死亡或结束的角色不能继续行动。',
       preferredAction: true }],
   });
-  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, ...originalFields } = projection;
+  assert.equal(Object.hasOwn(projection, 'tyrant'), true);
+  assert.deepEqual(projection.tyrant, {
+    title: '序列0 暴君', guidanceKnown: false, promoted: false,
+    story: '原小湾与旧人原物继续保留。三岸共二十七万原居民各有当前意愿与有限粮食；履约、隔周复核和真实航运不能用证书代替。另一位太阳真神独立敌对，单独挑战并真实存活才计入晋升经历。',
+    nextStep: state.progression.sequence === 1
+      ? '维持至少二十万同一在世居民同时恐惧、服从并信仰；本人单独挑战另一位真神后存活，取得原三份特性与同一唯一性，在当前氛围中完成同瓶付费准备。'
+      : '先继续雷神的真实原三份续筹、晋升和三案反思；历史独立第四份不能改写为同根回收件。',
+    risk: '晋升成功率按当前意志与本次付费准备计算；失败实际重伤、污染或死亡，没有免费重试。药液与普通载体耗用，原特性仍守恒，回收必须按真实原处和隔周条件完成。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'tyrant:0:LEARN_GUIDANCE', label: '听取暴君晋升与三岸原人群指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的雷神本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  assert.equal(Object.hasOwn(projection, 'sun'), true);
+  assert.deepEqual(projection.sun, {
+    title: '序列0 太阳', guidanceKnown: false, promoted: false,
+    story: '玛拉与芦影、原采光廊和投降的西拉斯都留在原处，旧许可、伤势和耗料继续保留。街区接待处有洗衣房与邻楼后阶两件居民求助；须亲自问清情况、处理实际原物并完成交接，普通手段也能完成。',
+    nextStep: '完成两件居民服务与现场核验；核清本人已有的一份和另外两份原特性，实地确认同一太阳唯一性空位，再为同一本人的同一瓶付费准备。实际晋1满十二周才可服药。',
+    risk: '成功率按本人实际意志与本瓶付费准备计算，不重掷。失败留下真实重伤和污染并可能死亡。幸存者只能在原处封存同一残余，隔周付费回收，再用剩余有价载体重配；总共只有三件载体。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'sun:0:LEARN_GUIDANCE', label: '听取两件服务与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, ...originalFields } = projection;
   return originalFields;
 }
 function relativeFile(file: string): string {

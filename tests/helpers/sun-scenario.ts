@@ -195,6 +195,8 @@ export function controlledSunSuccess(control: ReturnType<typeof installControlle
   // The actual recommended route exhausts this week's actions after the first
   // vacancy visit. The following week must pay and inspect the current seal
   // again; an old successful visit is not a transferable current permission.
+  // The actual weekly bill also leaves less than 60p, so real WORK must earn
+  // the original 180p wage before the second paid visit can proceed.
   expect(verifications.map(item => item.command)).toEqual([
     { type: 'VERIFY_UNIQUENESS', step: 'CHAIN' }, { type: 'VERIFY_UNIQUENESS', step: 'VACANCY' },
     { type: 'VERIFY_UNIQUENESS', step: 'VACANCY' },
@@ -207,8 +209,20 @@ export function controlledSunSuccess(control: ReturnType<typeof installControlle
   expect(currentVacancy.week).toBe(previousVacancy.week + 1);
   const firstVisit = root.journal.find(event => event.id === previousVacancy.eventId)!;
   expect(firstVisit.after.budget.actions).toBe(0);
-  expect(root.journal.filter(event => event.revision > previousVacancy.revision && event.revision < currentVacancy.revision)
-    .map(event => event.command)).toEqual([{ type: 'NEXT_WEEK' }]);
+  const renewal = root.journal.filter(event => event.revision > previousVacancy.revision && event.revision < currentVacancy.revision);
+  expect(renewal.map(event => event.command)).toEqual([{ type: 'NEXT_WEEK' }, { type: 'WORK' }]);
+  const renewalWeek = renewal[0]!, renewalWork = renewal[1]!;
+  expect(renewalWeek.after.budget.week).toBe(renewalWeek.before.budget.week + 1);
+  expect(renewalWeek.after.budget.actions).toBe(3);
+  expect(renewalWeek.after.budget.cash).toBeLessThan(60);
+  expect(renewalWeek.financeReceipts.length).toBeGreaterThan(0);
+  expect(renewalWeek.after.nowSecond).toBe(renewalWeek.after.weekAnchor);
+  expect(renewalWork.before).toEqual(renewalWeek.after);
+  expect(renewalWork.after.budget.cash).toBe(renewalWork.before.budget.cash + 180);
+  expect(renewalWork.after.budget.actions).toBe(2);
+  expect(renewalWork.after.nowSecond - renewalWork.before.nowSecond).toBe(28800);
+  expect(renewalWork.after.finance.wagePaidWeek).toBe(currentVacancy.week);
+  expect(renewalWork.after.random).toEqual(renewalWork.before.random);
   expect(root.materials!.uniqueness.checks.map(item => item.eventId)).toEqual([verifications[0]!.eventId, currentVacancy.eventId]);
   for (const verification of verifications) {
     const event = root.journal.find(item => item.id === verification.eventId)!;

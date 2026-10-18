@@ -1,13 +1,14 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { openDarknessRuntimeSession, type DarknessRuntimeSession } from '../../src/domain/darkness/owned-session.js';
 import { DARKNESS_FROZEN_SOURCE_KEYS } from '../../src/domain/darkness/source.js';
 import {
   INPUT_MANIFEST, NEW_COMMANDS, PINS, PREFIX, actualReceipts, assertCaptureFreeze, assertCaptureManifest,
   assertGlobalPublic, assertPublicAction, authenticateInputs, bytes, capturePublic, compactHash, hash, json,
-  loadCapture, migrateCapturedDarknessState, outcome, readBoundary, same,
-  type Boundary, type Freeze, type LoadedCapture, type Manifest,
+  historicalDarknessPublic, historicalDarknessState, loadCapture, migrateCapturedDarknessState, outcome, readBoundary, same,
+  type Boundary, type HistoricalDarknessState, type Freeze, type LoadedCapture, type Manifest,
 } from '../helpers/darkness-capture.js';
 
 /** Exactly155 NEW commands once across four contiguous, disjoint blocks.
@@ -28,7 +29,7 @@ function boundaryAt(count: number): Boundary {
 function checkedPublic(projection: SliceProjection, state: SliceState) {
   assertGlobalPublic(projection, state); return capturePublic(projection);
 }
-function preserveOriginal(state: SliceState, before: SliceState): void {
+function preserveOriginal(state: SliceState | HistoricalDarknessState, before: SliceState | HistoricalDarknessState): void {
   const original = data.original;
   expect(state.runId).toBe(original.runId); expect(state.random.seed).toBe(original.random.seed);
   same(state.character, original.character, 'The exact original identity, wages and abilities remain');
@@ -74,7 +75,7 @@ describe('Darkness213 complete immutable natural capture', () => {
   });
 
   it.each(BLOCKS)('replays only recorded commands %i..%i (%i actions), retaining every complete private/RNG/chapter/global hash', (first, last, size) => {
-    let state = first === PREFIX + 1 ? structuredClone(data.initial) : boundaryAt(first - 1).final;
+    let state = first === PREFIX + 1 ? structuredClone(data.initial) : migrateCapturedDarknessState(boundaryAt(first - 1).final);
     // The owned constructor is the strict current ingress for later blocks.
     let session: DarknessRuntimeSession | null = state.darkness.guidanceKnown ? openDarknessRuntimeSession(state) : null;
     let global = session ? session.project() : projectSliceState(state);
@@ -83,17 +84,17 @@ describe('Darkness213 complete immutable natural capture', () => {
     expect(rows).toHaveLength(size); let prepared = 0, committed = 0;
     for (const row of rows) {
       const before = state;
-      expect(hash(before), `Private before ${row.commandCount}`).toBe(row.beforeStateSha256);
+      expect(hash(historicalDarknessState(before)), `Private before ${row.commandCount}`).toBe(row.beforeStateSha256);
       expect(before.random).toEqual(row.randomBefore); expect(hash(before.random)).toBe(row.randomBeforeSha256);
       expect(hash(view), `Chapter before ${row.commandCount}`).toBe(row.publicBeforeSha256);
-      expect(hash(global), `Global before ${row.commandCount}`).toBe(row.globalPublicBeforeSha256);
+      expect(hash(historicalDarknessPublic(global, before)), `Global before ${row.commandCount}`).toBe(row.globalPublicBeforeSha256);
       expect(before.status).toBe('ACTIVE'); expect(validateSlicePayload(row.intent)).toBe(true); assertPublicAction(view, row);
       if (session) {
         const draft = session.prepare(row.intent, before.revision); prepared++;
         state = session.snapshotDraft(draft); global = session.projectDraft(draft); view = checkedPublic(global, state);
         expect(session.inspect()).toEqual({ runId: before.runId, revision: before.revision, status: before.status });
-        expect(hash(before), 'Preparing cannot mutate its predecessor').toBe(row.beforeStateSha256);
-        expect(hash(state)).toBe(row.afterStateSha256); expect(hash(global)).toBe(row.globalPublicAfterSha256);
+        expect(hash(historicalDarknessState(before)), 'Preparing cannot mutate its predecessor').toBe(row.beforeStateSha256);
+        expect(hash(historicalDarknessState(state))).toBe(row.afterStateSha256); expect(hash(historicalDarknessPublic(global, state))).toBe(row.globalPublicAfterSha256);
         session.commit(draft); committed++;
         expect(session.inspect()).toEqual({ runId: state.runId, revision: state.revision, status: state.status });
       } else {
@@ -101,24 +102,24 @@ describe('Darkness213 complete immutable natural capture', () => {
         state = applySliceIntent(before, row.intent); session = openDarknessRuntimeSession(state);
         global = session.project(); view = checkedPublic(global, state);
       }
-      expect(hash(before), 'Committing cannot rewrite its predecessor').toBe(row.beforeStateSha256);
-      expect(hash(state), `Private after ${row.commandCount}`).toBe(row.afterStateSha256);
+      expect(hash(historicalDarknessState(before)), 'Committing cannot rewrite its predecessor').toBe(row.beforeStateSha256);
+      expect(hash(historicalDarknessState(state)), `Private after ${row.commandCount}`).toBe(row.afterStateSha256);
       expect(state.random).toEqual(row.randomAfter); expect(hash(state.random)).toBe(row.randomAfterSha256);
       expect(hash(view), `Chapter after ${row.commandCount}`).toBe(row.publicAfterSha256);
-      expect(hash(global), `Global after ${row.commandCount}`).toBe(row.globalPublicAfterSha256);
+      expect(hash(historicalDarknessPublic(global, state)), `Global after ${row.commandCount}`).toBe(row.globalPublicAfterSha256);
       expect([state.revision, state.week]).toEqual([row.revision, row.week]); expect(state.revision).toBe(before.revision + 1);
       expect(outcome(view)).toEqual(row.selectionOutcome); same(actualReceipts(state, before), row.receipts); preserveOriginal(state, before);
       const item = data.checkpoint.boundaries.find(item => item.commandCount === row.commandCount);
-      if (item) { const recorded = readBoundary(item, row); same(recorded.beforeLast, before); same(recorded.final, state); same(recorded.public, view); }
+      if (item) { const recorded = readBoundary(item, row); same(recorded.beforeLast, historicalDarknessState(before)); same(recorded.final, historicalDarknessState(state)); same(recorded.public, view); }
     }
     expect(prepared).toBe(size - (first === 680 ? 1 : 0)); expect(committed).toBe(prepared);
     same(session!.snapshot(), state); same(session!.project(), global);
     // One complete strict current ingress at each block end, with exact hashes.
-    same(migrateCapturedDarknessState(state), state);
-    const end = boundaryAt(last); same(state, end.final); same(view, end.public);
+    same(migrateSliceState(state), state);
+    const end = boundaryAt(last); same(historicalDarknessState(state), end.final); same(view, end.public);
     if (last === 834) {
-      same(state, data.checkpoint.state); same(view, data.summary.public);
-      expect(hash(state)).toBe(PINS.finalStateSha256); expect(hash(global)).toBe(PINS.finalGlobalPublicSha256);
+      same(historicalDarknessState(state), data.checkpoint.state); same(view, data.summary.public);
+      expect(hash(historicalDarknessState(state))).toBe(PINS.finalStateSha256); expect(hash(historicalDarknessPublic(global, state))).toBe(PINS.finalGlobalPublicSha256);
       expect(hash(state.random)).toBe(PINS.finalRandomSha256);
     }
   }, BLOCK_BUDGET_MS);

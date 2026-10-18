@@ -8,6 +8,8 @@ import { stableStringify } from '../../src/domain/canonical.js';
 import { applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
+import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
 import type { VisionaryAction, VisionaryCommand, VisionaryProjection } from '../../src/domain/visionary/types.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { playerText, projectPlayerText } from '../../src/shared/player-text.js';
@@ -56,16 +58,16 @@ function boundaryFile(count: number): string {
   return path;
 }
 
-function capturedState(count: number, entry: 'beforeLast' | 'final' = 'final'): SliceState {
-  // Stream just one state; never retain the complete before/final/public bundle.
-  const raw = readObjectEntry<SliceState>(boundaryFile(count), entry), rawHash = hash(raw);
-  expect([raw.schemaVersion, raw.contentVersion]).toEqual([207, 'visionary-v207']);
-  const current = migrateSliceState(raw);
+type HistoricalVisionaryState = Omit<SliceState, 'schemaVersion' | 'contentVersion' |
+  'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun'> & {
+    schemaVersion: 207; contentVersion: 'visionary-v207';
+  };
+const VISIONARY_ADDED_ROOTS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'] as const;
+function historicalVisionaryState(current: SliceState): HistoricalVisionaryState {
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  // Pin every reviewed fresh root independently, then hash every original field.
-  // Future additions must be accounted for explicitly rather than ignored.
-  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'perfecter', 'moon', 'darkness', 'whiteTower'].sort());
-  const { perfecter, moon, darkness, whiteTower, ...originalFields } = current;
+  // Independently pin the complete empty additions. Unknown roots and all old
+  // fields survive this detached comparison view and must match the raw hash.
+  const { perfecter, moon, darkness, whiteTower, tyrant, sun, ...originalFields } = current;
   expect(perfecter).toStrictEqual({
     version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     works: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
@@ -82,10 +84,32 @@ function capturedState(count: number, entry: 'beforeLast' | 'final' = 'final'): 
     version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     passages: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
   });
-  expect(hash({ ...originalFields, schemaVersion: raw.schemaVersion, contentVersion: raw.contentVersion })).toBe(rawHash);
+  expect(tyrant).toStrictEqual({
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    coasts: null, challenge: null, materials: null, epilogue: null, seaVoyages: [], assembly: null,
+    journal: [], promotionStability: { preparations: [] },
+  });
+  expect(sun).toStrictEqual({
+    version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+  });
+  expect(tyrant).toStrictEqual(createTyrantState()); expect(sun).toStrictEqual(createSunState());
+  return { ...originalFields, schemaVersion: 207, contentVersion: 'visionary-v207' };
+}
+function migrateCapturedVisionaryState(raw: HistoricalVisionaryState): SliceState {
+  const rawHash = hash(raw);
+  expect([raw.schemaVersion, raw.contentVersion]).toEqual([207, 'visionary-v207']);
+  for (const key of VISIONARY_ADDED_ROOTS) expect(Object.hasOwn(raw, key)).toBe(false);
+  const current = migrateSliceState(raw);
+  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), ...VISIONARY_ADDED_ROOTS].sort());
+  expect(hash(historicalVisionaryState(current))).toBe(rawHash);
   expect(hash(raw), 'Explicit migration cannot mutate the captured raw state').toBe(rawHash);
   assertValidSliceState(current);
   return current;
+}
+function capturedState(count: number, entry: 'beforeLast' | 'final' = 'final'): SliceState {
+  // Stream just one state; never retain the complete before/final/public bundle.
+  return migrateCapturedVisionaryState(readObjectEntry<HistoricalVisionaryState>(boundaryFile(count), entry));
 }
 
 function capturedIntent(count: number): SliceIntent {
@@ -249,6 +273,28 @@ afterEach(async () => {
   if (close) Object.defineProperty(HTMLDialogElement.prototype, 'close', close); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'close');
   for (const [path, expected] of checkedFiles) expect(sha(readFileSync(path)), 'Captured bytes remain unchanged').toBe(expected);
   checkedFiles.clear();
+});
+
+describe('Visionary raw207 exact current-root adapter', () => {
+  it('retains the genuine boundary660 hash and rejects altered, smuggled or unknown roots', () => {
+    const path = `${ROOT}/boundary-660-learn_guidance.json`;
+    const expected = '11268eb866d0842a91ca20fe2d2c7f032352050bcd39484231effc05260fb632';
+    expect(sha(readFileSync(path))).toBe(expected); checkedFiles.set(path, expected);
+    const raw = readObjectEntry<HistoricalVisionaryState>(path, 'beforeLast'), rawHash = hash(raw);
+    const current = migrateCapturedVisionaryState(raw), currentHash = hash(current);
+    expect(hash(historicalVisionaryState(current))).toBe(rawHash);
+    for (const root of VISIONARY_ADDED_ROOTS) {
+      expect(() => historicalVisionaryState({ ...current, [root]: { ...current[root], guidanceKnown: true } })).toThrow();
+      expect(() => historicalVisionaryState({ ...current, [root]: { ...current[root], unexpected: undefined } })).toThrow();
+      const missing = { ...current }; Reflect.deleteProperty(missing, root);
+      expect(() => historicalVisionaryState(missing)).toThrow();
+      expect(() => migrateCapturedVisionaryState({ ...raw, [root]: current[root] })).toThrow();
+    }
+    expect(() => migrateCapturedVisionaryState({ ...raw, unexpectedRoot: null } as HistoricalVisionaryState)).toThrow();
+    expect(hash(historicalVisionaryState({ ...current, unexpectedRoot: null } as SliceState))).not.toBe(rawHash);
+    expect(hash(historicalVisionaryState({ ...current, cash: current.cash + 1 }))).not.toBe(rawHash);
+    expect(hash(raw)).toBe(rawHash); expect(hash(current)).toBe(currentHash);
+  }, FULL_CASE_BUDGET);
 });
 
 describe('Visionary actual210 final capture in the public renderer', () => {

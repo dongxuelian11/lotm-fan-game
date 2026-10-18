@@ -12,7 +12,7 @@ import type { SliceProjection, SliceState } from '../../src/domain/slice/types.j
 import type { SliceEnvelope, SliceReceipt, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   PINS, PREFIX, actualReceipts, assertGlobalPublic, assertPublicAction, authenticateInputs, capturePublic, hash,
-  loadCapture, migrateCapturedDarknessState, outcome, readBoundary, same, sha, type LoadedCapture,
+  historicalDarknessPublic, historicalDarknessState, loadCapture, migrateCapturedDarknessState, outcome, readBoundary, same, sha, type LoadedCapture,
 } from '../helpers/darkness-capture.js';
 
 /** Complete immutable input integrity plus exactly THREE actual captured
@@ -62,9 +62,10 @@ describe('Darkness213 compressed captured transitions through real SQLite', () =
     expect(hash(boundary.beforeLast)).toBe(row.beforeStateSha256); expect(hash(boundary.final)).toBe(row.afterStateSha256);
     const before = migrateCapturedDarknessState(boundary.beforeLast), after = migrateCapturedDarknessState(boundary.final);
     expect(before.status).toBe('ACTIVE');
-    expect(hash(before)).toBe(row.beforeStateSha256); expect(hash(after)).toBe(row.afterStateSha256);
+    expect(hash(historicalDarknessState(before))).toBe(row.beforeStateSha256); expect(hash(historicalDarknessState(after))).toBe(row.afterStateSha256);
     const publicBefore = publicState(before), publicAfter = publicState(after);
-    expect(hash(publicBefore)).toBe(row.globalPublicBeforeSha256); expect(hash(publicAfter)).toBe(row.globalPublicAfterSha256);
+    expect(hash(historicalDarknessPublic(publicBefore, before))).toBe(row.globalPublicBeforeSha256);
+    expect(hash(historicalDarknessPublic(publicAfter, after))).toBe(row.globalPublicAfterSha256);
     expect(hash(capturePublic(publicBefore))).toBe(row.publicBeforeSha256);
     expect(hash(capturePublic(publicAfter))).toBe(row.publicAfterSha256);
     same(capturePublic(publicAfter), boundary.public); expect(outcome(boundary.public)).toEqual(row.selectionOutcome);
