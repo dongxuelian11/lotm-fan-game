@@ -7,6 +7,7 @@ import { createMoonState } from '../../src/domain/moon/index.js';
 import { createDarknessState } from '../../src/domain/darkness/index.js';
 import { createWhiteTowerState } from '../../src/domain/white-tower/index.js';
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedMoonSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -29,24 +30,25 @@ describe('Moon exact current schema and public command boundary', () => {
     expect(state.darkness).toStrictEqual(createDarknessState());
     expect(state.whiteTower).toStrictEqual(createWhiteTowerState());
     expect(state.tyrant).toStrictEqual(createTyrantState());
+    expect(state.sun).toStrictEqual(createSunState());
     same(copy, state);
     expect(copy).not.toBe(state); expect(copy.moon).not.toBe(state.moon);
     expect(copy.darkness).not.toBe(state.darkness); expect(copy.whiteTower).not.toBe(state.whiteTower);
-    expect(copy.tyrant).not.toBe(state.tyrant);
+    expect(copy.tyrant).not.toBe(state.tyrant); expect(copy.sun).not.toBe(state.sun);
     assertValidSliceState(copy); expect(stableStringify(state)).toBe(before);
   });
 
-  it.each(['beforeLast', 'final'] as const)('migrates actual captured208 %s by adding exactly empty Moon, Darkness, White Tower and Tyrant and preserving every old field and raw byte', key => {
+  it.each(['beforeLast', 'final'] as const)('migrates actual captured208 %s by adding exactly empty Moon, Darkness, White Tower, Tyrant and Sun and preserving every old field and raw byte', key => {
     const bytes = readFileSync(CAPTURE), raw = readObjectEntry<Record<string, unknown>>(CAPTURE, key);
     expect(hash(bytes)).toBe(CAPTURE_SHA256);
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([208, 'perfecter-v208']);
     expect(Object.hasOwn(raw, 'moon')).toBe(false);
     expect(Object.hasOwn(raw, 'darkness')).toBe(false); expect(Object.hasOwn(raw, 'whiteTower')).toBe(false);
-    expect(Object.hasOwn(raw, 'tyrant')).toBe(false);
+    expect(Object.hasOwn(raw, 'tyrant')).toBe(false); expect(Object.hasOwn(raw, 'sun')).toBe(false);
     const before = stableStringify(raw), next = migrateSliceState(raw);
     expect([next.schemaVersion, next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual(['darkness', 'moon', 'tyrant', 'whiteTower']);
-    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'moon', 'darkness', 'whiteTower', 'tyrant'].sort());
+    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual(['darkness', 'moon', 'sun', 'tyrant', 'whiteTower']);
+    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'].sort());
     for (const [field, value] of Object.entries(raw)) {
       if (field !== 'schemaVersion' && field !== 'contentVersion') same(next[field as keyof SliceState], value);
     }
@@ -54,6 +56,7 @@ describe('Moon exact current schema and public command boundary', () => {
     expect(next.darkness).toStrictEqual(createDarknessState());
     expect(next.whiteTower).toStrictEqual(createWhiteTowerState());
     expect(next.tyrant).toStrictEqual(createTyrantState());
+    expect(next.sun).toStrictEqual(createSunState());
     same(migrateSliceState(next), next);
     expect(stableStringify(raw)).toBe(before);
     expect(hash(readFileSync(CAPTURE))).toBe(CAPTURE_SHA256);
@@ -62,7 +65,7 @@ describe('Moon exact current schema and public command boundary', () => {
 
   it.each([
     ['moon', createMoonState()], ['darkness', createDarknessState()], ['whiteTower', createWhiteTowerState()],
-    ['tyrant', createTyrantState()],
+    ['tyrant', createTyrantState()], ['sun', createSunState()],
   ] as const)('rejects a future %s root in actual208 rather than silently discarding it', (key, empty) => {
     const original = raw208();
     for (const root of [empty, { ...empty, guidanceKnown: true }, null]) {

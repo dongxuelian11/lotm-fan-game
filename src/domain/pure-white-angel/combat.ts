@@ -335,9 +335,69 @@ export function pureWhiteAngelCombatConsequence(round: SliceCombatRound): string
 }
 
 
+/** Keep replay authority private, including future fields nested in otherwise
+ * public receipts. Costs, settled checks and the original finite objects stay. */
+function combatFacts<T,K extends keyof T>(value:T,keys:readonly K[]):Pick<T,K> {
+ return Object.fromEntries(keys.map(key=>[key,structuredClone(value[key])])) as Pick<T,K>;
+}
+function publicPureWhiteAngelCheck(c:PublicCheckResult|null):PublicCheckResult|null {
+ return c===null?null:{...combatFacts(c,['ability','baseAbility','effectiveAbility','difficulty','chance','roll','tier']),
+  modifiers:c.modifiers.map(m=>({source:m.source,value:m.value}))};
+}
+export function projectPureWhiteAngelMaterials(m:PureWhiteAngelMaterials):PureWhiteAngelMaterials {
+ return {weapon:{...combatFacts(m.weapon,['id','sourceId','owner','massKg','location','condition','charge','capacity','visible']),
+  pieces:m.weapon.pieces.map(p=>combatFacts(p,['id','state']))},
+  screen:combatFacts(m.screen,['id','sourceId','owner','coordinate','hood','durability','operations'])};
+}
+export function projectPureWhiteAngelScene(s:PureWhiteAngelScene):PureWhiteAngelScene {
+ return {...combatFacts(s,['siteId','playerLocation','playerCoordinate','enemyCoordinate','ordinaryExit','visibleBodyLine',
+  'conditionVersion','observedConditionVersion','thirdPartiesInArea','observedSourceId','observationWeek','clockSeconds',
+  'externalSeconds','playerTravelMetres','knownPlayerName','knownEnemyName']),presentMemberIds:[...s.presentMemberIds]};
+}
+function publicPureWhiteAngelWindow(w:PureWhiteAngelWindow|null):PureWhiteAngelWindow|null {
+ return w===null?null:combatFacts(w,['id','kind','createdAt','expiresAt','openedOrder','conditionVersion','targetId','targetActionId','magnitude']);
+}
+function publicPureWhiteAngelWindows(w:PureWhiteAngelWindows):PureWhiteAngelWindows {
+ return {focusedPurification:publicPureWhiteAngelWindow(w.focusedPurification),warmRadianceGuard:publicPureWhiteAngelWindow(w.warmRadianceGuard),
+  notarization:publicPureWhiteAngelWindow(w.notarization),limitedLight:publicPureWhiteAngelWindow(w.limitedLight),enemyWard:publicPureWhiteAngelWindow(w.enemyWard)};
+}
+function publicPureWhiteAngelPending(p:PureWhiteAngelPendingAction|null):PureWhiteAngelPendingAction|null {
+ return p===null?null:combatFacts(p,['id','planned','actual','declaredAt','observedAt','observationSeconds','conditionVersion','visible','bodyImpact']);
+}
+export function projectPureWhiteAngelMastery(m:Record<string,number>):Record<string,number> {
+ return Object.fromEntries([...PURE_WHITE_ANGEL_INHERITED_SKILL_IDS,...PURE_WHITE_ANGEL_NEW_ABILITY_IDS]
+  .filter(id=>Object.hasOwn(m,id)).map(id=>[id,m[id]!]));
+}
+export function projectPureWhiteAngelAction(a:PureWhiteAngelActionEvidence) {
+ return {...combatFacts(a,['order','actor','id','planned','selectedAbility','fallbackReason','label','selfGain','enemyReduction',
+  'threatens','mentalPressure','attackKind','lightEffect','rawContribution','rawReduction','paidCost','mindCost','physicalFactor',
+  'resistanceRoll','resistanceChance','succeeded','finiteResult','rodChargeSpent','chargePieceId','conditionVersionBefore',
+  'conditionVersionAfter','atSeconds','elapsedSeconds','travelMetres','playerMindAfter','playerSpiritualityAfter','enemyMindAfter','enemySpiritualityAfter']),
+  check:publicPureWhiteAngelCheck(a.check),windowsBefore:publicPureWhiteAngelWindows(a.windowsBefore),windowsAfter:publicPureWhiteAngelWindows(a.windowsAfter),
+  pendingBefore:publicPureWhiteAngelPending(a.pendingBefore),pendingAfter:publicPureWhiteAngelPending(a.pendingAfter),
+  masteryApplied:[...a.masteryApplied],countered:[...a.countered],materialsBefore:projectPureWhiteAngelMaterials(a.materialsBefore),
+  materialsAfter:projectPureWhiteAngelMaterials(a.materialsAfter),travelPath:[...a.travelPath],lateralTravelPath:[...a.lateralTravelPath]};
+}
+export function projectPureWhiteAngelRoundOutcome(o:PureWhiteAngelRoundOutcome) {
+ return {...combatFacts(o,['targetId','round','stance','continuing','consequenceDomain','enemyHealth','enemyMind','enemySpirituality',
+  'enemyStatus','enemyRisk','weaponLocation','screenReveals','totalOwnerMindSpent','focusedPurificationAttempts','focusedPurificationChecks',
+  'focusedPurificationSuccesses','warmRadianceGuardAttempts','warmRadianceGuardChecks','warmRadianceGuardSuccesses',
+  'playerHealthAfter','playerMindAfter','playerSpiritualityAfter','playerRiskAfter','elapsedSeconds']),
+  enemyInjuries:o.enemyInjuries.map(i=>combatFacts(i,['id','severity','acquiredRevision','treatedRevision'])),
+  playerInjuriesAfter:o.playerInjuriesAfter.map(i=>combatFacts(i,['id','severity','acquiredRevision','treatedRevision'])),
+  powerUses:combatFacts(o.powerUses,PURE_WHITE_ANGEL_POWER_IDS),
+  observations:o.observations.map(p=>combatFacts(p,['power','conditionVersion','round','order','atSeconds','paidCost'])),
+  inheritedApplications:Object.fromEntries(PURE_WHITE_ANGEL_INHERITED_SKILL_IDS.filter(id=>Object.hasOwn(o.inheritedApplications,id)).map(id=>[id,o.inheritedApplications[id]!])),
+  materialsAfter:projectPureWhiteAngelMaterials(o.materialsAfter),masteryAfter:projectPureWhiteAngelMastery(o.masteryAfter),rootAfter:projectPureWhiteAngelScene(o.rootAfter),
+  playerActions:o.playerActions.map(projectPureWhiteAngelAction),enemyActions:o.enemyActions.map(projectPureWhiteAngelAction),
+  expiredWindows:o.expiredWindows.map(w=>publicPureWhiteAngelWindow(w)!),windowsAfter:publicPureWhiteAngelWindows(o.windowsAfter),pendingEnemyActionAfter:null};
+}
+export type PublicPureWhiteAngelAction=ReturnType<typeof projectPureWhiteAngelAction>;
+export type PublicPureWhiteAngelRoundOutcome=ReturnType<typeof projectPureWhiteAngelRoundOutcome>;
+
 export function projectPureWhiteAngelCombat(s:SliceState){
  const e=s.pureWhiteAngel.encounter,last=s.combat?.encounterId==='PURE_WHITE_ANGEL_DISPUTE'?s.combat.lastRound?.pureWhiteAngelOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.pureWhiteAngelOutcome:null;
- return{enemyName:'西拉斯·戴恩（49岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,scene:structuredClone(e.scene),materials:structuredClone(e.materials),lastConsequenceDomain:last?.consequenceDomain??'NONE',lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],constants:PURE_WHITE_ANGEL_COMBAT_CONSTANTS,countWheel:PURE_WHITE_ANGEL_COUNT_WHEEL,enemyCountWheel:PURE_WHITE_ANGEL_ENEMY_COUNT_WHEEL,abilityWheel:pureWhiteAngelAbilityWheel(s,null),enemyAbilityWheel:PURE_WHITE_ANGEL_ENEMY_ABILITY_WHEEL,facts:[
+ return{enemyName:'西拉斯·戴恩（49岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:combatFacts(e.powerUses,PURE_WHITE_ANGEL_POWER_IDS),policy:e.policy,scene:projectPureWhiteAngelScene(e.scene),materials:projectPureWhiteAngelMaterials(e.materials),lastConsequenceDomain:last?.consequenceDomain??'NONE',lastActionSequence:last?[...last.playerActions,...last.enemyActions].map(projectPureWhiteAngelAction).sort((a,b)=>a.order-b.order):[],constants:PURE_WHITE_ANGEL_COMBAT_CONSTANTS,countWheel:PURE_WHITE_ANGEL_COUNT_WHEEL,enemyCountWheel:PURE_WHITE_ANGEL_ENEMY_COUNT_WHEEL,abilityWheel:pureWhiteAngelAbilityWheel(s,null),enemyAbilityWheel:PURE_WHITE_ANGEL_ENEMY_ABILITY_WHEEL,facts:[
  '体35%、感25%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。',
  '净光定向只辅助下一实际威胁攻击30；温光护持只削弱随后一次实际可见身体冲击30，精神压力单独结算。',
  '每轮各一次，失败照付；条件改变、视线遮挡、离场或满30秒使旧窗口失效，空窗口不涨掌握。',

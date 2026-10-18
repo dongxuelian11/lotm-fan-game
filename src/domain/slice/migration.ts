@@ -1,3 +1,4 @@
+import { createSunState } from '../sun/index.js';
 import { createTyrantState } from '../tyrant/index.js';
 import { createWhiteTowerState } from '../white-tower/index.js';
 import { createDarknessState } from '../darkness/index.js';
@@ -213,7 +214,7 @@ import {createClownState} from '../clown/index.js';
 import type {SliceState} from './types.js';
 function withSupply(value:unknown){if(!value||typeof value!=='object'||Array.isArray(value)||'resupply'in value)throw new TypeError('Invalid historical potion state');return {...structuredClone(value),resupply:{requestedWeek:null,deliveries:0}};}
 function combatWithEncounter(value:unknown){return value&&typeof value==='object'?{...structuredClone(value),encounterId:'FIRST_CASE'}:value;}
-type NatureWalkerSliceState = Omit<SliceState, 'tyrant' | 'whiteTower' | 'darkness' | 'moon' | 'perfecter' | 'visionary' | 'redPriest' | 'fool' | 'schemaVersion' | 'contentVersion'> & {
+type NatureWalkerSliceState = Omit<SliceState, 'sun' | 'tyrant' | 'whiteTower' | 'darkness' | 'moon' | 'perfecter' | 'visionary' | 'redPriest' | 'fool' | 'schemaVersion' | 'contentVersion'> & {
  schemaVersion:204; contentVersion:'nature-walker-v204';
 };
 /** Validate old migrations through the current schema without changing their
@@ -221,58 +222,64 @@ type NatureWalkerSliceState = Omit<SliceState, 'tyrant' | 'whiteTower' | 'darkne
 function assertValidSliceState(input:unknown):asserts input is NatureWalkerSliceState {
  if(!input||typeof input!=='object'||Array.isArray(input))throw new TypeError('Invalid legacy slice state');
  const old=input as Record<string,unknown>;
- if(old.schemaVersion!==204||old.contentVersion!=='nature-walker-v204'||'fool'in old||'redPriest'in old||'visionary'in old||'perfecter'in old||'moon'in old||'darkness'in old||'whiteTower'in old||'tyrant'in old)throw new TypeError('Invalid NatureWalker save');
- assertValidCurrentSliceState({...old,schemaVersion:212,contentVersion:'tyrant-v212',tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),fool:createFoolState(),redPriest:createRedPriestState()});
+ if(old.schemaVersion!==204||old.contentVersion!=='nature-walker-v204'||'fool'in old||'redPriest'in old||'visionary'in old||'perfecter'in old||'moon'in old||'darkness'in old||'whiteTower'in old||'tyrant'in old||'sun'in old)throw new TypeError('Invalid NatureWalker save');
+ assertValidCurrentSliceState({...old,schemaVersion:213,contentVersion:'sun-v213',sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),fool:createFoolState(),redPriest:createRedPriestState()});
 }
 export function migrateSliceState(input:unknown):SliceState {
- if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===212){
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===213){
   assertValidCurrentSliceState(input);return structuredClone(input);
+ }
+ if(input&&typeof input==='object'&&'sun'in input)throw new TypeError('Unexpected Sun state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===212){
+  if(!('contentVersion'in input)||input.contentVersion!=='tyrant-v212')throw new TypeError('Invalid Tyrant save');
+  const next={...structuredClone(input),schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState()};
+  assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'tyrant'in input)throw new TypeError('Unexpected Tyrant state in a legacy save');
  if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===211){
   if(!('contentVersion'in input)||input.contentVersion!=='white-tower-v211')throw new TypeError('Invalid WhiteTower save');
-  const next={...structuredClone(input),schemaVersion:212 as const,contentVersion:'tyrant-v212' as const,tyrant:createTyrantState()};
+  const next={...structuredClone(input),schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState(),tyrant:createTyrantState()};
   assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'whiteTower'in input)throw new TypeError('Unexpected WhiteTower state in a legacy save');
  if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===210){
   if(!('contentVersion'in input)||input.contentVersion!=='darkness-v210')throw new TypeError('Invalid Darkness save');
-  const next={...structuredClone(input),schemaVersion:212 as const,contentVersion:'tyrant-v212' as const,tyrant:createTyrantState(),whiteTower:createWhiteTowerState()};
+  const next={...structuredClone(input),schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState()};
   assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'darkness'in input)throw new TypeError('Unexpected Darkness state in a legacy save');
  if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===209){
   if(!('contentVersion'in input)||input.contentVersion!=='moon-v209')throw new TypeError('Invalid Moon save');
-  const next={...structuredClone(input),schemaVersion:212 as const,contentVersion:'tyrant-v212' as const,tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState()};
+  const next={...structuredClone(input),schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState()};
   assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'moon'in input)throw new TypeError('Unexpected Moon state in a legacy save');
  if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===208){
   if(!('contentVersion'in input)||input.contentVersion!=='perfecter-v208')throw new TypeError('Invalid Perfecter save');
-  const next={...structuredClone(input),schemaVersion:212 as const,contentVersion:'tyrant-v212' as const,tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState()};
+  const next={...structuredClone(input),schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState()};
   assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'perfecter'in input)throw new TypeError('Unexpected Perfecter state in a legacy save');
  if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===207){
   if(!('contentVersion'in input)||input.contentVersion!=='visionary-v207')throw new TypeError('Invalid Visionary save');
-  const next={...structuredClone(input),schemaVersion:212 as const,contentVersion:'tyrant-v212' as const,tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState()};
+  const next={...structuredClone(input),schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState()};
   assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'visionary'in input)throw new TypeError('Unexpected Visionary state in a legacy save');
  if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===206){
   if(!('contentVersion'in input)||input.contentVersion!=='red-priest-v206')throw new TypeError('Invalid RedPriest save');
-  const next={...structuredClone(input),schemaVersion:212 as const,contentVersion:'tyrant-v212' as const,tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState()};
+  const next={...structuredClone(input),schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState()};
   assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'redPriest'in input)throw new TypeError('Unexpected RedPriest state in a legacy save');
  if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===205){
   if(!('contentVersion'in input)||input.contentVersion!=='fool-v205')throw new TypeError('Invalid Fool save');
-  const next={...structuredClone(input),schemaVersion:212 as const,contentVersion:'tyrant-v212' as const,tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),redPriest:createRedPriestState()};
+  const next={...structuredClone(input),schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),redPriest:createRedPriestState()};
   assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'fool'in input)throw new TypeError('Unexpected Fool state in a legacy save');
  const old=migratePreFoolSliceState(input);
- const next={...old,schemaVersion:212 as const,contentVersion:'tyrant-v212' as const,tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),fool:createFoolState(),redPriest:createRedPriestState()};
+ const next={...old,schemaVersion:213 as const,contentVersion:'sun-v213' as const,sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),fool:createFoolState(),redPriest:createRedPriestState()};
  assertValidCurrentSliceState(next);return next;
 }
 function migratePreFoolSliceState(input:unknown):NatureWalkerSliceState {

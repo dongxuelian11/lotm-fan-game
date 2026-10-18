@@ -7,6 +7,7 @@ import { stableStringify } from '../../src/domain/canonical.js';
 import { sha256Hex } from '../../src/domain/checksum.js';
 import { createPerfecterState } from '../../src/domain/perfecter/index.js';
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedPerfecterSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -33,9 +34,9 @@ const historicalCaptures = {
   },
 } as const;
 const introducedRoots = {
-  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
-  206: ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
-  207: ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
+  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'],
+  206: ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'],
+  207: ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'],
 } as const;
 const historicalStates = new Map<205 | 206 | 207, Record<string, unknown>>();
 function old(version: 205 | 206 | 207): Record<string, unknown> {
@@ -58,8 +59,8 @@ describe('Perfecter exact current schema boundary', () => {
   it('creates one empty new root and a detached valid current save', () => {
     const state=fresh(), before=stableStringify(state), copy=migrateSliceState(state);
     expect([state.schemaVersion,state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
-    same(state.perfecter,createPerfecterState());same(state.tyrant,createTyrantState());same(state,copy);expect(copy).not.toBe(state);
-    expect(copy.perfecter).not.toBe(state.perfecter);expect(copy.tyrant).not.toBe(state.tyrant);assertValidSliceState(copy);expect(stableStringify(state)).toBe(before);
+    same(state.perfecter,createPerfecterState());same(state.tyrant,createTyrantState());same(state.sun,createSunState());same(state,copy);expect(copy).not.toBe(state);
+    expect(copy.perfecter).not.toBe(state.perfecter);expect(copy.tyrant).not.toBe(state.tyrant);expect(copy.sun).not.toBe(state.sun);assertValidSliceState(copy);expect(stableStringify(state)).toBe(before);
   });
   for (const version of [205,206,207] as const) {
   it(`strictly preserves every old ${version} field and adds only missing defaults`, () => {
@@ -70,7 +71,7 @@ describe('Perfecter exact current schema boundary', () => {
     expect(Object.keys(next).sort()).toEqual([...Object.keys(state), ...introducedRoots[version]].sort());
     for(const [key,value] of Object.entries(state)) if(key!=='schemaVersion'&&key!=='contentVersion') same(next[key as keyof SliceState],value);
     for(const key of introducedRoots[version]) same(next[key],defaults[key]);
-    same(next.tyrant,createTyrantState());
+    same(next.tyrant,createTyrantState());same(next.sun,createSunState());
     expect(stableStringify(state)).toBe(before);
     expect(hash(readFileSync(historicalCaptures[version].path))).toBe(historicalCaptures[version].sha256);
   }, version === 205 ? 60_000 : 5_000);
@@ -84,14 +85,14 @@ describe('Perfecter exact current schema boundary', () => {
     const additions = ['beautyGoddess', 'misfortuneKnight', 'allKnowingEye', 'thunderGod', 'pureWhiteAngel',
       'paleEmperor', 'starKey', 'timeWorm', 'divineHand', 'apocalypseDemoness', 'knowledgeEmperor', 'darkAngel',
       'uncleanMonarch', 'abomination', 'mercurySnake', 'princeOfAbolition', 'handOfOrder', 'natureWalker',
-      'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'] as const;
+      'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'] as const;
     expect([next.schemaVersion,next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
     for(const key of additions) expect(Object.hasOwn(raw,key)).toBe(false);
     expect(Object.keys(next).filter(key=>!Object.hasOwn(raw,key)).sort()).toEqual([...additions].sort());
     expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), ...additions].sort());
     for(const [key,value] of Object.entries(raw))if(key!=='schemaVersion'&&key!=='contentVersion')same(next[key as keyof SliceState],value);
     for(const key of additions)same(next[key],defaults[key]);
-    same(next.perfecter,createPerfecterState());same(next.tyrant,createTyrantState());expect(stableStringify(raw)).toBe(before);
+    same(next.perfecter,createPerfecterState());same(next.tyrant,createTyrantState());same(next.sun,createSunState());expect(stableStringify(raw)).toBe(before);
     expect(sha256Hex(readFileSync('tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json','utf8'))).toBe('70b8843550d5a79abd5250377184ab5050a80cc1b7138f2a03ead788fb3bb8ef');
     expect(readFileSync('tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json','utf8')).toBe(bytes);
   },60_000);

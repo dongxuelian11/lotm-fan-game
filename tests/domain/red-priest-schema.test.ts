@@ -8,6 +8,7 @@ import { createFoolState, validateFoolState } from '../../src/domain/fool/index.
 import { createRedPriestState, validateRedPriestState } from '../../src/domain/red-priest/index.js';
 import { createVisionaryState, validateVisionaryState } from '../../src/domain/visionary/index.js';
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedFoolSlice, openValidatedRedPriestSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
@@ -35,9 +36,9 @@ const historicalSnapshots = {
   },
 } as const;
 const introducedRoots = {
-  203: ['natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
-  204: ['fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
-  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'],
+  203: ['natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'],
+  204: ['fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'],
+  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'],
 } as const;
 const historicalStates = new Map<203 | 204 | 205, Record<string, unknown>>();
 function legacy(version: 203 | 204 | 205): Record<string, unknown> {
@@ -69,9 +70,9 @@ describe('Red Priest exact slice schema and migration boundary', () => {
   it('creates the exact current empty root and returns a detached current save', () => {
     const input = fresh(), bytes = stableStringify(input), copy = migrateSliceState(input);
     expect([input.schemaVersion, input.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    same(input.redPriest, createRedPriestState()); same(input.tyrant, createTyrantState()); same(input, copy);
+    same(input.redPriest, createRedPriestState()); same(input.tyrant, createTyrantState()); same(input.sun, createSunState()); same(input, copy);
     expect(copy).not.toBe(input); expect(copy.redPriest).not.toBe(input.redPriest);
-    expect(copy.tyrant).not.toBe(input.tyrant);
+    expect(copy.tyrant).not.toBe(input.tyrant); expect(copy.sun).not.toBe(input.sun);
     expect(stableStringify(input)).toBe(bytes); assertValidSliceState(copy);
   });
 
@@ -87,7 +88,7 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     }
     for (const key of introducedRoots[205]) same(migrated[key], defaults[key]);
     same(migrated.redPriest, createRedPriestState()); same(migrated.fool, input.fool);
-    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState());
+    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState()); same(migrated.sun, createSunState());
     expect(stableStringify(input)).toBe(bytes);
     expect(hash(readFileSync(foolCapture.path))).toBe(foolCapture.sha256);
   }, 120_000);
@@ -105,7 +106,7 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     }
     for (const key of introducedRoots[version]) same(migrated[key], defaults[key]);
     same(migrated.fool, createFoolState()); same(migrated.redPriest, createRedPriestState());
-    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState());
+    same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState()); same(migrated.sun, createSunState());
     expect(stableStringify(input)).toBe(bytes);
     expect(hash(readFileSync(historicalSnapshots[version].path))).toBe(historicalSnapshots[version].sha256);
   }, 60_000);

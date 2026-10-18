@@ -216,12 +216,51 @@ export function finishLightSeekerCombatRound(s:SliceState,r:LightSeekerRoundCont
     playerActions:structuredClone(r.playerActions),enemyActions:structuredClone(r.enemyActions)};return structuredClone(r.outcome);
 }
 export function lightSeekerRoundOutcome(r:LightSeekerRoundContext):LightSeekerRoundOutcome{if(!r.outcome)throw new Error('回合尚未结束。');return structuredClone(r.outcome);}
+/** Public facts are selected positively: saved replay sources and future private
+ * fields must never travel through a public outcome or ordered action panel. */
+function combatFacts<T, K extends keyof T>(value:T, keys:readonly K[]):Pick<T,K> {
+  return Object.fromEntries(keys.map(key=>[key,structuredClone(value[key])])) as Pick<T,K>;
+}
+export function projectLightSeekerSite(site:LightSeekerSiteState):LightSeekerSiteState {
+  return {...combatFacts(site,['id','lengthMetres','ordinaryExit','elapsedSeconds','playerLocation','playerMetres',
+    'operatorId','operatorName','operatorAge','operatorLocation','operatorMetres','operatorEnergy','operatorConsent','operatorConsentWeek',
+    'spiritId','spiritName','spiritLocation','spiritMetres','spiritEnergy','spiritConsent','spiritConsentWeek']),
+    shutter:combatFacts(site.shutter,['id','location','state','durability','operations']),
+    lamp:combatFacts(site.lamp,['id','oil']), cover:combatFacts(site.cover,['id','position','durability']),
+    screen:combatFacts(site.screen,['id','location','durability','inspections']),
+    light:combatFacts(site.light,['mode','expiresAt']),board:combatFacts(site.board,['id','inscription','location','owner','read'])};
+}
+function publicLightSeekerAction(a:ActionEvidence) {
+  return {...combatFacts(a,['label','selfGain','enemyReduction','threatens','mentalPressure','order','atSeconds','elapsedSeconds',
+    'paidCost','physicalFactor','playerSpiritualityAfter','enemySpiritualityAfter','shutterOperationSeconds','shutterWear',
+    'chargeGranted','chargeConsumedByOrder','appliedAmount','consumedLimitedOrder','consumedWardOrder']),
+    rolls:[...a.rolls],siteBefore:projectLightSeekerSite(a.siteBefore),siteAfter:projectLightSeekerSite(a.siteAfter)};
+}
+export function projectLightSeekerPlayerAction(a:LightSeekerPlayerAction) {
+  return {...publicLightSeekerAction(a),...combatFacts(a,['id','attempted','succeeded','applied','fallback'])};
+}
+export function projectLightSeekerEnemyAction(a:LightSeekerEnemyAction) {
+  return {...publicLightSeekerAction(a),...combatFacts(a,['planned','actual','shutterChanged'])};
+}
+export function projectLightSeekerRoundOutcome(o:LightSeekerRoundOutcome) {
+  return {...combatFacts(o,['targetId','round','stance','continuing','enemyHealth','enemyMind','enemySpirituality','enemyStatus',
+    'playerSpiritualityBefore','playerSpiritualityAfter','playerHealthAfter','playerMindAfter','enemySpiritualityBefore',
+    'playerRiskAfter','enemyRiskAfter','shutterUsed','playerShutterOpened','limitedAttempted','expiredLimitedChargeOrder',
+    'expiredWardChargeOrder','elapsedSeconds']),
+    playerInjuriesAfter:o.playerInjuriesAfter.map(i=>combatFacts(i,['id','severity','acquiredRevision','treatedRevision'])),
+    enemyInjuriesAfter:o.enemyInjuriesAfter.map(i=>combatFacts(i,['id','severity','acquiredRevision','treatedRevision'])),
+    powerUses:combatFacts(o.powerUses,LIGHT_SEEKER_POWER_IDS),siteAfter:projectLightSeekerSite(o.siteAfter),
+    playerActions:o.playerActions.map(projectLightSeekerPlayerAction),enemyActions:o.enemyActions.map(projectLightSeekerEnemyAction)};
+}
+export type PublicLightSeekerPlayerAction=ReturnType<typeof projectLightSeekerPlayerAction>;
+export type PublicLightSeekerEnemyAction=ReturnType<typeof projectLightSeekerEnemyAction>;
+export type PublicLightSeekerRoundOutcome=ReturnType<typeof projectLightSeekerRoundOutcome>;
 export function projectLightSeekerCombat(s:SliceState){
   const e=s.lightSeeker.encounter,visible=isLightSeeker(s),last=s.combat?.encounterId==='LIGHT_SEEKER_DISPUTE'?s.combat.lastRound?.lightSeekerOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.lightSeekerOutcome:null;
   return{enemyName:visible?'欧文·赛尔（51岁）':'',targetId:visible?e.targetId:null,playerHealth:s.health,playerMind:s.mind,playerSpirituality:s.spirituality,maxSpirituality:120,
-    enemyHealth:visible?e.enemyHealth:null,enemyMind:visible?e.enemyMind:null,enemySpirituality:visible?e.enemySpirituality:null,powerUses:visible?{...e.powerUses}:null,
-    site:visible?structuredClone(s.lightSeeker.life.site):null,startSite:visible?structuredClone(e.startSite):null,originalExit:true,pursuit:false,distanceMetres:2,automaticAllyImmunity:false,
-    source:visible?currentLightSeekerCombatSource(s):null,lastActionSequence:visible&&last?[...last.playerActions.map(a=>({...structuredClone(a),actor:'PLAYER' as const})),...last.enemyActions.map(a=>({...structuredClone(a),actor:'ENEMY' as const}))].sort((a,b)=>a.order-b.order):[],
+    enemyHealth:visible?e.enemyHealth:null,enemyMind:visible?e.enemyMind:null,enemySpirituality:visible?e.enemySpirituality:null,powerUses:visible?combatFacts(e.powerUses,LIGHT_SEEKER_POWER_IDS):null,
+    site:visible?projectLightSeekerSite(s.lightSeeker.life.site):null,startSite:visible&&e.startSite?projectLightSeekerSite(e.startSite):null,originalExit:true,pursuit:false,distanceMetres:2,automaticAllyImmunity:false,
+    lastActionSequence:visible&&last?[...last.playerActions.map(a=>({...projectLightSeekerPlayerAction(a),actor:'PLAYER' as const})),...last.enemyActions.map(a=>({...projectLightSeekerEnemyAction(a),actor:'ENEMY' as const}))].sort((a,b)=>a.order-b.order):[],
     countWheel:LIGHT_SEEKER_COUNT_WHEEL.map(x=>({...x})),enemyCountWheel:LIGHT_SEEKER_ENEMY_COUNT_WHEEL.map(x=>({...x})),enemyAbilityWheel:LIGHT_SEEKER_ENEMY_ABILITY_WHEEL.map(x=>({...x})),
     summary:visible?'双方相距2米，中间的遮板阻光，地面仍可步行。引导光辉须光路通畅；本轮限光仅尝试一次，成功后等待下一次有效光击，实际减弱45，棍击不会消耗它。防光也只抵一次实际光照。每次动作5秒、每回合60秒，双方各付自己的灵性；欧文的灵性不会自动恢复。回合继续时你恢复12灵性。健康、伤势和遮板损耗持续保留，战斗不增长掌握。':''};
 }

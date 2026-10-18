@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
+import { createSunState } from '../../src/domain/sun/index.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { openWhiteTowerRuntimeSession, type WhiteTowerRuntimeSession } from '../../src/domain/white-tower/owned-session.js';
 import { WHITE_TOWER_FROZEN_SOURCE_KEYS } from '../../src/domain/white-tower/source.js';
@@ -49,10 +50,12 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
     expect(counts).toEqual(data.rows.map(row => row.commandCount)); expect(new Set(counts).size).toBe(137);
   });
 
-  it('admits only the exact empty Tyrant addition while retaining every raw211 private and public field', () => {
+  it('admits only the exact empty Tyrant and Sun additions while retaining every raw211 private and public field', () => {
     const current = data.initial, raw = actionAt(667).beforeLast, originalHash = hash(raw), currentHash = hash(current);
     same(historicalWhiteTowerState(current), raw);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'tyrant'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'tyrant', 'sun'].sort());
+    expect(current.sun).toStrictEqual(createSunState());
+    expect(Object.hasOwn(raw, 'sun')).toBe(false);
     expect(Object.hasOwn(raw, 'tyrant')).toBe(false);
     expect(() => migrateCapturedWhiteTowerState({ ...raw, tyrant: current.tyrant } as HistoricalWhiteTowerState)).toThrow();
     expect(() => migrateCapturedWhiteTowerState({ ...raw, unexpectedRoot: null } as HistoricalWhiteTowerState)).toThrow();

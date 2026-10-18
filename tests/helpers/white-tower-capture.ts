@@ -7,6 +7,7 @@ import { assertValidSliceState, projectSliceState } from '../../src/domain/slice
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
 
 /** Read-only consumer of the original complete137-action capture. Never imports
@@ -42,11 +43,11 @@ export interface Manifest { format: string; files: Member[] }
 export interface Freeze { sha256: string; nodeVersion: string; files: Array<FilePin & { file: string }> }
 export interface BoundaryIndex extends FilePin { file: string; kind: string; commandCount: number }
 export interface Outcome { status: SliceState['status']; promoted: boolean; passages: number; reviews: number }
-/** Raw211 evidence is immutable and has no current212 Tyrant root. */
-export type HistoricalWhiteTowerState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'tyrant'> & {
+/** Raw211 evidence is immutable and has neither the Tyrant nor Sun root. */
+export type HistoricalWhiteTowerState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'tyrant' | 'sun'> & {
   schemaVersion: 211; contentVersion: 'white-tower-v211';
 };
-export type HistoricalWhiteTowerPublic = Omit<SliceProjection, 'tyrant'>;
+export type HistoricalWhiteTowerPublic = Omit<SliceProjection, 'tyrant' | 'sun'>;
 export interface Row {
   commandCount: number; intent: SliceIntent; commandSha256: string; reason: string; publicLabel: string; publicCost: string;
   startedAt: string; elapsedMilliseconds: number; revision: number; week: number;
@@ -196,20 +197,24 @@ const EMPTY_TYRANT: SliceState['tyrant'] = {
   coasts: null, challenge: null, materials: null, epilogue: null, seaVoyages: [], assembly: null,
   journal: [], promotionStability: { preparations: [] },
 };
-/** Detached comparison only: verify and remove exactly the introduced empty root.
+const EMPTY_SUN: SliceState['sun'] = {
+  version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+  services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
+};
+/** Detached comparison only: verify and remove exactly the introduced empty roots.
  * Every original field and any unexpected future root stays in the full hash. */
 export function historicalWhiteTowerState(state: SliceState): HistoricalWhiteTowerState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assert.deepEqual(createTyrantState(), EMPTY_TYRANT);
-  assert.deepEqual(state.tyrant, EMPTY_TYRANT);
-  const { tyrant: _emptyTyrant, ...originalFields } = state;
+  assert.deepEqual(createTyrantState(), EMPTY_TYRANT); assert.deepEqual(createSunState(), EMPTY_SUN);
+  assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
+  const { tyrant: _emptyTyrant, sun: _emptySun, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 211, contentVersion: 'white-tower-v211' };
 }
-/** Pin the entire inactive public addition before removing only that root.
+/** Pin both entire inactive public additions before removing only those roots.
  * No old prose, chronicle, command, resource or unknown root is normalized. */
 export function historicalWhiteTowerPublic(projection: SliceProjection, state: SliceState): HistoricalWhiteTowerPublic {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assert.deepEqual(state.tyrant, EMPTY_TYRANT);
+  assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
   assert.equal(state.progression.pathwayId, 'white-tower');
   assert.equal(Object.hasOwn(projection, 'tyrant'), true);
   assert.deepEqual(projection.tyrant, {
@@ -227,15 +232,29 @@ export function historicalWhiteTowerPublic(projection: SliceProjection, state: S
       reason: state.status === 'ACTIVE' ? '须由仍活着的雷神本人继续。' : '已经死亡或结束的角色不能继续行动。',
       preferredAction: true }],
   });
-  const { tyrant: _emptyTyrant, ...originalFields } = projection;
+  assert.equal(Object.hasOwn(projection, 'sun'), true);
+  assert.deepEqual(projection.sun, {
+    title: '序列0 太阳', guidanceKnown: false, promoted: false,
+    story: '玛拉与芦影、原采光廊和投降的西拉斯都留在原处，旧许可、伤势和耗料继续保留。街区接待处有洗衣房与邻楼后阶两件居民求助；须亲自问清情况、处理实际原物并完成交接，普通手段也能完成。',
+    nextStep: '完成两件居民服务与现场核验；核清本人已有的一份和另外两份原特性，实地确认同一太阳唯一性空位，再为同一本人的同一瓶付费准备。实际晋1满十二周才可服药。',
+    risk: '成功率按本人实际意志与本瓶付费准备计算，不重掷。失败留下真实重伤和污染并可能死亡。幸存者只能在原处封存同一残余，隔周付费回收，再用剩余有价载体重配；总共只有三件载体。',
+    resources: { health: state.health, mind: state.mind, spirituality: state.spirituality,
+      cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'sun:0:LEARN_GUIDANCE', label: '听取两件服务与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: state.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  const { tyrant: _emptyTyrant, sun: _emptySun, ...originalFields } = projection;
   return originalFields;
 }
 export function migrateCapturedWhiteTowerState(raw: HistoricalWhiteTowerState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [211, 'white-tower-v211']);
-  assert.equal(Object.hasOwn(raw, 'tyrant'), false);
+  assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assert.deepEqual([current.schemaVersion, current.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assertValidSliceState(current); exactKeys(current, [...Object.keys(raw), 'tyrant']);
+  assertValidSliceState(current); exactKeys(current, [...Object.keys(raw), 'tyrant', 'sun']);
   same(historicalWhiteTowerState(current), raw, 'Strict current ingress changed full original capture');
   assert.equal(hash(raw), before); return current;
 }
@@ -268,8 +287,8 @@ export function loadCapture(): LoadedCapture {
   const migrated = json<{ final: HistoricalWhiteTowerState; random: SliceState['random']; public: CapturedPublic; globalPublic: HistoricalWhiteTowerPublic }>('migration-initial.json.gz');
   assert.equal(hash(migrated.final), PINS.initialStateSha256);
   assert.deepEqual([migrated.final.schemaVersion, migrated.final.contentVersion], [211, 'white-tower-v211']);
-  assert.equal(Object.hasOwn(migrated.final, 'tyrant'), false);
-  exactKeys(initial, [...Object.keys(migrated.final), 'tyrant']);
+  assert.equal(Object.hasOwn(migrated.final, 'tyrant'), false); assert.equal(Object.hasOwn(migrated.final, 'sun'), false);
+  exactKeys(initial, [...Object.keys(migrated.final), 'tyrant', 'sun']);
   same(historicalWhiteTowerState(initial), migrated.final); same(migrated.random, initial.random);
   const initialGlobal = projectSliceState(initial); assertGlobalPublic(initialGlobal, initial);
   same(historicalWhiteTowerPublic(initialGlobal, initial), migrated.globalPublic); same(capturePublic(initialGlobal), migrated.public);
