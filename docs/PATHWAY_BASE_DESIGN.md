@@ -193,6 +193,8 @@
 
 ### 门途径：序列9—0名册与数值设计入口
 
+以下旧数值包与机制候选保作历史设计。当前218的S0实现边界见[门阶段记录](stages/0218-door.md)，旧防御倍率、四类任意门操作、破封与世界连接不代表本阶段已实现能力。其它序列候选不在本次对齐范围。
+
 状态：`DOOR_MECHANISM_PACKAGE_COMPLETE_CANDIDATE_V1 / OFFICIAL_SEQUENCE_ROSTER_VERIFIED / D-DOOR-MECH1..45_USER_CONFIRMED / STABLE_ABILITY_AND_MASTERY_RECORDS_READY_V1 / TEN_SEQUENCE_ANCHOR_CARDS_COMPLETE_V1 / MIRROR_SCREEN_PASS_WITH_GLOBAL_HIGH_SEQUENCE_RISK / COMBAT_SPIRITUALITY_COST_PENDING / PLAYER_PACKAGE_REVIEW_PENDING / NOT_IMPLEMENTED`
 
 | 序列 | 名称 | 原著能力类别边界 | 已完成的数值身份 | 机制状态 |
@@ -206,7 +208,7 @@
 | 3 | 漫游者 | 星界/宇宙漫游、空间撕裂、空间融合与封锁 | 次数均值4.66，攻击略高于防御 | 即时AOE、囚笼局部100%胜率与多卡漫游已成候选 |
 | 2 | 旅法师 | 象征化、维度视野、跨位面行动与能力复制 | 攻防预算恢复相等，高位目录限定 | 象征化入战斗、维度视野转日常、记录升级复制已成候选 |
 | 1 | 星之匙 | 定位权柄、星辰/引力与时空扭曲 | 防御/控制略高于攻击 | 三选一位置权柄、AOE数量/目标盘与独立旅行已成候选 |
-| 0 | 门 | 门、空间、封印、定位与多世界层面的权柄升格 | 防御系数3.8高于攻击3.5；全局高序列胜率换算待修 | 四类有限门权柄、一次破封对抗、手工世界连接已成候选 |
+| 0 | 门 | 原文可核概念化与封印方向；普通晋0完整方仪、范围和定量成本未知 | 218当前切片：本人3秒有限概念化、一个亲见出口20秒短封；费用与实际应用分开记 | 三处真实通行和同三份材料主线；两有限技巧用于独立起重棚撤人，普通侧路保留，尚待本阶段自然验收 |
 
 完整`U/P`、核心权重、A/E、六槽、次数盘、贡献预算、成长周数和静态审计统一写在[量化与配速](PATHWAY_QUANTITATIVE_DESIGN.md)的`门途径数值包V1`；战斗灵性消耗仍未设计。两段记录、固定容量、开门/旅行技能无效化、永久战斗放逐、空间囚笼、复制和门权柄等45项规则已经写入[特殊机制](PATHWAY_MECHANISMS.md)，本节不重复定义。
 

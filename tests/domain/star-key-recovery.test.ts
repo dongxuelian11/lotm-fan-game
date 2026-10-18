@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import type { PublicResolutionTier } from '../../src/shared/contracts.js';
 import { stableStringify } from '../../src/domain/canonical.js';
@@ -15,7 +15,10 @@ import { STAR_KEY_PREPARATION_IDS, type StarKeyAcquisitionCommand, type StarKeyA
   type StarKeyAcquisitionEvent } from '../../src/domain/star-key/types.js';
 import { doorAcquisitionSnapshot } from '../../src/domain/door/source.js';
 import { resolveDoorOriginals } from '../../src/domain/door/originals.js';
-import { originalPlaneswalker } from './star-key-directed-helper.js';
+import { ae, originalPlaneswalker, prepareBottle, ready, originalDoorRoots } from './star-key-directed-helper.js';
+import { assertValidSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 
 const original = (n: number) => `star-key-potion-${n}`;
@@ -29,7 +32,9 @@ const apply = (s: SliceState, command: StarKeyAcquisitionCommand) => {
 /** Acquisition-only component inputs. These explicitly supplied budget/cursor
  * gaps are never used as natural-play evidence or to alter a recorded outcome. */
 function component(tiers: PublicResolutionTier[]): SliceState {
-  const s = originalPlaneswalker(); s.schemaVersion = STAR_KEY_RECOVERY_SCHEMA_VERSION;
+  const s = originalPlaneswalker();
+  expect([s.schemaVersion, s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  expect(STAR_KEY_RECOVERY_SCHEMA_VERSION).toBe(215);
   const weeks = Math.max(0, s.planeswalker.promotionWeek! + 12 - s.week);
   s.week += weeks; s.date = addGameWeeks(s.date, weeks); s.revision += 2;
   s.cash = 100000; s.actionsRemaining = s.weeklyBudget = 100;
@@ -84,6 +89,78 @@ function archivedSupply(s: SliceState, receive: boolean) {
 }
 
 describe('Star Key R218 same-original recovery', () => {
+  it('uses the actual current215 public branch through three controlled new failures, paid recovery and cold reopen', () => {
+    // This is a declared controlled branch, not natural823 evidence. The complete
+    // real S2 source keeps its cash5280, AP3, seed and cursor94. Only the three new
+    // consumption d100 values are controlled; original nextInt still advances.
+    const initial = originalPlaneswalker(); let s = structuredClone(initial);
+    expect([s.schemaVersion, s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+    expect(STAR_KEY_RECOVERY_SCHEMA_VERSION).toBe(215);
+    expect([s.cash, s.actionsRemaining, s.weeklyBudget, s.random.cursor]).toEqual([5280, 3, 3, 94]);
+    assertValidSliceState(s);
+    const consumeCursors = new Set<number>(), seed = s.random.seed;
+    const nextInt = DeterministicActionRandomStream.prototype.nextInt;
+    const spy = vi.spyOn(DeterministicActionRandomStream.prototype, 'nextInt').mockImplementation(function (this: DeterministicActionRandomStream, min: number, max: number) {
+      const cursor = this.cursor, value = nextInt.call(this, min, max);
+      return this.seed === seed && min === 1 && max === 100 && consumeCursors.has(cursor) ? 80 : value;
+    });
+    try {
+      s = ae(ready(s, { ap: 1, cash: 500 }), { type: 'LEARN_GUIDANCE' });
+      for (const n of [1, 2, 3]) {
+        s = prepareBottle(s, original(n));
+        consumeCursors.add(s.random.cursor);
+        s = ae(s, { type: 'CONSUME', bottleId: original(n), confirmed: true });
+        expect(s.starKey.bottles[n - 1]).toMatchObject({ status: 'CONSUMED', outcome: 'FAILURE', labourSteps: 5 });
+        expect(s.progression.sequence).toBe(2);
+      }
+      expect(consumeCursors.size).toBe(3);
+      expect(s.random.seed).toBe(seed); expect(s.random.cursor).toBeGreaterThanOrEqual(initial.random.cursor + 3);
+      for (const e of s.starKey.acquisitionJournal.filter(e => e.command.type === 'CONSUME')) {
+        expect(consumeCursors.has(e.cursorBefore)).toBe(true); expect(e.check?.roll).toBe(80);
+        expect(e.cursorAfter).toBe(e.cursorBefore + 1);
+      }
+      expect(originalDoorRoots(s)).toEqual(originalDoorRoots(initial));
+      const oldBottles = structuredClone(s.starKey.bottles), oldJournal = structuredClone(s.starKey.acquisitionJournal);
+      const request = { type: 'REQUEST_RECOVERY_V1', bottleId: original(1) } as const;
+      const receive = { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: original(1) } as const;
+      expect(validateSlicePayload({ type: 'STAR_KEY', command: request })).toBe(true);
+      expect(validateSlicePayload({ type: 'STAR_KEY', command: receive })).toBe(true);
+      s = ready(s, { ap: 1, cash: 120 });
+      expect(starKeyAcquisitionBlock(s, request)).toBeNull(); s = ae(s, request);
+      const requestedWeek = s.starKey.resupply.recovery!.requestedWeek, requestReceipt = s.starKey.acquisitionJournal.at(-1)!;
+      expect(requestReceipt.before.cash - requestReceipt.after.cash).toBe(120);
+      expect(requestReceipt.before.actions - requestReceipt.after.actions).toBe(1);
+      expect(requestReceipt.cursorAfter).toBe(requestReceipt.cursorBefore);
+      expect(requestReceipt.recoverySite?.custodyAfter).toBe('SEALED_WITH_CUSTODIAN');
+      assertValidSliceState(s); expect(validateStarKeyAcquisitionJournal(s)).toBe(true);
+      s = migrateSliceState(JSON.parse(JSON.stringify(s)));
+      expect([s.schemaVersion, s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+      expect(s.starKey.bottles).toEqual(oldBottles);
+      // Ordinary WORK/REST performs any needed real week crossing and finances.
+      // No direct week, cash, actions, cursor, injury or source mutation occurs.
+      s = ready(s, { afterWeek: requestedWeek, ap: 1, cash: 30 });
+      expect(s.week).toBeGreaterThan(requestedWeek); expect(s.weeklyBudget).toBe(3);
+      expect(starKeyAcquisitionBlock(s, receive)).toBeNull(); s = ae(s, receive);
+      const handover = s.starKey.acquisitionJournal.at(-1)!;
+      expect(handover.before.cash - handover.after.cash).toBe(30);
+      expect(handover.before.actions - handover.after.actions).toBe(1);
+      expect(handover.cursorAfter).toBe(handover.cursorBefore);
+      expect(s.starKey.bottles.at(-1)).toMatchObject({ id: 'star-key-recovery-1', labourSteps: 0, status: 'SUPPLIER',
+        recovery: { sourceBottleId: original(1), originalBottleId: original(1), characteristicId: 'DR0-SK-CHAR-1' } });
+      expect(s.starKey.bottles.slice(0, 3)).toEqual(oldBottles);
+      expect(s.starKey.acquisitionJournal.slice(0, oldJournal.length)).toEqual(oldJournal);
+      expect(originalDoorRoots(s)).toEqual(originalDoorRoots(initial));
+      assertValidSliceState(s); expect(validateStarKeyAcquisitionJournal(s)).toBe(true);
+      const reopened = migrateSliceState(JSON.parse(JSON.stringify(s)));
+      expect(reopened).toEqual(s); expect(resolveStarKeyOriginals(reopened)?.characteristics).toHaveLength(3);
+      expect(() => assertValidSliceState({ ...s, schemaVersion: CURRENT_SCHEMA_VERSION + 1 })).toThrow();
+      expect(() => migrateSliceState({ ...s, schemaVersion: CURRENT_SCHEMA_VERSION + 1 })).toThrow();
+      const { door: _door, ...withoutDoor } = s;
+      expect(() => migrateSliceState({ ...withoutDoor, schemaVersion: STAR_KEY_RECOVERY_SCHEMA_VERSION - 1, contentVersion: 'death-v214' }))
+        .toThrow('Unexpected StarKey recovery state in a legacy save');
+      expect(validateStarKeyAcquisitionJournal({ ...s, schemaVersion: STAR_KEY_RECOVERY_SCHEMA_VERSION - 1 })).toBe(false);
+    } finally { spy.mockRestore(); }
+  }, 180000);
   it('retains the raw natural823 source, original1 failure, original2 embodied and original3 supplied', () => {
     const path = 'tests/fixtures/star-key-v01960/natural.json', bytes = readFileSync(path);
     expect(createHash('sha256').update(bytes).digest('hex')).toBe('d9f23dd736ccf0a9fe4eb48e7ffbd79f86a87c6f6ad58dcd913d234c3251cc6d');
@@ -130,7 +207,7 @@ describe('Star Key R218 same-original recovery', () => {
       { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: original(1), recoverySite: {} },
       { type: 'REQUEST_RECOVERY_V1', bottleId: original(1), success: true }]) expect(validateStarKeyAcquisitionCommand(command)).toBe(false);
     const s = threeFailures(); expect(starKeyAcquisitionActions(s).some(a => ['REQUEST_SUPPLY', 'RECEIVE_SUPPLY'].includes(a.command.type))).toBe(false);
-    for (const patch of [{ actionsRemaining: 0 }, { cash: 119 }, { schemaVersion: 217 }])
+    for (const patch of [{ actionsRemaining: 0 }, { cash: 119 }, { schemaVersion: STAR_KEY_RECOVERY_SCHEMA_VERSION - 1 }])
       expect(starKeyAcquisitionBlock({ ...s, ...patch }, { type: 'REQUEST_RECOVERY_V1', bottleId: original(1) })).not.toBeNull();
   }, 60000);
   it('preserves legal legacy4+ replay but rejects its conflicting conservation admission', () => {

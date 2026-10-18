@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createDoorState, validateDoorState } from '../../src/domain/door/index.js';
 import { DOOR_HOME } from '../../src/domain/door/content.js';
@@ -7,17 +9,29 @@ import { assertValidSliceState, createSliceRun } from '../../src/domain/slice/in
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { validateSlicePayload } from '../../src/domain/slice/validation.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
+import { readObjectEntry } from '../helpers/read-object-entry.js';
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
+import { DOOR_SOURCE_FILE, DOOR_SOURCE_SHA, doorScenarioHash } from '../helpers/door-scenario.js';
 
 const fresh = (): SliceState => createSliceRun('door-schema-run', sliceDefaultCreationSelection, 'door-schema-seed');
-const previousFormat = () => {
-  const { door: _door, ...state } = fresh();
-  return { ...state, schemaVersion: 214 as const, contentVersion: 'death-v214' as const };
+type OriginalStarKeySave = {
+  schemaVersion: 193;
+  contentVersion: 'star-key-v193';
+  starKey: SliceState['starKey'];
+  [key: string]: unknown;
 };
+let source: OriginalStarKeySave;
+beforeAll(() => {
+  expect(createHash('sha256').update(readFileSync(DOOR_SOURCE_FILE)).digest('hex')).toBe(DOOR_SOURCE_SHA);
+  source = readObjectEntry<OriginalStarKeySave>(DOOR_SOURCE_FILE, 'final');
+  expect([source.schemaVersion, source.contentVersion]).toEqual([193, 'star-key-v193']);
+  expect(doorScenarioHash(source)).toBe('56ecbdddfdbfa82116aa8ea466d4195be0b98e4ccbcc49bea07f3f2cabfd1a5b');
+});
 
 describe('Door schema215 exact additive admission', () => {
   it('creates exactly the empty Door root in the current default run', () => {
     const state = fresh();
-    expect([state.schemaVersion, state.contentVersion]).toEqual([215, 'door-v215']);
+    expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(state.door).toEqual(createDoorState());
     expect(validateDoorState(state)).toBe(true);
     expect(() => assertValidSliceState(state)).not.toThrow();
@@ -25,15 +39,28 @@ describe('Door schema215 exact additive admission', () => {
     expect(() => openDoorRuntimeSession(state)).toThrow();
   });
 
-  it('migrates exact214 by adding only the empty Door root and current format', () => {
-    const previous = previousFormat(), before = structuredClone(previous);
-    const current = migrateSliceState(previous);
-    expect(previous).toEqual(before);
-    expect(current).toEqual({ ...previous, schemaVersion: 215, contentVersion: 'door-v215', door: createDoorState() });
-    expect(current).not.toBe(previous);
-    expect(current.death).not.toBe(previous.death);
+  it('migrates authentic193 while preserving every original field and adding empty chapter roots', () => {
+    const before = doorScenarioHash(source), current = migrateSliceState(source), defaults = fresh();
+    expect(doorScenarioHash(source)).toBe(before);
+    expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+    for (const [key, value] of Object.entries(source)) {
+      if (key === 'schemaVersion' || key === 'contentVersion') continue;
+      expect(doorScenarioHash(current[key as keyof SliceState]), `Changed original ${key}`).toBe(doorScenarioHash(value));
+    }
+    expect(current.door).toEqual(createDoorState());
+    for (const key of [
+      'timeWorm', 'divineHand', 'apocalypseDemoness', 'knowledgeEmperor', 'darkAngel',
+      'uncleanMonarch', 'abomination', 'mercurySnake', 'princeOfAbolition', 'handOfOrder',
+      'natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness',
+      'whiteTower', 'tyrant', 'sun', 'death', 'door',
+    ] as const) {
+      expect(Object.hasOwn(source, key), `Original193 unexpectedly contains ${key}`).toBe(false);
+      expect(current[key], `Nonempty migrated ${key}`).toEqual(defaults[key]);
+    }
+    expect(current).not.toBe(source);
+    expect(current.starKey).not.toBe(source.starKey);
     expect(() => assertValidSliceState(current)).not.toThrow();
-  });
+  }, 120_000);
 
   it('rejects missing, injected, unknown and future-format roots without repairing them', () => {
     const state = fresh(), { door: _door, ...missing } = state;
@@ -42,23 +69,23 @@ describe('Door schema215 exact additive admission', () => {
       { ...state, door: undefined },
       { ...state, door: { ...state.door, authority: true } },
       { ...state, futureChapter: {} },
-      { ...state, schemaVersion: 216 },
-      { ...state, contentVersion: 'door-v216' },
-      { ...state, contentVersion: 'death-v214' },
-      { ...previousFormat(), door: createDoorState() },
-      { ...previousFormat(), contentVersion: 'door-v215' },
+      { ...state, schemaVersion: CURRENT_SCHEMA_VERSION + 1 },
+      { ...state, contentVersion: `future-v${CURRENT_SCHEMA_VERSION + 1}` },
+      { ...state, contentVersion: source.contentVersion },
+      { ...source, door: createDoorState() },
+      { ...source, contentVersion: CURRENT_CONTENT_VERSION },
     ]) expect(() => migrateSliceState(invalid)).toThrow();
   });
 
   it('does not backdate StarKey recovery evidence while upgrading a legacy save', () => {
-    const previous = previousFormat(), starKey = previous.starKey;
+    const starKey = source.starKey;
     for (const injected of [
       { ...starKey, resupply: { ...starKey.resupply, recovery: {} } },
       { ...starKey, bottles: [{ ...starKey.bottles[0], recovery: {} }] },
       { ...starKey, acquisitionJournal: [{ recoverySite: {} }] },
       { ...starKey, acquisitionJournal: [{ command: { type: 'REQUEST_RECOVERY_V1' } }] },
       { ...starKey, acquisitionJournal: [{ command: { type: 'RECOVER_CHARACTERISTIC_V1' } }] },
-    ]) expect(() => migrateSliceState({ ...previous, starKey: injected }))
+    ]) expect(() => migrateSliceState({ ...source, starKey: injected }))
       .toThrow('Unexpected StarKey recovery state in a legacy save');
   });
 
