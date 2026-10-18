@@ -1,4 +1,4 @@
-import { assertEmptyDemonessState, assertEmptyDemonessPublic } from '../helpers/empty-demoness-capture.js';
+import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from '../helpers/empty-demoness-capture.js';
 import { createHash } from 'node:crypto';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
@@ -7,7 +7,8 @@ import { historicalFoolStateForEmptyRootAudit, historicalVisionaryStateForEmptyR
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
-import { projectSliceState } from '../../src/domain/slice/index.js';
+import { createSliceRun, projectSliceState } from '../../src/domain/slice/index.js';
+import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import {
@@ -31,6 +32,37 @@ import { assertEmptyTwilightGiantState, assertEmptyTwilightGiantPublic } from '.
 // Published members exercise exact comparison adapters without campaign replay.
 // Full campaign authentication/replay remains mandatory in the existing suites.
 describe('Exact historical capture root adapters', () => {
+  it('restores only the inactive historical null source and rejects leaked current source fields', () => {
+    const state = createSliceRun('inactive-null-source-audit', sliceDefaultCreationSelection, 'inactive-null-source-seed');
+    const projection = projectSliceState(state), privateHash = hash(state), publicHash = hash(projection);
+    const historical = historicalInactiveCalamitySourcePublic(projection, state);
+    const expected = { ...projection, calamityDemoness: { ...projection.calamityDemoness,
+      life: { ...projection.calamityDemoness.life, site: { ...projection.calamityDemoness.life.site, source: null } } } };
+    expect(historical).toStrictEqual(expected);
+    expect(Object.hasOwn(projection.calamityDemoness.life.site, 'source')).toBe(false);
+    for (const source of [null, undefined, { privateMarker: 'must-not-be-public' }]) {
+      const leaked = { ...projection, calamityDemoness: { ...projection.calamityDemoness,
+        life: { ...projection.calamityDemoness.life, site: { ...projection.calamityDemoness.life.site, source } } } };
+      expect(() => historicalInactiveCalamitySourcePublic(leaked, state)).toThrow();
+    }
+    expect(() => historicalInactiveCalamitySourcePublic(projection,
+      { ...state, progression: { ...state.progression, pathwayId: 'demoness' } })).toThrow();
+    const activeSource = { ...state, calamityDemoness: { ...state.calamityDemoness,
+      life: { ...state.calamityDemoness.life, site: { ...state.calamityDemoness.life.site, source: {} } } } };
+    expect(() => historicalInactiveCalamitySourcePublic(projection, activeSource as SliceState)).toThrow();
+    const alteredSite = { ...projection.calamityDemoness.life.site,
+      playerEnergy: projection.calamityDemoness.life.site.playerEnergy - 1, unexpected: undefined };
+    const tampered = { ...projection, cash: projection.cash + 1,
+      calamityDemoness: { ...projection.calamityDemoness,
+        life: { ...projection.calamityDemoness.life, site: alteredSite } } };
+    const auditedTamper = historicalInactiveCalamitySourcePublic(tampered, state);
+    expect(auditedTamper.cash).toBe(projection.cash + 1);
+    expect(auditedTamper.calamityDemoness.life.site.playerEnergy).toBe(alteredSite.playerEnergy);
+    expect(Object.hasOwn(auditedTamper.calamityDemoness.life.site, 'unexpected')).toBe(true);
+    expect(hash(auditedTamper)).not.toBe(hash(historical));
+    expect(hash(state)).toBe(privateHash); expect(hash(projection)).toBe(publicHash);
+  });
+
   it('preserves raw216 actual219 initial and terminal through only the exact empty Twilight Giant and Demoness additions', () => {
     for (const which of ['initial', 'terminal'] as const) {
       const raw = readErrorNaturalSnapshot(which);
@@ -321,7 +353,9 @@ describe('Three pinned historical empty Door, Error, Twilight Giant and Demoness
     const projection = projectSliceState(current), publicHash = fixture.fingerprint(projection);
     const withoutNewRoots = historicalWithoutEmptyDoorAndErrorPublic(projection, current);
     const { door: _expectedDoor, errorAscent: _expectedErrorAscent, twilightGiant: _expectedTwilightGiant, demoness: _expectedDemoness, ...expectedRest } = projection;
-    expect(fixture.fingerprint(withoutNewRoots)).toBe(fixture.fingerprint(expectedRest));
+    const expectedHistorical = { ...expectedRest, calamityDemoness: { ...expectedRest.calamityDemoness,
+      life: { ...expectedRest.calamityDemoness.life, site: { ...expectedRest.calamityDemoness.life.site, source: null } } } };
+    expect(fixture.fingerprint(withoutNewRoots)).toBe(fixture.fingerprint(expectedHistorical));
     const missingPublic = { ...projection }; Reflect.deleteProperty(missingPublic, 'door');
     expect(() => historicalWithoutEmptyDoorAndErrorPublic(missingPublic, current)).toThrow();
     for (const door of [null, { ...projection.door, promoted: true },

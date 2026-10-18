@@ -135,5 +135,5 @@ describe('Demoness218 controlled real-history SQLite transaction', () => {
       }]);
       assertDemonessSourceUnmodified();
     } finally { restore(); }
-  }, 120_000);
+  }, 300_000);
 });

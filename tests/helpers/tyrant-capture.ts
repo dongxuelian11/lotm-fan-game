@@ -1,4 +1,4 @@
-import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
+import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { lstatSync, readFileSync, readdirSync, realpathSync } from 'node:fs';
@@ -287,7 +287,7 @@ function assertPostTyrantPublic(projection: SliceProjection, state: SliceState):
 }
 export function historicalTyrantPublic(projection: SliceProjection, state: SliceState): HistoricalTyrantPublic {
   historicalTyrantState(state); assertPostTyrantPublic(projection, state);
-  const { sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = projection;
+  const { sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = historicalInactiveCalamitySourcePublic(projection, state);
   return originalFields;
 }
 /** Raw capture hashes always refer to212; current strict admission is a separate
@@ -351,7 +351,7 @@ export function assertCurrentGlobal(actual: SliceProjection, action: Action, sid
   const state = side === 'before' ? action.beforeLast : action.final;
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
   assertPostTyrantPublic(actual, state);
-  const { sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...historicalPublic } = actual;
+  const { sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...historicalPublic } = historicalInactiveCalamitySourcePublic(actual, state);
   same(historicalPublic, expectedCurrentGlobal(action, side), `Only the exact supported717 public check may differ (${action.commandCount} ${side})`);
   same(capturePublic(actual), side === 'before' ? action.publicBefore : action.public, 'The complete chapter capture remains unchanged');
 }

@@ -1,4 +1,4 @@
-import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
+import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -145,7 +145,7 @@ export function historicalTwilightNaturalPublic(view: SliceProjection, state: Sl
   assert.equal(originalKeys.includes('demoness'), false);
   assert.deepEqual(Object.keys(view).sort(), [...originalKeys, 'demoness'].sort());
   assertEmptyDemonessState(state); assertEmptyDemonessPublic(view, state);
-  const { demoness: _emptyDemoness, ...originalFields } = view;
+  const { demoness: _emptyDemoness, ...originalFields } = historicalInactiveCalamitySourcePublic(view, state);
   return originalFields;
 }
 export function currentTwilightNaturalAnchor(state: SliceState, view: SliceProjection, original: TwilightNaturalSnapshot): Anchor {

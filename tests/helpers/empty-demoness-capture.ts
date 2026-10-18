@@ -39,3 +39,25 @@ export function assertEmptyDemonessPublic(projection: Pick<SliceProjection, 'dem
   assert.equal(Object.hasOwn(projection, 'demoness'), true);
   assert.deepEqual(projection.demoness, emptyDemonessPublic(state));
 }
+
+/** Exact backwards-only public audit for the schema218 privacy whitelist.
+ * These unrelated-pathway captures retained one inactive null source at this
+ * path. Current public data must omit it. Restore only that literal null in a
+ * detached historical view; every other public field remains hash-covered. */
+export function historicalInactiveCalamitySourcePublic(projection: SliceProjection, state: SliceState): SliceProjection {
+  assert.notEqual(state.progression.pathwayId, 'demoness');
+  assert.equal(state.calamityDemoness.guidanceKnown, false);
+  assert.equal(state.calamityDemoness.promotionWeek, null);
+  assert.equal(state.calamityDemoness.life.site.introducedWeek, null);
+  assert.equal(state.calamityDemoness.life.site.source, null);
+  assert.equal(state.calamityDemoness.encounter.currentSite, null);
+  assert.equal(projection.calamityDemoness.discovered, false);
+  assert.equal(projection.calamityDemoness.guidanceKnown, false);
+  assert.equal(projection.calamityDemoness.promoted, false);
+  assert.equal(projection.calamityDemoness.life.activeCase, null);
+  assert.equal(projection.calamityDemoness.life.currentAttempt, null);
+  assert.equal(Object.hasOwn(projection.calamityDemoness.life.site, 'source'), false);
+  const site = { ...projection.calamityDemoness.life.site, source: null };
+  return { ...projection, calamityDemoness: { ...projection.calamityDemoness,
+    life: { ...projection.calamityDemoness.life, site } } };
+}

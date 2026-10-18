@@ -41,8 +41,10 @@ let prepared: PreparedScenario | undefined;
  * reflection. No historical854 sixth dose, acting/mastery edit or free stock. */
 export function preparedDemonessScenario(): PreparedScenario & { session: DemonessRuntimeSession } {
   if (prepared) return { ...prepared, session: openDemonessRuntimeSession(structuredClone(prepared.beforeConsume)) };
+  const started = performance.now();
   assertDemonessSourceUnmodified();
   const source = recoveryBudget(controlledApocalypseS1Source(), { cash: 100, ap: 1 });
+  console.info(`[demoness controlled source] actual recovered S1 and reflection: ${((performance.now() - started) / 1000).toFixed(2)}s`);
   const guided = applySliceIntent(source, { type: 'DEMONESS', command: { type: 'LEARN_GUIDANCE' } });
   const session = openDemonessRuntimeSession(guided), commands: DemonessCommand[] = [{ type: 'LEARN_GUIDANCE' }];
   for (let n = 0; n < 320; n++) {
@@ -50,6 +52,7 @@ export function preparedDemonessScenario(): PreparedScenario & { session: Demone
     if (action?.enabled && action.command.type === 'CONSUME') {
       const beforeConsume = session.snapshot();
       prepared = { source, guided, beforeConsume, commands };
+      console.info(`[demoness controlled route] ${commands.length} paid chapter commands ready in ${((performance.now() - started) / 1000).toFixed(2)}s total`);
       return { ...prepared, session };
     }
     if (!action?.enabled) throw Error('Real paid Demoness route blocked: ' + JSON.stringify({ action, last: commands.slice(-8) }));

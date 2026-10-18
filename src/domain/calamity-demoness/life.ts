@@ -91,7 +91,7 @@ export interface CalamityDemonessLifeState { activeCase: CalamityDemonessCaseId 
 export interface CalamityDemonessLifeAction { id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: CalamityDemonessActivityCommand }
 export interface CalamityDemonessLifeProjection {
   title: string; story: string; environment: string; activeCase: CalamityDemonessCaseId | null; inside: boolean; insideCase: boolean; reflected: boolean;
-  site: CalamityDemonessPublicSite; clockSeconds: number; playerLocation: CalamityDemonessLocation; playerTravelMetres: number; currentAttempt: CalamityDemonessPublicAttempt | null;
+  site: CalamityDemonessPublicSite; historicalScene?: CalamityDemonessPublicHistory; clockSeconds: number; playerLocation: CalamityDemonessLocation; playerTravelMetres: number; currentAttempt: CalamityDemonessPublicAttempt | null;
   cases: { id: CalamityDemonessCaseId; title: string; story: string; observations: string[]; status: string; method: 'ABILITY' | 'ORDINARY' | null; result: string | null; contactOpen: boolean; returned: boolean; closes: number; attempts: CalamityDemonessPublicAttempt[] }[];
   actions: CalamityDemonessLifeAction[];
 }
@@ -107,6 +107,24 @@ export function projectDemonessPublicCheck(c: PublicCheckResult | null): PublicC
 export const projectDemonessPublicDate = (d: PublicGameDate): PublicGameDate => ({ epoch: d.epoch, year: d.year, month: d.month, day: d.day });
 export const projectDemonessPublicInjury = (i: SliceState['injuries'][number]): SliceState['injuries'][number] =>
   ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+/** Only the already-known historical display facts, separate from current bodies and private provenance. */
+export interface CalamityDemonessPublicHistory {
+  clockSeconds: number; playerLocation: UnagingDemonessLifeState['playerLocation']; playerTravelMetres: number;
+  vera: Pick<UnagingDemonessLifeState['vera'], 'name' | 'age' | 'location'>;
+  marcus: Pick<UnagingDemonessLifeState['marcus'], 'name' | 'age' | 'location'>;
+  mirrorA: Pick<UnagingDemonessLifeState['mirrorA'], 'id' | 'intact'>;
+  mirrorB: Pick<UnagingDemonessLifeState['mirrorB'], 'id' | 'intact'>;
+  entry: Pick<UnagingDemonessLifeState['entry'], 'held'>;
+  shutter: Pick<UnagingDemonessLifeState['shutter'], 'state'>;
+}
+export function projectCalamityDemonessHistory(source: CalamityDemonessSceneSource | null): CalamityDemonessPublicHistory | undefined {
+  if (!source) return undefined;
+  const p = source.snapshot;
+  return { clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres,
+    vera: projectDemonessPublicFields(p.vera, ['name', 'age', 'location']), marcus: projectDemonessPublicFields(p.marcus, ['name', 'age', 'location']),
+    mirrorA: { id: p.mirrorA.id, intact: p.mirrorA.intact }, mirrorB: { id: p.mirrorB.id, intact: p.mirrorB.intact },
+    entry: { held: p.entry.held }, shutter: { state: p.shutter.state } };
+}
 export type CalamityDemonessPublicSite = Omit<CalamityDemonessSiteState, 'source'>;
 export type CalamityDemonessPublicAttempt = Omit<CalamityDemonessAttempt, 'siteAtStart' | 'siteAtClose'> &
   { siteAtStart: CalamityDemonessPublicSite; siteAtClose: CalamityDemonessPublicSite | null };
@@ -419,7 +437,7 @@ export function calamityDemonessLifeActions(s: SliceState): CalamityDemonessLife
 export function projectCalamityDemonessLife(s: SliceState): CalamityDemonessLifeProjection {
   const l = s.calamityDemoness.life, p = s.calamityDemoness.encounter.currentSite ?? l.site;
   return { title: '原馆舍附廊的有限镜幕与闭箱', story: CALAMITY_DEMONESS_LIFE_STORY, environment: '门口0米，原镜A4米，收容箱8米，原镜B12米，区外−2米，后院−4米。附廊普通A至B路线8米；旧馆外廊18米仍是既往记录。初始精力100，普通步行每米耗1，换案不补。两名原成人各有独立位置与有限精力；既往素描、封包、登记和旧遭遇不改。',
-    activeCase: l.activeCase, inside: hasCalamityDemonessLifeLock(s), insideCase: contactOpen(l), reflected: l.reflected, site: projectCalamityDemonessPublicSite(p), clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: current(l) ? projectCalamityDemonessPublicAttempt(current(l)!) : null,
+    activeCase: l.activeCase, inside: hasCalamityDemonessLifeLock(s), insideCase: contactOpen(l), reflected: l.reflected, site: projectCalamityDemonessPublicSite(p), ...(p.source ? { historicalScene: projectCalamityDemonessHistory(p.source)! } : {}), clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: current(l) ? projectCalamityDemonessPublicAttempt(current(l)!) : null,
     cases: CASES.map(d => { const r = l.cases[d.id], a = r.attempts.at(-1); return { id: d.id, title: d.title, story: d.story,
       observations: [ ...(r.observation ? ['已普通步行8米核对两面原镜、原箱和现实退路。'] : []), ...(a ? [`本案实付${a.penniesSpent}便士、${a.spiritualitySpent}灵性，步行${a.playerTravelMetres}米、经过${a.elapsedSeconds}秒，耗${a.energySpent}精力。`, ...(a.abilityTier ? [`检定${TIER_LABELS[a.abilityTier]}；实际应用${a.appliedAbilityIds.length}项技巧。`] : []), ...(a.loadApplied ? [`封闭负载已使用，实际减势${a.bufferedForce}；原护片磨损${a.plateWear}并消耗。`] : []), ...(a.pulseApplied ? ['同一封装残留经过10秒脉冲，原护片和箱体焦痕持久保留。'] : []), ...(a.residueHandedOver ? ['同一封装残留已由本人携回并当面交还原保管者。'] : []), ...(a.permissionWithdrawn ? ['当前镜面许可已撤回，普通路线许可独立记录；未施术。'] : [])] : []) ],
       status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限能力已真实应用，原人原物与实际成本保留。' : '按普通方法或停止结果收尾，不增加未应用能力的掌握。', contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: r.attempts.map(projectCalamityDemonessPublicAttempt) }; }), actions: calamityDemonessLifeActions(s) };

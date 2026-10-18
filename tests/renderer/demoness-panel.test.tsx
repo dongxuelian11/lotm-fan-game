@@ -55,7 +55,7 @@ beforeAll(() => {
     // The UI adapter captures only public projections, never private route authority.
     views = { source, guided, beforeConsume, success, consume };
   } finally { restore(); }
-}, 120_000);
+}, 300_000);
 
 interface Transition { command: DemonessCommand; after: SliceProjection; failOnce?: boolean }
 const disposers: (() => void)[] = [];

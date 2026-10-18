@@ -2,7 +2,7 @@ import type { SliceState } from '../slice/types.js';
 import { stableStringify } from '../canonical.js';
 import { sha256Hex } from '../checksum.js';
 import { compareGameDates } from '../game-calendar.js';
-import { validateApocalypseDemonessState, hasApocalypseDemonessLock, hasApocalypseDemonessOldPractice } from '../apocalypse-demoness/index.js';
+import { validateApocalypseDemonessState, hasApocalypseDemonessLock, hasApocalypseDemonessOldPractice, apocalypseDemonessOriginals } from '../apocalypse-demoness/index.js';
 import { projectOriginalLineage } from '../apocalypse-demoness/source.js';
 import type { ApocalypseDemonessOriginalCharacteristics } from '../apocalypse-demoness/types.js';
 import type { DemonessBudget, DemonessFinance } from './types.js';
@@ -38,7 +38,7 @@ export function demonessSourceBlock(s: SliceState): string | null {
   if (s.progression.acting !== 100 || !a.life.reflected || Object.values(a.life.cases).some(c => c.status !== 'RESOLVED' || c.contactOpen || !c.returned)) return '先完成末日魔女三份真实实践、反思与完整消化。';
   if (hasApocalypseDemonessLock(s) || hasApocalypseDemonessOldPractice(s) || s.combat || s.activeEvent || s.eventQueue.length || s.pulse !== 'NONE') return '先完成旧现场清理，逐人沿普通道路真正离开。';
   if (s.world.city !== 'BACKLUND') return '本人须实际回到贝克兰德。';
-  if (!a.sourceScene || !s.calamityDemoness.encounter.currentSite || !sameDemoness(a.sourceScene.originals.site, s.calamityDemoness.encounter.currentSite)) return '须以原灾难魔女实战后的当前现场承接，不能改用更早的生活快照。';
+  if (!a.sourceScene || !sameDemoness(a.sourceScene.originals, apocalypseDemonessOriginals(s))) return '原展廊的权威承接原物与实际指导记录不一致。';
   const p = a.life.site;
   if (!p || p.playerLocation !== 'OUTSIDE' || p.vera?.location !== 'OUTSIDE' || p.marcus?.location !== 'OUTSIDE' || !p.vera.alive || !p.marcus.alive || p.screen.active || p.box.state !== 'CLOSED') return '原成人与本人须实际在室外，原镜与原箱的持续作用须已经停止。';
   const guidance = a.acquisitionJournal.find(e => e.command.type === 'LEARN_GUIDANCE');

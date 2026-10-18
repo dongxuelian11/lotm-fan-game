@@ -1,4 +1,4 @@
-import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
+import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -80,7 +80,7 @@ export function historicalErrorNaturalPublic(view: SliceProjection, state: Slice
   assert.equal(originalKeys.includes('twilightGiant'), false); assert.equal(originalKeys.includes('demoness'), false);
   assert.deepEqual(Object.keys(view).sort(), [...originalKeys, 'twilightGiant', 'demoness'].sort());
   assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state); assertEmptyTwilightGiantPublic(view, state); assertEmptyDemonessPublic(view, state);
-  const { twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = view;
+  const { twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = historicalInactiveCalamitySourcePublic(view, state);
   return originalFields;
 }
 export function currentErrorNaturalAnchor(state: SliceState, view: SliceProjection, original: Snapshot): Anchor {

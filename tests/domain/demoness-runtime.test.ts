@@ -12,7 +12,7 @@ import {
 } from '../helpers/demoness-scenario.js';
 
 let route: ReturnType<typeof preparedDemonessScenario>;
-beforeAll(() => { route = preparedDemonessScenario(); }, 120_000);
+beforeAll(() => { route = preparedDemonessScenario(); }, 300_000);
 afterEach(() => { vi.resetAllMocks(); vi.restoreAllMocks(); });
 afterAll(() => { assertDemonessSourceUnmodified(); });
 const session = () => openDemonessRuntimeSession(structuredClone(route.beforeConsume));

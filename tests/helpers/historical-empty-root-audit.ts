@@ -1,4 +1,4 @@
-import { assertEmptyDemonessState, assertEmptyDemonessPublic } from './empty-demoness-capture.js';
+import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
@@ -93,6 +93,6 @@ export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjec
   assertEmptyErrorAscentState(state); assertEmptyErrorAscentPublic(projection, state);
   assertEmptyTwilightGiantState(state); assertEmptyTwilightGiantPublic(projection, state);
   assertEmptyDemonessState(state); assertEmptyDemonessPublic(projection, state);
-  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...allOtherFields } = projection;
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...allOtherFields } = historicalInactiveCalamitySourcePublic(projection, state);
   return allOtherFields;
 }
