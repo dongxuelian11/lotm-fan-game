@@ -139,3 +139,16 @@ export function currentTwilightNaturalAnchor(state: SliceState, view: SliceProje
   return twilightNaturalAnchor(historicalTwilightNaturalState(state, Object.keys(original.final)),
     historicalTwilightNaturalPublic(view, Object.keys(original.public)));
 }
+
+/** A retained actual command boundary for the separate last-command save test. */
+export function readTwilightNaturalSnapshotAt(commandCount: number): TwilightNaturalSnapshot {
+  const item = readTwilightNaturalSummary().keySnapshots.find(item => item.commandCount === commandCount);
+  assert(item, `No retained actual snapshot at command ${commandCount}`);
+  const value: TwilightNaturalSnapshot = JSON.parse(gunzipSync(readFileSync(join(directory, item.file))).toString('utf8'));
+  assert.equal(twilightNaturalHash(value), item.contentSha256);
+  assert.equal(value.commandCount, commandCount);
+  assert.deepEqual(value.anchor, twilightNaturalAnchor(value.final, value.public));
+  assert.equal(value.anchor.privateStateSha256, item.stateSha256);
+  assert.equal(value.anchor.publicStateSha256, item.publicSha256);
+  return value;
+}

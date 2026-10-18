@@ -1,6 +1,6 @@
 /** One actual new-command replay; its actual penultimate state feeds one
  * last-command SQLite fault/retry/idempotence/reopen. No historical replay or RNG seam. */
-import { beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -17,7 +17,7 @@ import {
   TWILIGHT220_FROZEN_ROOTS, TWILIGHT220_SOURCE_STATE_SHA, assertTwilightNaturalRetainedFreeze,
   currentTwilightNaturalAnchor, historicalTwilightNaturalPublic, historicalTwilightNaturalState,
   readTwilightNaturalArchive, readTwilightNaturalRows, readTwilightNaturalSnapshot,
-  readTwilightNaturalSource, readTwilightNaturalSummary, twilightNaturalHash, twilightNaturalSha,
+  readTwilightNaturalSource, readTwilightNaturalSummary, readTwilightNaturalSnapshotAt, twilightNaturalHash, twilightNaturalSha,
   type TwilightNaturalActionRow,
 } from '../helpers/twilight-giant-natural-capture.js';
 
@@ -27,7 +27,7 @@ function unwrap<T>(result: SliceResult<T>): T {
 }
 let replay: { before: SliceState; final: SliceState; public: SliceProjection; last: TwilightNaturalActionRow };
 
-beforeAll(() => {
+function replayCapturedNatural() {
   const summary = readTwilightNaturalSummary(), source = readTwilightNaturalSource();
   const archive = readTwilightNaturalArchive(), initial = readTwilightNaturalSnapshot('initial');
   assertTwilightNaturalRetainedFreeze(summary);
@@ -105,10 +105,11 @@ beforeAll(() => {
   }
   expect(twilightNaturalHash(source)).toBe(TWILIGHT220_SOURCE_STATE_SHA);
   replay = { before, final: state, public: view, last: actions.at(-1)! };
-}, 300_000);
+}
 
 describe('Twilight220 actual natural terminal', () => {
   it('matches every actual private/public/RNG boundary and the captured outcome without replaying old297', () => {
+    replayCapturedNatural();
     const summary = readTwilightNaturalSummary(), { final: state, public: view } = replay;
     expect(state.revision).toBe(summary.revision);
     expect(state.status).toBe(summary.actual.status);
@@ -128,10 +129,16 @@ describe('Twilight220 actual natural terminal', () => {
       expect(state.twilightGiant.epilogue!.workers.every(worker => worker.position === -2)).toBe(true);
       expect(view.twilightGiant.actions.some(action => action.preferredAction)).toBe(false);
     }
-  });
+  }, 300_000);
 
   it('faults the actual last command once, retries unchanged, then cold reopens the identical terminal and receipt', () => {
-    const { before, final: state, public: view, last } = replay;
+    const summary = readTwilightNaturalSummary(), terminal = readTwilightNaturalSnapshot('terminal');
+    const penultimate = readTwilightNaturalSnapshotAt(summary.commandCount - 1);
+    const before = migrateSliceState(structuredClone(penultimate.final));
+    const state = migrateSliceState(structuredClone(terminal.final)), view = projectSliceState(state);
+    const last = readTwilightNaturalRows().at(-1)! as TwilightNaturalActionRow;
+    expect(currentTwilightNaturalAnchor(before, projectSliceState(before), penultimate)).toEqual(last.before);
+    expect(currentTwilightNaturalAnchor(state, view, terminal)).toEqual(last.after);
     const directory = mkdtempSync(join(tmpdir(), 'lotm-twilight220-natural-')), file = join(directory, 'save.sqlite');
     const importedAt = '2026-10-18T22:00:00.000Z', committedAt = '2026-10-18T22:00:01.000Z';
     const request: SliceEnvelope = { intentId: 'twilight220-natural-last', runId: before.runId,
@@ -150,23 +157,28 @@ describe('Twilight220 actual natural terminal', () => {
       } finally { db.close(); }
     };
     let store: SqliteSliceStore | undefined, watching = false, fail = true, attempts = 0;
+    let stagedAssertionError: unknown;
     try {
       store = new SqliteSliceStore(file, { now: () => committedAt, beforeWrite: () => {
         if (!watching) return;
+        attempts++;
+        try {
         expect(store!.repository.ownedHead(before.runId)?.revision).toBe(before.revision);
         expect(store!.repository.get(before.runId)).toEqual({ state, updatedAt: committedAt });
         expect(store!.repository.receipt(request.intentId)?.receipt.newRevision).toBe(state.revision);
-        attempts++;
+        } catch (error) { stagedAssertionError = error; throw error; }
         if (fail) throw Error('Injected last natural Twilight command write failure');
       } });
       store.repository.transaction(() => {
         store!.repository.put({ state: before, updatedAt: importedAt });
         store!.repository.selectRun('previous-selected-slot');
       });
+      expect(store.repository.ownedHead(before.runId)?.revision).toBe(before.revision);
       const original = inspect();
       watching = true;
       try { expect(store.submitIntent(request)).toMatchObject({ ok: false, error: { code: 'SAVE_FAILED' } }); }
       finally { watching = false; }
+      if (stagedAssertionError) throw stagedAssertionError;
       expect(attempts).toBe(1);
       expect(inspect()).toEqual(original);
       expect(store.repository.receipt(request.intentId)).toBeNull();
