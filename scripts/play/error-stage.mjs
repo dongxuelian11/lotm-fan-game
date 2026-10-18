@@ -178,10 +178,11 @@ function checkpointSave(path, payload, predecessorSha256) {
   durableWrite(`${path}.next`, gzipSync(JSON.stringify(saved), { level: 6 }));
   renameSync(`${path}.next`, path); syncDirectory(dirname(path)); return saved;
 }
-function checkpointRecover(path) {
+function checkpointRecover(path, validate) {
   if (!existsSync(`${path}.next`)) return;
   const current = existsSync(path) ? checkpointRead(path) : null, next = checkpointRead(`${path}.next`);
   assert.equal(next.payload.predecessorSha256, current?.sha256 ?? null, 'Unknown checkpoint successor; preserve for inspection');
+  validate(next.payload, current?.payload ?? null);
   renameSync(`${path}.next`, path); syncDirectory(dirname(path));
 }
 function readSource(path) {
@@ -326,7 +327,23 @@ export async function main(args = process.argv.slice(2)) {
     for (const [retained, original] of [['producer.mjs', SELF], ['producer-tests.mjs', join(root, TEST)]])
       assert.deepEqual(readFileSync(join(options.out, retained)), readFileSync(original));
     if (readOnly) assert(!readdirSync(options.out).some(name => name.endsWith('.next')), 'Zero-action resume requires a closed boundary without successors');
-    else checkpointRecover(checkpoint);
+    else checkpointRecover(checkpoint, (candidate, previous) => {
+      assert.equal(candidate.sourceSha256, SOURCE_SHA256); assert.equal(candidate.sourceStateSha256, SOURCE_STATE_SHA256);
+      assert.equal(candidate.freezeSha256, freeze.sha256); assert.deepEqual(candidate.initial, initial);
+      assert(Number.isSafeInteger(candidate.newCount) && candidate.newCount >= 0);
+      assert.equal(candidate.commandCount, PREFIX_COUNT + candidate.newCount); assert.equal(candidate.state.revision, SOURCE_REVISION + candidate.newCount);
+      if (previous) {
+        const advance = candidate.commandCount - previous.commandCount;
+        assert(advance === 0 || advance === 1, 'Unknown successor action jump');
+        if (advance) {
+          assert(previous.pending, 'Completed successor lacks its durable intent');
+          assert.deepEqual(candidate.lastRow.intent, previous.pending.intent); assert.deepEqual(candidate.lastRow.before, previous.anchor);
+        } else assert.deepEqual(candidate.anchor, previous.anchor, 'Action-free successor changed state');
+      }
+      runtime.assertValidSliceState(candidate.state);
+      const projection = runtime.projectSliceState(candidate.state); auditPublic(projection, candidate.state);
+      assert.deepEqual(anchor(candidate.state, projection), candidate.anchor);
+    });
     saved = checkpointRead(checkpoint);
   } else {
     assert.equal(readdirSync(options.out).length, 0, 'Refuse to overwrite old capture; use --resume');
