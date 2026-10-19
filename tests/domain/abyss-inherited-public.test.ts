@@ -6,6 +6,7 @@ import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { projectSliceState } from '../../src/domain/slice/index.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { projectPlayerText } from '../../src/shared/player-text.js';
+import { projectDevilLife } from '../../src/domain/devil/life.js';
 import { projectDevilRoundOutcome } from '../../src/domain/devil/combat.js';
 import { projectUncleanMonarchCombat, projectUncleanMonarchRoundOutcome } from '../../src/domain/unclean-monarch/combat.js';
 import { projectUncleanMonarchPreparation } from '../../src/domain/unclean-monarch/encounter.js';
@@ -14,7 +15,7 @@ import { readObjectEntry } from '../helpers/read-object-entry.js';
 
 const file = 'tests/fixtures/unclean-monarch-v02020/natural.json';
 const hash = (x: unknown) => createHash('sha256').update(stableStringify(x)).digest('hex');
-const load = (entry: 'final' | 'beforeLast' = 'final') => migrateSliceState(readObjectEntry<SliceState>(file, entry));
+const load = (entry: 'final' | 'beforeLast' | 'prefixFinal' = 'final') => migrateSliceState(readObjectEntry<SliceState>(file, entry));
 const forbidden = new Set(['seed', 'cursor', 'randomSeed', 'randomCursor', 'randomCursorBefore', 'randomCursorAfter', 'cursorBefore', 'cursorAfter', 'randomBefore', 'randomAfter', 'futureRoll', 'nextRoll', 'futurePrivate', 'sourceDigest', 'identityDigest', 'historyDigest']);
 /** A source string (including a paid check modifier) is a display fact, not a replay source object. */
 function privatePaths(value: unknown): string[] {
@@ -50,7 +51,7 @@ describe('Abyss genuine inherited public boundary', () => {
       expect(s).toMatchObject({ revision, week: 198, status: 'ACTIVE', progression: { pathwayId: 'abyss', sequence: 1 }, random: { seed: 'criminal-natural-v054', cursor: 145 } });
       expect(s.combat).toBeNull(); expect(p.combat).toBeNull(); expect(s.combatHistory).toHaveLength(6);
       expect(p.progression.mastery).toEqual(s.progression.mastery);
-      expect(p.uncleanMonarch.life.site).toEqual(s.uncleanMonarch.encounter.currentSite);
+      expect(p.uncleanMonarch.life.site).toEqual(projectPlayerText(s.uncleanMonarch.encounter.currentSite, s.character.name));
       expect(p.uncleanMonarch.life.operation).toEqual(s.uncleanMonarch.life.operation);
       expect(s.bloodDuke.encounter.preparation).toBeNull(); // No invented Blood Duke encounter sample.
       noSecrets(p); expect(hash(s)).toBe(before);
@@ -123,11 +124,30 @@ describe('Abyss genuine inherited public boundary', () => {
     noSecrets(visible); expect(hash(s)).toBe(before);
   }, 60_000);
 
-  it('keeps legitimate source strings in settled check modifiers', () => {
+  it('keeps legitimate modifier sources and emotion-seed descriptions while excluding actual RNG authority', () => {
     const s = load(), before = hash(s), receipt = structuredClone(s.uncleanMonarch.life.journal.find(r => r.check)!);
     receipt.check!.modifiers.push({ source: '同一原卡已实际核对', value: 3 });
     const visible = projectUncleanMonarchLifeReceipt(receipt);
     expect(visible.check!.modifiers).toEqual(receipt.check!.modifiers);
     noSecrets(visible); expect(hash(s)).toBe(before);
+    // The genuine S2 prefix retains this completed S4 practice. Its public description
+    // is renamed, not erased; the private mechanic and all original objects stay exact.
+    const inherited = load('prefixFinal'), inheritedBefore = hash(inherited), life = projectDevilLife(inherited), practice = life.practice!;
+    expect(inherited).toMatchObject({ revision: 719, progression: { pathwayId: 'abyss', sequence: 2 } });
+    expect(practice.seedState).toBe('SPENT'); expect(typeof practice.seedSummary).toBe('string');
+    expect(practice.seedSummary).toBe('SPENT：同一种子已用于一次另付3灵性的催化，成功或失败保留');
+    expect(practice).not.toHaveProperty('seed');
+    expect(Object.keys(practice).sort()).toEqual(['emotion', 'seedState', 'seedSummary', 'consent', 'program', 'invitation', 'route', 'account', 'history'].sort());
+    expect(practice.program).toContain('同一DV4-PROGRAM-1始终由米蕾尔本人持有');
+    expect(practice.program).toContain('实际新短读1次'); expect(practice.program).toContain('累计60秒');
+    expect(practice.invitation).toContain('DV4-INVITATION-1：罗安保管'); expect(practice.invitation).toContain('蕾娜已自行拒绝');
+    expect(practice.route).toContain('实际普通行走2次、2米');
+    expect(practice.account).toContain('同一DV4-NOTE-1由罗安持有'); expect(practice.account).toContain('实际书写1次、交回1次');
+    expect(practice.history).toEqual(expect.arrayContaining(inherited.devil.life.account.writings));
+    noSecrets(life); expect(hash(inherited)).toBe(inheritedBefore);
+    const poisoned = structuredClone(inherited); inject(poisoned.devil.life);
+    Object.assign(poisoned.devil.life, { seed: inherited.random.seed, cursor: inherited.random.cursor });
+    expect(projectDevilLife(poisoned)).toEqual(life); noSecrets(projectDevilLife(poisoned));
+    expect(privatePaths({ seed: inherited.random.seed })).toEqual(['$.seed']);
   }, 60_000);
 });
