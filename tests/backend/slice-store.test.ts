@@ -82,7 +82,7 @@ afterEach(() => {
     rmSync(dir, { recursive: true, force: true });
 });
 describe("slice canonical storage", () => {
-  it("uses the same rules in memory and desktop, persists pending origin and random state across reopen", () => {
+  it("uses the same rules in memory and desktop, persists pending origin and random state across reopen", { tags: ["historical-replay"] }, () => {
     const file = path(),
       disk = open(file);
     let id = 0;
@@ -106,8 +106,8 @@ describe("slice canonical storage", () => {
     expect(unwrap(reopened.getBootstrap()).activeState).toEqual(before);
     expect(unwrap(reopened.submitIntent(command)).replayed).toBe(true);
     expect(unwrap(reopened.getBootstrap()).activeState).toEqual(before);
-  }, 10_000);
-  it("replays duplicate creation without a second run and rejects changed duplicate or stale revision", () => {
+  });
+  it("replays duplicate creation without a second run and rejects changed duplicate or stale revision", { tags: ["historical-replay"] }, () => {
     const s = open(path()),
       initial = unwrap(s.submitIntent(create));
     expect(unwrap(s.submitIntent(create)).replayed).toBe(true);
@@ -129,7 +129,7 @@ describe("slice canonical storage", () => {
     expect(
       s.submitIntent({ ...command, intentId: "stale-other" }),
     ).toMatchObject({ ok: false, error: { code: "REVISION_CONFLICT" } });
-  }, 10_000);
+  });
   it("rolls back snapshot, receipt, selected slot and random cursor on a write failure; retry is identical", () => {
     let fail = false;
     const s = open(path(), () => {
@@ -148,7 +148,7 @@ describe("slice canonical storage", () => {
     expect(committed.replayed).toBe(false);
     expect(committed.newRevision).toBe(initial.newRevision + 1);
   });
-  it("recovers a corrupt current snapshot from the latest physical backup, preserving exact revision", () => {
+  it("recovers a corrupt current snapshot from the latest physical backup, preserving exact revision", { tags: ["historical-replay"] }, () => {
     const file = path(),
       s = open(file);
     const first = unwrap(s.submitIntent(create));
@@ -166,8 +166,8 @@ describe("slice canonical storage", () => {
         name.includes("corrupt-snapshot"),
       ),
     ).toBe(true);
-  }, 10000);
-  it("recovers an unreadable database from checked backup without overwriting the damaged source", () => {
+  });
+  it("recovers an unreadable database from checked backup without overwriting the damaged source", { tags: ["historical-replay"] }, () => {
     const file = path(),
       s = open(file),
       original = unwrap(s.submitIntent(create));
@@ -181,7 +181,7 @@ describe("slice canonical storage", () => {
       readdirSync(join(file, "..")).some((n) => n.includes(".corrupt-")),
     ).toBe(true);
   });
-  it("does not replace main with an invalid backup", () => {
+  it("does not replace main with an invalid backup", { tags: ["historical-replay"] }, () => {
     const file = path(),
       s = open(file);
     unwrap(s.submitIntent(create));
@@ -204,7 +204,7 @@ describe("slice canonical storage", () => {
     // Native byte equality checks length and contents without expanding each byte into object entries.
     expect(readFileSync(file).equals(before)).toBe(true);
   });
-  it("migrates the explicit v1 storage schema without changing domain or random state", () => {
+  it("migrates the explicit v1 storage schema without changing domain or random state", { tags: ["historical-replay"] }, () => {
     const file = path(),
       state = createSliceRun(
         "migrated",
@@ -232,7 +232,7 @@ describe("slice canonical storage", () => {
     expect(boot.activeState).toEqual(projectSliceState(state));
     expect(boot.recoveryNotice).toContain("迁移");
   });
-  it("keeps final death read-only with a same-death backup and prevents resurrecting old backup", () => {
+  it("keeps final death read-only with a same-death backup and prevents resurrecting old backup", { tags: ["historical-replay"] }, () => {
     const file = path(),
       s = open(file);
     unwrap(s.submitIntent(create));
@@ -267,7 +267,7 @@ describe("slice canonical storage", () => {
       }),
     ).toMatchObject({ ok: false, error: { code: "ARCHIVED" } });
   });
-  it("rolls back a terminal marker when a final-death transaction fails, then recovers the last living save", () => {
+  it("rolls back a terminal marker when a final-death transaction fails, then recovers the last living save", { tags: ["historical-replay"] }, () => {
     const file = path();
     let shouldFail = false;
     const s = open(file, () => {
