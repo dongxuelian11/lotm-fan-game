@@ -125,7 +125,7 @@ test('one real construction command can legitimately settle multiple weeks', () 
   assert.throws(() => check(sealRow({ ...payload, after: { ...after, revision: 928 } })));
 });
 
-test('failed promotion remains recoverable and completed facility alone closes the route', () => {
+test('failed promotion remains recoverable and an actual reported exit closes the route', () => {
   const failed = { id: 'same-failed-compound', status: 'FAILED_EXPOSED', consumedEventId: 'actual-failure' };
   const state = { status: 'ACTIVE', progression: { sequence: 1 }, week: 260, health: 60, mind: 50, spirituality: 70,
     blackEmperor: { materials: { compounds: [failed] }, scene: { phase: 'REALM', status: 'ACTIVE',
@@ -142,7 +142,27 @@ test('failed promotion remains recoverable and completed facility alone closes t
   assert.equal(terminal(completed, view).stage, 'NATURAL_S0_REPORTED_EXIT');
   assert.equal(terminal(completed, { blackEmperor: { actions: [{ preferredAction: true }] } }), null);
   const aborted = structuredClone(state); aborted.blackEmperor.scene.status = 'ABORTED';
+  assert.equal(terminal(aborted, view), null);
+  aborted.blackEmperor.scene.returnReportEventId = 'real-abort-report';
   assert.equal(terminal(aborted, view).stage, 'NATURAL_ORDINARY_EXIT');
-  aborted.blackEmperor.scene.exit.door = 'OPEN'; assert.equal(terminal(aborted, view), null);
   assert.equal(terminal({ ...state, status: 'DEAD' }, view).stage, 'NATURAL_DEATH');
+});
+
+
+test('reported S1 resource-exhaustion exit requires the actual report and departure, not an unused facility door', () => {
+  const state = { status: 'ACTIVE', progression: { sequence: 1 }, week: 280, health: 80, mind: 70, spirituality: 90,
+    blackEmperor: { materials: null, scene: { phase: 'REALM', status: 'ABORTED', playerPosition: 'OUTSIDE',
+      returnReportEventId: 'actual-exhaustion-report', exit: { door: 'OPEN' }, constructionReceipts: [] } } };
+  const view = { blackEmperor: { actions: [] } };
+  assert.equal(terminal(state, view).stage, 'NATURAL_ORDINARY_EXIT');
+  const noFacility = structuredClone(state); delete noFacility.blackEmperor.scene.exit;
+  assert.equal(terminal(noFacility, view).stage, 'NATURAL_ORDINARY_EXIT');
+  const noReport = structuredClone(state); noReport.blackEmperor.scene.returnReportEventId = null;
+  assert.equal(terminal(noReport, view), null);
+  noReport.blackEmperor.scene.exit.door = 'CLOSED'; assert.equal(terminal(noReport, view), null);
+  const inside = structuredClone(state); inside.blackEmperor.scene.playerPosition = 'MAUSOLEUM';
+  assert.equal(terminal(inside, view), null);
+  const unresolved = structuredClone(state); unresolved.blackEmperor.scene.status = 'ACTIVE';
+  assert.equal(terminal(unresolved, view), null);
+  assert.equal(terminal(state, { blackEmperor: { actions: [{ preferredAction: true }] } }), null);
 });

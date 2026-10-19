@@ -341,8 +341,8 @@ export function terminal(state, view) {
   if (view.blackEmperor.actions.some(action => action.preferredAction)) return null;
   if (actual.reported && actual.sceneStatus === 'COMPLETED')
     return { stage: actual.promoted ? 'NATURAL_S0_REPORTED_EXIT' : 'NATURAL_ORDINARY_EXIT', reason: 'Actual finite facility aftermath reported and completed; all costs and failures retained' };
-  if (actual.ordinaryExit && actual.exitClosed && actual.sceneStatus === 'ABORTED')
-    return { stage: 'NATURAL_ORDINARY_EXIT', reason: 'Actual ordinary exit retained the realm, materials, construction damage and paid costs' };
+  if (actual.reported && actual.ordinaryExit && actual.sceneStatus === 'ABORTED')
+    return { stage: 'NATURAL_ORDINARY_EXIT', reason: 'Actual reported ordinary exit retained the realm, materials, construction damage and paid costs' };
   return null;
 }
 function safeOutput(root, options) {
