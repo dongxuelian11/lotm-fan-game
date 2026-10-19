@@ -1,0 +1,304 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.221.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.221.0_demoness_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 15686737,
+      "sha256": "a7400e42c084055a424ae80dd72b8d3382602074575a3f686ec54763ed6dfebe",
+      "members": [
+        "tests/fixtures/demoness-v02210/checkpoint.json.gz",
+        "tests/fixtures/demoness-v02210/checkpoint708-v1.json.gz",
+        "tests/fixtures/demoness-v02210/checkpoint883-v2.json.gz",
+        "tests/fixtures/demoness-v02210/commands.jsonl",
+        "tests/fixtures/demoness-v02210/commands883-v2.jsonl",
+        "tests/fixtures/demoness-v02210/continuation708-proof.json",
+        "tests/fixtures/demoness-v02210/continuation883-proof.json",
+        "tests/fixtures/demoness-v02210/key-688-initial.json.gz",
+        "tests/fixtures/demoness-v02210/key-697-same-original-recovery.json.gz",
+        "tests/fixtures/demoness-v02210/key-704-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-708-terminal.json.gz",
+        "tests/fixtures/demoness-v02210/key-709-before-consume.json.gz",
+        "tests/fixtures/demoness-v02210/key-710-after-consume.json.gz",
+        "tests/fixtures/demoness-v02210/key-718-same-original-recovery.json.gz",
+        "tests/fixtures/demoness-v02210/key-720-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-727-before-consume.json.gz",
+        "tests/fixtures/demoness-v02210/key-728-after-consume.json.gz",
+        "tests/fixtures/demoness-v02210/key-736-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-752-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-768-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-784-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-790-s1-reflection.json.gz",
+        "tests/fixtures/demoness-v02210/key-791-s0-guidance.json.gz",
+        "tests/fixtures/demoness-v02210/key-800-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-816-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-832-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-848-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-864-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-880-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-896-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-912-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-928-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-934-before-consume.json.gz",
+        "tests/fixtures/demoness-v02210/key-935-after-consume.json.gz",
+        "tests/fixtures/demoness-v02210/key-944-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-960-periodic.json.gz",
+        "tests/fixtures/demoness-v02210/key-961-terminal.json.gz",
+        "tests/fixtures/demoness-v02210/old-public883.json.gz",
+        "tests/fixtures/demoness-v02210/original854-natural.json.gz",
+        "tests/fixtures/demoness-v02210/producer-tests.mjs",
+        "tests/fixtures/demoness-v02210/producer-v1.mjs",
+        "tests/fixtures/demoness-v02210/producer.mjs"
+      ]
+    },
+    {
+      "name": "lotm_release_0.221.0_demoness_test_inputs_2026-10-19.part-002.tar.gz",
+      "bytes": 802862,
+      "sha256": "beaf3e5bb6db58452cc58480b79b805b46bdf118bbe8729b73b15a83c0c0810e",
+      "members": [
+        "tests/fixtures/demoness-v02210/runtime-freeze.json",
+        "tests/fixtures/demoness-v02210/runtime-freeze883-v2.json",
+        "tests/fixtures/demoness-v02210/source-snapshot.json.gz",
+        "tests/fixtures/demoness-v02210/summary.json",
+        "tests/fixtures/demoness-v02210/summary883-v2.json"
+      ]
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/demoness-v02210/checkpoint.json.gz",
+      "bytes": 241339,
+      "sha256": "00c325128bcc2f60e452c2abbeab1b6bd9443bea69d2849c95a5b36171dd13f4"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/checkpoint708-v1.json.gz",
+      "bytes": 174664,
+      "sha256": "21c38d90e8721e94bab91080e760d0c5696d3126180483c7324b93f6847358a7"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/checkpoint883-v2.json.gz",
+      "bytes": 220456,
+      "sha256": "aa9fd8c9c2f8654668c218497f7801f98fa6b6073c336ddc3861dde059cf069f"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/commands.jsonl",
+      "bytes": 909882,
+      "sha256": "44a525756beb6b782a90eeeac4535a27beecfeaf191e132cdc0d61f7e4febe2a"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/commands883-v2.jsonl",
+      "bytes": 746738,
+      "sha256": "50632a68394edd46c9efe6294b2c0362925e05d1288306dab340517985e14d85"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/continuation708-proof.json",
+      "bytes": 3080,
+      "sha256": "75244fe33a3f8387ebfb8c0984f53e7a6c4ae2558820023c54c26f900562485a"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/continuation883-proof.json",
+      "bytes": 17175,
+      "sha256": "f698abc5e8d2cb3de4982cce26dba011d3c0c6dd4eebe97bb02c08fddb13ffbe"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-688-initial.json.gz",
+      "bytes": 427838,
+      "sha256": "5bc2b88be0e43f0c0f6525d0aff155a97b8293eb426c46e89148076f6cc2af41"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-697-same-original-recovery.json.gz",
+      "bytes": 430802,
+      "sha256": "ac1182ab3e375f80228c4c536e33dd7cc15735e2d310469b6687b25cce44b27f"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-704-periodic.json.gz",
+      "bytes": 431671,
+      "sha256": "e1bb9b6dc35c81ca4d4b38e4db4ed0ef06bf151de1d5d31b8df41454d136e37e"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-708-terminal.json.gz",
+      "bytes": 432475,
+      "sha256": "bdbc21811f38850701f35acd13fd8126d44b889679b6d2ff6b59d1117ea4b246"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-709-before-consume.json.gz",
+      "bytes": 432976,
+      "sha256": "25318a78ee1abbf9fe0aee8cdc5867fc91e5097d3ac2704e0f47dcd6134563e2"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-710-after-consume.json.gz",
+      "bytes": 433464,
+      "sha256": "e5f7b13835545982eb08b971e091255d923c87e1119e2aeb64f1c6c37223294e"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-718-same-original-recovery.json.gz",
+      "bytes": 434610,
+      "sha256": "4d53280dd01d473b42d94b5036e807b2538f225d55b80f6d4f27ebe77aa2292a"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-720-periodic.json.gz",
+      "bytes": 434782,
+      "sha256": "3025f471cced24b842ce3f08dae6bb9730dbdf1ba53fbe6dffb1a564c5151437"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-727-before-consume.json.gz",
+      "bytes": 435968,
+      "sha256": "8e7eee5d80c315e10065986b545eac54c861e2b4c48d7625489e0929eba36843"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-728-after-consume.json.gz",
+      "bytes": 411586,
+      "sha256": "39b7f42e78db2d9efa68bd506c30e3e79a956090710380842e08fbf6185343e2"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-736-periodic.json.gz",
+      "bytes": 415698,
+      "sha256": "867a29599dbf8033f411e3aa7ab861fc74204155b74eaf2f169f04c34a66f6be"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-752-periodic.json.gz",
+      "bytes": 422045,
+      "sha256": "d2d7757d548f14c1ee73e412c363a5e7fc5638e4f881b5dc2325bd13faadb3df"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-768-periodic.json.gz",
+      "bytes": 428248,
+      "sha256": "eafd45609f4d926390ec316bf754982623f2905a02e6cf0baa91a48c605c3328"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-784-periodic.json.gz",
+      "bytes": 433291,
+      "sha256": "4022918740e6a6fb42a9ffe0975418bb020c246e96635dd967818ff01d2f450b"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-790-s1-reflection.json.gz",
+      "bytes": 434654,
+      "sha256": "bd2e2f1595799330e37d43f4629a02e4a454e4a73cef0258950f6a60b5cee7ce"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-791-s0-guidance.json.gz",
+      "bytes": 482785,
+      "sha256": "f53ba6183f9088773def445fb6c889ec02e71c52a2f91a6bb95d024f44796a74"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-800-periodic.json.gz",
+      "bytes": 485624,
+      "sha256": "ca1c69fd50cd5bbc390af66fcb25553c7f19d08170966e2e01e5206b94585c96"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-816-periodic.json.gz",
+      "bytes": 489544,
+      "sha256": "01dc30dcff7b003496fbb21c24eacc3e3f3f6f785ba9c4037abaf5e9678cb8dc"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-832-periodic.json.gz",
+      "bytes": 492146,
+      "sha256": "bdcfc00b6ae940a0d08aa170318dfcc155b65afe54e1c451ec0ed623d4ee9dd7"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-848-periodic.json.gz",
+      "bytes": 494628,
+      "sha256": "338b902f281b7d533c4ad6c0d465d5cb6a01242abe68a893caa55bdabe2033af"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-864-periodic.json.gz",
+      "bytes": 497002,
+      "sha256": "0d5d98d562a5a058e750285e4727966b65276455d31a25f8a722a6b53f5d8f69"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-880-periodic.json.gz",
+      "bytes": 499421,
+      "sha256": "f46261b076209f3add678049681db0445748bc93682d6306d763f251d5dfa7c2"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-896-periodic.json.gz",
+      "bytes": 502383,
+      "sha256": "3f071e6373b70b978cb9862363c77e6a2a4ce768cc72990e3f563c26b1e9f016"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-912-periodic.json.gz",
+      "bytes": 505442,
+      "sha256": "aff82fd754fc4f95d9698bf6ffd9ee3e0ab9e3e19dc834716aad50227ae56972"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-928-periodic.json.gz",
+      "bytes": 509214,
+      "sha256": "9c590bf8dcf13e25458c2422cd1b8d90bcfd78ed53c8879b09b5f096bebcdcd5"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-934-before-consume.json.gz",
+      "bytes": 511355,
+      "sha256": "90b0727a311f81e900d332645c5e4d4bb54d8cc0c4b3df55e2d903d109d9a476"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-935-after-consume.json.gz",
+      "bytes": 512420,
+      "sha256": "3963ba0cb6fb7eaf5a2ab2523881dc917ad8c058c713b95c438de08d4dcd6966"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-944-periodic.json.gz",
+      "bytes": 515738,
+      "sha256": "d691e8655a2c6877e419e39f90d754d67bf7d30ba91711253fb524c94eef61f3"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-960-periodic.json.gz",
+      "bytes": 520663,
+      "sha256": "f712bc99e97caf204145a7c58b58eddd68f2bf2edcba384a808f32b9171f94fa"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/key-961-terminal.json.gz",
+      "bytes": 520984,
+      "sha256": "88dedb898241a77eca2bbbb5c17471d0b8fd9b6a0a8ec125cf2b25c5377d6605"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/old-public883.json.gz",
+      "bytes": 284174,
+      "sha256": "834992ec9b6827d5a3d922dfe48952ced67d4e72a97ec9b4c3fbad77276d2472"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/original854-natural.json.gz",
+      "bytes": 724275,
+      "sha256": "4d71d78a3976d7add5213247dbc467a374a919f3f32aa6590b8985b96318dec1"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/producer-tests.mjs",
+      "bytes": 16476,
+      "sha256": "528ce1bc5065e8cc1496ee023d48f014ddefd60cad958cc354152c6edd033d7a"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/producer-v1.mjs",
+      "bytes": 52654,
+      "sha256": "47792e2ecaaca629bb013c1e0aa025eecbaf2c00a7f4d012caa349b9eb84b5f9"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/producer.mjs",
+      "bytes": 52654,
+      "sha256": "28bfa3465ef8c8845e4ed5d5d72c8c7e07bab8a011a93987553ac6f3b6aaa396"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/runtime-freeze.json",
+      "bytes": 657738,
+      "sha256": "6bfba273d5acc0474a7c32e4539a4c98584c7b774f5713dd7fcb6fb469aae167"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/runtime-freeze883-v2.json",
+      "bytes": 657738,
+      "sha256": "e683a093413a2f8d2d8e389c4b0a641f86f2e01e39d1e536af8d62a2a70578aa"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/source-snapshot.json.gz",
+      "bytes": 323803,
+      "sha256": "ec1a3a259ca4af3dad8a62f5d88d80014a2ca8283fb92681c4dad4c3c2385ec0"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/summary.json",
+      "bytes": 18832,
+      "sha256": "96a7c3e244680d0877aa6494548b0f39988d9c832ff9d2272732b194de943f74"
+    },
+    {
+      "path": "tests/fixtures/demoness-v02210/summary883-v2.json",
+      "bytes": 15438,
+      "sha256": "01296820d84dd070bbf00036139d235513738a5cbd473e1493ece3e25bb63eb4"
+    }
+  ]
+}

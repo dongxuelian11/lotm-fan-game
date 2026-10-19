@@ -15,8 +15,8 @@ export const DEMONESS221_HISTORY_SHA = 'baf997edd399bee66132fc7278a741968063dee0
 export const DEMONESS221_PREFIX_SHA = 'e7020f05603b64ded38f60da0fea7bb5c2031c0bb40ad1de9328a969a1b30a23';
 export const DEMONESS221_HANDOFF_SHA = '75244fe33a3f8387ebfb8c0984f53e7a6c4ae2558820023c54c26f900562485a';
 export const DEMONESS221_PROJECTION_AUDIT_SHA = 'f698abc5e8d2cb3de4982cce26dba011d3c0c6dd4eebe97bb02c08fddb13ffbe';
-// The parent pins this only after publishing the completed actual capture.
-export const DEMONESS221_SUMMARY_SHA = 'PENDING_ACTUAL_TERMINAL_SUMMARY';
+// Pinned from the completed actual961 capture, never from a desired endpoint.
+export const DEMONESS221_SUMMARY_SHA = '96a7c3e244680d0877aa6494548b0f39988d9c832ff9d2272732b194de943f74';
 export const DEMONESS221_FROZEN_ROOTS = ['assassin', 'instigator', 'witch', 'pleasure', 'pain',
   'despair', 'unagingDemoness', 'calamityDemoness', 'apocalypseDemoness'] as const;
 export const demonessNaturalSha = (bytes: string | Uint8Array) => createHash('sha256').update(bytes).digest('hex');
