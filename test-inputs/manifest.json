@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.223.0",
+  "version": "0.224.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -1353,6 +1353,34 @@
         "tests/fixtures/hanged-man-v02230/runtime-freeze.json",
         "tests/fixtures/hanged-man-v02230/source-snapshot.json.gz",
         "tests/fixtures/hanged-man-v02230/summary.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.224.0_abyss_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 8285555,
+      "sha256": "7d7c8ce1b917ec2c04b94590cd3dae4c83c202f4c52b0f8c82ec47c16889164e",
+      "members": [
+        "tests/fixtures/abyss-v02240/checkpoint.json.gz",
+        "tests/fixtures/abyss-v02240/commands.jsonl",
+        "tests/fixtures/abyss-v02240/key-821-initial.json.gz",
+        "tests/fixtures/abyss-v02240/key-837-periodic.json.gz",
+        "tests/fixtures/abyss-v02240/key-853-periodic.json.gz",
+        "tests/fixtures/abyss-v02240/key-869-periodic.json.gz",
+        "tests/fixtures/abyss-v02240/key-885-periodic.json.gz",
+        "tests/fixtures/abyss-v02240/key-901-periodic.json.gz",
+        "tests/fixtures/abyss-v02240/key-915-before-consume.json.gz",
+        "tests/fixtures/abyss-v02240/key-916-after-consume.json.gz",
+        "tests/fixtures/abyss-v02240/key-917-periodic.json.gz",
+        "tests/fixtures/abyss-v02240/key-933-periodic.json.gz",
+        "tests/fixtures/abyss-v02240/key-940-before-consume.json.gz",
+        "tests/fixtures/abyss-v02240/key-941-after-consume.json.gz",
+        "tests/fixtures/abyss-v02240/key-949-periodic.json.gz",
+        "tests/fixtures/abyss-v02240/key-964-terminal.json.gz",
+        "tests/fixtures/abyss-v02240/producer-tests.mjs",
+        "tests/fixtures/abyss-v02240/producer.mjs",
+        "tests/fixtures/abyss-v02240/runtime-freeze.json",
+        "tests/fixtures/abyss-v02240/source-natural.json.gz",
+        "tests/fixtures/abyss-v02240/summary.json"
       ]
     }
   ],
@@ -35101,6 +35129,111 @@
       "path": "tests/fixtures/hanged-man-v02230/summary.json",
       "bytes": 12227,
       "sha256": "aa43a5c2c8960aa778f5c1b0605a79988a4d99b3c9185a746fa9159253ad2eed"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/checkpoint.json.gz",
+      "bytes": 253236,
+      "sha256": "f5cd95760d5c3758d194eba13c02050248bda8fe3dbe94d0836864639f217d77"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/commands.jsonl",
+      "bytes": 563619,
+      "sha256": "c025598fb9b2ce6cec0bc303e93d1a2835fcd3d48726495a5d136501ffb9970f"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-821-initial.json.gz",
+      "bytes": 473024,
+      "sha256": "4a090b0eb5f6e79f054581a460cbc07ee8ff9c0b6d8af8129d067ab475e24bb0"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-837-periodic.json.gz",
+      "bytes": 511288,
+      "sha256": "d5d02cbe79503112171dc53ab2babb5c71f859a3e476a51e04a9767581c7c812"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-853-periodic.json.gz",
+      "bytes": 514427,
+      "sha256": "a7c04811c2581aa1df972d498292074c9538ad41b5b3287f9caf9787aadb53d5"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-869-periodic.json.gz",
+      "bytes": 517624,
+      "sha256": "c1131b612945bceae171581ccf98eee31bfc8b34b7f9df4a1a24677b69bfaca9"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-885-periodic.json.gz",
+      "bytes": 521181,
+      "sha256": "a4e79f8f57197abe1cdbb005182069a6dfca577a87f08896b5eff79c1ebd8545"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-901-periodic.json.gz",
+      "bytes": 524161,
+      "sha256": "9de406de2ab7d559e1c670c9e25157ac076ed1bbe4444f7c9061a51a705d92b0"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-915-before-consume.json.gz",
+      "bytes": 529109,
+      "sha256": "eec3a680efef0d7a7c92ddf829a98cb189a83a056b4d21305e9c18a555467b0e"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-916-after-consume.json.gz",
+      "bytes": 530176,
+      "sha256": "ad7ca86d6f1e51bd76f3e5182cc55667b5cdbb3f34c9c5dc4ca3d3e317d4d5d7"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-917-periodic.json.gz",
+      "bytes": 530169,
+      "sha256": "f954c250d59cd82be47c258a3a790bd453e7aee25cec677f9a223543fc431747"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-933-periodic.json.gz",
+      "bytes": 533056,
+      "sha256": "bb00b2595a37b04c16be09fa90a0d8aca7ebddd39137ae276a206641799f5d33"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-940-before-consume.json.gz",
+      "bytes": 534625,
+      "sha256": "c910eac66ef284bb0cabee689f41ad0b94ca34d39a1da7edc1261da37a0e361b"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-941-after-consume.json.gz",
+      "bytes": 535273,
+      "sha256": "661bf5fa40b3742200e0d5314d64cbaa7c7ef4bbec0fbb7ae92729afea087e4f"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-949-periodic.json.gz",
+      "bytes": 536509,
+      "sha256": "e773cfeb2e3b9a74cb29997a217128ae29e66a1a7be525cf752d2634de68a174"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/key-964-terminal.json.gz",
+      "bytes": 539723,
+      "sha256": "778d662391ebe23e4ade81186425858e192c4982542155018909d38672de2b4d"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/producer-tests.mjs",
+      "bytes": 4994,
+      "sha256": "63a9fed57c34f43f52f906d4ddb99cb3548df10d344ac0ea1021687279285a38"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/producer.mjs",
+      "bytes": 35149,
+      "sha256": "a3c019fc7f1b08c7127e59a998ce98126164a9b60466a6e3b9cf6681e794156e"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/runtime-freeze.json",
+      "bytes": 668287,
+      "sha256": "eba34201b23e94ea3c7a6afd2af02b9dd069720ca86278e3960c1f34e93e6cc5"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/source-natural.json.gz",
+      "bytes": 642774,
+      "sha256": "db92a5b666f39ab5cc3676218b6239451c1cb04de6e16b88d09001392080f403"
+    },
+    {
+      "path": "tests/fixtures/abyss-v02240/summary.json",
+      "bytes": 7365,
+      "sha256": "3a4cc3636662ffa21c8de3a114766cfb8155358883e02284490b42c6f6109a51"
     }
   ]
 }

@@ -107,7 +107,7 @@ function assertPage(value: SliceProjection) {
     + ' · 本周行动 ' + r.actionsRemaining + '/' + r.weeklyBudget);
   expect(r).toMatchObject({ health: value.health, mind: value.mind, spirituality: value.spirituality,
     maxSpirituality: value.maxSpirituality, cash: value.cash + '便士', actionsRemaining: value.actionsRemaining });
-  expect(within(panel).getByRole('region', { name: '当前主目标' }).textContent).toContain(value.abyss.nextStep);
+  expect(within(panel).getByRole('region', { name: '本章目标' }).textContent).toContain(value.abyss.nextStep);
   expect(screen.getByRole('button', { name: '返回主菜单' }).closest('header')?.textContent)
     .toContain(value.character.name + ' · ' + value.abyss.title);
   expect(screen.queryByRole('heading', { name: '人物卷宗' })).toBeNull();

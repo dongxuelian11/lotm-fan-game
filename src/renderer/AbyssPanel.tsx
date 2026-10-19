@@ -168,7 +168,7 @@ export function AbyssPanel({ value, busy, blocked = false, error = null, lastRes
       {body.map(publicSection)}
       {clock.map(publicSection)}
       <section aria-labelledby={`${id}-next`}>
-        <h3 id={`${id}-next`}>当前主目标</h3>
+        <h3 id={`${id}-next`}>本章目标</h3>
         <p className="seer-next">{value.nextStep}</p>
         {value.risk && <p className="slice-notice">{value.risk}</p>}
         <div className="seer-actions">{main.map(actionButton)}</div>
