@@ -67,7 +67,111 @@ export interface MotherTerminalPins {
 // PIN_AFTER_NATURAL_TERMINAL: replace only after independently reading the closed
 // summary, complete commands.jsonl and terminal snapshot. Include actual failures,
 // ordinary methods, costs, returned originals and any death exactly as observed.
-const terminalPins: MotherTerminalPins | null = null;
+const terminalPins: MotherTerminalPins = {
+  "stage": "NATURAL_S0_REPORTED_EXIT",
+  "commandCount": 1074,
+  "newCount": 119,
+  "revision": 1075,
+  "lastIntent": {
+    "type": "MOTHER",
+    "command": {
+      "type": "REPORT_RETURN"
+    }
+  },
+  "finalPrivateStateSha256": "cc6c8af2b1a04c71a97f0f6d5cbe3b1ef0c1a126b875e9613ed2d9c2e7cdb87a",
+  "finalWholePublicSha256": "af9742c6fc36c00b36ead55a25c6de33a6efed2545d1a3c053396aa38cfc37d7",
+  "runtimeFreezeSha256": "951a7605892322556cb41275415304116650c61e2b3238de902aabad1976387f",
+  "summaryFileSha256": "9ca00715ddd322078b37cf7e1f324c6b00b663cad2c48bcd49cfb65b736d9319",
+  "commandsFileSha256": "c7469896a6a469121b0dbe937ea28c007737a59ab9af8f46fff880556a55f539",
+  "state": {
+    "revision": 1075,
+    "status": "ACTIVE",
+    "week": 250,
+    "date": {
+      "epoch": "FIFTH_EPOCH",
+      "year": 1354,
+      "month": 4,
+      "day": 6
+    },
+    "health": 80,
+    "mind": 68,
+    "spirituality": 54,
+    "cash": 165,
+    "actionsRemaining": 1,
+    "injuries": [],
+    "injuryRisk": 0,
+    "pollution": 0,
+    "pathwayId": "mother",
+    "sequence": 0,
+    "acting": 0,
+    "mastery": {
+      "mother.s9.cultivation-knowledge": 25,
+      "mother.s9.season-observation": 32,
+      "mother.s9.careful-practice": 32,
+      "mother.s8.limited-healing": 16,
+      "mother.s8.condition-observation": 0,
+      "mother.s7.harvest-care": 24,
+      "mother.s7.life-support": 25,
+      "mother.s6.specimen-study": 0,
+      "mother.s6.controlled-trial": 25,
+      "mother.s5.ground-passage": 0,
+      "mother.s4.vital-knit": 8,
+      "mother.s4.living-matrix": 8,
+      "mother.s3.finite-preservation": 8,
+      "mother.s2.bounded-dormancy": 8,
+      "mother.s2.root-buffer": 24,
+      "mother.s1.living-response": 8,
+      "mother.s1.root-bearing": 8,
+      "mother.s0.short-vitality-maintenance": 0,
+      "mother.s0.existing-branch-support": 8
+    },
+    "randomCursor": 352
+  },
+  "actual": {
+    "status": "ACTIVE",
+    "sequence": 0,
+    "promoted": true,
+    "reported": true,
+    "ordinaryExit": true,
+    "returnedHome": true,
+    "exitOpen": true,
+    "sceneStatus": "COMPLETED",
+    "originalDepartureRecorded": false,
+    "preparationReported": true,
+    "returnedOriginals": 2,
+    "allOriginalsReturned": true,
+    "maintenanceApplied": false,
+    "branchApplied": true,
+    "week": 250,
+    "health": 80,
+    "mind": 68,
+    "spirituality": 54
+  },
+  "rolls": [
+    {
+      "revision": 1051,
+      "command": "CONSUME",
+      "chance": 70,
+      "roll": 29,
+      "tier": "SUCCESS"
+    },
+    {
+      "revision": 1061,
+      "command": "APPLY_MAINTENANCE",
+      "chance": 72,
+      "roll": 87,
+      "tier": "FAILURE"
+    },
+    {
+      "revision": 1071,
+      "command": "APPLY_BRANCH_SUPPORT",
+      "chance": 70,
+      "roll": 6,
+      "tier": "SUCCESS"
+    }
+  ],
+  "handoffSourceSha256": "03aa3135822c0105ce254dcb978b38ad36b1b60b1359236c8e7d44ad05425881"
+};
 export function motherNaturalPins(): MotherTerminalPins {
   assert(terminalPins, 'NOT_RUN: Mother229 terminal is not pinned; wait for the single frozen natural continuation to stop');
   return terminalPins;
