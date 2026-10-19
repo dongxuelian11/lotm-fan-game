@@ -116,19 +116,31 @@ export function runShard({ shard, repo = defaultRepo, execute = spawnSync, log =
       const batch = { files, passed: false };
       summary.batches.push(batch);
       save();
-      const result = execute(process.execPath, [
-        path.join(repo, 'node_modules/vitest/vitest.mjs'), 'run', ...files,
-        '--maxWorkers=1', '--no-file-parallelism', '--reporter=default', '--reporter=json',
-        `--outputFile=${reportPath}`,
-      ], { cwd: repo, stdio: 'inherit', env: { ...process.env, NODE_OPTIONS: process.env.NODE_OPTIONS || DEFAULT_NODE_OPTIONS } });
-      if (result.error || result.status !== 0 || result.signal != null) {
-        throw new Error(`Vitest batch ${batchNumber} failed: ${result.error?.message ?? result.signal ?? `exit ${result.status}`}`);
+      let result;
+      try {
+        result = execute(process.execPath, [
+          path.join(repo, 'node_modules/vitest/vitest.mjs'), 'run', ...files,
+          '--maxWorkers=1', '--no-file-parallelism', '--reporter=default', '--reporter=json',
+          `--outputFile=${reportPath}`,
+        ], { cwd: repo, stdio: 'inherit', env: { ...process.env, NODE_OPTIONS: process.env.NODE_OPTIONS || DEFAULT_NODE_OPTIONS } });
+        if (result.error || result.status !== 0 || result.signal != null) {
+          throw new Error(`Vitest batch ${batchNumber} failed: ${result.error?.message ?? result.signal ?? `exit ${result.status}`}`);
+        }
+        verifyBatchReport(JSON.parse(fs.readFileSync(reportPath, 'utf8')), files, repo);
+        batch.passed = true;
+        summary.passed.push(...files);
+      } catch (error) {
+        batch.error = error instanceof Error ? error.message : String(error);
+        if (result) {
+          batch.result = { status: result.status, signal: result.signal };
+          if (result.error) batch.result.error = result.error.message ?? String(result.error);
+        }
+        log(`Shard ${shard}/8, batch ${batchNumber}: ${batch.error}`);
       }
-      verifyBatchReport(JSON.parse(fs.readFileSync(reportPath, 'utf8')), files, repo);
-      batch.passed = true;
-      summary.passed.push(...files);
       save();
     }
+    const failures = summary.batches.flatMap((batch, index) => batch.passed ? [] : [`Batch ${index + 1}: ${batch.error}`]);
+    if (failures.length > 0) throw new Error(`The shard contains failed batches:\n${failures.join('\n')}`);
     summary.success = summary.passed.length === selected.length;
     if (!summary.success) throw new Error('The shard contains unexecuted test files.');
   } catch (error) {
