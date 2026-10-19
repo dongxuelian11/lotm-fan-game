@@ -1,10 +1,15 @@
-import { createHash } from "node:crypto";
+import { sha256 } from "@noble/hashes/sha256";
+import { bytesToHex } from "@noble/hashes/utils";
 
 import type { PublicGameState } from "../shared/contracts.js";
 import { stableStringify } from "./canonical.js";
 
+export function sha256Hex(input: string): string {
+  return bytesToHex(sha256(new TextEncoder().encode(input)));
+}
+
 export type PublicGameStateWithoutChecksum = Omit<PublicGameState, "stateChecksum">;
 
 export function computeStateChecksum(state: PublicGameStateWithoutChecksum): string {
-  return createHash("sha256").update(stableStringify(state), "utf8").digest("hex");
+  return sha256Hex(stableStringify(state));
 }

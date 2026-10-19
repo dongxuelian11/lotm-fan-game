@@ -8,6 +8,7 @@ export default defineConfig({
     },
   },
   test: {
+    tags: [{ name: "historical-replay", timeout: 30_000 }],
     environment: "node",
     include: ["tests/**/*.test.{ts,tsx}"],
     passWithNoTests: false,
