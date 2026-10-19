@@ -1,8 +1,18 @@
+import { emptyTwilightGiantPublic } from '../helpers/empty-twilight-giant-capture.js';
+import { emptyDemonessPublic } from '../helpers/empty-demoness-capture.js';
+import { emptyHermitPublic } from '../helpers/empty-hermit-capture.js';
+import { emptyHangedManPublic } from '../helpers/empty-hanged-man-capture.js';
+import { emptyAbyssPublic } from '../helpers/empty-abyss-capture.js';
+import { emptyChainedPublic } from '../helpers/empty-chained-capture.js';
+import { emptyWheelOfFortunePublic } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { emptyBlackEmperorPublic } from '../helpers/empty-black-emperor-capture.js';
+import { emptyJusticiarPublic } from '../helpers/empty-justiciar-capture.js';
+import { emptyMotherPublic } from '../helpers/empty-mother-capture.js';
 import { emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { emptyDeathPublic, emptyDoorPublic } from '../helpers/empty-death-capture.js';
-import type { SliceState } from '../../src/domain/slice/types.js';
+import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { openSunRuntimeSession, type SunRuntimeSession } from '../../src/domain/sun/owned-session.js';
 import { SUN_ABILITY_IDS, SUN_ORIGINAL_IDS } from '../../src/domain/sun/types.js';
 import {
@@ -20,6 +30,41 @@ let data: LoadedCapture;
 beforeAll(() => { data = loadCapture(); }, 120_000);
 afterAll(() => { authenticateInputs(); }, 120_000);
 const actionAt = (count: number) => readAction(data.rows[count - PREFIX - 1]!);
+/** Build a current mock from literal historical public evidence, not a live projector.
+ * Only named empty roots and the three reviewed inactive privacy paths change. */
+function currentPublicExpectation(historical: SliceProjection, state: SliceState): SliceProjection {
+  const current = structuredClone(historical);
+  for (const root of ['calamityDemoness', 'knowledgeEmperor', 'sage'] as const) {
+    const site = current[root].life.site;
+    expect(Object.hasOwn(site, 'source')).toBe(true);
+    expect(Reflect.get(site, 'source')).toBeNull();
+    Reflect.deleteProperty(site, 'source');
+  }
+  for (const root of ['knowledgeEmperor', 'sage'] as const) {
+    const encounter = current[root].encounter;
+    expect(Object.hasOwn(encounter, 'preparation')).toBe(true);
+    expect(Reflect.get(encounter, 'preparation')).toBeNull();
+    expect(Object.hasOwn(encounter, 'preparationSummary')).toBe(false);
+    Reflect.deleteProperty(encounter, 'preparation');
+    encounter.preparationSummary = null;
+  }
+  return { ...current,
+    death: emptyDeathPublic(state),
+    door: emptyDoorPublic(state),
+    errorAscent: emptyErrorAscentPublic(state),
+    twilightGiant: emptyTwilightGiantPublic(state),
+    demoness: emptyDemonessPublic(state),
+    hermit: emptyHermitPublic(state),
+    hangedMan: emptyHangedManPublic(state),
+    abyss: emptyAbyssPublic(state),
+    chained: emptyChainedPublic(state),
+    wheelOfFortune: emptyWheelOfFortunePublic(state),
+    blackEmperor: emptyBlackEmperorPublic(state),
+    justiciar: emptyJusticiarPublic(state),
+    mother: emptyMotherPublic(state),
+  };
+}
+
 function preserveOriginal(state: SliceState): void {
   expect(state.runId).toBe(data.original.runId); expect(state.random.seed).toBe(data.original.random.seed);
   for (const key of ['bard', 'lightprayer', 'sunpriest', 'notary', 'priestOfLight', 'unshadowed',
@@ -170,9 +215,9 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
         same(expected.recovery.actions.credit, raw.recovery.actions.credit, 'Event-choice credit gating remains frozen');
         expect(state.sun.guidanceKnown).toBe(guided); expect(state.sun.source !== null).toBe(guided);
         expect([raw.maxSpirituality, expected.maxSpirituality]).toEqual(promoted ? [30, 150] : [120, 120]);
-        const currentExpected = { ...expected, death: emptyDeathPublic(state), door: emptyDoorPublic(state), errorAscent: emptyErrorAscentPublic(state) };
+        const currentExpected = currentPublicExpectation(expected, state);
         assertCurrentGlobal(currentExpected, action, side);
-        if (guided) expect(() => assertCurrentGlobal({ ...raw, death: emptyDeathPublic(state), door: emptyDoorPublic(state), errorAscent: emptyErrorAscentPublic(state) }, action, side)).toThrow();
+        if (guided) expect(() => assertCurrentGlobal(currentPublicExpectation(raw, state), action, side)).toThrow();
         else {
           same(expected, raw, '854-before remains completely unchanged');
           expect(raw.canAct).toBe(true); expect(raw.actionBlockedReason).toBeNull(); expect(state.sun.source).toBeNull();
@@ -230,7 +275,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
       if (count === 854) {
         const next = actionAt(855);
         same(action.final, next.beforeLast); same(action.globalPublic, next.globalPublicBefore);
-        expect(() => assertCurrentGlobal({ ...expectedCurrentGlobal(action, 'after'), death: emptyDeathPublic(action.final), door: emptyDoorPublic(action.final), errorAscent: emptyErrorAscentPublic(action.final) }, next, 'after')).toThrow();
+        expect(() => assertCurrentGlobal(currentPublicExpectation(expectedCurrentGlobal(action, 'after'), action.final), next, 'after')).toThrow();
         expect(() => expectedCurrentGlobal({ ...action, lastIntent: next.lastIntent }, 'after')).toThrow();
         const sourceMissing = { ...action, final: { ...action.final, sun: { ...action.final.sun, source: null } } };
         expect(() => expectedCurrentGlobal(sourceMissing, 'after')).toThrow();
@@ -269,6 +314,7 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
 
   it('grants the150 maximum only to authentic923 Sun0 without refilling spirituality or admitting forged promotion history', () => {
     const action = actionAt(923), before = migrateCapturedSunState(action.beforeLast), state = migrateCapturedSunState(action.final);
+    const beforeHash = hash(before), afterHash = hash(state), rawBeforeHash = hash(action.beforeLast), rawAfterHash = hash(action.final);
     const beforePublic = projectSliceState(before), afterPublic = projectSliceState(state);
     expect(before.progression).toMatchObject({ pathwayId: 'sun', sequence: 1 });
     expect(state.progression).toMatchObject({ pathwayId: 'sun', sequence: 0 });
@@ -285,8 +331,11 @@ describe('Sun216 actual natural934 from unchanged original194 living853', () => 
       expect(() => projectSliceState(forged), label).toThrow();
       expect(() => assertValidSliceState(forged), label).toThrow();
     }
-    same(before, action.beforeLast, 'Resource projection cannot mutate the actual S1 predecessor');
-    same(state, action.final, 'Resource projection cannot refill or mutate the actual S0 successor');
+    expect(hash(before), 'Resource projection cannot mutate its current S1 input').toBe(beforeHash);
+    expect(hash(state), 'Resource projection cannot refill or mutate its current S0 input').toBe(afterHash);
+    same(historicalSunState(before), action.beforeLast, 'Every original S1 field remains unchanged after the named additive migration');
+    same(historicalSunState(state), action.final, 'Every original S0 field remains unchanged after the named additive migration');
+    expect(hash(action.beforeLast)).toBe(rawBeforeHash); expect(hash(action.final)).toBe(rawAfterHash);
   }, 120_000);
 
   it('requires actual application after directed-radiance success before granting8 mastery or removing any of the four original residues', () => {

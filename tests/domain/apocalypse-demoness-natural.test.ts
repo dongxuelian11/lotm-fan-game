@@ -691,6 +691,26 @@ function boundary(name: string) {
   return { count: readObjectEntry<number>(path, 'commandCount'), before: current(readObjectEntry(path, 'beforeLast')),
     intent: readObjectEntry<SliceIntent>(path, 'lastIntent'), final: current(readObjectEntry(path, 'final')) };
 }
+/** Adapt only newly emitted guidance in the current replay expectation. The
+ * archived checkpoint, original prose and all gameplay/RNG fields stay exact. */
+function withCurrentGuidance(archived: SliceState): SliceState {
+  const expected = structuredClone(archived), records = expected.chronicle.filter(record => record.id === 'record-594-936');
+  expect(records).toHaveLength(1);
+  const record = records[0]!;
+  expect({ id: record.id, week: record.week, title: record.title }).toEqual({
+    id: 'record-594-936', week: 145, title: '听取末日魔女独立成品与专业准备指导',
+  });
+  expect(createHash('sha256').update(record.text).digest('hex')).toBe('cae8b6d40ef3fa393d5778c9aa475a45b583e382b6530af5bd26b362c373a268');
+  const oldGuidance = '三瓶全部失败耗尽后，可花1行动与100便士申请下一批，至少跨一真实周再接收三瓶；各瓶费用与准备单独结算。';
+  const currentGuidance = '最初三份原特性总量保持三。三瓶真实失败后，可花1行动与120便士调查指定原失败回执，隔一真实周再花1行动回原展廊出口，当面重新取得马库斯本次许可并封存同一份原特性。重配容器不是第四份原特性，旧瓶及失败结果保留；本次新普通药物与调配服务900便士，或五项新劳动后90便士。另付150便士与1行动检查当周场地。可选择为指定未服瓶另付60便士、8灵性、6精神，获得只限本瓶、本场、本周的意志+13支持；按当前意志动态显示概率，仍会失败。退出、跨周或服药即失效，无退款、无补伤、无净化；污染须走正常净化、收入与休养流程。成功后仍从末日魔女生活实践0/100开始。';
+  expect(record.text.endsWith(oldGuidance)).toBe(true);
+  expect(expected.chronicle.reduce((count, row) => count + row.text.split(oldGuidance).length - 1, 0)).toBe(1);
+  const latestGuidance = expected.lastResult?.id === record.id ? expected.lastResult : null;
+  if (latestGuidance) same(latestGuidance, record);
+  record.text = record.text.slice(0, -oldGuidance.length) + currentGuidance;
+  if (latestGuidance) latestGuidance.text = record.text;
+  return expected;
+}
 function publicControl(s: SliceState, intent: SliceIntent): void {
   expect(validateSlicePayload(intent), JSON.stringify(intent)).toBe(true);
   const view = projectSliceState(s);
@@ -744,6 +764,7 @@ describe('Apocalypse Demoness exact585 natural source and observed public contin
   it('pins immutable raw174 source, natural487 ancestry, frozen producer and current migrated format separately', async () => {
     expect(await fileHash(SOURCE)).toBe(SOURCE_SHA); expect(await fileHash(PRIOR)).toBe(PRIOR_SHA);
     expect(await fileHash('scripts/play/apocalypse-demoness-stage.mjs')).toBe(expected.producerSha256);
+    expect(await fileHash(localPath(boundaries['step-688-action']!))).toBe('34e43b3cb872a7c43851e5d3d583983e06b2081d8645bc42cd10b6d243a5bb67');
     const raw = source<SliceState>('final');
     expect(raw).toMatchObject({ schemaVersion: 174, contentVersion: 'calamity-demoness-v174', status: 'ACTIVE', revision: 586,
       week: 143, health: 70, mind: 100, spirituality: 120, cash: 610, actionsRemaining: 3, random: { seed: SEED, cursor: 207 } });
@@ -776,11 +797,15 @@ describe('Apocalypse Demoness exact585 natural source and observed public contin
     same(summary('sourceOriginals'), { site: old.encounter.currentSite }); same(summary('currentOriginals'), { site: site(state('final')) });
   });
 
-  it('replays every captured command once from original creation with enabled public controls after585', () => {
+  it('replays the exact688 current commands and strictly validates the unchanged854-command archive without new legacy supply', () => {
     expect(commands).toHaveLength(expected.commands); expect(entry('prefixCount')).toBe(PREFIX_COUNT);
     same(entry('strategy'), expected.strategy); let s = current(source('initial')); const original = state('prefixFinal');
+    const stop = boundary('step-688-action'), archivedHash = hash(stop.final);
+    expect(stop.count).toBe(688); same(stop.intent, commands[687]);
+    expect(commands[688]).toEqual({ type: 'APOCALYPSE_DEMONESS', command: { type: 'REQUEST_SUPPLY' } });
+    expect(commands[690]).toEqual({ type: 'APOCALYPSE_DEMONESS', command: { type: 'RECEIVE_SUPPLY' } });
     same(s, state('initial'));
-    for (const [index, intent] of commands.entries()) {
+    for (const [index, intent] of commands.slice(0, stop.count).entries()) {
       if (intent.type === 'CONTINUE_LIFE') { expect(index).toBeLessThan(PREFIX_COUNT); expect(s.status).toBe('SLICE_COMPLETE'); expect(s.ending?.kind).not.toBe('DEATH'); }
       else expect(s.status, `No command after death at step${index + 1}`).toBe('ACTIVE');
       if (index >= PREFIX_COUNT) publicControl(s, intent);
@@ -790,9 +815,30 @@ describe('Apocalypse Demoness exact585 natural source and observed public contin
       if (index === PREFIX_COUNT - 1) same(s, original);
       if (index >= PREFIX_COUNT) originals(s, original);
     }
-    same(s, state('final')); assertValidSliceState(s); same(migrateSliceState(s), s); same(body(s), expected.final);
+    same(s, withCurrentGuidance(stop.final)); assertValidSliceState(s); same(migrateSliceState(s), s);
+    expect(s.apocalypseDemoness.bottles.map(bottle => bottle.outcome)).toEqual(['FAILURE', 'FAILURE', 'GREAT_FAILURE']);
+    expect(s.random).toEqual({ seed: SEED, cursor: 210 });
+    expect(s.revision).toBe(state('initial').revision + stop.count);
+    expect(projectSliceState(s).apocalypseDemoness.actions.some(action =>
+      action.command.type === 'REQUEST_SUPPLY' || action.command.type === 'RECEIVE_SUPPLY')).toBe(false);
+    publicControl(s, { type: 'APOCALYPSE_DEMONESS', command: { type: 'REQUEST_RECOVERY_V1', bottleId: 'apocalypse-demoness-potion-1' } });
+    const stoppedHash = hash(s);
+    for (const intent of [commands[688]!, commands[690]!]) {
+      expect(validateSlicePayload(intent)).toBe(false); expect(() => applySliceIntent(s, intent)).toThrow(); expect(hash(s)).toBe(stoppedHash);
+    }
+    expect(hash(stop.final)).toBe(archivedHash);
+    // Strict historical validators retain every original receipt, including the
+    // three independent fourth-plus bottles. No live reducer bypass is used.
+    const final = state('final'); assertValidSliceState(final); same(migrateSliceState(final), final);
+    expect(validateApocalypseDemonessAcquisitionJournal(final)).toBe(true);
+    expect(validateApocalypseDemonessJournalContinuity(final)).toBe(true);
+    expect(validateApocalypseDemonessLifeState(final)).toBe(true); expect(validateApocalypseDemonessEncounterState(final)).toBe(true);
+    expect(final.apocalypseDemoness.bottles).toHaveLength(6);
+    expect(final.apocalypseDemoness.bottles.slice(3).every(bottle => bottle.recovery === undefined)).toBe(true);
+    expect(projectSliceState(final).apocalypseDemoness.actions).toEqual([]);
+    originals(final, original); same(body(final), expected.final);
     expect(entry('stage')).toBe(expected.stage); expect(entry('error')).toBeNull(); expect(entry('pendingIntent')).toBeNull(); expect(entry('failurePhase')).toBe('IDLE');
-    expect(s.revision).toBe(state('initial').revision + expected.commands);
+    expect(final.revision).toBe(state('initial').revision + expected.commands);
   }, 240_000);
 
   it('retains contiguous whole command and public ledgers and exact observed snapshot names', async () => {
@@ -804,6 +850,9 @@ describe('Apocalypse Demoness exact585 natural source and observed public contin
     for await (const row of jsonLines<Ledger>('commands.jsonl')) {
       expect(row.step).toBe(++count); expect(row.sourcePrefix).toBe(count <= PREFIX_COUNT); same(row.intent, commands[count - 1]);
       same(row.before, previous); expect(row.after.revision).toBe(row.before.revision + 1); previous = row.after;
+      if (row.intent.type === 'CONTINUE_LIFE') { expect(count).toBeLessThanOrEqual(PREFIX_COUNT); expect(row.before.status).toBe('SLICE_COMPLETE'); }
+      else expect(row.before.status, `No captured command after death at step${count}`).toBe('ACTIVE');
+      expect(row.after.random.seed).toBe(SEED); expect(row.after.random.cursor).toBeGreaterThanOrEqual(row.before.random.cursor);
       if (count > PREFIX_COUNT) newRows.set(count, row);
     }
     expect(count).toBe(expected.commands); same(previous, expected.final); count = PREFIX_COUNT;

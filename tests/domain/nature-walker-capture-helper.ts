@@ -15,6 +15,7 @@ import { barrenMatriarchAbilityWheel } from '../../src/domain/barren-matriarch/c
 import { validateNatureWalkerEncounterState } from '../../src/domain/nature-walker/encounter.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentNatureWalkerReplayExpectation } from '../helpers/nature-walker-current-replay.js';
 import { NATURE_WALKER_CAPTURE_EVIDENCE } from './nature-walker-capture-evidence.js';
 import { assertNatureWalkerPublicEvidence } from './nature-walker-public-evidence.js';
 
@@ -70,7 +71,11 @@ export function replayCaptureBoundary(name: string) {
     const intent = b.intent, control = projectSliceState(b.before).natureWalker.actions.find(a => stableStringify(a.command) === stableStringify(intent.command));
     expect(control).toBeDefined(); expect(control!.enabled, control!.reason ?? '').toBe(true);
   }
-  sameCaptureValue(applySliceIntent(b.before, b.intent), b.final); return b;
+  // Historical restored boundaries retain their old guide. Only the actual
+  // guidance command writes the current wording during a one-step replay.
+  const expected = b.intent.type === 'NATURE_WALKER' && b.intent.command.type === 'LEARN_GUIDANCE'
+    ? currentNatureWalkerReplayExpectation(b.final) : b.final;
+  sameCaptureValue(applySliceIntent(b.before, b.intent), expected); return b;
 }
 export const captureBody = (s: SliceState) => ({ status: s.status, revision: s.revision, week: s.week, date: s.date,
   H: s.health, M: s.mind, S: s.spirituality, cash: s.cash, AP: s.actionsRemaining, pollution: s.seer.pollution,

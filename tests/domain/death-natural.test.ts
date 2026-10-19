@@ -1,9 +1,19 @@
+import { emptyTwilightGiantPublic } from '../helpers/empty-twilight-giant-capture.js';
+import { emptyDemonessPublic } from '../helpers/empty-demoness-capture.js';
+import { emptyHermitPublic } from '../helpers/empty-hermit-capture.js';
+import { emptyHangedManPublic } from '../helpers/empty-hanged-man-capture.js';
+import { emptyAbyssPublic } from '../helpers/empty-abyss-capture.js';
+import { emptyChainedPublic } from '../helpers/empty-chained-capture.js';
+import { emptyWheelOfFortunePublic } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { emptyBlackEmperorPublic } from '../helpers/empty-black-emperor-capture.js';
+import { emptyJusticiarPublic } from '../helpers/empty-justiciar-capture.js';
+import { emptyMotherPublic } from '../helpers/empty-mother-capture.js';
 import { emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { emptyDoorPublic } from '../helpers/empty-death-capture.js';
-import type { SliceState } from '../../src/domain/slice/types.js';
+import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { openDeathRuntimeSession, type DeathRuntimeSession } from '../../src/domain/death/owned-session.js';
 import { DEATH_ABILITY_IDS, DEATH_ORIGINAL_IDS } from '../../src/domain/death/types.js';
 import {
@@ -21,6 +31,40 @@ let data: LoadedCapture;
 beforeAll(() => { data = loadCapture(); }, 300_000);
 afterAll(() => { authenticateInputs(); }, 300_000);
 const actionAt = (count: number) => readAction(data.rows[count - PREFIX - 1]!);
+/** Build a current mock from literal historical public evidence, not a live projector.
+ * Only named empty roots and the three reviewed inactive privacy paths change. */
+function currentPublicExpectation(historical: SliceProjection, state: SliceState): SliceProjection {
+  const current = structuredClone(historical);
+  for (const root of ['calamityDemoness', 'knowledgeEmperor', 'sage'] as const) {
+    const site = current[root].life.site;
+    expect(Object.hasOwn(site, 'source')).toBe(true);
+    expect(Reflect.get(site, 'source')).toBeNull();
+    Reflect.deleteProperty(site, 'source');
+  }
+  for (const root of ['knowledgeEmperor', 'sage'] as const) {
+    const encounter = current[root].encounter;
+    expect(Object.hasOwn(encounter, 'preparation')).toBe(true);
+    expect(Reflect.get(encounter, 'preparation')).toBeNull();
+    expect(Object.hasOwn(encounter, 'preparationSummary')).toBe(false);
+    Reflect.deleteProperty(encounter, 'preparation');
+    encounter.preparationSummary = null;
+  }
+  return { ...current,
+    door: emptyDoorPublic(state),
+    errorAscent: emptyErrorAscentPublic(state),
+    twilightGiant: emptyTwilightGiantPublic(state),
+    demoness: emptyDemonessPublic(state),
+    hermit: emptyHermitPublic(state),
+    hangedMan: emptyHangedManPublic(state),
+    abyss: emptyAbyssPublic(state),
+    chained: emptyChainedPublic(state),
+    wheelOfFortune: emptyWheelOfFortunePublic(state),
+    blackEmperor: emptyBlackEmperorPublic(state),
+    justiciar: emptyJusticiarPublic(state),
+    mother: emptyMotherPublic(state),
+  };
+}
+
 function preserveOriginal(state: SliceState): void {
   expect(state.runId).toBe(data.original.runId); expect(state.random.seed).toBe(data.original.random.seed);
   for (const key of ['corpsecollector', 'gravedigger', 'spiritmedium', 'spiritGuide', 'gatekeeper', 'undying',
@@ -51,7 +95,9 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
     expect(Object.values(data.original.progression.mastery).filter(value => value === 0)).toHaveLength(7);
     const originalHash = hash(data.original), migrated = migrateSliceState(data.original);
     same(historicalDeathState(migrated), data.initial, 'Current migration retains every exact192->214 captured field');
-    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(data.initial), 'door', 'errorAscent'].sort());
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(data.initial), 'door', 'errorAscent',
+      'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained',
+      'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'].sort());
     expect(hash(data.original)).toBe(originalHash); expect(originalHash).toBe(PINS.originalStateSha256);
     const global = projectSliceState(migrated); same(historicalDeathPublic(global, migrated), data.initialPublic); assertGlobalPublic(global, migrated);
     expect(hash(historicalDeathPublic(global, migrated))).toBe(PINS.initialGlobalPublicSha256); expect(hash(capturePublic(global))).toBe(PINS.initialPublicSha256);
@@ -179,7 +225,7 @@ describe('Death217 actual natural1141 from unchanged original195 living1038', ()
   }, 300_000);
 
   it('rejects altered evidence, unknown roots, wrong sides, forged input and private leakage without editing any capture', () => {
-    const action = actionAt(1128), original = hash(action), expected = { ...action.globalPublic, door: emptyDoorPublic(action.final), errorAscent: emptyErrorAscentPublic(action.final) };
+    const action = actionAt(1128), original = hash(action), expected = currentPublicExpectation(action.globalPublic, action.final);
     assertCurrentGlobal(expected, action, 'after');
     expect(() => assertCurrentGlobal(action.globalPublic, action, 'after')).toThrow();
     expect(() => assertCurrentGlobal({ ...expected, cash: expected.cash + 1 }, action, 'after')).toThrow();

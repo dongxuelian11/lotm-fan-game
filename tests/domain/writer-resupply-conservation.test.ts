@@ -1,3 +1,4 @@
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { stableStringify } from '../../src/domain/canonical.js';
@@ -155,7 +156,7 @@ describe('Writer versioned resupply conserves the three actual original characte
     ];
     for (const mutate of mutations) { const bad = structuredClone(s); mutate(bad); expect(validateWriterState(bad)).toBe(false); expect(resolveWriterOriginalCharacteristicsSnapshot(bad.writer)).toBeNull(); }
     for (const schemaVersion of [185, 206]) { const bad = structuredClone(s); Object.assign(bad, { schemaVersion }); expect(validateWriterState(bad)).toBe(false); }
-    expect(s.schemaVersion).toBe(207); expect(validateWriterState(s)).toBe(true); expect(stableStringify(s)).toBe(original);
+    expect([s.schemaVersion, s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]); expect(validateWriterState(s)).toBe(true); expect(stableStringify(s)).toBe(original);
   });
 
   it('replays real legacy independent deliveries without converting their original identities', () => {

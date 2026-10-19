@@ -1,3 +1,12 @@
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
+import { stableStringify } from '../../src/domain/canonical.js';
+import { sha256Hex } from '../../src/domain/checksum.js';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -10,8 +19,24 @@ import { validateSlicePayload } from '../../src/domain/slice/validation.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 
 const fresh = (): SliceState => createSliceRun('hangedMan-schema-run', sliceDefaultCreationSelection, 'hangedMan-schema-seed');
+const ADDITIVE_ROOTS = ['hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const stateHash = (state: unknown): string => sha256Hex(stableStringify(state));
+const historicalFields = (state: object) => Object.fromEntries(Object.entries(state)
+  .filter(([key]) => !['schemaVersion', 'contentVersion', ...ADDITIVE_ROOTS].includes(key)));
+const assertEmptyAdditiveRoots = (state: SliceState): void => {
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+};
 const legacy219 = () => {
-  const { hangedMan: _root, abyss: _abyss, ...state } = fresh();
+  const current = fresh();
+  assertEmptyAdditiveRoots(current);
+  const { hangedMan: _root, abyss: _abyss, chained: _chained, wheelOfFortune: _wheelOfFortune,
+    blackEmperor: _blackEmperor, justiciar: _justiciar, mother: _mother, ...state } = current;
   return { ...state, schemaVersion: 219 as const, contentVersion: 'hermit-v219' as const };
 };
 
@@ -25,16 +50,19 @@ describe('HangedMan schema220 exact additive admission', () => {
     expect(() => openHangedManRuntimeSession(state)).toThrow();
   });
 
-  it('upgrades219 by adding only the two missing empty roots and format while preserving all old fields', () => {
-    const source = legacy219(), before = structuredClone(source), current = migrateSliceState(source);
+  it('upgrades219 by adding only seven explicit empty roots and format while preserving every old-field hash', () => {
+    const source = legacy219(), before = structuredClone(source), originalFieldsHash = stateHash(historicalFields(source));
+    const current = migrateSliceState(source);
+    assertEmptyAdditiveRoots(current);
+    expect(stateHash(historicalFields(current))).toBe(originalFieldsHash);
     expect(source).toStrictEqual(before);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'hangedMan', 'abyss'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), ...ADDITIVE_ROOTS].sort());
     expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.hangedMan).toStrictEqual(createHangedManState());
     expect(current.abyss).toStrictEqual(createAbyssState());
     for (const [key, value] of Object.entries(source)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
-      expect(current[key as keyof SliceState], `Changed original ${key}`).toStrictEqual(value);
+      expect(stateHash(current[key as keyof SliceState]), `Changed original ${key}`).toBe(stateHash(value));
     }
     expect(current.demoness).not.toBe(source.demoness);
     expect(() => assertValidSliceState(current)).not.toThrow();
@@ -42,6 +70,13 @@ describe('HangedMan schema220 exact additive admission', () => {
 
   it('rejects missing, altered, injected, unknown and future fields without repairing the input', () => {
     const current = fresh(), legacy = legacy219(), { hangedMan: _root, ...missing } = current;
+    for (const root of ADDITIVE_ROOTS) {
+      for (const value of [current[root], undefined, null, { ...current[root], guidanceKnown: true }]) {
+        const invalid = { ...legacy, [root]: value }, before = structuredClone(invalid);
+        expect(() => migrateSliceState(invalid), `Injected legacy219 root ${root}`).toThrow();
+        expect(invalid).toStrictEqual(before);
+      }
+    }
     for (const invalid of [
       missing,
       { ...current, hangedMan: undefined },
