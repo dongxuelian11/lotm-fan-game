@@ -12,13 +12,36 @@ export type KnowledgeEmperorPreparationId = typeof KNOWLEDGE_EMPEROR_PREPARATION
 export type KnowledgeEmperorAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: KnowledgeEmperorPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type KnowledgeEmperorCommand = KnowledgeEmperorAcquisitionCommand | KnowledgeEmperorActivityCommand | KnowledgeEmperorEncounterCommand;
+/** The vessel may change; the three finite original characteristics do not. */
+export interface KnowledgeEmperorRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_KNOWLEDGE_EMPEROR_PREPARATION'; custodian: 'TG222-KNOWLEDGE-EMPEROR-SUPPLIER';
+}
+export interface KnowledgeEmperorRecovery extends KnowledgeEmperorRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface KnowledgeEmperorRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_KNOWLEDGE_EMPEROR_PREPARATION'; originals: KnowledgeEmperorOriginals;
+  permission: { personId: 'TG222-KNOWLEDGE-EMPEROR-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface KnowledgeEmperorOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface KnowledgeEmperorOriginalCharacteristics {
+  characteristics: KnowledgeEmperorOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface KnowledgeEmperorBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: KnowledgeEmperorRecovery;
 }
 export interface KnowledgeEmperorPrices { guidance: number; potion: number; labourCredit: number; labourBalance: number; preparation: number; resupply: number }
 export type KnowledgeEmperorFinance = Pick<SliceState, 'weeklyBudget' | 'lifeTier' | 'nextLifeTier' | 'debts' | 'missedWeeks' | 'credit'>;
@@ -32,6 +55,7 @@ export interface KnowledgeEmperorAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'hermit'; sagePromotionWeek: number; pryerPromotionWeek: number };
   before: KnowledgeEmperorAcquisitionBudget; after: KnowledgeEmperorAcquisitionBudget; finance: KnowledgeEmperorFinance;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: KnowledgeEmperorRecoverySite;
 }
 export const KNOWLEDGE_EMPEROR_SOURCE_KEYS = ['pryer', 'combatScholar', 'wizard', 'scrollProfessor', 'starMystic', 'mystic', 'prophecyMaster', 'sage'] as const;
 export type KnowledgeEmperorSourceHistory = Pick<SliceState, typeof KNOWLEDGE_EMPEROR_SOURCE_KEYS[number]>;
@@ -44,7 +68,7 @@ export interface KnowledgeEmperorSourceScene {
 }
 export interface KnowledgeEmperorState {
   guidanceKnown: boolean; sourceWeek: number | null; bottles: KnowledgeEmperorBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: KnowledgeEmperorRecoveryRequest };
   promotionWeek: number | null; sageActingAtPromotion: number | null;
   preparations: { taskId: KnowledgeEmperorPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: KnowledgeEmperorAcquisitionEvent[];

@@ -1,3 +1,4 @@
+import { publicPryerFields, publicPryerInjury, publicPryerScroll, publicPryerWorkshop, publicSageSite } from '../sage/life.js';
 import type { ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -239,7 +240,7 @@ export function projectProphecyMasterCombat(s: SliceState) {
   const e = s.prophecyMaster.encounter, visible = isProphecyMaster(s);
   return { enemyName: visible ? '奥斯里克·盖尔（48岁，原创有限G3非凡者）' : '', targetId: visible ? e.targetId : null,
     enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null, powerUses: visible ? { ...e.powerUses } : null,
-    scene: visible ? structuredClone(e.scene) : null, source: visible ? currentProphecyMasterCombatSource(s) : null,
+    scene: visible ? publicProphecyMasterScene(e.scene) : null,
     summary: visible ? '双方1–6次，继承神秘学家4实际核心10/30/25/35；1250/底125、S120，只有CONTINUE恢复12。七槽H30/J15/B20/K15/R10/预兆5/失衡5。新预兆6S＋2M/知识18，成功只准备本轮下一实际身体或付费弧光正贡献×0.7；假动作能耗窗，失败与过期不退款，不自动攻击、免伤或揭露真相。原卷只用已有已授权原件，旧已学迟钟公开后仍仅15%效力；敌弧光5S/屏护4S/假动作有窗3S，资源不足普通原棍回退。原卢坎投降和旧故事105人公开历史不改。' : '' };
 }
 function validWorkshop(w: ScrollProfessorWorkshop, week: number): boolean {
@@ -289,3 +290,16 @@ export function validateProphecyMasterRoundOutcome(value: unknown): value is Pro
     return q.playerS === o.playerSpiritualityAfter && q.playerM === o.playerMindAfter && q.enemyS === o.enemySpirituality && same(q.powers, o.powerUses) && same(q.workshop, o.workshopAfter) && same(scene, o.sceneAfter);
   } catch { return false; }
 }
+
+const publicProphecyMasterScene = (p: ProphecyMasterEncounterScene) => publicPryerFields(p, ['courtId', 'ordinaryExit', 'thirdPartiesInArea', 'clearanceConfirmed', 'playerPosition', 'distanceMetres', 'exitMetres', 'ordinaryWalkedMetres']);
+const publicProphecyMasterAction = (a: ActionEvidence) => ({
+  ...publicPryerFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'order', 'paidCost', 'physicalFactor', 'mode']), rolls: [...a.rolls],
+});
+export function publicProphecyMasterRound(o: ProphecyMasterRoundOutcome) { return {
+  ...publicPryerFields(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'enemyRiskAfter', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'cageReadyAfter', 'echoReadyAfter', 'propheticWindowAfter', 'elapsedSeconds', 'lifeClockSecondsAfter']),
+  enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicPryerInjury), powerUses: publicPryerFields(o.powerUses, ['ARC_BOLT', 'WARD', 'FEINT']),
+  sceneAfter: publicProphecyMasterScene(o.sceneAfter), workshopAfter: publicPryerWorkshop(o.workshopAfter),
+  playerActions: o.playerActions.map(a => ({ ...publicProphecyMasterAction(a), ...publicPryerFields(a, ['id', 'mindCost', 'prepared']), scroll: a.scroll ? publicPryerScroll(a.scroll) : null })),
+  enemyActions: o.enemyActions.map(a => ({ ...publicProphecyMasterAction(a), ...publicPryerFields(a, ['planned', 'actual', 'cageConsumed', 'echoConsumed', 'windowConsumed', 'echoMultiplier']) })),
+}; }
+export type ProphecyMasterPublicRoundOutcome = ReturnType<typeof publicProphecyMasterRound>;

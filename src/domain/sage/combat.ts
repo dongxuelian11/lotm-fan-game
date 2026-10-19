@@ -1,3 +1,4 @@
+import { publicPryerFields, publicPryerInjury, publicPryerScroll, publicPryerWorkshop, publicSageSite } from '../sage/life.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -459,10 +460,28 @@ export function projectSageCombat(s: SliceState) {
   return { enemyName: visible ? '梅林·阿什（47岁）' : '', targetId: visible ? e.targetId : null,
     playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
     enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
-    powerUses: visible ? { ...e.powerUses } : null, site: visible && site ? structuredClone(site) : null,
-    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0, source: visible ? currentSageCombatSource(s) : null,
-    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...structuredClone(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...structuredClone(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
+    powerUses: visible ? publicPryerFields(e.powerUses, ['ARC_BOLT', 'WARD', 'FEINT']) : null, site: visible && site ? publicSageSite(site) : null,
+    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0, historicalScene: visible ? { workshop: publicPryerWorkshop(s.scrollProfessor.workshop), learnedImpact: s.wizard.lessons['light-touch']?.learned === true, learnedWard: s.wizard.lessons['brief-ward']?.learned === true, echoLearned: s.mystic.life.echoLearned, publicDisclosed: s.mystic.life.publicDisclosed } : null,
+    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...publicSagePlayerAction(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...publicSageEnemyAction(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
     countWheel: SAGE_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: SAGE_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: SAGE_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
     summary: visible ? '双方每轮1至6次行动。继承原11项掌握与实际已学法术、原卷来源、牢笼、迟钟和预兆成本。信息化每轮尝试一次：6灵性、2精神、6精力、一次暴露，成功只减随后一次身体攻势至多45。筛取每轮尝试一次：6灵性、2精神、一次暴露，知识检定后仍有25%抵抗；成功只给随后一次真实攻击20%优势，不自动攻击。暴露令两种尝试更困难，假动作可耗掉读势与预兆。每动作5秒、每轮60秒；继续交战时本人恢复12灵性，对手不恢复。死亡、原伤、旧物和旧结局保留。' : '' };
 }
 export type SageCombatProjection = ReturnType<typeof projectSageCombat>;
+
+const publicSageAction = (a: ActionEvidence) => ({
+  ...publicPryerFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'order', 'atSeconds', 'elapsedSeconds', 'paidCost', 'mindCost', 'physicalFactor', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'enemySpiritualityAfter', 'chargeGranted', 'chargeConsumedByOrder', 'chargeCancelledByOrder', 'appliedAmount']), rolls: [...a.rolls], consumedEffectOrders: [...a.consumedEffectOrders],
+});
+export const publicSagePlayerAction = (a: SagePlayerAction) => ({
+  ...publicSageAction(a), ...publicPryerFields(a, ['id', 'attempted', 'succeeded', 'applied', 'resisted', 'mode', 'prepared', 'formEnergyPaid', 'exposurePaid']),
+  observed: a.observed ? publicPryerFields(a.observed, ['weaponId', 'position', 'distanceMetres', 'pattern']) : null,
+  scroll: a.scroll ? publicPryerScroll(a.scroll) : null,
+});
+export const publicSageEnemyAction = (a: SageEnemyAction) => ({ ...publicSageAction(a), ...publicPryerFields(a, ['planned', 'actual', 'attackKind']) });
+export function publicSageRound(o: SageRoundOutcome) { return {
+  ...publicPryerFields(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'playerRiskAfter', 'enemyRiskAfter', 'formAttempted', 'siftAttempted', 'guardAttempted', 'clockSecondsAfter', 'elapsedSeconds']),
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicPryerInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicPryerInjury),
+  powerUses: publicPryerFields(o.powerUses, ['ARC_BOLT', 'WARD', 'FEINT']),
+  expiredEffectOrders: [...o.expiredEffectOrders], siteAfter: publicSageSite(o.siteAfter), workshopAfter: publicPryerWorkshop(o.workshopAfter),
+  playerActions: o.playerActions.map(publicSagePlayerAction), enemyActions: o.enemyActions.map(publicSageEnemyAction),
+}; }
+export type SagePublicRoundOutcome = ReturnType<typeof publicSageRound>;

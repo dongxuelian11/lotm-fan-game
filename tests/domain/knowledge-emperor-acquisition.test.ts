@@ -3,7 +3,9 @@ import { assertValidSliceState, projectSliceState } from '../../src/domain/slice
 import { validateSageState } from '../../src/domain/sage/index.js';
 import { createKnowledgeEmperorState, knowledgeEmperorInheritedView, knowledgeEmperorAcquisitionBlock, knowledgeEmperorOriginals,
   projectKnowledgeEmperor, validateKnowledgeEmperorState, validateKnowledgeEmperorSource, validateKnowledgeEmperorAcquisitionJournal,
-  KNOWLEDGE_EMPEROR_INHERITED_ABILITY_IDS } from '../../src/domain/knowledge-emperor/index.js';
+  KNOWLEDGE_EMPEROR_INHERITED_ABILITY_IDS, knowledgeEmperorAcquisitionBudget, resolveKnowledgeEmperorOriginalsSnapshot } from '../../src/domain/knowledge-emperor/index.js';
+import { knowledgeEmperorFinanceSnapshot } from '../../src/domain/knowledge-emperor/encounter.js';
+import { knowledgeEmperorPotionSource } from '../../src/domain/knowledge-emperor/content.js';
 import { KNOWLEDGE_EMPEROR_ABILITY_IDS, KNOWLEDGE_EMPEROR_PREPARATION_IDS } from '../../src/domain/knowledge-emperor/types.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { originalSage, directedInitial2, taught, prepared, promoted, prepareBottle, step, ke, ready, dose,
@@ -100,7 +102,7 @@ describe('Knowledge Emperor independent bottles and authenticated original archi
     expect(commands.some(c => c.type === 'EVENT_CHOICE' && c.choiceId === 'PAY')).toBe(true);
     expect(oldHermitRoots(s)).toEqual(oldHermitRoots(source)); expect(source.cash).toBe(770); expect(source.health).toBe(40); assertValidSliceState(s);
   }, 240_000);
-  it('requires all three real failed bottles and a real following week for independent resupply', () => {
+  it('rejects current independent supply while reading the old paid six-bottle protocol without washing IDs', () => {
     const initial = directedInitial2('THREE_FAILURES'); initial.actionsRemaining = initial.weeklyBudget = 3; // Explicit pre-journal UNIT budget.
     let s = ke(initial, { type: 'LEARN_GUIDANCE' }); rejectKnowledgeEmperor(s, { type: 'REQUEST_SUPPLY' });
     for (let number = 1; number <= 3; number++) {
@@ -108,12 +110,42 @@ describe('Knowledge Emperor independent bottles and authenticated original archi
       expect(s.progression.sequence).toBe(2);
     }
     s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 });
-    const before = s.cash; s = ke(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100);
-    const requested = s.knowledgeEmperor.resupply.requestedWeek!; rejectKnowledgeEmperor(s, { type: 'RECEIVE_SUPPLY' });
-    s = ready(s, { afterWeek: requested }); s = ke(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.knowledgeEmperor.bottles).toHaveLength(6); expect(s.knowledgeEmperor.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.knowledgeEmperor.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
-    expect(validateKnowledgeEmperorState(s)).toBe(true);
+    rejectKnowledgeEmperor(s, { type: 'REQUEST_SUPPLY' }); rejectKnowledgeEmperor(s, { type: 'RECEIVE_SUPPLY' });
+    expect(s.knowledgeEmperor.bottles).toHaveLength(3);
+    // Explicit archived-protocol compatibility fixture, never a current public
+    // supply action. Preserve the original private replay contract: 100p/1AP,
+    // then ordinary public weekly progress, then three independent old rows.
+    const archivedSupplyReceipt = (type: 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY') => {
+      const before = knowledgeEmperorAcquisitionBudget(s), cursor = s.random.cursor, week = s.week, revision = s.revision;
+      const actor = { ...journal(s)[0]!.actor, sourceHistoryDigest: null };
+      if (type === 'REQUEST_SUPPLY') {
+        s.actionsRemaining--; s.cash -= 100; s.knowledgeEmperor.resupply.requestedWeek = week;
+      } else {
+        for (let number = 4; number <= 6; number++) s.knowledgeEmperor.bottles.push({
+          id: `knowledge-emperor-potion-${number}`, source: knowledgeEmperorPotionSource(number, week), stockedWeek: week,
+          labourSteps: 0, acquiredWeek: null, consumedWeek: null, preparationWeek: null, status: 'SUPPLIER', outcome: null,
+        });
+        s.knowledgeEmperor.resupply.requestedWeek = null; s.knowledgeEmperor.resupply.deliveries++;
+      }
+      journal(s).push({ week, date: structuredClone(s.date), revision, command: { type }, actor, before,
+        after: knowledgeEmperorAcquisitionBudget(s), finance: knowledgeEmperorFinanceSnapshot(s),
+        cursorBefore: cursor, cursorAfter: cursor, randomBefore: null, randomAfter: null, check: null });
+      s.revision++;
+    };
+    const before = s.cash; archivedSupplyReceipt('REQUEST_SUPPLY'); expect(s.cash).toBe(before - 100);
+    expect(validateKnowledgeEmperorAcquisitionJournal(s)).toBe(true);
+    const requested = s.knowledgeEmperor.resupply.requestedWeek!;
+    s = ready(s, { afterWeek: requested }); archivedSupplyReceipt('RECEIVE_SUPPLY');
+    // Raw legacy schema remains readable by the historical validator. The
+    // current conservation resolver fails closed instead of relabelling 4..6.
+    const archived = { ...s, schemaVersion: 218, contentVersion: 'demoness-v218' } as unknown as SliceState;
+    expect(archived.knowledgeEmperor.bottles).toHaveLength(6);
+    expect(archived.knowledgeEmperor.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
+    expect(archived.knowledgeEmperor.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null && !b.recovery)).toBe(true);
+    expect(validateKnowledgeEmperorAcquisitionJournal(archived)).toBe(true);
+    expect(validateKnowledgeEmperorState(archived)).toBe(true);
+    expect(resolveKnowledgeEmperorOriginalsSnapshot(archived.knowledgeEmperor)).toBeNull();
+    expect(archived.knowledgeEmperor.bottles.slice(3).map(b => b.id)).toEqual(['knowledge-emperor-potion-4', 'knowledge-emperor-potion-5', 'knowledge-emperor-potion-6']);
   }, 240_000);
   it('closes old actions and rejectsS0, wrong path and invented promotion state', () => {
     const s = promoted(); rejectIntent(s, { type: 'SAGE', command: { type: 'LEARN_GUIDANCE' } });

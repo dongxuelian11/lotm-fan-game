@@ -1,3 +1,13 @@
+import { publicPryerFields, publicPryerDate, publicPryerCheck, publicPryerInjury, publicSageSite, publicSageMovement, type SagePublicSite } from '../sage/life.js';
+import { PRYER_ABILITY_IDS } from '../pryer/types.js';
+import { COMBAT_SCHOLAR_ABILITY_IDS } from '../combat-scholar/types.js';
+import { WIZARD_ABILITY_IDS } from '../wizard/types.js';
+import { SCROLL_PROFESSOR_ABILITY_IDS } from '../scroll-professor/types.js';
+import { STAR_MYSTIC_ABILITY_IDS } from '../star-mystic/types.js';
+import { MYSTIC_ABILITY_IDS } from '../mystic/types.js';
+import { PROPHECY_MASTER_ABILITY_IDS } from '../prophecy-master/types.js';
+import { SAGE_ABILITY_IDS } from '../sage/types.js';
+import { KNOWLEDGE_EMPEROR_ABILITY_IDS } from './types.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { DeterministicActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
@@ -82,11 +92,11 @@ export interface KnowledgeEmperorLifeAction { id: string; label: string; cost: s
 export interface KnowledgeEmperorLifeProjection {
   title: string; story: string; source: string; environment: string; activeCase: KnowledgeEmperorCaseId | null;
   inside: boolean; insideCase: boolean; reflected: boolean; preferredActionId: string | null;
-  site: SageSiteState; clockSeconds: number; playerLocation: SageLocation; playerTravelMetres: number;
-  pending: KnowledgeEmperorLifeWindow | null; pendingRemainingSeconds: number; currentAttempt: KnowledgeEmperorAttempt | null;
+  site: SagePublicSite; clockSeconds: number; playerLocation: SageLocation; playerTravelMetres: number;
+  pending: KnowledgeEmperorLifeWindow | null; pendingRemainingSeconds: number; currentAttempt: KnowledgeEmperorPublicAttempt | null;
   notes: KnowledgeEmperorNote[];
-  cases: { id: KnowledgeEmperorCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; permission: Record<Permission, Consent>; permissionVersion: number; contactOpen: boolean; returned: boolean; attempts: KnowledgeEmperorAttempt[] }[];
-  ledger: KnowledgeEmperorLifeReceipt[]; actions: KnowledgeEmperorLifeAction[];
+  cases: { id: KnowledgeEmperorCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; permission: Record<Permission, Consent>; permissionVersion: number; contactOpen: boolean; returned: boolean; attempts: KnowledgeEmperorPublicAttempt[] }[];
+  ledger: KnowledgeEmperorPublicLifeReceipt[]; actions: KnowledgeEmperorLifeAction[];
 }
 const KP: KnowledgeEmperorLifeAbilityId = 'hermit.s1.knowledge-power', PK: KnowledgeEmperorLifeAbilityId = 'hermit.s1.power-knowledge';
 const POSITION: Record<SageLocation, number> = { YARD: -4, OUTSIDE: -2, ENTRY: 0, A: 6, B: 10 };
@@ -470,11 +480,51 @@ export function projectKnowledgeEmperorLife(s: SliceState): KnowledgeEmperorLife
   return { title: '原档案的有限知识实践', story: '继承贤者遭遇后真实院外状态。每案新许可、新购一张有限纸，亲读原页才可手抄；两种能力都须真实来源、实付代价和实际应用。旧档灾难、原棍与耗尽的旧耗材仍保留原结局。',
     source: '同一原档区、原49岁艾瑞丝、原记录、原档页与四米导管；历史工房不会补充。', environment: '院外至入口2米，入口至锚位6米，锚位至原档架4米。每米消耗1精力并经过1秒；第二案原主也各自实际行走和支付精力。院外休整15便士、1行动、60秒恢复20精力，上限100。',
     activeCase: l.activeCase, inside: hasKnowledgeEmperorLifeLock(s), insideCase: hasKnowledgeEmperorLifeLock(s), reflected: l.reflected, preferredActionId: actions.find(a => a.preferredAction)?.id ?? actions.find(a => a.enabled)?.id ?? null,
-    site: structuredClone(site), clockSeconds: site.clockSeconds, playerLocation: site.playerLocation, playerTravelMetres: site.playerTravelMetres, pending: structuredClone(l.pending), pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - site.clockSeconds) : 0,
-    currentAttempt: structuredClone(current(l)), notes: structuredClone(l.notes),
+    site: publicSageSite(site), clockSeconds: site.clockSeconds, playerLocation: site.playerLocation, playerTravelMetres: site.playerTravelMetres, pending: l.pending ? publicKnowledgeEmperorWindow(l.pending) : null, pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - site.clockSeconds) : 0,
+    currentAttempt: current(l) ? publicKnowledgeEmperorAttempt(current(l)!) : null, notes: l.notes.map(publicKnowledgeEmperorNote),
     cases: CASES.map(info => { const r = l.cases[info.id], a = r.attempts[0]; return { ...info, observations: a ? [
       `实付${a.penniesSpent}便士、${a.spiritualitySpent}灵性（检定${a.checkSpiritualitySpent}，实际推力${a.forceSpiritualitySpent}）、${a.mindSpent}精神；本人移动${a.playerTravelMetres}米，原主移动${a.ownerTravelMetres}米，耗时${a.elapsedSeconds}秒。`,
       ...(a.reading?.facts ?? []), ...(a.applicationDone ? [`同一原页实际基线${a.baselineStabilization}，本次稳定值${a.measuredStabilization}。`] : []), ...(a.observedReaction ? [a.observedReaction] : []), ...(a.withdrawn ? ['本案许可已撤回，未用窗口不可恢复。'] : []),
-    ] : [], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限能力已实际作用并记录。' : '普通核验或明确停止；没有未应用的掌握奖励。', permission: structuredClone(r.permission), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }),
-    ledger: structuredClone(l.journal), actions };
+    ] : [], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限能力已实际作用并记录。' : '普通核验或明确停止；没有未应用的掌握奖励。', permission: publicPryerFields(r.permission, ['OWNER', 'ABILITY']), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(publicKnowledgeEmperorAttempt) }; }),
+    ledger: l.journal.map(publicKnowledgeEmperorLifeReceipt), actions };
 }
+
+const PUBLIC_MASTERY_IDS = [...PRYER_ABILITY_IDS, ...COMBAT_SCHOLAR_ABILITY_IDS, ...WIZARD_ABILITY_IDS, ...SCROLL_PROFESSOR_ABILITY_IDS, ...STAR_MYSTIC_ABILITY_IDS, ...MYSTIC_ABILITY_IDS, ...PROPHECY_MASTER_ABILITY_IDS, ...SAGE_ABILITY_IDS, ...KNOWLEDGE_EMPEROR_ABILITY_IDS];
+export const publicKnowledgeEmperorMastery = (m: Record<string, number>) => Object.fromEntries(PUBLIC_MASTERY_IDS.filter(id => Object.hasOwn(m, id)).map(id => [id, m[id]!]));
+export const publicKnowledgeEmperorBudget = (b: KnowledgeEmperorEncounterBudget): KnowledgeEmperorEncounterBudget => ({
+  ...publicPryerFields(b, ['cash', 'actions', 'health', 'mind', 'spirituality', 'pollution', 'gender', 'sequence', 'acting', 'injuryRisk']),
+  coreStats: publicPryerFields(b.coreStats, ['physique', 'perception', 'will', 'knowledge']), mastery: publicKnowledgeEmperorMastery(b.mastery),
+  completedSources: [...b.completedSources], injuries: b.injuries.map(publicPryerInjury),
+});
+export const publicKnowledgeEmperorReading = (r: KnowledgeEmperorReading): KnowledgeEmperorReading => ({
+  ...publicPryerFields(r, ['pageId', 'location', 'at', 'readingNumber', 'permissionVersion']), facts: [...r.facts],
+});
+export const publicKnowledgeEmperorLifeForceReceipt = (r: KnowledgeEmperorForceReceipt): KnowledgeEmperorForceReceipt => publicPryerFields(r,
+  ['id', 'caseId', 'noteId', 'substrateId', 'pageId', 'location', 'at', 'elapsedSeconds', 'spiritualitySpent', 'force', 'noteChargeSpent', 'noteWear', 'paperEdgeMovedMm', 'permissionVersion']);
+export const publicKnowledgeEmperorWindow = (w: KnowledgeEmperorLifeWindow): KnowledgeEmperorLifeWindow => publicPryerFields(w,
+  ['abilityId', 'caseId', 'noteId', 'substrateId', 'pageId', 'location', 'permissionVersion', 'createdAt', 'expiresAt', 'forceReceiptId']);
+export const publicKnowledgeEmperorNote = (n: KnowledgeEmperorNote): KnowledgeEmperorNote => ({
+  ...publicPryerFields(n, ['id', 'substrateId', 'caseId', 'ownerId', 'quantity', 'status', 'location', 'copied', 'paidPennies', 'boughtWeek', 'charges', 'wear', 'travelMetres']),
+  content: [...n.content], reading: n.reading ? publicKnowledgeEmperorReading(n.reading) : null,
+});
+export function publicKnowledgeEmperorAttempt(a: KnowledgeEmperorAttempt) { return {
+  ...publicPryerFields(a, ['week', 'method', 'closed', 'stopped', 'returned', 'withdrawn', 'elapsedSeconds', 'playerTravelMetres', 'ownerTravelMetres', 'energySpent', 'spiritualitySpent', 'checkSpiritualitySpent', 'forceSpiritualitySpent', 'mindSpent', 'penniesSpent', 'noteSubstrateId', 'forceReceiptValid', 'knowledgePowerTier', 'powerKnowledgeTier', 'applicationDone', 'verified', 'baselineStabilization', 'measuredStabilization', 'observedReaction', 'waits', 'ownerAccompanied', 'windowEnd', 'result']),
+  reading: a.reading ? publicKnowledgeEmperorReading(a.reading) : null,
+  forceReceipt: a.forceReceipt ? publicKnowledgeEmperorLifeForceReceipt(a.forceReceipt) : null,
+  appliedAbilityIds: [...a.appliedAbilityIds], siteAtStart: publicSageSite(a.siteAtStart), siteAtClose: a.siteAtClose ? publicSageSite(a.siteAtClose) : null,
+}; }
+export type KnowledgeEmperorPublicAttempt = ReturnType<typeof publicKnowledgeEmperorAttempt>;
+function publicKnowledgeEmperorLifeCommand(c: KnowledgeEmperorActivityCommand): KnowledgeEmperorActivityCommand {
+  if (c.type === 'PREPARE') return { type: c.type, caseId: c.caseId, method: c.method };
+  if (c.type === 'CONSENT' || c.type === 'WITHDRAW_CONSENT') return { type: c.type, caseId: c.caseId, permission: c.permission };
+  if (c.type === 'RECOVER_ENERGY' || c.type === 'REFLECT') return { type: c.type };
+  return { type: c.type, caseId: c.caseId };
+}
+export function publicKnowledgeEmperorLifeReceipt(r: KnowledgeEmperorLifeReceipt) { return {
+  ...publicPryerFields(r, ['week', 'revision', 'checkBase', 'outcome', 'elapsedSeconds', 'energyRecovered']),
+  date: publicPryerDate(r.date), command: publicKnowledgeEmperorLifeCommand(r.command), check: publicPryerCheck(r.check),
+  before: publicKnowledgeEmperorBudget(r.before), after: publicKnowledgeEmperorBudget(r.after),
+  paid: publicPryerFields(r.paid, ['actions', 'pennies', 'spirituality', 'mind', 'energy', 'forceSpirituality']),
+  moves: r.moves.map(publicSageMovement), siteBefore: publicSageSite(r.siteBefore), siteAfter: publicSageSite(r.siteAfter),
+}; }
+export type KnowledgeEmperorPublicLifeReceipt = ReturnType<typeof publicKnowledgeEmperorLifeReceipt>;
