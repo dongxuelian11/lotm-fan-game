@@ -58,7 +58,23 @@ describe('Knowledge Emperor actual651 inheritance and authoritative continuation
     expect(s.knowledgeEmperor.encounter).toMatchObject({ targetId: 'KE1-DARIAN', enemyHealth: 100, enemyMind: 100, enemySpirituality: 120 });
   }, 120_000);
   it('shows the real original current location even before promotion, then advances only the cloned new site', () => {
-    const initial = originalSage(); expect(projectKnowledgeEmperorLife(initial).site).toEqual(initial.sage.encounter.currentSite);
+    const fields = <T, K extends keyof T>(value: T, keys: readonly K[]) => Object.fromEntries(keys.map(key => [key, value[key]]));
+    const expectedSite = (site: ReturnType<typeof getKnowledgeEmperorCurrentSite>) => ({
+      ...fields(site, ['siteId', 'introducedWeek', 'clockSeconds', 'playerLocation', 'playerTravelMetres', 'playerEnergy', 'formEnergySpent', 'assimilationExposure', 'body']),
+      introducedDate: site.introducedDate ? fields(site.introducedDate, ['epoch', 'year', 'month', 'day']) : null,
+      form: fields(site.form, ['active', 'expiresAt', 'anchorId']),
+      iris: site.iris ? fields(site.iris, ['id', 'name', 'age', 'alive', 'willing', 'location', 'energy', 'travelMetres', 'consent']) : null,
+      record: site.record ? fields(site.record, ['id', 'owner', 'quantity', 'location', 'travelMetres']) : null,
+      conduit: fields(site.conduit, ['id', 'from', 'to', 'metres', 'connected', 'traversals']),
+      archive: fields(site.archive, ['id', 'owner', 'quantity', 'location', 'readings', 'verifications']),
+      materials: site.materials.map(material => fields(material, ['id', 'caseId', 'ownerId', 'quantity', 'status', 'location', 'wear', 'paidPennies', 'preparedWeek'])),
+      actorMoves: site.actorMoves.map(move => ({ ...fields(move, ['actorId', 'from', 'to', 'mode', 'metres', 'seconds']), ...(move.itemIds ? { itemIds: [...move.itemIds] } : {}) })),
+    });
+    const initial = originalSage(), initialFrozen = structuredClone(initial), initialSite = initial.sage.encounter.currentSite!, initialView = projectKnowledgeEmperorLife(initial);
+    expect(initialView.site).toStrictEqual(expectedSite(initialSite)); expect(initialSite.source).not.toBeNull(); expect(initialView.site).not.toHaveProperty('source');
+    expect(initial).toEqual(initialFrozen); expect(initial.random).toEqual(initialFrozen.random);
+    initialView.site.playerEnergy--; initialView.site.iris!.energy--; initialView.site.record!.travelMetres++; initialView.site.materials[0]!.wear++;
+    expect(initial).toEqual(initialFrozen); expect(initial.random).toEqual(initialFrozen.random);
     let s = promoted(); const old = oldHermitRoots(s), original = structuredClone(s.knowledgeEmperor.sourceScene!.originals);
     for (const command of [
       { type: 'OBSERVE', caseId: 'knowledge-power' }, { type: 'CONSENT', caseId: 'knowledge-power', permission: 'OWNER' },
@@ -67,6 +83,11 @@ describe('Knowledge Emperor actual651 inheritance and authoritative continuation
     expect(getKnowledgeEmperorCurrentSite(s)).toMatchObject({ playerLocation: 'ENTRY', playerEnergy: 28, playerTravelMetres: 68 });
     expect(oldHermitRoots(s)).toEqual(old); expect(s.knowledgeEmperor.sourceScene!.originals).toEqual(original);
     expect(s.sage.encounter.currentSite).toMatchObject({ playerLocation: 'OUTSIDE', playerEnergy: 30, clockSeconds: 510 }); expect(validateKnowledgeEmperorLifeState(s)).toBe(true);
+    const frozen = structuredClone(s), view = projectKnowledgeEmperorLife(s);
+    expect(view.site).toStrictEqual(expectedSite(getKnowledgeEmperorCurrentSite(s))); expect(view.site).not.toHaveProperty('source');
+    expect(s).toEqual(frozen); expect(s.random).toEqual(frozen.random);
+    view.site.playerEnergy--; view.site.materials[0]!.wear++;
+    expect(s).toEqual(frozen); expect(s.random).toEqual(frozen.random);
   }, 120_000);
   it('closes real old acquisition, workshop, ritual, life and encounter commands after guidance and promotion', () => {
     for (const s of [taught(), promoted()]) {

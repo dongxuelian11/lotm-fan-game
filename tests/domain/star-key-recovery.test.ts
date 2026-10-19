@@ -19,6 +19,18 @@ import { ae, originalPlaneswalker, prepareBottle, ready, originalDoorRoots } fro
 import { assertValidSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyDoorState } from '../helpers/empty-death-capture.js';
+import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
+import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 
 const original = (n: number) => `star-key-potion-${n}`;
@@ -155,9 +167,23 @@ describe('Star Key R218 same-original recovery', () => {
       expect(reopened).toEqual(s); expect(resolveStarKeyOriginals(reopened)?.characteristics).toHaveLength(3);
       expect(() => assertValidSliceState({ ...s, schemaVersion: CURRENT_SCHEMA_VERSION + 1 })).toThrow();
       expect(() => migrateSliceState({ ...s, schemaVersion: CURRENT_SCHEMA_VERSION + 1 })).toThrow();
-      const { door: _door, ...withoutDoor } = s;
-      expect(() => migrateSliceState({ ...withoutDoor, schemaVersion: STAR_KEY_RECOVERY_SCHEMA_VERSION - 1, contentVersion: 'death-v214' }))
+      // Only omit the verified empty schema215–226 additions. Keep the real
+      // StarKey recovery evidence so the schema214 boundary rejects that history.
+      assertEmptyDoorState(s); assertEmptyErrorAscentState(s); assertEmptyTwilightGiantState(s);
+      assertEmptyDemonessState(s); assertEmptyHermitState(s); assertEmptyHangedManState(s);
+      assertEmptyAbyssState(s); assertEmptyChainedState(s); assertEmptyWheelOfFortuneState(s);
+      assertEmptyBlackEmperorState(s); assertEmptyJusticiarState(s); assertEmptyMotherState(s);
+      const beforeLegacyCheck = stableStringify(s);
+      const { door: _door, errorAscent: _errorAscent, twilightGiant: _twilightGiant, demoness: _demoness,
+        hermit: _hermit, hangedMan: _hangedMan, abyss: _abyss, chained: _chained,
+        wheelOfFortune: _wheelOfFortune, blackEmperor: _blackEmperor, justiciar: _justiciar,
+        mother: _mother, ...withoutPostDeathRoots } = s;
+      const legacy = { ...withoutPostDeathRoots, schemaVersion: STAR_KEY_RECOVERY_SCHEMA_VERSION - 1, contentVersion: 'death-v214' };
+      const beforeLegacy = stableStringify(legacy);
+      expect(() => migrateSliceState(legacy))
         .toThrow('Unexpected StarKey recovery state in a legacy save');
+      expect(stableStringify(legacy)).toBe(beforeLegacy);
+      expect(stableStringify(s)).toBe(beforeLegacyCheck);
       expect(validateStarKeyAcquisitionJournal({ ...s, schemaVersion: STAR_KEY_RECOVERY_SCHEMA_VERSION - 1 })).toBe(false);
     } finally { spy.mockRestore(); }
   }, 180000);

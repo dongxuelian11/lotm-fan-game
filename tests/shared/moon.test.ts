@@ -14,6 +14,18 @@ import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedMoonSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyDoorState } from '../helpers/empty-death-capture.js';
+import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
+import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 
 const CAPTURE = 'tests/fixtures/perfecter-v02110/boundary-798-learn_guidance.json';
@@ -49,17 +61,18 @@ describe('Moon exact current schema and public command boundary', () => {
     assertValidSliceState(copy); expect(stableStringify(state)).toBe(before);
   });
 
-  it.each(['beforeLast', 'final'] as const)('migrates actual captured208 %s by adding exactly empty Moon, Darkness, White Tower, Tyrant, Sun and Death and preserving every old field and raw byte', key => {
+  it.each(['beforeLast', 'final'] as const)('migrates actual captured208 %s by adding exactly the named empty schema209–226 roots and preserving every old field and raw byte', key => {
     const bytes = readFileSync(CAPTURE), raw = readObjectEntry<Record<string, unknown>>(CAPTURE, key);
     expect(hash(bytes)).toBe(CAPTURE_SHA256);
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([208, 'perfecter-v208']);
-    expect(Object.hasOwn(raw, 'moon')).toBe(false);
-    expect(Object.hasOwn(raw, 'darkness')).toBe(false); expect(Object.hasOwn(raw, 'whiteTower')).toBe(false);
-    expect(Object.hasOwn(raw, 'tyrant')).toBe(false); expect(Object.hasOwn(raw, 'sun')).toBe(false); expect(Object.hasOwn(raw, 'death')).toBe(false);
+    const addedRoots = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent',
+      'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune',
+      'blackEmperor', 'justiciar', 'mother'] as const;
+    for (const root of addedRoots) expect(Object.hasOwn(raw, root)).toBe(false);
     const before = stableStringify(raw), next = migrateSliceState(raw);
     expect([next.schemaVersion, next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual(['darkness', 'death', 'moon', 'sun', 'tyrant', 'whiteTower']);
-    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death'].sort());
+    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual([...addedRoots].sort());
+    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), ...addedRoots].sort());
     for (const [field, value] of Object.entries(raw)) {
       if (field !== 'schemaVersion' && field !== 'contentVersion') same(next[field as keyof SliceState], value);
     }
@@ -68,6 +81,10 @@ describe('Moon exact current schema and public command boundary', () => {
     expect(next.whiteTower).toStrictEqual(createWhiteTowerState());
     expect(next.tyrant).toStrictEqual(createTyrantState());
     expect(next.sun).toStrictEqual(createSunState());expect(next.death).toStrictEqual(createDeathState());
+    assertEmptyDoorState(next); assertEmptyErrorAscentState(next); assertEmptyTwilightGiantState(next);
+    assertEmptyDemonessState(next); assertEmptyHermitState(next); assertEmptyHangedManState(next);
+    assertEmptyAbyssState(next); assertEmptyChainedState(next); assertEmptyWheelOfFortuneState(next);
+    assertEmptyBlackEmperorState(next); assertEmptyJusticiarState(next); assertEmptyMotherState(next);
     same(migrateSliceState(next), next);
     expect(stableStringify(raw)).toBe(before);
     expect(hash(readFileSync(CAPTURE))).toBe(CAPTURE_SHA256);
