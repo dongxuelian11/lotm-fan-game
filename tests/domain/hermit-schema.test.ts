@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
+import { createHangedManState } from '../../src/domain/hanged-man/index.js';
 import { createHermitState, validateHermitState } from '../../src/domain/hermit/index.js';
 import { openHermitRuntimeSession } from '../../src/domain/hermit/owned-session.js';
 import { assertValidSliceState, createSliceRun } from '../../src/domain/slice/index.js';
@@ -10,7 +11,7 @@ import type { SliceState } from '../../src/domain/slice/types.js';
 
 const fresh = (): SliceState => createSliceRun('hermit-schema-run', sliceDefaultCreationSelection, 'hermit-schema-seed');
 const legacy218 = () => {
-  const { hermit: _root, ...state } = fresh();
+  const { hermit: _root, hangedMan: _next, ...state } = fresh();
   return { ...state, schemaVersion: 218 as const, contentVersion: 'demoness-v218' as const };
 };
 
@@ -27,9 +28,10 @@ describe('Hermit schema219 exact additive admission', () => {
   it('upgrades218 by adding only the empty root and format while preserving all old fields', () => {
     const source = legacy218(), before = structuredClone(source), current = migrateSliceState(source);
     expect(source).toStrictEqual(before);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'hermit'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'hermit', 'hangedMan'].sort());
     expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.hermit).toStrictEqual(createHermitState());
+    expect(current.hangedMan).toStrictEqual(createHangedManState());
     for (const [key, value] of Object.entries(source)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(current[key as keyof SliceState], `Changed original ${key}`).toStrictEqual(value);

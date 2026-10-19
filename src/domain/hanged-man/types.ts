@@ -78,7 +78,7 @@ export interface HangedManWindow {
 export interface HangedManScene {
   phase: 'PREPARATION' | 'PRACTICE'; status: 'ACTIVE' | 'ABORTED' | 'COMPLETED';
   playerPosition: HangedManPosition; playerTravelMetres: number; originalDepartureEventId: string | null;
-  owner: { id: 'THT3-MARA'; alive: boolean; position: 'OUTSIDE'; consent: HangedManConsent; permissionVersion: number; permissionWeek: number | null; permissionEventId: string | null };
+  owner: { id: 'HM223-KEEPER'; name: '伊文'; age: 42; alive: boolean; position: 'OUTSIDE'; consent: HangedManConsent; permissionVersion: number; permissionWeek: number | null; permissionEventId: string | null };
   workers: HangedManWorker[];
   /** These are the sole mutable continued spirits; frozen predecessor copies are evidence. */
   spirits: ThreeHeadedTemplarSpirits;

@@ -228,7 +228,7 @@ export function DarkAngelPanel({ value, busy, blocked = false, error = null, onC
       <section aria-label="当前时钟与一次能力窗口"><h4>实际时间与下一次作用</h4>
         <p>现场时钟{life.clockSeconds}秒；{attempt ? `本次实际经过${attempt.elapsedSeconds}秒。` : '本案尚无实际尝试。'}页面停留不会推进现场，等待须提交实际等待动作。</p>
         {pendingWindow ? <><p>{pendingWindow.abilityId === 'hanged-man.s1.single-spirit-guidance' ? '单灵引导' : '单灵护持'}窗口：从{pendingWindow.createdAt}秒至{pendingWindow.expiresAt}秒，还剩{life.pendingRemainingSeconds}秒。</p>
-          <p>来源为{pendingWindow.sourceSpirit.name}的{METHODS[pendingWindow.selectedMethod]}，只针对{pendingWindow.cardId}、本案封条{pendingWindow.stripId}与第{pendingWindow.permissionVersion}次许可，位置为{PLACE[pendingWindow.location]}。开窗尚不等于实际应用。</p></>
+          <p>来源为{pendingWindow.spiritName}的{METHODS[pendingWindow.selectedMethod]}，只针对{pendingWindow.cardId}、本案封条{pendingWindow.stripId}与第{pendingWindow.permissionVersion}次许可，位置为{PLACE[pendingWindow.location]}。开窗尚不等于实际应用。</p></>
           : <p>当前没有尚未耗用的能力窗口。成功施放、实际应用、失败、到期与停止分别记录。</p>}
         <p>每次支付本人8灵性、2精神及选定原灵3灵性，按知识18检定；失败总共损失4精神。成功窗口最长20秒，一次只能保留一个。移动、停止、撤回、强光或到期使未用窗口失效；已付成本不退。</p>
         {attempt && <p>本次检定：{attempt.castTier === null ? '尚未尝试' : TIER[attempt.castTier]}。{attempt.selectedSpiritId ? `选定${site.spirits[attempt.selectedSpiritId].name}，方法${attempt.selectedMethod ? METHODS[attempt.selectedMethod] : '尚未选择'}。` : '尚未选择本次施法原灵。'}窗口记录：{WINDOW[attempt.windowEnd]}。{attempt.withdrawn ? '本次许可已撤回。' : ''}{attempt.stopped ? '方法已经停止。' : ''}实际应用{attempt.appliedAbilityIds.length}项。</p>}

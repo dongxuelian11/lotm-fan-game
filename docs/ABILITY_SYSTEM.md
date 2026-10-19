@@ -342,6 +342,8 @@ V3底稿原列17条稳定能力记录；下表仅将序列0两行对齐214，序
 
 ### 倒吊人途径稳定能力记录V1
 
+本节旧稳定记录属于历史设计讨论。当前0.223.0序列0候选仅接入[短压廊](stages/0223-hanged-man.md)的有限承压与单灵贴封；完整原文方仪、通用复活及其他0级能力细则尚未核实，不能把历史草稿当成已实现能力。
+
 状态：`HANGED_MAN_STABLE_ABILITY_RECORDS_USER_CONFIRMED_V1 / 27_RECORDS / EVENT_AND_COMBAT_IDENTITIES_SEPARATED / GRAZING_CAPACITY_3_4_5_6_7_USER_CONFIRMED / TRINITY_THREE_FULL_INDEPENDENT_WHEELS_USER_CONFIRMED / PRIMARY_TEXT_PENDING / NOT_IMPLEMENTED`
 
 倒吊人采用27条稳定能力记录。具体祈求内容、秘密、影兽、血肉来源、牧放灵魂和秽语句式属于内容数据，不为每个对象创建新的能力经验条。事件身份和战斗身份分别结算；只有已准备仪式、血肉储备、随身牧群及既有伤势/污染能通过开战快照进入战斗。
@@ -372,9 +374,8 @@ V3底稿原列17条稳定能力记录；下表仅将序列0两行对齐214，序
 | `hanged-man.degeneration-authority` | 1 | 令身体、物品、投影和能力背叛其主人 | 战斗：能力背叛；事件：组织、誓言和世界堕落 |
 | `hanged-man.dark-ocean` | 1 | 形成吞噬攻击、干扰认知与腐化对象的黑暗海洋 | 战斗：多人首击削弱；事件：地区灾难与封锁 |
 | `hanged-man.depraved-dependents` | 1 | 将牧放灵魂堕落为服从的临时眷属群 | 战斗：聚合群体行动；事件：灵魂关系与教派后果 |
-| `hanged-man.sin-bearing` | 0 | 承担本应属于他者的伤害、死亡、罪责或惩罚 | 战斗：转移一次盟友败者后果；事件：代罪与社会/神秘裁决 |
-| `hanged-man.sacrifice` | 0 | 以自身真实毁灭换取一个预先声明的有限希望 | 战斗：死亡后保证一个目标结果；事件：世界终局与周目评价 |
-| `hanged-man.mutation-filth` | 0 | 污秽和变异既有身体、状态、物品或能力 | 战斗：次攻/控制；事件：创造怪物、污染地点和权柄冲突 |
+| `hanged-man.s0.finite-pressure-bearing` | 0 | 本人原位20秒短窗，实耗行动、灵性、精神，下一次局部测试实际承担3健康 | 当前有限候选：眼前已查验隔离装置；离位、到期、撤回失效，不转移死亡 |
+| `hanged-man.s0.single-spirit-seal` | 0 | 一位实际已牧内收原灵、已选能力与同一实购封条，20秒内真实贴封才应用 | 当前有限候选：本人及原灵付真实成本；无扩容、复制、额外途径或原灵复原 |
 
 事件用途、掌握度与十张位格锚卡见[日常技能效果](PATHWAY_DAILY_EFFECTS.md#倒吊人途径日常效果完整设计已确认v1)；战斗数值与特殊机制见[量化与配速](PATHWAY_QUANTITATIVE_DESIGN.md#倒吊人途径combat-v3完整数值与机制接线已确认v1)和[战斗机制](PATHWAY_MECHANISMS.md#倒吊人途径呓语血肉牧羊堕落机制已确认v1)。
 

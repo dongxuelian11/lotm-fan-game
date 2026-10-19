@@ -5,7 +5,7 @@ import { HANGED_MAN_ABILITY_IDS, HANGED_MAN_EXIT_METRES, HANGED_MAN_PRACTICE_COS
 import type { HangedManCommand, HangedManEffect, HangedManScene, HangedManSceneHost, HangedManSource } from './types.js';
 
 const SCENE_COMMANDS = new Set([
-  'LEAVE_ORIGINAL_COURT', 'RETURN_ON_FOOT', 'ASK_OWNER', 'WITHDRAW_OWNER', 'APPROACH', 'INSPECT_EXIT', 'INSPECT_DEVICE',
+  'LEAVE_ORIGINAL_COURT', 'ASK_OWNER', 'WITHDRAW_OWNER', 'APPROACH', 'INSPECT_EXIT', 'INSPECT_DEVICE',
   'BUY_BRACE', 'BUY_SEAL', 'USE_WINCH', 'OPEN_EXIT', 'CLOSE_EXIT', 'ASK_WORKER', 'WITHDRAW_WORKER', 'ARRIVE_WORKER',
   'EXIT_WORKER', 'INSPECT_SEGMENT', 'OPEN_SEGMENT', 'CLOSE_SEGMENT', 'CROSS', 'REPORT_EVACUATION', 'START_PRACTICE',
   'BEAR_PRESSURE', 'TEST_PRESSURE', 'COOPERATIVE_SEAL', 'APPLY_SEAL', 'MANUAL_SEAL', 'STOP_METHOD', 'END_CONTACT', 'WAIT_10', 'WALK_EXIT', 'REPORT_RETURN',
@@ -18,6 +18,7 @@ const outside = (s: HangedManScene) => s.playerPosition === 'OUTSIDE' && s.owner
 const settled = (s: HangedManScene) => outside(s) && !s.window && !s.contact && !s.segments.A.open && !s.segments.B.open && s.exit.door === 'CLOSED';
 const blankSeal = (s: HangedManScene) => s.seals.find(seal => seal.status === 'BLANK' && seal.charges === 1);
 const hasReceipt = (s: HangedManScene, kind: string) => s.receipts.some(r => r.kind === kind);
+const workerFinished = (w: HangedManScene['workers'][number]) => !!w.passage.a && !!w.passage.b && !!w.passage.exit;
 const spiritDigest = (s: HangedManScene, id: ThreeHeadedTemplarSpiritId) => sha256Hex(stableStringify(s.spirits[id]));
 const route = (segment: HangedManSegmentId): { from: HangedManPosition; to: HangedManPosition } => segment === 'A' ? { from: 'ENTRY', to: 'MIDPOINT' } : { from: 'MIDPOINT', to: 'GATE' };
 function crossing(s: HangedManScene, c: Extract<HangedManCommand, { type: 'CROSS' }>): HangedManPosition | null {
@@ -30,7 +31,7 @@ function spiritReady(s: HangedManScene, id: ThreeHeadedTemplarSpiritId, payment 
 }
 function windowCurrent(s: HangedManScene, h: HangedManSceneHost, seconds = 0): boolean {
   const w = s.window;
-  if (!w || w.actorId !== h.actorId || w.startPosition !== s.playerPosition || w.targetId !== s.device.id || w.targetVersion !== s.device.revision || w.permissionVersion !== s.owner.permissionVersion || !permitted(s, h) || h.second < w.createdAt || h.second + seconds >= w.expiresAt) return false;
+  if (!w || w.actorId !== h.actorId || w.startPosition !== s.playerPosition || w.targetId !== s.device.id || w.targetVersion !== s.device.revision || !s.device.inspectedEventId || w.permissionVersion !== s.owner.permissionVersion || !permitted(s, h) || h.second < w.createdAt || h.second + seconds >= w.expiresAt) return false;
   return w.kind === 'PRESSURE_BEARING' || !!(s.contact && w.spiritId && spiritReady(s, w.spiritId, false) && w.selectedMethod === METHODS[w.spiritId] && w.spiritDigest === spiritDigest(s, w.spiritId) && s.seals.some(seal => seal.id === w.sealId && seal.status === 'BLANK' && seal.charges === 1));
 }
 function cost(c: HangedManCommand, s: HangedManScene): HangedManEffect {
@@ -57,7 +58,7 @@ export function createHangedManScene(source: HangedManSource): HangedManScene {
   if (!site.owner.alive || site.owner.location !== 'OUTSIDE' || !['START', 'OUTSIDE'].includes(site.playerLocation) || operation.focus || operation.suppressedUntil !== null || !operation.contained) throw Error('须先收束原院的作用，让玛拉实际退出，并走回原院入口。');
   return {
     phase: 'PREPARATION', status: 'ACTIVE', playerPosition: site.playerLocation === 'START' ? 'ORIGINAL_ENTRY' : 'OUTSIDE', playerTravelMetres: site.playerTravelMetres, originalDepartureEventId: null,
-    owner: { id: 'THT3-MARA', alive: site.owner.alive, position: 'OUTSIDE', consent: 'CLOSED', permissionVersion: 0, permissionWeek: null, permissionEventId: null },
+    owner: { id: 'HM223-KEEPER', name: '伊文', age: 42, alive: true, position: 'OUTSIDE', consent: 'CLOSED', permissionVersion: 0, permissionWeek: null, permissionEventId: null },
     workers: HANGED_MAN_WORKERS.map(w => ({ ...w, alive: true, health: 100, energy: 80, position: 'OUTSIDE', walkedMetres: 0, consent: 'UNASKED', permissionVersion: 0, permissionEventId: null, paidEventId: null, arrivalEventId: null, passage: { a: null, b: null, exit: null } })),
     spirits: structuredClone(site.spirits), originalOperation: structuredClone(operation),
     segments: { A: { inspectedEventId: null, open: false }, B: { inspectedEventId: null, open: false } },
@@ -80,10 +81,10 @@ export function hangedManSceneBlock(s: HangedManScene, c: HangedManCommand, h: H
   if (s.status === 'ABORTED' && !CLEANUP.has(c.type)) return '本次已停止；先用普通退路逐人退出并关好通路。';
   if (s.window && !windowCurrent(s, h) && !CLEANUP.has(c.type)) return '短窗已失效；先松手收束，已付费用保留。';
   const needsPermission = ['ASK_WORKER', 'ARRIVE_WORKER', 'BUY_BRACE', 'BEAR_PRESSURE', 'TEST_PRESSURE', 'COOPERATIVE_SEAL', 'APPLY_SEAL', 'MANUAL_SEAL'];
-  if (needsPermission.includes(c.type) && !permitted(s, h)) return '须取得玛拉对本周这次短压廊作业的新许可。';
+  if (needsPermission.includes(c.type) && !permitted(s, h)) return '须取得短廊值守者伊文对本周这次作业的新许可。';
   switch (c.type) {
     case 'LEAVE_ORIGINAL_COURT': return s.playerPosition !== 'ORIGINAL_ENTRY' || !!s.originalDepartureEventId ? '本人已经实际离开原院入口。' : null;
-    case 'ASK_OWNER': return !settled(s) || !s.owner.alive || permitted(s, h) || s.phase === 'PREPARATION' && !!s.evacuationReportEventId ? '须先在廊外收好通路，再向玛拉当面询问本次许可。' : null;
+    case 'ASK_OWNER': return !settled(s) || !s.owner.alive || permitted(s, h) || s.phase === 'PREPARATION' && !!s.evacuationReportEventId ? '须先在廊外收好通路，再向值守者伊文当面询问本次许可。' : null;
     case 'WITHDRAW_OWNER': return s.owner.consent !== 'GRANTED' ? '当前没有可以撤回的许可。' : null;
     case 'INSPECT_EXIT': return s.playerPosition !== 'OUTSIDE' || !!s.exit.inspectedEventId ? '须在廊外查验尚未检查的普通侧门、绞盘和各停靠点退路。' : null;
     case 'USE_WINCH': return !s.exit.inspectedEventId || s.exit.winch !== 'READY' ? '须先查明可用绞盘；已经锁好的绞盘不用重复操作。' : null;
@@ -104,13 +105,13 @@ export function hangedManSceneBlock(s: HangedManScene, c: HangedManCommand, h: H
     case 'BUY_BRACE': return s.playerPosition !== 'GATE' || !s.device.inspectedEventId || !!s.device.braceBoughtEventId || s.window ? '须在已查验的装置旁领用并装好本次尚未购买的普通支撑。' : null;
     case 'ASK_WORKER': {
       const w = worker(s, c.workerId);
-      if (s.phase !== 'PREPARATION' || h.actions < 1 || s.playerPosition !== 'OUTSIDE' || !w || !w.alive || w.health <= 0 || w.age < 18 || w.position !== 'OUTSIDE' || w.consent === 'GRANTED' || !!w.passage.exit) return '须在廊外向尚未完成本班的成年人独立询问，并先留足报告所需的一行动。';
+      if (s.phase !== 'PREPARATION' || h.actions < 1 || s.playerPosition !== 'OUTSIDE' || !w || !w.alive || w.health <= 0 || w.age < 18 || w.position !== 'OUTSIDE' || w.consent === 'GRANTED' || workerFinished(w)) return '须在廊外向尚未完成本班的成年人独立询问，并先留足报告所需的一行动。';
       return !s.segments.A.inspectedEventId || !s.segments.B.inspectedEventId || !s.device.testEventId || s.device.testMethod !== 'ORDINARY' || s.exit.door !== 'OPEN' || w.energy < 16 ? '先完成装置的普通支撑测试、两段查验和侧门准备，并确认此人足够走完与退出。' : null;
     }
     case 'WITHDRAW_WORKER': return worker(s, c.workerId)?.consent !== 'GRANTED' ? '这位成年人当前没有作业同意可撤回。' : null;
     case 'ARRIVE_WORKER': {
       const w = worker(s, c.workerId);
-      return s.phase !== 'PREPARATION' || !w || w.position !== 'OUTSIDE' || !w.alive || w.health <= 0 || w.consent !== 'GRANTED' || !w.paidEventId || w.passage.exit || s.exit.door !== 'OPEN' || w.energy < 16 ? '须本人自愿、已经收取本班工钱且保留完整退出余力，才能亲走到入口。' : null;
+      return s.phase !== 'PREPARATION' || !w || w.position !== 'OUTSIDE' || !w.alive || w.health <= 0 || w.consent !== 'GRANTED' || !w.paidEventId || workerFinished(w) || s.exit.door !== 'OPEN' || w.energy < 16 ? '须本人自愿、已经收取本班工钱且保留完整退出余力，才能亲走到入口。' : null;
     }
     case 'EXIT_WORKER': {
       const w = worker(s, c.workerId);
@@ -121,8 +122,9 @@ export function hangedManSceneBlock(s: HangedManScene, c: HangedManCommand, h: H
     case 'BUY_SEAL': return s.phase !== 'PRACTICE' || s.playerPosition !== 'OUTSIDE' || !!blankSeal(s) || !!s.device.sealedEventId ? '须在廊外购买本次尚未持有的新封条；已经贴好的封条不会免费重置。' : null;
     case 'BEAR_PRESSURE': case 'COOPERATIVE_SEAL': {
       if (h.sequence !== 0 || s.phase !== 'PRACTICE' || s.playerPosition !== 'GATE' || s.workers.some(w => w.position !== 'OUTSIDE') || !s.device.inspectedEventId || s.window || s.contact) return '须晋升后本人独自在已检查的封闩旁，两位工人仍在廊外，且没有其他短窗。';
-      if (c.type === 'BEAR_PRESSURE') return s.pressureApplied || !!s.device.testEventId ? '本轮已经完成实际测试，不能重复计入承压应用。' : null;
-      return !!s.device.sealedEventId || !s.device.testEventId || !blankSeal(s) || !spiritReady(s, c.spiritId) ? '先实际测试，持有新封条，并选择仍内收可用、已选短暂屏护或局部遮护的同一原灵。' : null;
+      if (c.type === 'BEAR_PRESSURE') return s.pressureApplied || !!s.device.testEventId ? '本轮已经完成实际测试，不能重复计入承压应用。' : h.health <= HANGED_MAN_PRACTICE_COSTS.pressureBearing.appliedHealth ? '须先保留实际测试要承担的三健康余力。' : null;
+      if (c.type === 'COOPERATIVE_SEAL') return !!s.device.sealedEventId || !s.device.testEventId || !blankSeal(s) || !spiritReady(s, c.spiritId) ? '先实际测试，持有新封条，并选择仍内收可用、已选短暂屏护或局部遮护的同一原灵。' : null;
+      return '当前没有可开始的有限作用。';
     }
     case 'TEST_PRESSURE': return s.playerPosition !== 'GATE' || !s.device.inspectedEventId || !!s.device.testEventId || (s.window ? s.window.kind !== 'PRESSURE_BEARING' || !windowCurrent(s, h, e.seconds) : !s.device.braced) ? '须在已检查的封闩旁，以有效承压短窗或已安装普通支撑完成本轮一次实际测试。' : null;
     case 'APPLY_SEAL': return s.phase !== 'PRACTICE' || !!s.device.sealedEventId || s.window?.kind !== 'COOPERATIVE_SEAL' || !windowCurrent(s, h, e.seconds) ? '须持续接触同一封闩和同一张新封条，并在有效协同短窗内实际贴封。' : null;
@@ -157,8 +159,8 @@ export function applyHangedManScene(scene: HangedManScene, command: HangedManCom
   const s = structuredClone(scene), c = command, h = host, e = cost(c, s), notes: string[] = [];
   switch (c.type) {
     case 'LEAVE_ORIGINAL_COURT': move(s, h, 'PLAYER', 'OUTSIDE', 2); s.originalDepartureEventId = h.eventId; notes.push('本人从原院入口实际走两米到院外；原人、原物与旧封存状态均未改变。'); break;
-    case 'ASK_OWNER': s.status = 'ACTIVE'; s.owner.consent = 'GRANTED'; s.owner.permissionVersion++; s.owner.permissionWeek = h.week; s.owner.permissionEventId = h.eventId; receipt(s, h, 'OWNER_PERMISSION', s.owner.id, 'OUTSIDE'); notes.push('玛拉在廊外当面同意本周这次作业；原院许可没有沿用，她也没有重新进入廊内。'); break;
-    case 'WITHDRAW_OWNER': s.owner.consent = 'WITHDRAWN'; s.owner.permissionVersion++; s.status = 'ABORTED'; endWindow(s, h, 'OWNER_WITHDREW'); notes.push('玛拉撤回本次许可，立即结束作用；所有人仍在实际位置，普通退路保留。'); break;
+    case 'ASK_OWNER': s.status = 'ACTIVE'; s.owner.consent = 'GRANTED'; s.owner.permissionVersion++; s.owner.permissionWeek = h.week; s.owner.permissionEventId = h.eventId; receipt(s, h, 'OWNER_PERMISSION', s.owner.id, 'OUTSIDE'); notes.push('42岁的值守者伊文在短廊外当面同意本周这次作业；原院玛拉仍留在原院外，本次没有沿用她的旧许可。'); break;
+    case 'WITHDRAW_OWNER': s.owner.consent = 'WITHDRAWN'; s.owner.permissionVersion++; s.status = 'ABORTED'; endWindow(s, h, 'OWNER_WITHDREW'); notes.push('值守者伊文撤回本次许可，立即结束作用；所有人仍在实际位置，普通退路保留。'); break;
     case 'INSPECT_EXIT': s.exit.inspectedEventId = h.eventId; s.exit.winch = 'READY'; notes.push('查明普通绞盘、侧门和各停靠点的退路，入口、中点、封闩至廊外分别为两米、五米、八米；各处可拉动同一控制索。'); break;
     case 'USE_WINCH': s.exit.winch = 'LOCKED'; notes.push('就地拉动已检查的控制索，把普通绞盘锁稳；没有开启旧封存残余，也没有消耗行动点或工钱。'); break;
     case 'OPEN_EXIT': s.exit.door = 'OPEN'; notes.push('普通侧门已实际打开，各停靠点都能沿已查明退路步行离开。'); break;
@@ -173,10 +175,10 @@ export function applyHangedManScene(scene: HangedManScene, command: HangedManCom
     case 'BUY_BRACE': s.device.braceBoughtEventId = h.eventId; s.device.braced = true; notes.push(`实付${e.cash}便士领用现场普通支撑并装好；它会保留到后续检查。`); break;
     case 'ASK_WORKER': { const w = worker(s, c.workerId)!; w.consent = 'GRANTED'; w.permissionVersion++; w.permissionEventId = h.eventId; w.paidEventId ??= h.eventId; receipt(s, h, e.cash ? 'WORKER_PAID' : 'WORKER_RECONSENTED', w.id, w.position); notes.push(`${w.name}独立同意本班作业${e.cash ? `，实收${e.cash}便士` : '；本班工钱已收，不重复收费'}，仍在廊外。`); break; }
     case 'WITHDRAW_WORKER': { const w = worker(s, c.workerId)!; w.consent = 'WITHDRAWN'; w.permissionVersion++; s.status = 'ABORTED'; endWindow(s, h, 'WORKER_WITHDREW'); notes.push(`${w.name}撤回同意，仍在原位置；可沿普通侧门自主退出。`); break; }
-    case 'ARRIVE_WORKER': { const w = worker(s, c.workerId)!; move(s, h, w.id, 'ENTRY', 2); w.arrivalEventId = h.eventId; notes.push(`${w.name}亲走两米到入口，真实消耗两点精力。`); break; }
+    case 'ARRIVE_WORKER': { const w = worker(s, c.workerId)!; move(s, h, w.id, 'ENTRY', 2); w.arrivalEventId = h.eventId; w.passage.exit = null; notes.push(`${w.name}亲走两米到入口，真实消耗两点精力。`); break; }
     case 'EXIT_WORKER': { const w = worker(s, c.workerId)!, metres = HANGED_MAN_EXIT_METRES[w.position]; move(s, h, w.id, 'OUTSIDE', metres); w.passage.exit = h.eventId; if (w.consent === 'GRANTED') { w.consent = 'CLOSED'; w.permissionVersion++; } if (!w.passage.a || !w.passage.b) s.status = 'ABORTED'; notes.push(`${w.name}沿普通侧廊亲走${metres}米到廊外，消耗同量精力；费用与已走路程保留。`); break; }
     case 'REPORT_EVACUATION': s.evacuationReportEventId = h.eventId; s.status = 'COMPLETED'; closeConsent(s); notes.push('记录两位成人各自实际走过两段并退出的经过；工钱、余力、原灵与旧封存材料消耗如实保留。'); break;
-    case 'START_PRACTICE': s.phase = 'PRACTICE'; s.status = 'ACTIVE'; closeConsent(s); s.device.revision++; s.device.inspectedEventId = null; s.device.testEventId = null; s.device.testMethod = 'NONE'; notes.push('开始本人独自进行的一轮新检查；两位工人留在廊外，既有普通支撑仍在，须重新询问玛拉并亲查封闩。'); break;
+    case 'START_PRACTICE': s.phase = 'PRACTICE'; s.status = 'ACTIVE'; closeConsent(s); s.device.revision++; s.device.inspectedEventId = null; s.device.testEventId = null; s.device.testMethod = 'NONE'; notes.push('开始本人独自进行的一轮新检查；两位工人留在廊外，既有普通支撑仍在，须重新询问值守者伊文并亲查封闩。'); break;
     case 'BUY_SEAL': s.seals.push({ id: `HM223-STRIP-${s.seals.length + 1}`, status: 'BLANK', charges: 1, boughtEventId: h.eventId, appliedEventId: null, targetVersion: null }); notes.push(`实付${e.cash}便士购买一张只能贴用一次的新封条。`); break;
     case 'BEAR_PRESSURE': case 'COOPERATIVE_SEAL': {
       const spiritId = c.type === 'COOPERATIVE_SEAL' ? c.spiritId : null;
@@ -217,7 +219,7 @@ export function desiredHangedManSceneCommand(s: HangedManScene, h: HangedManScen
   if (s.returnReportEventId) return null;
   if (s.phase === 'PREPARATION' && s.evacuationReportEventId) return h.sequence === 0 ? { type: 'START_PRACTICE' } : null;
   if (s.window) { const apply: HangedManCommand = { type: s.window.kind === 'PRESSURE_BEARING' ? 'TEST_PRESSURE' : 'APPLY_SEAL' }; return !hangedManSceneBlock(s, apply, h) ? apply : simple('END_CONTACT'); }
-  const evacuated = s.workers.every(w => !!w.passage.a && !!w.passage.b && !!w.passage.exit);
+  const evacuated = s.workers.every(workerFinished);
   if (s.status === 'ABORTED' || s.phase === 'PREPARATION' && evacuated || s.phase === 'PRACTICE' && !!s.device.sealedEventId) {
     const next = cleanup(); if (next) return next;
     if (h.actions < 1 && (s.owner.consent === 'GRANTED' || s.workers.some(w => w.consent === 'GRANTED'))) return simple('STOP_METHOD');
@@ -251,9 +253,9 @@ export function desiredHangedManSceneCommand(s: HangedManScene, h: HangedManScen
   if (s.phase === 'PREPARATION') {
     if (s.playerPosition !== 'OUTSIDE') return simple('WALK_EXIT');
     if (h.actions < 1) return simple('STOP_METHOD');
-    const unasked = s.workers.find(w => w.consent !== 'GRANTED' && !w.passage.exit);
+    const unasked = s.workers.find(w => w.consent !== 'GRANTED' && !workerFinished(w));
     if (unasked) { const ask: HangedManCommand = { type: 'ASK_WORKER', workerId: unasked.id }; return !hangedManSceneBlock(s, ask, h) ? ask : simple('STOP_METHOD'); }
-    const w = s.workers.find(person => !person.passage.exit);
+    const w = s.workers.find(person => !workerFinished(person));
     if (!w) return simple('STOP_METHOD');
     if (w.position === 'OUTSIDE') return { type: 'ARRIVE_WORKER', workerId: w.id };
     if (w.position === 'GATE') return { type: 'EXIT_WORKER', workerId: w.id };
@@ -270,7 +272,7 @@ function label(c: HangedManCommand): string {
   if (c.type === 'CROSS') return `${c.actorId === 'PLAYER' ? '本人' : HANGED_MAN_WORKERS.find(w => w.id === c.actorId)!.name}亲走${c.segment}段三米`;
   if ('segment' in c) return `${c.type === 'INSPECT_SEGMENT' ? '现场查验' : c.type === 'OPEN_SEGMENT' ? '打开' : '关闭'}${c.segment}段普通门`;
   if (c.type === 'COOPERATIVE_SEAL') return `与${c.spiritId === 'THT3-HELENA' ? '赫莲娜的短暂屏护' : '罗兰的局部遮护'}协同贴封`;
-  const labels: Partial<Record<HangedManCommand['type'], string>> = { LEAVE_ORIGINAL_COURT: '亲走两米离开原院入口', ASK_OWNER: '当面重询玛拉本次许可', WITHDRAW_OWNER: '玛拉撤回本次许可', APPROACH: '本人亲走两米到入口', INSPECT_EXIT: '查明普通绞盘、侧门与退路', INSPECT_DEVICE: '亲查眼前有限压力封闩', BUY_BRACE: '实购并安装普通支撑', BUY_SEAL: '实购一张新封条', USE_WINCH: '拉动普通绞盘并锁稳', OPEN_EXIT: '打开普通侧门', CLOSE_EXIT: '所有人退出后关闭侧门', REPORT_EVACUATION: '报告两位成人的真实撤离', START_PRACTICE: '独自开始有限练习', BEAR_PRESSURE: '实付成本开启有限承压', TEST_PRESSURE: '实际完成一次局部测试', APPLY_SEAL: '在短窗内贴上同一张封条', MANUAL_SEAL: '普通手工贴上同一张封条', STOP_METHOD: '停止本次作业并保留成本', END_CONTACT: '松手并结束当前短窗', WAIT_10: '实际等待十秒', WALK_EXIT: '本人沿普通侧廊退出', RETURN_ON_FOOT: '本人实际步行退出', REPORT_RETURN: '如实报告练习与返程' };
+  const labels: Partial<Record<HangedManCommand['type'], string>> = { LEAVE_ORIGINAL_COURT: '亲走两米离开原院入口', ASK_OWNER: '当面询问值守者伊文本次许可', WITHDRAW_OWNER: '值守者伊文撤回本次许可', APPROACH: '本人亲走两米到入口', INSPECT_EXIT: '查明普通绞盘、侧门与退路', INSPECT_DEVICE: '亲查眼前有限压力封闩', BUY_BRACE: '实购并安装普通支撑', BUY_SEAL: '实购一张新封条', USE_WINCH: '拉动普通绞盘并锁稳', OPEN_EXIT: '打开普通侧门', CLOSE_EXIT: '所有人退出后关闭侧门', REPORT_EVACUATION: '报告两位成人的真实撤离', START_PRACTICE: '独自开始有限练习', BEAR_PRESSURE: '实付成本开启有限承压', TEST_PRESSURE: '实际完成一次局部测试', APPLY_SEAL: '在短窗内贴上同一张封条', MANUAL_SEAL: '普通手工贴上同一张封条', STOP_METHOD: '停止本次作业并保留成本', END_CONTACT: '松手并结束当前短窗', WAIT_10: '实际等待十秒', WALK_EXIT: '本人沿普通侧廊退出', RETURN_ON_FOOT: '本人实际步行退出', REPORT_RETURN: '如实报告练习与返程' };
   return labels[c.type] ?? '继续现场行动';
 }
 export function hangedManSceneActions(s: HangedManScene, host?: HangedManSceneHost): { command: HangedManCommand; label: string; cost: string }[] {
@@ -287,6 +289,7 @@ export function hangedManSceneActions(s: HangedManScene, host?: HangedManSceneHo
   if (s.status === 'ACTIVE') add({ type: 'STOP_METHOD' });
   if (s.status === 'ABORTED' && settled(s) && !s.returnReportEventId) add({ type: 'ASK_OWNER' });
   if (s.phase === 'PRACTICE' && s.playerPosition === 'GATE' && !s.window) {
+    for (const type of ['BEAR_PRESSURE', 'BUY_BRACE', 'TEST_PRESSURE'] as const) if (!hangedManSceneBlock(s, { type }, h)) add({ type });
     for (const spiritId of ['THT3-HELENA', 'THT3-ROLAND'] as const) { const c: HangedManCommand = { type: 'COOPERATIVE_SEAL', spiritId }; if (!hangedManSceneBlock(s, c, h)) add(c); }
     if (!hangedManSceneBlock(s, { type: 'MANUAL_SEAL' }, h)) add({ type: 'MANUAL_SEAL' });
   }
