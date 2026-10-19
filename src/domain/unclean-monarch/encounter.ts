@@ -1,3 +1,5 @@
+import { publicPryerFields as publicFields, publicPryerDate } from '../sage/life.js';
+import { publicAbyssOriginalSite, publicAbyssOperation, publicUncleanMonarchBudget, publicUncleanMonarchFinance, publicUncleanMonarchOriginals, publicUncleanMonarchPiece, publicUncleanMonarchPlate, publicUncleanMonarchForceReceipt } from './public.js';
 import { SLICE_LIFE } from '../../content/slice-events.js';
 import type { PublicGameDate } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
@@ -155,14 +157,20 @@ export function uncleanMonarchEncounterActions(s: SliceState) {
   ];
   return commands.map(({ command, label, cost }) => { const reason = blockUncleanMonarchEncounter(s, command); return { id: `unclean-monarch-${command.type}${command.type === 'SET_COMBAT_POLICY' ? `-${command.policy}` : ''}`, label, cost, command, enabled: reason === null, reason }; });
 }
+export function projectUncleanMonarchPreparation(p: UncleanMonarchPreparation) { return {
+  ...publicFields(p, ['week', 'revision', 'pricePaid', 'actionsPaid', 'lifeJournalLength', 'lifeClockSeconds', 'strain']), date: publicPryerDate(p.date),
+  before: publicUncleanMonarchBudget(p.before), after: publicUncleanMonarchBudget(p.after), finance: publicUncleanMonarchFinance(p.finance),
+  site: publicAbyssOriginalSite(p.site), operation: publicAbyssOperation(p.operation), originals: publicUncleanMonarchOriginals(p.originals),
+}; }
+export type UncleanMonarchPublicPreparation = ReturnType<typeof projectUncleanMonarchPreparation>;
 export function projectUncleanMonarchEncounter(s: SliceState) {
   const e = s.uncleanMonarch.encounter, visible = isUncleanMonarchEncounterStage(s);
   return { title: visible ? '相邻院落的独立争议' : '尚未开放的相邻院落', story: visible ? '47岁的哈伦·维斯在静室相邻院落提出独立通行争议。先让诺拉自愿带同一原卡实际离场，再沿普通路交谈；你可以决定是否交战，也能普通离开。' : '',
     status: e.status, inside: hasUncleanMonarchEncounterLock(s), policy: e.policy, enemyAbilityWheel: UNCLEAN_MONARCH_ENEMY_ABILITY_WHEEL.map(row => ({ ...row })),
-    site: visible ? structuredClone(e.currentSite ?? s.uncleanMonarch.life.site) : null, startSite: visible ? structuredClone(e.startSite) : null,
-    preparation: visible ? structuredClone(e.preparation) : null, piece: visible ? structuredClone(e.piece) : null, plates: visible ? structuredClone(e.plates) : [],
+    site: visible ? publicAbyssOriginalSite(e.currentSite ?? s.uncleanMonarch.life.site) : null, startSite: visible && e.startSite ? publicAbyssOriginalSite(e.startSite) : null,
+    preparation: visible && e.preparation ? projectUncleanMonarchPreparation(e.preparation) : null, piece: visible && e.piece ? publicUncleanMonarchPiece(e.piece) : null, plates: visible ? e.plates.map(publicUncleanMonarchPlate) : [],
     strain: e.strain ?? s.uncleanMonarch.sourceScene?.originals.strain ?? s.demon.strain, emotion: e.emotion, emotionObservedAt: e.emotionObservedAt, conditionVersion: e.conditionVersion,
-    operation: visible ? structuredClone(s.uncleanMonarch.life.operation) : null, lastForceReceipt: visible ? structuredClone(e.lastForceReceipt) : null,
+    operation: visible ? publicAbyssOperation(s.uncleanMonarch.life.operation) : null, lastForceReceipt: visible && e.lastForceReceipt ? publicUncleanMonarchForceReceipt(e.lastForceReceipt) : null,
     enemy: visible ? { id: e.targetId, name: '哈伦·维斯', age: 47, sequence: 1, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus,
       weaponId: 'UM1-HARLAN-ROD', weaponLocation: e.weaponLocation, position: e.enemyPosition, distanceMetres: 2, powerUses: { ...e.powerUses } } : null,
     actions: uncleanMonarchEncounterActions(s), facts: visible ? [

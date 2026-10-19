@@ -1,3 +1,5 @@
+import { publicPryerFields as publicFields, publicPryerInjury } from '../sage/life.js';
+import { publicAbyssOriginalSite, publicAbyssOperation, publicUncleanMonarchPiece, publicUncleanMonarchPlate, publicUncleanMonarchForceReceipt, publicUncleanMonarchMastery } from './public.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -377,14 +379,36 @@ export function uncleanMonarchCombatConsequence(round: SliceCombatRound): string
   if (o.playerHealthAfter === 0) text += '你已死亡，原身体与持物留在院落。'; else if (o.enemyStatus === 'DEAD') text += '哈伦已死亡，原身体与原棍留在院落。'; else if (o.enemyStatus === 'SURRENDERED') text += '哈伦停止抵抗，亲自将自己的原棍放在脚边。'; else if (o.playerMindAfter === 0) text += '精神耗尽，停止交战并沿普通出口退出。';
   return `47岁的哈伦·维斯持独立原棍；诺拉带原卡、罗安实际在室外，旧对手仍在各自原处。${text} 本轮60秒；同一辅助片余${o.pieceAfter.charges}/3、磨损${o.pieceAfter.wear}；对手刻片余${o.platesAfter.filter(p => p.status === 'HELD').length}/3；恶魔负荷${o.strainAfter}/3。实际支出、旧伤与旧物不回填；未用窗口轮末失效。`;
 }
+function publicUncleanMonarchAction(a: UncleanMonarchPlayerAction | UncleanMonarchEnemyAction) { return {
+  ...publicFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'order', 'atSeconds', 'elapsedSeconds', 'paidCost', 'mindCost', 'physicalFactor', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'enemySpiritualityAfter', 'chargeGranted', 'chargeConsumedByOrder', 'chargeCancelledByOrder', 'appliedAmount', 'expiresAt', 'conditionVersion', 'pieceChargePaid', 'pieceWearPaid']),
+  rolls: [...a.rolls], consumedEffectOrders: [...a.consumedEffectOrders], masteryApplied: [...a.masteryApplied],
+  receipt: a.receipt ? publicUncleanMonarchForceReceipt(a.receipt) : null,
+}; }
+export function projectUncleanMonarchPlayerAction(a: UncleanMonarchPlayerAction) { return {
+  ...publicUncleanMonarchAction(a), ...publicFields(a, ['id', 'attempted', 'succeeded', 'applied', 'resisted', 'mode', 'prepared', 'travelMetres', 'strainCost']),
+  ownImpulse: a.ownImpulse ? publicFields(a.ownImpulse, ['actor', 'kind', 'observedAt', 'conditionVersion']) : null,
+  emotionEvidence: a.emotionEvidence ? publicFields(a.emotionEvidence, ['targetId', 'kind', 'observedAt', 'conditionVersion', 'visible']) : null,
+}; }
+export function projectUncleanMonarchEnemyAction(a: UncleanMonarchEnemyAction) { return {
+  ...publicUncleanMonarchAction(a), ...publicFields(a, ['planned', 'actual', 'attackKind', 'plateId', 'emotionBefore', 'emotionAfter', 'travelMetres', 'visible']),
+}; }
+export function projectUncleanMonarchRoundOutcome(o: UncleanMonarchRoundOutcome) { return {
+  ...publicFields(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'playerRiskAfter', 'enemyRiskAfter', 'restraintAttempted', 'interferenceAttempted', 'guardAttempted', 'strainAfter', 'emotion', 'emotionObservedAt', 'conditionVersion', 'clockSecondsAfter', 'elapsedSeconds']),
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicPryerInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicPryerInjury),
+  powerUses: publicFields(o.powerUses, ['ARC_BOLT', 'DREAD_PULSE', 'GUARD', 'CALM_BREATH']), expiredEffectOrders: [...o.expiredEffectOrders],
+  siteAfter: publicAbyssOriginalSite(o.siteAfter), operationAfter: publicAbyssOperation(o.operationAfter), masteryAfter: publicUncleanMonarchMastery(o.masteryAfter),
+  pieceAfter: publicUncleanMonarchPiece(o.pieceAfter), platesAfter: o.platesAfter.map(publicUncleanMonarchPlate), lastForceReceipt: o.lastForceReceipt ? publicUncleanMonarchForceReceipt(o.lastForceReceipt) : null,
+  playerActions: o.playerActions.map(projectUncleanMonarchPlayerAction), enemyActions: o.enemyActions.map(projectUncleanMonarchEnemyAction),
+}; }
+export type UncleanMonarchPublicRoundOutcome = ReturnType<typeof projectUncleanMonarchRoundOutcome>;
 export function projectUncleanMonarchCombat(s: SliceState) {
   const e = s.uncleanMonarch.encounter, visible = isUncleanMonarch(s), last = s.combat?.encounterId === 'UNCLEAN_MONARCH_DISPUTE' ? s.combat.lastRound?.uncleanMonarchOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.uncleanMonarchOutcome : null;
   return { enemyName: visible ? '哈伦·维斯（47岁）' : '', targetId: visible ? e.targetId : null, playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
     enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null, powerUses: visible ? { ...e.powerUses } : null,
-    site: visible ? structuredClone(e.currentSite) : null, piece: visible ? structuredClone(e.piece) : null, plates: visible ? structuredClone(e.plates) : [], policy: e.policy,
+    site: visible && e.currentSite ? publicAbyssOriginalSite(e.currentSite) : null, piece: visible && e.piece ? publicUncleanMonarchPiece(e.piece) : null, plates: visible ? e.plates.map(publicUncleanMonarchPlate) : [], policy: e.policy,
     strain: e.strain ?? s.uncleanMonarch.sourceScene?.originals.strain ?? s.demon.strain, emotion: e.emotion, emotionObservedAt: e.emotionObservedAt, conditionVersion: e.conditionVersion,
-    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0, source: visible ? currentUncleanMonarchCombatSource(s) : null,
-    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...structuredClone(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...structuredClone(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
+    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0,
+    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...projectUncleanMonarchPlayerAction(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...projectUncleanMonarchEnemyAction(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
     countWheel: UNCLEAN_MONARCH_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: UNCLEAN_MONARCH_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: UNCLEAN_MONARCH_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
     summary: visible ? '体35%感30%意15%知20%，基础1500、核心上限300、状态最多减40%、底150。双方1至6动作10/15/25/25/15/10；旧六槽30/15/20/20/10/5及防守、控制替换保留，新两槽各20。每动作5秒、每轮60秒；继续战斗仅本人回12灵性。两项新能力各8灵性2精神，意志18，失败总计4精神；定向扰动另需已知当前强烈情绪并接受目标抵抗。同一时刻一个20秒窗口，实际应用才耗同一辅助片1次。缺资源普通回退，旧负荷不重置。' : '' };
 }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
+import { createAbyssState } from '../../src/domain/abyss/index.js';
 import { createHangedManState, validateHangedManState } from '../../src/domain/hanged-man/index.js';
 import { openHangedManRuntimeSession } from '../../src/domain/hanged-man/owned-session.js';
 import { assertValidSliceState, createSliceRun } from '../../src/domain/slice/index.js';
@@ -10,7 +11,7 @@ import type { SliceState } from '../../src/domain/slice/types.js';
 
 const fresh = (): SliceState => createSliceRun('hangedMan-schema-run', sliceDefaultCreationSelection, 'hangedMan-schema-seed');
 const legacy219 = () => {
-  const { hangedMan: _root, ...state } = fresh();
+  const { hangedMan: _root, abyss: _abyss, ...state } = fresh();
   return { ...state, schemaVersion: 219 as const, contentVersion: 'hermit-v219' as const };
 };
 
@@ -24,12 +25,13 @@ describe('HangedMan schema220 exact additive admission', () => {
     expect(() => openHangedManRuntimeSession(state)).toThrow();
   });
 
-  it('upgrades219 by adding only the empty root and format while preserving all old fields', () => {
+  it('upgrades219 by adding only the two missing empty roots and format while preserving all old fields', () => {
     const source = legacy219(), before = structuredClone(source), current = migrateSliceState(source);
     expect(source).toStrictEqual(before);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'hangedMan'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'hangedMan', 'abyss'].sort());
     expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.hangedMan).toStrictEqual(createHangedManState());
+    expect(current.abyss).toStrictEqual(createAbyssState());
     for (const [key, value] of Object.entries(source)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(current[key as keyof SliceState], `Changed original ${key}`).toStrictEqual(value);

@@ -12,13 +12,37 @@ export type UncleanMonarchPreparationId = typeof UNCLEAN_MONARCH_PREPARATION_IDS
 export type UncleanMonarchAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: UncleanMonarchPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1' | 'STABILIZE_PROMOTION'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type UncleanMonarchCommand = UncleanMonarchAcquisitionCommand | UncleanMonarchActivityCommand | UncleanMonarchEncounterCommand;
+export type UncleanMonarchOriginalBottleId = 'unclean-monarch-potion-1' | 'unclean-monarch-potion-2' | 'unclean-monarch-potion-3';
+/** The vessel may change; the three finite original characteristics do not. */
+export interface UncleanMonarchRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_UNCLEAN_MONARCH_PREPARATION'; custodian: 'TG224-UNCLEAN-MONARCH-SUPPLIER';
+}
+export interface UncleanMonarchRecovery extends UncleanMonarchRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface UncleanMonarchRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_UNCLEAN_MONARCH_PREPARATION'; originals: UncleanMonarchOriginals;
+  permission: { personId: 'TG224-UNCLEAN-MONARCH-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface UncleanMonarchOriginalCharacteristic {
+  characteristicId: string; originalBottleId: UncleanMonarchOriginalBottleId; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface UncleanMonarchOriginalCharacteristics {
+  characteristics: UncleanMonarchOriginalCharacteristic[];
+  embodiedOriginalBottleId: UncleanMonarchOriginalBottleId | null; embodiedBottleId: string | null;
+}
 export interface UncleanMonarchBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: UncleanMonarchRecovery;
 }
 export interface UncleanMonarchPrices { guidance: number; potion: number; labourCredit: number; labourBalance: number; preparation: number; resupply: number }
 export type UncleanMonarchFinance = Pick<SliceState, 'weeklyBudget' | 'lifeTier' | 'nextLifeTier' | 'debts' | 'missedWeeks' | 'credit'>;
@@ -32,6 +56,7 @@ export interface UncleanMonarchAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'abyss'; bloodDukePromotionWeek: number; criminalPromotionWeek: number };
   before: UncleanMonarchAcquisitionBudget; after: UncleanMonarchAcquisitionBudget; finance: UncleanMonarchFinance;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: UncleanMonarchRecoverySite;
 }
 export const UNCLEAN_MONARCH_SOURCE_KEYS = ['criminal', 'unwinged', 'serialKiller', 'demon', 'desireApostle', 'devil', 'blatherer', 'bloodDuke'] as const;
 export type UncleanMonarchSourceHistory = Pick<SliceState, typeof UNCLEAN_MONARCH_SOURCE_KEYS[number]>;
@@ -50,7 +75,7 @@ export interface UncleanMonarchSourceScene {
 }
 export interface UncleanMonarchState {
   guidanceKnown: boolean; sourceWeek: number | null; bottles: UncleanMonarchBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: UncleanMonarchRecoveryRequest };
   promotionWeek: number | null; bloodDukeActingAtPromotion: number | null;
   preparations: { taskId: UncleanMonarchPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: UncleanMonarchAcquisitionEvent[];

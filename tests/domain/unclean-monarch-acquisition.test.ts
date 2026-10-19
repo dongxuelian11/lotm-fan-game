@@ -143,7 +143,7 @@ describe('Unclean Monarch independent bottles and authenticated original room', 
     expect(commands.some(c => c.type === 'EVENT_CHOICE' && (c.choiceId === 'PAY' || c.choiceId === 'CREDIT'))).toBe(false);
     expect(oldAbyssRoots(s)).toEqual(oldAbyssRoots(source)); expect(source.cash).toBe(710); expect(source.health).toBe(100); assertValidSliceState(s);
   }, 240_000);
-  it('requires all three real failed bottles and a real following week for independent resupply', () => {
+  it('preserves all three real failures and rejects new independent fourth-to-sixth supply', () => {
     const initial = directedInitial2('THREE_FAILURES'); initial.actionsRemaining = initial.weeklyBudget = 3; // Explicit pre-journal UNIT budget.
     let s = um(initial, { type: 'LEARN_GUIDANCE' }); rejectUncleanMonarch(s, { type: 'REQUEST_SUPPLY' });
     for (let number = 1; number <= 3; number++) {
@@ -151,11 +151,12 @@ describe('Unclean Monarch independent bottles and authenticated original room', 
       expect(s.progression.sequence).toBe(2);
     }
     s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 });
-    const before = s.cash; s = um(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100);
-    const requested = s.uncleanMonarch.resupply.requestedWeek!; rejectUncleanMonarch(s, { type: 'RECEIVE_SUPPLY' });
-    s = ready(s, { afterWeek: requested }); s = um(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.uncleanMonarch.bottles).toHaveLength(6); expect(s.uncleanMonarch.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.uncleanMonarch.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
+    const before = structuredClone(s);
+    rejectUncleanMonarch(s, { type: 'REQUEST_SUPPLY' });
+    rejectUncleanMonarch(s, { type: 'RECEIVE_SUPPLY' });
+    expect(s).toEqual(before);
+    expect(s.uncleanMonarch.bottles).toHaveLength(3);
+    expect(s.uncleanMonarch.bottles.every(b => b.status === 'CONSUMED' && b.outcome === 'FAILURE')).toBe(true);
     expect(validateUncleanMonarchState(s)).toBe(true);
   }, 240_000);
   it('closes old actions and rejectsS0, wrong path and invented promotion state', () => {

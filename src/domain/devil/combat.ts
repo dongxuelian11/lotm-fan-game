@@ -1,3 +1,4 @@
+import { publicPryerFields as publicFields } from '../sage/life.js';
 import type { ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -205,13 +206,20 @@ export function finishDevilCombatRound(s: SliceState, r: DevilRoundContext, cont
     lastSeedRound: e.lastSeedRound, staggerReady: false, seedAttempts: e.seedAttempts, catalysisAttempts: e.catalysisAttempts, composeUses: e.composeUses,
     playerActions: structuredClone(r.playerActions), enemyActions: structuredClone(r.enemyActions) };
 }
+/** Settled combat facts only; the original replay source remains private. */
+export function projectDevilRoundOutcome(o: DevilRoundOutcome) { return {
+  ...publicFields(o, ['targetId', 'round', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'playerStrainAfter', 'enemySpiritualityBefore', 'emotion', 'seedPlanted', 'lastSeedRound', 'staggerReady', 'seedAttempts', 'catalysisAttempts', 'composeUses']),
+  powerUses: publicFields(o.powerUses, ['ARC_BOLT', 'WARD']),
+  playerActions: o.playerActions.map(a => publicFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'order', 'id', 'paidCost', 'strainCost', 'physicalFactor', 'checkChance', 'checkRoll', 'seedAttempted', 'catalysisAttempted', 'succeeded'])),
+  enemyActions: o.enemyActions.map(a => publicFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'order', 'planned', 'actual', 'paidCost', 'physicalFactor', 'staggerApplied'])),
+}; }
+export type DevilPublicRoundOutcome = ReturnType<typeof projectDevilRoundOutcome>;
 export function projectDevilCombat(s: SliceState) {
   const e = s.devil.encounter;
   return { enemyName: '奥里克·费恩（DV4-ORRICK-FANE，原创成年序列5对手，G）', targetId: e.targetId,
     enemySpirituality: e.enemySpirituality, powerUses: { ...e.powerUses }, emotion: e.emotion, seedPlanted: e.seedPlanted,
     lastSeedRound: e.lastSeedRound, staggerReady: e.staggerReady, seedAttempts: e.seedAttempts, catalysisAttempts: e.catalysisAttempts,
     composeUses: e.composeUses, strain: s.demon.strain, originalExit: true, pursuit: false, distanceMetres: 4,
-    source: currentDevilCombatSource(s),
     summary: `原奥里克灵性${e.enemySpirituality}/40，当前${e.emotion === 'STRONG' ? '强烈情绪' : '已平复，本场不自动重新愤怒'}；原种子${e.seedPlanted ? `第${e.lastSeedRound}轮埋入、至第${e.lastSeedRound! + 2}轮末` : '无'}。本人旧恶魔负荷${s.demon.strain}/3。4灵性埋种、后续3灵性催化均可被知识18对抗抵抗；有限迟疑只减半下一实际正身体或弧光战势，不影响WARD，不直接扣健康。新4命名与强化规则为G，完整原著4级技能仍未知。`,
     enemyCountWheel: DEVIL_ENEMY_COUNT_WHEEL, enemyAbilityWheel: DEVIL_ENEMY_ABILITY_WHEEL };
 }
