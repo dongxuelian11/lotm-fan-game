@@ -6,11 +6,11 @@ import { SagePanel } from '../../src/renderer/SagePanel';
 import type { SageAction, SageCommand, SageProjection } from '../../src/domain/sage/types';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types';
 import type { SliceBridge } from '../../src/shared/slice-contracts';
-import type { SageAttempt, SageSiteState } from '../../src/domain/sage/life';
+import type { SagePublicAttempt, SagePublicSite } from '../../src/domain/sage/life';
 
 // Small public renderer fixtures, not claimed domain saves or natural campaign evidence.
-function site(): SageSiteState {
-  return { siteId: 'SG2-ARCHIVE', introducedWeek: 130, introducedDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 1, day: 1 }, source: null,
+function site(): SagePublicSite {
+  return { siteId: 'SG2-ARCHIVE', introducedWeek: 130, introducedDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 1, day: 1 },
     clockSeconds: 16, playerLocation: 'A', playerTravelMetres: 6, playerEnergy: 92, formEnergySpent: 2, assimilationExposure: 1,
     body: 'INFORMATION', form: { active: true, expiresAt: 32, anchorId: 'SG2-KIT-1' },
     iris: { id: 'PM3-IRIS', name: '艾瑞丝·沃德', age: 49, alive: true, willing: true, location: 'ENTRY', energy: 100, travelMetres: 0, consent: 'GRANTED' },
@@ -19,7 +19,7 @@ function site(): SageSiteState {
     archive: { id: 'SG2-ARCHIVE-LEAF', owner: 'PM3-IRIS', quantity: 1, location: 'B', readings: 0, verifications: 0 },
     materials: [{ id: 'SG2-KIT-1', caseId: 'information-route', ownerId: 'PLAYER', quantity: 1, status: 'INSTALLED', location: 'A', wear: 2, paidPennies: 20, preparedWeek: 130 }], actorMoves: [] };
 }
-function attempt(p: SageSiteState): SageAttempt {
+function attempt(p: SagePublicSite): SagePublicAttempt {
   return { week: 130, method: 'ABILITY', closed: false, result: 'NONE', stopped: false, inspected: false, permissionWithdrawn: false, consent: 'GRANTED',
     elapsedSeconds: 12, playerTravelMetres: 6, energySpent: 8, spiritualitySpent: 8, mindSpent: 2, penniesSpent: 20, materialId: 'SG2-KIT-1', itemsReturned: false, anchorInstalled: true,
     formTier: 'SUCCESS', siftTier: null, traversed: false, reassembled: false, expired: false, waits: 0, ownerAccompanied: false, ownerReturned: false,
