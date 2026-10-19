@@ -1,0 +1,205 @@
+{
+  "format": "DOOR218_PUBLIC_INPUT_STREAM_PROOF_V1",
+  "exit": 0,
+  "allRequiredArchiveAndMemberHashesVerified": true,
+  "requiredFiles": 395,
+  "logicalRequiredFiles": 268,
+  "newFiles": 117,
+  "newBytes": 132903940,
+  "fixtureWrites": 0,
+  "runtimeImported": false,
+  "gameplayExecuted": false,
+  "sqliteOpened": false,
+  "representativeExtraction": "NOT_RUN; full independent parser streamed every member",
+  "stdout": "Checking 395 fixture files (1067536970 bytes) to /workspace/scratch/25a15120163a/recovery-20261018/pr38-baseline/tests/fixtures\nVerified archive: lotm_rebuild_0.177.0_test_fixtures_11_2026-10-14.tar.gz\nVerified archive: lotm_rebuild_0.177.0_test_fixtures_13_2026-10-14.tar.gz\nVerified archive: lotm_rebuild_0.177.0_test_fixtures_20_2026-10-14.tar.gz\nVerified archive: lotm_release_0.196.0_star_key_test_inputs_1_2026-10-15.tar.gz\nVerified archive: lotm_release_0.196.0_star_key_test_inputs_2_2026-10-15.tar.gz\nVerified archive: lotm_release_0.196.0_star_key_test_inputs_3_2026-10-15.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_1_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_2_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_3_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_4_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_5_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_6_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_7_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_8_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_9_2026-10-18.tar.gz\nVerified archive: lotm_release_0.218.0_door_test_inputs_10_2026-10-18.tar.gz\nValidated fixture contents: lotm_rebuild_0.177.0_test_fixtures_11_2026-10-14.tar.gz\nValidated fixture contents: lotm_rebuild_0.177.0_test_fixtures_13_2026-10-14.tar.gz\nValidated fixture contents: lotm_rebuild_0.177.0_test_fixtures_20_2026-10-14.tar.gz\nValidated fixture contents: lotm_release_0.196.0_star_key_test_inputs_1_2026-10-15.tar.gz\nValidated fixture contents: lotm_release_0.196.0_star_key_test_inputs_2_2026-10-15.tar.gz\nValidated fixture contents: lotm_release_0.196.0_star_key_test_inputs_3_2026-10-15.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_1_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_2_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_3_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_4_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_5_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_6_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_7_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_8_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_9_2026-10-18.tar.gz\nValidated fixture contents: lotm_release_0.218.0_door_test_inputs_10_2026-10-18.tar.gz\nCheck complete: all 395 fixture hashes verified; 395 files selected; no files written.\n",
+  "stderr": "",
+  "parts": [
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_1_2026-10-18.tar.gz",
+      "bytes": 14295636,
+      "sha256": "1f86446b0d88015c27ec730f46a44839bc7f39b7a131ebaa2f991ec54808108b",
+      "members": [
+        "tests/fixtures/door-v02180/action-824.json.gz",
+        "tests/fixtures/door-v02180/action-825.json.gz",
+        "tests/fixtures/door-v02180/action-826.json.gz",
+        "tests/fixtures/door-v02180/action-827.json.gz",
+        "tests/fixtures/door-v02180/action-828.json.gz",
+        "tests/fixtures/door-v02180/action-829.json.gz",
+        "tests/fixtures/door-v02180/action-830.json.gz",
+        "tests/fixtures/door-v02180/action-831.json.gz",
+        "tests/fixtures/door-v02180/action-832.json.gz",
+        "tests/fixtures/door-v02180/action-833.json.gz",
+        "tests/fixtures/door-v02180/action-834.json.gz",
+        "tests/fixtures/door-v02180/action-835.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_2_2026-10-18.tar.gz",
+      "bytes": 14486908,
+      "sha256": "b63d54c3b47ca961f15466ed93f50dd6ead54f20ebca696370bc59d16a2131be",
+      "members": [
+        "tests/fixtures/door-v02180/action-836.json.gz",
+        "tests/fixtures/door-v02180/action-837.json.gz",
+        "tests/fixtures/door-v02180/action-838.json.gz",
+        "tests/fixtures/door-v02180/action-839.json.gz",
+        "tests/fixtures/door-v02180/action-840.json.gz",
+        "tests/fixtures/door-v02180/action-841.json.gz",
+        "tests/fixtures/door-v02180/action-842.json.gz",
+        "tests/fixtures/door-v02180/action-843.json.gz",
+        "tests/fixtures/door-v02180/action-844.json.gz",
+        "tests/fixtures/door-v02180/action-845.json.gz",
+        "tests/fixtures/door-v02180/action-846.json.gz",
+        "tests/fixtures/door-v02180/action-847.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_3_2026-10-18.tar.gz",
+      "bytes": 14587238,
+      "sha256": "f2e17a3499aa4be88847d2b5ae0f621b278fd790a1368ddf6cd505c538111675",
+      "members": [
+        "tests/fixtures/door-v02180/action-848.json.gz",
+        "tests/fixtures/door-v02180/action-849.json.gz",
+        "tests/fixtures/door-v02180/action-850.json.gz",
+        "tests/fixtures/door-v02180/action-851.json.gz",
+        "tests/fixtures/door-v02180/action-852.json.gz",
+        "tests/fixtures/door-v02180/action-853.json.gz",
+        "tests/fixtures/door-v02180/action-854.json.gz",
+        "tests/fixtures/door-v02180/action-855.json.gz",
+        "tests/fixtures/door-v02180/action-856.json.gz",
+        "tests/fixtures/door-v02180/action-857.json.gz",
+        "tests/fixtures/door-v02180/action-858.json.gz",
+        "tests/fixtures/door-v02180/action-859.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_4_2026-10-18.tar.gz",
+      "bytes": 14650888,
+      "sha256": "63c007e84ce3fe7e5f8f18f6874b3114ed6b23128b1011c03b003fd28b2453aa",
+      "members": [
+        "tests/fixtures/door-v02180/action-860.json.gz",
+        "tests/fixtures/door-v02180/action-861.json.gz",
+        "tests/fixtures/door-v02180/action-862.json.gz",
+        "tests/fixtures/door-v02180/action-863.json.gz",
+        "tests/fixtures/door-v02180/action-864.json.gz",
+        "tests/fixtures/door-v02180/action-865.json.gz",
+        "tests/fixtures/door-v02180/action-866.json.gz",
+        "tests/fixtures/door-v02180/action-867.json.gz",
+        "tests/fixtures/door-v02180/action-868.json.gz",
+        "tests/fixtures/door-v02180/action-869.json.gz",
+        "tests/fixtures/door-v02180/action-870.json.gz",
+        "tests/fixtures/door-v02180/action-871.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_5_2026-10-18.tar.gz",
+      "bytes": 14729892,
+      "sha256": "75189be14ac5e920b37e2fb58ce592aa5c5383f89681182a258a20535fc529db",
+      "members": [
+        "tests/fixtures/door-v02180/action-872.json.gz",
+        "tests/fixtures/door-v02180/action-873.json.gz",
+        "tests/fixtures/door-v02180/action-874.json.gz",
+        "tests/fixtures/door-v02180/action-875.json.gz",
+        "tests/fixtures/door-v02180/action-876.json.gz",
+        "tests/fixtures/door-v02180/action-877.json.gz",
+        "tests/fixtures/door-v02180/action-878.json.gz",
+        "tests/fixtures/door-v02180/action-879.json.gz",
+        "tests/fixtures/door-v02180/action-880.json.gz",
+        "tests/fixtures/door-v02180/action-881.json.gz",
+        "tests/fixtures/door-v02180/action-882.json.gz",
+        "tests/fixtures/door-v02180/action-883.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_6_2026-10-18.tar.gz",
+      "bytes": 14801789,
+      "sha256": "230f98c66a9396ffe35af92e3fb3c333bd8b8493ba6a3990d2eea34d39547b9e",
+      "members": [
+        "tests/fixtures/door-v02180/action-884.json.gz",
+        "tests/fixtures/door-v02180/action-885.json.gz",
+        "tests/fixtures/door-v02180/action-886.json.gz",
+        "tests/fixtures/door-v02180/action-887.json.gz",
+        "tests/fixtures/door-v02180/action-888.json.gz",
+        "tests/fixtures/door-v02180/action-889.json.gz",
+        "tests/fixtures/door-v02180/action-890.json.gz",
+        "tests/fixtures/door-v02180/action-891.json.gz",
+        "tests/fixtures/door-v02180/action-892.json.gz",
+        "tests/fixtures/door-v02180/action-893.json.gz",
+        "tests/fixtures/door-v02180/action-894.json.gz",
+        "tests/fixtures/door-v02180/action-895.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_7_2026-10-18.tar.gz",
+      "bytes": 13608765,
+      "sha256": "dd897b686f7ebd4ee61bedf1f64cf896e5461cd083f64b7f845942f40ce225b1",
+      "members": [
+        "tests/fixtures/door-v02180/action-896.json.gz",
+        "tests/fixtures/door-v02180/action-897.json.gz",
+        "tests/fixtures/door-v02180/action-898.json.gz",
+        "tests/fixtures/door-v02180/action-899.json.gz",
+        "tests/fixtures/door-v02180/action-900.json.gz",
+        "tests/fixtures/door-v02180/action-901.json.gz",
+        "tests/fixtures/door-v02180/action-902.json.gz",
+        "tests/fixtures/door-v02180/action-903.json.gz",
+        "tests/fixtures/door-v02180/action-904.json.gz",
+        "tests/fixtures/door-v02180/action-905.json.gz",
+        "tests/fixtures/door-v02180/action-906.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_8_2026-10-18.tar.gz",
+      "bytes": 13658753,
+      "sha256": "6832186e2f0236c17228fcb15a3f55230b23e38d74c59db41c34ada7bad1280b",
+      "members": [
+        "tests/fixtures/door-v02180/action-907.json.gz",
+        "tests/fixtures/door-v02180/action-908.json.gz",
+        "tests/fixtures/door-v02180/action-909.json.gz",
+        "tests/fixtures/door-v02180/action-910.json.gz",
+        "tests/fixtures/door-v02180/action-911.json.gz",
+        "tests/fixtures/door-v02180/action-912.json.gz",
+        "tests/fixtures/door-v02180/action-913.json.gz",
+        "tests/fixtures/door-v02180/action-914.json.gz",
+        "tests/fixtures/door-v02180/action-915.json.gz",
+        "tests/fixtures/door-v02180/action-916.json.gz",
+        "tests/fixtures/door-v02180/action-917.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_9_2026-10-18.tar.gz",
+      "bytes": 14593468,
+      "sha256": "30fa5bfd20a1de0a4ee734f18dae329dc108f4963d1c9247f829fab1be58aed5",
+      "members": [
+        "tests/fixtures/door-v02180/action-918.json.gz",
+        "tests/fixtures/door-v02180/action-919.json.gz",
+        "tests/fixtures/door-v02180/action-920.json.gz",
+        "tests/fixtures/door-v02180/action-921.json.gz",
+        "tests/fixtures/door-v02180/action-922.json.gz",
+        "tests/fixtures/door-v02180/action-923.json.gz",
+        "tests/fixtures/door-v02180/action-924.json.gz",
+        "tests/fixtures/door-v02180/action-925.json.gz",
+        "tests/fixtures/door-v02180/action-926.json.gz",
+        "tests/fixtures/door-v02180/action-927.json.gz",
+        "tests/fixtures/door-v02180/action-928.json.gz",
+        "tests/fixtures/door-v02180/archived-original196-natural.json.gz",
+        "tests/fixtures/door-v02180/boundaries.index.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_10_2026-10-18.tar.gz",
+      "bytes": 1567618,
+      "sha256": "80e591aa8460fee67c9ae3047bae8133e6b9de6eaf29fe6d4d281e3613f2fc79",
+      "members": [
+        "tests/fixtures/door-v02180/checkpoint.json.gz",
+        "tests/fixtures/door-v02180/commands.ndjson.gz",
+        "tests/fixtures/door-v02180/input-freeze.json",
+        "tests/fixtures/door-v02180/migration-initial.json.gz",
+        "tests/fixtures/door-v02180/natural.json.gz",
+        "tests/fixtures/door-v02180/producer-tests.mjs",
+        "tests/fixtures/door-v02180/producer.mjs",
+        "tests/fixtures/door-v02180/recovery-manifest.json",
+        "tests/fixtures/door-v02180/runtime-freeze.json",
+        "tests/fixtures/door-v02180/summary.json"
+      ]
+    }
+  ]
+}
