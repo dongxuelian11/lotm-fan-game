@@ -1,0 +1,102 @@
+name: Verify exact Windows candidate ZIP
+
+on:
+  push:
+    branches: [verify/windows-candidate-0229]
+
+permissions:
+  contents: read
+
+jobs:
+  direct-zip:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: scripts/verify-windows-candidate.mjs
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+      - name: Download and authenticate the existing draft-release asset
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          New-Item -ItemType Directory -Force output/windows-candidate-smoke | Out-Null
+          @'
+          import assert from 'node:assert/strict';
+          import { spawnSync } from 'node:child_process';
+          import { openSync, closeSync, statSync, createReadStream, writeFileSync } from 'node:fs';
+          import { createHash } from 'node:crypto';
+          const repo = 'dongxuelian11/lotm-fan-game';
+          const expected = {
+            releaseId: 417572162, assetId: 656974925,
+            tag: 'candidate-0.229.0-verification',
+            target: '6c1e41d74c0c87010a8d7e161448103ed2d2d85d',
+            name: 'lotm-fan-game-0.229.0-win32-x64-candidate.zip',
+            bytes: 175488288,
+            sha256: '592c9d37a3410e66cb5cb934fa4ba985ec600cf0dfb3c4a4580aec7a33bcf512'
+          };
+          function api(route) {
+            const result = spawnSync('gh', ['api', `repos/${repo}/${route}`], { encoding: 'utf8' });
+            if (result.error) throw result.error;
+            assert.equal(result.status, 0, result.stderr);
+            return JSON.parse(result.stdout);
+          }
+          const release = api(`releases/${expected.releaseId}`);
+          assert.equal(release.id, expected.releaseId);
+          assert.equal(release.tag_name, expected.tag);
+          assert.equal(release.target_commitish, expected.target);
+          assert.equal(release.draft, true, 'This check must use the unpublished verification draft');
+          const asset = api(`releases/assets/${expected.assetId}`);
+          assert(release.assets.some(item => item.id === asset.id));
+          assert.equal(asset.id, expected.assetId);
+          assert.equal(asset.name, expected.name);
+          assert.equal(asset.size, expected.bytes);
+          assert.equal(asset.state, 'uploaded');
+          assert.equal(asset.digest, `sha256:${expected.sha256}`);
+          const directory = 'output/windows-candidate-smoke';
+          const zip = `${directory}/${expected.name}`;
+          const fd = openSync(zip, 'wx');
+          let download;
+          try {
+            // File descriptor redirection preserves binary bytes in Windows PowerShell.
+            download = spawnSync('gh', ['api', `repos/${repo}/releases/assets/${expected.assetId}`,
+              '-H', 'Accept: application/octet-stream'], { stdio: ['ignore', fd, 'inherit'], timeout: 180000 });
+          } finally { closeSync(fd); }
+          if (download.error) throw download.error;
+          assert.equal(download.status, 0, 'Asset download failed');
+          assert.equal(statSync(zip).size, expected.bytes);
+          const hash = createHash('sha256');
+          for await (const chunk of createReadStream(zip)) hash.update(chunk);
+          const actualSha256 = hash.digest('hex');
+          assert.equal(actualSha256, expected.sha256);
+          writeFileSync(`${directory}/download-proof.json`, JSON.stringify({
+            status: 'PASS', checkedAt: new Date().toISOString(), repo, ...expected,
+            releaseDraft: release.draft, actualSha256, actualBytes: statSync(zip).size,
+            runId: process.env.GITHUB_RUN_ID, workflowCommit: process.env.GITHUB_SHA
+          }, null, 2));
+          console.log('EXACT_DRAFT_ZIP_DOWNLOAD_PASS');
+          '@ | node --input-type=module
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Expand-Archive -LiteralPath output/windows-candidate-smoke/lotm-fan-game-0.229.0-win32-x64-candidate.zip -DestinationPath output/windows-candidate-smoke/extracted
+      - name: Launch the actual EXE, save, close, reopen, and replay
+        shell: pwsh
+        run: |
+          node scripts/verify-windows-candidate.mjs --app=output/windows-candidate-smoke/extracted/lotm-fan-game-0.229.0-win32-x64-candidate --evidence=output/windows-candidate-smoke/evidence 2>&1 | Tee-Object -FilePath output/windows-candidate-smoke/run.log
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-direct-zip-${{ github.run_id }}
+          path: |
+            output/windows-candidate-smoke/download-proof.json
+            output/windows-candidate-smoke/run.log
+            output/windows-candidate-smoke/evidence/*.json
+            output/windows-candidate-smoke/evidence/*.png
+            output/windows-candidate-smoke/evidence/*.txt
+            output/windows-candidate-smoke/evidence/*.log
+          if-no-files-found: warn
