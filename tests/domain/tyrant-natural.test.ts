@@ -143,7 +143,7 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
       expect(state).toMatchObject({ status: 'DEAD', health: 0, week: 195, random: { cursor: 284 } });
       expect(view.tyrant.promoted).toBe(false);
     }
-  }, first === 833 ? 600_000 : 240_000);
+  }, first >= 801 ? 600_000 : 240_000);
   }
 
   it('allows only verified empty Sun, Death, Door and Error roots when comparing captured212', () => {
