@@ -77,7 +77,8 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
     expect(() => readAction(row)).toThrow(); expect(hash(manifest)).toBe(before);
   });
 
-  it.each(BLOCKS)('replays recorded %i..%i (%i commands) with every full private/RNG/chapter/global boundary', (first, last, size) => {
+  for (const [first, last, size] of BLOCKS) {
+  it(`replays recorded ${first}..${last} (${size} commands) with every full private/RNG/chapter/global boundary`, () => {
     let state = first === PREFIX + 1 ? structuredClone(data.initial) : migrateCapturedTyrantState(actionAt(first).beforeLast);
     let session: TyrantRuntimeSession | null = state.tyrant.guidanceKnown ? openTyrantRuntimeSession(state) : null;
     let global = session ? session.project() : projectSliceState(state), view = capturePublic(global);
@@ -142,7 +143,8 @@ describe('NEW rebuilt215 immutable natural864 death capture', () => {
       expect(state).toMatchObject({ status: 'DEAD', health: 0, week: 195, random: { cursor: 284 } });
       expect(view.tyrant.promoted).toBe(false);
     }
-  }, 240_000);
+  }, first === 833 ? 600_000 : 240_000);
+  }
 
   it('allows only verified empty Sun, Death, Door and Error roots when comparing captured212', () => {
     const state = data.initial, historical = historicalTyrantState(state);

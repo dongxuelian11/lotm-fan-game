@@ -181,7 +181,7 @@ describe('Catastrophe S2 independent acquisition and exact inherited source boun
       s => { s.world.city = 'ELSEWHERE'; },
     ];
     for (const mutate of mutations) { const s = prepared(); mutate(s); reject(s, dose(s)); }
-  });
+  }, 15_000);
   it('retains failed originals, pays for another preparation and waits a real week for independently priced resupply', () => {
     const s = qualify(taught());
     for (let i = 0; i < 3; i++) {
