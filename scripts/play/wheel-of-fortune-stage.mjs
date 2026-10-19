@@ -11,6 +11,8 @@ import { gzipSync, gunzipSync } from 'node:zlib';
  * --max-new-actions=0/1/N counts actions completed THIS invocation (default32).
  * --resume uses that same directory and frozen input/runtime/producer bytes.
  * Zero-action resume is read-only and requires a closed completed boundary.
+ * The source's 841 commands end at revision842. Start at zero actions, resume
+ * for one real 20-penny/1-action guidance, then continue this same lineage.
  *
  * Persist chosen public intent -> prepare real owned draft -> atomically save
  * COMPLETE result checkpoint -> append lightweight JSONL receipt/key snapshots
@@ -61,10 +63,10 @@ export function verifyRow(row) {
 }
 export function snapshotReasons({ newCount, beforeIntent = null, afterIntent = null, terminal = false }) {
   assert(Number.isSafeInteger(newCount) && newCount >= 0);
-  const replacement = intent => intent?.type === 'WHEEL_OF_FORTUNE' && intent.command?.type === 'CONSUME';
+  const consume = intent => intent?.type === 'WHEEL_OF_FORTUNE' && intent.command?.type === 'CONSUME';
   return [newCount === 0 && !beforeIntent && !afterIntent && !terminal ? 'initial' : null,
     newCount > 0 && newCount % SNAPSHOT_INTERVAL === 0 && afterIntent ? 'periodic' : null,
-    replacement(beforeIntent) ? 'before-consume' : null, replacement(afterIntent) ? 'after-consume' : null,
+    consume(beforeIntent) ? 'before-consume' : null, consume(afterIntent) ? 'after-consume' : null,
     terminal ? 'terminal' : null].filter(Boolean);
 }
 export function chooseAction(view) {
@@ -85,7 +87,9 @@ export function assertPublicOnly(value, path = '$') {
     'originalWorldDigest', 'combatHistoryDigest', 'originalsDigest', 'acquisitionDigest', 'compoundDigest', 'beforeDigest', 'afterDigest',
     'actorId', 'predecessorActorId', 'incumbentActorId', 'custodianActorId', 'preparationRoll', 'futureRoll', 'nextRoll', 'privateSource']);
   for (const [key, child] of Object.entries(value)) {
-    const next = `${path}.${key}`, physicalActor = key === 'actorId' && (/^\$\.wheelOfFortune\.actions\.\d+\.command\.actorId$/.test(next) && ['PLAYER','CH225-VERA','CH225-EDWIN'].includes(child) || /^\$\.abomination\.life\.ledger\.\d+\.moves\.\d+\.actorId$/.test(next) && ['PLAYER','SD3-ELSA'].includes(child)), inheritedNull = key === 'actorId' && child === null &&
+    const next = `${path}.${key}`, physicalActor = key === 'actorId' &&
+      /^\$\.mercurySnake\.life\.ledger\.\d+\.moves\.\d+\.actorId$/.test(next) &&
+      ['PLAYER', 'GUIDE', 'CW3-VERA', 'CW3-CART', 'CW3-PARCEL'].includes(child), inheritedNull = key === 'actorId' && child === null &&
       ['$.divineHand.life.site.guard.actorId', '$.glory.life.site.guard.actorId'].includes(next);
     assert(!(forbidden.has(key) && !inheritedNull && !physicalActor) && !(key === 'source' && child !== null && typeof child === 'object'), `Private public field ${next}`);
     assertPublicOnly(child, next);
@@ -199,7 +203,18 @@ function readSource(path) {
   assert.equal(source.revision, SOURCE_REVISION); assert.equal(source.status, 'ACTIVE'); assert.equal(source.week, 202);
   assert.deepEqual([source.health, source.mind, source.spirituality, source.cash, source.actionsRemaining], [90, 88, 86, 20, 3]);
   assert.equal(source.progression.pathwayId, 'wheel'); assert.equal(source.progression.sequence, 1);
-  assert.equal(Object.keys(source.progression.mastery).length, 19); return { archive, bytes, source };
+  assert.equal(source.progression.acting, 100); assert.equal(Object.keys(source.progression.mastery).length, 19);
+  assert.deepEqual(source.random, { seed: 'monster-natural-v060', cursor: 306 });
+  assert.equal(source.injuries.length, 1); assert.equal(source.injuries[0].severity, 'LIGHT');
+  assert.equal(source.injuries[0].treatedRevision, null);
+  assert.deepEqual(source.mercurySnake.luck, { stored: 0, lastAccumulateWeek: 176, accumulated: 14, spent: 14 });
+  assert.equal(source.mercurySnake.life.site.playerLocation, 'START');
+  assert.deepEqual(source.mercurySnake.bottles.map(({ id, status, outcome }) => ({ id, status, outcome })), [
+    { id: 'mercury-snake-potion-1', status: 'CONSUMED', outcome: 'FAILURE' },
+    { id: 'mercury-snake-potion-2', status: 'CONSUMED', outcome: 'SUCCESS' },
+    { id: 'mercury-snake-potion-3', status: 'SUPPLIER', outcome: null },
+  ]);
+  return { archive, bytes, source };
 }
 async function loadRuntime(root) {
   const [slice, migration, owned] = await Promise.all(['domain/slice/index', 'domain/slice/migration', 'domain/wheel-of-fortune/owned-session']
@@ -283,18 +298,23 @@ function reconcileTrace(path, cp, prefixCommands, initial, readOnly) {
   assert.equal(chain.rowSha256, cp.rowSha256); assert.deepEqual(chain.anchor, cp.anchor); return trace.rows;
 }
 function outcome(state) {
- const root=state.wheelOfFortune,scene=root.scene;
+ const root=state.wheelOfFortune,scene=root.scene,commissions=scene?.commissions??[];
  return {status:state.status,sequence:state.progression.sequence,promoted:state.progression.sequence===0,
   reported:Boolean(scene?.returnReportEventId),ordinaryExit:scene?.playerPosition==='OUTSIDE',
-  returnedHome:root.frame?.location===HOME,sceneStatus:scene?.status??null,
+  returnedHome:root.frame?.location===HOME,exitClosed:scene?.exit.door==='CLOSED',sceneStatus:scene?.status??null,
+  originalDepartureRecorded:Boolean(scene?.originalDepartureEventId),
+  completedCommissions:commissions.filter(item=>item.reportEventId).length,
+  observedOpportunityWeek:commissions[scene?.commissionIndex]?.opportunityWeek??null,
+  impactBufferApplied:Boolean(scene?.impactBufferApplied),shortReturnApplied:Boolean(scene?.shortReturnApplied),
+  loadMethod:scene?.device.loadMethod??null,returnMethod:scene?.device.returnMethod??null,
   week:state.week,health:state.health,mind:state.mind,spirituality:state.spirituality};
 }
 function terminal(state,view){
  const actual=outcome(state);
  if(actual.status!=='ACTIVE')return {stage:actual.status==='DEAD'?'NATURAL_DEATH':'NATURAL_TERMINAL',reason:`Actual runtime status ${actual.status}`};
  if(view.wheelOfFortune.actions.some(action=>action.preferredAction))return null;
- if(actual.returnedHome&&actual.reported)return {stage:'NATURAL_S0_REPORTED_EXIT',reason:'Actual warehouse aftermath reported after ordinary return'};
- if(actual.returnedHome&&actual.sceneStatus==='ABORTED')return {stage:'NATURAL_ORDINARY_EXIT',reason:'Actual ordinary exit retained all costs and cargo positions'};
+ if(actual.returnedHome&&actual.ordinaryExit&&actual.exitClosed&&actual.reported)return {stage:actual.promoted?'NATURAL_S0_REPORTED_EXIT':'NATURAL_ORDINARY_EXIT',reason:'Actual junction aftermath reported after ordinary exit; only observed opportunities retained'};
+ if(actual.returnedHome&&actual.ordinaryExit&&actual.exitClosed&&actual.sceneStatus==='ABORTED')return {stage:'NATURAL_ORDINARY_EXIT',reason:'Actual ordinary exit retained all costs and cargo positions'};
  return null;
 }
 function safeOutput(root, options) {

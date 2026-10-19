@@ -4,7 +4,7 @@ import { openWheelOfFortuneRuntimeSession } from '../../src/domain/wheel-of-fort
 import { createWheelOfFortuneState, validateWheelOfFortuneState, validateWheelOfFortuneCommand } from '../../src/domain/wheel-of-fortune/index.js';
 import { WHEEL_OF_FORTUNE_ABILITY_IDS, WHEEL_OF_FORTUNE_ORIGINAL_IDS } from '../../src/domain/wheel-of-fortune/content.js';
 import { wheelOfFortuneHost } from '../../src/domain/wheel-of-fortune/engine.js';
-import { wheelOfFortuneSceneBlock } from '../../src/domain/wheel-of-fortune/scene.js';
+import { wheelOfFortuneSceneBlock, applyWheelOfFortuneScene } from '../../src/domain/wheel-of-fortune/scene.js';
 import { assertWheelOfFortuneSourceUnmodified, controlledWheelOfFortuneRolls, executeWheelOfFortune, wheelOfFortuneHash,
   wheelOfFortuneInheritedHash, wheelOfFortunePublicLeaks, preparedWheelOfFortuneScenario } from '../helpers/wheel-of-fortune-scenario.js';
 
@@ -36,6 +36,19 @@ describe('WheelOfFortune226 real original841 body, three originals and owned run
     expect(state.progression.mastery).toEqual(source.progression.mastery);
     expect(wheelOfFortuneInheritedHash(state)).toBe(wheelOfFortuneInheritedHash(source));
     expect(root.promotionStability.preparations.at(-1)!.status).toBe('READY');
+    // The opportunity belongs to the actual second arrival, never the later report.
+    const host = wheelOfFortuneHost(root, 'observed-arrival', state.revision + 1);
+    const justBeforeArrival = structuredClone(scene), live = justBeforeArrival.commissions[justBeforeArrival.commissionIndex]!;
+    live.reportEventId = null; live.opportunityWeek = null;
+    const last = live.workers[1]!; last.position = 'ENTRY'; last.cargo.position = 'ENTRY'; last.destinationEventId = null;
+    justBeforeArrival.playerPosition = 'ENTRY'; justBeforeArrival.status = 'ACTIVE';
+    const observed = applyWheelOfFortuneScene(justBeforeArrival, { type: 'EXIT_WORKER', workerId: last.id }, host, () => { throw Error('No random draw for real movement'); });
+    expect(observed.state.commissions[observed.state.commissionIndex]!.opportunityWeek).toBe(state.week);
+    const delayed = structuredClone(scene); delayed.commissions[delayed.commissionIndex]!.reportEventId = null;
+    const reported = applyWheelOfFortuneScene(delayed, { type: 'REPORT_JUNCTION' }, { ...host, week: state.week + 1 }, () => { throw Error('No random draw for reporting'); });
+    expect(reported.state.commissions[reported.state.commissionIndex]!.opportunityWeek).toBe(state.week);
+    expect(reported.notes.join('')).toContain('迟报不会');
+    expect(scene.commissions[scene.commissionIndex]!.reportEventId).toBe(commission.reportEventId);
   });
 
   it('keeps drafts isolated and rejects old routes, forged S0 and hidden-roll commands', () => {

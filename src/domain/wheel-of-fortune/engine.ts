@@ -127,7 +127,11 @@ function reduce(root:WheelOfFortuneState,c:WheelOfFortuneCommand,revision:number
  else if(c.type==='NEXT_WEEK'){b.actions=0;time(f.weekAnchor+604800-f.nowSecond);notes.push('经过下一真实周界，生活费与既有还款照常结算；没有自动工资、治疗或补货。');}
  else if(c.type==='TRAVEL'||c.type==='RETURN_ON_FOOT'){const from=f.location;if(c.type==='TRAVEL')pay(b,{actions:1});f.location=c.type==='TRAVEL'?c.to:WHEEL_OF_FORTUNE_HOME;transportWheelOfFortuneMaterials(root.materials!,from,f.location);const metres=c.type==='TRAVEL'?1800:7200;root.scene!.playerTravelMetres+=metres;root.scene!.moves.push({eventId,actorId:'PLAYER',from:'OUTSIDE',to:'OUTSIDE',metres,seconds:metres,cargoId:null,mode:'WALK'});time(metres);notes.push(c.type==='TRAVEL'?'本人携实际随身原件沿普通道路步行半小时抵达。':'本人携随身原件沿普通道路步行两小时回交接站外，不需要现款或行动。');}
  else if(isWheelOfFortuneSceneCommand(c)){
+  const previousOpportunityWeek=wheelOfFortuneCurrentCommission(root.scene!).opportunityWeek;
   const result=applyWheelOfFortuneScene(root.scene!,c,wheelOfFortuneHost(root,eventId,revision),(ability,difficulty)=>check(ability,difficulty));root.scene=result.state;pay(b,result.effect);time(result.effect.seconds);
+  // A new witnessed arrival belongs to its actual completion week; an old
+  // opportunity is never refreshed by elapsed time, reporting or later movement.
+  if(c.type==='EXIT_WORKER'&&previousOpportunityWeek===null&&wheelOfFortuneCurrentCommission(root.scene!).opportunityWeek!==null)wheelOfFortuneCurrentCommission(root.scene!).opportunityWeek=b.week;
   if(c.type==='LEAVE_ORIGINAL_COURT'){transportWheelOfFortuneMaterials(root.materials!,f.location,'WF226-COURT-OUTSIDE');f.location='WF226-COURT-OUTSIDE';}
   for(const ability of result.effect.mastery??[]){need(WHEEL_OF_FORTUNE_ABILITY_IDS.some(x=>x===ability),'有限能力的应用记录无效。');b.mastery[ability]=Math.min(500,(b.mastery[ability]??0)+8);}notes.push(...result.notes);
  }

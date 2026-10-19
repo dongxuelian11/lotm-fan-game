@@ -65,7 +65,7 @@ describe('Wheel of Fortune genuine 204 inherited public evidence', () => {
         if (!round[key]) continue;
         counts[key]++;
         expect(visible[key]).toEqual(publicFacts(round[key]));
-        expect(p.combatHistory[index]![key]).toEqual(projectPlayerText(visible[key], s.character.name));
+        expect(p.combatHistory[index]![key]).toEqual(projectPlayerText(visible[key]!, s.character.name));
         noSecrets(visible[key]);
       }
     }
@@ -129,7 +129,7 @@ describe('Wheel of Fortune genuine 204 inherited public evidence', () => {
     }
     const receipt = structuredClone(journal.find(r => r.check)!);
     const label = 'source randomSeed randomCursor preparationRoll 是合法的公开检定说明';
-    receipt.check!.modifiers.push({ source: label, value: 3 });
+    receipt.check!.modifiers = [...receipt.check!.modifiers, { source: label, value: 3 }];
     const projected = projectMercurySnakeLifeReceipt(receipt);
     expect(projected.check!.modifiers).toEqual(receipt.check!.modifiers); expect(projected.check!.roll).toBe(receipt.check!.roll); noSecrets(projected);
     const probe = structuredClone(s); probe.lastCheck = receipt.check;

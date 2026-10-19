@@ -46,9 +46,8 @@ import type { EntropyDukeCombatProjection } from "../domain/entropy-duke/combat"
 import { BarrenMatriarchPanel } from "./BarrenMatriarchPanel";
 import { BalancerPanel } from "./BalancerPanel";
 import { EntropyDukePanel } from "./EntropyDukePanel";
-import type { FateProphetCombatProjection } from "../domain/fate-prophet/combat";
 import { FateProphetPanel } from "./FateProphetPanel";
-import type { MercurySnakeCombatProjection, MercurySnakeRoundOutcome } from "../domain/mercury-snake/combat";
+import type { MercurySnakeCombatProjection, MercurySnakePublicRoundOutcome } from "../domain/mercury-snake/combat";
 import { MercurySnakePanel } from "./MercurySnakePanel";
 import type { PrinceOfAbolitionCombatProjection, PrinceOfAbolitionPublicRoundOutcome } from "../domain/prince-of-abolition/combat";
 import { PrinceOfAbolitionPanel } from "./PrinceOfAbolitionPanel";
@@ -2904,12 +2903,11 @@ function MercurySnakeActionSequence({ actions, characterName }: { actions: Mercu
   </li>)}</ol>;
 }
 
-function MercurySnakeRoundFacts({ outcome, consequenceDomain, characterName }: { outcome: MercurySnakeRoundOutcome; consequenceDomain: SliceCombatRound["consequenceDomain"]; characterName?: string }) {
+function MercurySnakeRoundFacts({ outcome, consequenceDomain, characterName }: { outcome: MercurySnakePublicRoundOutcome; consequenceDomain: SliceCombatRound["consequenceDomain"]; characterName?: string }) {
   return <section aria-label="水银之蛇本回合实际记录">
     <h3>同一位置、原攻击与实际消耗</h3>
-    <p>回合开始：本人健康{outcome.source.playerHealth}、精神{outcome.source.playerMind}、灵性{outcome.source.playerSpirituality}，唯一幸运{outcome.source.luck.stored}/3；对手健康{outcome.source.body.enemyHealth}、精神{outcome.source.body.enemyMind}、灵性{outcome.source.body.enemySpirituality}。</p>
     <p>回合结束：本人健康{outcome.playerHealthAfter}、精神{outcome.playerMindAfter}、灵性{outcome.playerSpiritualityAfter}；对手健康{outcome.enemyHealth}、精神{outcome.enemyMind}、灵性{outcome.enemySpirituality}。幸运余{outcome.luckAfter.stored}/3，累计实际花费{outcome.luckAfter.spent}份。</p>
-    <p>原现场时钟{outcome.source.site.clockSeconds}秒→{outcome.siteAfter.clockSeconds}秒，本回合真实经过{outcome.elapsedSeconds}秒；本人实际移动{outcome.playerTravelMetres - outcome.source.body.playerTravelMetres}米，对手实际移动{outcome.enemyTravelMetres - outcome.source.body.enemyTravelMetres}米。本人结束于局部{outcome.playerLocalMetres}米处，与对手相距{2 + outcome.playerLocalMetres}米；活着离场须从此处实际走{4 + outcome.playerLocalMetres}米回门口。</p>
+    <p>原现场时钟{outcome.siteAfter.clockSeconds - outcome.elapsedSeconds}秒→{outcome.siteAfter.clockSeconds}秒，本回合真实经过{outcome.elapsedSeconds}秒；本人累计实际移动{outcome.playerTravelMetres}米，对手累计实际移动{outcome.enemyTravelMetres}米。本人结束于局部{outcome.playerLocalMetres}米处，与对手相距{2 + outcome.playerLocalMetres}米；活着离场须从此处实际走{4 + outcome.playerLocalMetres}米回门口。</p>
     <p>辅助片剩余{outcome.piece?.charges ?? 0}/3，累计磨损{outcome.piece?.wear ?? 0}；对手原刻片剩余{outcome.plates.filter(plate => plate.status === "HELD").length}/3。本人现存伤势{outcome.playerInjuriesAfter.length}处，伤势风险{outcome.playerRiskAfter}；对手伤势{outcome.enemyInjuries.length}处，伤势风险{outcome.enemyRisk}。</p>
     <p>{consequenceDomain === "BODY" ? "本回合根据实际身体攻击结算伤势。" : consequenceDomain === "MENTAL" ? "本回合只结算实际精神压力，不生成身体伤口。" : "本回合没有实际致伤来源，不掷身体伤势盘。"}片刻维系没有额外减势；另付费的局部重启仅处理同一尚未结算身体冲量，合计至多减30。健康、旧伤、死亡、时间和已付费用均不回滚。</p>
     {outcome.expiredWindows.length > 0 && <p>本回合另有{outcome.expiredWindows.length}份未用位置联系已到期或失效，费用保留。</p>}
@@ -2932,7 +2930,7 @@ function MercurySnakeCombatFacts({ value, state }: { value: MercurySnakeCombatPr
   </section>;
 }
 
-function FateProphetActionSequence({actions}:{actions:FateProphetCombatProjection["lastActionSequence"]}) {
+function FateProphetActionSequence({actions}:{actions:NonNullable<SliceCombatRound["fateProphetOutcome"]>["playerActions"]}) {
  return <ol>{actions.map(action=><li key={`${action.actor}-${action.order}`}><strong>{action.actor==='PLAYER'?'本人':'对手'}第{action.order+1}槽：{action.label}</strong><p>实耗{action.paidCost}灵性、{action.mindCost}精神、{action.luckCost}份幸运；自身优势{displayNumber(action.selfGain)}，减势{displayNumber(action.enemyReduction)}。</p>{action.fallbackReason&&<p>{action.fallbackReason}</p>}{action.check&&<p>本次检定{action.check.roll}/{action.check.chance}；{action.resisted?'对手实际抵抗。':''}</p>}</li>)}</ol>;
 }
 

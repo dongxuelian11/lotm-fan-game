@@ -66,7 +66,7 @@ export function wheelOfFortuneSceneBlock(s:WheelOfFortuneScene,c:WheelOfFortuneC
  case 'WALK_EXIT':return ['OUTSIDE','ORIGINAL_ENTRY'].includes(s.playerPosition)?'本人当前不在交接站内。':null;
  case 'ASK_WORKER':return s.phase!=='PREPARATION'||!commission.papersVerifiedEventId||w!.consent==='GRANTED'||w!.destinationEventId?'先核对原凭证，已完成新去处者不能重新作同一决定。':null;
  case 'WITHDRAW_WORKER':return w!.consent!=='GRANTED'?'当前没有可撤回的同意。':null;
- case 'ARRIVE_WORKER':return s.phase!=='PREPARATION'||w!.position!=='OUTSIDE'||w!.consent!=='GRANTED'||w!.arrivalEventId||!s.toolsBoughtEventId||s.playerPosition!=='ENTRY'?'本人须在安全交接台见证，成年人须本次同意后携原物首次步行进入。':null;
+ case 'ARRIVE_WORKER':return s.phase!=='PREPARATION'||w!.position!=='OUTSIDE'||w!.consent!=='GRANTED'||w!.destinationEventId||!s.toolsBoughtEventId||s.playerPosition!=='ENTRY'?'本人须在安全交接台见证，成年人须本次同意后携原物实际步行进入。':null;
  case 'CHOOSE_DESTINATION':case 'HAND_OVER':
   if(s.phase!=='PREPARATION'||s.playerPosition!=='ENTRY'||w!.position!=='ENTRY'||w!.consent!=='GRANTED')return '须本人亲见仍在台前的本次同意者自行决定和交接。';
   if(!h.dosePrepared||!h.mature)return '先备妥同一成药，成为水银之蛇满十二周后再进行最后不可撤销的决定与交接。';
@@ -114,12 +114,12 @@ export function applyWheelOfFortuneScene(scene:WheelOfFortuneScene,c:WheelOfFort
  case 'APPROACH':move(s,h,'PLAYER','ENTRY',2);notes.push('本人真实走两米到交接台。');break;
  case 'ASK_WORKER':w!.consent='GRANTED';w!.permissionVersion++;w!.permissionEventId=h.eventId;w!.paidEventId??=h.eventId;notes.push(`${w!.name}独立同意本次交接，${e.cash?'实收20便士劳务费':'已收费用不重复收取'}；仍可撤回尚未实施部分。`);break;
  case 'WITHDRAW_WORKER':w!.consent='WITHDRAWN';w!.permissionVersion++;s.status='ABORTED';end(s);notes.push(`${w!.name}撤回后续同意；已经签定的去处、交接及费用不倒退。`);break;
- case 'ARRIVE_WORKER':move(s,h,w!.id,'ENTRY',2);w!.arrivalEventId=h.eventId;notes.push(`${w!.name}携同一原凭证和货物真实走两米到交接台，消耗两点精力。`);break;
+ case 'ARRIVE_WORKER':move(s,h,w!.id,'ENTRY',2);w!.arrivalEventId??=h.eventId;notes.push(`${w!.name}携同一原凭证和货物真实走两米到交接台，消耗两点精力。`);break;
  case 'CHOOSE_DESTINATION':w!.destination=c.destination;w!.decisionEventId=h.eventId;w!.paper.signedEventId=h.eventId;notes.push(`${w!.name}亲自在原凭证上确认${c.destination==='NORTH_DEPOT'?'北侧新址':'南侧新址'}，决定不可撤销。尚未把未来机会当作保证。`);break;
  case 'HAND_OVER':w!.handoverEventId=h.eventId;w!.paper.holderId=`WF226-RECIPIENT-${w!.destination}`;w!.cargo.holderId=w!.paper.holderId;w!.cargo.version++;notes.push(`${w!.name}亲手将同一原凭证与货物交给新址收件人；凭证留交接台，原货物由其继续实际送往已选新址。旧决定和所有权转移不能重演。`);break;
- case 'EXIT_WORKER':{const delivered=!!w!.handoverEventId&&!!w!.destination,to=delivered?w!.destination!:'OUTSIDE';move(s,h,w!.id,to,delivered?3:2);e.seconds=delivered?3:2;if(delivered)w!.destinationEventId=h.eventId;w!.consent='CLOSED';w!.permissionVersion++;notes.push(`${w!.name}携同一货物真实走${e.seconds}米到${delivered?'已选新址':'站外'}，交接台可直接看见；精力、货物路程和已付费用保留。`);break;}
+ case 'EXIT_WORKER':{const delivered=!!w!.handoverEventId&&!!w!.destination,to=delivered?w!.destination!:'OUTSIDE';move(s,h,w!.id,to,delivered?3:2);e.seconds=delivered?3:2;if(delivered)w!.destinationEventId=h.eventId;w!.consent='CLOSED';w!.permissionVersion++;if(delivered&&done(s)&&s.playerPosition==='ENTRY'&&commission.opportunityWeek===null)commission.opportunityWeek=h.week;notes.push(`${w!.name}携同一货物真实走${e.seconds}米到${delivered?'已选新址':'站外'}，交接台可直接看见；精力、货物路程和已付费用保留。`);break;}
  case 'WALK_EXIT':{const metres=WHEEL_OF_FORTUNE_EXIT_METRES[s.playerPosition];end(s);move(s,h,'PLAYER','OUTSIDE',metres);notes.push(`本人沿普通侧路真实走${metres}米到站外，不借能力退出。`);break;}
- case 'REPORT_JUNCTION':commission.reportEventId=h.eventId;commission.opportunityWeek=h.week;s.evacuationReportEventId=h.eventId;s.status='COMPLETED';closeConsent(s);notes.push('在两项独立决定、同一原物交接与真实去处已经发生后，你才察觉此次汇合中的当周契机。没有提前预言时刻，也不改写任何已经发生的决定。');break;
+ case 'REPORT_JUNCTION':commission.reportEventId=h.eventId;s.evacuationReportEventId=h.eventId;s.status='COMPLETED';closeConsent(s);notes.push(commission.opportunityWeek===h.week?'如实记录刚亲见的两项独立决定、同一原物交接与真实去处；契机已在第二次实际到达时察觉，只在该周有效。没有提前预言时刻，也不改写任何已经发生的决定。':commission.opportunityWeek===null?'如实记录两项原物交接与实际去处；本人未在汇合当下亲见完整变化，没有取得当周契机。已成人物决定与费用保留。':`如实记录第${commission.opportunityWeek}周已经亲见的独立变化；该周已经过去，迟报不会产生新的当周契机，已成人物决定与费用保留。`);break;
  case 'NEXT_COMMISSION':s.commissionIndex++;s.evacuationReportEventId=null;s.status='ACTIVE';closeConsent(s);notes.push('转向事先登记的下一项独立委托及另外两位成年人。全部旧委托、原人物决定、交接、费用和伤势保留，没有重置过去。');break;
  case 'START_PRACTICE':s.phase='PRACTICE';s.status='ACTIVE';closeConsent(s);notes.push('本人开始一次有限应用，已到新址的成年人及其原物不被召回。');break;
  case 'INSPECT_DEVICE':s.device.inspectedEventId=h.eventId;s.load.visible=true;notes.push('亲见同一箱件与下一次放下时对本人产生的八健康冲击，查清普通绳索支撑及可步行的三米侧路。');break;
