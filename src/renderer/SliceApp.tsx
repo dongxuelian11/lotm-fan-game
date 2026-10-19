@@ -5483,6 +5483,7 @@ export function SliceApp() {
         <p className="slice-muted">健康{state.health} / 精神{state.mind} / 灵性{state.spirituality} · 本周行动{state.actionsRemaining}</p>
         <div className="slice-sr-only" role="status" aria-live="polite">{busy ? "正在结算并保存" : state.lastResult?.title}</div>
         {error && <ErrorNotice error={error} onRetry={retryLast} busy={busy}/>}
+        {blackEmperorPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("BLACK_EMPEROR")}>查看黑皇帝晋升准备</button>}
         {isEnding ? <Ending state={state} onInspect={() => setInspect(true)} onTitle={title} onContinue={() => command({type:"CONTINUE_LIFE"})} busy={busy} error={error} onRetry={retryLast}/> :
         <PrinceOfAbolitionPanel value={state.princeOfAbolition} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
           onCommand={c => command({type:"PRINCE_OF_ABOLITION",command:c})}
@@ -5498,7 +5499,6 @@ export function SliceApp() {
         {recoveryNotice}
         <p className="slice-muted">健康{state.health} / 精神{state.mind} / 灵性{state.spirituality} · 本周行动{state.actionsRemaining}</p>
         {error && <ErrorNotice error={error} onRetry={retryLast} busy={busy}/>}
-        {blackEmperorPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("BLACK_EMPEROR")}>查看黑皇帝晋升准备</button>}
         {wheelOfFortunePageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("WHEEL_OF_FORTUNE")}>查看命运之轮晋升准备</button>}
         {chainedPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("CHAINED")}>查看被缚者晋升准备</button>}
         {isEnding ? <Ending state={state} onInspect={() => setInspect(true)} onTitle={title} onContinue={() => command({type:"CONTINUE_LIFE"})} busy={busy} error={error} onRetry={retryLast}/> :
@@ -5898,7 +5898,6 @@ export function SliceApp() {
         <p className="slice-muted">健康{state.health} / 精神{state.mind} / 灵性{state.spirituality} · 本周行动{state.actionsRemaining}</p>
         <div className="slice-sr-only" role="status" aria-live="polite">{busy ? "正在结算并保存" : state.lastResult?.title}</div>
         {error && <ErrorNotice error={error} onRetry={retryLast} busy={busy}/>}
-        {blackEmperorPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("BLACK_EMPEROR")}>查看黑皇帝晋升准备</button>}
         {wheelOfFortunePageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("WHEEL_OF_FORTUNE")}>查看命运之轮晋升准备</button>}
         {isEnding ? <Ending state={state} onInspect={() => setInspect(true)} onTitle={title} onContinue={() => command({type:"CONTINUE_LIFE"})} busy={busy} error={error} onRetry={retryLast}/> :
         <MercurySnakePanel value={state.mercurySnake} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
