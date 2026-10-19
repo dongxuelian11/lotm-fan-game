@@ -2,7 +2,9 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { assertValidSliceState } from '../../src/domain/slice/index.js';
 import { openHermitRuntimeSession } from '../../src/domain/hermit/owned-session.js';
 import { createHermitState, validateHermitCommand, validateHermitState } from '../../src/domain/hermit/index.js';
-import { HERMIT_ABILITY_IDS, HERMIT_ORIGINAL_IDS } from '../../src/domain/hermit/content.js';
+import { HERMIT_ABILITY_IDS, HERMIT_ORIGINAL_IDS, HERMIT_MOVE_LINE } from '../../src/domain/hermit/content.js';
+import { hermitHost } from '../../src/domain/hermit/engine.js';
+import { hermitSceneBlock } from '../../src/domain/hermit/scene.js';
 import * as predecessor from '../../src/domain/knowledge-emperor/index.js';
 import { assertHermitSourceUnmodified, controlledHermitRolls, executeHermit, hermitHash,
   hermitInheritedHash, hermitPublicLeaks, preparedHermitScenario } from '../helpers/hermit-scenario.js';
@@ -100,7 +102,7 @@ describe('Hermit222 real predecessor, paid preparation and owned runtime', () =>
     expect(validateHermitState(noHistory)).toBe(false);
   }, 300_000);
 
-  it('consumes the real prepared compound without a refill and cold-validates the same locked S0 state with global cap 150', () => {
+  it('consumes without a refill, cold-validates cap 150, and completes both finite S0 applications with the same owned session', () => {
     const before = scenario.beforeConsume;
     const state = executeHermit(scenario.session, { type: 'CONSUME', compoundId: before.hermit.materials!.compounds[0]!.id, confirmed: true });
     expect(state.progression).toMatchObject({ pathwayId: 'hermit', sequence: 0, acting: 0 });
@@ -123,6 +125,94 @@ describe('Hermit222 real predecessor, paid preparation and owned runtime', () =>
     expect(hermitPublicLeaks(view)).toEqual([]);
     expect(() => scenario.session.prepare({ type: 'REST' }, state.revision)).toThrow();
     assertValidSliceState(state);
+
+    // Continue this already-owned successful head. Probe negative conditions only
+    // on scene copies, without manufacturing a new campaign or replay authority.
+    let entered = false, touched = false;
+    const practiceCommands: string[] = [];
+    for (let step = 0; step < 100; step++) {
+      const current = scenario.session.snapshot(), scene = current.hermit.scene!;
+      if (scene.returnReportEventId) break;
+      const action = scenario.session.projectHermit().actions.find(candidate => candidate.preferredAction);
+      if (!action?.enabled) throw Error(`Hermit S0 preferred return blocked: ${JSON.stringify({
+        week: current.week, actions: current.actionsRemaining, cash: current.cash,
+        location: current.hermit.frame!.location, scene, action, last: practiceCommands.slice(-10),
+      })}`);
+      const command = action.command;
+      if (command.type === 'ENTER_INFORMATION_FORM' || command.type === 'TOUCH_READ_RECORD') {
+        const host = hermitHost(current.hermit, `R222:${current.runId}:${current.revision + 1}`, current.revision + 1);
+        const sceneBefore = hermitHash(scene);
+        expect(hermitSceneBlock(scene, command, host)).toBeNull();
+        const withdrawn = structuredClone(scene);
+        withdrawn.owner.consent = 'WITHDRAWN';
+        withdrawn.owner.permissionVersion++;
+        expect(hermitSceneBlock(withdrawn, command, host)).not.toBeNull();
+        if (command.type === 'ENTER_INFORMATION_FORM') {
+          entered = true;
+          const disconnected = structuredClone(scene); disconnected.slit.connected = false;
+          expect(hermitSceneBlock(disconnected, command, host)).not.toBeNull();
+          const blocked = structuredClone(scene); blocked.slit.open = false;
+          expect(hermitSceneBlock(blocked, command, host)).not.toBeNull();
+        } else {
+          touched = true;
+          const unread = structuredClone(scene); unread.reading = null;
+          expect(hermitSceneBlock(unread, command, host)).not.toBeNull();
+        }
+        expect(hermitHash(scene)).toBe(sceneBefore);
+      }
+      const next = executeHermit(scenario.session, command), nextScene = next.hermit.scene!;
+      practiceCommands.push(command.type);
+      if (command.type === 'ENTER_INFORMATION_FORM' || command.type === 'TOUCH_READ_RECORD') {
+        const information = command.type === 'ENTER_INFORMATION_FORM';
+        expect(next.actionsRemaining).toBe(current.actionsRemaining - 1);
+        expect(next.spirituality).toBe(current.spirituality - (information ? 18 : 12));
+        expect(next.mind).toBe(current.mind - (information ? 6 : 5));
+        expect(nextScene.playerEnergy).toBe(scene.playerEnergy - (information ? 10 : 3));
+        expect(next.health).toBe(current.health);
+        expect(nextScene.custody).toEqual(scene.custody);
+        expect(nextScene.window!.expiresAt - nextScene.window!.createdAt).toBe(information ? 10 : 15);
+        expect(next.progression.mastery[HERMIT_ABILITY_IDS[information ? 0 : 1]]).toBe(0);
+      }
+      if (command.type === 'CROSS_INFORMATION_ROUTE') {
+        expect(nextScene.moves.at(-1)).toMatchObject({ actorId: 'PLAYER', from: 'MIDPOINT',
+          to: 'DESTINATION', metres: 3, mode: 'INFORMATION', carriedRecord: false });
+        expect(nextScene.custody).toEqual(scene.custody);
+        expect(next.progression.mastery[HERMIT_ABILITY_IDS[0]]).toBe(0);
+      }
+      if (command.type === 'RECONSTRUCT') expect(next.progression.mastery[HERMIT_ABILITY_IDS[0]]).toBe(8);
+      if (command.type === 'TRANSFER_READ_LINE') expect(next.progression.mastery[HERMIT_ABILITY_IDS[1]]).toBe(0);
+      if (command.type === 'AFFIX_SEAL') expect(next.progression.mastery[HERMIT_ABILITY_IDS[1]]).toBe(8);
+    }
+    const returned = scenario.session.snapshot(), scene = returned.hermit.scene!;
+    expect(scene.returnReportEventId, `Preferred commands: ${practiceCommands.join(', ')}`).toBeTruthy();
+    expect(entered).toBe(true);
+    expect(touched).toBe(true);
+    for (const id of HERMIT_ABILITY_IDS) expect(returned.progression.mastery[id]).toBe(8);
+    expect(scene).toMatchObject({ phase: 'PRACTICE', status: 'COMPLETED', body: 'SOLID', playerPosition: 'OUTSIDE',
+      informationCompleted: true, transferCompleted: true, manualCopyCompleted: false, window: null, contact: false,
+      owner: { position: 'OUTSIDE', consent: 'CLOSED' },
+      custody: { recordId: 'PM3-BOUNDARY-RECORD', quantity: 1, holder: 'OWNER', position: 'OUTSIDE', sealed: true } });
+    expect(scene.custody.returnEventId).toBeTruthy();
+    expect(scene.segments.A.open).toBe(false);
+    expect(scene.segments.B.open).toBe(false);
+    expect(scene.workers.every(worker => worker.age >= 18 && worker.alive && worker.health === 100 &&
+      worker.position === 'OUTSIDE' && worker.consent === 'CLOSED' && worker.passage.a && worker.passage.b && worker.passage.sideExit)).toBe(true);
+    expect(scene.seals).toHaveLength(1);
+    expect(scene.seals[0]).toMatchObject({ status: 'APPLIED', content: HERMIT_MOVE_LINE });
+    expect(scene.seals[0]!.boughtEventId).toBeTruthy();
+    expect(scene.seals[0]!.writtenEventId).toBeTruthy();
+    expect(scene.seals[0]!.appliedEventId).toBeTruthy();
+    const practice = returned.hermit.journal.slice(state.hermit.journal.length);
+    const paidWorkers = practice.filter(event => event.command.type === 'ASK_ARCHIVIST');
+    expect(paidWorkers).toHaveLength(2);
+    for (const event of paidWorkers) expect(event.before.budget.cash - event.after.budget.cash).toBe(20);
+    const paidSeals = practice.filter(event => event.command.type === 'BUY_SEAL');
+    expect(paidSeals).toHaveLength(1);
+    expect(paidSeals[0]!.before.budget.cash - paidSeals[0]!.after.budget.cash).toBe(20);
+    expect(returned.random).toEqual(state.random);
+    expect(returned.hermit.materials).toEqual(state.hermit.materials);
+    expect(hermitInheritedHash(returned)).toBe(hermitInheritedHash(scenario.source));
+    expect(hermitPublicLeaks(scenario.session.project())).toEqual([]);
   }, 300_000);
 
   it('keeps living failed originals recoverable only after real sealing and seven days, while severe failure cannot resurrect', () => {

@@ -39,7 +39,7 @@ function view(promoted = false): SageProjection {
     ritual: { title: '玻璃名录', story: '原高层次信息洪流已经伤及两名成年馆员。', status: '真实灾害仍在扩散', location: '原门厅', source: '旧移交卷与当前裂纹相互核实。', threat: '原核心活跃，未断回路仍在传播。', damage: '原记录4/12份损毁、原板1/4块损毁。', people: ['玛伦，46岁，原门厅，健康88。旧伤保留。', '埃德里克，39岁，原门厅，健康91。'], routes: ['刻印板连接仍在传播。', '索引回路仍在传播。'], materials: '封缄材料现有3份、已耗0份。', stoppedRecord: null, review: null, actions: [], inside: false, nextStep: '先亲自研究原来源。' },
     life: { title: '有限信息实践', story: '同一本体、原成人与原记录页。', environment: '门口至锚位6米，锚位至档架4米；每米1秒1精力。', activeCase: null, inside: false, insideCase: false, reflected: false, site: p, clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: null,
       cases: [{ id: 'information-route', title: '同一本体经过四米导管', story: '先准备，再真实通行并重组。', observations: [], status: 'OBSERVED', method: null, result: null, contactOpen: false, returned: false, closes: 0, attempts: [] }], actions: [] },
-    encounter: { title: '档案馆后院争议', story: '交谈和真实交战分别选择。', status: 'AVAILABLE', inside: false, site: null, startSite: null, preparation: null, enemy: null, actions: [], facts: [] }, insideCase: false, environment: '原仓库与独立后院，普通道路可返回。' };
+    encounter: { title: '档案馆后院争议', story: '交谈和真实交战分别选择。', status: 'AVAILABLE', inside: false, site: null, startSite: null, preparationSummary: null, enemy: null, actions: [], facts: [] }, insideCase: false, environment: '原仓库与独立后院，普通道路可返回。' };
 }
 const showModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal');
 const close = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'close');

@@ -517,7 +517,7 @@ export type KnowledgeEmperorPublicAttempt = ReturnType<typeof publicKnowledgeEmp
 function publicKnowledgeEmperorLifeCommand(c: KnowledgeEmperorActivityCommand): KnowledgeEmperorActivityCommand {
   if (c.type === 'PREPARE') return { type: c.type, caseId: c.caseId, method: c.method };
   if (c.type === 'CONSENT' || c.type === 'WITHDRAW_CONSENT') return { type: c.type, caseId: c.caseId, permission: c.permission };
-  if (c.type === 'RECOVER_ENERGY' || c.type === 'REFLECT') return { type: c.type };
+  if (!('caseId' in c)) return { type: c.type };
   return { type: c.type, caseId: c.caseId };
 }
 export function publicKnowledgeEmperorLifeReceipt(r: KnowledgeEmperorLifeReceipt) { return {

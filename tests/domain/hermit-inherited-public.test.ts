@@ -9,6 +9,8 @@ import { projectPlayerText } from '../../src/shared/player-text.js';
 import { publicMysticRound } from '../../src/domain/mystic/combat.js';
 import { publicProphecyMasterRound } from '../../src/domain/prophecy-master/combat.js';
 import { publicSageRound } from '../../src/domain/sage/combat.js';
+import { projectSageEncounter } from '../../src/domain/sage/encounter.js';
+import { knowledgeEmperorInheritedView } from '../../src/domain/knowledge-emperor/index.js';
 import { projectSageLife } from '../../src/domain/sage/life.js';
 import { projectKnowledgeEmperorCombat, publicKnowledgeEmperorRound } from '../../src/domain/knowledge-emperor/combat.js';
 import { projectKnowledgeEmperorEncounter } from '../../src/domain/knowledge-emperor/encounter.js';
@@ -97,6 +99,22 @@ describe('Hermit inherited positive public boundaries from the living 827-comman
     expect(s.combatHistory.filter(r => r.sageOutcome)).toHaveLength(5);
     expect(s.combatHistory.filter(r => r.knowledgeEmperorOutcome)).toHaveLength(0);
     publicOnly(view); expect(JSON.stringify(view)).not.toContain(s.random.seed);
+    // The Hermit runtime also freezes this genuine S2 checkpoint. A plain S1 view hides
+    // its encounter, so scan the entire restored historical public view explicitly.
+    const inherited = knowledgeEmperorInheritedView(s), inheritedBefore = digest(inherited);
+    const historicalView = projectSliceState(inherited), encounter = historicalView.sage.encounter;
+    expect(inherited.progression.sequence).toBe(2);
+    expect(encounter.site).not.toBeNull(); expect(encounter.startSite).not.toBeNull();
+    expect(encounter.preparationSummary).toEqual({ week: inherited.sage.encounter.preparation!.week, mindPaid: 2 });
+    publicOnly(historicalView); expect(JSON.stringify(historicalView)).not.toContain(inherited.random.seed);
+    expect(encounter).not.toHaveProperty('preparation');
+    expect(digest(inherited)).toBe(inheritedBefore);
+    const probe = structuredClone(inherited), expected = projectSageEncounter(probe);
+    inject(probe.sage.encounter.currentSite); inject(probe.sage.encounter.startSite); inject(probe.sage.encounter.preparation);
+    inject(probe.sage.encounter.powerUses);
+    const probeBefore = digest(probe), projected = projectSageEncounter(probe);
+    expect(projected).toEqual(expected); publicOnly(projected); detached(projected, probe);
+    expect(digest(probe)).toBe(probeBefore);
     expect(digest(s)).toBe(before); expect(s.random).toEqual(random); expect(digest(raw)).toBe(SOURCE_STATE_HASH);
   }, 60_000);
 
