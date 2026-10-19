@@ -1,0 +1,195 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.228.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.228.0_justiciar_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 13494664,
+      "sha256": "12151e79473ad19a544ed31a568fd3b023f8a4968a4376f58da275c60250814f",
+      "members": [
+        "tests/fixtures/justiciar-v02280/checkpoint.json.gz",
+        "tests/fixtures/justiciar-v02280/commands.jsonl",
+        "tests/fixtures/justiciar-v02280/key-706-initial.json.gz",
+        "tests/fixtures/justiciar-v02280/key-712-same-original-recovery.json.gz",
+        "tests/fixtures/justiciar-v02280/key-722-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-724-before-consume.json.gz",
+        "tests/fixtures/justiciar-v02280/key-725-after-consume.json.gz",
+        "tests/fixtures/justiciar-v02280/key-738-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-754-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-770-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-786-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-790-s1-reflection.json.gz",
+        "tests/fixtures/justiciar-v02280/key-791-s0-guidance.json.gz",
+        "tests/fixtures/justiciar-v02280/key-802-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-818-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-834-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-850-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-866-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-882-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-893-before-consume.json.gz",
+        "tests/fixtures/justiciar-v02280/key-894-after-consume.json.gz",
+        "tests/fixtures/justiciar-v02280/key-898-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-914-periodic.json.gz",
+        "tests/fixtures/justiciar-v02280/key-915-terminal.json.gz",
+        "tests/fixtures/justiciar-v02280/original801-natural.json.gz",
+        "tests/fixtures/justiciar-v02280/producer-tests.mjs",
+        "tests/fixtures/justiciar-v02280/producer.mjs",
+        "tests/fixtures/justiciar-v02280/runtime-freeze.json",
+        "tests/fixtures/justiciar-v02280/source-snapshot.json.gz",
+        "tests/fixtures/justiciar-v02280/summary.json"
+      ]
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/justiciar-v02280/checkpoint.json.gz",
+      "bytes": 290870,
+      "sha256": "08d6db2d4fbe919e516fae4008161642c86b02611c8ac14be4eb54204a004fda"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/commands.jsonl",
+      "bytes": 790561,
+      "sha256": "252f161e839c6f609648d3fb19f95a4d73a84efe3d8b4c511c0c1b31a93dcdcd"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-706-initial.json.gz",
+      "bytes": 499078,
+      "sha256": "1eff0546655048bf529fd9eee064e013cf996930003144ed879cd93ce1b4e3b3"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-712-same-original-recovery.json.gz",
+      "bytes": 502891,
+      "sha256": "dec969d5f262580a7b9550c07c258dabd9930fcec8b52a3d9649557d7f6690c5"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-722-periodic.json.gz",
+      "bytes": 505295,
+      "sha256": "6e572d7fdb0fc56b93dbe8cb4f253564057f71b4e9e416c3927aaa5586bcc30d"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-724-before-consume.json.gz",
+      "bytes": 506223,
+      "sha256": "dd0944a939db8c6f6efa8b48301273b341b0908975fb4455d9c5de468ffbcc79"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-725-after-consume.json.gz",
+      "bytes": 509018,
+      "sha256": "a983718e1a22ae74a9ae5a66e06ac01f2163d8a87e9f71553e06300493771bba"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-738-periodic.json.gz",
+      "bytes": 511165,
+      "sha256": "db7545487094f98aef1422be8d3536ded55dd397872e82c391621e103970653c"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-754-periodic.json.gz",
+      "bytes": 513633,
+      "sha256": "73075dab4a417637b8f5d9066b580faf15f62aca8e0560dc9bc4531e5d7c0909"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-770-periodic.json.gz",
+      "bytes": 515722,
+      "sha256": "df6e5fccbe5bbb0b6a54c051c0bf0553680fd129cd0b2d3d5993b9781555201a"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-786-periodic.json.gz",
+      "bytes": 516953,
+      "sha256": "1a2b002de734d6f9aea2117adeb39b65c1fa2b252cabd0ebe5c4b657ece08b2c"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-790-s1-reflection.json.gz",
+      "bytes": 517231,
+      "sha256": "f56137385c7d124b06002aa41b5f2515e0770ce9cac0bac353dc75de9763addf"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-791-s0-guidance.json.gz",
+      "bytes": 530789,
+      "sha256": "1c5fdd5874d551fe7d033626a38b6f923fcd384865fc7ef4ca5e14730a6162a0"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-802-periodic.json.gz",
+      "bytes": 534487,
+      "sha256": "f9cae080c91e36ace3e7da84cc72ac56b72eb139c8dcf049a81a70932c0edfbc"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-818-periodic.json.gz",
+      "bytes": 539056,
+      "sha256": "14e975a422243d634a456ea8e387929e146151e0298bfdb8148b4f9478f82630"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-834-periodic.json.gz",
+      "bytes": 543479,
+      "sha256": "cd1385e3381e95e8eff25e891cf5acd32c12086435632d2b9aa9c0d0368d3a8d"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-850-periodic.json.gz",
+      "bytes": 547009,
+      "sha256": "b5fe368100fe592bc1340a5b53fd0a2a67519b1773afb0167d18a1db9561d9f5"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-866-periodic.json.gz",
+      "bytes": 550031,
+      "sha256": "2e8e3700d40b045c3596692746f582845e4eb2dc015764ba051694bb5a946d94"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-882-periodic.json.gz",
+      "bytes": 552659,
+      "sha256": "8b12dfbd1a2c0b0db794b1e4e07621e9817210f1f6342cc689782b42902dfbd9"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-893-before-consume.json.gz",
+      "bytes": 556515,
+      "sha256": "f1f58936c76d7a78ad3f2ce9aa6fcea06faf5567c1d1ac23f8d2d456ac7412cd"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-894-after-consume.json.gz",
+      "bytes": 557440,
+      "sha256": "ae210b39c8a4d2eaec02ef082498208b6c190d905b6d56b0c9b64d1933cf775b"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-898-periodic.json.gz",
+      "bytes": 558847,
+      "sha256": "1a43febe1b0d17b3d85b672b854af4f7dcb1d32b0938b7ca8b617ee0a0abf80b"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-914-periodic.json.gz",
+      "bytes": 564157,
+      "sha256": "4b3e1d343cd63db76f912128b1722df552477dd02498026699847720ade782bb"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/key-915-terminal.json.gz",
+      "bytes": 564287,
+      "sha256": "a16af088b3fd05713a7fc31aaef4c5e0c8aed522bf89ac2ab3e87ac9cc0f46cf"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/original801-natural.json.gz",
+      "bytes": 829038,
+      "sha256": "412d198fdce441dfe2b5297978097e0c6783cf14eac88e0cc53df1a0c9fb4f35"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/producer-tests.mjs",
+      "bytes": 20672,
+      "sha256": "42d0fc976da52cf92e4415b57b60649faa4aeef19a4fdaf6bc38fb1803db3fab"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/producer.mjs",
+      "bytes": 55325,
+      "sha256": "1678165abdc96239878fb5034250b023f3741d6b61bb0c634439fea1f955e934"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/runtime-freeze.json",
+      "bytes": 683366,
+      "sha256": "c53164831dc96d803eb6fa5a16fb69737c4fdedb5d9a1e16ea4eb376d8079b4f"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/source-snapshot.json.gz",
+      "bytes": 459373,
+      "sha256": "ecf82faead279156f4652ab959577c0694ea6595407524f45a8fee333c9eaaf4"
+    },
+    {
+      "path": "tests/fixtures/justiciar-v02280/summary.json",
+      "bytes": 14585,
+      "sha256": "50158e10b93db4f6199035a372e5079bac8b7c50acda2bdee68c1fade18ccd2a"
+    }
+  ]
+}
