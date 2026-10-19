@@ -1,0 +1,1203 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.216.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.194.0_pure_white_angel_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17713737,
+      "sha256": "fdf5dfc5f094d0dd633fee58c692a402135996c0df7fe9db66045eb182ed61ae"
+    },
+    {
+      "name": "lotm_release_0.194.0_pure_white_angel_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 17888999,
+      "sha256": "a2e5daf5fa9ceab347b8f7b674e47ecf97c4fef5e7e1a0ea86e530a755986b67"
+    },
+    {
+      "name": "lotm_release_0.194.0_pure_white_angel_test_inputs_3_2026-10-15.tar.gz",
+      "bytes": 8989012,
+      "sha256": "ccc21f0db55a86b4ade4244481c337870e85f48e5d8c2d64986935fef63eab5c"
+    },
+    {
+      "name": "lotm_release_0.216.0_sun_test_inputs_1_2026-10-18.tar.gz",
+      "bytes": 17359090,
+      "sha256": "e14d56bd3596bb942766d498468a8b2f9bbe42033ce278cbebc45be53d354ac1"
+    },
+    {
+      "name": "lotm_release_0.216.0_sun_test_inputs_2_2026-10-18.tar.gz",
+      "bytes": 17577661,
+      "sha256": "fc15c9de26bc673c49178876c4683e834f4c16acce675e448b4464bc875c032f"
+    },
+    {
+      "name": "lotm_release_0.216.0_sun_test_inputs_3_2026-10-18.tar.gz",
+      "bytes": 16497810,
+      "sha256": "c48d2204d58062e572b4587a809c27c95d5fb170adcf5347b29fb54cc438f954"
+    },
+    {
+      "name": "lotm_release_0.216.0_sun_test_inputs_4_2026-10-18.tar.gz",
+      "bytes": 16592562,
+      "sha256": "f89ffc0f233cdd3ce7781673efccae0ae42c260df0693accd63c9ba80eb2e25e"
+    },
+    {
+      "name": "lotm_release_0.216.0_sun_test_inputs_5_2026-10-18.tar.gz",
+      "bytes": 16665350,
+      "sha256": "28ce15ea4e19b78c8e3189a8fd811573f957ece1e3491a93cca558a1bdfe02cb"
+    },
+    {
+      "name": "lotm_release_0.216.0_sun_test_inputs_6_2026-10-18.tar.gz",
+      "bytes": 12995954,
+      "sha256": "13ca2cd7d346b0a2314be55d51bef0a80b5cd6e6406b528fbc4f65c028465f82"
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundaries.index.json",
+      "bytes": 12617,
+      "sha256": "e0b5be95c6c88d933dd785ee90f52b5698c1dd95741eccdb4d16a50376411f52"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual-clinic-pay60.json",
+      "bytes": 2612282,
+      "sha256": "03966fd56a9649c795560fb9216bb2fca198859ddad3516922f02cdc6cd63923"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual-consumption-pure-white-angel-potion-1.json",
+      "bytes": 2878829,
+      "sha256": "672569bb4a98fce356fce54896c833a62e763b838943a5bf1b0c7d594473daee"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual-ordinary-encounter-exit.json",
+      "bytes": 6188141,
+      "sha256": "769fe0b903a975afd5ad738c3ce9e606a9f0e91c517dab6be6445a91522347a9"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual-paid-work-after-living-exit.json",
+      "bytes": 6234238,
+      "sha256": "e3d0f90364a22e3aa5e6a2d78c4caabaf026b173a3b7b166b06e8520204fffde"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual-preparation-PLAN_RETURN.json",
+      "bytes": 2804809,
+      "sha256": "31aa33b89a86d83139b9544513407058fcaefb358b8da61fb4be1d46677c1831"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 2788195,
+      "sha256": "9c645fb0565c75202b28632154b50783e4b3aff0a67a9ba1afa5425c2e2f2c74"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual-preparation-VERIFY_TARGET.json",
+      "bytes": 2795749,
+      "sha256": "f171c42f26b2de08f2fbfd73fb1f0a382d2a3fbf676174a29a96f342dab93de5"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual1100p-buy-pure-white-angel-potion-1.json",
+      "bytes": 2860628,
+      "sha256": "ecbd6d8104b0e7335c690f39f557430d1280a30a9825a189c122be85cd00edf7"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual150p-current-week-preparation-pure-white-angel-potion-1.json",
+      "bytes": 2869109,
+      "sha256": "40c65dad2000689f27a876ec9ce944623b79dbd374762fc8a541e21a75497c38"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual20p1AP-unique-personal-pad.json",
+      "bytes": 2923877,
+      "sha256": "b0c8cac4d84f7862de301dd59cfd008b48be195bbda9860bbe07910e41cf7850"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual40p1AP-unique-one-unit-fictional-residue.json",
+      "bytes": 2907504,
+      "sha256": "33cc98554a49230fe1015d1bd380f72691be71f0083ddfd3538f751df5b3f4e5"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual4metre-independent-forecourt-arrival-and-silas-name-exchange.json",
+      "bytes": 5033417,
+      "sha256": "79d5aa6b369aa6695ba5f5a84fd4f6c67edecd8bb17088b116c87a93652a00ae"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-actual500p-guidance-and-frozen-eight-root-source.json",
+      "bytes": 2700416,
+      "sha256": "71fed67a5e92e8a6bcb06d96b5aacc8a1dd04ec4208a7f6a934b73754da2c95d"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-combat-round-1.json",
+      "bytes": 6188141,
+      "sha256": "769fe0b903a975afd5ad738c3ce9e606a9f0e91c517dab6be6445a91522347a9"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-event-LIFE-BILL-01-PAY_PART.json",
+      "bytes": 2899142,
+      "sha256": "e574ee3bc74ab7f838b8b868b21e8635538734e7e8caed95166969444298fa39"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-exact-original729-command-living-source.json",
+      "bytes": 2610886,
+      "sha256": "036db86efcf4790fdf366e3f5e8153cd5a35175704917422cffa1ca69c60ad26"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-fixed-all-policy-before-fight.json",
+      "bytes": 6097542,
+      "sha256": "448b734148e8628825e0742466f4cc7cec9b62f70556879fc5670f55c0a10c24"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-independent-optional-silas-fight.json",
+      "bytes": 6123850,
+      "sha256": "55e6a0d0110a01f2d37dabd971365160adcea9e1a80f5b428fd786f28bd87cbf"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-original-heavy-injury-rest-and-current-clinic-invitation.json",
+      "bytes": 2611937,
+      "sha256": "175525169f195c687ed0fac09982377281974f2c93ad22088b85497c2d8d74f3"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-original-injuries-actually-treated-and-later-rested.json",
+      "bytes": 2615550,
+      "sha256": "ffddb0a6443ab9c0db2cdc1a46756115c75ef0b4565bda18fd9b1e353dda4d83"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-actual-four-metre-walk-to-original-entry.json",
+      "bytes": 3264511,
+      "sha256": "2d0c8f701c7a73c53e4ea90094dbf221b6b384949085517a221a0db07b359de1"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-actual-six-metre-gallery-return.json",
+      "bytes": 3524498,
+      "sha256": "9bdcf407d7212e76c36417fb6672dc603b183f524c0037fcbb605b8389dcf1c7"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-actual10p1AP-fresh-ivan-invitation.json",
+      "bytes": 3281846,
+      "sha256": "7ad5efa1a8104e8bbf48782e2fc48775486ae9aa2c2c43ac9ef1d52a7d97bf9b"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-actually-wear-same-original-personal-pad.json",
+      "bytes": 3443510,
+      "sha256": "91661e6526d3411eb71a0b2d4f732e60539f850bc8c6d637000bf0ad2f9ef74d"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-ask-same-original-reed-and-record-current-refusal.json",
+      "bytes": 3315051,
+      "sha256": "7fb9efe86bdd757f8f25c78d415fea3f58160851809b7b9dd2b2591aab0d329a"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-current-originals-and-bodily-cost-explained.json",
+      "bytes": 3298958,
+      "sha256": "87342f41c9eb22e81e6d7dd02fb8cebb995a857fdcc0badaf2a8286a0a9225ff"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-declare-one-personal-impact-pad10-and-unprotected-health5.json",
+      "bytes": 3459568,
+      "sha256": "3c2ac8b8405b1912181363b71de1cf9e1d6ea7b55c528e2515e6bba1f0075a7b"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-end-current-contact-and-ivan-actually-leaves.json",
+      "bytes": 3540575,
+      "sha256": "e4c1e026e55fc74d0787ea6c603aec94f99b0e7a6a78db59ca28e36fefe45465"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-fresh-ability-consent.json",
+      "bytes": 3379434,
+      "sha256": "7a447b99a4273f67148cac6ab740ceb51f761f5fb2d3f44e9c989cdd54c95744"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-fresh-owner-consent.json",
+      "bytes": 3347206,
+      "sha256": "2ab11425e7456c6adbb2b7ccb34eb2c8c688043f6262023192336f9bc4dff83f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-fresh-technician-consent.json",
+      "bytes": 3363330,
+      "sha256": "b49236c314bb142b5815eac1eda2521d73bc0697054ceb0d8395e5523e65dc9f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-honest-actual-result-cost-and-application-report.json",
+      "bytes": 3557025,
+      "sha256": "67217d960bf79c1eb03e1baff67e033f15261d2dcbdf4bdee5b50af1c854c820"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-ivan-actually-walks-nine-metres-to-side.json",
+      "bytes": 3411485,
+      "sha256": "d8449bb0045ee295da50609093da34acb6b6702cc9c5570b2dba8a804a6a086c"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-one-paid-personal-guard-attempt.json",
+      "bytes": 3476167,
+      "sha256": "63598c18424c89390de1b8d600d6acbed535424549899f34cb616336c24f35cf"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-ordinary-return-agreement.json",
+      "bytes": 3395463,
+      "sha256": "4c0762c1368c0f05a99da324098a932c217b83cf64191261272d9b8a9c7782a3"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-ordinary-safe-reset-after-failed-guard-with-actual-pad-wear.json",
+      "bytes": 3492605,
+      "sha256": "11064a89c8edd08fbd8cfbc529e013138fd66e8658129081bce34abdbf953198"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-player-actual-six-metre-original-gallery-entry.json",
+      "bytes": 3427504,
+      "sha256": "1a7731b6ed4064a3c79eaad49f15720b97fe1465dcfd53b534c6cde2c777391a"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-respect-original-reed-without-motion-or-energy-cost.json",
+      "bytes": 3331135,
+      "sha256": "83fb5f101a6ba965e7c8214ed09add801f344148c6bf527199ce2975fc300607"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-same-original-pad-returned-to-player.json",
+      "bytes": 3508493,
+      "sha256": "b514c57cf76a2396508468607bfe770f46bc942d5d229f2fad8968f64da73219"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-personal-impact-source-costs-and-ordinary-alternative.json",
+      "bytes": 3247576,
+      "sha256": "a0ea5eb5a55d7f74ca85f33320cf346b38e50010b137fbe6c798dfb31dcad484"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-public-original-injury-clinic-discovery-1AP.json",
+      "bytes": 2611485,
+      "sha256": "ed8c48950bc9727a2ea755b74599ce34fc840313b0525a5f9b6acee9e7ee6eaf"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-pure-white-angel-potion-1-actual-labour-2.json",
+      "bytes": 2821823,
+      "sha256": "749183d337d30c3d27e9fe3167bb52374b3fdf78badba623d621aab47f886a01"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-pure-white-angel-potion-1-actual-labour-3.json",
+      "bytes": 2830422,
+      "sha256": "000252b2fdc5516ff4f9a86c37097f444e6fff2ad7ab1de8559770a2c608272d"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-pure-white-angel-potion-1-actual-labour-4.json",
+      "bytes": 2838983,
+      "sha256": "269c566129bd45b7c60e04ca90b70256ac8cec8cdbe6e14b248e28609e69c487"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-pure-white-angel-potion-1-actual-labour-5.json",
+      "bytes": 2847401,
+      "sha256": "4bb07ca7b82ac12b14d0a7d3902c67228d4daa8bad9e43ece717c31cd8046066"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-pure-white-angel-potion-1-actual-labour.json",
+      "bytes": 2813589,
+      "sha256": "c5884851ac6d284ed6d58aee880694c370e0c6d067056d3a551ba013f7309843"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-actual-four-metre-walk-to-original-entry.json",
+      "bytes": 2940704,
+      "sha256": "b95bbb175294abc959f249bf10c41b3f177107cf7544c4316c5f2db9a5cd0333"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-actual-six-metre-gallery-return.json",
+      "bytes": 3199079,
+      "sha256": "6faee23b36f94e6ce0be29f12ec8c16da6b3dde8c2784796aa4ffc60d3f02939"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-actual10p1AP-fresh-ivan-invitation.json",
+      "bytes": 2957862,
+      "sha256": "c55c7a9eec9a75dd9a87d65ded18faffa153e4993fee817db7bf849b7c7756be"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-ask-same-original-reed-and-record-current-refusal.json",
+      "bytes": 2990723,
+      "sha256": "d1b3342b3583c10c1f4599de6d16dbaafaf8b6ccaca1a5fb385eca05270db047"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-close-observation-of-same-actual-version.json",
+      "bytes": 3133802,
+      "sha256": "0ab63e28546cafa167afaee3363703807722985eb98b34c26685c50248425b29"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-current-originals-and-bodily-cost-explained.json",
+      "bytes": 2974799,
+      "sha256": "786b9eaadb4c4fa2160c776e3026cbbe243ff9e177cc6ebf13dfcaf5eb6b6e37"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-end-current-contact-and-ivan-actually-leaves.json",
+      "bytes": 3215001,
+      "sha256": "8ea5e8f25a5a2496960b040cf7b9c61369fee61c1e4d77435ffacf62b80c7f07"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-fresh-ability-consent.json",
+      "bytes": 3054462,
+      "sha256": "e3ac5b7966b3bb6b6b5746d2ac5adf8770b2744301c49e2c34bd4ab8e996505c"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-fresh-owner-consent.json",
+      "bytes": 3022553,
+      "sha256": "1f17baa41cd24346d1a30078661f589bad40081267eeee2c5c6283e0543f0c1e"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-fresh-technician-consent.json",
+      "bytes": 3038518,
+      "sha256": "436e18fea1336a544162c23cfa2ea535285a1b7db6d2202141bc8bec77f997d2"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-honest-actual-result-cost-and-application-report.json",
+      "bytes": 3231290,
+      "sha256": "672884052d6e9157c931461df2910775cc11541be3bc139e751d7641d54f3174"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-ivan-actually-walks-nine-metres-to-side.json",
+      "bytes": 3086194,
+      "sha256": "681e80b3e732579e7bc13dd38c0e8d9c49ca88caef3a15541c8eacbe906a651b"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-one-paid-focused-window-attempt.json",
+      "bytes": 3150413,
+      "sha256": "0850f0c63226bde266a8a15aa73b4d3d0c214523f95a78d9760f52568bb3a2f6"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-ordinary-return-agreement.json",
+      "bytes": 3070331,
+      "sha256": "c9b66bb7406be93d93c8144985956d3b762c1dafcd072850fb803e3fb6081ade"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-place-same-original-residue-at-actual-far-end.json",
+      "bytes": 3117919,
+      "sha256": "981ec114ae0985881e261d368b0a08790d04be6c656f951fcd09d00c524cb9c7"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-player-actual-six-metre-original-gallery-entry.json",
+      "bytes": 3102057,
+      "sha256": "8b05101a7f8270bf713184bcd33c4d9ddf7e2c4f94f6cfbd4814422c25523229"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-respect-original-reed-without-motion-or-energy-cost.json",
+      "bytes": 3006643,
+      "sha256": "c1231cf442046038f06bd128bbeaf3d924444b656dfa92f73d4dfbb5a1b36d45"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-same-original-sample-returned-to-player.json",
+      "bytes": 3183482,
+      "sha256": "f0788b6d6ea699887d52f4b661af0316fd43985a37ef24089136886dd978a7c7"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-separate-actual-will18-check-and-finite-unit-result.json",
+      "bytes": 3167442,
+      "sha256": "603449fa7b1bc17b4bfa3bf1a7b0b571cec5a7c2d523ab2bdbd6e3a13752e9ff"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-residue-trace-source-costs-and-ordinary-alternative.json",
+      "bytes": 2891640,
+      "sha256": "155f8e772014c91e032cfbc597263d07522a72f1815583e7fc0fb90d9e4a821a"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-actual-four-metre-walk-to-original-entry.json",
+      "bytes": 3590563,
+      "sha256": "554ebc3a41009ca401ffc4bbf6ef66d936caf9da2afc6e055e0c17e6b6937a6f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-actual-six-metre-gallery-return.json",
+      "bytes": 3918141,
+      "sha256": "fb427d6a7011b7900e6d5e18f76bee12d05af80fb9447721d51b6bba95529c71"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-actual10p1AP-fresh-ivan-invitation.json",
+      "bytes": 3608055,
+      "sha256": "cc6d185dbdeef941d37fb238f54e05b0dd1db483410c9ec993ab9969f3b99cda"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-actually-wear-same-original-personal-pad.json",
+      "bytes": 3771297,
+      "sha256": "b9b75f382fab46dc836e2713b9eea00d282666f604dadc5614c030a0344402be"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-ask-same-original-reed-and-record-current-refusal.json",
+      "bytes": 3641574,
+      "sha256": "697dbcc8a1740cec33ce39973e25e06541b44f059865d9209653477ac6070d5f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-current-mara-withdrawal.json",
+      "bytes": 3837186,
+      "sha256": "ef174b2386eba7c66d53cedb2d0700cdf655ce434c1c95d48b03d79c0bcb4dd3"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-current-originals-and-bodily-cost-explained.json",
+      "bytes": 3625324,
+      "sha256": "915ae77f0a6df998b6f476a69edd53445b73f02d8346bc931038727c307a8a34"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-declare-one-personal-impact-pad10-and-unprotected-health5.json",
+      "bytes": 3787513,
+      "sha256": "cd3e8a4a896705356c0405ffa00ea5942d4f8ef0565f02529fc467cbb36a7eba"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-end-current-contact-and-ivan-actually-leaves.json",
+      "bytes": 3934385,
+      "sha256": "7c1e9d3df40a3b1c0d5d8771723fc3a697924d73595e694b4c2ba76d15a100d3"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-explicit-ordinary-stop-after-withdrawal.json",
+      "bytes": 3853251,
+      "sha256": "2e2bf53c53c872f6ffd2d7a3f96ea5b7dc5844cb3663a58fad0d405626e404f3"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-fresh-ability-consent.json",
+      "bytes": 3706589,
+      "sha256": "b0cbd94959c1226b5e98b262d9a2614daadd2bec483ab3010c97ac9da4620984"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-fresh-owner-consent.json",
+      "bytes": 3674045,
+      "sha256": "30448989c31bc748bd7faddfcd6e705745b4368c23ca045e3d0950f5d44f6dbd"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-fresh-technician-consent.json",
+      "bytes": 3690327,
+      "sha256": "188ddb6b27bc6364deb5814bdbbb077a8192cfe73669f7f4b8b8ff328239848f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-honest-actual-result-cost-and-application-report.json",
+      "bytes": 3951002,
+      "sha256": "e529adf6e5b9f7570e0211bb7e72e6351e51899d63fae3473f2fa3747d464c22"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-ivan-actual24metre-walk-and-original-shutter-close-wear.json",
+      "bytes": 3821154,
+      "sha256": "b205d0f3190d84db9eee6b45d06138085735649178ff6cb875ac4e0e06444e2f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-ivan-actually-walks-nine-metres-to-side.json",
+      "bytes": 3738956,
+      "sha256": "408513249ef372dd0d459eec2903fb68e9700796e8e845177a16ab69506e086f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-one-paid-personal-guard-attempt.json",
+      "bytes": 3804406,
+      "sha256": "826ad5070e5ec0569b283d906ccd4d280258585f1ed2e7a2e9e4c7f433aeee8b"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-ordinary-real-six-metre-walk-and-original-shutter-wear.json",
+      "bytes": 3885768,
+      "sha256": "dfadda74deba743dafef5fe2f7d311d0a254b334dfdff824e2fd1cdd29b91842"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-ordinary-return-agreement.json",
+      "bytes": 3722776,
+      "sha256": "287f1483683b5e2e13ed840fa32159a5558b5d48efe573425f97573223b51565"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-ordinary-safe-reset-with-pad10-no-impact-release.json",
+      "bytes": 3869500,
+      "sha256": "8afcbd61ca4e72f974ff4b7e3e5fa07d83d5ca65882fd461cf35589fc6f3cd9e"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-player-actual-six-metre-original-gallery-entry.json",
+      "bytes": 3755133,
+      "sha256": "04e29f9d41b94623b0202d65b55c0f97d3a775d83ec761684b71266d90ddb475"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-respect-original-reed-without-motion-or-energy-cost.json",
+      "bytes": 3657816,
+      "sha256": "14c42752d7dbef258fa807ac096f2b63f16fd5741a832a93c9a2a5dc1a2023e8"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-same-original-pad-returned-to-player.json",
+      "bytes": 3901956,
+      "sha256": "884c14330c3228fe08c6c155132fe9804376e0ee68b9b4893ad07674a6be942f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-screened-return-source-costs-and-ordinary-alternative.json",
+      "bytes": 3573470,
+      "sha256": "a380445502373dce2b11c69f7a818cf6f3fec4b6211b221c03b04b91a3ecaa6b"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-733-action.json",
+      "bytes": 2612632,
+      "sha256": "48d5820b2b23bcadea0b88ba1ca1470c9e5d367143d71c24a8e42cfb1ee74eac"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-734-action.json",
+      "bytes": 2613023,
+      "sha256": "a5f645a290e94d39cff282bdb182b31592b289abc4e3931dfe7ccf2c383729b2"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-735-action.json",
+      "bytes": 2613243,
+      "sha256": "263dde28f82fdd87f4fe853eeb9dd735cd916fb6cf9ef36480dd1991b0175ea9"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-736-action.json",
+      "bytes": 2613691,
+      "sha256": "1d27a671a0ae37c41dfbaf700685bc9f13beb2f1e401feadb0a9b3c8ad9a2836"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-737-action.json",
+      "bytes": 2614137,
+      "sha256": "f0bd16ffc5db0d9b51a3f9c4faa8d9df0b2db0dc56da45be9faa6bba14c7c1e3"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-738-action.json",
+      "bytes": 2614230,
+      "sha256": "ec56b47331c7ecae2528dab03f709fd81b57178218fe3f37f878a7d156991bb2"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-739-action.json",
+      "bytes": 2614493,
+      "sha256": "077a6d46938cd3ccf941bcc79eb9c3fdcc471b8196fc54ffd1d5a6242907473c"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-740-action.json",
+      "bytes": 2614882,
+      "sha256": "0033da16e101778bda8d9d076d9a50d378f57af39411e5165f8cace256541ffd"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-741-action.json",
+      "bytes": 2615102,
+      "sha256": "072e46ba1c07f1c1680ea33b9c18a94b3c9665a1c3a97646b1cc05032271bc6c"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-742-action.json",
+      "bytes": 2615550,
+      "sha256": "ffddb0a6443ab9c0db2cdc1a46756115c75ef0b4565bda18fd9b1e353dda4d83"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-752-action.json",
+      "bytes": 2851671,
+      "sha256": "ecc4f9f1e47632d949b0e447fe829a782a1291ba1b58e8a5a2f8d7817a9eff44"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-753-action.json",
+      "bytes": 2851894,
+      "sha256": "a8347f1dd3c1450ae8f73d8fa8e4a3ccd93e707a3ec243b18bb7cfdedac41728"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-754-action.json",
+      "bytes": 2852344,
+      "sha256": "123af458a0631144a26d853653cf7f92d0b5890d5bc28f448f6baf6e3ca6efdf"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-755-action.json",
+      "bytes": 2852789,
+      "sha256": "31541bdae1d0f5dea23cd510826f7fb93f670cb2a0cb884de554f50beb6e640c"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-756-action.json",
+      "bytes": 2853012,
+      "sha256": "4afd941962f8780451e79f8ecce9b803f7903a37fcef8e2712ac11ae30c2e7a8"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-757-action.json",
+      "bytes": 2853462,
+      "sha256": "ff24f3291c5cf2a0c16e1ec8e6c267d4968660f40c6730b9567d141d257687b7"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-758-action.json",
+      "bytes": 2853907,
+      "sha256": "ec74b49e496a5f213120cc992742a9a8d13c04760af9328293f6513c4c5e7073"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-759-action.json",
+      "bytes": 2854130,
+      "sha256": "21b6b8be871e4fc08a99dae0ac11de1172ecf2ac57dfb9550f0a7b0b2b97caed"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-760-action.json",
+      "bytes": 2854578,
+      "sha256": "cac642adf3797939e392fbdc775047191d0c0c5d2bb26e55976f45ea3c24363b"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-761-action.json",
+      "bytes": 2855022,
+      "sha256": "1b44d1c451b647088635f59d34bea45262ed678ef903cecede6a71012147da01"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-762-action.json",
+      "bytes": 2855246,
+      "sha256": "21a74650cfee38741db163753916251cde2f278a5f659b6823bd27ea449b5883"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-763-action.json",
+      "bytes": 2855697,
+      "sha256": "3ae52ab152e6aaace9eeb9ec0ff08562e972244defbe15c9c91f0d77bf6e77b3"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-764-action.json",
+      "bytes": 2856143,
+      "sha256": "710be0615ccd419a40c4f3717d8f1ceee3572f81305b62f6b10da7d2f51affce"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-770-action.json",
+      "bytes": 2899283,
+      "sha256": "8ca173f6d40c784073b9306f6979a9e89b4e0280103293650887698e31f83d29"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-773-action.json",
+      "bytes": 2932256,
+      "sha256": "3a5cd0decd227d49c177dfefb838f4f9f32caa18f1051d6b2fef9966d90cf557"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-774-action.json",
+      "bytes": 2932481,
+      "sha256": "ff2fb6464fba8c147c6f284356f60f5283c7027f02a3321d6062fcdd01fefa83"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-795-action.json",
+      "bytes": 3255703,
+      "sha256": "f10aa149ed0c9e82dad302c66e3aef36dbae040bc5bbee50f0d9d885b5ffefb6"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-796-action.json",
+      "bytes": 3255979,
+      "sha256": "fdb9e514ffb73dcc39e00c013e13a52976d27350aa83a7d95dc9769c2a583324"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-797-action.json",
+      "bytes": 3256203,
+      "sha256": "ce59c6ae135c12bdb55866132334f058bfe051e0318f12e724e1ad39e0890bd5"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-818-action.json",
+      "bytes": 3581677,
+      "sha256": "4fd3902f83f05e4431e03e1e8e9b711856ed231d24f6520c19efc8585f540eb5"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-819-action.json",
+      "bytes": 3581953,
+      "sha256": "0583c8e161024b64c2b25719d87123268f1223ed9100542691a62bab0b109381"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-820-action.json",
+      "bytes": 3582177,
+      "sha256": "142a1f8831205ec6cfb451ea3fa44cae7eee7d8b6c5b762a918bcb0c40849128"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-845-action.json",
+      "bytes": 3975976,
+      "sha256": "81023bf8d47d67600e63f70c934516306cb679beea6472d1a9bfbdfc3574d261"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-846-action.json",
+      "bytes": 3976254,
+      "sha256": "9aaa89ea472db85a4f187ca0e6c466efc2069049b39c5c0c483047f8691cb122"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-847-action.json",
+      "bytes": 3976479,
+      "sha256": "0f93014f586e451881d82db863ef0669158a1b2989322825dca241e5425d006f"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-step-848-action.json",
+      "bytes": 3976930,
+      "sha256": "f2cc2091ff8b77e7e82306a90b3b97a8d1e21568e8965e549fbda92660918488"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/boundary-three-honest-actual-reports-reflected.json",
+      "bytes": 3967622,
+      "sha256": "f85148a6b3ae926d8ad81badf167a3000c8fe8cc7261294b337999f53641ec29"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/capture-integrity.json",
+      "bytes": 16738,
+      "sha256": "fb9cf031d6c981b33e9bc2861c3f3fa986d08e864bd8d1a9bb58fd66019acf38"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/natural.json",
+      "bytes": 8199835,
+      "sha256": "3f13d554046ecffe3512bda22fb4cd14747be2b06dd6dd47185c025d7d9855f1"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/snapshot-combatStart.json",
+      "bytes": 3071033,
+      "sha256": "2e8c7a9212513af62e73578194943b432f4ac167e4deb5b769891ae83df1cb7c"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/snapshot-combatTerminal.json",
+      "bytes": 3117009,
+      "sha256": "433e5cd600bec63c5311fa80195fd563d7fab5dc5916718be3758d968f5f51f1"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/snapshot-departure.json",
+      "bytes": 1305505,
+      "sha256": "61b5657a23cdfb766eb4843b07561b6879555dd2c017381951261212bc28cdcd"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/snapshot-practiced.json",
+      "bytes": 1987859,
+      "sha256": "1eb62ba72de6017cb101bf4348005cb64dda6c887b3e4a19ccb3de512be69c81"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/snapshot-promoted.json",
+      "bytes": 1442066,
+      "sha256": "c54ff807519c1210ed33f2bfab2bcb2a603c1a56c9de8f996ae39f43d0107bbd"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 1988588,
+      "sha256": "db064e5fb93e70f8d4820181ce9d2ad3812efaf11a7cd8cd125f54cdb61a8748"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/snapshot-recoveredOriginalInjuries.json",
+      "bytes": 1307899,
+      "sha256": "221f863831d5fe816b3d2309df86fce7744f5c785fe5bb4147f195c698f85524"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/source-prefix.json",
+      "bytes": 46655,
+      "sha256": "7ca2f5f03d644395af5a51009fd5a53d8ee3507453285be4d2dfcd6766d522c5"
+    },
+    {
+      "path": "tests/fixtures/pure-white-angel-v01940/summary.json",
+      "bytes": 48351,
+      "sha256": "7a849fafbff590b8288351b71985f6134aa5783597f9407a2550d6691935f537"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-854.json.gz",
+      "bytes": 1107609,
+      "sha256": "ec575c96bd317c1eb4eaac74d2c2e1e34b4c4a60abc951504bf7698d03401e3c"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-855.json.gz",
+      "bytes": 1166667,
+      "sha256": "a1d9fa944ce9bc70a0371164457c7d42e2d3c8897ec3a127fa3b15b5a8220c8c"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-856.json.gz",
+      "bytes": 1169802,
+      "sha256": "7af683a9579d1e862900b9dc40ae87adc0e10621b6d7bd5f56bbb65673afd132"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-857.json.gz",
+      "bytes": 1171936,
+      "sha256": "c258acc39c62a1889d4f402430bd287dc543caf498617592758ec0bb884753b8"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-858.json.gz",
+      "bytes": 1172961,
+      "sha256": "41a3ff2573e19353512ade2b34b3fd43d04a60daa72dee82b502c300d9e7cd39"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-859.json.gz",
+      "bytes": 1175266,
+      "sha256": "b5a60681ed90544bf95255792f6dfa48fd238867755e7e516cc6498f041b33fb"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-860.json.gz",
+      "bytes": 1176743,
+      "sha256": "82d9f0bfb7bf2bd4ea6c154dfa09638acfa348124943036596a4c0e3bbb2ad62"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-861.json.gz",
+      "bytes": 1178287,
+      "sha256": "9a7c14b2565afd075b289df7037cd436033053c73818fe321510d8fdd8bedd02"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-862.json.gz",
+      "bytes": 1179875,
+      "sha256": "d9d16e3f1f2c322b36dd763281bed484fbbdff8842319ae809382ff6ffe8d767"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-863.json.gz",
+      "bytes": 1180459,
+      "sha256": "dccf76700a853e85c15788442fefc98f209b51be79c22208fd9b2247cdab48a7"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-864.json.gz",
+      "bytes": 1181835,
+      "sha256": "a7ac5771cabcb1d6274ee91ecad6435d44958cc229ea8317598512d8dff5fb32"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-865.json.gz",
+      "bytes": 1183273,
+      "sha256": "1b62d20516ca97e1a5edebe85ab16b49a3a9e4f9ac69b44543c247538317e829"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-866.json.gz",
+      "bytes": 1185701,
+      "sha256": "0b2fe83d5fb5c05c17feed63b91ba7db798b0c8369b3445acd900988044745c8"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-867.json.gz",
+      "bytes": 1186829,
+      "sha256": "6bff5dba075aaf0fbe7e0f3b242a06587f8ba2ba7c8bdbe1ae85d704252773b3"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-868.json.gz",
+      "bytes": 1187813,
+      "sha256": "5484cb28f9f77f3c60798ba2a408618f8ebb3275abd1f48128b63a37ce6a8b7c"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-869.json.gz",
+      "bytes": 1188554,
+      "sha256": "f59bcbb7b26e1e20fc03f83aac85e5252fcf8d783bdebf3f4ced70aa73f006da"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-870.json.gz",
+      "bytes": 1188673,
+      "sha256": "323100de68b335bcb6d53744ad7d88b5e6172d6f1fef1604796351cbf2351f72"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-871.json.gz",
+      "bytes": 1189123,
+      "sha256": "ae3e7376c747f9e09dc0b4a51c4fbfb19fde63bdae78f241297162d52413a3bd"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-872.json.gz",
+      "bytes": 1189754,
+      "sha256": "e01e83346efeaca3f8d75a7ede0d4ab681110b6a5c7ace9f66f06cca1740510a"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-873.json.gz",
+      "bytes": 1190166,
+      "sha256": "d56a299af03873716655b43224ad3828479906a5da8ec70f59d239a7788d407a"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-874.json.gz",
+      "bytes": 1190516,
+      "sha256": "44d1cfcab153d892826ce229142dd294ee1e57fd57eb87ab7257eb27c89c7375"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-875.json.gz",
+      "bytes": 1191033,
+      "sha256": "83f9a4e517d0d9dd2c1def89b0af335a70506552783e9386f088a9a7f76f7f96"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-876.json.gz",
+      "bytes": 1191691,
+      "sha256": "6aba349f721ce9d1e1e2440635d95ee579776d9a884430a2856736de53b0a69e"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-877.json.gz",
+      "bytes": 1192357,
+      "sha256": "9ef15247953f2d41c059fa6a311fe1833daf40f6976187a638bda1030fce04a1"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-878.json.gz",
+      "bytes": 1192613,
+      "sha256": "8cf946f713b0adcc95d2fae5c676c902faf1910ed8c67c6e18b95be9b55d21f4"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-879.json.gz",
+      "bytes": 1193319,
+      "sha256": "605bf6ca61134b9bf98f7e32f596361eb09b2e0e3f1bf7707098124aae869dbf"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-880.json.gz",
+      "bytes": 1193744,
+      "sha256": "da4958ad548828f055b28d37dd2ba2ae5164150aa1be3d7e6172ec5e01b5e27f"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-881.json.gz",
+      "bytes": 1194155,
+      "sha256": "e99f026a412894008df145a46bcf67792bea7ab96cf6695fa8d5cdb0e7360c27"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-882.json.gz",
+      "bytes": 1194429,
+      "sha256": "b97a4aa92bcc307d5d81534623c3e07eb3ed94aac923ae35360b9cfb3578b4f6"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-883.json.gz",
+      "bytes": 1194988,
+      "sha256": "fd47f0db7762098b8e9de25ba102d419e3264ecc5d8438290e6c77a8a364122c"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-884.json.gz",
+      "bytes": 1195664,
+      "sha256": "f6cc0d5d38508797014e9192a6a6ca9ebb6439791ffecbdb30d6d36f0f5b043e"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-885.json.gz",
+      "bytes": 1196513,
+      "sha256": "71740b2f92855dbecf40215bdb83a2a10a472d57f317ee7d18756c49c9f06386"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-886.json.gz",
+      "bytes": 1197101,
+      "sha256": "60a797483214cffc0c6f387282a2e1fc11d61d9421b2fbc6ef71c7f3af4c7863"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-887.json.gz",
+      "bytes": 1197480,
+      "sha256": "c677eea6cced6d13e6b58d2e92ae56e24dcf78105dd789c738f6f97ec3e8775a"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-888.json.gz",
+      "bytes": 1198424,
+      "sha256": "bf3f9fcd318900bed8423ab759790fb29c4e2ca5cb897a11bb1cef8844c1a382"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-889.json.gz",
+      "bytes": 1199162,
+      "sha256": "4fed1cd33b6334b40759db78cb02d2feca789104eab0570ebc70fb200b5b165b"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-890.json.gz",
+      "bytes": 1199741,
+      "sha256": "7bebb6f6c702a3662b756670fcdf465e1cffebfb8088f388859ab858410a0b3d"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-891.json.gz",
+      "bytes": 1200190,
+      "sha256": "0c8d7098eec8b2be4cdadeae96f4993341be0b079d2495daa172e4b9521f3392"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-892.json.gz",
+      "bytes": 1200657,
+      "sha256": "7d05080161b504cd5bb4ccf8baba01042bd03f4a0b6a78fa8e0b699a57f85b21"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-893.json.gz",
+      "bytes": 1201044,
+      "sha256": "266676d467dca50356e4b62e4e287ee40adffc845bf4165e47a6056d740410a3"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-894.json.gz",
+      "bytes": 1201476,
+      "sha256": "cbe1afe4506469940c2cca37524762417c4b6b41f8f97edd99eb51487f58ceb6"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-895.json.gz",
+      "bytes": 1201800,
+      "sha256": "968d3996de7c8fbb87b9be7aa2e13ae08f22ae9bdf1e08eca2eeb34a1e92c808"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-896.json.gz",
+      "bytes": 1202215,
+      "sha256": "5c3d6e954022222348af22aa3954852e29c4e0344f6ca9d7f10cee0308e79e11"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-897.json.gz",
+      "bytes": 1202532,
+      "sha256": "fd211c2d8459cc45503cb7f1d819423945e60d842af79450ab15dbb8bddea9b0"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-898.json.gz",
+      "bytes": 1202914,
+      "sha256": "c8ae351af60170c9d3da8b5a470dc99c1c7a38583906f977480f44ee9a1cf42b"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-899.json.gz",
+      "bytes": 1203257,
+      "sha256": "204cca739587b93b406c9a794f2be7d78d1892a764acebb063c933c5fce60721"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-900.json.gz",
+      "bytes": 1203862,
+      "sha256": "d86e244e4f0d5d24410524d9c8a0cea462abf52299b12a709cb311b9f8ce2e79"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-901.json.gz",
+      "bytes": 1204197,
+      "sha256": "054bda49a844da1e83dee8a05bc4c5d1c5f136f62324432b061b1ca3e96a179b"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-902.json.gz",
+      "bytes": 1205008,
+      "sha256": "9557860e1ee7a7b33cfcd0c17698a5358aabdb922b59aa0b3d4fa9f9f3a83209"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-903.json.gz",
+      "bytes": 1205509,
+      "sha256": "d7b31e7c1ac648c0946f53f8769b75469f92c12d12f18df3e1b26bb5354ff1b2"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-904.json.gz",
+      "bytes": 1206628,
+      "sha256": "44c9f229b16f05785321c32cda16bbc55f62de9bc1ce03ba2c25c9ec75071a2a"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-905.json.gz",
+      "bytes": 1207300,
+      "sha256": "638e5b5eb24ed59fe3197f6e52f7f7c312dfbc3c0316b6bc621b22bf4ad86c75"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-906.json.gz",
+      "bytes": 1208637,
+      "sha256": "caa33a17fc9f8d9ee875310bddf8ea04af8a5547437f75c4b899fb17180aa5e6"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-907.json.gz",
+      "bytes": 1209530,
+      "sha256": "cfde95740c319f28ff92fec71a5285d57e48b9a706636a869976865af79d0e11"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-908.json.gz",
+      "bytes": 1209909,
+      "sha256": "13aa6cde5618ab5217221f0fb7a2ac79f031cb9eab1b42b355fd4f4ab0ad194e"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-909.json.gz",
+      "bytes": 1210252,
+      "sha256": "5e0cd84d16cfb18cbd51816e0cd585e6d7c28347ff337b382ea44e243227b2cc"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-910.json.gz",
+      "bytes": 1210685,
+      "sha256": "ea756d77de24add9c4091e77566149919b83d19da23cca8cbfeba80415ffc437"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-911.json.gz",
+      "bytes": 1211166,
+      "sha256": "46c9b0142ad361277452e9f777caf8c9239709df40f8bf4dfa29b7de8fc3a55c"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-912.json.gz",
+      "bytes": 1211450,
+      "sha256": "d94439ccb1b7b54c17d6a9eaab0a01332e738db3da6f39389f178e5e97bec0b6"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-913.json.gz",
+      "bytes": 1211862,
+      "sha256": "32b06571f3afdc5184ac8fa1ce02339264b423031749ef3cd8aabd31a61d3541"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-914.json.gz",
+      "bytes": 1212231,
+      "sha256": "a89b03e758ff3253bf271aa1367730ffa1c4cfeaf8af1553dad306fce46a985e"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-915.json.gz",
+      "bytes": 1212528,
+      "sha256": "61383a07e656b99eb70297e88d6f6157d9b58d8a857f589d52a4fb7dfc9661cc"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-916.json.gz",
+      "bytes": 1212780,
+      "sha256": "771a383d0713208306597aeec7a37d4b0d7aec32f34d1a52a59af44df9868d00"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-917.json.gz",
+      "bytes": 1213422,
+      "sha256": "d178810d6e47b3820bf1e4772a804f5133f92b4d68f57a2738f9f87d72493f60"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-918.json.gz",
+      "bytes": 1214016,
+      "sha256": "eff53fc186512d7cfeacee2e43de614fc09d6f47a4e288c6c4c97c5adbfd888a"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-919.json.gz",
+      "bytes": 1215402,
+      "sha256": "9d5fc27c34161b98d88be7d68f0e1997ee96a7220ff23b2f4bea70de541b3b3e"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-920.json.gz",
+      "bytes": 1216117,
+      "sha256": "d6a45c7457f3ab7dab1846867c33f7eab78a5e8cbbc77f692e95f564f84ee2e1"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-921.json.gz",
+      "bytes": 1216592,
+      "sha256": "c9b38876a055cfe7e86dfd1adb95d7f5114a33b15a8ca85828b15f3fc963de23"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-922.json.gz",
+      "bytes": 1217776,
+      "sha256": "d1f70a44cbfc4735e32faa13b10594a3dd0f48cb56b7a6cf7c7a2554aeaf8768"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-923.json.gz",
+      "bytes": 1217579,
+      "sha256": "4a8e09fad2826bd231f4751d0a2f5179ae1df9dcb3768a4ca46c84b67ea76972"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-924.json.gz",
+      "bytes": 1213078,
+      "sha256": "55fc2043319ddbc131c0462b85abe68e0dd87b96d1ed41b78bc6d612b864f1d8"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-925.json.gz",
+      "bytes": 1213583,
+      "sha256": "0d4018ef72a961fc99b6937a15d2a8672ea55fa18202de278f8beed528b13dcc"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-926.json.gz",
+      "bytes": 1218439,
+      "sha256": "c802075eb13aa09358848229304b8a8194312657571598e394f2f850c946a80b"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-927.json.gz",
+      "bytes": 1222378,
+      "sha256": "9afff27f2608a3969acf38302a6ff23c8c29c3360cf19207ad5968d3fe166190"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-928.json.gz",
+      "bytes": 1224232,
+      "sha256": "15c3db91ce042f3de9182113781e5a6f246ef8c20d69800e81fa02751e2dd119"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-929.json.gz",
+      "bytes": 1225792,
+      "sha256": "a88c887b02f5f90f9344b02e9bcd10c1ab03ea09d310b2255657417e25497d94"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-930.json.gz",
+      "bytes": 1227145,
+      "sha256": "66d8d99b5e12ef942d9f837bb1151f22acd910e78b5667b6edba646aaa4bd558"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-931.json.gz",
+      "bytes": 1229912,
+      "sha256": "ba1e6d46c7e61e790a66bf875c0a956216d7c4b75a3898e59a572085515be4e7"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-932.json.gz",
+      "bytes": 1231289,
+      "sha256": "0c24d2da5c981fa137e7c97de0af1a12c2c96b7f0b2175eecebb2879bb6cc6e4"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-933.json.gz",
+      "bytes": 1232225,
+      "sha256": "eccd4f2e2dc3a66b3d886af463c1af1e38045c3f95edbaf9eb560592166de336"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/action-934.json.gz",
+      "bytes": 1232589,
+      "sha256": "046deb9d94b466c0a59d63382df72e177ebf04f4c7b2d58b6e63d350d3615575"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/archived-original194-natural.json.gz",
+      "bytes": 695146,
+      "sha256": "8140b54354d98696bb32c2b80c5d6779ea57fcac6e0fb491ce79b17bdd14a3ee"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/boundaries.index.json",
+      "bytes": 6189,
+      "sha256": "522ef8d7e0decffd534b914e87150ead7ebdcebc9ceff262babfbed9f4a787de"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/checkpoint.json.gz",
+      "bytes": 363007,
+      "sha256": "e8f55edfeb0977635e9da20e332056681be99d3d1879575865c5613c3d04fc61"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/commands.ndjson.gz",
+      "bytes": 29905,
+      "sha256": "dc8f0e8ee11f49039d6e62c7ebc2a7db3730b6506d626e05692bf8ffc93e8b47"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/input-freeze.json",
+      "bytes": 640,
+      "sha256": "e803684208f868e06a995b482065b6bee7a4729573a4227393f165146e90d0cf"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/migration-initial.json.gz",
+      "bytes": 521247,
+      "sha256": "038a5204462222b70b1f4cb69c5a8f4e23f24a9b69533d50ba48a517ad049cf5"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/natural.json.gz",
+      "bytes": 337973,
+      "sha256": "5ae8bccd35335c6aba1f59832056ba8541e02dfd1204f052772b8cf3fe5cb2b8"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/producer.mjs",
+      "bytes": 48203,
+      "sha256": "4023aaf768d13630e464d4b2d923de0dd5d727ac9723472b101f8589cb432303"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/runtime-freeze.json",
+      "bytes": 621747,
+      "sha256": "8c1191978865642db2d726b4701b5f41cbde109ab9188d989e5607027907cf4a"
+    },
+    {
+      "path": "tests/fixtures/sun-v02160/summary.json",
+      "bytes": 21790,
+      "sha256": "cf8476a6d1ba37521fe93012b689640c3345392076320020e8a232632383ed76"
+    }
+  ]
+}

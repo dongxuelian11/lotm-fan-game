@@ -1,0 +1,12 @@
+{
+  "format": "DOOR218_PUBLIC_INPUT_EXTRACTION_V1",
+  "exit": 0,
+  "allContainerMembersStreamVerified": 395,
+  "newMembersActuallyExtracted": 117,
+  "newBytes": 132903940,
+  "destination": "output/rebuild-0218/final-restored-inputs",
+  "logSha256": "825590ec0039ced0fe8ad0b492bdf313d9d4326d0b8e137ddee6c0e524635ccc",
+  "sourceCaptureUnchanged": true,
+  "gameplayExecuted": false,
+  "sqliteOpened": false
+}
