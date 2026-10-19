@@ -1,7 +1,7 @@
 import type { SliceState } from '../slice/types.js';
 import { validateNatureWalkerState, hasNatureWalkerLock, resolveNatureWalkerOriginalsSnapshot } from '../nature-walker/index.js';
 import { NATURE_WALKER_SOURCE_KEYS } from '../nature-walker/types.js';
-import { NATURE_WALKER_CASE_IDS, getNatureWalkerCurrentSite } from '../nature-walker/life.js';
+import { NATURE_WALKER_CASE_IDS } from '../nature-walker/life.js';
 import { stableStringify } from '../canonical.js';
 import { sha256Hex } from '../checksum.js';
 import { compareGameDates } from '../game-calendar.js';

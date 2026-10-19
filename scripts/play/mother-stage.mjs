@@ -12,7 +12,7 @@ import { gzipSync, gunzipSync } from 'node:zlib';
  * --resume uses that same directory and frozen input/runtime/producer bytes.
  * Zero-action resume is read-only and requires a closed completed boundary.
  * The source's 955 commands end at revision956. Start at zero actions, resume
- * for one real 20-penny/1-action guidance, then continue this same lineage.
+ * for one real 100-penny/1-action guidance, then continue this same lineage.
  *
  * Persist chosen public intent -> prepare real owned draft -> atomically save
  * COMPLETE result checkpoint -> append lightweight JSONL receipt/key snapshots

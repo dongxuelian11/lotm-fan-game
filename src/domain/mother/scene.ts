@@ -29,7 +29,7 @@ export function motherSceneBlock(s:MotherScene,c:MotherCommand,h:MotherSceneHost
  if(c.type==='WITHDRAW_PERMISSION')return s.permissions[c.personId].consent==='GRANTED'?null:'当前没有这位成年人的有效许可。';
  if(c.type==='ENTER_GREENHOUSE')return s.playerPosition==='OUTSIDE'&&s.greenhouse.repairEventId&&!s.plants.some(p=>p.holder==='PLAYER')?null:'须在已查明的温室外，实际步行进入；携苗用对应的搬运行动。';
  if(c.type==='WALK_EXIT')return s.playerPosition==='GREENHOUSE'&&!s.plants.some(p=>p.holder==='PLAYER')?null:'须在温室内；若实持原苗，应携同一苗普通走出。';
- if(c.type==='REPORT_RETURN')return allReturned(s)&&(s.phase==='PRACTICE'||s.status==='ABORTED')?null:'先停止接触，把每株实际借用原苗亲还原持有人，再普通退出。';
+ if(c.type==='REPORT_RETURN')return allReturned(s)&&(s.status==='ABORTED'||s.phase==='PRACTICE'&&s.plants.every(p=>p.placedEventId&&p.wateredEventId&&p.supportedEventId&&p.returnedEventId))?null:'先停止接触，把每株实际借用原苗亲还原持有人，再普通退出。';
  if(c.type==='REPORT_GREENHOUSE')return s.phase==='PREPARATION'&&s.status==='ACTIVE'&&!s.greenhouseReportEventId&&allReturned(s)&&s.greenhouse.repairEventId&&s.plants.every(p=>p.placedEventId&&p.wateredEventId&&p.supportedEventId&&p.returnedEventId)?null:'先有价修复、将两株原苗实际搬入供水楔撑，再各自亲还并退出。';
  if(c.type==='START_PRACTICE')return h.sequence===0&&s.phase==='PREPARATION'&&s.greenhouseReportEventId&&allReturned(s)?null:'须完成普通维护与原苗交还，晋升后再开始短检修。';
  if(c.type==='INSPECT_GREENHOUSE')return s.playerPosition==='OUTSIDE'&&!s.greenhouse.inspectedEventId?null:'在温室外实际检查一次风损框架、四米搬运路线与普通退路。';
@@ -80,8 +80,8 @@ export function applyMotherScene(input:MotherScene,c:MotherCommand,h:MotherScene
  else if(c.type==='CARRY_PLANT'){move(c.to,c.sampleId);notes.push('本人亲持同一原苗普通走四米，位置、实际路程与原持有人均有记录。');}
  else if(c.type==='PLACE_PLANT'){p!.holder='BED';p!.placedEventId=h.eventId;p!.version++;notes.push('将实际携入的原苗安置在已修好的同一温室内，没有复制或替换。');}
  else if(c.type==='RETURN_PLANT'){stop();p!.holder=p!.originalHolder;p!.care=p!.originalHolder==='RECIPIENT'?'RECIPIENT_CARE':'OWNER_CARE';p!.returnedEventId=h.eventId;p!.returns++;p!.handovers++;p!.version++;notes.push(`${p!.originalHolder==='RECIPIENT'?'莉娜':'艾达'}在室外亲收同一原苗；当前活性${p!.vitality}，所有已付费用和损耗保留。`);}
- else if(c.type==='WATER_PLANT'){spend(1,0);p!.wateredEventId=h.eventId;e.seconds=10;notes.push('消耗一份实购水普通供水，原活性保持当前数值。');}
- else if(c.type==='SUPPORT_PLANT'){spend(0,1);p!.supportedEventId=h.eventId;p!.branch.supportMethod='WEDGE';e.seconds=10;notes.push('实耗一根普通木楔，完成同一原苗的有限支撑；无需任何能力成功。');}
+ else if(c.type==='WATER_PLANT'){stop();spend(1,0);p!.wateredEventId=h.eventId;e.seconds=10;notes.push('消耗一份实购水普通供水，原活性保持当前数值。');}
+ else if(c.type==='SUPPORT_PLANT'){stop();spend(0,1);p!.supportedEventId=h.eventId;p!.branch.supportMethod='WEDGE';e.seconds=10;notes.push('实耗一根普通木楔，完成同一原苗的有限支撑；无需任何能力成功。');}
  else if(c.type==='REPORT_GREENHOUSE'){s.greenhouseReportEventId=h.eventId;for(const v of Object.values(s.permissions))v.consent='CLOSED';notes.push('风损温室已实付修复，两株原活苗实际搬入、普通供水楔撑并原路各自亲还。完整报告保留每次实际位置与消耗。');}
  else if(c.type==='START_PRACTICE'){s.phase='PRACTICE';for(const v of Object.values(s.permissions)){v.consent='UNASKED';v.version++;v.eventId=null;v.phase='PRACTICE';}for(const q of s.plants){q.placedEventId=null;q.wateredEventId=null;q.supportedEventId=null;q.returnedEventId=null;}notes.push('开始一次短检修，原苗仍在室外原持有人手中；另行征求本次许可后才搬入。');}
  else if(c.type==='MAINTAIN_VITALITY'||c.type==='SUPPORT_BRANCH'){const branch=c.type==='SUPPORT_BRANCH',cost=branch?MOTHER_PRACTICE_COSTS.branch:MOTHER_PRACTICE_COSTS.maintenance;e.actions=cost.actions;e.spirituality=cost.spirituality;e.mind=cost.mind;s.window={kind:branch?'LIVING_BRANCH_SUPPORT':'VITALITY_MAINTENANCE',actorId:h.actorId,sampleId:c.sampleId,branchId:branch?p!.branch.id:null,targetVersion:p!.version,permissionVersion:permissionVersion(s),createdAt:h.second,expiresAt:h.second+cost.validSeconds};notes.push('实付1行动、12灵性、5精神，开启绑定同一原活苗与本次许可的二十秒单次短窗；实际应用才独立检定。');}
@@ -95,7 +95,7 @@ export function applyMotherScene(input:MotherScene,c:MotherCommand,h:MotherScene
  else if(c.type==='WALK_EXIT'){move('OUTSIDE',null);notes.push('本人沿普通路线步行四米退出；仍在温室的原苗不会自动跟随。');}
  else if(c.type==='REPORT_RETURN'){stop();s.returnReportEventId=h.eventId;s.status=s.status==='ABORTED'?'ABORTED':'COMPLETED';for(const v of Object.values(s.permissions))if(v.consent==='GRANTED')v.consent='CLOSED';notes.push('本人已实际退出，每株借用原苗由原持有人在室外亲收；如实报告已完成或提前停止，全部费用、原活性与旧伤保留。');}
  if(s.window&&h.second+e.seconds>=s.window.expiresAt)stop();
- s.receipts.push({eventId:h.eventId,kind:c.type,sampleId:p?.id as MotherSampleId??null,beforeVitality:before,afterVitality:p?.vitality??null});
+ s.receipts.push({eventId:h.eventId,kind:c.type,sampleId:p?p.id as MotherSampleId:null,beforeVitality:before,afterVitality:p?.vitality??null});
  return {state:s,effect:e,notes};
 }
 export function desiredMotherSceneCommand(s:MotherScene,h:MotherSceneHost):MotherCommand|null {

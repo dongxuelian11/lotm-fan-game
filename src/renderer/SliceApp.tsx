@@ -2786,7 +2786,7 @@ function AttendantMysteriesActionSequence({actions}:{actions:AttendantMysteriesC
     <p>本槽后本人健康{action.playerHealthAfter}、精神{action.playerMindAfter}、灵性{action.playerSpiritualityAfter}；对手灵性{action.enemySpiritualityAfter}。</p>
   </li>)}</ol>;
 }
-function BarrenMatriarchActionSequence({actions}:{actions:BarrenMatriarchCombatProjection["lastActionSequence"]}) {
+function BarrenMatriarchActionSequence({actions}:{actions:Omit<BarrenMatriarchCombatProjection["lastActionSequence"][number], "randomCursorBefore" | "randomCursorAfter">[]}) {
  return <ol>{actions.map(action=><li key={`${action.actor}-${action.order}`}><strong>{action.actor==='PLAYER'?'本人':'对手'}第{action.order+1}槽：{playerText(action.label)}</strong><p>实耗{action.paidCost}灵性、{action.mindCost}精神；自身优势{displayNumber(action.selfGain)}，减势{displayNumber(action.enemyReduction)}；实际恢复{action.recoveredHealth}健康，护垫磨损{action.padWear}，剩余完整度{action.rootPadAfter.integrity}。</p></li>)}</ol>;
 }
 function BalancerActionSequence({actions}:{actions:Omit<BalancerCombatProjection["lastActionSequence"][number], "randomCursorBefore" | "randomCursorAfter">[]}) {

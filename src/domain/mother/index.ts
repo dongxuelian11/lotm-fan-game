@@ -75,6 +75,9 @@ export function desiredMotherCommand(root:MotherState):MotherCommand|null {
  if(scene.playerPosition==='ORIGINAL_ENTRY')return {type:'LEAVE_ORIGINAL_NURSERY'};
  if(motherInsideCase(root))return desiredMotherSceneCommand(scene,motherHost(root,'preview',root.source!.revision+2+root.journal.length));
  if(scene.status==='ABORTED')return at(MOTHER_HOME,{type:'REPORT_RETURN'},0);
+ // Keep an already-started finite inspection together: the first return must
+ // not spend the second reserved technique action on an unrelated rest.
+ if(b.sequence===0&&scene.phase==='PRACTICE'){if(f.location!==MOTHER_HOME)return {type:'RETURN_ON_FOOT'};return desiredMotherSceneCommand(scene,motherHost(root,'preview',root.source!.revision+2+root.journal.length));}
  if(b.injuries.some(i=>i.severity==='HEAVY'&&i.treatedRevision===null))return b.actions<1?{type:'NEXT_WEEK'}:b.cash>=60?{type:'CLINIC'}:earn();
  if(b.health<80||b.mind<78||b.spirituality<42||b.injuries.length||b.pollution>0){
   if(b.actions>0&&b.cash<200&&f.finance.wagePaidWeek!==b.week)return {type:'WORK'};

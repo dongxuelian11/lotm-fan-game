@@ -83,10 +83,10 @@ function commandBlock(root:MotherState,c:MotherCommand,revision:number):string|n
  if(!root.guidanceKnown||!root.source||!f||!b||b.status!=='ACTIVE')return '已经死亡或结束的角色不能继续行动。';
  if(revision!==root.source.revision+2+root.journal.length)return '本次实际动作次序无效。';
  const sceneAction=isMotherSceneCommand(c);
- if(motherInsideCase(root)&&!sceneAction)return root.scene!.playerPosition==='ORIGINAL_ENTRY'?'先沿原路实际走出原苗圃入口。':'先停止短窗、松开接触，并逐人沿普通侧门退出和关闭现场。';
+ if(motherInsideCase(root)&&!sceneAction)return root.scene!.playerPosition==='ORIGINAL_ENTRY'?'先沿原路实际走出原苗圃入口。':'先停止短窗、松开接触，亲携实际借用原苗沿普通路线退出并当面归还。';
  if(sceneAction){
   if(c.type==='LEAVE_ORIGINAL_NURSERY'){
-   if(f.location!=='MO229-NURSERY-ENTRY')return '本人已经实际离开原入口，不能重复记一次出院。';
+   if(f.location!=='MO229-NURSERY-ENTRY')return '本人已经实际走出原苗圃入口，不能重复记一次离场。';
   }else if(f.location!==MOTHER_HOME)return '本人须先沿普通道路实际到达温室交接处。';
   return motherSceneBlock(root.scene!,c,motherHost(root,`R229:${root.source.runId}:${revision}`,revision));
  }

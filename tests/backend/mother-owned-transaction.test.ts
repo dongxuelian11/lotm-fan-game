@@ -105,7 +105,7 @@ describe('Mother229 controlled real-history SQLite transaction', () => {
       expect(stored(file, before.runId).state).toEqual(before);
       expect(stored(file, before.runId).state.random).toEqual(before.random);
       expect(before.random.seed).toBe(route.source.random.seed);
-      expect(before.random.cursor).toBeGreaterThan(route.source.random.cursor);
+      expect(before.random.cursor).toBe(route.source.random.cursor + before.mother.journal.reduce((count, event) => count + event.randomReceipts.reduce((draws, receipt) => draws + receipt.cursorAfter - receipt.cursorBefore, 0), 0));
       expect(beforeView.mother.promoted).toBe(false);
 
       fail = false; watching = true;
