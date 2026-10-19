@@ -2,15 +2,17 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createHash } from 'node:crypto';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { applySliceIntent, assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import type { SliceBridge, SliceReceipt } from '../../src/shared/slice-contracts.js';
 import { playerText } from '../../src/shared/player-text.js';
 import { HAND_OF_ORDER_SOURCE_KEYS, type HandOfOrderAction } from '../../src/domain/hand-of-order/types.js';
+import { resolveHandOfOrderOriginalsSnapshot } from '../../src/domain/hand-of-order/index.js';
 import { getHandOfOrderCurrentSite } from '../../src/domain/hand-of-order/life.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
-import { capturedSnapshot, capturedState, namedBoundary, observedCapture, captureBody, captureValueHash,
+import { capturedSnapshot, capturedState, namedBoundary, observedCapture, captureBody, captureValueHash, captureFileHash,
   currentCapture, sourceEntry, sameCaptureValue as same } from '../domain/hand-of-order-capture-helper.js';
 import { GUIDANCE, LIFE_REOPEN_NAMES, UI_RETRY_NAMES, distinctObserved, assertCapturedResources,
   assertObservedBoundary, assertObservedRound, assertObservedFinal, assertCapturedRoundResources, assertPublicProjection } from '../domain/hand-of-order-save-ui-helper.js';
@@ -23,6 +25,28 @@ const NONE = '本回合没有实际致伤来源，不掷身体伤势盘';
 const disabled = (element: HTMLElement) => (element as HTMLButtonElement).disabled;
 const rootsHash = (state: SliceState) => captureValueHash(HAND_OF_ORDER_SOURCE_KEYS.map(key => state[key]));
 const places = { START: '原门口', A: '原标线处', B: '室内原空桌旁', OUTSIDE: '室外', ANNEX_A: '新场地甲处', ANNEX_B: '新场地乙处' };
+const ARCHIVED_FOURTH = 'consume-hand-of-order-potion-4';
+
+// Only this newly emitted guidance text changed. Keep the original archive,
+// all other records and every gameplay/random field as the expected state.
+function withCurrentGuidance(archived: SliceState): SliceState {
+  const expected = structuredClone(archived), records = expected.chronicle.filter(record => record.id === 'record-602-943');
+  expect(records).toHaveLength(1);
+  const record = records[0]!;
+  expect({ id: record.id, week: record.week, title: record.title }).toEqual({
+    id: 'record-602-943', week: 136, title: '听取秩序之手独立成品与专业准备指导',
+  });
+  expect(createHash('sha256').update(record.text).digest('hex')).toBe('71580ffd37c86930cd2c48ca913eef9d0cec1ba009bd0306b73615b3fe67ec4b');
+  const oldGuidance = '全批失败耗尽后，实付1行动与100便士申请独立三瓶，至少跨一真实周领取；每瓶另做五次劳动并付1200便士，或直接支付7200便士。';
+  const currentGuidance = '最初三瓶全部失败耗尽后，只能在原服药准备与支持交接处以1行动和120便士调查同一原特性的归属与位置，经保管方本次许可实际核验封存；至少下一真实周以1行动和30便士当面交接。新普通药物与调配服务900便士，或五项新劳动后90便士；当周检查仍另付1行动和180便士。失败残留不会自动回收，旧瓶、原失败与旧成本不改写，不再供应第四份原特性。可另付60便士、8灵性、6精神为所选同瓶准备同场当周支持，0行动，意志临时+15；仍可能失败，换瓶、退出或跨周失效，已付成本不退。';
+  expect(record.text.endsWith(oldGuidance)).toBe(true);
+  expect(expected.chronicle.reduce((count, row) => count + row.text.split(oldGuidance).length - 1, 0)).toBe(1);
+  const latestGuidance = expected.lastResult?.id === record.id ? expected.lastResult : null;
+  if (latestGuidance) same(latestGuidance, record);
+  record.text = record.text.slice(0, -oldGuidance.length) + currentGuidance;
+  if (latestGuidance) latestGuidance.text = record.text;
+  return expected;
+}
 
 // Only IPC delivery is controlled. Every candidate comes from the real reducer
 // on the complete captured state. SQLite behavior is covered by the save suite.
@@ -211,8 +235,8 @@ it('requires coordinator-frozen actual stage206 capture before claiming renderer
 }, 30_000);
 
 describe('Hand of Order actual saved UI and identical-intent retry', () => {
-  it.each(UI_RETRY_NAMES)('%s keeps real resources uncommitted on failure and commits the identical retry once', async name => {
-    const boundary = namedBoundary(name), before = boundary.before, expected = boundary.final;
+  it.each(UI_RETRY_NAMES.filter(name => name !== ARCHIVED_FOURTH))('%s keeps real resources uncommitted on failure and commits the identical retry once', async name => {
+    const boundary = namedBoundary(name), before = boundary.before, expected = name === GUIDANCE ? withCurrentGuidance(boundary.final) : boundary.final;
     if (boundary.intent.type !== 'HAND_OF_ORDER') throw new Error('Expected a real panel operation.');
     const command = boundary.intent.command, game = savedGame(before), releaseFailure = game.holdNextSave();
     game.failNextSave(); await mount(game); await openPanel();
@@ -240,6 +264,50 @@ describe('Hand of Order actual saved UI and identical-intent retry', () => {
     assertCurrentBody(expected); expect(screen.queryByRole('dialog', { name: ROUND })).toBeNull();
     await reopen(game); await openPanel(); assertCurrentBody(expected);
     same(game.state, expected); expect(game.submit).toHaveBeenCalledTimes(2); expect(game.commits).toBe(1);
+  }, 180_000);
+
+  it('reopens both actual fourth-independent-bottle endpoints as read-only history and rejects live consumption without writes', async () => {
+    expect(UI_RETRY_NAMES).toContain(ARCHIVED_FOURTH);
+    const boundary = namedBoundary(ARCHIVED_FOURTH), archiveHash = await captureFileHash(boundary.path);
+    expect(archiveHash).toBe('24ff09f0bc982dcd9adf05c661825568e7ddca7595e1c9682e3fd022fe703009');
+    expect(boundary.intent).toEqual({ type: 'HAND_OF_ORDER', command: { type: 'CONSUME', bottleId: 'hand-of-order-potion-4', confirmed: true } });
+    assertCapturedResources(boundary.before, boundary.intent, boundary.final); assertObservedBoundary(ARCHIVED_FOURTH, boundary.final);
+    // Load each authentic endpoint independently; never synthesize a successful
+    // current-rule receipt for the archived fourth independent original.
+    for (const state of [boundary.before, boundary.final]) {
+      cleanup();
+      const game = savedGame(state), hash = captureValueHash(state), value = projectSliceState(state);
+      expect(state.handOfOrder.bottles).toHaveLength(6);
+      expect(state.handOfOrder.bottles.every(bottle => bottle.recovery === undefined)).toBe(true);
+      expect(resolveHandOfOrderOriginalsSnapshot(state.handOfOrder)).toBeNull();
+      const action = value.handOfOrder.actions.find(row => JSON.stringify({ type: 'HAND_OF_ORDER', command: row.command }) === JSON.stringify(boundary.intent));
+      expect(action?.enabled ?? false).toBe(false);
+      const envelope = { intentId: `archived-fourth:${state.revision}`, runId: state.runId, expectedRevision: state.revision, payload: boundary.intent };
+      await mount(game);
+      for (let attempt = 0; attempt < 2; attempt++) {
+        if (attempt) await reopen(game);
+        const panel = await openPanel(); assertCurrentBody(state);
+        if (!value.handOfOrder.promoted) {
+          expect(action).toBeDefined();
+          expect(action!.reason).toBe('历史独立第4份及以后原特性存在守恒冲突；旧记录只读，不能改标为回收件或继续本入口。');
+          const bottle = value.handOfOrder.bottles.find(row => row.id === 'hand-of-order-potion-4')!;
+          await userEvent.click(within(within(panel).getByRole('navigation', { name: '秩序之手目标' })).getByRole('button', { name: name => name.startsWith(bottle.title) }));
+          const buttons = within(panel).getAllByRole('button', { hidden: true }).filter(button => button.textContent?.startsWith(playerText(action!.label)));
+          expect(buttons).toHaveLength(1);
+          const consume = buttons[0]!, fold = consume.closest('details'); if (fold) fold.open = true;
+          expect(disabled(consume)).toBe(true); fireEvent.click(consume);
+          expect(screen.queryByRole('dialog', { name: CONFIRM })).toBeNull();
+        }
+        expect(game.submit).toHaveBeenCalledTimes(attempt);
+        await expect(game.submit(envelope)).rejects.toThrow();
+        assertEnvelope(game, state, boundary.intent, attempt + 1);
+        expect(game.attemptedHashes).toEqual([]); expect(game.commits).toBe(0);
+        expect(captureValueHash(game.state)).toBe(hash); expect(captureValueHash(state)).toBe(hash);
+      }
+      await reopen(game); await openPanel(); assertCurrentBody(state);
+      expect(captureValueHash(game.state)).toBe(hash); expect(game.submit).toHaveBeenCalledTimes(2); expect(game.commits).toBe(0);
+    }
+    expect(await captureFileHash(boundary.path)).toBe(archiveHash);
   }, 180_000);
 
   it('reopens the genuine treated source without a free refill or restoration of old opponents', async () => {
