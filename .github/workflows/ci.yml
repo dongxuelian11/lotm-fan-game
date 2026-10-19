@@ -50,7 +50,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -59,7 +59,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run fixtures:restore
-      - run: node scripts/test-ci-batches.mjs --shard ${{ matrix.shard }}/8
+      - run: node scripts/test-ci-batches.mjs --shard ${{ matrix.shard }}/16
       - uses: actions/upload-artifact@v4
         if: always()
         with:
