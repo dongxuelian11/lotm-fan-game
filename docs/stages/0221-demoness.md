@@ -45,3 +45,18 @@ commands. The final private state is fully equal. The explicit708 handoff copies
 this state into natural-v2 with a new producer fingerprint; product/runtime/source
 bytes remain exact. Zero-action strict reopening passed. Continuation uses the
 already enabled, paid same-bottle support, then real consumption; no reroll.
+
+### Actual883 paused recommendation repair
+The actual V2 route reached S1 at729 (68%, roll55), completed its three practical
+reports, then the recommendation repeatedly paid for attendance with no remaining
+AP to fit the supports. All195 new commands through883, their costs and RNG are
+preserved. The interrupted runner exited130 after882 with883 pending; unchanged
+frozen continuation completed that exact ordinary PAUSE_SHIFT and exited0 at883.
+This is an explicitly paused living route, not a terminal result.
+
+Only the private recommendation selector now reserves actual AP/cash/time before
+paid attendance, same-week custody and promotion preparation, and leaves an
+ordinary-shoring action after optional return abilities. Settlement is unchanged.
+The five focused regression tests are running; a single exact195-command private
+state/RNG replay and narrowly bounded recommendation-field audit are pending.
+The old883 capture and runtime have independently restored and been backed up.

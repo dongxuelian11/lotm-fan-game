@@ -4,7 +4,7 @@ import type { DemonessCommand, DemonessMaterialCommand, DemonessPassageCommand, 
 import { DEMONESS_ORIGINAL_IDS, DEMONESS_RESIDENT_IDS } from './types.js';
 import { createDemonessState, startDemoness, validateDemonessCommand, openDemonessOwnedEngine, snapshotDemonessOwnedEngine, advanceDemonessOwnedEngine, blockDemonessOwnedEngine, assertDemonessEndpoint, demonessInsideCase, getDemonessPromotionStabilityPreview, type DemonessOwnedEngine } from './engine.js';
 import { demonessBudget, demonessSourceBlock, validateDemonessSource, sameDemoness } from './source.js';
-import { DEMONESS_ABILITIES, DEMONESS_PLACES, DEMONESS_STORY, DEMONESS_GOAL, DEMONESS_RISK, DEMONESS_GUIDANCE, DEMONESS_SPIRITUALITY_CAP } from './content.js';
+import { DEMONESS_ABILITIES, DEMONESS_PLACES, DEMONESS_STORY, DEMONESS_GOAL, DEMONESS_RISK, DEMONESS_GUIDANCE, DEMONESS_SPIRITUALITY_CAP, DEMONESS_PRICES, DEMONESS_PREPARATION } from './content.js';
 import { demonessPassagesComplete } from './passage.js';
 import { APOCALYPSE_DEMONESS_INHERITED_ABILITIES, APOCALYPSE_DEMONESS_ABILITIES } from '../apocalypse-demoness/content.js';
 export { createDemonessState, createDefaultDemonessState, validateDemonessCommand } from './engine.js';
@@ -64,6 +64,13 @@ function desiredCommand(root: DemonessState): DemonessCommand | null {
   const passage = (command: DemonessPassageCommand): DemonessCommand => ({ type: 'PASSAGE', command });
   const material = (command: DemonessMaterialCommand): DemonessCommand => ({ type: 'MATERIAL', command });
   const at = (to: DemonessPlace, c: DemonessCommand): DemonessCommand => f.location === to ? c : { type: 'TRAVEL', to };
+  // Reserve the real next work before paying for attendance or a short-lived
+  // permission. These recommendations never supply AP, cash or check results.
+  const reserve = (actions: number, cash: number, seconds = 0): DemonessCommand | null => {
+    if (b.actions >= actions && b.cash >= cash && f.nowSecond + seconds < f.weekAnchor + 604800) return null;
+    if (b.cash < cash && f.finance.wagePaidWeek !== b.week && b.actions > 0) return { type: 'WORK' };
+    return { type: 'NEXT_WEEK' };
+  };
   if (b.status !== 'ACTIVE' || p.phase === 'CLOSED') return null;
   const ready = m.compounds.find(c => c.status === 'PREPARED' && getDemonessPromotionStabilityPreview(root, c.id).prepared);
   if (ready) return { type: 'CONSUME', compoundId: ready.id, confirmed: true };
@@ -71,7 +78,6 @@ function desiredCommand(root: DemonessState): DemonessCommand | null {
     const unsealed = m.compounds.find(c => c.status === 'FAILED_EXPOSED'); if (unsealed) return at(unsealed.location, material({ type: 'SEAL_REMAINS', compoundId: unsealed.id }));
     if (b.injuries.some(i => i.severity === 'HEAVY' && i.treatedRevision === null)) return { type: 'CLINIC' };
     if (b.health < 80 || b.mind < 78 || b.spirituality < 42 || b.injuries.length || b.pollution > 20) return { type: 'REST' };
-    if (f.finance.wagePaidWeek !== b.week && b.actions > 0) return { type: 'WORK' };
   }
   if (!demonessPassagesComplete(p) || b.sequence === 0) {
     if (f.location !== 'DM221-ARCH') return { type: 'TRAVEL', to: 'DM221-ARCH' };
@@ -86,6 +92,17 @@ function desiredCommand(root: DemonessState): DemonessCommand | null {
     if (demonessInsideCase(root) && (p.playerEnergy < 7 || p.residents.some(r => r.consent !== 'GRANTED' || r.consentWeek !== b.week))) return passage({ type: 'PAUSE_SHIFT' });
     if (!returning) for (const segment of ['A', 'B'] as const) if (!p.supports.some(s => s.segment === segment)) return p.position === -2 ? passage({ type: 'BUY_SUPPORT', segment }) : passage({ type: 'WALK', to: -2 });
     if (returning && !p.returnKit) return passage({ type: 'BUY_RETURN_KIT' });
+    if (!demonessInsideCase(root)) {
+      const unfinished = p.residents.filter(r => !complete(r));
+      const fittingActions = returning ? Number(p.stone.state === 'LANDED') + Number(!p.returnKit!.fittedEventId)
+        + Number(p.stone.state === 'LOOSE' && p.petrificationAttempts === 0)
+        + Number(!p.returnKit!.fittedEventId && p.reshapingAttempts === 0)
+        : p.supports.filter(s => !s.fittedEventId).length;
+      const cleanupCash = returning && ['LOOSE', 'LANDED'].includes(p.stone.state) ? 20 : 0;
+      const recovery = reserve(Math.min(fittingActions, f.finance.weeklyBudget),
+        unfinished.length * DEMONESS_PRICES.residentService + cleanupCash, 3600);
+      if (recovery) return recovery;
+    }
     for (const r of p.residents) if (r.consent !== 'GRANTED' || r.consentWeek !== b.week) return passage({ type: 'ASK_RESIDENT', residentId: r.id });
     if (returning) {
       for (const r of p.residents) if (!complete(r) && r.position === -2) return passage({ type: 'ARRIVE_RESIDENT', residentId: r.id });
@@ -94,11 +111,11 @@ function desiredCommand(root: DemonessState): DemonessCommand | null {
       if (p.stone.state === 'LOOSE') return passage({ type: 'OBSERVE_STONE' });
       if (p.stone.state === 'FALLING') {
         if (p.window?.kind === 'PETRIFICATION' && f.nowSecond + 2 <= p.window.expiresAt) return passage({ type: 'CATCH_STONE' });
-        return p.petrificationAttempts < 2 && b.actions > 0 && b.spirituality >= 12 && b.mind > 5 ? passage({ type: 'PETRIFY_STONE' }) : passage({ type: 'CATCH_STONE' });
+        return p.petrificationAttempts < 2 && b.actions > Number(!p.returnKit!.fittedEventId) + Number(!p.returnKit!.fittedEventId && p.reshapingAttempts === 0) && b.spirituality >= 12 && b.mind > 5 ? passage({ type: 'PETRIFY_STONE' }) : passage({ type: 'CATCH_STONE' });
       }
       if (!p.returnKit!.fittedEventId) {
         if (p.window?.kind === 'RESHAPING' && f.nowSecond + 8 <= p.window.expiresAt) return passage({ type: 'FIT_WEDGE' });
-        if (p.reshapingAttempts < 2 && b.actions > 0 && b.spirituality >= 14 && b.mind > 6) return passage({ type: p.contact ? 'RESHAPE_STRUT' : 'TOUCH_STRUT' });
+        if (p.reshapingAttempts < 2 && b.actions > 1 && b.spirituality >= 14 && b.mind > 6) return passage({ type: p.contact ? 'RESHAPE_STRUT' : 'TOUCH_STRUT' });
         return passage({ type: 'ORDINARY_SHORE' });
       }
       const r = p.residents.find(r => r.position === 0 && !complete(r)); return r ? passage({ type: 'CROSS_RETURN', residentId: r.id }) : passage({ type: 'PAUSE_SHIFT' });
@@ -124,14 +141,23 @@ function desiredCommand(root: DemonessState): DemonessCommand | null {
     return at(item.location!, material(command));
   }
   if (m.uniqueness.holder === 'CUSTODIAN') {
-    if (b.cash < 250 && m.uniqueness.verifiedWeek !== b.week) return f.finance.wagePaidWeek !== b.week && b.actions > 0 ? { type: 'WORK' } : { type: 'NEXT_WEEK' };
-    return at('DM221-VAULT', material({ type: m.uniqueness.verifiedWeek === b.week ? 'ACQUIRE_UNIQUENESS' : 'VERIFY_CUSTODY' }));
+    if (f.location !== 'DM221-VAULT') return { type: 'TRAVEL', to: 'DM221-VAULT' };
+    const verified = m.uniqueness.verifiedWeek === b.week, actions = verified ? 1 : 2;
+    if (f.finance.weeklyBudget < actions) return null;
+    const recovery = reserve(actions, DEMONESS_PRICES.uniquenessHandover + (verified ? 0 : DEMONESS_PRICES.uniquenessVerification), actions * 1800);
+    return recovery ?? material({ type: verified ? 'ACQUIRE_UNIQUENESS' : 'VERIFY_CUSTODY' });
   }
   const compound = m.compounds.find(c => c.status === 'PREPARED');
   if (compound) {
     if (b.week - root.source!.actualS1PromotionWeek < 12) return { type: 'NEXT_WEEK' };
+    if (f.location !== 'DM221-WORKSHOP') return { type: 'TRAVEL', to: 'DM221-WORKSHOP' };
     const preview = getDemonessPromotionStabilityPreview(root, compound.id);
-    return at('DM221-WORKSHOP', preview.prepared ? { type: 'CONSUME', compoundId: compound.id, confirmed: true } : { type: 'STABILIZE_PROMOTION', compoundId: compound.id });
+    if (!preview.prepared) {
+      if (f.finance.weeklyBudget < 2) return null;
+      const recovery = reserve(2, DEMONESS_PREPARATION.cash, DEMONESS_PREPARATION.seconds + 3600);
+      if (recovery) return recovery;
+    }
+    return preview.prepared ? { type: 'CONSUME', compoundId: compound.id, confirmed: true } : { type: 'STABILIZE_PROMOTION', compoundId: compound.id };
   }
   if (m.carriers.some(x => x.status === 'PLAYER')) return at('DM221-WORKSHOP', material({ type: 'COMPOSE' }));
   return m.carriers.some(x => x.status === 'SUPPLIER') ? at('DM221-SUPPLIER', material({ type: 'BUY_CARRIER' })) : null;
