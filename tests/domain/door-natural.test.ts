@@ -1,4 +1,14 @@
 import { emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
+import { emptyTwilightGiantPublic } from '../helpers/empty-twilight-giant-capture.js';
+import { emptyDemonessPublic } from '../helpers/empty-demoness-capture.js';
+import { emptyHermitPublic } from '../helpers/empty-hermit-capture.js';
+import { emptyHangedManPublic } from '../helpers/empty-hanged-man-capture.js';
+import { emptyAbyssPublic } from '../helpers/empty-abyss-capture.js';
+import { emptyChainedPublic } from '../helpers/empty-chained-capture.js';
+import { emptyWheelOfFortunePublic } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { emptyBlackEmperorPublic } from '../helpers/empty-black-emperor-capture.js';
+import { emptyJusticiarPublic } from '../helpers/empty-justiciar-capture.js';
+import { emptyMotherPublic } from '../helpers/empty-mother-capture.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
@@ -52,7 +62,8 @@ describe('Door218 actual natural928 from unchanged original196 living823', () =>
     expect(Object.values(data.original.progression.mastery).filter(value => value === 0)).toHaveLength(8);
     const originalHash = hash(data.original), migrated = migrateSliceState(data.original);
     same(historicalDoorState(migrated), data.initial, 'Current migration retains every exact193->215 captured field');
-    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(data.initial), 'errorAscent'].sort());
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(data.initial), 'errorAscent', 'twilightGiant', 'demoness',
+      'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'].sort());
     expect(hash(data.original)).toBe(originalHash); expect(originalHash).toBe(PINS.originalStateSha256);
     const global = projectSliceState(migrated); same(historicalDoorPublic(global, migrated), data.initialPublic); assertGlobalPublic(global, migrated);
     expect(hash(historicalDoorPublic(global, migrated))).toBe(PINS.initialGlobalPublicSha256); expect(hash(capturePublic(global))).toBe(PINS.initialPublicSha256);
@@ -183,7 +194,23 @@ describe('Door218 actual natural928 from unchanged original196 living823', () =>
   }, 300_000);
 
   it('rejects altered evidence, unknown roots, wrong revision offsets, forged input and private leakage', () => {
-    const action = actionAt(916), original = hash(action), expected = { ...action.globalPublic, errorAscent: emptyErrorAscentPublic(action.final) };
+    const action = actionAt(916), original = hash(action), expected = { ...structuredClone(action.globalPublic),
+      errorAscent: emptyErrorAscentPublic(action.final), twilightGiant: emptyTwilightGiantPublic(action.final),
+      demoness: emptyDemonessPublic(action.final), hermit: emptyHermitPublic(action.final),
+      hangedMan: emptyHangedManPublic(action.final), abyss: emptyAbyssPublic(action.final),
+      chained: emptyChainedPublic(action.final), wheelOfFortune: emptyWheelOfFortunePublic(action.final),
+      blackEmperor: emptyBlackEmperorPublic(action.final), justiciar: emptyJusticiarPublic(action.final),
+      mother: emptyMotherPublic(action.final) };
+    // Adapt only the named inactive null fields; the authenticated raw action stays untouched.
+    expect(Reflect.get(expected.calamityDemoness.life.site, 'source')).toBeNull();
+    Reflect.deleteProperty(expected.calamityDemoness.life.site, 'source');
+    for (const root of ['knowledgeEmperor', 'sage'] as const) {
+      expect(Reflect.get(expected[root].life.site, 'source')).toBeNull();
+      expect(Reflect.get(expected[root].encounter, 'preparation')).toBeNull();
+      Reflect.deleteProperty(expected[root].life.site, 'source');
+      Reflect.deleteProperty(expected[root].encounter, 'preparation');
+      expected[root].encounter.preparationSummary = null;
+    }
     assertCurrentGlobal(expected, action, 'after');
     expect(() => assertCurrentGlobal({ ...expected, cash: expected.cash + 1 }, action, 'after')).toThrow();
     expect(() => assertCurrentGlobal({ ...expected, unexpectedRoot: null } as typeof expected, action, 'after')).toThrow();
