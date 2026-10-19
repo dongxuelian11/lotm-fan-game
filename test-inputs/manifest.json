@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.221.0",
+  "version": "0.222.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -1289,6 +1289,39 @@
         "tests/fixtures/demoness-v02210/source-snapshot.json.gz",
         "tests/fixtures/demoness-v02210/summary.json",
         "tests/fixtures/demoness-v02210/summary883-v2.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.222.0_hermit_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 7367909,
+      "sha256": "c60bc0af2ffb6c72387551a174d6e755eb2fbbf07a5bc449bedf04420e7b7bb0",
+      "members": [
+        "tests/fixtures/hermit-v02220/before-audit-handoff910/checkpoint.json.gz",
+        "tests/fixtures/hermit-v02220/before-audit-handoff910/commands.jsonl",
+        "tests/fixtures/hermit-v02220/before-audit-handoff910/producer-tests.mjs",
+        "tests/fixtures/hermit-v02220/before-audit-handoff910/producer.mjs",
+        "tests/fixtures/hermit-v02220/before-audit-handoff910/runtime-freeze.json",
+        "tests/fixtures/hermit-v02220/before-audit-handoff910/summary.json",
+        "tests/fixtures/hermit-v02220/checkpoint.json.gz",
+        "tests/fixtures/hermit-v02220/commands.jsonl",
+        "tests/fixtures/hermit-v02220/continuation910-proof.json",
+        "tests/fixtures/hermit-v02220/key-827-initial.json.gz",
+        "tests/fixtures/hermit-v02220/key-843-periodic.json.gz",
+        "tests/fixtures/hermit-v02220/key-859-periodic.json.gz",
+        "tests/fixtures/hermit-v02220/key-875-periodic.json.gz",
+        "tests/fixtures/hermit-v02220/key-891-periodic.json.gz",
+        "tests/fixtures/hermit-v02220/key-894-before-consume.json.gz",
+        "tests/fixtures/hermit-v02220/key-895-after-consume.json.gz",
+        "tests/fixtures/hermit-v02220/key-907-periodic.json.gz",
+        "tests/fixtures/hermit-v02220/key-923-periodic.json.gz",
+        "tests/fixtures/hermit-v02220/key-939-periodic.json.gz",
+        "tests/fixtures/hermit-v02220/key-941-terminal.json.gz",
+        "tests/fixtures/hermit-v02220/original831-natural.json.gz",
+        "tests/fixtures/hermit-v02220/producer-tests.mjs",
+        "tests/fixtures/hermit-v02220/producer.mjs",
+        "tests/fixtures/hermit-v02220/runtime-freeze.json",
+        "tests/fixtures/hermit-v02220/source-snapshot.json.gz",
+        "tests/fixtures/hermit-v02220/summary.json"
       ]
     }
   ],
@@ -34787,6 +34820,136 @@
       "path": "tests/fixtures/demoness-v02210/summary883-v2.json",
       "bytes": 15438,
       "sha256": "01296820d84dd070bbf00036139d235513738a5cbd473e1493ece3e25bb63eb4"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/before-audit-handoff910/checkpoint.json.gz",
+      "bytes": 227215,
+      "sha256": "2de9da2f8664988c7a68c1beb5eee0511a91664714b90d7203f3590d90551859"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/before-audit-handoff910/commands.jsonl",
+      "bytes": 477657,
+      "sha256": "ae9183a6af897df18e66e3a634cd5490f91c342e5862a27a99a9816f327cc510"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/before-audit-handoff910/producer-tests.mjs",
+      "bytes": 12600,
+      "sha256": "9640186091fd579083423ec452dfecd5b3ee34a18438695ad1d1c5c4fc49a707"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/before-audit-handoff910/producer.mjs",
+      "bytes": 43218,
+      "sha256": "f23ab85e523e1b5f9731777f6c4db6f6129fe50d65a961a326742e4febf001d4"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/before-audit-handoff910/runtime-freeze.json",
+      "bytes": 661022,
+      "sha256": "5888678daeb483c17e377f5a3b5ac33e08e9a13213deed75bcaf858a5fb197c6"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/before-audit-handoff910/summary.json",
+      "bytes": 4757,
+      "sha256": "ee38656a762680f1c30053ac5d6df2b9b0ba75292eaac4b26cee6b54ab299651"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/checkpoint.json.gz",
+      "bytes": 235036,
+      "sha256": "e36cd612a6652f9037313a345a948f4ffd628696cb7e7d4e35f076449f2b46df"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/commands.jsonl",
+      "bytes": 540988,
+      "sha256": "e0d2a8fb5094709633a1711e4df69d17050575c1bd5e7ac5b17e399d7b05f088"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/continuation910-proof.json",
+      "bytes": 4445,
+      "sha256": "2eedc032fb98162638919f6c48efdd82c7606376ca431704ab8739f662b27587"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-827-initial.json.gz",
+      "bytes": 450029,
+      "sha256": "210f4304b30e40340c98dec22aede6fc8949f30869b11702a629931621e83a7c"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-843-periodic.json.gz",
+      "bytes": 487630,
+      "sha256": "24e15514d4fd640341ee3f0524ae39debd58371dfe28f3216aeafa1952d14090"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-859-periodic.json.gz",
+      "bytes": 491506,
+      "sha256": "7a38fab58ed0062ee93d370f72c8b52c442097cf4b75903e1f5041802dcc86f9"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-875-periodic.json.gz",
+      "bytes": 495718,
+      "sha256": "b74fcbfeaf5db22144870780758856efa51523e45597c2a7b9992dede1dcee8c"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-891-periodic.json.gz",
+      "bytes": 498995,
+      "sha256": "9434878ec1f2bafbfe3ef6f107c9fb03fc747e936314203e58ffcc0eec6c61d7"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-894-before-consume.json.gz",
+      "bytes": 500858,
+      "sha256": "0ca6eee36e6237b5008bf95a8ab895b62b2226e634e22b55e275b8efe5378521"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-895-after-consume.json.gz",
+      "bytes": 501757,
+      "sha256": "f961099bcc973f5856aa30369eae4b1545c3943796ec5d64d690183fd2bd0115"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-907-periodic.json.gz",
+      "bytes": 503964,
+      "sha256": "786ec6ec30c950d872d46694e6c1d9bb425a42f09ec5b461738c73ee4672291f"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-923-periodic.json.gz",
+      "bytes": 508491,
+      "sha256": "6257321c41dfdb8ed8c29a021ad5908d177eba508de3b3eab392f24cc0811b0e"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-939-periodic.json.gz",
+      "bytes": 513291,
+      "sha256": "ece89fbb77a4399938cbd81683bf2bedbfa00d91915a224007e00fba1ae1ee2b"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/key-941-terminal.json.gz",
+      "bytes": 514114,
+      "sha256": "2f9f00a52f19d1f5a6e27b22c47aaa19926fb97241ab8bbc7b3b8388ca716ab5"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/original831-natural.json.gz",
+      "bytes": 634018,
+      "sha256": "4e92eceadcc2d829a350b4cac668d4307d5b74b82ce7c482efd5dd2fd5f18af5"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/producer-tests.mjs",
+      "bytes": 12913,
+      "sha256": "310e2ad2812f7085d4f9a9978ffc21731268b1f162fe41f3980ba7bb5170445a"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/producer.mjs",
+      "bytes": 43227,
+      "sha256": "424679f4b3595e2cdc763b441e61307b63d2a1e1b8e63439d8e02d25218f7c71"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/runtime-freeze.json",
+      "bytes": 661022,
+      "sha256": "d62690c32f5c4e4eaf84e54c20d5c6a190434260db2cba2990c57387f125f7c7"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/source-snapshot.json.gz",
+      "bytes": 191882,
+      "sha256": "a8df22ee0c7c30e1d05fc0e5748c2245db654d0cbbcdef8f9b3c6f689e5ce9d1"
+    },
+    {
+      "path": "tests/fixtures/hermit-v02220/summary.json",
+      "bytes": 9036,
+      "sha256": "ea82ab64dd331bf0157eeb98661aee41567f58e8b6e42f95bce432c60ad73b26"
     }
   ]
 }
