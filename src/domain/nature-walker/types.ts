@@ -22,13 +22,37 @@ export type NatureWalkerPreparationId = typeof NATURE_WALKER_PREPARATION_IDS[num
 export type NatureWalkerAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: NatureWalkerPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type NatureWalkerCommand = NatureWalkerAcquisitionCommand | NatureWalkerActivityCommand | NatureWalkerEncounterCommand;
+export type NatureWalkerOriginalBottleId = 'nature-walker-potion-1' | 'nature-walker-potion-2' | 'nature-walker-potion-3';
+/** The vessel may change; the three finite original characteristics do not. */
+export interface NatureWalkerRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_NATURE_WALKER_PREPARATION'; custodian: 'MO229-NATURE-WALKER-SUPPLIER';
+}
+export interface NatureWalkerRecovery extends NatureWalkerRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface NatureWalkerRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_NATURE_WALKER_PREPARATION'; originals: NatureWalkerOriginals;
+  permission: { personId: 'MO229-NATURE-WALKER-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface NatureWalkerOriginalCharacteristic {
+  characteristicId: string; originalBottleId: NatureWalkerOriginalBottleId; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface NatureWalkerOriginalCharacteristics {
+  characteristics: NatureWalkerOriginalCharacteristic[];
+  embodiedOriginalBottleId: NatureWalkerOriginalBottleId | null; embodiedBottleId: string | null;
+}
 export interface NatureWalkerBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: NatureWalkerRecovery;
 }
 export interface NatureWalkerPrices { guidance: number; potion: number; labourCredit: number; labourBalance: number; preparation: number; resupply: number }
 export type NatureWalkerFinance = Pick<SliceState, 'weeklyBudget' | 'lifeTier' | 'nextLifeTier' | 'debts' | 'missedWeeks' | 'credit'>;
@@ -42,6 +66,7 @@ export interface NatureWalkerAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'mother'; barrenMatriarchPromotionWeek: number; cultivatorPromotionWeek: number };
   before: NatureWalkerAcquisitionBudget; after: NatureWalkerAcquisitionBudget; finance: NatureWalkerFinance;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: NatureWalkerRecoverySite;
 }
 export const NATURE_WALKER_SOURCE_KEYS = ['cultivator', 'physician', 'harvestpriest', 'biologist', 'druid', 'ancientAlchemist', 'coffinBearer', 'barrenMatriarch'] as const;
 export type NatureWalkerSourceHistory = Pick<SliceState, typeof NATURE_WALKER_SOURCE_KEYS[number]>;
@@ -58,7 +83,7 @@ export interface NatureWalkerSourceScene {
 }
 export interface NatureWalkerState {
   guidanceKnown: boolean; sourceWeek: number | null; bottles: NatureWalkerBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: NatureWalkerRecoveryRequest };
   promotionWeek: number | null; barrenMatriarchActingAtPromotion: number | null;
   preparations: { taskId: NatureWalkerPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: NatureWalkerAcquisitionEvent[];

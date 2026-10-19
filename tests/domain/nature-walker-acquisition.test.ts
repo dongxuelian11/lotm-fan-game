@@ -103,15 +103,17 @@ describe('NatureWalker independent acquisition and truthful S2 source', () => {
     expect(receipt.before).toEqual(receipt.after); expect(n.week).toBe(s.week + 1); expect(n.cash).toBe(s.cash - 30); expect(n.random).toEqual(s.random);
     expect(n.natureWalker.bottles[0]!.status).toBe('PLAYER'); expect(n.injuries).toEqual(s.injuries); assertValidSliceState(n);
   }, 30_000);
-  it('requires three genuine failures, paid request and actual next week for fresh independent bottles', () => {
+  it('requires three genuine failures, a paid same-original investigation and actual next-week handover', () => {
     const initial = directedInitial2('THREE_FAILURES'); initial.actionsRemaining = initial.weeklyBudget = 3;
     let s = nw(initial, { type: 'LEARN_GUIDANCE' }); rejectNatureWalker(s, { type: 'REQUEST_SUPPLY' });
     for (let number = 1; number <= 3; number++) { const bottleId = `nature-walker-potion-${number}`; s = prepareBottle(s, bottleId); s = nw(s, { type: 'CONSUME', bottleId, confirmed: true }); expect(s.progression.sequence).toBe(2); }
-    s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 }); const before = s.cash;
-    s = nw(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100); const requested = s.natureWalker.resupply.requestedWeek!;
-    rejectNatureWalker(s, { type: 'RECEIVE_SUPPLY' }); s = ready(s, { afterWeek: requested }); s = nw(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.natureWalker.bottles).toHaveLength(6); expect(s.natureWalker.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.natureWalker.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true); assertValidSliceState(s);
+    s = ready(s, { ap: 2, cash: 120, health: 100, mind: 100 }); const before = s.cash, originalBottles = structuredClone(s.natureWalker.bottles);
+    s = nw(s, { type: 'REQUEST_RECOVERY_V1', bottleId: dose.bottleId }); expect(s.cash).toBe(before - 120); const requested = s.natureWalker.resupply.requestedWeek!;
+    rejectNatureWalker(s, { type: 'RECEIVE_SUPPLY' }); rejectNatureWalker(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: dose.bottleId });
+    s = ready(s, { ap: 2, cash: 30, afterWeek: requested }); const handoverCash = s.cash;
+    s = nw(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: dose.bottleId }); expect(s.cash).toBe(handoverCash - 30);
+    expect(s.natureWalker.bottles).toHaveLength(4); expect(s.natureWalker.bottles.slice(0, 3)).toEqual(originalBottles);
+    expect(s.natureWalker.bottles[3]).toMatchObject({ id: 'nature-walker-recovery-1', status: 'SUPPLIER', labourSteps: 0, acquiredWeek: null, recovery: { originalBottleId: dose.bottleId, characteristicId: 'NW229-CHAR-1' } }); assertValidSliceState(s);
   }, 30_000);
   it('rejects tampered source receipts, random evidence and forgedS1/S0 states', () => {
     for (const mutate of [
