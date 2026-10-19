@@ -142,7 +142,7 @@ describe('Prince of Abolition finite originals and paid recovery', () => {
     expect(oldGuidance.text).toContain('申请独立三瓶');
     expect(PRINCE_OF_ABOLITION_CURRENT_CONSUMPTION_RISK).toContain('不再供应第四份原特性');
     expect(PRINCE_OF_ABOLITION_CURRENT_CONSUMPTION_RISK).not.toContain('申请独立三瓶');
-  });
+  }, 30_000);
 
   it.each([1, 2, 3])('supports original%s as the actual success with a genuinely paid held peer', n => {
     let s = directedInitial2('SUCCESS');

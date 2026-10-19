@@ -181,6 +181,8 @@ describe('ProphecyMaster actual finite omen and inherited original combat', () =
   it('keeps oldLucan70H17S surrendered and hides newOsric beforeS3', () => {
     const s = fixture(); expect(s.mystic.encounter).toMatchObject({ targetId: 'MY4-LUCAN-VEY', enemyHealth: 70, enemySpirituality: 17, enemyStatus: 'SURRENDERED' });
     expect(s.mystic.life.publicDisclosed).toBe(true); expect(currentProphecyMasterCombatSource(s)).toMatchObject({ targetAge: 48, distanceMetres: 4, enemyWeapon: 'PM3-OSRIC-ROD' });
-    s.progression.sequence = 4; const view = projectProphecyMasterCombat(s); expect(view.source).toBeNull(); expect(view.scene).toBeNull(); expect(view.targetId).toBeNull(); expect(JSON.stringify(view)).not.toMatch(/OSRIC|奥斯里克/);
+    s.progression.sequence = 4; const view = projectProphecyMasterCombat(s);
+    expect(view).toEqual({ enemyName: '', targetId: null, enemyMind: null, enemySpirituality: null, powerUses: null, scene: null, summary: '' });
+    expect(view).not.toHaveProperty('source'); expect(JSON.stringify(view)).not.toMatch(/OSRIC|奥斯里克/);
   });
 });
