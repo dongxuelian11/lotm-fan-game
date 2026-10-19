@@ -107,66 +107,71 @@ app
       assert(text.includes("桌面版"));
     } else if (phase === "fixtures") {
       // New fixture slots model the exact domain commit boundaries, never user saves.
-      const { createSliceRun, applySliceIntent, projectSliceState } = require(
+      const {
+        createSliceRun,
+        applySliceIntent,
+        assertValidSliceState,
+        projectSliceState,
+      } = require(
         path.join(root, "dist/domain/slice/index.js"),
       );
-      const states = [];
-      const opening = createSliceRun(
-        "fixture-opening",
-        sliceDefaultCreationSelection,
-        "fixture-seed",
-      );
-      states.push(opening);
-      const bill = structuredClone(opening);
-      bill.runId = "fixture-bill";
-      bill.activeEvent = { id: "LIFE-BILL-01", instanceId: "fixture-bill:1" };
-      bill.cash = 0;
-      bill.actionsRemaining = 0;
-      bill.pulse = "BILL";
-      bill.billAmount = 120;
-      states.push(bill);
-      const combat = structuredClone(opening);
-      combat.runId = "fixture-combat";
-      combat.activeEvent = null;
-      combat.arc.stage = "COMBAT";
-      combat.arc.startWeek = 1;
-      combat.arc.completedAWeek = 1;
-      combat.world.bellFactKnown = true;
-      combat.combat = {
-        round: 1,
-        enemyHealth: 100,
-        enemyMind: 100,
-        enemyInjuries: [],
-        enemyRisk: 0,
-        enemyStatus: "RESISTING",
-        lastRound: null,
-      };
-      const afterRound = applySliceIntent(combat, {
-        type: "COMBAT_ROUND",
-        stance: "DEFEND",
-      });
-      states.push(afterRound);
-      const conclusion = structuredClone(opening);
-      conclusion.runId = "fixture-conclusion";
-      conclusion.activeEvent = { id: "ARC-C", instanceId: "fixture-c:1" };
-      conclusion.arc.stage = "C";
-      conclusion.arc.startWeek = 1;
-      conclusion.arc.completedAWeek = 1;
-      conclusion.world.bellFactKnown = true;
-      states.push(
-        applySliceIntent(conclusion, {
+      const newFixture = (runId) =>
+        createSliceRun(runId, sliceDefaultCreationSelection, "fixture-seed");
+      const choose = (state, choiceId) => {
+        assert(state.activeEvent);
+        return applySliceIntent(state, {
           type: "EVENT_CHOICE",
-          eventInstanceId: "fixture-c:1",
-          choiceId: "C_EVACUATE",
+          eventInstanceId: state.activeEvent.instanceId,
+          choiceId,
+        });
+      };
+      // Follow the ordinary A -> B -> C route used by slice-rules tests.
+      // Commands supply encounter identity, history and all current save fields.
+      const atC = (runId) => {
+        let state = choose(newFixture(runId), ".decline");
+        state = applySliceIntent(state, {
+          type: "ACTION",
+          action: "INVESTIGATE",
+          targetId: "LIFE-LEAD-NIGHTSHIFT",
+        });
+        state = choose(state, "A_LEDGER");
+        state = applySliceIntent(state, { type: "ACTION", action: "WORK" });
+        state = applySliceIntent(state, { type: "ACTION", action: "REST" });
+        state = choose(state, "B_SHARE");
+        state = choose(state, "SKIP");
+        state = applySliceIntent(state, {
+          type: "ACTION",
+          action: "INVESTIGATE",
+          targetId: "ARC-C",
+        });
+        assert.equal(state.activeEvent?.id, "ARC-C");
+        return state;
+      };
+      const states = [newFixture("fixture-opening")];
+      let bill = choose(newFixture("fixture-bill"), ".decline");
+      // Nine rest actions without wages exhaust the opening cash naturally.
+      for (let action = 0; action < 9; action++)
+        bill = applySliceIntent(bill, { type: "ACTION", action: "REST" });
+      assert.equal(bill.activeEvent?.id, "LIFE-BILL-01");
+      states.push(bill);
+      const combat = choose(atC("fixture-combat"), "C_PURSUIT");
+      assert.equal(combat.combat?.encounterId, "FIRST_CASE");
+      states.push(
+        applySliceIntent(combat, {
+          type: "COMBAT_ROUND",
+          stance: "DEFEND",
         }),
       );
-      for (const state of states)
+      states.push(choose(atC("fixture-conclusion"), "C_EVACUATE"));
+      for (const state of states) {
+        assertValidSliceState(state);
         store.repository.transaction(() =>
           store.repository.put({
             state,
             updatedAt: "2026-10-10T00:00:00.000Z",
           }),
         );
+      }
       fs.writeFileSync(evidence, JSON.stringify(states.map(projectSliceState)));
     } else if (phase === "verify-fixtures") {
       const expected = JSON.parse(fs.readFileSync(evidence, "utf8"));
