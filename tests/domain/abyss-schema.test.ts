@@ -1,4 +1,9 @@
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
 import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -13,12 +18,24 @@ import { ABYSS_SOURCE_FILE, ABYSS_SOURCE_COMMAND_COUNT, abyssHash, authenticAbys
   assertAbyssSourceUnmodified } from '../helpers/abyss-scenario.js';
 
 const fresh = (): SliceState => createSliceRun('abyss-schema-run', sliceDefaultCreationSelection, 'abyss-schema-seed');
+const ADDITIVE_ROOTS = ['abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const assertEmptyAdditiveRoots = (state: SliceState): void => {
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+};
 const legacy220 = () => {
-  const { abyss: _root, chained: _chained, ...state } = fresh();
+  const current = fresh();
+  assertEmptyAdditiveRoots(current);
+  const { abyss: _root, chained: _chained, wheelOfFortune: _wheelOfFortune,
+    blackEmperor: _blackEmperor, justiciar: _justiciar, mother: _mother, ...state } = current;
   return { ...state, schemaVersion: 220 as const, contentVersion: 'hanged-man-v220' as const };
 };
 const historicalFields = (state: object) => Object.fromEntries(Object.entries(state)
-  .filter(([key]) => !['schemaVersion', 'contentVersion', 'abyss', 'chained'].includes(key)));
+  .filter(([key]) => !['schemaVersion', 'contentVersion', ...ADDITIVE_ROOTS].includes(key)));
 
 describe('Abyss schema221 exact additive admission', () => {
   it('creates precisely the empty root without granting an owned session', () => {
@@ -30,12 +47,12 @@ describe('Abyss schema221 exact additive admission', () => {
     expect(() => openAbyssRuntimeSession(state)).toThrow();
   });
 
-  it('upgrades original220 by changing only format and adding an explicit empty abyss root', () => {
+  it('upgrades original220 by changing only format and adding explicit empty subsequent roots', () => {
     const source = legacy220(), sourceHash = abyssHash(source), historicalHash = abyssHash(historicalFields(source));
     const current = migrateSliceState(source);
-    assertEmptyChainedState(current);
+    assertEmptyAdditiveRoots(current);
     expect(abyssHash(source)).toBe(sourceHash);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'abyss', 'chained'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), ...ADDITIVE_ROOTS].sort());
     expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.abyss).toStrictEqual(createAbyssState());
     expect(abyssHash(historicalFields(current))).toBe(historicalHash);
