@@ -15,7 +15,7 @@ import { MERCURY_SNAKE_CAPTURE_EVIDENCE as evidence, MERCURY_SNAKE_METADATA_FILE
 import { MERCURY_SNAKE_ROOT as ROOT, MERCURY_SNAKE_SOURCE as SOURCE, MERCURY_SNAKE_PRIOR as PRIOR,
   MERCURY_SNAKE_PREFIX_COUNT as PREFIX, MERCURY_SNAKE_INHERITED_COUNT as INHERITED, MERCURY_SNAKE_SEED as SEED,
   captureMetadata, observedCapture, naturalEntry, sourceEntry, summaryEntry, capturePath, captureFileHash,
-  insertionOrderHash, captureValueHash, captureJsonLines, currentCapture, originalLivingPrefix, capturedState, capturedSnapshot,
+  insertionOrderHash, captureValueHash, captureJsonLines, currentCapture, mercurySnakeReplayExpectation, originalLivingPrefix, capturedState, capturedSnapshot,
   replayCaptureBoundary, captureBody, capturePublicBody, sourceOriginals, currentOriginals, actualLifeAbilityUse, actualCombatAbilityUse,
   assertPublicCaptureControl, assertOriginalContinuity, sameCaptureValue as same } from './mercury-snake-capture-helper.js';
 
@@ -140,16 +140,17 @@ describe.skipIf(evidence.observed === null)('Mercury Snake literal original-seed
         if (transition) {
           const path = capturePath(transition.file); expect(readObjectEntry(path, 'commandCount')).toBe(count); same(readObjectEntry(path, 'lastIntent'), row.intent);
           // Only two live reducer states plus one raw root at a time; retain hashes only.
-          same(before, currentCapture(readObjectEntry(path, 'beforeLast'))); same(state, currentCapture(readObjectEntry(path, 'final')));
+          same(before, mercurySnakeReplayExpectation(currentCapture(readObjectEntry(path, 'beforeLast'))));
+          same(state, mercurySnakeReplayExpectation(currentCapture(readObjectEntry(path, 'final'))));
           stateHashes.set(state.revision, captureValueHash(state));
         }
       }
       expect((await publicRows.next()).done).toBe(true);
     } finally { await publicRows.return(undefined); }
-    expect(count).toBe(expected.commands); expect(state.revision).toBe(842); same(state, capturedState('final'));
+    expect(count).toBe(expected.commands); expect(state.revision).toBe(842); same(state, mercurySnakeReplayExpectation(capturedState('final')));
     same(captureBody(state), expected.final); assertValidSliceState(state); assertOriginalContinuity(state, original);
     for (const filename of new Set(Object.values(snapshots))) {
-      const saved = currentCapture(JSON.parse(readFileSync(capturePath(filename), 'utf8')));
+      const saved = mercurySnakeReplayExpectation(currentCapture(JSON.parse(readFileSync(capturePath(filename), 'utf8'))));
       expect(captureValueHash(saved), filename).toBe(stateHashes.get(saved.revision));
     }
     same(naturalEntry('creation'), sourceEntry('creation')); same(naturalEntry('strategy'), expected.strategy); same(naturalEntry('provenance'), expected.provenance);

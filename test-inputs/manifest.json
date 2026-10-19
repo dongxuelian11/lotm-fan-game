@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.225.0",
+  "version": "0.226.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -1403,6 +1403,29 @@
         "tests/fixtures/chained-v02250/runtime-freeze.json",
         "tests/fixtures/chained-v02250/source-natural.json.gz",
         "tests/fixtures/chained-v02250/summary.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.226.0_wheel_of_fortune_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 7245356,
+      "sha256": "1a067b97bad176a1b0af109980bc839f2aa3aa411f75c6a4a173c110c9dca5df",
+      "members": [
+        "tests/fixtures/wheel-of-fortune-v02260/checkpoint.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/commands.jsonl",
+        "tests/fixtures/wheel-of-fortune-v02260/key-841-initial.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/key-857-periodic.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/key-873-periodic.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/key-889-periodic.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/key-905-periodic.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/key-914-before-consume.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/key-915-after-consume.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/key-921-periodic.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/key-929-terminal.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/producer-tests.mjs",
+        "tests/fixtures/wheel-of-fortune-v02260/producer.mjs",
+        "tests/fixtures/wheel-of-fortune-v02260/runtime-freeze.json",
+        "tests/fixtures/wheel-of-fortune-v02260/source-natural.json.gz",
+        "tests/fixtures/wheel-of-fortune-v02260/summary.json"
       ]
     }
   ],
@@ -35331,6 +35354,86 @@
       "path": "tests/fixtures/chained-v02250/summary.json",
       "bytes": 4799,
       "sha256": "b902833aa0285856b4e48d2654558a95710b0a61b579b4e13ac3dba11e092800"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/checkpoint.json.gz",
+      "bytes": 400053,
+      "sha256": "3bcaf737826d03bf19b5d562a8b4d0a3803289140821a70eabfc1e3c71399f0b"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/commands.jsonl",
+      "bytes": 494207,
+      "sha256": "72560ded310f47c4743546a7ded6d2e966a6452478eedc521a1e2eed2f0ff705"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-841-initial.json.gz",
+      "bytes": 650157,
+      "sha256": "c1402a2f3eb2b7d2170db14c552cb67e6373dfb2dcd285d11a7389ba45300c04"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-857-periodic.json.gz",
+      "bytes": 666633,
+      "sha256": "6ab22da3d0f2cb011fd17d80f855305ca3844666d069c24f06e8a2a8912caeac"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-873-periodic.json.gz",
+      "bytes": 670613,
+      "sha256": "356885872193e43b72e3c656f1a9452e628d822c70335fcc86c7bdd823cec4db"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-889-periodic.json.gz",
+      "bytes": 673348,
+      "sha256": "a4ef459fa6ad66ae0992baa123c479602d0da70c1d1ef66ac04ee127a073add5"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-905-periodic.json.gz",
+      "bytes": 679279,
+      "sha256": "910fc0684c55c97d2902bf237f6c0e5800c800fcb5fd316124789ed52b5df2fd"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-914-before-consume.json.gz",
+      "bytes": 681874,
+      "sha256": "f0110d41041c07a4c919e57e768d4e37325c2d0a6b1fceb283f5bc2a6144f864"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-915-after-consume.json.gz",
+      "bytes": 682523,
+      "sha256": "feea9697b76b53d0bab54e3f360a95bdd809024a59778d5c1ba16517290b870c"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-921-periodic.json.gz",
+      "bytes": 684912,
+      "sha256": "7d0d385ce10b9f392d295ed1f0d550cdca845720437525cfec960eb898d93253"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/key-929-terminal.json.gz",
+      "bytes": 687476,
+      "sha256": "2f09c87c5a5818f58c512dd68da1bba95b14a889dff05e8982f309f978a36d80"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/producer-tests.mjs",
+      "bytes": 7642,
+      "sha256": "42b7c3ab2cd5078403163391780a5d0f862c2c803aa60623c512b19299b76c97"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/producer.mjs",
+      "bytes": 37006,
+      "sha256": "def8dfaf30110b4077d21d274e6f8090780b2a826066be4600fdb24698240dba"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/runtime-freeze.json",
+      "bytes": 676378,
+      "sha256": "5bf4203d66230058922dd566e31b1e5622f98e965e265415c19b33176783b8a1"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/source-natural.json.gz",
+      "bytes": 992431,
+      "sha256": "88d41c00c0a8dc9b7b039733b3b859f98d8f03a84568b8bc4077f7e5cb723d46"
+    },
+    {
+      "path": "tests/fixtures/wheel-of-fortune-v02260/summary.json",
+      "bytes": 5514,
+      "sha256": "36ac7c4ad4642d48862066e2d5bc51e1dc55428e310898acb53da6fba4d6209f"
     }
   ]
 }
