@@ -5,6 +5,8 @@ import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-
 import { assertEmptyDeathState, assertEmptyDoorState, assertEmptyDoorPublic } from './empty-death-capture.js';
 import { assertEmptyErrorAscentState, assertEmptyErrorAscentPublic } from './empty-error-ascent-capture.js';
 import { assertEmptyTwilightGiantState, assertEmptyTwilightGiantPublic } from './empty-twilight-giant-capture.js';
+import { assertEmptyHermitState, assertEmptyHermitPublic } from './empty-hermit-capture.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from './empty-hanged-man-capture.js';
 
 /** Test-only exact historical audit seams, never a production migration.
  * Only these three published formats are supported. Callers authenticate the
@@ -49,9 +51,9 @@ const EARLY_EMPTY_ROOTS = {
   moon: EMPTY_MOON, darkness: EMPTY_DARKNESS, whiteTower: EMPTY_WHITE_TOWER,
   tyrant: EMPTY_TYRANT, sun: EMPTY_SUN,
 };
-const FOOL_ADDITIONS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
-const VISIONARY_ADDITIONS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
-const PERFECTER_ADDITIONS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
+const FOOL_ADDITIONS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan'] as const;
+const VISIONARY_ADDITIONS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan'] as const;
+const PERFECTER_ADDITIONS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan'] as const;
 type AddedRoot = typeof FOOL_ADDITIONS[number];
 
 function exactView(current: SliceState, originalKeys: readonly string[], additions: readonly AddedRoot[],
@@ -63,7 +65,8 @@ function exactView(current: SliceState, originalKeys: readonly string[], additio
   // Exact keys FIRST: an unknown/extra key, even undefined, must never disappear.
   assert.deepEqual(Object.keys(current).sort(), [...originalKeys, ...additions].sort());
   assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current); assertEmptyTwilightGiantState(current); assertEmptyDemonessState(current);
-  for (const root of additions) if (root !== 'death' && root !== 'door' && root !== 'errorAscent' && root !== 'twilightGiant' && root !== 'demoness') {
+  assertEmptyHermitState(current); assertEmptyHangedManState(current);
+  for (const root of additions) if (root !== 'death' && root !== 'door' && root !== 'errorAscent' && root !== 'twilightGiant' && root !== 'demoness' && root !== 'hermit' && root !== 'hangedMan') {
     assert.equal(Object.hasOwn(current, root), true);
     assert.deepEqual(current[root], EARLY_EMPTY_ROOTS[root]);
   }
@@ -86,13 +89,16 @@ export function historicalPerfecterStateForEmptyRootAudit(current: SliceState, h
   return exactView(current, Object.keys(historical), PERFECTER_ADDITIONS, [208, 'perfecter-v208']);
 }
 
-/** Remove only these FOUR independently pinned empty public roots. All other public
+/** Remove only these SIX independently pinned empty public roots. All other public
  * fields, including unknown additions, stay in the caller's complete hash. */
-export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'> {
+export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan'> {
   assertEmptyDoorState(state); assertEmptyDoorPublic(projection, state);
   assertEmptyErrorAscentState(state); assertEmptyErrorAscentPublic(projection, state);
   assertEmptyTwilightGiantState(state); assertEmptyTwilightGiantPublic(projection, state);
   assertEmptyDemonessState(state); assertEmptyDemonessPublic(projection, state);
-  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...allOtherFields } = historicalInactiveCalamitySourcePublic(projection, state);
+  assertEmptyHermitState(state); assertEmptyHermitPublic(projection, state);
+  assertEmptyHangedManState(state); assertEmptyHangedManPublic(projection, state);
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, ...allOtherFields } = historicalInactiveCalamitySourcePublic(projection, state);
   return allOtherFields;
 }
