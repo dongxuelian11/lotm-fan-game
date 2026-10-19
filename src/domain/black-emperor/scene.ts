@@ -44,6 +44,7 @@ export function blackEmperorSceneBlock(s:BlackEmperorScene,c:BlackEmperorCommand
  if(c.type==='PREPARE_FESTIVAL')return h.sequence!==1?'已经晋升，无须再次举行晋升祭祀。':blackEmperorRitualBlock(s,h)??(!h.dosePrepared?'先携同一三份特性与唯一性配成的成药到议事所。':festival&&!festival.consumedEventId&&(festival.opportunityWeek===null||festival.opportunityWeek===h.week)?'这次祭祀已备妥，须实际举行或完成本次尝试。':s.realm.cities.some(x=>!stock(x,FESTIVAL.cashPerCity,0,0,FESTIVAL.foodPerCity,FESTIVAL.labourDaysPerCity))?'三城所余有限祭祀物资不足，不能凭空补发。':requireCost(h,1,FESTIVAL.personalCash));
  if(c.type==='HOLD_FESTIVAL')return blackEmperorRitualBlock(s,h)??(!festival?'先真实购买并分发三城本次祭祀的有限物资。':festival.heldEventId?'这次祭祀已经真实举行，不能把过去参与当新机会。':!h.dosePrepared?'本人须携同一成药准备参加。':null);
  if(c.type==='ENTER_MAUSOLEUM')return blackEmperorRitualBlock(s,h)??(!t||t.stage!==3||t.integrity!==100?'须选择一座真实完好陵寝。':!festival?.heldEventId||festival.opportunityWeek!==h.week||festival.consumedEventId?'本人须在这次真实多城祭祀的当周进入。':s.playerPosition==='MAUSOLEUM'?'本人已经实际在陵内。':null);
+ if(c.type==='REPORT_RETURN'&&h.sequence===1)return !h.canCloseUnpromoted?'仍有真实材料或本次祭祀可用，可继续筹备；普通返程始终可用。':s.playerPosition!=='OUTSIDE'||s.contact?'先沿普通路线实际退出并结束接触。':requireCost(h,1);
  if(h.sequence!==0)return '先完成真实国度仪式并实际晋升，才能进入有限市政设施现场。';
  if(c.type==='START_PRACTICE')return s.phase==='PRACTICE'?'该设施现场已经开启。':s.playerPosition!=='OUTSIDE'?'先沿普通陵道实际走回室外。':!s.exit.inspectedEventId?'先核对普通停机与退出路线。':requireCost(h,0);
  if(s.phase!=='PRACTICE')return '先开启一个有限市政设施现场。';
@@ -99,9 +100,9 @@ export function applyBlackEmperorScene(s0:BlackEmperorScene,c:BlackEmperorComman
  else if(c.type==='WAIT_10'){e.seconds=10;notes.push('真实经过十秒，已经发生的费用、位置与身体不回退。');}
  else if(c.type==='WALK_EXIT'){move('PLAYER','FACILITY','OUTSIDE',4);closeWindow();notes.push('本人沿普通四米通道走到室外，成本和已启动机构保留。');}
  else if(c.type==='CLOSE_EXIT'){s.exit.door='CLOSED';e.seconds=2;notes.push('确认所有成年人实际在室外后，关闭同一设施门。');}
- else if(c.type==='REPORT_RETURN'){e.actions=1;e.seconds=30;s.status='COMPLETED';s.returnReportEventId=h.eventId;for(const w of s.workers)w.consent='CLOSED';notes.push('如实报告这一个市政设施现场并结束本轮；两项应用可成功、失败或普通完成，实际伤势、物件、费用和三城既成国度继续保留。');}
+ else if(c.type==='REPORT_RETURN'){e.actions=1;e.seconds=30;s.status=h.sequence===0?'COMPLETED':'ABORTED';s.returnReportEventId=h.eventId;for(const w of s.workers)w.consent='CLOSED';notes.push(h.sequence===0?'如实报告这一个市政设施现场并结束本轮；两项应用可成功、失败或普通完成，实际伤势、物件、费用和三城既成国度继续保留。':'有限载体或本次祭祀物资已实际用尽，本人沿普通道路退出并如实报告，结束本轮晋升筹备。没有晋升、没有补发；原国度、材料残余、伤势与全部费用继续保留。');}
  const end=h.second+e.seconds;if(s.window&&s.window.expiresAt<end)s.window=null;
- if(d.pendingImpact&&d.impactDueSecond!==null&&d.impactDueSecond<=end){d.pendingImpact=false;d.impactResolvedEventId=h.eventId;d.version++;d.impactDamage=s.playerPosition==='FACILITY'?8:0;e.health+=d.impactDamage;notes.push(`同一冲击已经实际落定；${d.impactDamage?'本人仍在机构旁，损失8健康':'本人在普通安全位置，没有受到冲击'}，不会生成第二次冲击。`);}
+ if(d.pendingImpact&&d.impactDueSecond!==null&&d.impactDueSecond<=end){d.pendingImpact=false;d.impactResolvedEventId=h.eventId;d.version++;const stillInsideAtImpact=s.playerPosition==='FACILITY'||s0.playerPosition==='FACILITY'&&s.playerPosition==='OUTSIDE'&&d.impactDueSecond<end;d.impactDamage=stillInsideAtImpact?8:0;e.health+=d.impactDamage;notes.push(`同一冲击已经实际落定；${d.impactDamage?'本人仍在机构旁，损失8健康':'本人在普通安全位置，没有受到冲击'}，不会生成第二次冲击。`);}
  s.receipts.push({eventId:h.eventId,kind:c.type,actorId:h.actorId,position:s.playerPosition,targetVersion:d.version});return{state:s,effect:e,notes};
 }
 export function desiredBlackEmperorSceneCommand(s:BlackEmperorScene,h:BlackEmperorSceneHost):BlackEmperorCommand|null {
@@ -124,6 +125,7 @@ export function blackEmperorSceneActions(s:BlackEmperorScene,h:BlackEmperorScene
  add({type:'PREPARE_FESTIVAL'},'实付筹备新一场多城祭祀','1行动、本人30便士；三城各150便士、600份供物、180工日');add({type:'HOLD_FESTIVAL'},'亲历三城居民实际举行祭祀','0行动、一小时；消耗本次已筹备祭祀');
  if(s.playerPosition!=='MAUSOLEUM')for(const t of blackEmperorAllTombs(s).filter(x=>x.stage===3&&x.integrity===100))add({type:'ENTER_MAUSOLEUM',tombId:t.id},`沿墓道真实进入${t.title}`,'0行动、300米、五分钟');
  if(s.playerPosition==='MAUSOLEUM')add({type:'LEAVE_MAUSOLEUM'},'沿普通墓道真实退出','0行动、300米、五分钟');
+ if(h.sequence===1&&h.canCloseUnpromoted)add({type:'REPORT_RETURN'},'如实报告有限物资用尽并普通结束本轮','1行动、三十秒；保留国度、材料、身体与全部费用');
  if(h.sequence===0){const specs:[BlackEmperorCommand['type'],string,string][]=[['START_PRACTICE','开启有限市政设施现场','0行动、三十秒'],['INSPECT_DEVICE','检查绞盘、反制闩与停机杆','0行动、一分钟'],['BUY_TOOLS','实购普通绳索与垫木','0行动、30便士'],['ASK_WORKERS','询问两名成年工人并实付当次工时','0行动、20便士'],['WITHDRAW_WORKERS','撤回本轮成年人许可','0行动；未落冲击仍继续'],['EXIT_WORKERS','两名成年工人分别普通退出','0行动、四米、四秒'],['APPROACH','本人和工人步行到设施旁','0行动、四米、四秒'],['SECURE_LOAD','以普通绳索实际固定原载荷','0行动、实用已购支撑、五秒'],['DISTORT_ORDER','为本次待释放载荷扭曲局部路径','1行动、12灵性、5精神；20秒窗口'],['RELEASE_LOAD','实际释放同一原载荷','0行动、两秒；未固定主槽可能损6健康'],['ARM_IMPACT','启动同一待落冲击','0行动、一秒；十秒后实际落定'],['DELAY_IMPACT','尝试把同一待落冲击延后二十秒','1行动、12灵性、5精神；仅一次'],['WAIT_10','实际等待十秒','0行动、十秒'],['STOP_MECHANISM','拉动普通停机杆并锁住机构','0行动、一秒；室内外均可'],['STOP_METHOD','停止待用技巧窗口','0行动；已延迟冲击不消失'],['END_CONTACT','结束现场接触','0行动'],['WALK_EXIT','本人普通步行退出','0行动、四米、四秒'],['CLOSE_EXIT','确认成年人退出后关闭设施门','0行动、两秒'],['REPORT_RETURN','如实报告并结束本轮','1行动、三十秒']];for(const [type,label,cost]of specs)add({type}as BlackEmperorCommand,label,cost);}
  return a;
 }

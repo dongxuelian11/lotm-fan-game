@@ -34,8 +34,8 @@ export function blackEmperorSourceBlock(s: SliceState): string | null {
   if (!validatePrinceOfAbolitionState(s) || s.princeOfAbolition.promotionWeek === null) return '原晋升、原人物与实际履历未通过核验。';
   const life = s.princeOfAbolition.life;
   if (s.progression.acting !== 100 || !life.reflected || !PRINCE_OF_ABOLITION_CASE_IDS.every(id => {
-    const c = life.cases[id];
-    return c.status === 'RESOLVED' && c.returned && !c.contactOpen && c.attempts.length > 0 && c.attempts.every(a => a.closed && a.returned && a.verified && a.landed && a.retrieved) && life.journal.some(e => e.command.type === 'REPORT' && e.command.caseId === id);
+    const c = life.cases[id], last = c.attempts.at(-1);
+    return c.status === 'RESOLVED' && c.returned && !c.contactOpen && c.attempts.length > 0 && !!last && last.closed && last.returned && last.verified && last.landed && last.retrieved && life.journal.some(e => e.command.type === 'REPORT' && e.command.caseId === id);
   }) || !life.journal.some(e => e.command.type === 'REFLECT')) return '先完成弑序亲王三案的真实报告、反思与完整消化；普通完成同样有效。';
   if (hasPrinceOfAbolitionLock(s) || hasPrinceOfAbolitionOldPractice(s) || s.combat || s.activeEvent || s.eventQueue.length || s.pulse !== 'NONE') return '先停止旧能力、归还原物并结束旧现场的接触。';
   const site = getPrinceOfAbolitionCurrentSite(s), operation = life.operation;

@@ -58,8 +58,15 @@ export function blackEmperorConstructionPersonalCost(root:BlackEmperorState,week
   total+=cash-result.state.cash;finance={...finance,lifeTier:result.state.nextLifeTier,nextLifeTier:result.state.nextLifeTier,debts:clone(result.state.debts),missedWeeks:result.state.missedWeeks,credit:result.state.credit};week++;
  }return total;
 }
+export function blackEmperorRouteExhausted(root:BlackEmperorState):boolean {
+ const m=root.materials!,scene=root.scene!,b=root.frame!.budget,festival=blackEmperorCurrentFestival(scene);
+ if(b.sequence!==1)return false;
+ if(!m.carriers.some(x=>x.status!=='SPENT')&&!m.compounds.some(x=>['PREPARED','FAILED_EXPOSED','FAILED_SEALED'].includes(x.status)))return true;
+ const currentUsable=festival&&!festival.consumedEventId&&(!festival.heldEventId||festival.opportunityWeek===b.week);
+ return !!scene.realm.charterEventId&&!currentUsable&&scene.realm.cities.some(c=>c.stocks.cash<150||c.stocks.food<600||c.stocks.labourDays<180);
+}
 export function blackEmperorHost(root:BlackEmperorState,eventId:string,revision:number):BlackEmperorSceneHost{
- const f=root.frame!,b=f.budget;return {eventId,revision,week:b.week,second:f.nowSecond,actorId:root.source!.actorId,sequence:b.sequence,actions:b.actions,cash:b.cash,health:b.health,mind:b.mind,spirituality:b.spirituality,dosePrepared:root.materials!.compounds.some(p=>p.status==='PREPARED'&&p.location===f.location),mature:b.week-root.source!.acquisition.promotionWeek>=BLACK_EMPEROR_MIN_PRINCE_OF_ABOLITION_WEEKS,actualName:root.source!.character.name,constructionPersonalCost:blackEmperorConstructionPersonalCost(root)};
+ const f=root.frame!,b=f.budget;return {eventId,revision,week:b.week,second:f.nowSecond,actorId:root.source!.actorId,sequence:b.sequence,actions:b.actions,cash:b.cash,health:b.health,mind:b.mind,spirituality:b.spirituality,dosePrepared:root.materials!.compounds.some(p=>p.status==='PREPARED'&&p.location===f.location),mature:b.week-root.source!.acquisition.promotionWeek>=BLACK_EMPEROR_MIN_PRINCE_OF_ABOLITION_WEEKS,actualName:root.source!.character.name,constructionPersonalCost:blackEmperorConstructionPersonalCost(root),canCloseUnpromoted:blackEmperorRouteExhausted(root)};
 }
 function preparation(root:BlackEmperorState,compoundId:string):BlackEmperorPreparation|null {
  const f=root.frame!,p=root.materials!.compounds.find(x=>x.id===compoundId);
@@ -129,6 +136,16 @@ function elapse(root:BlackEmperorState,seconds:number,revision:number,eventId:st
   b.cash=result.state.cash;const{nextLifeTier,debts,missedWeeks,credit}=result.state;Object.assign(f.finance,{lifeTier:nextLifeTier,nextLifeTier,debts:clone(debts),missedWeeks,credit});b.week++;b.date=addGameWeeks(b.date,1);b.actions=f.finance.weeklyBudget;f.weekAnchor+=604800;
  }
  f.nowSecond=target;
+ // Time continues after an ordinary exit: work, travel and weekly settlement
+ // cannot freeze or retroactively cancel an already started physical impact.
+ const scene=root.scene,device=scene?.facility;
+ if(scene&&device?.pendingImpact&&device.impactDueSecond!==null&&device.impactDueSecond<=target){
+  device.pendingImpact=false;device.impactResolvedEventId=eventId;device.version++;
+  device.impactDamage=scene.playerPosition==='FACILITY'?8:0;
+  if(device.impactDamage)pay(b,{health:device.impactDamage});
+  receipts.push({title:'已启动冲击实际落定',text:device.impactDamage?'真实经过冲击时点，本人仍未离开设施，健康减少8；不能事后停机撤销。':'真实经过冲击时点，同一冲击在本人离开后的设施内落定；没有冻结或重新生成。'});
+ }
+ if(scene?.window&&scene.window.expiresAt<target)scene.window=null;
 }
 function reduce(root:BlackEmperorState,c:BlackEmperorCommand,revision:number):BlackEmperorEvent {
  const reason=commandBlock(root,c,revision);need(reason===null,reason??'当前无法行动。');

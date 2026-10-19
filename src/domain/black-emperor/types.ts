@@ -114,7 +114,7 @@ export interface BlackEmperorState {
 }
 export interface BlackEmperorSceneHost {
   eventId: string; revision: number; week: number; second: number; actorId: string; sequence: 1 | 0;
-  actions: number; cash: number; health: number; mind: number; spirituality: number; dosePrepared: boolean; mature: boolean; actualName: string; constructionPersonalCost: number;
+  actions: number; cash: number; health: number; mind: number; spirituality: number; dosePrepared: boolean; mature: boolean; actualName: string; constructionPersonalCost: number; canCloseUnpromoted: boolean;
 }
 export interface BlackEmperorEffect { actions: number; cash: number; spirituality: number; mind: number; health: number; seconds: number; mastery?: string[] }
 export interface BlackEmperorAction { id: string; label: string; cost: string; command: BlackEmperorCommand; enabled: boolean; reason: string | null; preferredAction?: boolean }

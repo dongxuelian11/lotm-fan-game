@@ -2,7 +2,7 @@ import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
 import type { BlackEmperorState, BlackEmperorCommand, BlackEmperorProjection, BlackEmperorPlaceId } from './types.js';
-import { createBlackEmperorState,startBlackEmperor,sameBlackEmperor,blackEmperorDigest,validateBlackEmperorCommand,openBlackEmperorOwnedEngine,snapshotBlackEmperorOwnedEngine,advanceBlackEmperorOwnedEngine,blockBlackEmperorOwnedEngine,getBlackEmperorPromotionStabilityPreview,blackEmperorInsideCase,blackEmperorHost,blackEmperorConstructionPersonalCost,blackEmperorConsumeBlock,type BlackEmperorOwnedEngine } from './engine.js';
+import { createBlackEmperorState,startBlackEmperor,sameBlackEmperor,blackEmperorDigest,validateBlackEmperorCommand,openBlackEmperorOwnedEngine,snapshotBlackEmperorOwnedEngine,advanceBlackEmperorOwnedEngine,blockBlackEmperorOwnedEngine,getBlackEmperorPromotionStabilityPreview,blackEmperorInsideCase,blackEmperorHost,blackEmperorConstructionPersonalCost,blackEmperorConsumeBlock,blackEmperorRouteExhausted,type BlackEmperorOwnedEngine } from './engine.js';
 import { blackEmperorBudget,blackEmperorHistoryDigest,blackEmperorAcquisitionSnapshot,blackEmperorSourceBlock } from './source.js';
 import { BLACK_EMPEROR_ABILITIES,BLACK_EMPEROR_STORY,BLACK_EMPEROR_GOAL,BLACK_EMPEROR_RISK,BLACK_EMPEROR_PLACES,BLACK_EMPEROR_PRACTICE_COSTS,BLACK_EMPEROR_GUIDANCE } from './content.js';
 import { PRINCE_OF_ABOLITION_ABILITIES,PRINCE_OF_ABOLITION_INHERITED_ABILITIES } from '../prince-of-abolition/content.js';
@@ -80,6 +80,7 @@ export function desiredBlackEmperorCommand(root:BlackEmperorState):BlackEmperorC
  if(b.sequence===0){if(f.location!==BLACK_EMPEROR_HOME)return{type:'RETURN_ON_FOOT'};if(scene.phase==='REALM'&&b.actions<3)return earn();const next=sceneNext();if(next?.type==='BUY_TOOLS'&&b.cash<30||next?.type==='ASK_WORKERS'&&b.cash<20)return earn();return next;}
  const failed=m.compounds.find(p=>p.status==='FAILED_EXPOSED'||p.status==='FAILED_SEALED');
  if(failed){if(failed.status==='FAILED_SEALED'&&(b.week<=failed.sealedWeek!||f.nowSecond<failed.sealedSecond!+604800))return earn();if(failed.status==='FAILED_SEALED'&&b.cash<60)return earn();return at(failed.location,{type:failed.status==='FAILED_EXPOSED'?'SEAL_REMAINS':'RECOVER_REMAINS',compoundId:failed.id});}
+ if(blackEmperorRouteExhausted(root))return at(BLACK_EMPEROR_HOME,{type:'REPORT_RETURN'});
  if(!scene.exit.inspectedEventId)return at(BLACK_EMPEROR_HOME,{type:'INSPECT_EXIT'},0);
  const task=scene.realm.cities.find(c=>!c.taskEventId);if(task)return b.cash<20?earn():at(BLACK_EMPEROR_HOME,{type:'SOLVE_CITY_TASK',cityId:task.id});
  if(!scene.realm.charterEventId)return b.cash<30?earn():at(BLACK_EMPEROR_HOME,{type:'FOUND_REALM'});
@@ -135,7 +136,7 @@ function projection(s:SliceState,head:BlackEmperorOwnedEngine|null):BlackEmperor
  const wanted=desiredBlackEmperorCommand(root);let preferred=wanted?result.actions.find(a=>sameBlackEmperor(a.command,wanted)&&a.enabled):null;
  if(!preferred&&wanted&&!blackEmperorInsideCase(root)&&b.status==='ACTIVE'){if(b.actions>0&&f!.finance.wagePaidWeek!==b.week)preferred=result.actions.find(a=>a.command.type==='WORK'&&a.enabled);else preferred=result.actions.find(a=>a.command.type==='NEXT_WEEK'&&a.enabled);}
  if(preferred){preferred.preferredAction=true;result.nextStep=`下一步：${preferred.label}。${preferred.cost}。`;}
- if(scene.returnReportEventId){result.nextStep='本轮已真实退出并报告。三城国度、九座完好陵寝、实际晋升与全部费用和伤势保留。';result.story=`${s.character.name}已拥有同一九万人国度；人民建成九座金字塔式陵寝，完成多城多数祭祀，本人已实际晋升并结束一个有限市政设施现场。`;}
+ if(scene.returnReportEventId){result.nextStep=promoted?'本轮已真实退出并报告。三城国度、九座完好陵寝、实际晋升与全部费用和伤势保留。':'本轮有限物资已用尽，已普通退出并如实报告；未晋升，国度、同一材料、身体与费用均保留。';result.story=promoted?`${s.character.name}已拥有同一九万人国度；人民建成九座金字塔式陵寝，完成多城多数祭祀，本人已实际晋升并结束一个有限市政设施现场。`:`${s.character.name}已结束本轮有限筹备。三城的实际任务、主权、建筑、材料残余与旧祭祀按真实记录保留，没有凭空补发物资。`;}
  if(b.status!=='ACTIVE')result.nextStep='本次周目已经死亡并封存，不能继续行动或重新取得材料。';
  return result;
 }

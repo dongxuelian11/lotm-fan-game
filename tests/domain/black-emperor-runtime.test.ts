@@ -6,7 +6,7 @@ import type { BlackEmperorState } from '../../src/domain/black-emperor/types.js'
 import { openBlackEmperorRuntimeSession } from '../../src/domain/black-emperor/owned-session.js';
 import { createBlackEmperorState, validateBlackEmperorState, validateBlackEmperorCommand } from '../../src/domain/black-emperor/index.js';
 import { BLACK_EMPEROR_ABILITY_IDS, BLACK_EMPEROR_CITIES, BLACK_EMPEROR_CONSTRUCTION, BLACK_EMPEROR_ORIGINAL_IDS } from '../../src/domain/black-emperor/content.js';
-import { blackEmperorConsumeBlock, blackEmperorHost } from '../../src/domain/black-emperor/engine.js';
+import { blackEmperorConsumeBlock, blackEmperorHost, blackEmperorRouteExhausted } from '../../src/domain/black-emperor/engine.js';
 import { applyBlackEmperorScene, blackEmperorSceneBlock } from '../../src/domain/black-emperor/scene.js';
 import { assertBlackEmperorSourceUnmodified, controlledBlackEmperorRolls, executeBlackEmperor, blackEmperorHash,
   blackEmperorInheritedHash, blackEmperorPublicLeaks, preparedBlackEmperorScenario } from '../helpers/black-emperor-scenario.js';
@@ -17,7 +17,7 @@ beforeAll(() => { restore = controlledBlackEmperorRolls(rolls); route = prepared
 afterAll(() => { restore?.(); assertBlackEmperorSourceUnmodified(); });
 
 describe('BlackEmperor227 original924 body, real three-city country and owned runtime', () => {
-  it('pays from the injured original140, completes three mandates and spends27 real weeks building nine independent tombs', () => {
+  it('pays from the injured original 140, completes three mandates and spends 27 real weeks building nine independent tombs', () => {
     const { source, guided, beforeConsume: state, commands } = route, root = state.blackEmperor, scene = root.scene!, materials = root.materials!;
     expect(guided.cash).toBe(120); expect(guided.actionsRemaining).toBe(0);
     expect(guided.health).toBe(80); expect(guided.mind).toBe(71); expect(guided.spirituality).toBe(97);
@@ -181,7 +181,7 @@ describe('BlackEmperor227 original924 body, real three-city country and owned ru
     expect(() => outside.prepare({ type: 'BLACK_EMPEROR', command: { type: 'CONSUME', compoundId: root.materials!.compounds[0]!.id, confirmed: true } }, outside.inspect().revision)).toThrow();
   }, 300_000);
 
-  it('uses one paid70 draw, two bounded municipal effects with resistance and an ordinary return', () => {
+  it('uses one paid 70% draw, two bounded municipal effects with resistance and an ordinary return', () => {
     const before = route.beforeConsume;
     const promoted = executeBlackEmperor(route.session, { type: 'CONSUME', compoundId: before.blackEmperor.materials!.compounds[0]!.id, confirmed: true });
     expect(promoted.progression).toMatchObject({ pathwayId: 'black-emperor', sequence: 0, acting: 0 });
@@ -202,6 +202,25 @@ describe('BlackEmperor227 original924 body, real three-city country and owned ru
         const withdrawn = structuredClone(scene); withdrawn.workers[0]!.consent = 'WITHDRAWN';
         expect(blackEmperorSceneBlock(withdrawn, command, blackEmperorHost(current.blackEmperor, 'withdrawn', current.revision + 1))).not.toBeNull();
         if (command.type === 'DISTORT_ORDER') distortion = true; else delay = true;
+      }
+      if (command.type === 'DELAY_IMPACT') {
+        // Same actual pending impact: leaving safely does not freeze its clock.
+        const outsideClock = openBlackEmperorRuntimeSession(current);
+        executeBlackEmperor(outsideClock, { type: 'EXIT_WORKERS' });
+        const outside = executeBlackEmperor(outsideClock, { type: 'WALK_EXIT' });
+        expect(outside.blackEmperor.scene!.facility.pendingImpact).toBe(true);
+        expect(outside.blackEmperor.scene!.facility.impactDueSecond! - outside.blackEmperor.frame!.nowSecond).toBe(1);
+        const travelled = executeBlackEmperor(outsideClock, { type: 'TRAVEL', to: 'BE227-WORKSHOP' });
+        expect(travelled.blackEmperor.scene!.facility.pendingImpact).toBe(false);
+        expect(travelled.blackEmperor.scene!.facility.impactResolvedEventId).toBeTruthy();
+        expect(travelled.blackEmperor.scene!.facility.impactDamage).toBe(0);
+        expect(travelled.health).toBe(outside.health);
+        // Isolated timing boundary: an exit finishing after impact cannot erase harm.
+        const lateExit = structuredClone(scene), host = blackEmperorHost(current.blackEmperor, 'late-ordinary-exit', current.revision + 1);
+        lateExit.facility.impactDueSecond = host.second + 1;
+        const late = applyBlackEmperorScene(lateExit, { type: 'WALK_EXIT' }, host, () => { throw Error('Walking needs no draw'); });
+        expect(late.effect.health).toBe(8); expect(late.state.facility.pendingImpact).toBe(false);
+        expect(late.state.facility.impactResolvedEventId).toBe('late-ordinary-exit');
       }
       if (command.type === 'RELEASE_LOAD' || command.type === 'DELAY_IMPACT') {
         const host = blackEmperorHost(current.blackEmperor, 'resisted-effect', current.revision + 1);
@@ -257,6 +276,13 @@ describe('BlackEmperor227 original924 body, real three-city country and owned ru
       expect(state.blackEmperor.materials!.originals[2]!.holder).toBe('EMBODIED');
       expect(state.blackEmperor.materials!.uniqueness.holder).toBe('EXPOSED');
       expect(state.blackEmperor.scene!.festivals.find(festival => festival.id === state.blackEmperor.scene!.activeFestivalId)!.consumedEventId).toBeTruthy();
+      expect(state.blackEmperor.scene!.playerPosition).toBe('MAUSOLEUM');
+      expect(() => failed.prepare({ type: 'BLACK_EMPEROR', command: { type: 'NEXT_WEEK' } }, state.revision)).toThrow();
+      expect(failed.projectBlackEmperor().actions.find(action => action.preferredAction)?.command.type).toBe('LEAVE_MAUSOLEUM');
+      const outside = executeBlackEmperor(failed, { type: 'LEAVE_MAUSOLEUM' });
+      expect(outside.blackEmperor.scene!.playerPosition).toBe('OUTSIDE');
+      expect(outside.health).toBe(state.health); expect(outside.mind).toBe(state.mind);
+      expect(outside.injuries).toEqual(state.injuries); expect(outside.seer.pollution).toBe(state.seer.pollution);
       let recovered = false;
       for (let step = 0; step < 120; step++) {
         const current = failed.snapshot();
@@ -280,6 +306,18 @@ describe('BlackEmperor227 original924 body, real three-city country and owned ru
       expect(root.scene!.constructionReceipts).toEqual(before.blackEmperor.scene!.constructionReceipts);
       expect(blackEmperorInheritedHash(recoveredState)).toBe(blackEmperorInheritedHash(route.source));
       expect(validateBlackEmperorState(recoveredState)).toBe(true);
+      // Isolated finite-stock boundary only, not a forged persisted campaign.
+      const exhausted = structuredClone(root);
+      exhausted.materials!.carriers.forEach(carrier => { carrier.status = 'SPENT'; });
+      expect(blackEmperorRouteExhausted(exhausted)).toBe(true);
+      const exhaustedMaterials = blackEmperorHash(exhausted.materials);
+      const exhaustedHost = { ...blackEmperorHost(exhausted, 'ordinary-exhaustion-report', recoveredState.revision + 1), actions: 1 };
+      const closed = applyBlackEmperorScene(exhausted.scene!, { type: 'REPORT_RETURN' }, exhaustedHost,
+        () => { throw Error('Ordinary exhaustion reporting needs no draw'); });
+      expect(closed.state.status).toBe('ABORTED'); expect(closed.state.returnReportEventId).toBe('ordinary-exhaustion-report');
+      expect(closed.effect.actions).toBe(1); expect(closed.effect.cash).toBe(0);
+      expect(closed.effect.health).toBe(0); expect(blackEmperorHash(exhausted.materials)).toBe(exhaustedMaterials);
+      expect(exhausted.frame!.budget.sequence).toBe(1);
       rolls[cursor] = 100;
       const dying = openBlackEmperorRuntimeSession(before), dead = executeBlackEmperor(dying, { type: 'CONSUME', compoundId, confirmed: true });
       expect(dead.status).toBe('DEAD'); expect(dead.health).toBe(0); expect(dead.ending?.kind).toBe('DEATH');

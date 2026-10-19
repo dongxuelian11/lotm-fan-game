@@ -1,5 +1,5 @@
 /** Actual living Prince of Abolition fixture, then the paid BlackEmperor route.
- * Only future d100 rolls at/after cursor306 are controlled; real advancement
+ * Only future d100 rolls at/after cursor315 are controlled; real advancement
  * includes the paid investigations. Keep the same seam through cold validation.
  * One failed write, identical retry and reopen test the durable boundary. */
 import { afterEach, describe, expect, it, vi } from 'vitest';
