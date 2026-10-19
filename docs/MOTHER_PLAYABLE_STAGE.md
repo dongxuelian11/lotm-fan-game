@@ -1,6 +1,6 @@
 # 0.229 Mother: finite wind-damaged greenhouse
 
-Implementation status: domain candidate; parent main typecheck PASS. Controlled runtime retry:4/4 PASS,95.68s,exit0. Desktop acceptance NOT_RUN.
+Implementation status: controlled implementation checks passed; natural continuation pending. Desktop acceptance NOT_RUN.
 Authority: `output/rebuild-0229/approved-scope.md`. Base: `9a9a5d903c17e4e2635c9ac9ad6086ccce004aa7`.
 
 ## Authentic continuation
@@ -22,4 +22,4 @@ Mother follows Justiciar's opaque WeakMap-owned engine, cold predecessor authent
 
 Canonical names and uniqueness-plus-three-characteristics are sourced; complete S0 formula/ritual and these finite ability specifications are unknown in canon. The greenhouse story, dates, numerical costs, probability, materials and limits above are explicitly authored game content. Player-facing prose does not expose development labels. No soul creation, resurrection, replacement plants, multiplication, moon shield, unrestricted healing or infinite-life subsystem is implemented.
 
-Verification at this handoff: parent main typecheck PASS. First controlled runtime run completed3/4 tests; generic recovery had spent the reserved second action between the two plant round trips. Minimal recommendation fix keeps an already-started finite practice on its own route before generic recovery. Parent retry `output/rebuild-0229/validation/runtime-final.log` and `.exit` prove4/4 PASS,95.68s,exit0. Parent owns migration/save/UI checks, production generation and acceptance. No test run, commit or push was performed by the domain worker.
+Verification before the natural freeze: main and renderer-app types PASS; bounded stage-test types PASS after correcting the deliberately backdated test input's TypeScript construction. Runtime4, schema/public8, original recovery9, focused old acquisition1, controlled SQLite1, and actual-page UI2 passed (25 Vitest tests, eight files; the acquisition file's other13 were not selected). Producer pure10 passed. SQLite covers real promotion rollback, identical retry, idempotence and cold reopen. The controlled UI covers actual H40 entry, guidance lock, failed-save retry and immediate S0/max150. The original runtime3/4 result and renderer/test-type failures remain in the logs. Natural capture and final-terminal tests are NOT_RUN; terminal pins are intentionally pending. No controlled dice are used by the production producer.

@@ -105,7 +105,7 @@ describe('Nature Walker finite original-characteristic recovery', () => {
     expect(natureWalkerAcquisitionBlock(supplied, recovery('REQUEST_RECOVERY_V1'))).not.toBeNull();
     const moved = structuredClone(failed); moved.coffinBearer.life.playerLocation = 'A';
     expect(natureWalkerAcquisitionBlock(moved, recovery('REQUEST_RECOVERY_V1'))).not.toBeNull();
-    const backdated = structuredClone(requested); backdated.schemaVersion = 225;
+    const backdated = Object.assign(structuredClone(requested), { schemaVersion: 225 });
     expect(validateNatureWalkerAcquisitionJournal(backdated)).toBe(false);
     expect(natureWalkerAcquisitionActions(failed).filter(a => a.command.type === 'REQUEST_RECOVERY_V1')).toHaveLength(3);
     expect(validateNatureWalkerAcquisitionCommand({ type: 'STABILIZE_PROMOTION', bottleId: carrierId })).toBe(false);
