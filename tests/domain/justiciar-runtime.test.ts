@@ -1,3 +1,5 @@
+import { hasHandOfOrderOldPractice, handOfOrderInheritedView } from '../../src/domain/hand-of-order/index.js';
+import { justiciarSourceBlock } from '../../src/domain/justiciar/source.js';
 import {afterAll,beforeAll,describe,expect,it} from 'vitest';
 import {assertValidSliceState} from '../../src/domain/slice/index.js';
 import {openJusticiarRuntimeSession} from '../../src/domain/justiciar/owned-session.js';
@@ -14,6 +16,11 @@ describe('Justiciar228 actual706 original recovery, dock and paid promotion',()=
   const {predecessor,source,beforeConsume:s}=route,scene=s.justiciar.scene!;
   expect(predecessor.handOfOrder.bottles).toHaveLength(3);expect(predecessor.seer.pollution).toBe(20);
   expect(source.handOfOrder.life.reflected).toBe(true);expect(source.progression.acting).toBe(100);
+  expect(hasHandOfOrderOldPractice(source)).toBe(true);
+  expect(hasHandOfOrderOldPractice(handOfOrderInheritedView(source))).toBe(false);
+  expect(justiciarSourceBlock(source)).toBeNull();
+  const forgedS1=structuredClone(predecessor);forgedS1.progression.sequence=1;forgedS1.progression.acting=100;
+  expect(justiciarSourceBlock(forgedS1)).not.toBeNull();
   expect(source.handOfOrder.bottles.slice(0,3).every(b=>b.status==='CONSUMED'&&b.outcome==='FAILURE')).toBe(true);
   expect(source.handOfOrder.bottles.at(-1)!.recovery?.originalBottleId).toBe('hand-of-order-potion-1');
   expect(source.chaosHunter.life).toEqual(predecessor.chaosHunter.life);

@@ -6,6 +6,8 @@ import { applySliceIntent } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { createJusticiarState } from '../../src/domain/justiciar/index.js';
+import { justiciarSourceBlock } from '../../src/domain/justiciar/source.js';
+import { hasHandOfOrderLock, hasHandOfOrderOldPractice } from '../../src/domain/hand-of-order/index.js';
 import { openJusticiarRuntimeSession, type JusticiarRuntimeSession } from '../../src/domain/justiciar/owned-session.js';
 import { JUSTICIAR_FROZEN_SOURCE_KEYS } from '../../src/domain/justiciar/source.js';
 import type { JusticiarCommand } from '../../src/domain/justiciar/types.js';
@@ -30,6 +32,8 @@ export function preparedJusticiarScenario(){
  if(s.progression.sequence!==1)throw Error('Controlled S1 recovery did not promote.');
  s=completeHandOfOrderLife(s,predecessorCommands);
  s=ready(s,{ap:2,cash:350,health:100,mind:100,spirituality:120,pollution:0},predecessorCommands);
+ const sourceReason=justiciarSourceBlock(s);
+ if(sourceReason)throw Error(JSON.stringify({reason:sourceReason,lock:hasHandOfOrderLock(s),oldLock:hasHandOfOrderOldPractice(s),combat:s.combat?.encounterId,event:s.activeEvent,queue:s.eventQueue,pulse:s.pulse,site:s.handOfOrder.life.site?.playerLocation,operation:s.handOfOrder.life.operation}));
  const source=s,guided=applySliceIntent(source,{type:'JUSTICIAR',command:{type:'LEARN_GUIDANCE'}}),session=openJusticiarRuntimeSession(guided),commands:JusticiarCommand[]=[{type:'LEARN_GUIDANCE'}];
  for(let n=0;n<320;n++){
   const state=session.snapshot(),action=session.projectJusticiar().actions.find(a=>a.preferredAction);

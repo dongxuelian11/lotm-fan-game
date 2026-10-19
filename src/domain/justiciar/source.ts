@@ -1,5 +1,5 @@
 import type { SliceState } from '../slice/types.js';
-import { validateHandOfOrderState, hasHandOfOrderLock, hasHandOfOrderOldPractice, resolveHandOfOrderOriginalsSnapshot } from '../hand-of-order/index.js';
+import { validateHandOfOrderState, hasHandOfOrderLock, hasHandOfOrderOldPractice, handOfOrderInheritedView, resolveHandOfOrderOriginalsSnapshot } from '../hand-of-order/index.js';
 import { HAND_OF_ORDER_SOURCE_KEYS } from '../hand-of-order/types.js';
 import { HAND_OF_ORDER_CASE_IDS, getHandOfOrderCurrentSite } from '../hand-of-order/life.js';
 import { stableStringify } from '../canonical.js';
@@ -37,7 +37,9 @@ export function justiciarSourceBlock(s: SliceState): string | null {
     const c = life.cases[id];
     return c.status === 'RESOLVED' && c.returned && !c.contactOpen && c.attempts.length > 0 && life.journal.some(e => e.command.type === 'REPORT' && e.command.caseId === id);
   }) || !life.journal.some(e => e.command.type === 'REFLECT')) return '先完成秩序之手三案的真实报告、反思与完整消化；普通完成同样有效。';
-  if (hasHandOfOrderLock(s) || hasHandOfOrderOldPractice(s) || s.combat || s.activeEvent || s.eventQueue.length || s.pulse !== 'NONE') return '先停止旧能力、归还原物并结束旧现场的接触。';
+  // The authenticated S2 checkpoint owns predecessor locks; their exact-stage
+  // guards deliberately reject a raw S1. New S1 locks and objects stay live.
+  if (hasHandOfOrderLock(s) || hasHandOfOrderOldPractice(handOfOrderInheritedView(s)) || s.combat || s.activeEvent || s.eventQueue.length || s.pulse !== 'NONE') return '先停止旧能力、归还原物并结束旧现场的接触。';
   const site = getHandOfOrderCurrentSite(s), operation = life.operation;
   const plate = life.guardPlate;
   if (!['START', 'OUTSIDE'].includes(site.playerLocation) || site.activeCase !== null || life.activeCase !== null ||
