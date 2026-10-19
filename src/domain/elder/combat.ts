@@ -1,3 +1,6 @@
+import { publicPryerFields, publicPryerInjury } from '../sage/life.js';
+import { publicDarkAngelSite } from '../dark-angel/life.js';
+import { publicThreeHeadedTemplarReserve } from '../three-headed-templar/combat.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -438,8 +441,29 @@ export function projectElderCombat(s: SliceState) {
     playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
     enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
     powerUses: visible ? { ...e.powerUses } : null, originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0,
-    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...structuredClone(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...structuredClone(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
+    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...projectElderPlayerAction(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...projectElderEnemyAction(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
     countWheel: ELDER_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: ELDER_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: ELDER_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
     summary: visible ? '双方每轮1至6次动作，每动作5秒，每轮60秒。低语每轮一次：6灵性、2精神，意志18并可被抵抗，仅准备随后一次减势至多35。聚声每轮一次：6本人灵性、2精神、3实际原灵灵性，知识18并可被抵抗，失败总计4精神；只用一位实际原灵已选的一项方法。借用不并行、不复制能力；资源不足则普通行动。本人沿用既有12灵性续战恢复，对手与原灵不恢复。死亡和伤势仍由共同身体后果规则处理。' : '' };
 }
 export type ElderCombatProjection = ReturnType<typeof projectElderCombat>;
+
+
+function publicElderAction(a: ElderPlayerAction | ElderEnemyAction) { return {
+  ...publicPryerFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'order', 'travelMetres', 'atSeconds', 'elapsedSeconds', 'paidCost', 'mindCost', 'physicalFactor', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'enemySpiritualityAfter', 'chargeGranted', 'chargeConsumedByOrder', 'chargeCancelledByOrder', 'applied', 'appliedAmount']),
+  rolls: [...a.rolls], consumedEffectOrders: [...a.consumedEffectOrders],
+}; }
+export function projectElderPlayerAction(a: ElderPlayerAction) { return {
+  ...publicElderAction(a), ...publicPryerFields(a, ['id', 'attempted', 'succeeded', 'resisted', 'mode', 'prepared', 'reserveCost', 'healthRestored', 'borrowedSpiritId', 'borrowedMethod']),
+  spirit: a.spirit ? publicPryerFields(a.spirit, ['id', 'method', 'casketId', 'deathRecordId', 'spiritualityBefore', 'spiritualityAfter', 'spiritCost', 'integrity']) : null,
+}; }
+export function projectElderEnemyAction(a: ElderEnemyAction) { return {
+  ...publicElderAction(a), ...publicPryerFields(a, ['planned', 'actual', 'attackKind', 'succeeded']),
+}; }
+export function projectElderRoundOutcome(o: ElderRoundOutcome) { return {
+  ...publicPryerFields(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'playerRiskAfter', 'enemyRiskAfter', 'whisperAttempted', 'chorusAttempted', 'guardAttempted', 'clockSecondsAfter', 'elapsedSeconds']),
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicPryerInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicPryerInjury),
+  powerUses: publicPryerFields(o.powerUses, ['SILVER_THRUST', 'SILVER_ARMOR']), expiredEffectOrders: [...o.expiredEffectOrders],
+  rootAfter: { ...publicDarkAngelSite(o.rootAfter), playerLocation: o.rootAfter.playerLocation }, reserveAfter: publicThreeHeadedTemplarReserve(o.reserveAfter),
+  playerActions: o.playerActions.map(projectElderPlayerAction), enemyActions: o.enemyActions.map(projectElderEnemyAction),
+}; }
+export type ElderPublicRoundOutcome = ReturnType<typeof projectElderRoundOutcome>;
