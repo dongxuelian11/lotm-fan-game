@@ -1,0 +1,34 @@
+.clown-growth-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--slice-line);
+}
+.clown-growth-tabs .slice-button {
+  flex: 1 1 180px;
+  min-height: 48px;
+  white-space: normal;
+}
+.clown-growth-tabs .slice-button[aria-pressed="true"] {
+  border-color: var(--slice-red);
+  color: var(--slice-red);
+  box-shadow: inset 0 -3px var(--slice-red);
+}
+.clown-panel .clown-paper {
+  padding: 16px 20px;
+  background: var(--slice-paper-light);
+  border: 1px solid var(--slice-line);
+}
+.clown-panel .clown-paper h4 { margin: 0 0 6px; }
+.clown-panel .clown-paper p { margin: 0; }
+.clown-panel .clown-story p,
+.clown-panel .seer-risk p { white-space: pre-line; }
+.clown-panel .clown-abilities > .seer-fold { margin-top: 14px; }
+.clown-panel .seer-action,
+.clown-panel .seer-action .slice-choice { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .clown-growth-tabs .slice-button { flex-basis: 100%; }
+  .clown-panel .clown-paper { padding: 16px; }
+}
