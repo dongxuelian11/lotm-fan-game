@@ -1,3 +1,7 @@
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from './empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from './empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from './empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from './empty-mother-capture.js';
 import { assertEmptyHermitState, assertEmptyHermitPublic } from './empty-hermit-capture.js';
 import { assertEmptyHangedManState, assertEmptyHangedManPublic } from './empty-hanged-man-capture.js';
 import { assertEmptyAbyssState, assertEmptyAbyssPublic } from './empty-abyss-capture.js';
@@ -44,7 +48,7 @@ export const INITIAL_POLICY = {
 };
 export interface FilePin { bytes: number; sha256: string }
 /** Immutable capture input format, distinct from the current runtime state. */
-export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'> & {
+export type HistoricalMoonState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained' | 'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'> & {
   schemaVersion: 209; contentVersion: 'moon-v209';
 };
 export interface Member extends FilePin { file: string; originalBytes?: number; originalSha256?: string }
@@ -147,7 +151,7 @@ const EMPTY_SUN: SliceState['sun'] = {
   services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
 };
 /** Detached audit view only. Remove exactly the independently specified default
- * Darkness/White Tower/Tyrant/Sun/Death/Door/Error/Twilight Giant/Demoness/Hermit/Hanged Man/Abyss/Chained roots and restore the capture's version tags. Every other field,
+ * Darkness/White Tower/Tyrant/Sun/Death/Door/Error/Twilight Giant/Demoness/Hermit/Hanged Man/Abyss/Chained/Wheel of Fortune/Black Emperor/Justiciar/Mother roots and restore the capture's version tags. Every other field,
  * including any unexpected root, remains covered by the historical hash. */
 export function historicalMoonState(state: SliceState): HistoricalMoonState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
@@ -157,28 +161,30 @@ export function historicalMoonState(state: SliceState): HistoricalMoonState {
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
   assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
   assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state); assertEmptyBlackEmperorState(state); assertEmptyJusticiarState(state); assertEmptyMotherState(state);
   const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
-    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...originalFields } = state;
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 209, contentVersion: 'moon-v209' };
 }
 /** Strict current ingress must preserve every original 209 field and may add
- * only the reviewed default Darkness/White Tower/Tyrant/Sun/Death/Door/Error/Twilight Giant/Demoness/Hermit/Hanged Man/Abyss/Chained roots; it never rewrites the raw input. */
+ * only the reviewed default Darkness/White Tower/Tyrant/Sun/Death/Door/Error/Twilight Giant/Demoness/Hermit/Hanged Man/Abyss/Chained/Wheel of Fortune/Black Emperor/Justiciar/Mother roots; it never rewrites the raw input. */
 export function migrateCapturedMoonState(raw: HistoricalMoonState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [209, 'moon-v209']);
   assert.equal(Object.hasOwn(raw, 'darkness'), false);
   assert.equal(Object.hasOwn(raw, 'whiteTower'), false);
   assert.equal(Object.hasOwn(raw, 'tyrant'), false); assert.equal(Object.hasOwn(raw, 'sun'), false); assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false); assert.equal(Object.hasOwn(raw, 'errorAscent'), false); assert.equal(Object.hasOwn(raw, 'twilightGiant'), false); assert.equal(Object.hasOwn(raw, 'demoness'), false);
-  for (const key of ['hermit', 'hangedMan', 'abyss', 'chained']) assert.equal(Object.hasOwn(raw, key), false);
+  for (const key of ['hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother']) assert.equal(Object.hasOwn(raw, key), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assertValidSliceState(current);
-  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained']);
+  exactKeys(current, [...Object.keys(raw), 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother']);
   same(historicalMoonState(current), raw, 'Migration changed the complete captured Moon state');
   assert.equal(hash(raw), before, 'Migration changed the raw Moon input');
   return current;
 }
-/** Verify all thirteen entire new inactive public roots before removing just those roots
+/** Verify all seventeen entire new inactive public roots before removing just those roots
  * from a detached historical view. Unknown fields are never filtered out. */
-export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'> {
+export function historicalMoonPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained' | 'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'> {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assert.deepEqual(state.darkness, EMPTY_DARKNESS);
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
@@ -186,6 +192,7 @@ export function historicalMoonPublic(projection: SliceProjection, state: SliceSt
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
   assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
   assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state); assertEmptyBlackEmperorState(state); assertEmptyJusticiarState(state); assertEmptyMotherState(state);
   assert.equal(state.progression.pathwayId, 'moon');
   assert.equal(Object.hasOwn(projection, 'darkness'), true);
   const root = projection.darkness;
@@ -254,8 +261,10 @@ export function historicalMoonPublic(projection: SliceProjection, state: SliceSt
   });
   assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state); assertEmptyDemonessPublic(projection, state);
   assertEmptyHermitPublic(projection, state); assertEmptyHangedManPublic(projection, state); assertEmptyAbyssPublic(projection, state); assertEmptyChainedPublic(projection, state);
+  assertEmptyWheelOfFortunePublic(projection, state); assertEmptyBlackEmperorPublic(projection, state); assertEmptyJusticiarPublic(projection, state); assertEmptyMotherPublic(projection, state);
   const { darkness: _emptyDarkness, whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
-    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...originalFields } = historicalInactiveCalamitySourcePublic(projection, state);
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = historicalInactiveCalamitySourcePublic(projection, state);
   return originalFields;
 }
 function relativeFile(file: string): string {

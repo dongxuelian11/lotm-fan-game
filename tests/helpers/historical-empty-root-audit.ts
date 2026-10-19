@@ -1,3 +1,7 @@
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from './empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from './empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from './empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from './empty-mother-capture.js';
 import { assertEmptyChainedState, assertEmptyChainedPublic } from './empty-chained-capture.js';
 import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
@@ -53,9 +57,9 @@ const EARLY_EMPTY_ROOTS = {
   moon: EMPTY_MOON, darkness: EMPTY_DARKNESS, whiteTower: EMPTY_WHITE_TOWER,
   tyrant: EMPTY_TYRANT, sun: EMPTY_SUN,
 };
-const FOOL_ADDITIONS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'] as const;
-const VISIONARY_ADDITIONS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'] as const;
-const PERFECTER_ADDITIONS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'] as const;
+const FOOL_ADDITIONS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const VISIONARY_ADDITIONS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const PERFECTER_ADDITIONS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
 type AddedRoot = typeof FOOL_ADDITIONS[number];
 
 function exactView(current: SliceState, originalKeys: readonly string[], additions: readonly AddedRoot[],
@@ -68,7 +72,8 @@ function exactView(current: SliceState, originalKeys: readonly string[], additio
   assert.deepEqual(Object.keys(current).sort(), [...originalKeys, ...additions].sort());
   assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current); assertEmptyTwilightGiantState(current); assertEmptyDemonessState(current);
   assertEmptyHermitState(current); assertEmptyHangedManState(current); assertEmptyAbyssState(current); assertEmptyChainedState(current);
-  for (const root of additions) if (root !== 'death' && root !== 'door' && root !== 'errorAscent' && root !== 'twilightGiant' && root !== 'demoness' && root !== 'hermit' && root !== 'hangedMan' && root !== 'abyss' && root !== 'chained') {
+  assertEmptyWheelOfFortuneState(current); assertEmptyBlackEmperorState(current); assertEmptyJusticiarState(current); assertEmptyMotherState(current);
+  for (const root of additions) if (root !== 'death' && root !== 'door' && root !== 'errorAscent' && root !== 'twilightGiant' && root !== 'demoness' && root !== 'hermit' && root !== 'hangedMan' && root !== 'abyss' && root !== 'chained' && root !== 'wheelOfFortune' && root !== 'blackEmperor' && root !== 'justiciar' && root !== 'mother') {
     assert.equal(Object.hasOwn(current, root), true);
     assert.deepEqual(current[root], EARLY_EMPTY_ROOTS[root]);
   }
@@ -91,9 +96,9 @@ export function historicalPerfecterStateForEmptyRootAudit(current: SliceState, h
   return exactView(current, Object.keys(historical), PERFECTER_ADDITIONS, [208, 'perfecter-v208']);
 }
 
-/** Remove only these EIGHT independently pinned empty public roots. All other public
+/** Remove only these TWELVE independently pinned empty public roots. All other public
  * fields, including unknown additions, stay in the caller's complete hash. */
-export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'> {
+export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained' | 'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'> {
   assertEmptyDoorState(state); assertEmptyDoorPublic(projection, state);
   assertEmptyErrorAscentState(state); assertEmptyErrorAscentPublic(projection, state);
   assertEmptyTwilightGiantState(state); assertEmptyTwilightGiantPublic(projection, state);
@@ -102,7 +107,12 @@ export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjec
   assertEmptyHangedManState(state); assertEmptyHangedManPublic(projection, state);
   assertEmptyAbyssState(state); assertEmptyAbyssPublic(projection, state);
   assertEmptyChainedState(state); assertEmptyChainedPublic(projection, state);
+  assertEmptyWheelOfFortuneState(state); assertEmptyWheelOfFortunePublic(projection, state);
+  assertEmptyBlackEmperorState(state); assertEmptyBlackEmperorPublic(projection, state);
+  assertEmptyJusticiarState(state); assertEmptyJusticiarPublic(projection, state);
+  assertEmptyMotherState(state); assertEmptyMotherPublic(projection, state);
   const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
-    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...allOtherFields } = historicalInactiveCalamitySourcePublic(projection, state);
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...allOtherFields } = historicalInactiveCalamitySourcePublic(projection, state);
   return allOtherFields;
 }

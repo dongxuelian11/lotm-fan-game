@@ -14,6 +14,10 @@ import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-
 import { assertEmptyErrorAscentState, assertEmptyErrorAscentPublic } from './empty-error-ascent-capture.js';
 import { assertEmptyTwilightGiantState, assertEmptyTwilightGiantPublic } from './empty-twilight-giant-capture.js';
 import { assertEmptyDoorState, assertEmptyDoorPublic } from './empty-death-capture.js';
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from './empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from './empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from './empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from './empty-mother-capture.js';
 
 /** Independent immutable NEW217 reader. Never imports/executes the producer,
  * gameplay replay, migration, SQLite or controlled scenario builders.
@@ -273,7 +277,7 @@ export function authenticateInputs(): void {
 const PUBLIC_FIELDS = ['runId', 'revision', 'status', 'week', 'date', 'actionsRemaining', 'weeklyBudget', 'cash', 'weeklyWage', 'wagePaid',
   'health', 'mind', 'spirituality', 'maxHealth', 'maxMind', 'maxSpirituality', 'pollution', 'injuries', 'injuryRisk',
   'debtTotal', 'debts', 'canAct', 'actionBlockedReason', 'activeEvent', 'combat'] as const;
-export function capturePublic(projection: SliceProjection) {
+export function capturePublic(projection: Pick<SliceProjection, typeof PUBLIC_FIELDS[number] | 'progression' | 'death'>) {
   const ordinary = Object.fromEntries(PUBLIC_FIELDS.map(key => [key, structuredClone(projection[key])])) as Pick<SliceProjection, typeof PUBLIC_FIELDS[number]>;
   return { ...ordinary, progression: { sequence: projection.progression.sequence, acting: projection.progression.acting,
     mastery: structuredClone(projection.progression.mastery) }, death: structuredClone(projection.death) };
@@ -294,7 +298,7 @@ export function assertPublicOnly(value: unknown, state: Pick<SliceState, 'random
   for (const secret of [state.random.seed, state.death.source?.actorId, state.death.source?.historyDigest])
     if (secret) assert(!text.includes(secret), 'An actual private value leaked');
 }
-export const assertGlobalPublic = (value: SliceProjection, state: SliceState): void => assertPublicOnly(value, state);
+export const assertGlobalPublic = (value: SliceProjection | HistoricalDeathPublic, state: SliceState): void => assertPublicOnly(value, state);
 export const outcome = (view: CapturedPublic): Outcome => ({ status: view.status, sequence: view.progression.sequence,
   promoted: view.death.promoted, guidance: view.death.guidanceKnown });
 export function assertPublicAction(view: CapturedPublic, row: Pick<Row, 'intent' | 'publicLabel' | 'publicCost'>): void {
@@ -310,30 +314,35 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   assert(!before.death.guidanceKnown && after.death.guidanceKnown);
   return { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
-export type HistoricalDeathState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'> & {
+export type HistoricalDeathState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained' | 'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'> & {
   schemaVersion: 214; contentVersion: 'death-v214';
 };
-export type HistoricalDeathPublic = Omit<HistoricalInactiveHermitProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'>;
+export type HistoricalDeathPublic = Omit<HistoricalInactiveHermitProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained' | 'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'>;
 /** Exactly the schema215 Door, schema216 Error, schema217 Twilight Giant, schema218 Demoness,
- * schema219 Hermit, schema220 Hanged Man, schema221 Abyss and schema222 Chained defaults may be omitted. Every original field and
+ * schema219 Hermit, schema220 Hanged Man, schema221 Abyss, schema222 Chained, schema223 Wheel of Fortune,
+ * schema224 Black Emperor, schema225 Justiciar and schema226 Mother defaults may be omitted. Every original field and
  * unknown root remains in the historical hash; raw schema/content never move. */
 export function historicalDeathState(state: SliceState): HistoricalDeathState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
   assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state); assertEmptyBlackEmperorState(state); assertEmptyJusticiarState(state); assertEmptyMotherState(state);
   const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
-    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...originalFields } = state;
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = state;
   return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
 }
 export function historicalDeathPublic(projection: SliceProjection, state: SliceState): HistoricalDeathPublic {
   historicalDeathState(state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state); assertEmptyDemonessPublic(projection, state);
   assertEmptyHermitPublic(projection, state); assertEmptyHangedManPublic(projection, state); assertEmptyAbyssPublic(projection, state); assertEmptyChainedPublic(projection, state);
+  assertEmptyWheelOfFortunePublic(projection, state); assertEmptyBlackEmperorPublic(projection, state); assertEmptyJusticiarPublic(projection, state); assertEmptyMotherPublic(projection, state);
   const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
-    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...originalFields } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(projection, state), state);
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(projection, state), state);
   return originalFields;
 }
 /** Raw214 authentication stays independent of current projection admission. */
-export function assertCapturedGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
+export function assertCapturedGlobal(actual: SliceProjection | HistoricalDeathPublic, action: Action, side: 'before' | 'after'): void {
   const state = side === 'before' ? action.beforeLast : action.final;
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
   assert.equal(state.revision, action.commandCount + (side === 'after' ? 1 : 0));
@@ -345,15 +354,17 @@ export function assertCapturedGlobal(actual: SliceProjection, action: Action, si
   same(capturePublic(actual), side === 'before' ? action.publicBefore : action.public); assertGlobalPublic(actual, state);
 }
 /** Current projection requires the exact empty Door, Error, Twilight Giant, Demoness,
- * Hermit, Hanged Man, Abyss and Chained roots before comparison of
+ * Hermit, Hanged Man, Abyss, Chained, Wheel of Fortune, Black Emperor, Justiciar and Mother roots before comparison of
  * every historical public leaf. Missing roots never select a permissive path. */
 export function assertCurrentGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
   const state = side === 'before' ? action.beforeLast : action.final;
   assertEmptyDoorPublic(actual, state); assertEmptyErrorAscentPublic(actual, state); assertEmptyTwilightGiantPublic(actual, state); assertEmptyDemonessPublic(actual, state);
   assertEmptyHermitPublic(actual, state); assertEmptyHangedManPublic(actual, state); assertEmptyAbyssPublic(actual, state); assertEmptyChainedPublic(actual, state);
+  assertEmptyWheelOfFortunePublic(actual, state); assertEmptyBlackEmperorPublic(actual, state); assertEmptyJusticiarPublic(actual, state); assertEmptyMotherPublic(actual, state);
   const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
-    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...historicalPublic } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(actual, state), state);
-  assertCapturedGlobal(historicalPublic as SliceProjection, action, side);
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...historicalPublic } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(actual, state), state);
+  assertCapturedGlobal(historicalPublic, action, side);
   assertGlobalPublic(actual, state);
 }
 
