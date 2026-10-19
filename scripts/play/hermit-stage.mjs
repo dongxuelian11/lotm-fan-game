@@ -110,7 +110,7 @@ export function auditPublic(view, state) {
   assertPublicOnly(view); const text = JSON.stringify(view), secrets = new Set([state.random.seed, state.hermit.source?.actorId].filter(Boolean));
   // These inherited on-screen body labels are not private identities. The
   // actual admission actor above is always secret, regardless of its spelling.
-  const physicalBodies = new Set(['PLAYER', 'HM222-MIRA', 'HM222-NILES', 'PM3-IRIS']);
+  const physicalBodies = new Set(['PLAYER', 'HM222-MIRA', 'HM222-NILES', 'PM3-IRIS', 'OWNER']);
   const collect = value => {
     if (!value || typeof value !== 'object') return;
     for (const [key, child] of Object.entries(value)) {

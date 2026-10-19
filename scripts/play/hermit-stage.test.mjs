@@ -111,6 +111,11 @@ test('whole-public scan allows only exact physical movement and command paths', 
   const privateState = { random: { seed: 'private-seed' }, hermit: { source: { actorId: 'private-person', historyDigest: 'private-digest',
     originals: { site: { actorMoves: [movement] } } }, scene: { moves: [{ actorId: 'PLAYER' }] } } };
   assert.doesNotThrow(() => auditPublic(publicView, privateState));
+  const ownerReceipt = structuredClone(privateState);
+  ownerReceipt.hermit.scene.receipts = [{ actorId: 'OWNER' }];
+  assert.doesNotThrow(() => auditPublic({ holder: 'OWNER' }, ownerReceipt));
+  ownerReceipt.hermit.source.actorId = 'OWNER';
+  assert.throws(() => auditPublic({ holder: 'OWNER' }, ownerReceipt));
   for (const secret of ['private-seed', 'private-person', 'private-digest']) assert.throws(() => auditPublic({ lines: [secret] }, privateState));
   assert.throws(() => auditPublic(publicView, { random: privateState.random, hermit: { source: { actorId: 'HM222-MIRA' } } }));
 });
