@@ -75,7 +75,12 @@ describe('Apocalypse Demoness one current original body and finite life cases', 
     const raw = readObjectEntry<SliceState>(calamityNaturalPath, 'final');
     expect(raw).toMatchObject({ schemaVersion: 174, revision: 586, week: 143, health: 70, random: { seed: 'assassin-natural-v045', cursor: 207 } });
     const old = originalCalamity(); expect(old.schemaVersion).toBe(CURRENT_SCHEMA_VERSION); expect(old.contentVersion).toBe(CURRENT_CONTENT_VERSION);
-    expect(projectApocalypseDemonessLife(old).site).toEqual(raw.calamityDemoness.encounter.currentSite);
+    const { source: privateSource, ...publicSite } = raw.calamityDemoness.encounter.currentSite!;
+    const originalHash = digest(old);
+    expect(privateSource).not.toBeNull();
+    expect(projectApocalypseDemonessLife(old).site).toEqual(publicSite);
+    expect(projectApocalypseDemonessLife(old).site).not.toHaveProperty('source');
+    expect(digest(old)).toBe(originalHash);
     expect(projectApocalypseDemonessLife(old).clockSeconds).toBe(407);
     const fresh = createSliceRun('apocalypse-hidden', sliceDefaultCreationSelection, 'apocalypse-hidden');
     expect(fresh.apocalypseDemoness.life).toEqual(createApocalypseDemonessLifeState()); expect(apocalypseDemonessLifeActions(fresh)).toEqual([]); assertValidSliceState(fresh);
