@@ -101,7 +101,8 @@ export function assertPublicOnly(value, path = '$') {
     'actorId', 'predecessorActorId', 'incumbentActorId', 'custodianActorId', 'preparationRoll', 'futureRoll', 'nextRoll', 'privateSource']);
   for (const [key, child] of Object.entries(value)) {
     const next = `${path}.${key}`, physicalActor = key === 'actorId' && hermitPublicPhysicalActor(next, child);
-    assert(!((forbidden.has(key) || key.endsWith('Digest')) && !physicalActor) && !(key === 'source' && child !== null && typeof child === 'object'), `Private public field ${next}`);
+    const inactiveWriterRecord = next === '$.writer.life.practice.record.reportDigest' && child === null;
+    assert(!((forbidden.has(key) || key.endsWith('Digest')) && !physicalActor && !inactiveWriterRecord) && !(key === 'source' && child !== null && typeof child === 'object'), `Private public field ${next}`);
     assertPublicOnly(child, next);
   }
 }

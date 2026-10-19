@@ -95,6 +95,7 @@ test('whole-public scan allows only exact physical movement and command paths', 
     lastCombatRound: { sageOutcome: { siteAfter: { actorMoves: [movement] } } },
     combatHistory: [{ sageOutcome: { siteAfter: { actorMoves: [movement] } } }],
     lastCheck: { modifiers: [{ source: 'Paid preparation', value: 10 }] },
+    writer: { life: { practice: { record: { reportDigest: null } } } },
   };
   assert.doesNotThrow(() => assertPublicOnly(publicView));
   for (const bad of [
@@ -104,7 +105,8 @@ test('whole-public scan allows only exact physical movement and command paths', 
     { hermit: { actions: [{ command: { actorId: null } }] } },
     { sage: { life: { site: { actorMoves: [{ actorId: 'HM222-MIRA' }] } } } },
     { divineHand: { life: { site: { guard: { actorId: 'PLAYER' } } } } },
-    { nextRoll: 1 }, { random: { seed: 'anything' } }, { unknownDigest: 'anything' },
+    { writer: { life: { practice: { record: { reportDigest: 'private-digest' } } } } },
+    { other: { reportDigest: null } }, { nextRoll: 1 }, { random: { seed: 'anything' } }, { unknownDigest: 'anything' },
   ]) assert.throws(() => assertPublicOnly(bad));
   const privateState = { random: { seed: 'private-seed' }, hermit: { source: { actorId: 'private-person', historyDigest: 'private-digest',
     originals: { site: { actorMoves: [movement] } } }, scene: { moves: [{ actorId: 'PLAYER' }] } } };
