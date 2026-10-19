@@ -1,6 +1,6 @@
 {
   "format": "lotm-test-inputs-v1",
-  "version": "0.222.0",
+  "version": "0.223.0",
   "parts": [
     {
       "name": "lotm_rebuild_0.177.0_test_fixtures_1_2026-10-14.tar.gz",
@@ -1322,6 +1322,37 @@
         "tests/fixtures/hermit-v02220/runtime-freeze.json",
         "tests/fixtures/hermit-v02220/source-snapshot.json.gz",
         "tests/fixtures/hermit-v02220/summary.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.223.0_hanged_man_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 10331808,
+      "sha256": "dbda5d61728949907f78f7e84e6d4917c2c5111a76ba29ad7a87a9171faa6694",
+      "members": [
+        "tests/fixtures/hanged-man-v02230/checkpoint.json.gz",
+        "tests/fixtures/hanged-man-v02230/commands.jsonl",
+        "tests/fixtures/hanged-man-v02230/key-723-initial.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-731-same-original-recovery.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-739-periodic.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-740-before-consume.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-741-after-consume.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-755-periodic.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-771-periodic.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-787-periodic.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-802-s1-reflection.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-803-periodic-s0-guidance.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-819-periodic.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-835-periodic.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-851-periodic.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-867-periodic.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-870-before-consume.json.gz",
+        "tests/fixtures/hanged-man-v02230/key-871-after-consume-terminal.json.gz",
+        "tests/fixtures/hanged-man-v02230/original824-natural.json.gz",
+        "tests/fixtures/hanged-man-v02230/producer-tests.mjs",
+        "tests/fixtures/hanged-man-v02230/producer.mjs",
+        "tests/fixtures/hanged-man-v02230/runtime-freeze.json",
+        "tests/fixtures/hanged-man-v02230/source-snapshot.json.gz",
+        "tests/fixtures/hanged-man-v02230/summary.json"
       ]
     }
   ],
@@ -34950,6 +34981,126 @@
       "path": "tests/fixtures/hermit-v02220/summary.json",
       "bytes": 9036,
       "sha256": "ea82ab64dd331bf0157eeb98661aee41567f58e8b6e42f95bce432c60ad73b26"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/checkpoint.json.gz",
+      "bytes": 319423,
+      "sha256": "57d784ec545f5532cf78ebdc1ef46bf79a3a5ba04614410163bb3face2308ae3"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/commands.jsonl",
+      "bytes": 814282,
+      "sha256": "ace8bf8eb65b8a2f30bfbfb007c35c5afb4bffb085788555db38dfb96e3ee8a5"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-723-initial.json.gz",
+      "bytes": 467761,
+      "sha256": "4a80402a5a8023b8e6ed595e2b383b19b6cf17d3f3766bc135eb012deb31e7b0"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-731-same-original-recovery.json.gz",
+      "bytes": 472240,
+      "sha256": "2c2e5cefa213fdd25e4f973f2cd7ef1548ec343c4bc89b611ea99ff356b3d117"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-739-periodic.json.gz",
+      "bytes": 473937,
+      "sha256": "53c4f921768ecae55ce51ec9e1367672c5017139402c26d1245ce4bac5dd3912"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-740-before-consume.json.gz",
+      "bytes": 474508,
+      "sha256": "81c8164a9c083e98047d0a1b226cf9d8746539fa2af8aa05d51b62d66029f615"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-741-after-consume.json.gz",
+      "bytes": 449624,
+      "sha256": "fb1419c90397f18bfbd77b06eb007cf06eba4ab33861c3a575057ad06c760b4d"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-755-periodic.json.gz",
+      "bytes": 480294,
+      "sha256": "6d3c856d1accd111d832f5d4651e970b2c370a89aa2bf050f05d82ad9851251e"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-771-periodic.json.gz",
+      "bytes": 524865,
+      "sha256": "5ca39bc2bf7b0377a2a39af8844707832449f504dcde007ad21dd685a4c67e38"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-787-periodic.json.gz",
+      "bytes": 567247,
+      "sha256": "d59b24cdd26192053a6caec44513baad89dc60d4c6ff307863d448b0d9c45e49"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-802-s1-reflection.json.gz",
+      "bytes": 603465,
+      "sha256": "b34767823090c1091d4b2e167a0eeb9c17d70cbd2722f71e2a3cf23ced2f6598"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-803-periodic-s0-guidance.json.gz",
+      "bytes": 649900,
+      "sha256": "eee4c3d9c67ae8bea0d90fdc522a2388d958883db65ffc46f2ef6cc7d11cf9b5"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-819-periodic.json.gz",
+      "bytes": 656040,
+      "sha256": "3d7f328df101a1a2948fc13577c23f1c0526908a6fae0266bb2f048f00a06543"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-835-periodic.json.gz",
+      "bytes": 659995,
+      "sha256": "79654706afea50c2f32218a3dc27f89f688528d82a5395cf1d5caaa997dea26c"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-851-periodic.json.gz",
+      "bytes": 663851,
+      "sha256": "0ed4a9aaf99d5785607e58f99249f526d51ff33b975474ac6b3afcd8bb1141c5"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-867-periodic.json.gz",
+      "bytes": 666970,
+      "sha256": "6ce464b780bc6422225235de455f3395098167f9928c1bd2afe4efa0a63b03ed"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-870-before-consume.json.gz",
+      "bytes": 667878,
+      "sha256": "2fc5a836d8a76f07795a4f635f94642ab0c0e1707ad0dd28cbbe70bd017bd77d"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/key-871-after-consume-terminal.json.gz",
+      "bytes": 668681,
+      "sha256": "6eccb40b95324c8e9facc91679b531abfd32accd26acf445c0152fce5ce911e6"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/original824-natural.json.gz",
+      "bytes": 872825,
+      "sha256": "37f3a13cb6ac31d445a2b57f8aabd17002c7b5834a33ea293bfbef7b4d7e544a"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/producer-tests.mjs",
+      "bytes": 20995,
+      "sha256": "7d674e9bd1642bc1fa0ec22a48ae88a05dc41961e5a17e8b7cfa7a310bbc1491"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/producer.mjs",
+      "bytes": 53259,
+      "sha256": "735aa73bd9eb1b5a886aa0a41b959411529f221d4343012404771c94967bd275"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/runtime-freeze.json",
+      "bytes": 664404,
+      "sha256": "38063d8d09cccda2fa75daea0e5d24f3ef4a7d87c194bd0513dce1e5d00dff64"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/source-snapshot.json.gz",
+      "bytes": 378885,
+      "sha256": "e966b91cbe35f8b3dfa90a78682d390fd193c199bb92ca14eb573720a4facf71"
+    },
+    {
+      "path": "tests/fixtures/hanged-man-v02230/summary.json",
+      "bytes": 12227,
+      "sha256": "aa43a5c2c8960aa778f5c1b0605a79988a4d99b3c9185a746fa9159253ad2eed"
     }
   ]
 }
