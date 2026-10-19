@@ -20,10 +20,10 @@ export interface WindowSecurityTarget {
 
 export function buildMainWindowOptions(preloadPath: string): BrowserWindowConstructorOptions {
   return {
-    width: 1280,
-    height: 720,
-    minWidth: 960,
-    minHeight: 540,
+    width: 1600,
+    height: 900,
+    minWidth: 1280,
+    minHeight: 720,
     show: false,
     webPreferences: {
       preload: preloadPath,
