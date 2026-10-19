@@ -1,0 +1,1927 @@
+{
+  "format": "DOOR218_PUBLIC_INPUT_REPRODUCTION_V1",
+  "recipeSha256": "d4b94769373a24be1e33c5b32fd1f7063c56ab15f4a601d4b5d1f51e4761f611",
+  "python": "3.12.14",
+  "zlib": "1.3.2",
+  "gzip": {
+    "filename": "",
+    "mtime": 0,
+    "level": 6
+  },
+  "tar": {
+    "format": "PAX_FORMAT",
+    "mode": "w|",
+    "recordSize": 10240,
+    "encoding": "utf-8",
+    "errors": "strict",
+    "prefix": "诡秘/",
+    "modeOctal": "0644",
+    "uid": 0,
+    "gid": 0,
+    "uname": "",
+    "gname": "",
+    "mtime": 0
+  },
+  "grouping": {
+    "sort": "lexicographic full relative path",
+    "limit": 15000000,
+    "charge": "member bytes + 2048"
+  },
+  "strictArchiveBytesBelow": 20000000,
+  "inputMetadataSha256": {
+    "test-inputs/manifest.json": "788b2244dd2c49cd32ed6f80305d35020e7dea21c2e010f4a675419f7054ceab",
+    "test-inputs/door-v02180-capture-files.json": "20cbef150abd01ad544a9fb911f178087872e0d4a2fd08a47fdeddb9834c8402",
+    "test-inputs/restore-test-inputs.mjs": "a3f5bbd21004c8a15b3735a0b08b393aa67cbaff863231e90190cd93c60c1f19",
+    "lotm_door218_natural824_fc2308010ba2_manifest.json": "5bdb271412b65e494ca9e3e3ee5612c09633f88a1815da1ca4041ef69150511f",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_manifest.json": "887a04d262ce5fce0843f0982fe5ebe9e36d25ad42533f299f10b84e6b104e32"
+  },
+  "requiredCommittedRecipeInputs": [
+    "the exact recipe identified by recipeSha256",
+    "test-inputs/restore-test-inputs.mjs",
+    "test-inputs/manifest.json",
+    "test-inputs/door-v02180-capture-files.json"
+  ],
+  "chainDirectoryInputs": [
+    "lotm_door218_natural824_fc2308010ba2_manifest.json",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_manifest.json",
+    "lotm_door218_natural824_fc2308010ba2_capture_1.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_1.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_2.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_3.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_4.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_5.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_6.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_7.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_8.tar.gz",
+    "lotm_door218_natural825-928_f591c17b91c7_delta_under20mb_9.tar.gz"
+  ],
+  "runtimeArchivesRequired": false,
+  "supersededOversizeDeltaArchivesRequired": false,
+  "captureToFixture": {
+    "from": "output/rebuild-0218/natural-v1/",
+    "to": "tests/fixtures/door-v02180/",
+    "byteTransform": "NONE"
+  },
+  "separateOriginalPublicArchives": [
+    {
+      "name": "lotm_rebuild_0.177.0_test_fixtures_11_2026-10-14.tar.gz",
+      "bytes": 16843082,
+      "sha256": "50b8f5577c90170bfaa4224db8863e7d339491b0f85463311b1d6764026f1f3b"
+    },
+    {
+      "name": "lotm_rebuild_0.177.0_test_fixtures_13_2026-10-14.tar.gz",
+      "bytes": 16854069,
+      "sha256": "eb13cc7b0ca051fefb131471e76474b8cba9d1a35a0376146309f4de53db5b0c"
+    },
+    {
+      "name": "lotm_rebuild_0.177.0_test_fixtures_20_2026-10-14.tar.gz",
+      "bytes": 16846732,
+      "sha256": "ce3a38e4fa3d339e99871a55a40d3f39ec3b472969adabe57fa55427d95ef57d"
+    },
+    {
+      "name": "lotm_release_0.196.0_star_key_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17593078,
+      "sha256": "89ea783afa58a25e535a74212826d00b3b99e8ea6f48ffa9e0a2201824246473"
+    },
+    {
+      "name": "lotm_release_0.196.0_star_key_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 17793685,
+      "sha256": "0a4e9045186700759ff0166aa861757c0d405ec53f11446832090763a57c5856"
+    },
+    {
+      "name": "lotm_release_0.196.0_star_key_test_inputs_3_2026-10-15.tar.gz",
+      "bytes": 14765801,
+      "sha256": "3056e0da824ac2d6956c1ad95b30b9b10c2a8458f8714bbc7a223b8d12174cae"
+    }
+  ],
+  "originalArchiveMembership": {
+    "lotm_rebuild_0.177.0_test_fixtures_11_2026-10-14.tar.gz": [
+      "tests/fixtures/prophecy-master-v01540/boundaries.json",
+      "tests/fixtures/planeswalker-v01740/natural.json",
+      "tests/fixtures/wraith-v01120/boundaries.json",
+      "tests/fixtures/recovery-v01620/natural.json",
+      "tests/fixtures/war-bishop-v01410/peaceful-exit.json",
+      "tests/fixtures/alchemist-v01200/natural.json",
+      "tests/fixtures/planeswalker-v01740/combat-first.json",
+      "tests/fixtures/planeswalker-v01740/symbolic-transit-prepared.json",
+      "tests/fixtures/planeswalker-v01740/paid140-current-week-original-auxiliary-check.json",
+      "tests/fixtures/monster-v0600/boundaries.json",
+      "tests/fixtures/planeswalker-v01740/pw2-ash-verify-close.json",
+      "tests/fixtures/glory-v01760/close-guard-actual-original-observation.json",
+      "tests/fixtures/death-consul-v01730/original-enemy-fight.json",
+      "tests/fixtures/glory-v01760/glory-potion-1-fifth-real-labour.json",
+      "tests/fixtures/death-consul-v01730/public-check_endpoints-short-passage.json",
+      "tests/fixtures/calamity-demoness-v01770/mirror-screen-report-actual-application.json",
+      "tests/fixtures/death-consul-v01730/current-week-paid-preparation-3.json",
+      "tests/fixtures/death-consul-v01730/real-emergency-work-2.json",
+      "tests/fixtures/death-consul-v01730/professional-review_residual.json",
+      "tests/fixtures/light-seeker-v01720/public-inspect-screened-return.json",
+      "tests/fixtures/light-seeker-v01720/public-consent_operator-screened-return.json",
+      "tests/fixtures/light-seeker-v01720/public-close_shutter-marker-path.json",
+      "tests/fixtures/fate-trojan-v01750/fate-assumption-both-current-consents.json",
+      "tests/fixtures/fate-trojan-v01750/identity-link-closed-original-site.json",
+      "tests/fixtures/catastrophe-v01710/buoy-return-storm-outcome.json",
+      "tests/fixtures/light-seeker-v01720/professional-review_exposure.json",
+      "tests/fixtures/catastrophe-v01710/professional-plan_return.json",
+      "tests/fixtures/fate-trojan-v01750/clinic-actual-pay60.json",
+      "tests/fixtures/wisdom-angel-v01700/changed-condition-same-papers-returned.json",
+      "tests/fixtures/wisdom-angel-v01700/public-observe_condition-changed-condition.json",
+      "tests/fixtures/wisdom-angel-v01700/current-week-paid-preparation.json",
+      "tests/fixtures/wisdom-angel-v01700/inherited-full-s3-final.json",
+      "tests/fixtures/unshadowed-v01250/shared-exit-save-boundary.json",
+      "tests/fixtures/cataclysm-priest-v01240/shared-stop-save-boundary.json",
+      "tests/fixtures/prophet-v01230/shared-open-save-boundary.json",
+      "tests/fixtures/swindler-v0400/natural.json",
+      "tests/fixtures/catastrophe-v01710/snapshot-promoted.json",
+      "tests/fixtures/apprentice-v0350/natural.json",
+      "tests/fixtures/assassin-v0450/natural.json",
+      "tests/fixtures/spirit-warlock-v01000/shared-recruit-save-boundary.json",
+      "tests/fixtures/sleepless-v0200/natural.json",
+      "tests/fixtures/reasoner-v0240/shared-combat-save-boundary.json",
+      "tests/fixtures/fate-trojan-v01750/commands.jsonl"
+    ],
+    "lotm_rebuild_0.177.0_test_fixtures_13_2026-10-14.tar.gz": [
+      "tests/fixtures/life-giver-v01680/boundary-parts-mY7bu5/part-03.json",
+      "tests/fixtures/ferryman-v01490/original-boundaries.json",
+      "tests/fixtures/wanderer-v01500/continued.json",
+      "tests/fixtures/judge-v0930/boundaries.json",
+      "tests/fixtures/ferryman-v01490/original.json",
+      "tests/fixtures/nightwatcher-v01220/shared-stage-natural.json",
+      "tests/fixtures/planeswalker-v01740/withdrawn-transit-closed-original-site.json",
+      "tests/fixtures/planeswalker-v01740/pattern-reproduction-prepared.json",
+      "tests/fixtures/planeswalker-v01740/failed-pw2-visit-34-close.json",
+      "tests/fixtures/light-seeker-v01720/combat-round-10.json",
+      "tests/fixtures/glory-v01760/revoked-actual-original-adult-return.json",
+      "tests/fixtures/glory-v01760/close-guard-closed-original-site.json",
+      "tests/fixtures/planeswalker-v01740/pw2-glass-help.json",
+      "tests/fixtures/death-consul-v01730/withdrawn-passage-paid-window.json",
+      "tests/fixtures/glory-v01760/professional-plan_load.json",
+      "tests/fixtures/death-consul-v01730/public-inspect-pale-residue.json",
+      "tests/fixtures/death-consul-v01730/public-potion_work-15.json",
+      "tests/fixtures/death-consul-v01730/current-week-paid-preparation-2.json",
+      "tests/fixtures/calamity-demoness-v01770/professional-trace_original_mirrors.json",
+      "tests/fixtures/fate-trojan-v01750/original-elias46-optional-fight.json",
+      "tests/fixtures/fate-trojan-v01750/revoked-link-paid20-original-seal.json",
+      "tests/fixtures/light-seeker-v01720/public-move_operator_far-marker-path.json",
+      "tests/fixtures/catastrophe-v01710/wheel-return-keeper-actual-return.json",
+      "tests/fixtures/light-seeker-v01720/public-consume-2.json",
+      "tests/fixtures/catastrophe-v01710/buoy-return-same-buoy-recovered.json",
+      "tests/fixtures/concealment-servant-v01690/ordinary-unbolt-after-release.json",
+      "tests/fixtures/catastrophe-v01710/buy-independent-bottle.json",
+      "tests/fixtures/concealment-servant-v01690/consented-box-report.json",
+      "tests/fixtures/catastrophe-v01710/treated-injury-later-rest.json",
+      "tests/fixtures/wisdom-angel-v01700/public-agree_return-changed-condition.json",
+      "tests/fixtures/concealment-servant-v01690/clinic-pay60.json",
+      "tests/fixtures/assassin-v0450/boundaries.json",
+      "tests/fixtures/unshadowed-v01250/shared-report-save-boundary.json",
+      "tests/fixtures/glory-v01760/snapshot-combatStart.json",
+      "tests/fixtures/glory-v01760/snapshot-promoted.json",
+      "tests/fixtures/glory-v01760/snapshot-departureStart.json",
+      "tests/fixtures/fate-trojan-v01750/snapshot-practiced.json",
+      "tests/fixtures/concealment-servant-v01690/snapshot-guidanceStart.json",
+      "tests/fixtures/priest-of-light-v01030/shared-consume-save-boundary.json",
+      "tests/fixtures/ocean-singer-v01020/shared-consume-save-boundary.json",
+      "tests/fixtures/wind-blessed-v0800/shared-open-save-boundary.json",
+      "tests/fixtures/reader-v0230/shared-combat-save-boundary.json",
+      "tests/fixtures/audience-v080/natural.json"
+    ],
+    "lotm_rebuild_0.177.0_test_fixtures_20_2026-10-14.tar.gz": [
+      "tests/fixtures/wanderer-v01500/boundaries.json",
+      "tests/fixtures/life-giver-v01680/boundary-parts-mY7bu5/part-05.json",
+      "tests/fixtures/knowledge-mentor-v01670/natural.json",
+      "tests/fixtures/weather-warlock-v01650/natural.json",
+      "tests/fixtures/silver-knight-v01520/directed.json",
+      "tests/fixtures/shadow-ascetic-v0530/boundaries.json",
+      "tests/fixtures/planeswalker-v01740/original-enemy-approach.json",
+      "tests/fixtures/planeswalker-v01740/symbolic-transit-closed-original-site.json",
+      "tests/fixtures/light-seeker-v01720/combat-round-12.json",
+      "tests/fixtures/light-seeker-v01720/combat-round-9.json",
+      "tests/fixtures/glory-v01760/revoked-crossing-actual-ordinary-return.json",
+      "tests/fixtures/death-consul-v01730/combat-first.json",
+      "tests/fixtures/criminal-v0540/boundaries.json",
+      "tests/fixtures/death-consul-v01730/reflection.json",
+      "tests/fixtures/calamity-demoness-v01770/original-residue-placed-in-box.json",
+      "tests/fixtures/death-consul-v01730/pale-residue-paid-window.json",
+      "tests/fixtures/planeswalker-v01740/failed-pw2-visit-2-close.json",
+      "tests/fixtures/death-consul-v01730/actual-potion-failure.json",
+      "tests/fixtures/death-consul-v01730/public-potion_work.json",
+      "tests/fixtures/planeswalker-v01740/inherited-full-208-peaceful-final.json",
+      "tests/fixtures/death-consul-v01730/inherited-full-s3-final.json",
+      "tests/fixtures/wisdom-angel-v01700/defensive-round-2.json",
+      "tests/fixtures/catastrophe-v01710/wheel-return-report.json",
+      "tests/fixtures/catastrophe-v01710/buoy-return-report.json",
+      "tests/fixtures/catastrophe-v01710/buoy-return-actual-ordinary-exit.json",
+      "tests/fixtures/concealment-servant-v01690/reflection.json",
+      "tests/fixtures/wisdom-angel-v01700/original-enemy-fight.json",
+      "tests/fixtures/wisdom-angel-v01700/withdrawn-consent-same-device-returned.json",
+      "tests/fixtures/wisdom-angel-v01700/changed-condition-report.json",
+      "tests/fixtures/wisdom-angel-v01700/public-take_papers-changed-condition.json",
+      "tests/fixtures/concealment-servant-v01690/clinic-invitation-rest.json",
+      "tests/fixtures/potion-professor-v0770/natural.json",
+      "tests/fixtures/unshadowed-v01250/shared-close-save-boundary.json",
+      "tests/fixtures/cataclysm-priest-v01240/shared-close-save-boundary.json",
+      "tests/fixtures/calamity-demoness-v01770/snapshot-practiced.json",
+      "tests/fixtures/cultivator-v0690/natural.json",
+      "tests/fixtures/catastrophe-v01710/snapshot-practiced.json",
+      "tests/fixtures/concealment-servant-v01690/snapshot-departureStart.json",
+      "tests/fixtures/mysticism-magister-v01010/shared-report-save-boundary.json",
+      "tests/fixtures/ocean-singer-v01020/shared-promotion-save-boundary.json",
+      "tests/fixtures/soother-v0780/shared-promotion-save-boundary.json",
+      "tests/fixtures/rager-v0270/shared-combat-save-boundary.json",
+      "tests/fixtures/calamity-demoness-v01770/public-compact.jsonl",
+      "tests/fixtures/death-consul-v01730/boundaries.index.json"
+    ],
+    "lotm_release_0.196.0_star_key_test_inputs_1_2026-10-15.tar.gz": [
+      "tests/fixtures/star-key-v01960/boundaries.index.json",
+      "tests/fixtures/star-key-v01960/boundaries.steps.json",
+      "tests/fixtures/star-key-v01960/boundary-actual-consumption-star-key-potion-1.json",
+      "tests/fixtures/star-key-v01960/boundary-actual-consumption-star-key-potion-2.json",
+      "tests/fixtures/star-key-v01960/boundary-actual-ordinary-encounter-exit.json",
+      "tests/fixtures/star-key-v01960/boundary-actual-paid-work-after-living-exit.json",
+      "tests/fixtures/star-key-v01960/boundary-actual-potion-failure.json",
+      "tests/fixtures/star-key-v01960/boundary-actual-preparation-MARK_RETURN.json",
+      "tests/fixtures/star-key-v01960/boundary-actual-preparation-RECORD_ENDPOINTS.json",
+      "tests/fixtures/star-key-v01960/boundary-actual-preparation-VERIFY_ORIGINALS.json",
+      "tests/fixtures/star-key-v01960/boundary-actual1100p-buy-star-key-potion-1.json",
+      "tests/fixtures/star-key-v01960/boundary-actual1100p-buy-star-key-potion-2.json",
+      "tests/fixtures/star-key-v01960/boundary-actual150p-current-week-preparation-star-key-potion-1.json",
+      "tests/fixtures/star-key-v01960/boundary-actual150p-current-week-preparation-star-key-potion-2.json",
+      "tests/fixtures/star-key-v01960/boundary-actual4metre-arrival-and-independent-rowan-name-exchange.json",
+      "tests/fixtures/star-key-v01960/boundary-actual500p-guidance-and-frozen-eight-root-source.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-actual10p1AP-fresh-mara-invitation.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-actual2metre-walk-back-to-original-entrance.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-both-actual2metre-exits.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-close-current-contact-without-resetting-mara.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-current-originals-explained.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-fresh-ability-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-fresh-operator-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-fresh-owner-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-honest-actual-result-report.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-independent-check-and-actual4metre-carry.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-manually-close-same-shutter.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-manually-open-original-shutter.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-observe-current4metre-endpoint-and-sightline.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-one-paid-anchor_maintenance-attempt.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-ordinary-return-agreed.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-physically-inspect-near-far-and-return-to-entry.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-player-and-mara-really-walk-to-near-pad.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-read-original-local-return-marker.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-real-player-and-mara-walk-back-with-original.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-same-original-parcel-returned-to-entry-stand.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-source-costs-and-ordinary-alternative.json",
+      "tests/fixtures/star-key-v01960/boundary-anchor-transfer-take-same-player-owned-original.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-1.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-10.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-2.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-3.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-4.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-5.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-6.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-7.json",
+      "tests/fixtures/star-key-v01960/boundary-combat-round-8.json"
+    ],
+    "lotm_release_0.196.0_star_key_test_inputs_2_2026-10-15.tar.gz": [
+      "tests/fixtures/star-key-v01960/boundary-combat-round-9.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-actual10p1AP-fresh-mara-invitation.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-both-actual2metre-exits.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-close-current-contact-without-resetting-mara.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-current-originals-explained.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-fresh-ability-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-fresh-operator-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-fresh-owner-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-honest-actual-result-report.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-independent-check-and-actual4metre-walk.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-manually-close-same-shutter.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-manually-open-original-shutter.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-observe-current4metre-endpoint-and-sightline.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-one-paid-endpoint_location-attempt.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-ordinary-return-agreed.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-physically-inspect-near-far-and-return-to-entry.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-player-and-mara-really-walk-to-near-pad.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-read-original-local-return-marker.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-real-player-and-mara-walk-back-with-original.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-same-original-parcel-returned-to-entry-stand.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-source-costs-and-ordinary-alternative.json",
+      "tests/fixtures/star-key-v01960/boundary-endpoint-verification-take-same-player-owned-original.json",
+      "tests/fixtures/star-key-v01960/boundary-exact-original701-command-living-source.json",
+      "tests/fixtures/star-key-v01960/boundary-fixed-all-policy-before-fight.json",
+      "tests/fixtures/star-key-v01960/boundary-independent-optional-rowan-fight.json",
+      "tests/fixtures/star-key-v01960/boundary-promotion.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour-2.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour-3.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour-4.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour-5.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour-2.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour-3.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour-4.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour-5.json",
+      "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour.json",
+      "tests/fixtures/star-key-v01960/boundary-step-712-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-713-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-714-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-723-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-724-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-725-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-726-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-727-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-731-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-732-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-733-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-734-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-756-action.json"
+    ],
+    "lotm_release_0.196.0_star_key_test_inputs_3_2026-10-15.tar.gz": [
+      "tests/fixtures/star-key-v01960/boundary-step-757-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-758-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-781-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-782-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-783-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-806-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-807-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-808-action.json",
+      "tests/fixtures/star-key-v01960/boundary-step-809-action.json",
+      "tests/fixtures/star-key-v01960/boundary-three-honest-actual-reports-reflected.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-actual10p1AP-fresh-mara-invitation.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-actual2metre-walk-back-to-original-entrance.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-both-actual2metre-exits.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-close-current-contact-without-resetting-mara.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-current-originals-explained.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-fresh-ability-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-fresh-operator-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-fresh-owner-consent.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-honest-actual-result-report.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-manually-close-same-shutter.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-manually-open-original-shutter.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-mara-withdraws-current-participation.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-observe-current4metre-endpoint-and-sightline.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-one-paid-anchor_maintenance-attempt.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-ordinary-return-agreed.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-physically-inspect-near-far-and-return-to-entry.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-player-and-mara-really-walk-to-near-pad.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-read-original-local-return-marker.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-real-player-and-mara-walk-back-with-original.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-same-original-parcel-returned-to-entry-stand.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-source-costs-and-ordinary-alternative.json",
+      "tests/fixtures/star-key-v01960/boundary-withdrawn-return-take-same-player-owned-original.json",
+      "tests/fixtures/star-key-v01960/capture-integrity.json",
+      "tests/fixtures/star-key-v01960/commands.jsonl",
+      "tests/fixtures/star-key-v01960/natural.json",
+      "tests/fixtures/star-key-v01960/prior-blocker-boundaries.index.json",
+      "tests/fixtures/star-key-v01960/prior-blocker-boundaries.steps.json",
+      "tests/fixtures/star-key-v01960/prior-blocker-capture-integrity.json",
+      "tests/fixtures/star-key-v01960/prior-blocker-commands.jsonl",
+      "tests/fixtures/star-key-v01960/prior-blocker-natural.json",
+      "tests/fixtures/star-key-v01960/prior-blocker-public.jsonl",
+      "tests/fixtures/star-key-v01960/prior-blocker-summary.json",
+      "tests/fixtures/star-key-v01960/public.jsonl",
+      "tests/fixtures/star-key-v01960/resume-verification.json",
+      "tests/fixtures/star-key-v01960/snapshot-combatStart.json",
+      "tests/fixtures/star-key-v01960/snapshot-combatTerminal.json",
+      "tests/fixtures/star-key-v01960/snapshot-departure.json",
+      "tests/fixtures/star-key-v01960/snapshot-practiced.json",
+      "tests/fixtures/star-key-v01960/snapshot-promoted.json",
+      "tests/fixtures/star-key-v01960/snapshot-recoveredBeforeEncounter.json",
+      "tests/fixtures/star-key-v01960/source-prefix.json",
+      "tests/fixtures/star-key-v01960/summary.json"
+    ]
+  },
+  "logicalLegacyDependencies": [
+    {
+      "path": "tests/fixtures/planeswalker-v01740/natural.json",
+      "bytes": 9954058,
+      "sha256": "06e0bec9d3a72a41c27c96dbedafdddb023732f74a559471848f53163d144a78"
+    },
+    {
+      "path": "tests/fixtures/planeswalker-v01740/original-enemy-approach.json",
+      "bytes": 2486973,
+      "sha256": "ef0fe46be50b3b8ad09b8ef8551b7fa7fe76542626ccf769a50e31f9babe73f9"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundaries.index.json",
+      "bytes": 12149,
+      "sha256": "a6d2a9c1f76ab1e661af10b4151060b90f401019fd18c369b22ffd62f6bd8f50"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundaries.steps.json",
+      "bytes": 5697,
+      "sha256": "c39a4e069eb35b84cc23535ae6c05b1f9244c53a977971d3d4d953a09fc3b91c"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual-consumption-star-key-potion-1.json",
+      "bytes": 3614617,
+      "sha256": "60c01fb1b9700d5dcde2bcc156cddf926b9b064a4fb719ae9cbf1c6a9d668448"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual-consumption-star-key-potion-2.json",
+      "bytes": 3705139,
+      "sha256": "1ecabf65d9bfd22e14994772c03c6e834bdd9ceaedd720513114453eb7b33768"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual-ordinary-encounter-exit.json",
+      "bytes": 6962401,
+      "sha256": "4a882bd0257f788a85d9cb8f58553b32acd79603a1c97ebda67eb3fbd1e3bc4b"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual-paid-work-after-living-exit.json",
+      "bytes": 6996214,
+      "sha256": "577fcb5e22e74f4bf5b5b62f6b7a3bd68ad917b0feb290234972ba00da8f688a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual-potion-failure.json",
+      "bytes": 3614617,
+      "sha256": "60c01fb1b9700d5dcde2bcc156cddf926b9b064a4fb719ae9cbf1c6a9d668448"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual-preparation-MARK_RETURN.json",
+      "bytes": 3524509,
+      "sha256": "6f1de703ec8747919614b2bcc46d33db1d627981b732746c5907210a76930b12"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual-preparation-RECORD_ENDPOINTS.json",
+      "bytes": 3512910,
+      "sha256": "5bd24069c52df43761857abf88376647a3d4754adf4a4a49b1cf2da7ee056503"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual-preparation-VERIFY_ORIGINALS.json",
+      "bytes": 3502765,
+      "sha256": "2bbb825d23c2e6cde58dd8713db9a6c051cbe56662f8d9197d63218ad299124a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual1100p-buy-star-key-potion-1.json",
+      "bytes": 3590768,
+      "sha256": "cebf2ba9c85a85f21ebf3f82c202bfdb13a15f298208dee484f207feca3cb01c"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual1100p-buy-star-key-potion-2.json",
+      "bytes": 3680667,
+      "sha256": "a3801229ef90b4caa29ab0c315b339a981b9ba09c1ea848d72e88a7fa8ee4742"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual150p-current-week-preparation-star-key-potion-1.json",
+      "bytes": 3602776,
+      "sha256": "ef20f06497115214b543af1ce893aff5c85108b6fc36e4e235de7ec0a9003f52"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual150p-current-week-preparation-star-key-potion-2.json",
+      "bytes": 3693112,
+      "sha256": "a370a89f58a9215f4515f8b712e5c20ddb42c3a4b64010fdf1812c30f6096801"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual4metre-arrival-and-independent-rowan-name-exchange.json",
+      "bytes": 5361223,
+      "sha256": "2dc059538d8abba193bc5b3720a2051797895a4c146b1f79850444d6c83d7b37"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-actual500p-guidance-and-frozen-eight-root-source.json",
+      "bytes": 3087185,
+      "sha256": "9a8e5b8b881d1df11d67f24ff5940bb993a2a0968e734fb8086f9374f1098b14"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-actual10p1AP-fresh-mara-invitation.json",
+      "bytes": 3981135,
+      "sha256": "af569835e8412ccdc27e70fbc59e956c6e9650619774ed1c4697fee7b947e16a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-actual2metre-walk-back-to-original-entrance.json",
+      "bytes": 3968701,
+      "sha256": "6d83f626a4c4082a212a10e2c64347c4844edc3d5456b8515653bce018803566"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-both-actual2metre-exits.json",
+      "bytes": 4173613,
+      "sha256": "b06aea055d60bfc3368a56303f6a5c2bb3fbd737976027d4604f96f61e97e437"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-close-current-contact-without-resetting-mara.json",
+      "bytes": 4184880,
+      "sha256": "52e554dc7929c7d315f3d76d3d512f90654f6e25f0f959ff08e5fd5378dc9d5d"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-current-originals-explained.json",
+      "bytes": 3993261,
+      "sha256": "59eac981b645a67a98adbfce1f967afa096279cf7316b6bdf90bd85d44ea784e"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-fresh-ability-consent.json",
+      "bytes": 4025944,
+      "sha256": "ad2c11e685840526f0b4e03d3779514e74e67d5808cfed8e973b81a25a3024fa"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-fresh-operator-consent.json",
+      "bytes": 4015023,
+      "sha256": "ec92c7cd80caeae1b7e24301ebb728daec49c9e1f61b25adde9c48865c0657f4"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-fresh-owner-consent.json",
+      "bytes": 4004139,
+      "sha256": "c6af137ee54ea77157b8a087ba2881aca863279fb76fe0578146996809bcb62e"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-honest-actual-result-report.json",
+      "bytes": 4196203,
+      "sha256": "386deb557605c43ecc1cb7111ea4306be890c57139a9d5bf499b16add874b86f"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-independent-check-and-actual4metre-carry.json",
+      "bytes": 4128510,
+      "sha256": "23da4ffd4d66de11c0ea891dd194c0408fab19d0b4d48de737694546da7adf18"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-manually-close-same-shutter.json",
+      "bytes": 4162189,
+      "sha256": "e7a6bd745c2805234497f44b7bd65315cfe8fb5efdb754d9047fc4d9bbc2fa44"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-manually-open-original-shutter.json",
+      "bytes": 4048038,
+      "sha256": "6a5ba40ac0d0f3258920a22f736f168d832383fd0d73147d0bd0e608f18b20da"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-observe-current4metre-endpoint-and-sightline.json",
+      "bytes": 4104257,
+      "sha256": "06d541e157194ae827f21c8ed0da4556371ee0f6226c70b60e4bbbe09d770b66"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-one-paid-anchor_maintenance-attempt.json",
+      "bytes": 4116116,
+      "sha256": "f33acb2391b41618cf3e4e64d916fc272dc468ebe86f99d2528174ec956d8b80"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-ordinary-return-agreed.json",
+      "bytes": 4036882,
+      "sha256": "aae55075f355f39bfe8c5ca378427f08db4b560c1d8a9f36bec2228bae842851"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-physically-inspect-near-far-and-return-to-entry.json",
+      "bytes": 4059596,
+      "sha256": "de1be5a2ea9a569dfb93dc436949e2844d597175b5800b107ef41552286e3a63"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-player-and-mara-really-walk-to-near-pad.json",
+      "bytes": 4092891,
+      "sha256": "57b604758c94ffaa5ff56a7bd530c45226754040a07227be01b0d475a8862158"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-read-original-local-return-marker.json",
+      "bytes": 4070925,
+      "sha256": "663b28f89aa0cc54e899297750cb16683b2aa1ad76460f2934c4f2f697d79e91"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-real-player-and-mara-walk-back-with-original.json",
+      "bytes": 4140257,
+      "sha256": "12fec8a1513f7289edadb3fb69779ceed0fa36a5ac26a0f51ecb349fd71a250c"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-same-original-parcel-returned-to-entry-stand.json",
+      "bytes": 4151137,
+      "sha256": "a34c84d56c661109b901ef60ba0272695aae5a9a4fc8fcf3a013689f3ef8f0ac"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-source-costs-and-ordinary-alternative.json",
+      "bytes": 3956748,
+      "sha256": "630f2dd047ab405563e6606993afc56d0f649e1ef60b9e6bee596c8d6465f367"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-anchor-transfer-take-same-player-owned-original.json",
+      "bytes": 4081778,
+      "sha256": "5f0e6e9a7bfe66cc1cbf1afa0b287c7f79bffa86b046b3e5b0dd4dad0fc6de96"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-1.json",
+      "bytes": 6404164,
+      "sha256": "19bab1c8bfa3288adb7f0bb3e17216f7b4b1906e3d8199ab52dfc704a970fd1c"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-10.json",
+      "bytes": 6962401,
+      "sha256": "4a882bd0257f788a85d9cb8f58553b32acd79603a1c97ebda67eb3fbd1e3bc4b"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-2.json",
+      "bytes": 6512877,
+      "sha256": "0aa3d5821dbdd1f0ac4dfcb834ea05d2a7ab4de49a3c755694d927cd2d9b885d"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-3.json",
+      "bytes": 6566059,
+      "sha256": "62e8a870b7a646f6ca4718a55c5e4a3374c218d48dbc8207ff7f45dcf1c80b04"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-4.json",
+      "bytes": 6625181,
+      "sha256": "69c5e5d65c69d652f8fb1b3ca08ba59d990d5b5ba7e94bbeab17d877833916c1"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-5.json",
+      "bytes": 6650924,
+      "sha256": "9f019bdf354f296c11b609a79b3040fd73ae06666ffaed611cad305793434cfd"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-6.json",
+      "bytes": 6696131,
+      "sha256": "18d7264752640e16135cbd02d9de7887b6f27b5a56a57d6389761b907ded1b46"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-7.json",
+      "bytes": 6798243,
+      "sha256": "d614e29a499ead23d3393db90809a69a254807e7114e64a74266da9ab058406b"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-8.json",
+      "bytes": 6880373,
+      "sha256": "120b46f82b2997dc4190005fd8371024340b43a8441bb794069134ea28a4d77b"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-combat-round-9.json",
+      "bytes": 6912211,
+      "sha256": "f014f46bd06ed33edeeaaa04986a77540a2965f04fc47de5f7c83ea6d6fd4a8b"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-actual10p1AP-fresh-mara-invitation.json",
+      "bytes": 3730263,
+      "sha256": "481f4b6a474e6400bfcf0ad7109626ad99c2bdd7ce4df8d844929e7dc4be4956"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-both-actual2metre-exits.json",
+      "bytes": 3923022,
+      "sha256": "b59e06ebe5c2ec1a9a19a82a80d67ca3f8122bca498dcf35257760487a7539ff"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-close-current-contact-without-resetting-mara.json",
+      "bytes": 3934271,
+      "sha256": "45689de4859f6bb8ea83896f3cbe98516c45ba90aa009ffa7a25cfed9b9faf8a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-current-originals-explained.json",
+      "bytes": 3742377,
+      "sha256": "96035570a0251267ceeb0b9f54d46c377a5a78eaaa095847de6f5f3020adf16d"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-fresh-ability-consent.json",
+      "bytes": 3775037,
+      "sha256": "e7122857ccd2a392a3fc4d5108106e1eeaf64f3d7ee11771b21defff0d019fe6"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-fresh-operator-consent.json",
+      "bytes": 3764124,
+      "sha256": "a8e6859e02d5a8f7cdda812383edcbcff491e3365c2ac63aa613c5ce4f10faee"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-fresh-owner-consent.json",
+      "bytes": 3753248,
+      "sha256": "1112556f8a16f032e9955898282788842330a258298f9b1d9b09a69f04b3099e"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-honest-actual-result-report.json",
+      "bytes": 3945594,
+      "sha256": "d51d2312ef475ba23df19cc9f34c48b329cae4a4265ea55bba870212162542b3"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-independent-check-and-actual4metre-walk.json",
+      "bytes": 3878142,
+      "sha256": "c70856ab6510ae21863f79385f590e3d4f5292964fd0bb5c24d0d9b5b409117c"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-manually-close-same-shutter.json",
+      "bytes": 3911608,
+      "sha256": "0585921e860ef69a7f231d8ad9d6570200a0f902b8c8df2177d862c7ef4d094e"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-manually-open-original-shutter.json",
+      "bytes": 3797114,
+      "sha256": "277148ae28040f04f5a93f749e0f20d6de91f6779e297b9df7d8d210d404e2c6"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-observe-current4metre-endpoint-and-sightline.json",
+      "bytes": 3853294,
+      "sha256": "79746b724ae4f01e94e38e7e312e452fa6ae800c5cd1293ca8744188d99cb30f"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-one-paid-endpoint_location-attempt.json",
+      "bytes": 3865458,
+      "sha256": "d1dfa6817036e335e7355e55ec9a8afbbae9151079a5cf50955eb940eb1c6d10"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-ordinary-return-agreed.json",
+      "bytes": 3785967,
+      "sha256": "e4d87def40d8ce1c0384d6d9acc28b2d3490bb9a8b25e9f18e788d99af9ecb80"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-physically-inspect-near-far-and-return-to-entry.json",
+      "bytes": 3808665,
+      "sha256": "5aaa8c206a512b6ab06d939e2ae2810d3bc773ccb8aee971bb321c116e769619"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-player-and-mara-really-walk-to-near-pad.json",
+      "bytes": 3841937,
+      "sha256": "0fcab5d78fd8b76e8a66f39a616337bd0d0bbe0faad68b726cfa3a2b7a8cf78a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-read-original-local-return-marker.json",
+      "bytes": 3819987,
+      "sha256": "a918742af602daab4369b33ae815ab60ddc823915aa1a89876a9a91f56e62e26"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-real-player-and-mara-walk-back-with-original.json",
+      "bytes": 3889780,
+      "sha256": "9c16aa21c585971f8b59ed14893f95c838db1c5c9f519fa5e4f1c7717c409af6"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-same-original-parcel-returned-to-entry-stand.json",
+      "bytes": 3900568,
+      "sha256": "0bf94d0bfe5197dc2470564f08f5173e402e85a408782068c00ca4af894215df"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-source-costs-and-ordinary-alternative.json",
+      "bytes": 3716942,
+      "sha256": "2a92364fb881ecc9ebcb1506db8d56800d7cdcb40b7abb99ad664a90eb1960c5"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-endpoint-verification-take-same-player-owned-original.json",
+      "bytes": 3830832,
+      "sha256": "49fe63ea290690c4f80bb4f87d52170159c64383cd743e23a40a628e61efe057"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-exact-original701-command-living-source.json",
+      "bytes": 2675901,
+      "sha256": "96a87582485523e387c3241f3d4437105803f0e5dfb29acc230a14f8a6da40bc"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-fixed-all-policy-before-fight.json",
+      "bytes": 6265660,
+      "sha256": "e428bbc3290d02a4a0969dc32d21287c3353dbca9373055eac50b927da4933b6"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-independent-optional-rowan-fight.json",
+      "bytes": 6289027,
+      "sha256": "1ec4dc21f73dbb9b7834d109f72c4811adf0f6e42c5002a5deefcd5afcdfcd66"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-promotion.json",
+      "bytes": 3705139,
+      "sha256": "1ecabf65d9bfd22e14994772c03c6e834bdd9ceaedd720513114453eb7b33768"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour-2.json",
+      "bytes": 3546566,
+      "sha256": "185c1f565436b033bbf71e81942ad6b3de5657dfa6713712f5acc58c63c5eb2a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour-3.json",
+      "bytes": 3557689,
+      "sha256": "6569bd0716e29aaf11701e66d88d24a4d8404c6685383d4e51ab2bc1734fcaca"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour-4.json",
+      "bytes": 3568764,
+      "sha256": "030e3a01329523b85bb859fdbafff2ec31eadfa9b4656908b223abd9cf06736a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour-5.json",
+      "bytes": 3579713,
+      "sha256": "2b247f41a65c57ddf6f63bde59c1e16959cff35b088efcd79f2aa589aa32d9ea"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-1-actual-labour.json",
+      "bytes": 3535836,
+      "sha256": "59ba4fa71107a905e1f6964920d0d70ac2a662459fed1bb9e321106d4e6345f3"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour-2.json",
+      "bytes": 3636489,
+      "sha256": "a5b8e158c6ad8d22d41372d5004dc38b5d47e0a6c08f6b059ac34a9b5b3ba42e"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour-3.json",
+      "bytes": 3647606,
+      "sha256": "a0ab59dca72a4298486fcbe80cc40d3af846066daaf7a98490590c9f8422eeff"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour-4.json",
+      "bytes": 3658675,
+      "sha256": "e4d398730327524bec773b593b153016783990275650388dcd77a6a4a784aa7f"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour-5.json",
+      "bytes": 3669618,
+      "sha256": "d3576122c0127f6f25a5adbccf021f9c7665aa1d6bc88db32c0149244463b094"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-star-key-potion-2-actual-labour.json",
+      "bytes": 3625880,
+      "sha256": "b2e6e3078dfe403bbab784c28b35de075d5a390c8d5e03866c825ad689c8f445"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-712-action.json",
+      "bytes": 3596241,
+      "sha256": "76aa8350ace66c8308ed7f83c81e62772ceedc4e9a433aa0a4947e7f8f68ff1f"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-713-action.json",
+      "bytes": 3596319,
+      "sha256": "8d686bcb9daeb8e0466914ec8bd5145095eeebf5148243c7b952061d6d1f61cb"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-714-action.json",
+      "bytes": 3596773,
+      "sha256": "a987f11f207f54b4dab2eeb015f6d697eca12dda5b2de3587d1a7aa7822ddd03"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-723-action.json",
+      "bytes": 3686137,
+      "sha256": "78b9029ead6080bf838c482bca2ffa78d4dc5d8a8a041da39b32c593a5d7b3ea"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-724-action.json",
+      "bytes": 3686209,
+      "sha256": "5e7a9056a3a6c34933a437f47e71d95923de72aa68eaa7c63bfb9fb606d8b355"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-725-action.json",
+      "bytes": 3686660,
+      "sha256": "bd1f862d9524942f9900dd16e8a110704a795dc18fbf718ddef2ac81a27c2600"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-726-action.json",
+      "bytes": 3687112,
+      "sha256": "6c980845ccb89cfe8c75ea3c87e7539d90646d6629c90f67714f49a42a5f733c"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-727-action.json",
+      "bytes": 3687337,
+      "sha256": "8116b1961e6be41471a2383d62ea1a12f0ddcec1600365fd84fb557af06021cc"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-731-action.json",
+      "bytes": 3722349,
+      "sha256": "2eb11493b037198fe13294074fb71a5e138605db9a33fde1704210ee927a35ab"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-732-action.json",
+      "bytes": 3722681,
+      "sha256": "f5bd48b094e6a44aa4a60f492d07f96b3b1ba42073ec94a2b34a1625985f00fd"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-733-action.json",
+      "bytes": 3723132,
+      "sha256": "8b0e735e6e56b19b68f607746ffe787c7e0f1f765495d8246dc5803304139924"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-734-action.json",
+      "bytes": 3723358,
+      "sha256": "948d570f63f39fc0f0eab19b57e3affde2f366bf18de23ab3fcfcbb8d8bfe260"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-756-action.json",
+      "bytes": 3962338,
+      "sha256": "502dd894c3083941caf4e0a28302cba1eb71f2555e9a8d35c865453bddbf56b5"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-757-action.json",
+      "bytes": 3962670,
+      "sha256": "83d2672ac57e93813c9e184f0d2ddbc27db9abe04d02698ec5a3f288debd7587"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-758-action.json",
+      "bytes": 3962896,
+      "sha256": "4cecb54d319c4d0d93d9d7999f02f1d0777f28a528f1dce6cdbb2dcbf17867ab"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-781-action.json",
+      "bytes": 4212959,
+      "sha256": "80348ce7705d718a525b845bbcfaa115be6659ddac48109e6014fd6ffb0b8d52"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-782-action.json",
+      "bytes": 4213290,
+      "sha256": "86c7321fad260990e2e5345b6f40c2eafb2d3d949d89b8957d0f36e96aa4142f"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-783-action.json",
+      "bytes": 4213516,
+      "sha256": "46d33bd1557f0650cd4c9cb8a4100bca2a7a090ca3d8297da2ce7697998675a8"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-806-action.json",
+      "bytes": 4462591,
+      "sha256": "0392ae710367223b5f312a100adb17b97fee0402a79a1943e2fbcbc01a3da6d3"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-807-action.json",
+      "bytes": 4462842,
+      "sha256": "6c0b27c855fb74eb0f4fecfd06b05073df5af767210557837a35f053f0214946"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-808-action.json",
+      "bytes": 4463068,
+      "sha256": "4390ef60a8ae1f9f76d784239f3c8beb25a6671cb10525a6d391d192ad7128f6"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-step-809-action.json",
+      "bytes": 4463523,
+      "sha256": "ddb2bc144fbcf723193847bbda72493b3b6710513bbcc2a9e08cc1c9f98888e5"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-three-honest-actual-reports-reflected.json",
+      "bytes": 4456885,
+      "sha256": "d1d9ba0619a1ed7ecae0694905b303bd0a87f3c3e7842e2d8c9c1e4a7b908a57"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-actual10p1AP-fresh-mara-invitation.json",
+      "bytes": 4231773,
+      "sha256": "142cee69a6bdf189e6b600935ec3ff472d9d6c2d9a38856f6733598af2e6b397"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-actual2metre-walk-back-to-original-entrance.json",
+      "bytes": 4219326,
+      "sha256": "bcd175d549cdd8c89f0fb53ceb02d9b6e77a71f1815f9ca35459d8f015d09167"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-both-actual2metre-exits.json",
+      "bytes": 4422963,
+      "sha256": "e7a9061d3d4751a50fb3002a45760de56efe030665d426d6500da6a7bb041e1c"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-close-current-contact-without-resetting-mara.json",
+      "bytes": 4434243,
+      "sha256": "fccc5ce64d8d0995c13cb22b8ca4b3a88f7b525f9832f19f2dc5d169dee27ab9"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-current-originals-explained.json",
+      "bytes": 4243910,
+      "sha256": "9a487ecace4ee1823a12ba1907ce33b3bb2a88a55430cc9631839ac5341b519a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-fresh-ability-consent.json",
+      "bytes": 4276623,
+      "sha256": "cb812a5bab191ddaba24e47887d66c04456c1645fdec42a824da783afbc93188"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-fresh-operator-consent.json",
+      "bytes": 4265692,
+      "sha256": "cfabb27d8d88f262a00933c3d406705df5212a8db8e730628da0db9f13705740"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-fresh-owner-consent.json",
+      "bytes": 4254798,
+      "sha256": "d79ec0299803b97bcfeeac831fadfb77e74d0f93a021c412090de55bb230a02c"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-honest-actual-result-report.json",
+      "bytes": 4445583,
+      "sha256": "231912abf42de19238918aab960f7f1537fcc76a564268a17d64c1b1aed7a6ca"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-manually-close-same-shutter.json",
+      "bytes": 4411531,
+      "sha256": "b6a940f6f2501ee13f332609f69239a202dcbb2a33b1176acf4ec07e2c6bd19d"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-manually-open-original-shutter.json",
+      "bytes": 4298735,
+      "sha256": "8603261a4a78ef5b3e75de42642a07e9dd190e56c7abfb646123fe2a362c2078"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-mara-withdraws-current-participation.json",
+      "bytes": 4378486,
+      "sha256": "a03f15326ddd9bb6bd11bebefb614f3245b8c41f3b204cf79a9591a4b804ca61"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-observe-current4metre-endpoint-and-sightline.json",
+      "bytes": 4354996,
+      "sha256": "37b51e223b03a10fa1960c3a7e769a740a98a5adda4a851731ad11aed3040515"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-one-paid-anchor_maintenance-attempt.json",
+      "bytes": 4367042,
+      "sha256": "8d5c4e942bc7c2a885f4849f9faf4c8eabf8914176c4253aa7207469f8b5a4fa"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-ordinary-return-agreed.json",
+      "bytes": 4287570,
+      "sha256": "57b33235b99e00b3409b0188374c9d926c2bc438c33610069e15f5c44ad3c4d1"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-physically-inspect-near-far-and-return-to-entry.json",
+      "bytes": 4310303,
+      "sha256": "97a076875a0d92ee54d7bdd388a603f5756191cc97d0b572a5de06a035343254"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-player-and-mara-really-walk-to-near-pad.json",
+      "bytes": 4343625,
+      "sha256": "f9aea1bf097fb2856e8f2810878c774b2df1cb624dc25a94c50f7ded25740ae7"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-read-original-local-return-marker.json",
+      "bytes": 4321642,
+      "sha256": "844f5b5c2e06561192d0224d1553ea428afbaf37ade16bc21691219681fcdd97"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-real-player-and-mara-walk-back-with-original.json",
+      "bytes": 4389313,
+      "sha256": "771dda123b259490f20cdfe1dd2f7e92c0f59fae164c28c993981b0650f5b837"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-same-original-parcel-returned-to-entry-stand.json",
+      "bytes": 4400471,
+      "sha256": "3fd9cd3f78a5c488c8270dc40b117583907167372b4e1f54c4074b426882fdf9"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-source-costs-and-ordinary-alternative.json",
+      "bytes": 4207364,
+      "sha256": "34eca9522a3ac2312e262517cb1c2e374ad2e803275e5b76e9d33a73291ad01b"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/boundary-withdrawn-return-take-same-player-owned-original.json",
+      "bytes": 4332505,
+      "sha256": "4f41b0a885b0ff2d12abeee74ea18ebdb303c021cffa84bf78266a0965b67474"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/capture-integrity.json",
+      "bytes": 18525,
+      "sha256": "8c5d81e104e12a558bac0e7c0773e5198f37bc2ee01a5b2fb5011ae0adc8f56e"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/commands.jsonl",
+      "bytes": 1223082,
+      "sha256": "52a70a2be8956e618707993e5c1dae24868cf2fd0ff2f85583b3301ed7481542"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/natural.json",
+      "bytes": 9160811,
+      "sha256": "d9f23dd736ccf0a9fe4eb48e7ffbd79f86a87c6f6ad58dcd913d234c3251cc6d"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/prior-blocker-boundaries.index.json",
+      "bytes": 11499,
+      "sha256": "1dac7231e7f4c18f9ca889893e95918f73f38910ab6a6acf3bd5692452d1dec6"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/prior-blocker-boundaries.steps.json",
+      "bytes": 5408,
+      "sha256": "835cce5074a3aff1261f92809ae543e9f3126a61383a81e879e5be661d83af7a"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/prior-blocker-capture-integrity.json",
+      "bytes": 15359,
+      "sha256": "110880a2cc5bafbb80f63b384c975089b1de6821a9b33d633081627423601562"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/prior-blocker-commands.jsonl",
+      "bytes": 1202633,
+      "sha256": "f4f04a8c2149f8c8f18d073d967fbca027b0f09a9be94548370897df56f39c82"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/prior-blocker-natural.json",
+      "bytes": 8566917,
+      "sha256": "b666ef2deed2d19188793f2fd036c397cde8f695a47b8d1653028e608f019d4f"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/prior-blocker-public.jsonl",
+      "bytes": 50603,
+      "sha256": "cd8931907cc018cbb46b9d935f694447e47d10821372e1e80b5b14bec25ca35e"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/prior-blocker-summary.json",
+      "bytes": 19044,
+      "sha256": "20ebf010685f2a7b9f69c33628ecb2ff19bc132cee2723e930cdfd6aeeb14922"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/public.jsonl",
+      "bytes": 53835,
+      "sha256": "6a90a98bce9097255d35f3644fb4849bf2ee6da718cbc9f61d7adcaa9b63a6e0"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/resume-verification.json",
+      "bytes": 1652,
+      "sha256": "7423934a2dfef434994f642a49ecf6232865685fd203417172a9a2b8610effe1"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/snapshot-combatStart.json",
+      "bytes": 3152608,
+      "sha256": "69d53a37e4bac59243c127d1a5a56c90cefa7494579edc77537e621bb40f6d56"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/snapshot-combatTerminal.json",
+      "bytes": 3497970,
+      "sha256": "a538a888f26c76aea6d39e129c59b989b566719ff697ea4cd7b58828972857e8"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/snapshot-departure.json",
+      "bytes": 1338075,
+      "sha256": "33798235f9b5e02c8011d61c41650c4c2f03179178497fcb38966b4de90ff228"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/snapshot-practiced.json",
+      "bytes": 2231180,
+      "sha256": "d34eb7a2c02c0e7c85aed2eb1329c5efad1849114315cd78bb210b228657cb81"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/snapshot-promoted.json",
+      "bytes": 1855670,
+      "sha256": "a278529cd4a6835124fa10a422509865bcbba7fead33b05e23efe07dab3ad184"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 2231886,
+      "sha256": "be5302d8f4abff400e26c33608722565f1e5e8629dc9dd2d66ed288ce0a70056"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/source-prefix.json",
+      "bytes": 719266,
+      "sha256": "e8b762a36b861d0c0cd1091ce4a33e63f011f783969cff47f669d610e3475ecd"
+    },
+    {
+      "path": "tests/fixtures/star-key-v01960/summary.json",
+      "bytes": 23788,
+      "sha256": "8bec982b7547b601c2b5fd4a8b5c20a619997b8f895dbfa5ed2628b9702f5c78"
+    },
+    {
+      "path": "tests/fixtures/wanderer-v01500/continued.json",
+      "bytes": 5527846,
+      "sha256": "aa074a2c14ca18d3199a667bbec61b47bab05b6796de83649949299c9f03ffa9"
+    }
+  ],
+  "legacyContainerFiles": 278,
+  "logicalRequiredFiles": 268,
+  "fullContainerRequiredFiles": 395,
+  "outputParts": [
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_1_2026-10-18.tar.gz",
+      "bytes": 14295636,
+      "sha256": "1f86446b0d88015c27ec730f46a44839bc7f39b7a131ebaa2f991ec54808108b",
+      "members": [
+        "tests/fixtures/door-v02180/action-824.json.gz",
+        "tests/fixtures/door-v02180/action-825.json.gz",
+        "tests/fixtures/door-v02180/action-826.json.gz",
+        "tests/fixtures/door-v02180/action-827.json.gz",
+        "tests/fixtures/door-v02180/action-828.json.gz",
+        "tests/fixtures/door-v02180/action-829.json.gz",
+        "tests/fixtures/door-v02180/action-830.json.gz",
+        "tests/fixtures/door-v02180/action-831.json.gz",
+        "tests/fixtures/door-v02180/action-832.json.gz",
+        "tests/fixtures/door-v02180/action-833.json.gz",
+        "tests/fixtures/door-v02180/action-834.json.gz",
+        "tests/fixtures/door-v02180/action-835.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_2_2026-10-18.tar.gz",
+      "bytes": 14486908,
+      "sha256": "b63d54c3b47ca961f15466ed93f50dd6ead54f20ebca696370bc59d16a2131be",
+      "members": [
+        "tests/fixtures/door-v02180/action-836.json.gz",
+        "tests/fixtures/door-v02180/action-837.json.gz",
+        "tests/fixtures/door-v02180/action-838.json.gz",
+        "tests/fixtures/door-v02180/action-839.json.gz",
+        "tests/fixtures/door-v02180/action-840.json.gz",
+        "tests/fixtures/door-v02180/action-841.json.gz",
+        "tests/fixtures/door-v02180/action-842.json.gz",
+        "tests/fixtures/door-v02180/action-843.json.gz",
+        "tests/fixtures/door-v02180/action-844.json.gz",
+        "tests/fixtures/door-v02180/action-845.json.gz",
+        "tests/fixtures/door-v02180/action-846.json.gz",
+        "tests/fixtures/door-v02180/action-847.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_3_2026-10-18.tar.gz",
+      "bytes": 14587238,
+      "sha256": "f2e17a3499aa4be88847d2b5ae0f621b278fd790a1368ddf6cd505c538111675",
+      "members": [
+        "tests/fixtures/door-v02180/action-848.json.gz",
+        "tests/fixtures/door-v02180/action-849.json.gz",
+        "tests/fixtures/door-v02180/action-850.json.gz",
+        "tests/fixtures/door-v02180/action-851.json.gz",
+        "tests/fixtures/door-v02180/action-852.json.gz",
+        "tests/fixtures/door-v02180/action-853.json.gz",
+        "tests/fixtures/door-v02180/action-854.json.gz",
+        "tests/fixtures/door-v02180/action-855.json.gz",
+        "tests/fixtures/door-v02180/action-856.json.gz",
+        "tests/fixtures/door-v02180/action-857.json.gz",
+        "tests/fixtures/door-v02180/action-858.json.gz",
+        "tests/fixtures/door-v02180/action-859.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_4_2026-10-18.tar.gz",
+      "bytes": 14650888,
+      "sha256": "63c007e84ce3fe7e5f8f18f6874b3114ed6b23128b1011c03b003fd28b2453aa",
+      "members": [
+        "tests/fixtures/door-v02180/action-860.json.gz",
+        "tests/fixtures/door-v02180/action-861.json.gz",
+        "tests/fixtures/door-v02180/action-862.json.gz",
+        "tests/fixtures/door-v02180/action-863.json.gz",
+        "tests/fixtures/door-v02180/action-864.json.gz",
+        "tests/fixtures/door-v02180/action-865.json.gz",
+        "tests/fixtures/door-v02180/action-866.json.gz",
+        "tests/fixtures/door-v02180/action-867.json.gz",
+        "tests/fixtures/door-v02180/action-868.json.gz",
+        "tests/fixtures/door-v02180/action-869.json.gz",
+        "tests/fixtures/door-v02180/action-870.json.gz",
+        "tests/fixtures/door-v02180/action-871.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_5_2026-10-18.tar.gz",
+      "bytes": 14729892,
+      "sha256": "75189be14ac5e920b37e2fb58ce592aa5c5383f89681182a258a20535fc529db",
+      "members": [
+        "tests/fixtures/door-v02180/action-872.json.gz",
+        "tests/fixtures/door-v02180/action-873.json.gz",
+        "tests/fixtures/door-v02180/action-874.json.gz",
+        "tests/fixtures/door-v02180/action-875.json.gz",
+        "tests/fixtures/door-v02180/action-876.json.gz",
+        "tests/fixtures/door-v02180/action-877.json.gz",
+        "tests/fixtures/door-v02180/action-878.json.gz",
+        "tests/fixtures/door-v02180/action-879.json.gz",
+        "tests/fixtures/door-v02180/action-880.json.gz",
+        "tests/fixtures/door-v02180/action-881.json.gz",
+        "tests/fixtures/door-v02180/action-882.json.gz",
+        "tests/fixtures/door-v02180/action-883.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_6_2026-10-18.tar.gz",
+      "bytes": 14801789,
+      "sha256": "230f98c66a9396ffe35af92e3fb3c333bd8b8493ba6a3990d2eea34d39547b9e",
+      "members": [
+        "tests/fixtures/door-v02180/action-884.json.gz",
+        "tests/fixtures/door-v02180/action-885.json.gz",
+        "tests/fixtures/door-v02180/action-886.json.gz",
+        "tests/fixtures/door-v02180/action-887.json.gz",
+        "tests/fixtures/door-v02180/action-888.json.gz",
+        "tests/fixtures/door-v02180/action-889.json.gz",
+        "tests/fixtures/door-v02180/action-890.json.gz",
+        "tests/fixtures/door-v02180/action-891.json.gz",
+        "tests/fixtures/door-v02180/action-892.json.gz",
+        "tests/fixtures/door-v02180/action-893.json.gz",
+        "tests/fixtures/door-v02180/action-894.json.gz",
+        "tests/fixtures/door-v02180/action-895.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_7_2026-10-18.tar.gz",
+      "bytes": 13608765,
+      "sha256": "dd897b686f7ebd4ee61bedf1f64cf896e5461cd083f64b7f845942f40ce225b1",
+      "members": [
+        "tests/fixtures/door-v02180/action-896.json.gz",
+        "tests/fixtures/door-v02180/action-897.json.gz",
+        "tests/fixtures/door-v02180/action-898.json.gz",
+        "tests/fixtures/door-v02180/action-899.json.gz",
+        "tests/fixtures/door-v02180/action-900.json.gz",
+        "tests/fixtures/door-v02180/action-901.json.gz",
+        "tests/fixtures/door-v02180/action-902.json.gz",
+        "tests/fixtures/door-v02180/action-903.json.gz",
+        "tests/fixtures/door-v02180/action-904.json.gz",
+        "tests/fixtures/door-v02180/action-905.json.gz",
+        "tests/fixtures/door-v02180/action-906.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_8_2026-10-18.tar.gz",
+      "bytes": 13658753,
+      "sha256": "6832186e2f0236c17228fcb15a3f55230b23e38d74c59db41c34ada7bad1280b",
+      "members": [
+        "tests/fixtures/door-v02180/action-907.json.gz",
+        "tests/fixtures/door-v02180/action-908.json.gz",
+        "tests/fixtures/door-v02180/action-909.json.gz",
+        "tests/fixtures/door-v02180/action-910.json.gz",
+        "tests/fixtures/door-v02180/action-911.json.gz",
+        "tests/fixtures/door-v02180/action-912.json.gz",
+        "tests/fixtures/door-v02180/action-913.json.gz",
+        "tests/fixtures/door-v02180/action-914.json.gz",
+        "tests/fixtures/door-v02180/action-915.json.gz",
+        "tests/fixtures/door-v02180/action-916.json.gz",
+        "tests/fixtures/door-v02180/action-917.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_9_2026-10-18.tar.gz",
+      "bytes": 14593468,
+      "sha256": "30fa5bfd20a1de0a4ee734f18dae329dc108f4963d1c9247f829fab1be58aed5",
+      "members": [
+        "tests/fixtures/door-v02180/action-918.json.gz",
+        "tests/fixtures/door-v02180/action-919.json.gz",
+        "tests/fixtures/door-v02180/action-920.json.gz",
+        "tests/fixtures/door-v02180/action-921.json.gz",
+        "tests/fixtures/door-v02180/action-922.json.gz",
+        "tests/fixtures/door-v02180/action-923.json.gz",
+        "tests/fixtures/door-v02180/action-924.json.gz",
+        "tests/fixtures/door-v02180/action-925.json.gz",
+        "tests/fixtures/door-v02180/action-926.json.gz",
+        "tests/fixtures/door-v02180/action-927.json.gz",
+        "tests/fixtures/door-v02180/action-928.json.gz",
+        "tests/fixtures/door-v02180/archived-original196-natural.json.gz",
+        "tests/fixtures/door-v02180/boundaries.index.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_10_2026-10-18.tar.gz",
+      "bytes": 1567618,
+      "sha256": "80e591aa8460fee67c9ae3047bae8133e6b9de6eaf29fe6d4d281e3613f2fc79",
+      "members": [
+        "tests/fixtures/door-v02180/checkpoint.json.gz",
+        "tests/fixtures/door-v02180/commands.ndjson.gz",
+        "tests/fixtures/door-v02180/input-freeze.json",
+        "tests/fixtures/door-v02180/migration-initial.json.gz",
+        "tests/fixtures/door-v02180/natural.json.gz",
+        "tests/fixtures/door-v02180/producer-tests.mjs",
+        "tests/fixtures/door-v02180/producer.mjs",
+        "tests/fixtures/door-v02180/recovery-manifest.json",
+        "tests/fixtures/door-v02180/runtime-freeze.json",
+        "tests/fixtures/door-v02180/summary.json"
+      ]
+    }
+  ],
+  "captureFileEntries": [
+    {
+      "path": "tests/fixtures/door-v02180/action-824.json.gz",
+      "bytes": 1125953,
+      "sha256": "2952401d354c45f40c71a55e9fdc69e69ff49f74ca3b07b80c4a6118ccab0611"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-825.json.gz",
+      "bytes": 1203042,
+      "sha256": "dbfb387ad0d7570352a08f93391f9883041984d78b2a6b42444b413a788dbe0d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-826.json.gz",
+      "bytes": 1204844,
+      "sha256": "4e37746ac91f83456fe80952b5ff6e2e5644557e372575d12d8f4f117d417444"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-827.json.gz",
+      "bytes": 1205753,
+      "sha256": "b171de2af2a252b0845a8011431230796794386ad5f0d0e1186ed0a14ebe4883"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-828.json.gz",
+      "bytes": 1207285,
+      "sha256": "418cacb72f0c2bc8d7df4513d756da578d5df77d93bc48e2f06a78df346e846e"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-829.json.gz",
+      "bytes": 1208098,
+      "sha256": "3fa2d9d80864d338751f0aeb035a5bcdaf8b983b9a5ac3adc32deed4c83f1791"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-830.json.gz",
+      "bytes": 1209074,
+      "sha256": "00fb9b0275c429178b581f9abd88bb88c185fa31d84a3e0a7cbe156d9c238c78"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-831.json.gz",
+      "bytes": 1209956,
+      "sha256": "ac85184a20d1af4683339560b208c6436b6410300015284079bcf59169c0eb75"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-832.json.gz",
+      "bytes": 1210427,
+      "sha256": "147c5cef9c6d6994489411df93be1536585e8542f33cd173489f1ad5cdab324e"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-833.json.gz",
+      "bytes": 1210940,
+      "sha256": "392f234be2ee7408ef80c96878010b2fb6b26a6f3d8c9ebf6edc66772ba5052b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-834.json.gz",
+      "bytes": 1211473,
+      "sha256": "1415b4eaff0656e73d0a3c7f5b1246cb6883cd64ce59a986c16aac2a54889b15"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-835.json.gz",
+      "bytes": 1212062,
+      "sha256": "96ce9d0cc9769467541574963a44318afeb8be0059044675d2da4f733187fd19"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-836.json.gz",
+      "bytes": 1213375,
+      "sha256": "7bf55c4175653434791e069441d391fb05ed6c8d2c5b454df7cf6cd81fa2c5ce"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-837.json.gz",
+      "bytes": 1214070,
+      "sha256": "ffd3e2c5b52e25126ebfbd36cd99cec8d182e6a06491679de3372c0f226ecc86"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-838.json.gz",
+      "bytes": 1214448,
+      "sha256": "566ace9e5563de10473a98dd8164dacd4ee830d0bbe4edab3bb26532c9267078"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-839.json.gz",
+      "bytes": 1214927,
+      "sha256": "e75ae4b821c9d3f03aee4ecd498c5cfab27578e58a486a35120a1a8f3a579272"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-840.json.gz",
+      "bytes": 1215569,
+      "sha256": "e419c2d8895ab01cf8b305f334ed7396edef99eb2e904b401a8bd0393bb479ac"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-841.json.gz",
+      "bytes": 1216617,
+      "sha256": "7b083817c84c44fc279253602b6ab932966e254877943aef9e549f99f3e22263"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-842.json.gz",
+      "bytes": 1217540,
+      "sha256": "2bdcd1ae241d4d4304516491fb98487224f9c94f16998a007e238555152518c2"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-843.json.gz",
+      "bytes": 1218393,
+      "sha256": "a2325e9c17315f070aa9d80b7fa776d48ffa1944c259f0bbccaf081a3b346c01"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-844.json.gz",
+      "bytes": 1219557,
+      "sha256": "6cd0432d7fa73dff8cec140d5df9933c546dc26784ff05a29cda2f09e452ca44"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-845.json.gz",
+      "bytes": 1220723,
+      "sha256": "aaab63715b685738fc68121a6d11ec4a3e53a68099fc9ff8df26b33ca4579be6"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-846.json.gz",
+      "bytes": 1221001,
+      "sha256": "1be38344078bc100c931c77a489475652d04691e119d55adff415987e7d7d8bb"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-847.json.gz",
+      "bytes": 1222458,
+      "sha256": "865638f043a2156cb8e41a32e207d39cb397b7f656ef300e692a73abf6611b42"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-848.json.gz",
+      "bytes": 1222945,
+      "sha256": "34c7e44aa259ce6c0979caf882c9830baec138edd421b057b51f402899473064"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-849.json.gz",
+      "bytes": 1223794,
+      "sha256": "bbe9c9bc188856903a31ae00f90019b20b8c7c32ae6ee5dc7a8f9ed6e66ccb99"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-850.json.gz",
+      "bytes": 1224572,
+      "sha256": "220ed514871da18997af02ca7cd447088d305967223687792a1ac74e42349347"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-851.json.gz",
+      "bytes": 1225349,
+      "sha256": "055b159fb77821ac4ed097d02a86fdf5648e90a5245986fa53acddf340da6caa"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-852.json.gz",
+      "bytes": 1226165,
+      "sha256": "53d7d7034b58cf51a8dbe1a3569123ae1980d834c954b5035930356e37808bef"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-853.json.gz",
+      "bytes": 1227443,
+      "sha256": "15e3a90b9398d9dc46a02a77d248620c4fa713bc856a991afc609cfb1fb5b9e4"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-854.json.gz",
+      "bytes": 1228407,
+      "sha256": "a0af234278088efecb899fef7b65564dd513a75d9d1a86c2e5d735ea46298ed5"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-855.json.gz",
+      "bytes": 1228908,
+      "sha256": "dfc8e01fb6235053034059cf1d59fa8cf81288cad46ce94cdb4f4d9ae487a3a4"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-856.json.gz",
+      "bytes": 1229977,
+      "sha256": "bfef138da9c3ee3c6f5414374651aeaf18d858509d069816b38aea2f00f1db05"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-857.json.gz",
+      "bytes": 1230293,
+      "sha256": "93a3930b6d0abdeebe96989bc40b359158be04a267636296572b6f067239f2cd"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-858.json.gz",
+      "bytes": 1230535,
+      "sha256": "f6a1720beff755c0fa11806eed321648b0b7aa6f35d1d6d0e56271a632c28152"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-859.json.gz",
+      "bytes": 1230981,
+      "sha256": "a6d27f5c9225fe4e428ff52fe4c2ed1e601d058453cca1fddb03d058695379d3"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-860.json.gz",
+      "bytes": 1231481,
+      "sha256": "912d016fddd04bbbe3111c853d21ea566d395b95b98de6074f136687f14c5f36"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-861.json.gz",
+      "bytes": 1232050,
+      "sha256": "3e70c360b4a4c1aedbc729dded46a50516931a0bc5982403807ac92bc8141c5b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-862.json.gz",
+      "bytes": 1232432,
+      "sha256": "3d69835da67c51cc1c93ec3e98f703f93cbf56ab2682e33a4a35517938db4aff"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-863.json.gz",
+      "bytes": 1232965,
+      "sha256": "9617ce33cc01382c2b6a627ad74c1672a0e459d0498d971eb32743dd8c0387d1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-864.json.gz",
+      "bytes": 1233324,
+      "sha256": "cdff6f4f194ccac9fe21d1330b0135691745cbb057d2fc0dc884b25726ae4523"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-865.json.gz",
+      "bytes": 1233786,
+      "sha256": "b55ea5f442701340f3d0d9fdd5e5c6c9b6f145ac1353da16b848c36e4b58c683"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-866.json.gz",
+      "bytes": 1234165,
+      "sha256": "a277122124a2f9844eba04e807764878346878792bf44134006c7e37e8cc3df7"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-867.json.gz",
+      "bytes": 1234149,
+      "sha256": "a57826477a1a3b764134fb65eb51b0c5e88c5e97ef515465966a0d32456cb71c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-868.json.gz",
+      "bytes": 1235073,
+      "sha256": "2a3467eaee38d04d24664516cfe789100dc3bb33b6a5aaf5bea514a2b1ec9e86"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-869.json.gz",
+      "bytes": 1235212,
+      "sha256": "ca1c974a4eed2120e17943219d2e1cc9b46d66742fada07abea65493ee5986ee"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-870.json.gz",
+      "bytes": 1235800,
+      "sha256": "2a2237d4fcb2499a03646e64695c5cb1521b82f23318d8b1f57c762877c140f1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-871.json.gz",
+      "bytes": 1236549,
+      "sha256": "0c6fb3eb73b9036b7117e5e656da085ee7a97f3f940fe2880f0f91eb05dfb1ee"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-872.json.gz",
+      "bytes": 1237147,
+      "sha256": "c8c2c3c48ce1a42e63d8b38b53e31e21d924625c7cb006c578f289b821c69f69"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-873.json.gz",
+      "bytes": 1237647,
+      "sha256": "4f9132e5d3ad3112fa89b0000e5a6262c2b1ab10f0a8b6f402008c1c31666a7d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-874.json.gz",
+      "bytes": 1238144,
+      "sha256": "4c9500d5f80dca20cd5d3329705bb3692b79144f503486ff0ef6c88a919eeaa0"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-875.json.gz",
+      "bytes": 1238678,
+      "sha256": "b4adc38e676159aeaf19c658f8e6eb87b27c03bb0b5b7056af18ad4fe17dd68e"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-876.json.gz",
+      "bytes": 1239703,
+      "sha256": "61f5a9d1f424b6f3c5853c029e51596167c2764331b1e8f368be6f89240377f5"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-877.json.gz",
+      "bytes": 1240183,
+      "sha256": "64911270a4d1030a3648ddc67089c879b838faae779dbfff7ab4b7e120dbc7f8"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-878.json.gz",
+      "bytes": 1240453,
+      "sha256": "33de4441b61a56cfc0d8881502e3f64c880debb63b10273bc803c15ead45eb10"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-879.json.gz",
+      "bytes": 1240993,
+      "sha256": "18a53b4b0ec285122b80659e91cc3cf08dbfdae353af3246604805e8898d2c0a"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-880.json.gz",
+      "bytes": 1241704,
+      "sha256": "fccc5f11fefde7e8624b351e3118ca81922f7a3a9bcd3d4d0ae10ae2e9603593"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-881.json.gz",
+      "bytes": 1242655,
+      "sha256": "d621d55ec6fa7152ca089d75b5b53ca59fdf1cd7a3f2e205e884cab40c23c326"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-882.json.gz",
+      "bytes": 1243463,
+      "sha256": "f39958e2118a9c09bc18023c03e4bc7a7e9242c4ec8baefc8f10654b1f67cc1d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-883.json.gz",
+      "bytes": 1243954,
+      "sha256": "80aade6eb289f4a998e7b19737fbe63a32fc0ab6cf8cdb8874459ce8a30e923b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-884.json.gz",
+      "bytes": 1244764,
+      "sha256": "5ab8521fbe4db244f9c939ab0c32552830ab655ec811eb8c71e7ed90d61d7bb8"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-885.json.gz",
+      "bytes": 1244922,
+      "sha256": "025dd30a3a6106ee83aaf59403c2717f7f77f2221d0fe6ecdf70fb4e1243a367"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-886.json.gz",
+      "bytes": 1245429,
+      "sha256": "2b0852df7b42f946288a1740263d5c51235274e5278fee4b5c61ce8ae2fd0b9d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-887.json.gz",
+      "bytes": 1246720,
+      "sha256": "58dd365ef3588cc8dc23af252206ea81a242b5429af875b879af59d47eaf953e"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-888.json.gz",
+      "bytes": 1247456,
+      "sha256": "4420277a572d13c699611c487ce1ec8e0b5b1156300c839eed5b0364f063d19b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-889.json.gz",
+      "bytes": 1247849,
+      "sha256": "3a0fa01217d8ff05638a4eb5a830759847fc88b5de70189d10396bc15a7a5945"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-890.json.gz",
+      "bytes": 1247977,
+      "sha256": "29a61b141b44010744a322f49549519da06c438ce7b46740962fd7e524133391"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-891.json.gz",
+      "bytes": 1248514,
+      "sha256": "ae98c8ff67f303de9678e6099c16e1ab8c0b81fc564d65d811b835d6ee6d55f2"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-892.json.gz",
+      "bytes": 1249245,
+      "sha256": "985c819d7c13e87c83cda3387becda2418ec8bdc0aeba7db30fd72dab862dc3b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-893.json.gz",
+      "bytes": 1250332,
+      "sha256": "d6ee0fc50e0f384f32123b711daa739b949babcb8fa3cd10050b11504458b00c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-894.json.gz",
+      "bytes": 1250673,
+      "sha256": "d34d494845deeced2ad6d2866adb08fa774323816eb27add788735cf8d7939b3"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-895.json.gz",
+      "bytes": 1250572,
+      "sha256": "547d4bce00899e54322d0136b11f2e45fd408f9b90ba2a1caa3537b5f8fd3eea"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-896.json.gz",
+      "bytes": 1251006,
+      "sha256": "81f9386626b07ba8072aefda1b816f3438d54246c732338893faab60287d13c1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-897.json.gz",
+      "bytes": 1251468,
+      "sha256": "6935ff7389413e556954891ac1511d383f3131cc289c0dba87f5640448cfd205"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-898.json.gz",
+      "bytes": 1251968,
+      "sha256": "59a0b7e95ae1f8e81186dc757922d1097c678293032718edd9f52dad89045f24"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-899.json.gz",
+      "bytes": 1252281,
+      "sha256": "68d773a4acdab86b20b6e30e7ad08a02d845fbea62ae0c7a70fb8936ec414c81"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-900.json.gz",
+      "bytes": 1252646,
+      "sha256": "295e573125f00bead2d06c5917c55b83cdfb435725ca89a3d3d8fc58d6a7df8c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-901.json.gz",
+      "bytes": 1252951,
+      "sha256": "1ec51f5a943763bdb7f3b7e17a4f6a4a4e9393990d3c9af7effc90748715db09"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-902.json.gz",
+      "bytes": 1253350,
+      "sha256": "db0eceb3125590c5c02d3badb8efbb546435c71a90e5a82501b784a199581685"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-903.json.gz",
+      "bytes": 1253581,
+      "sha256": "a4903ba45e851c9bd6c11b3bc81da5720a7640873b28c49a90c31ba3bdcff320"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-904.json.gz",
+      "bytes": 1253986,
+      "sha256": "9b66c0be8635993c6a55c822575d525123057782e6e303b5b0518888ce47a4a1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-905.json.gz",
+      "bytes": 1254342,
+      "sha256": "14ab9ce3c5d8087354310e890c883f4b8368a550eb02eb03a7671f509b438b42"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-906.json.gz",
+      "bytes": 1255158,
+      "sha256": "6a52f03392eeec714ba01e6890cce2a9fcd9ae9ac5a6e88afd61b3e9a70ce0fc"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-907.json.gz",
+      "bytes": 1255529,
+      "sha256": "2dd7d5f51dea4cd5ae125fd1d0d6e9736b1c79c22b9127d23b6632d71b8ec289"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-908.json.gz",
+      "bytes": 1255578,
+      "sha256": "155d1955b5ccfbaeecaccd4c36f31feb605d1acd6d19bd9d8fdf662d977b1430"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-909.json.gz",
+      "bytes": 1255572,
+      "sha256": "eaf07bf8f73b61dc0478c142bf8c1a957ef37f357eba3b43f5c2e8ff9a1b53fe"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-910.json.gz",
+      "bytes": 1255833,
+      "sha256": "9589cabfde68d8a60a14ab47494fef6e7d19ebd04d73180bfc3106f94eec86a6"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-911.json.gz",
+      "bytes": 1256277,
+      "sha256": "3632c19f19835e32464beeda9d46172c1e1df64e8dcf3b4a6c11d326b7c3c033"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-912.json.gz",
+      "bytes": 1256478,
+      "sha256": "0e151149d6ceb62b787cf03540544909e38db6e5c35e55fd8f8044696a8c9599"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-913.json.gz",
+      "bytes": 1257685,
+      "sha256": "9944b9e1d48557c03627043d9d24702f42256fecb437e70e20e05e99f887a83c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-914.json.gz",
+      "bytes": 1258367,
+      "sha256": "e045c2835784b22e74150eee173ce107bb62f2254997a4be961e48db4e202867"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-915.json.gz",
+      "bytes": 1259480,
+      "sha256": "51a8b1a89a3500fc0e2f7288cc49b539220dc3b02d0dfec29895f21f37227208"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-916.json.gz",
+      "bytes": 1261512,
+      "sha256": "0bdd00a54a5ee394fc60976838027885345241f86b1b25c033d5f6cdfb01d146"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-917.json.gz",
+      "bytes": 1261285,
+      "sha256": "364eff6b1dd94ddbc83206b30e7d5d8a385e6eb62d593afe85a7f3ac417840e8"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-918.json.gz",
+      "bytes": 1261464,
+      "sha256": "13213fb9151ecdb9ea619f3e655b534ff3efe437523ad21148187410859a68f5"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-919.json.gz",
+      "bytes": 1266806,
+      "sha256": "ab43a7c961d72503f7722a4074141037bf321a480e8e3155632d3ff11c034603"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-920.json.gz",
+      "bytes": 1269688,
+      "sha256": "07785fb2b63e2c9069f8be157dff6aa40e50600c038fff78813dc1c4e9e35bdc"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-921.json.gz",
+      "bytes": 1271131,
+      "sha256": "df9698cc0f746a8e1bfca3604126791d8defe36d81e516c9504043fda7d19370"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-922.json.gz",
+      "bytes": 1272030,
+      "sha256": "8441a439ca930823df8c20481fda7add9343edec3a1f3369c8f2eb3defd956ae"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-923.json.gz",
+      "bytes": 1274351,
+      "sha256": "22bab2c2e040a468bcd7e8e54f6d94740f0bb36bb69dc0b7926011bf549c20fd"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-924.json.gz",
+      "bytes": 1276530,
+      "sha256": "e7c2800649766ecc694fc6dcb4bf2d115c75eb8e9419a586efb8f337bbf9909c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-925.json.gz",
+      "bytes": 1277405,
+      "sha256": "d9e8acc8e6a63d456ce11804b4bac8a6b39a76c0b81a94380a88d0eafd200cd3"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-926.json.gz",
+      "bytes": 1278512,
+      "sha256": "5cbf591d1a56b198cbad972d1cfb7baf0514115cdcc93b240812501c2a18bca1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-927.json.gz",
+      "bytes": 1279942,
+      "sha256": "3e0523ed1eb89cd5a312f662a3cb0bfdc3d7d9f28c5dac298dc7adbbfde34b34"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-928.json.gz",
+      "bytes": 1281279,
+      "sha256": "c318178d735be175a62c736124f4cd2d0e2ca55f84695851a909ac21481a578d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/archived-original196-natural.json.gz",
+      "bytes": 771453,
+      "sha256": "0c4afcac3a3762b90f885516c093c490651c0064d41c89e780939becb357ba67"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/boundaries.index.json",
+      "bytes": 11490,
+      "sha256": "10b8e85e2dc998bafd34e6ffd6a32caf4b2d393a67fbb2648c4e7a192af7bf92"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/checkpoint.json.gz",
+      "bytes": 396089,
+      "sha256": "f591c17b91c75f3eb3253a9d9908f58897e56d7a009babca8182e2e24de9ef50"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/commands.ndjson.gz",
+      "bytes": 39938,
+      "sha256": "dbb776239df8c73e72f9b9a7e9f80e65d47c54d5bcb7ca4260e8dbd1ece88aac"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/input-freeze.json",
+      "bytes": 632,
+      "sha256": "a29463086e8f359067e24df486468eeede4177af6e7308411029aa7f4047cc14"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/migration-initial.json.gz",
+      "bytes": 522673,
+      "sha256": "23cffa30ab81db34822bfc3247b51938ad7053cf549b4a18e71c45cf799e95d0"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/natural.json.gz",
+      "bytes": 357635,
+      "sha256": "9913d6c1a4d0841d92a001ff7cfda6bc70e123bdd7687bf29eaa2adbb9d370e2"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/producer-tests.mjs",
+      "bytes": 24997,
+      "sha256": "6bb789e1fa83093ad936f1ae8a849784ab338f9526dc9adbd9a33c1921b066be"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/producer.mjs",
+      "bytes": 60584,
+      "sha256": "45296d4d02f611416333fc7b6cbd3673b2a9d6f78fa3589f169aced641641da4"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/recovery-manifest.json",
+      "bytes": 14680,
+      "sha256": "f528ea18dfb18ce87b0951e4a039f6fbf23b230e4403da510b723faebc877152"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/runtime-freeze.json",
+      "bytes": 633498,
+      "sha256": "f691f6cc3dbe72c6780762fdc15d310e52cb449d3ab6ebbab433796316c990ab"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/summary.json",
+      "bytes": 21683,
+      "sha256": "1637d8dcecb2ed3fb0e235a1e35cc9372d31029bf0de49f3584b02f1978bd5d2"
+    }
+  ],
+  "requiredRestoreCommand": "node test-inputs/restore-test-inputs.mjs --manifest test-inputs/door218-required-inputs.manifest.json",
+  "note": "First824 captureParts + final under20MB delta reproduce Door117 files without runtime or replay. Six unchanged published legacy containers are separately required; their full278 members include the exact151 logical legacy inputs."
+}

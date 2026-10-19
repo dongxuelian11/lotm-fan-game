@@ -1,0 +1,233 @@
+{
+  "format": "DARKNESS213_CAPTURE_FILES_V1",
+  "files": [
+    {
+      "file": "archived-original694.json.gz",
+      "bytes": 392877,
+      "sha256": "b018b586a14d5cea9859809610fbb9b5146702798b351fd120d3e971cbad1c2c",
+      "originalBytes": 3329692,
+      "originalSha256": "597112414e673dbb446dd17d860bd88541ca5007f6310d552c41f96b12462ae8"
+    },
+    {
+      "file": "boundaries.index.json",
+      "bytes": 4735,
+      "sha256": "76ff41587b2dc7c2da4146927b1dd763eaac7616d53bf9d314d2582a3b321ca7"
+    },
+    {
+      "file": "boundary-680-darkness-learn_guidance.json.gz",
+      "bytes": 328328,
+      "sha256": "244055724e180d9629adc945354f0e5cbe5c9624fcbe06d765f0b95264dfc1f0",
+      "originalBytes": 2855849,
+      "originalSha256": "ab3c8cf7ea620059b65f6f5ff4a0b722ffeffba5043b345861b2bfa29d816caf"
+    },
+    {
+      "file": "boundary-702-evacuation-shield_false_light.json.gz",
+      "bytes": 352860,
+      "sha256": "a41444f9df83da7d482deb64c4e31f1fd696150541a64b4b6cb5dc58957a6411",
+      "originalBytes": 3414883,
+      "originalSha256": "4c175c0c6bcaeb38a97a4f499866ee79e250825007873e905b89ab17a432f6ed"
+    },
+    {
+      "file": "boundary-706-evacuation-relay_instructions.json.gz",
+      "bytes": 355173,
+      "sha256": "fcf2c1f87c362f088ff2cdf4e5941aca18797d836b441ea9c983cc2b479c594d",
+      "originalBytes": 3469991,
+      "originalSha256": "fb92a346c32ce5e6c68c016a0861216864a80a2d6be6132481e6ef5b9c41feda"
+    },
+    {
+      "file": "boundary-718-evacuation-actual-arrival-1.json.gz",
+      "bytes": 360721,
+      "sha256": "deb5684b9beaa5fe3c94976a64ae8257d23e3cdd85e80f83b5c5cd2525160758",
+      "originalBytes": 3633252,
+      "originalSha256": "5d0ea8028309e8b5e9c0938c12902fa1ebc06fe06a544318b12ab61c6d2e8beb"
+    },
+    {
+      "file": "boundary-731-evacuation-actual-arrival-2.json.gz",
+      "bytes": 367246,
+      "sha256": "9d09a11ecebc8fb84b06f51e025cb4d45d19741558ea620dd477982d3ebeaecb",
+      "originalBytes": 3811879,
+      "originalSha256": "a24b5cc712a2c07f6c044ba2d785a161a7cf1b75103fdcf2ad8f4251937ef8a0"
+    },
+    {
+      "file": "boundary-742-evacuation-actual-arrival-3.json.gz",
+      "bytes": 371098,
+      "sha256": "2d72e39aecaad9e46725eb6e90b0b6b5363a00b0e7286b6bfca130f2981efaa3",
+      "originalBytes": 3963830,
+      "originalSha256": "c15770f0bf2641e7fe674e6ca2cd23194568cc09c6326fdee9017e65e0e2c24a"
+    },
+    {
+      "file": "boundary-751-evacuation-actual-arrival-4.json.gz",
+      "bytes": 373909,
+      "sha256": "ad01adec2dd4cef19dce909dc75209ee24ac16788b71cdeeec2d87b2b5f9483c",
+      "originalBytes": 4088869,
+      "originalSha256": "0e096290ffe9797d24ab4ff2f786f94c574a3be2cddd967325a5556a0e6ea0b4"
+    },
+    {
+      "file": "boundary-753-evacuation-report.json.gz",
+      "bytes": 375348,
+      "sha256": "1daa106c1e031125e60db14d7028f3f79f5b5b55a5f429e90f4f198a4342e683",
+      "originalBytes": 4114866,
+      "originalSha256": "ac51c4a48286e632821cb8bf5656250bf8ee22d2fed13950dc26b20fd6752be3"
+    },
+    {
+      "file": "boundary-756-material-investigate_legacy_remains-misfortune-knight-potion-1.json.gz",
+      "bytes": 377420,
+      "sha256": "118f11ca9a4d8835e82718a6dd79344c831267e21ec5f4254181978e34f20a9f",
+      "originalBytes": 4153987,
+      "originalSha256": "3140d4bb7dfd51144f20ec4b386f56864dcb9e641de9978493594f25d1f95bdc"
+    },
+    {
+      "file": "boundary-759-material-recover_legacy_remains-misfortune-knight-potion-1.json.gz",
+      "bytes": 379007,
+      "sha256": "98c6c4598d23e5c38643ddc62980fbf4eff7299138f1c8151dc96277b0425389",
+      "originalBytes": 4191904,
+      "originalSha256": "213a82d3c32da0698347b94516e34ffe42754094f661e51dd1f25af9df00744d"
+    },
+    {
+      "file": "boundary-760-material-investigate_legacy_remains-misfortune-knight-potion-2.json.gz",
+      "bytes": 379551,
+      "sha256": "ea15f59f66a12d3c792ec34b91245a5a34a9b1d1b1d96ea21042b082a3d8bdb3",
+      "originalBytes": 4205686,
+      "originalSha256": "bf04cdc794e8b4a76e285cc8d163376d542b2469c458824bd36b286dcca82955"
+    },
+    {
+      "file": "boundary-763-material-recover_legacy_remains-misfortune-knight-potion-2.json.gz",
+      "bytes": 380328,
+      "sha256": "a03c4542dbead17d778ec3bd68bed4564dc4287549920cbcbdcb88a2e6004304",
+      "originalBytes": 4243600,
+      "originalSha256": "7d8b4f094150b75ff0c43a1f6363fbe3949bdb0e3e7bfb68539c3862dc5215db"
+    },
+    {
+      "file": "boundary-801-uniqueness-chain.json.gz",
+      "bytes": 391523,
+      "sha256": "78afddc6acded46982657926cdb57cf016b5ef3be7fd98648ff907723a087fe4",
+      "originalBytes": 4722678,
+      "originalSha256": "352b2e87c10fde7326972ca2981a4df10ce923a76363909f1ba25562b5e5a50d"
+    },
+    {
+      "file": "boundary-804-uniqueness-vacancy.json.gz",
+      "bytes": 393048,
+      "sha256": "c14f10919a86e9bfdd42e74605c03f6cbe35c99f172b8ac52290ca2328b52f0e",
+      "originalBytes": 4761390,
+      "originalSha256": "8411fb0b9f980bb7d7a74770ebaaf609c59f69a2aa78fc33dac1afb494d50e1b"
+    },
+    {
+      "file": "boundary-805-material-acquire_uniqueness.json.gz",
+      "bytes": 393849,
+      "sha256": "bc99524d9f8a8f2659b3bd3f1dc20373735c981672a0c3e7b01e5a2832938d08",
+      "originalBytes": 4773611,
+      "originalSha256": "5c341cad91b46c50e2fdcbc1ae1ca29ff6d0d4ff8988313fde4b3eab2f6353f0"
+    },
+    {
+      "file": "boundary-810-material-compose_potion.json.gz",
+      "bytes": 396913,
+      "sha256": "fde854d1c59111a2f9e535fc4cd310be942915d9041de9219ca8acdb47100b36",
+      "originalBytes": 4839536,
+      "originalSha256": "47d5a727d48804727597ac8fa524d089176a5604b0320f16124ff662d4bf14d3"
+    },
+    {
+      "file": "boundary-813-darkness-stabilize_promotion.json.gz",
+      "bytes": 399138,
+      "sha256": "da708754f3e02ec45e4f13112025f59f11d38571b7997f4152b5672f92f45e21",
+      "originalBytes": 4879930,
+      "originalSha256": "299d40c6296a6a3457aff9e2e60fc48f260baf6d9545b3ce0f88160452ada9d8"
+    },
+    {
+      "file": "boundary-814-darkness-actual-promotion.json.gz",
+      "bytes": 400832,
+      "sha256": "be716c9ac4a2d6205e62ee632dbfd9ca42ebdeafffc57cea78d40a07a267790c",
+      "originalBytes": 4894608,
+      "originalSha256": "a4e239ef24ebe16e73df2b23f1a56924f17ed88b0cbdd028793c23c3e46ca7c8"
+    },
+    {
+      "file": "boundary-825-darkness-start_epilogue.json.gz",
+      "bytes": 406771,
+      "sha256": "ba35380bad48283ce3fae4ad0b3b583517991edd91bbf1bd737c36491170ce35",
+      "originalBytes": 5038433,
+      "originalSha256": "3ad63fb5ebaa2a774b3b21ec44924935ebc0e4a91376556624dd40eedaf9f442"
+    },
+    {
+      "file": "boundary-830-epilogue-short_concealment.json.gz",
+      "bytes": 411778,
+      "sha256": "3bbdc50d7b915ce51e7508b56224e0ebc38a58d5fe3459969cbd2a1d34c6a677",
+      "originalBytes": 5107307,
+      "originalSha256": "dd43fc34ba7e14a16156724d0d327c0e3dfad1183959aaa5d5d3de5e06274ebf"
+    },
+    {
+      "file": "boundary-831-epilogue-bounded_misfortune_diversion.json.gz",
+      "bytes": 413323,
+      "sha256": "fc3daaf9490f8ffa45c7865d4ba366ffdee985b3ad3b562ca05e2949a132ada5",
+      "originalBytes": 5122707,
+      "originalSha256": "0eafc1c6d13b00b0e82d37258e51f22d1e9b35d84d290aa36b4e413020745bb4"
+    },
+    {
+      "file": "boundary-834-epilogue-report.json.gz",
+      "bytes": 415499,
+      "sha256": "ca67121b53898e465df87400fbb9c8a2d0f6728c3db0f914599d7e72367d09b1",
+      "originalBytes": 5165816,
+      "originalSha256": "89705556af2e3e647993e01db8ff6e137076a71da8ee2efc7c2c557ca4a3b171"
+    },
+    {
+      "file": "checkpoint.json.gz",
+      "bytes": 254020,
+      "sha256": "3caef6e0079f7be0b7708a10e2cc6c1bd29f2b67ec4fe0a52a432ef714213d12",
+      "originalBytes": 2876647,
+      "originalSha256": "8660c0a1e3ad5faf002344198d74e095cee6c9005f70fc9aa225aa442d7bb0c6"
+    },
+    {
+      "file": "commands.ndjson.gz",
+      "bytes": 44649,
+      "sha256": "1fe100beb7dca747cd8daf691200b4502e0457b632b51091a7cc3284753c0e59",
+      "originalBytes": 278786,
+      "originalSha256": "a1169b93fabee08b38265e5b9abb337a8cc576f063b85b863ab7aae2314ac7da"
+    },
+    {
+      "file": "input-freeze.json",
+      "bytes": 840,
+      "sha256": "0d9d278538371545015b55f9a4cb1f4640486ca76d607c4df1784ca22dabee64"
+    },
+    {
+      "file": "migration-initial.json.gz",
+      "bytes": 156382,
+      "sha256": "7bffffc173330fff344a61d4a9d0700d6a690afe7fec43b7de25c473d1589253",
+      "originalBytes": 1287859,
+      "originalSha256": "2170611eb39265a2a4d1fe82dc9314a62aba51c8efc708d82ceadd035983489d"
+    },
+    {
+      "file": "natural.json.gz",
+      "bytes": 212480,
+      "sha256": "0ea275612c843ada95566cd92fef8e83910dea6602469a51bc3d727d96680501",
+      "originalBytes": 2640474,
+      "originalSha256": "bf5a40259ad64400970fbdeefab51a299e158c6aec181827a4902b191cf3d09e"
+    },
+    {
+      "file": "producer.mjs",
+      "bytes": 48866,
+      "sha256": "8a1b38c675224a0c873aed88517408c765d5241a763b0a8a390fe450d826c83f"
+    },
+    {
+      "file": "runtime-freeze.json",
+      "bytes": 604952,
+      "sha256": "afffa732d2238093d651c34e12e53ffe9b5d4f7c35b45d6b8494f9e076ed72cb"
+    },
+    {
+      "file": "source-boundary679.json.gz",
+      "bytes": 294328,
+      "sha256": "a3d154ffb99df9e20a04aa9e5a1c67cd907b39695ef839351f68d1ccc9390fa5",
+      "originalBytes": 2431880,
+      "originalSha256": "6e5889192d3a0c697640fc0bc1fadd680c7b8526088a11d8f920b602cf34b79f"
+    },
+    {
+      "file": "source-state679.json.gz",
+      "bytes": 147446,
+      "sha256": "44d3a73ec80ae30c30ef93aa577b856b68c2a813266750e3ac8dd10caab03230",
+      "originalBytes": 1217515,
+      "originalSha256": "470d3ae9700186d8488b27663a9c64060053a011cd57bed3a5054a275bf7b6ee"
+    },
+    {
+      "file": "summary.json",
+      "bytes": 15951,
+      "sha256": "f3d79380501b5f469da2031daa18e92f4710fa42c840b19afec8a8139b078091"
+    }
+  ]
+}

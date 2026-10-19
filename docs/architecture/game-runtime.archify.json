@@ -1,0 +1,296 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "诡秘同人游戏：运行时与途径架构",
+    "subtitle": "一次玩家意图、一套领域规则、两种存储适配器；RAG 永不反向裁决玩法",
+    "locale": "zh-CN",
+    "output": "game-runtime-architecture.html",
+    "animation": "trace",
+    "visual_preset": "editorial",
+    "quality_profile": "showcase",
+    "viewBox": [1640, 1050],
+    "views": [
+      {
+        "id": "player-intent",
+        "label": "玩家意图主链",
+        "focus": ["renderer", "public-boundary", "orchestrator", "core-state", "repository", "desktop-store"],
+        "note": "从周仪表盘到原子存档，再返回仅包含玩家可见信息的投影。"
+      },
+      {
+        "id": "pathway-runtime",
+        "label": "途径运行时",
+        "focus": ["orchestrator", "core-state", "resolution", "pathway-engine", "event-world", "content-registry"],
+        "note": "途径复用行动、事件、世界脉冲和存档，不建立第二套游戏循环。"
+      },
+      {
+        "id": "storage-adapters",
+        "label": "试玩与正式存档",
+        "focus": ["orchestrator", "repository", "browser-memory", "desktop-store"],
+        "note": "浏览器和 Electron 使用同一应用层；只有存储寿命与能力不同。"
+      },
+      {
+        "id": "rag-boundary",
+        "label": "RAG 单向边界",
+        "focus": ["renderer", "public-boundary", "rag-presenter"],
+        "note": "模型只接收公开事实并返回可回退表现文本，没有通往规则层的返回边。"
+      }
+    ],
+    "legend": {
+      "mode": "all",
+      "entries": {
+        "frontend": { "label": "玩家界面", "visible": true },
+        "security": { "label": "公开与信任边界", "visible": true },
+        "backend": { "label": "纯 TypeScript 游戏核心", "visible": true },
+        "database": { "label": "存档与适配器", "visible": true },
+        "external": { "label": "可选外部表现能力", "visible": true }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "renderer",
+      "type": "frontend",
+      "label": "React 周仪表盘",
+      "pos": [40, 390],
+      "size": [190, 92]
+    },
+    {
+      "id": "public-boundary",
+      "type": "security",
+      "label": "公开合同与 Projector",
+      "pos": [280, 390],
+      "size": [205, 92]
+    },
+    {
+      "id": "orchestrator",
+      "type": "backend",
+      "label": "应用编排器",
+      "pos": [545, 390],
+      "size": [210, 92]
+    },
+    {
+      "id": "core-state",
+      "type": "backend",
+      "label": "GameState 与不变量",
+      "pos": [815, 390],
+      "size": [210, 92]
+    },
+    {
+      "id": "resolution",
+      "type": "backend",
+      "label": "结算与随机流",
+      "pos": [1085, 225],
+      "size": [220, 92]
+    },
+    {
+      "id": "pathway-engine",
+      "type": "backend",
+      "label": "途径运行时",
+      "pos": [1085, 390],
+      "size": [220, 92]
+    },
+    {
+      "id": "event-world",
+      "type": "backend",
+      "label": "事件与世界模拟",
+      "pos": [1085, 555],
+      "size": [220, 98]
+    },
+    {
+      "id": "content-registry",
+      "type": "database",
+      "label": "版本化内容注册表",
+      "pos": [1360, 387],
+      "size": [235, 98]
+    },
+    {
+      "id": "repository",
+      "type": "database",
+      "label": "Game Repository Port",
+      "pos": [545, 700],
+      "size": [210, 92]
+    },
+    {
+      "id": "browser-memory",
+      "type": "database",
+      "label": "浏览器内存适配器",
+      "pos": [850, 650],
+      "size": [210, 92]
+    },
+    {
+      "id": "desktop-store",
+      "type": "database",
+      "label": "Electron Main + SQLite",
+      "pos": [850, 810],
+      "size": [225, 92]
+    },
+    {
+      "id": "rag-presenter",
+      "type": "external",
+      "label": "可选 RAG 表现器",
+      "pos": [280, 85],
+      "size": [240, 98]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "玩家可见边界",
+      "wraps": ["renderer", "public-boundary"],
+      "pad": 18
+    },
+    {
+      "kind": "region",
+      "label": "同一套纯 TypeScript 游戏核心",
+      "wraps": ["orchestrator", "core-state", "resolution", "pathway-engine", "event-world", "content-registry"],
+      "pad": 22
+    },
+    {
+      "kind": "region",
+      "label": "可替换存储",
+      "wraps": ["repository", "browser-memory", "desktop-store"],
+      "pad": 18
+    }
+  ],
+  "connections": [
+    {
+      "id": "intent-to-boundary",
+      "from": "renderer",
+      "to": "public-boundary",
+      "label": "类型化意图 / 公开投影",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelAt": [255, 505]
+    },
+    {
+      "id": "boundary-to-app",
+      "from": "public-boundary",
+      "to": "orchestrator",
+      "label": "已校验命令",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelAt": [515, 505]
+    },
+    {
+      "id": "app-to-state",
+      "from": "orchestrator",
+      "to": "core-state",
+      "label": "纯状态变换",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelAt": [785, 505]
+    },
+    {
+      "id": "state-to-resolution",
+      "from": "core-state",
+      "to": "resolution",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [[1055, 436], [1055, 271]]
+    },
+    {
+      "id": "state-to-pathway",
+      "from": "core-state",
+      "to": "pathway-engine",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "state-to-world",
+      "from": "core-state",
+      "to": "event-world",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [[1055, 436], [1055, 604]]
+    },
+    {
+      "id": "content-to-resolution",
+      "from": "content-registry",
+      "to": "resolution",
+      "label": "量化包",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "right",
+      "via": [[1477.5, 345], [1335, 345], [1335, 271]],
+      "labelAt": [1405, 330]
+    },
+    {
+      "id": "content-to-pathway",
+      "from": "content-registry",
+      "to": "pathway-engine",
+      "label": "序列 / 能力 / 晋升",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "right",
+      "via": [[1335, 436]],
+      "labelAt": [1333, 505]
+    },
+    {
+      "id": "content-to-world",
+      "from": "content-registry",
+      "to": "event-world",
+      "label": "事件 / 对话 / NPC",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "right",
+      "via": [[1477.5, 535], [1335, 535], [1335, 604]],
+      "labelAt": [1405, 660]
+    },
+    {
+      "id": "app-to-repository",
+      "from": "orchestrator",
+      "to": "repository",
+      "label": "load / commit(receipt)",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelAt": [710, 595]
+    },
+    {
+      "id": "repository-to-browser",
+      "from": "repository",
+      "to": "browser-memory",
+      "label": "试玩",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [[790, 746], [790, 696]],
+      "labelAt": [815, 680]
+    },
+    {
+      "id": "repository-to-desktop",
+      "from": "repository",
+      "to": "desktop-store",
+      "label": "正式",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [[790, 746], [790, 856]],
+      "labelAt": [815, 880]
+    },
+    {
+      "id": "public-to-rag",
+      "from": "public-boundary",
+      "to": "rag-presenter",
+      "label": "只读公开事实包",
+      "variant": "dashed",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "rag-to-renderer",
+      "from": "rag-presenter",
+      "to": "renderer",
+      "label": "可回退表现文本",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "top",
+      "via": [[110, 134], [110, 350], [135, 350], [135, 370]],
+      "labelAt": [195, 115]
+    }
+  ]
+}

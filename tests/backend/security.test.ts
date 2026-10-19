@@ -7,7 +7,7 @@ import {
 } from "../../src/main/window-security.js";
 import { resolveRendererLoadPlan } from "../../src/main/renderer-source.js";
 
-describe("R1 Electron security boundary", () => {
+describe("R2 Electron security boundary", () => {
   it("pins the required BrowserWindow web preferences", () => {
     const options = buildMainWindowOptions("C:\\app\\preload.js");
 
@@ -18,6 +18,12 @@ describe("R1 Electron security boundary", () => {
       webviewTag: false,
     });
     expect(options.webPreferences?.preload).toBe("C:\\app\\preload.js");
+    expect(options).toMatchObject({
+      width: 1600,
+      height: 900,
+      minWidth: 1280,
+      minHeight: 720,
+    });
   });
 
   it("denies new windows, webviews, and non-app navigations", () => {
