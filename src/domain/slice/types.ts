@@ -2,6 +2,7 @@ import type { MysticPublicRoundOutcome } from '../mystic/combat.js';
 import type { ProphecyMasterPublicRoundOutcome } from '../prophecy-master/combat.js';
 import type { SagePublicRoundOutcome } from '../sage/combat.js';
 import type { KnowledgeEmperorPublicRoundOutcome } from '../knowledge-emperor/combat.js';
+import type { HangedManState, HangedManCommand, HangedManProjection } from '../hanged-man/types.js';
 import type { HermitState, HermitCommand, HermitProjection } from '../hermit/types.js';
 import type { DespairPublicRoundOutcome } from '../despair/combat.js';
 import type { UnagingDemonessPublicRoundOutcome } from '../unaging-demoness/combat.js';
@@ -327,6 +328,7 @@ import type { PublicCheckResult, PublicCoreStatKey, PublicGameDate } from '../..
 export type SliceLifeTier = 'DESTITUTE' | 'POOR' | 'ORDINARY' | 'RESPECTABLE' | 'LUXURIOUS';
 export type SliceStance = 'ATTACK' | 'DEFEND' | 'CONTROL' | 'PREPARE' | 'RETREAT';
 export type SliceIntent =
+  | { type: 'HANGED_MAN'; command: HangedManCommand }
   | { type: 'HERMIT'; command: HermitCommand }
   | { type: 'DEMONESS'; command: DemonessCommand }
   | { type: 'TWILIGHT_GIANT'; command: TwilightGiantCommand }
@@ -808,6 +810,7 @@ export interface SliceArc {
   relationship: AudreyOutcome; transferPending: boolean;
 }
 export interface SliceState {
+  hangedMan:HangedManState;
   hermit:HermitState;
   demoness:DemonessState;
   twilightGiant:TwilightGiantState;
@@ -1023,7 +1026,7 @@ export interface SliceState {
   hunter:HunterState;
   clown:ClownState;
   caseArchive:SliceEnding[];
-  schemaVersion: 219; contentVersion: 'hermit-v219'; runId: string; revision: number;
+  schemaVersion: 220; contentVersion: 'hanged-man-v220'; runId: string; revision: number;
   status: 'ACTIVE' | 'SLICE_COMPLETE' | 'DEAD' | 'REVIVAL_PENDING'; character: SliceCharacter;
   week: number; date: PublicGameDate; actionsRemaining: number; weeklyBudget: number; wagePaidWeek: number | null;
   cash: number; lifeTier: SliceLifeTier; nextLifeTier: SliceLifeTier; health: number; mind: number; spirituality: number;
@@ -1042,6 +1045,7 @@ export interface SliceState {
 /** Public records keep resolved action facts; deterministic replay source stays private. */
 export type SlicePublicCombatRound = Omit<SliceCombatRound, 'mysticOutcome' | 'prophecyMasterOutcome' | 'sageOutcome' | 'knowledgeEmperorOutcome' | 'despairOutcome' | 'unagingDemonessOutcome' | 'calamityDemonessOutcome' | 'apocalypseDemonessOutcome' | 'demonHunterOutcome' | 'silverKnightOutcome' | 'gloryOutcome' | 'timeWormOutcome' | 'fateTrojanOutcome' | 'starKeyOutcome' | 'planeswalkerOutcome' | 'ferrymanOutcome' | 'deathConsulOutcome' | 'paleEmperorOutcome' | 'pureWhiteAngelOutcome' | 'lightSeekerOutcome' | 'seaKingOutcome' | 'thunderGodOutcome' | 'allKnowingEyeOutcome' | 'wisdomAngelOutcome' | 'natureWalkerOutcome' | 'princeOfAbolitionOutcome' | 'handOfOrderOutcome' | 'attendantMysteriesOutcome' | 'conquerorOutcome' | 'writerOutcome' | 'civilizationEnlightenerOutcome' | 'knowledgeMentorOutcome' | 'beautyGoddessOutcome' | 'lifeGiverOutcome' | 'misfortuneKnightOutcome' | 'concealmentServantOutcome' | 'fearBishopOutcome'> & { mysticOutcome?:MysticPublicRoundOutcome; prophecyMasterOutcome?:ProphecyMasterPublicRoundOutcome; sageOutcome?:SagePublicRoundOutcome; knowledgeEmperorOutcome?:KnowledgeEmperorPublicRoundOutcome; despairOutcome?:DespairPublicRoundOutcome; unagingDemonessOutcome?:UnagingDemonessPublicRoundOutcome; calamityDemonessOutcome?:CalamityDemonessPublicRoundOutcome; apocalypseDemonessOutcome?:ApocalypseDemonessPublicRoundOutcome; demonHunterOutcome?: Omit<DemonHunterRoundOutcome, 'source'>; silverKnightOutcome?: Omit<SilverKnightRoundOutcome, 'source'>; gloryOutcome?: Omit<GloryRoundOutcome, 'source' | 'randomCursorAfter' | 'playerActions' | 'enemyActions'> & { playerActions: Omit<GloryRoundOutcome['playerActions'][number], 'randomCursorBefore' | 'randomCursorAfter'>[]; enemyActions: Omit<GloryRoundOutcome['enemyActions'][number], 'randomCursorBefore' | 'randomCursorAfter'>[] }; timeWormOutcome?:TimeWormPublicRoundOutcome; fateTrojanOutcome?:FateTrojanPublicRoundOutcome; starKeyOutcome?:StarKeyPublicRoundOutcome; planeswalkerOutcome?:PlaneswalkerPublicRoundOutcome; ferrymanOutcome?:FerrymanPublicRoundOutcome; deathConsulOutcome?:DeathConsulPublicRoundOutcome; paleEmperorOutcome?:PaleEmperorPublicRoundOutcome; pureWhiteAngelOutcome?:PublicPureWhiteAngelRoundOutcome; lightSeekerOutcome?:PublicLightSeekerRoundOutcome; seaKingOutcome?:SeaKingPublicRoundOutcome; thunderGodOutcome?:ThunderGodPublicRoundOutcome; allKnowingEyeOutcome?: PublicAllKnowingEyeRoundOutcome; wisdomAngelOutcome?: PublicWisdomAngelRoundOutcome; misfortuneKnightOutcome?: PublicMisfortuneKnightRoundOutcome; concealmentServantOutcome?: PublicConcealmentServantRoundOutcome; fearBishopOutcome?: PublicFearBishopRoundOutcome; lifeGiverOutcome?: Omit<LifeGiverRoundOutcome, 'source' | 'randomCursorAfter'>; beautyGoddessOutcome?: BeautyGoddessPublicRoundOutcome; knowledgeMentorOutcome?: KnowledgeMentorPublicRoundOutcome; civilizationEnlightenerOutcome?: CivilizationEnlightenerPublicRoundOutcome; writerOutcome?: WriterPublicRoundOutcome; conquerorOutcome?: ConquerorPublicRoundOutcome; natureWalkerOutcome?: NatureWalkerPublicRoundOutcome; princeOfAbolitionOutcome?: PrinceOfAbolitionPublicRoundOutcome; handOfOrderOutcome?: HandOfOrderPublicRoundOutcome; attendantMysteriesOutcome?: AttendantMysteriesPublicRoundOutcome };
 export interface SliceProjection {
+  hangedMan:HangedManProjection;
   hermit:HermitProjection;
   demoness:DemonessProjection;
   twilightGiant:TwilightGiantProjection;

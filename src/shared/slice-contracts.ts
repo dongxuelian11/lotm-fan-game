@@ -1,3 +1,4 @@
+export type { HangedManCommand, HangedManProjection } from '../domain/hanged-man/types.js';
 export type { HermitCommand, HermitProjection } from '../domain/hermit/types.js';
 export type { DemonessCommand, DemonessProjection } from '../domain/demoness/types.js';
 export type { TwilightGiantCommand, TwilightGiantProjection } from '../domain/twilight-giant/types.js';
