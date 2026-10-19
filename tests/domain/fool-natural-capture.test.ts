@@ -1,3 +1,14 @@
+import { historicalInactiveHermitPublic } from '../helpers/inactive-hermit-public-capture.js';
+import { createTwilightGiantState } from '../../src/domain/twilight-giant/index.js';
+import { createDemonessState } from '../../src/domain/demoness/index.js';
+import { createHermitState } from '../../src/domain/hermit/index.js';
+import { createHangedManState } from '../../src/domain/hanged-man/index.js';
+import { createAbyssState } from '../../src/domain/abyss/index.js';
+import { createChainedState } from '../../src/domain/chained/index.js';
+import { createWheelOfFortuneState } from '../../src/domain/wheel-of-fortune/index.js';
+import { createBlackEmperorState } from '../../src/domain/black-emperor/index.js';
+import { createJusticiarState } from '../../src/domain/justiciar/index.js';
+import { createMotherState } from '../../src/domain/mother/index.js';
 import { createErrorAscentState } from '../../src/domain/error-ascent/index.js';
 import { EMPTY_RED_PRIEST, EMPTY_VISIONARY, EMPTY_PERFECTER, EMPTY_MOON, EMPTY_DARKNESS, EMPTY_WHITE_TOWER, EMPTY_TYRANT, EMPTY_SUN, historicalFoolStateForEmptyRootAudit, historicalWithoutEmptyDoorAndErrorPublic } from '../helpers/historical-empty-root-audit.js';
 import assert from 'node:assert/strict';
@@ -262,7 +273,7 @@ async function fileHash(path: string, prefixBytes?: number): Promise<string> {
 interface PriorPublicRow { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; public: { strictSha256: string } }
 interface RedactionAudit {
   prior: { rows: PriorPublicRow[] };
-  restore: (state: SliceState, projection: Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent'>, display: typeof projectPlayerText) => unknown;
+  restore: (state: SliceState, projection: HistoricalFoolProjection, display: typeof projectPlayerText) => unknown;
   assertRow: (prior: { rows: PriorPublicRow[] }, index: number, actual: { stateSha256: string; budgetSha256: string; random: SliceState['random']; eventSha256: string | null; legacyPublicSha256: string }) => string;
 }
 let redactionAudit: RedactionAudit | null = null;
@@ -319,25 +330,24 @@ function jsonLines<T>(file: FileName): T[] {
   const text = readFileSync(fixturePath(file), 'utf8'); expect(text.endsWith('\n'), file).toBe(true);
   return text.slice(0, -1).split('\n').map(line => { expect(line.length).toBeGreaterThan(0); return JSON.parse(line) as T; });
 }
-type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent'> & { schemaVersion: 205; contentVersion: 'fool-v205' };
+const CURRENT_EMPTY_CHAPTERS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun',
+  'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained',
+  'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+type CurrentEmptyChapter = typeof CURRENT_EMPTY_CHAPTERS[number];
+type HistoricalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | CurrentEmptyChapter> & { schemaVersion: 205; contentVersion: 'fool-v205' };
+type HistoricalFoolProjection = Omit<ReturnType<typeof historicalInactiveHermitPublic>, CurrentEmptyChapter>;
 let originalStateKeys: readonly string[] | null = null;
 function historicalStateKeys(): readonly string[] {
   if (!originalStateKeys) {
     const raw = entry<HistoricalFoolState>('final');
     expect(hash(raw)).toBe(observed().finalStateSha256);
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([205, 'fool-v205']);
-    expect(Object.hasOwn(raw, 'redPriest')).toBe(false);
-    expect(Object.hasOwn(raw, 'visionary')).toBe(false);
-    expect(Object.hasOwn(raw, 'perfecter')).toBe(false);
-    expect(Object.hasOwn(raw, 'moon')).toBe(false);
-    expect(Object.hasOwn(raw, 'darkness')).toBe(false);
-    expect(Object.hasOwn(raw, 'whiteTower')).toBe(false);
-    for (const root of ['tyrant', 'sun', 'death', 'door', 'errorAscent']) expect(Object.hasOwn(raw, root)).toBe(false);
+    for (const root of CURRENT_EMPTY_CHAPTERS) expect(Object.hasOwn(raw, root)).toBe(false);
     originalStateKeys = Object.keys(raw).sort();
   }
   return originalStateKeys;
 }
-/** Audit only: allow exactly the eleven approved new roots and two version changes.
+/** Audit only: allow exactly the twenty-one explicitly named new roots and two version changes.
  * Every original field, including all nested history, remains in the hash. */
 function historicalStateView(state: SliceState): HistoricalFoolState {
   return historicalFoolStateForEmptyRootAudit(state, historicalStateKeys()) as HistoricalFoolState;
@@ -357,9 +367,9 @@ function current(raw: unknown): SliceState {
   return state;
 }
 
-/** Remove only the eleven verified inactive new chapters from this detached audit view.
+/** Remove only the twenty-one verified inactive new chapters from this detached audit view.
  * Its complete remaining shape/content is still bound by the old public hash. */
-function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): Omit<ReturnType<typeof projectSliceState>, 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent'> {
+function historicalPublicView(state: SliceState, projection: ReturnType<typeof projectSliceState>): HistoricalFoolProjection {
   expect(state.progression.pathwayId).toBe('diviner');
   expect(state.redPriest).toStrictEqual(EMPTY_RED_PRIEST);
   expect(state.visionary).toStrictEqual(EMPTY_VISIONARY);
@@ -459,7 +469,11 @@ function historicalPublicView(state: SliceState, projection: ReturnType<typeof p
   const { redPriest: _emptyRedPriest, visionary: _emptyVisionary,
     perfecter: _emptyPerfecter, moon: _emptyMoon, darkness: _emptyDarkness, whiteTower: _emptyWhiteTower,
     tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, ...originalFields } = historicalWithoutEmptyDoorAndErrorPublic(projection, state);
-  return originalFields;
+  // The original Fool capture predates the Hermit public privacy whitelist.
+  // Restore only the two inactive null sources and two null preparation names;
+  // the helper checks both private and public inactivity before changing them.
+  const inactive = historicalInactiveHermitPublic(projection, state);
+  return { ...originalFields, knowledgeEmperor: inactive.knowledgeEmperor, sage: inactive.sage };
 }
 function budget(s: SliceState) {
   return { revision: s.revision, week: s.week, date: s.date, status: s.status, sequence: s.progression.sequence,
@@ -604,7 +618,7 @@ async function assertTransition(e: Observation, commands: SliceIntent[], freeze:
 describe.sequential('Fool original1868 continuation with explicit original43 reconstruction evidence', () => {
   beforeAll(assertReviewedHistoricalRuntimeProof, 240_000);
   afterAll(assertReviewedHistoricalRuntimeProof, 240_000);
-  it('limits the historical audit view to the exact original keys and eleven strictly empty current chapters', () => {
+  it('limits the historical audit view to the exact original keys and twenty-one strictly empty current chapters', () => {
     const raw = entry<HistoricalFoolState>('final');
     expect(EMPTY_RED_PRIEST).toStrictEqual(createRedPriestState());
     expect(EMPTY_VISIONARY).toStrictEqual(createVisionaryState());
@@ -618,7 +632,10 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
       redPriest: structuredClone(EMPTY_RED_PRIEST), visionary: structuredClone(EMPTY_VISIONARY),
       perfecter: structuredClone(EMPTY_PERFECTER), moon: structuredClone(EMPTY_MOON), darkness: structuredClone(EMPTY_DARKNESS),
       whiteTower: structuredClone(EMPTY_WHITE_TOWER), tyrant: structuredClone(EMPTY_TYRANT),
-      sun: structuredClone(EMPTY_SUN), death: createDeathState(), door: createDoorState(), errorAscent: createErrorAscentState() };
+      sun: structuredClone(EMPTY_SUN), death: createDeathState(), door: createDoorState(), errorAscent: createErrorAscentState(),
+      twilightGiant: createTwilightGiantState(), demoness: createDemonessState(), hermit: createHermitState(), hangedMan: createHangedManState(),
+      abyss: createAbyssState(), chained: createChainedState(), wheelOfFortune: createWheelOfFortuneState(),
+      blackEmperor: createBlackEmperorState(), justiciar: createJusticiarState(), mother: createMotherState() };
     same(historicalStateView(shape), raw);
     expect(() => historicalStateView({ ...shape, unexpectedRoot: null } as SliceState)).toThrow();
     const { fool: _missingOriginalRoot, ...missingOriginal } = shape;
@@ -648,7 +665,8 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     expect(() => historicalStateView(missingMoon as SliceState)).toThrow();
     expect(() => historicalStateView(missingDarkness as SliceState)).toThrow();
     expect(() => historicalStateView(missingWhiteTower as SliceState)).toThrow();
-    for (const root of ['tyrant', 'sun', 'death', 'door', 'errorAscent'] as const) {
+    for (const root of ['tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan',
+      'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const) {
       const { [root]: _missing, ...missing } = shape;
       expect(() => historicalStateView(missing as SliceState)).toThrow();
       for (const value of [null, { ...shape[root], guidanceKnown: true },
@@ -659,6 +677,24 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
     expect(() => historicalStateView({ ...shape, schemaVersion: 205 } as unknown as SliceState)).toThrow();
     expect(hash(historicalStateView({ ...shape, cash: shape.cash + 1 })), 'An old field is never normalized away').not.toBe(hash(raw));
   });
+  it('preserves the first historical public checkpoint after the exact inactive Hermit redactions', () => {
+    if (!redactionAudit) throw new Error('Missing exact reviewed public-redaction proof');
+    const state = current(entry('prefixFinal')), before = hash(state), projection = projectSliceState(state), publicBefore = hash(projection);
+    const restored = redactionAudit.restore(state, historicalPublicView(state, projection), projectPlayerText);
+    expect(hash(restored)).toBe(redactionAudit.prior.rows[0]!.public.strictSha256);
+    for (const root of ['knowledgeEmperor', 'sage'] as const) {
+      expect(() => historicalPublicView(state, { ...projection,
+        [root]: { ...projection[root], encounter: { ...projection[root].encounter, preparationSummary: {} } },
+      } as unknown as ReturnType<typeof projectSliceState>)).toThrow();
+      expect(() => historicalPublicView(state, { ...projection,
+        [root]: { ...projection[root], life: { ...projection[root].life, site: { ...projection[root].life.site, source: null } } },
+      } as ReturnType<typeof projectSliceState>)).toThrow();
+    }
+    const unknown = historicalPublicView(state, { ...projection, unexpectedRoot: null } as ReturnType<typeof projectSliceState>);
+    expect(Object.hasOwn(unknown, 'unexpectedRoot')).toBe(true);
+    expect(hash(redactionAudit.restore(state, unknown, projectPlayerText))).not.toBe(redactionAudit.prior.rows[0]!.public.strictSha256);
+    expect(hash(state)).toBe(before); expect(hash(projection)).toBe(publicBefore);
+  }, 120_000);
   it('requires reviewed actual observations and immutable restored inputs, preserving both raw original roots', async () => {
     const e = observed();
     expect(e.commands).toBeGreaterThanOrEqual(PAUSED_COUNT); expect(e.commands).toBeLessThanOrEqual(PREFIX + 1600);
@@ -838,7 +874,7 @@ describe.sequential('Fool original1868 continuation with explicit original43 rec
         for (const [id, mastery] of Object.entries(origin.mastery)) expect(state.progression.mastery[id], id).toBe(mastery);
         assertValidSliceState(state); const p = projectSliceState(state); assertPublicProjection(p);
         if (session) { const owned = session.project(); assertPublicProjection(owned); same(owned, p); }
-        // The complete current strict/owned output agrees before the five added
+        // The complete current strict/owned output agrees before the explicitly named added
         // inactive chapters are checked and removed. Only this detached audit copy
         // receives the reviewed removed private S1 fields; every old public field
         // remains covered by its exact historical hash.

@@ -1,3 +1,11 @@
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
 import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
 import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
@@ -21,11 +29,14 @@ describe('Death schema214 exact additive admission',()=>{
     expect([source.schemaVersion,source.contentVersion]).toEqual([192,'pale-emperor-v192']);
     const additions=['abomination','apocalypseDemoness','darkAngel','darkness','death','demoness','divineHand','door','errorAscent',
       'fool','handOfOrder','knowledgeEmperor','mercurySnake','moon','natureWalker','perfecter','princeOfAbolition',
-      'redPriest','starKey','sun','timeWorm','twilightGiant','tyrant','uncleanMonarch','visionary','whiteTower'] as const;
+      'redPriest','starKey','sun','timeWorm','twilightGiant','tyrant','uncleanMonarch','visionary','whiteTower',
+      'hermit','hangedMan','abyss','chained','wheelOfFortune','blackEmperor','justiciar','mother'] as const;
     for(const root of additions)expect(Object.hasOwn(source,root)).toBe(false);
     expect(Object.keys(current).sort()).toEqual([...Object.keys(source),...additions].sort());
     expect(deathScenarioHash(source)).toBe(before);expect([current.schemaVersion,current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);expect(current.death).toEqual(createDeathState());expect(current.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(current);
     assertEmptyTwilightGiantState(current);assertEmptyDemonessState(current);
+    assertEmptyHermitState(current);assertEmptyHangedManState(current);assertEmptyAbyssState(current);assertEmptyChainedState(current);
+    assertEmptyWheelOfFortuneState(current);assertEmptyBlackEmperorState(current);assertEmptyJusticiarState(current);assertEmptyMotherState(current);
     for(const[key,value]of Object.entries(source))if(!['schemaVersion','contentVersion'].includes(key))expect(deathScenarioHash(current[key as keyof SliceState]),key).toBe(deathScenarioHash(value));assertValidSliceState(current);
   },120_000);
   it('rejects a legacy injected root,missing current root and unimplemented future format',()=>{

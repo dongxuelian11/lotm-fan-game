@@ -1,3 +1,11 @@
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -10,7 +18,8 @@ import type { SliceState } from '../../src/domain/slice/types.js';
 
 const fresh = (): SliceState => createSliceRun('demoness-schema-run', sliceDefaultCreationSelection, 'demoness-schema-seed');
 const legacy217 = () => {
-  const { demoness: _root, ...state } = fresh();
+  const { demoness: _root, hermit: _hermit, hangedMan: _hangedMan, abyss: _abyss, chained: _chained,
+    wheelOfFortune: _wheelOfFortune, blackEmperor: _blackEmperor, justiciar: _justiciar, mother: _mother, ...state } = fresh();
   return { ...state, schemaVersion: 217 as const, contentVersion: 'twilight-giant-v217' as const };
 };
 
@@ -24,12 +33,15 @@ describe('Demoness schema218 exact additive admission', () => {
     expect(() => openDemonessRuntimeSession(state)).toThrow();
   });
 
-  it('upgrades217 by adding only the empty root and format while preserving all old fields', () => {
+  it('upgrades217 by adding only the explicit empty current roots and format while preserving all old fields', () => {
     const source = legacy217(), before = structuredClone(source), current = migrateSliceState(source);
     expect(source).toStrictEqual(before);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'demoness'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'demoness', 'hermit', 'hangedMan',
+      'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'].sort());
     expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.demoness).toStrictEqual(createDemonessState());
+    assertEmptyHermitState(current); assertEmptyHangedManState(current); assertEmptyAbyssState(current); assertEmptyChainedState(current);
+    assertEmptyWheelOfFortuneState(current); assertEmptyBlackEmperorState(current); assertEmptyJusticiarState(current); assertEmptyMotherState(current);
     for (const [key, value] of Object.entries(source)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(current[key as keyof SliceState], `Changed original ${key}`).toStrictEqual(value);

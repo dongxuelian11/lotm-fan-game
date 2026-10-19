@@ -1,3 +1,15 @@
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
+import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
+import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
+import { assertEmptyDoorState } from '../helpers/empty-death-capture.js';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
@@ -42,19 +54,24 @@ describe('WhiteTower exact current schema and public command boundary', () => {
     assertValidSliceState(copy); expect(stableStringify(state)).toBe(before);
   });
 
-  it.each(['beforeLast', 'final'] as const)('migrates actual captured210 %s by adding exactly empty WhiteTower, Tyrant and Sun and preserving every old field and raw byte', key => {
+  it.each(['beforeLast', 'final'] as const)('migrates actual captured210 %s by adding exactly the named empty current roots and preserving every old field and raw byte', key => {
     const bytes = readFileSync(CAPTURE), raw = JSON.parse(gunzipSync(readFileSync(CAPTURE)).toString('utf8'))[key] as Record<string, unknown>;
     expect(hash(bytes)).toBe(CAPTURE_SHA256);
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([210, 'darkness-v210']);
-    expect(Object.hasOwn(raw, 'whiteTower')).toBe(false); expect(Object.hasOwn(raw, 'tyrant')).toBe(false); expect(Object.hasOwn(raw, 'sun')).toBe(false); expect(Object.hasOwn(raw, 'death')).toBe(false);
+    const additions = ['whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness',
+      'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+    for (const root of additions) expect(Object.hasOwn(raw, root)).toBe(false);
     const before = stableStringify(raw), next = migrateSliceState(raw);
     expect([next.schemaVersion, next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual(['death', 'sun', 'tyrant', 'whiteTower']);
-    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), 'whiteTower', 'tyrant', 'sun', 'death'].sort());
+    expect(Object.keys(next).filter(field => !Object.hasOwn(raw, field)).sort()).toEqual([...additions].sort());
+    expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), ...additions].sort());
     for (const [field, value] of Object.entries(raw)) {
       if (field !== 'schemaVersion' && field !== 'contentVersion') same(next[field as keyof SliceState], value);
     }
     same(next.whiteTower, createWhiteTowerState()); same(next.tyrant, createTyrantState()); same(next.sun, createSunState());same(next.death,createDeathState()); same(migrateSliceState(next), next);
+    assertEmptyDoorState(next); assertEmptyErrorAscentState(next); assertEmptyTwilightGiantState(next); assertEmptyDemonessState(next);
+    assertEmptyHermitState(next); assertEmptyHangedManState(next); assertEmptyAbyssState(next); assertEmptyChainedState(next);
+    assertEmptyWheelOfFortuneState(next); assertEmptyBlackEmperorState(next); assertEmptyJusticiarState(next); assertEmptyMotherState(next);
     expect(stableStringify(raw)).toBe(before);
     expect(hash(readFileSync(CAPTURE))).toBe(CAPTURE_SHA256);
     expect(readFileSync(CAPTURE).equals(bytes)).toBe(true);
