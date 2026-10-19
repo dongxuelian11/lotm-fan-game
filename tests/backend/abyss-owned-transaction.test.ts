@@ -105,7 +105,8 @@ describe('Abyss224 controlled real-history SQLite transaction', () => {
       expect(stored(file, before.runId).state).toEqual(before);
       expect(stored(file, before.runId).state.random).toEqual(before.random);
       expect(before.random.seed).toBe(route.source.random.seed);
-      expect(before.random.cursor).toBeGreaterThan(route.source.random.cursor);
+      // All preparation used ordinary paid work and tools; the first new draw is consumption.
+      expect(before.random).toEqual(route.source.random);
       expect(beforeView.abyss.promoted).toBe(false);
 
       fail = false; watching = true;
