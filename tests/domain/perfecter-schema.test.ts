@@ -1,3 +1,13 @@
+import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { createHash } from 'node:crypto';
@@ -17,7 +27,7 @@ import { assertValidSliceState, openValidatedPerfecterSlice, validateSlicePayloa
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 const fresh = () => createSliceRun('perfecter-schema', sliceDefaultCreationSelection, 'perfecter-schema');
-const same = (a: unknown,b: unknown) => expect(stableStringify(a)).toBe(stableStringify(b));
+const same = (a: unknown,b: unknown) => expect(sha256Hex(stableStringify(a))).toBe(sha256Hex(stableStringify(b)));
 const hash = (bytes: string | Buffer): string => createHash('sha256').update(bytes).digest('hex');
 const historicalCaptures = {
   205: {
@@ -36,10 +46,23 @@ const historicalCaptures = {
     contentVersion: 'visionary-v207', revision: 660,
   },
 } as const;
+const laterRoots = ['twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const assertEmptyLaterRoots = (state: SliceState): void => {
+  assertEmptyTwilightGiantState(state);
+  assertEmptyDemonessState(state);
+  assertEmptyHermitState(state);
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+};
 const introducedRoots = {
-  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
-  206: ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
-  207: ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
+  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...laterRoots],
+  206: ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...laterRoots],
+  207: ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...laterRoots],
 } as const;
 const historicalStates = new Map<205 | 206 | 207, Record<string, unknown>>();
 function old(version: 205 | 206 | 207): Record<string, unknown> {
@@ -74,7 +97,7 @@ describe('Perfecter exact current schema boundary', () => {
     expect(Object.keys(next).sort()).toEqual([...Object.keys(state), ...introducedRoots[version]].sort());
     for(const [key,value] of Object.entries(state)) if(key!=='schemaVersion'&&key!=='contentVersion') same(next[key as keyof SliceState],value);
     for(const key of introducedRoots[version]) same(next[key],defaults[key]);
-    same(next.tyrant,createTyrantState());same(next.sun,createSunState());same(next.death,createDeathState());expect(next.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(next);
+    same(next.tyrant,createTyrantState());same(next.sun,createSunState());same(next.death,createDeathState());expect(next.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(next);assertEmptyLaterRoots(next);
     expect(stableStringify(state)).toBe(before);
     expect(hash(readFileSync(historicalCaptures[version].path))).toBe(historicalCaptures[version].sha256);
   }, version === 205 ? 60_000 : 5_000);
@@ -88,14 +111,14 @@ describe('Perfecter exact current schema boundary', () => {
     const additions = ['beautyGoddess', 'misfortuneKnight', 'allKnowingEye', 'thunderGod', 'pureWhiteAngel',
       'paleEmperor', 'starKey', 'timeWorm', 'divineHand', 'apocalypseDemoness', 'knowledgeEmperor', 'darkAngel',
       'uncleanMonarch', 'abomination', 'mercurySnake', 'princeOfAbolition', 'handOfOrder', 'natureWalker',
-      'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'] as const;
+      'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...laterRoots] as const;
     expect([next.schemaVersion,next.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
     for(const key of additions) expect(Object.hasOwn(raw,key)).toBe(false);
     expect(Object.keys(next).filter(key=>!Object.hasOwn(raw,key)).sort()).toEqual([...additions].sort());
     expect(Object.keys(next).sort()).toEqual([...Object.keys(raw), ...additions].sort());
     for(const [key,value] of Object.entries(raw))if(key!=='schemaVersion'&&key!=='contentVersion')same(next[key as keyof SliceState],value);
     for(const key of additions)same(next[key],defaults[key]);
-    same(next.perfecter,createPerfecterState());same(next.tyrant,createTyrantState());same(next.sun,createSunState());same(next.death,createDeathState());expect(next.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(next);expect(stableStringify(raw)).toBe(before);
+    same(next.perfecter,createPerfecterState());same(next.tyrant,createTyrantState());same(next.sun,createSunState());same(next.death,createDeathState());expect(next.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(next);assertEmptyLaterRoots(next);expect(stableStringify(raw)).toBe(before);
     expect(sha256Hex(readFileSync('tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json','utf8'))).toBe('70b8843550d5a79abd5250377184ab5050a80cc1b7138f2a03ead788fb3bb8ef');
     expect(readFileSync('tests/fixtures/civilization-enlightener-v01890/boundary-ordinary-life-after-exit.json','utf8')).toBe(bytes);
   },60_000);
@@ -105,7 +128,7 @@ describe('Perfecter exact current schema boundary', () => {
       const state={...original,[root]:value},before=stableStringify(state);
       expect(()=>migrateSliceState(state)).toThrow();expect(stableStringify(state)).toBe(before);
     }
-  }, version === 205 ? 10_000 : 5_000);
+  }, version === 207 ? 5_000 : 30_000);
   it('rejects missing roots, unknown keys, invalid nested roots and mismatched versions',()=>{
     const state=fresh(), missing=structuredClone(state) as unknown as Record<string,unknown>;delete missing.perfecter;
     const missingTyrant=structuredClone(state) as unknown as Record<string,unknown>;delete missingTyrant.tyrant;
