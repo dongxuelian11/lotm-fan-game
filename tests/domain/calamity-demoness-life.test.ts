@@ -116,8 +116,22 @@ describe('Calamity Demoness original people, paid finite life work and honest cl
   });
   it('projects the later actual encounter scene while keeping the frozen life journal unchanged', () => {
     const s = encounterReady(), before = structuredClone(s), p = projectCalamityDemonessLife(s);
-    expect(p.site).toEqual(s.calamityDemoness.encounter.currentSite); expect(p.site.playerLocation).toBe('YARD'); expect(s.calamityDemoness.life.site.playerLocation).toBe('ENTRY');
-    p.site.playerEnergy--; p.site.mirrorA!.intact = false; expect(s).toEqual(before); rejectCalamity(s, { type: 'OBSERVE', caseId: 'mirror-screen' }); valid(s);
+    const site = s.calamityDemoness.encounter.currentSite!;
+    // Positive public-site contract: private provenance is retained only in the authoritative state.
+    expect(p.site).toStrictEqual({
+      siteId: site.siteId, introducedWeek: site.introducedWeek, introducedDate: site.introducedDate,
+      clockSeconds: site.clockSeconds, playerLocation: site.playerLocation,
+      playerTravelMetres: site.playerTravelMetres, playerEnergy: site.playerEnergy,
+      vera: site.vera, marcus: site.marcus, mirrorA: site.mirrorA, mirrorB: site.mirrorB,
+      load: site.load, box: site.box, residue: site.residue, screen: site.screen,
+      plates: site.plates, actorMoves: site.actorMoves,
+    });
+    expect(p.site).not.toHaveProperty('source'); expect(site.source).not.toBeNull();
+    expect(site.source).toStrictEqual(before.calamityDemoness.encounter.currentSite!.source);
+    expect(p.site.playerLocation).toBe('YARD'); expect(s.calamityDemoness.life.site.playerLocation).toBe('ENTRY');
+    p.site.playerEnergy--; p.site.mirrorA!.intact = false;
+    expect(s.calamityDemoness.life.journal).toStrictEqual(before.calamityDemoness.life.journal);
+    expect(s).toStrictEqual(before); rejectCalamity(s, { type: 'OBSERVE', caseId: 'mirror-screen' }); valid(s);
   });
   it.each([null, {}, { type: 'WALK', caseId: 'mirror-screen', to: 'YARD' }, { type: 'SCREEN_MIRROR', caseId: 'mirror-screen', free: true }, { type: 'TELEPORT_ANYWHERE', caseId: 'revoked-window' }, { type: 'REFLECT', caseId: 'mirror-screen' }])('rejects malformed/unavailable life command%#', command => { expect(validateCalamityDemonessActivityCommand(command)).toBe(false); rejectCalamity(lifeReady(), command); });
 });

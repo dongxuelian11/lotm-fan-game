@@ -3,6 +3,16 @@ import { readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { SliceState } from '../../src/domain/slice/types.js';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { openDemonessRuntimeSession, type DemonessRuntimeSession } from '../../src/domain/demoness/owned-session.js';
 import type { DemonessCommand } from '../../src/domain/demoness/types.js';
 import { controlledDemonessRolls, demonessHash, demonessInheritedHash } from '../helpers/demoness-scenario.js';
@@ -17,7 +27,24 @@ beforeAll(() => {
   const saved = JSON.parse(gunzipSync(readFileSync(candidate)).toString('utf8'));
   expect(saved.payload).toMatchObject({ commandCount: 883, newCount: 195, pending: null });
   expect(demonessHash(saved.payload)).toBe(saved.sha256);
-  original = saved.payload.state;
+  const raw: Record<string, unknown> = saved.payload.state, rawHash = demonessHash(raw);
+  expect(raw).toMatchObject({ schemaVersion: 218, contentVersion: 'demoness-v218' });
+  expect(() => openDemonessRuntimeSession(raw)).toThrow();
+  // Migrate the stopped historical capture through the real current validator; never relabel its bytes.
+  original = migrateSliceState(raw);
+  expect([original.schemaVersion, original.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  expect(Object.keys(original).sort()).toEqual([...Object.keys(raw),
+    'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother',
+  ].sort());
+  assertEmptyHermitState(original); assertEmptyHangedManState(original); assertEmptyAbyssState(original);
+  assertEmptyChainedState(original); assertEmptyWheelOfFortuneState(original);
+  assertEmptyBlackEmperorState(original); assertEmptyJusticiarState(original); assertEmptyMotherState(original);
+  const historical = Object.entries(raw).filter(([key]) => key !== 'schemaVersion' && key !== 'contentVersion');
+  expect(demonessHash(Object.fromEntries(historical.map(([key]) => [key, original[key as keyof SliceState]]))))
+    .toBe(demonessHash(Object.fromEntries(historical)));
+  for (const [key, value] of historical) expect(original[key as keyof SliceState], `Changed actual883 ${key}`).toStrictEqual(value);
+  expect(original.random).toStrictEqual(raw.random);
+  expect(demonessHash(raw)).toBe(rawHash); expect(demonessHash(saved.payload)).toBe(saved.sha256);
   expect(original).toMatchObject({ revision: 884, actionsRemaining: 0, cash: 170, progression: { sequence: 1 } });
   expect(original.demoness.passage!.residents.map(r => r.services.length)).toEqual([24, 0]);
 });
