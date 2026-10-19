@@ -345,6 +345,7 @@ function assertLegacyPrinceOfAbolitionRecoveryAbsent(input:unknown):void {
   throw new TypeError('Unexpected PrinceOfAbolition recovery in legacy save');
 }
 function assertLegacyHandOfOrderRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
  if(!record(input)||!record(input.handOfOrder))return;
  const own=(value:unknown,key:string)=>record(value)&&Object.hasOwn(value,key);
  const root=input.handOfOrder;

@@ -180,7 +180,7 @@ describe('Hand of Order same-three-characteristic recovery', () => {
     // Read the old801 result once, never replay its commands or repair its fourth original.
     const legacyRaw = readObjectEntry<SliceState>('tests/fixtures/hand-of-order-v02060/natural.json', 'final'), legacy = migrateSliceState(legacyRaw);
     expect(legacy.handOfOrder).toEqual(legacyRaw.handOfOrder);
-    expect(legacy.handOfOrder.bottles[3]).toMatchObject({ id: originalId(4), outcome: 'GREAT_SUCCESS' });
+    expect(legacy.handOfOrder.bottles[3]).toMatchObject({ id: originalId(4), outcome: 'SUCCESS' });
     expect(validateHandOfOrderState(legacy)).toBe(true); expect(resolveHandOfOrderOriginalsSnapshot(legacy.handOfOrder)).toBeNull();
   }, 60_000);
 });

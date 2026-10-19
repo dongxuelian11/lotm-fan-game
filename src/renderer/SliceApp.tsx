@@ -2772,7 +2772,7 @@ function AttendantMysteriesActionSequence({actions}:{actions:AttendantMysteriesC
 function BarrenMatriarchActionSequence({actions}:{actions:BarrenMatriarchCombatProjection["lastActionSequence"]}) {
  return <ol>{actions.map(action=><li key={`${action.actor}-${action.order}`}><strong>{action.actor==='PLAYER'?'本人':'对手'}第{action.order+1}槽：{playerText(action.label)}</strong><p>实耗{action.paidCost}灵性、{action.mindCost}精神；自身优势{displayNumber(action.selfGain)}，减势{displayNumber(action.enemyReduction)}；实际恢复{action.recoveredHealth}健康，护垫磨损{action.padWear}，剩余完整度{action.rootPadAfter.integrity}。</p></li>)}</ol>;
 }
-function BalancerActionSequence({actions}:{actions:BalancerCombatProjection["lastActionSequence"]}) {
+function BalancerActionSequence({actions}:{actions:Omit<BalancerCombatProjection["lastActionSequence"][number], "randomCursorBefore" | "randomCursorAfter">[]}) {
  return <ol>{actions.map(action=><li key={`${action.actor}-${action.order}`}><strong>{action.actor==='PLAYER'?'本人':'对手'}第{action.order+1}槽：{playerText(action.label)}</strong><p>实耗{action.paidCost}灵性、{action.mindCost}精神；自身优势{displayNumber(action.selfGain)}，减势{displayNumber(action.enemyReduction)}。</p></li>)}</ol>;
 }
 function EntropyDukeActionSequence({actions}:{actions:Omit<EntropyDukeCombatProjection["lastActionSequence"][number], "randomCursorBefore" | "randomCursorAfter">[]}) {

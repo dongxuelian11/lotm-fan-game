@@ -6,27 +6,32 @@ import { validateSlicePayload } from '../../src/domain/slice/validation.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { createBlackEmperorState, validateBlackEmperorState } from '../../src/domain/black-emperor/index.js';
 import { openBlackEmperorRuntimeSession } from '../../src/domain/black-emperor/owned-session.js';
+import { createJusticiarState } from '../../src/domain/justiciar/index.js';
 import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { BLACK_EMPEROR_SOURCE_FILE, blackEmperorHash, authenticBlackEmperorSource,
   assertBlackEmperorSourceUnmodified } from '../helpers/black-emperor-scenario.js';
 
 const fresh = (): SliceState => createSliceRun('black-emperor-schema', sliceDefaultCreationSelection, 'black-emperor-schema-seed');
 const legacy223 = () => {
-  const { blackEmperor: _root, ...state } = fresh();
+  const { blackEmperor: _root, justiciar: _justiciar, ...state } = fresh();
   return { ...state, schemaVersion: 223 as const, contentVersion: 'wheel-of-fortune-v223' as const };
 };
 
-describe('BlackEmperor schema224 exact additive admission', () => {
-  it('adds one exact empty root and preserves every older field and input', () => {
+describe('BlackEmperor schema223 migration to current exact additive admission', () => {
+  it('adds exactly empty blackEmperor and justiciar roots and preserves every older field and input', () => {
     const state = fresh(), old = legacy223(), before = structuredClone(old);
-    expect([state.schemaVersion, state.contentVersion]).toEqual([224, 'black-emperor-v224']);
+    expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     assertEmptyBlackEmperorState(state);
+    expect(state.justiciar).toStrictEqual(createJusticiarState());
     expect(validateBlackEmperorState(state)).toBe(true);
     expect(() => openBlackEmperorRuntimeSession(state)).toThrow();
     const migrated = migrateSliceState(old);
-    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(old), 'blackEmperor'].sort());
+    expect([migrated.schemaVersion, migrated.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(old), 'blackEmperor', 'justiciar'].sort());
     assertEmptyBlackEmperorState(migrated);
+    expect(migrated.justiciar).toStrictEqual(createJusticiarState());
     for (const [key, value] of Object.entries(old)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(migrated[key as keyof SliceState], `Changed old root ${key}`).toStrictEqual(value);
@@ -40,7 +45,7 @@ describe('BlackEmperor schema224 exact additive admission', () => {
     const state = fresh(), old = legacy223(), { blackEmperor: _root, ...missing } = state;
     const invalids = [missing, { ...state, blackEmperor: undefined }, { ...state, blackEmperor: null },
       { ...state, blackEmperor: { ...state.blackEmperor, extra: undefined } },
-      { ...state, futureChapter: {} }, { ...state, schemaVersion: 225 }, { ...state, contentVersion: 'wheel-of-fortune-v223' },
+      { ...state, futureChapter: {} }, { ...state, schemaVersion: CURRENT_SCHEMA_VERSION + 1 }, { ...state, contentVersion: 'wheel-of-fortune-v223' },
       { ...old, blackEmperor: createBlackEmperorState() }, { ...old, blackEmperor: undefined },
       { ...old, wheelOfFortune: { ...old.wheelOfFortune, forged: true } },
       { ...old, princeOfAbolition: { ...old.princeOfAbolition, resupply: { ...old.princeOfAbolition.resupply, recovery: null } } },
