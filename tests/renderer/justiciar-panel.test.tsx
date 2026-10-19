@@ -107,7 +107,7 @@ function assertPage(value: SliceProjection) {
     + ' · 本周行动 ' + r.actionsRemaining + '/' + r.weeklyBudget);
   expect(r).toMatchObject({ health: value.health, mind: value.mind, spirituality: value.spirituality,
     maxSpirituality: value.maxSpirituality, cash: value.cash + '便士', actionsRemaining: value.actionsRemaining });
-  expect(within(panel).getByRole('region', { name: '当前主目标' }).textContent).toContain(value.justiciar.nextStep);
+  expect(within(panel).getByRole('region', { name: '本章目标' }).textContent).toContain(value.justiciar.nextStep);
   expect(screen.getByRole('button', { name: '返回主菜单' }).closest('header')?.textContent)
     .toContain(value.character.name + ' · ' + value.justiciar.title);
   expect(screen.queryByRole('heading', { name: '人物卷宗' })).toBeNull();
@@ -131,7 +131,7 @@ afterEach(() => {
 afterAll(() => { views = undefined; assertJusticiarSourceUnmodified(); });
 
 describe('Justiciar228 actual public entry and controlled promotion',()=>{
- it('opens the real original-spirit entry and commits guidance without enabling stale ordinary actions',async()=>{
+ it('opens the real Hand of Order entry and commits guidance without enabling stale ordinary actions',async()=>{
   const {source,guided}=saved(),learn=enabledAction(source,{type:'LEARN_GUIDANCE'});
   const game=publicAdapter(source,{command:learn.command,after:guided});await mount(game);
   await userEvent.click(screen.getByRole('button',{name:'秩序之手与新划界场地'}));
