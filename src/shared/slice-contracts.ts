@@ -1,3 +1,4 @@
+export type { JusticiarCommand, JusticiarProjection } from '../domain/justiciar/types.js';
 export type { BlackEmperorCommand, BlackEmperorProjection } from '../domain/black-emperor/types.js';
 export type { WheelOfFortuneCommand, WheelOfFortuneProjection } from '../domain/wheel-of-fortune/types.js';
 export type { ChainedCommand, ChainedProjection } from '../domain/chained/types.js';

@@ -23,13 +23,37 @@ export type HandOfOrderPreparationId = typeof HAND_OF_ORDER_PREPARATION_IDS[numb
 export type HandOfOrderAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: HandOfOrderPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1' | 'STABILIZE_PROMOTION'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type HandOfOrderCommand = HandOfOrderAcquisitionCommand | HandOfOrderActivityCommand | HandOfOrderEncounterCommand;
+export type HandOfOrderOriginalBottleId = 'hand-of-order-potion-1' | 'hand-of-order-potion-2' | 'hand-of-order-potion-3';
+/** The vessel may change; the three finite original characteristics do not. */
+export interface HandOfOrderRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_HAND_OF_ORDER_PREPARATION'; custodian: 'JU228-HAND-OF-ORDER-SUPPLIER';
+}
+export interface HandOfOrderRecovery extends HandOfOrderRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface HandOfOrderRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_HAND_OF_ORDER_PREPARATION'; originals: HandOfOrderOriginals;
+  permission: { personId: 'JU228-HAND-OF-ORDER-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface HandOfOrderOriginalCharacteristic {
+  characteristicId: string; originalBottleId: HandOfOrderOriginalBottleId; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface HandOfOrderOriginalCharacteristics {
+  characteristics: HandOfOrderOriginalCharacteristic[];
+  embodiedOriginalBottleId: HandOfOrderOriginalBottleId | null; embodiedBottleId: string | null;
+}
 export interface HandOfOrderBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: HandOfOrderRecovery;
 }
 export interface HandOfOrderPrices { guidance: number; potion: number; labourCredit: number; labourBalance: number; preparation: number; resupply: number }
 export type HandOfOrderFinance = Pick<SliceState, 'weeklyBudget' | 'lifeTier' | 'nextLifeTier' | 'debts' | 'missedWeeks' | 'credit'>;
@@ -43,6 +67,7 @@ export interface HandOfOrderAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'justiciar'; balancerPromotionWeek: number; arbiterPromotionWeek: number };
   before: HandOfOrderAcquisitionBudget; after: HandOfOrderAcquisitionBudget; finance: HandOfOrderFinance;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: HandOfOrderRecoverySite;
 }
 export const HAND_OF_ORDER_SOURCE_KEYS = ['arbiter', 'sheriff', 'interrogator', 'judge', 'punishmentKnight', 'imperativeMage', 'chaosHunter', 'balancer'] as const;
 export type HandOfOrderSourceHistory = Pick<SliceState, typeof HAND_OF_ORDER_SOURCE_KEYS[number]>;
@@ -59,7 +84,7 @@ export interface HandOfOrderSourceScene {
 }
 export interface HandOfOrderState {
   guidanceKnown: boolean; sourceWeek: number | null; bottles: HandOfOrderBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: HandOfOrderRecoveryRequest };
   promotionWeek: number | null; balancerActingAtPromotion: number | null;
   preparations: { taskId: HandOfOrderPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: HandOfOrderAcquisitionEvent[];

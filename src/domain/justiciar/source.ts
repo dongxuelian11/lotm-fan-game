@@ -1,0 +1,92 @@
+import type { SliceState } from '../slice/types.js';
+import { validateHandOfOrderState, hasHandOfOrderLock, hasHandOfOrderOldPractice, resolveHandOfOrderOriginalsSnapshot } from '../hand-of-order/index.js';
+import { HAND_OF_ORDER_SOURCE_KEYS } from '../hand-of-order/types.js';
+import { HAND_OF_ORDER_CASE_IDS, getHandOfOrderCurrentSite } from '../hand-of-order/life.js';
+import { stableStringify } from '../canonical.js';
+import { sha256Hex } from '../checksum.js';
+import { compareGameDates } from '../game-calendar.js';
+import { JUSTICIAR_ORIGINAL_IDS, JUSTICIAR_SUCCESSION } from './content.js';
+import type { JusticiarBudget, JusticiarSource } from './types.js';
+export type { JusticiarBudget, JusticiarFinance, JusticiarSource } from './types.js';
+
+export const JUSTICIAR_FROZEN_SOURCE_KEYS = [...HAND_OF_ORDER_SOURCE_KEYS, 'handOfOrder'] as const;
+const digest = (value: unknown): string => sha256Hex(stableStringify(value));
+const same = (a: unknown, b: unknown): boolean => stableStringify(a) === stableStringify(b);
+export const justiciarBudget = (s: SliceState): JusticiarBudget => ({
+  week: s.week, date: structuredClone(s.date), actions: s.actionsRemaining, cash: s.cash,
+  health: s.health, mind: s.mind, spirituality: s.spirituality, pollution: s.seer.pollution,
+  injuries: structuredClone(s.injuries), injuryRisk: s.injuryRisk, status: s.status,
+  sequence: s.progression.sequence as 1 | 0, acting: s.progression.acting,
+  mastery: { ...s.progression.mastery }, coreStats: { ...s.character.coreStats }, completedSources: [...s.seer.completedSources],
+});
+export const justiciarHistoryDigest = (s: SliceState): string => digest(Object.fromEntries(JUSTICIAR_FROZEN_SOURCE_KEYS.map(key => [key, s[key]])));
+export const justiciarAcquisitionSnapshot = (s: SliceState) => ({
+  bottles: structuredClone(s.handOfOrder.bottles), resupply: structuredClone(s.handOfOrder.resupply),
+  promotionWeek: s.handOfOrder.promotionWeek!, acquisitionJournal: structuredClone(s.handOfOrder.acquisitionJournal),
+});
+/** Read the live S1 endpoint, never the frozen S2 room or encounter start. */
+export const justiciarOriginalPeopleAndObjects = (s: SliceState): JusticiarSource['originals'] => ({
+  site: structuredClone(getHandOfOrderCurrentSite(s)), operation: structuredClone(s.handOfOrder.life.operation),
+  guardPlate: structuredClone(s.handOfOrder.life.guardPlate!),
+});
+export function justiciarSourceBlock(s: SliceState): string | null {
+  if (s.progression.pathwayId !== 'justiciar' || s.progression.sequence !== 1 || s.status !== 'ACTIVE') return '须由仍活着的秩序之手本人继续。';
+  if (!validateHandOfOrderState(s) || s.handOfOrder.promotionWeek === null) return '原晋升、原人物与实际履历未通过核验。';
+  const life = s.handOfOrder.life;
+  if (s.progression.acting !== 100 || !life.reflected || !HAND_OF_ORDER_CASE_IDS.every(id => {
+    const c = life.cases[id];
+    return c.status === 'RESOLVED' && c.returned && !c.contactOpen && c.attempts.length > 0 && life.journal.some(e => e.command.type === 'REPORT' && e.command.caseId === id);
+  }) || !life.journal.some(e => e.command.type === 'REFLECT')) return '先完成秩序之手三案的真实报告、反思与完整消化；普通完成同样有效。';
+  if (hasHandOfOrderLock(s) || hasHandOfOrderOldPractice(s) || s.combat || s.activeEvent || s.eventQueue.length || s.pulse !== 'NONE') return '先停止旧能力、归还原物并结束旧现场的接触。';
+  const site = getHandOfOrderCurrentSite(s), operation = life.operation;
+  const plate = life.guardPlate;
+  if (!['START', 'OUTSIDE'].includes(site.playerLocation) || site.activeCase !== null || life.activeCase !== null ||
+      site.guide.id !== 'GUIDE' || site.guide.name !== '薇娜·贝尔' || site.guide.location !== 'OUTSIDE' ||
+      site.volunteer.id !== 'CH3-MIRA' || site.volunteer.age !== 43 || !site.volunteer.alive || !site.volunteer.independentMind || site.volunteer.location !== 'OUTSIDE' ||
+      site.parcel.id !== 'CH3-PARCEL' || site.parcel.massGrams !== 350 ||
+      [site.parcel, site.line, site.paper].some(item => item.owner !== 'GUIDE' || item.holder !== 'GUIDE' || item.location !== 'OUTSIDE' || item.quantity !== 1) ||
+      !plate || plate.id !== 'BA2-GUARD-PLATE' || plate.owner !== 'PLAYER' || plate.holder !== 'PLAYER' || plate.location !== site.playerLocation ||
+      operation.door !== 'OPEN' || operation.truth !== null || operation.effect !== null || operation.pending !== null || operation.division !== null || operation.aftermath !== null)
+    return '本人须在原入口或室外；薇娜与43岁的米拉已经退出，350克原包裹、线和规则纸仍由薇娜在室外持有，原护板由本人实持，原门开放且旧作用已停止。';
+  const first = s.handOfOrder.acquisitionJournal.find(e => e.command.type === 'LEARN_GUIDANCE');
+  const succession = JUSTICIAR_SUCCESSION;
+  if (!first || compareGameDates(succession.death.date, succession.separation.date) > 0 ||
+      compareGameDates(succession.separation.date, succession.custody.date) > 0 ||
+      [succession.death.date, succession.separation.date, succession.custody.date].some(date => compareGameDates(date, first.date) >= 0)) return '前任死亡、析出与唯一性封存须各自早于本人最初取得成品指导。';
+  const originals = resolveHandOfOrderOriginalsSnapshot(s.handOfOrder);
+  if (!originals || originals.characteristics.length !== 3 || JUSTICIAR_ORIGINAL_IDS.some(id => originals.characteristics.filter(item => item.originalBottleId === id).length !== 1) ||
+      originals.characteristics.filter(item => item.holder === 'EMBODIED').length !== 1 || !originals.embodiedOriginalBottleId || !originals.embodiedBottleId) return '须核清同一三份原特性和本体内实际晋升的一份，额外独立原瓶不能改名进入。';
+  const embodied = originals.characteristics.find(item => item.originalBottleId === originals.embodiedOriginalBottleId);
+  const consumed = embodied?.consumptionHistory.at(-1);
+  if (embodied?.holder !== 'EMBODIED' || !consumed || consumed.bottleId !== originals.embodiedBottleId || consumed.week !== s.handOfOrder.promotionWeek || !['SUCCESS', 'GREAT_SUCCESS'].includes(consumed.outcome)) return '本体内原特性须对应实际成功晋升的同一瓶与检定。';
+  return null;
+}
+export function createJusticiarSource(s: SliceState): JusticiarSource {
+  const reason = justiciarSourceBlock(s); if (reason) throw Error(reason);
+  const acquisition = justiciarAcquisitionSnapshot(s), originals = justiciarOriginalPeopleAndObjects(s);
+  return { runId: s.runId, actorId: `${s.runId}:original-player`, revision: s.revision, character: structuredClone(s.character), budget: justiciarBudget(s),
+    finance: structuredClone({ weeklyBudget: s.weeklyBudget, wagePaidWeek: s.wagePaidWeek, lifeTier: s.lifeTier, nextLifeTier: s.nextLifeTier, debts: s.debts, missedWeeks: s.missedWeeks, credit: s.credit }),
+    random: { ...s.random }, historyDigest: justiciarHistoryDigest(s), originalWorldDigest: digest(s.world), combatHistoryLength: s.combatHistory.length,
+    combatHistoryDigest: digest(s.combatHistory), originals, originalsDigest: digest(originals), acquisition, acquisitionDigest: digest(acquisition), originalCharacteristics: resolveHandOfOrderOriginalsSnapshot(s.handOfOrder)!,
+  };
+}
+export function justiciarSourceView(s: SliceState, source: JusticiarSource): SliceState {
+  const b = source.budget;
+  return { ...s, ...structuredClone(source.finance), revision: source.revision, week: b.week, date: structuredClone(b.date), actionsRemaining: b.actions,
+    cash: b.cash, health: b.health, mind: b.mind, spirituality: b.spirituality, status: b.status, injuries: structuredClone(b.injuries), injuryRisk: b.injuryRisk,
+    character: structuredClone(source.character), random: { ...source.random }, progression: { ...s.progression, pathwayId: 'justiciar', sequence: 1, acting: b.acting, mastery: { ...b.mastery } },
+    seer: { ...s.seer, pollution: b.pollution, completedSources: [...b.completedSources] }, combatHistory: s.combatHistory.slice(0, source.combatHistoryLength),
+    combat: null, activeEvent: null, eventQueue: [], pulse: 'NONE', billAmount: 0, ending: null,
+  };
+}
+export function validateJusticiarSource(s: SliceState, source: JusticiarSource, phase: 'HANDOFF' | 'COLD_REOPEN'): boolean {
+  try {
+    if (phase === 'HANDOFF') return same(createJusticiarSource(s), source);
+    if (source.runId !== s.runId || source.actorId !== `${s.runId}:original-player` || source.revision > s.revision || source.random.seed !== s.random.seed ||
+        source.random.cursor > s.random.cursor || source.budget.status !== 'ACTIVE' || source.budget.sequence !== 1 || source.historyDigest !== justiciarHistoryDigest(s) ||
+        source.originalWorldDigest !== digest(s.world) || source.combatHistoryLength !== s.combatHistory.length || source.combatHistoryDigest !== digest(s.combatHistory) ||
+        !same(source.originals, justiciarOriginalPeopleAndObjects(s)) || source.originalsDigest !== digest(source.originals) ||
+        !same(source.acquisition, justiciarAcquisitionSnapshot(s)) || source.acquisitionDigest !== digest(source.acquisition)) return false;
+    return same(createJusticiarSource(justiciarSourceView(s, source)), source);
+  } catch { return false; }
+}

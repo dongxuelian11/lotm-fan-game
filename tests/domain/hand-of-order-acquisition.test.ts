@@ -103,14 +103,14 @@ describe('HandOfOrder independent acquisition and truthful S2 source', () => {
     expect(receipt.before).toEqual(receipt.after); expect(n.week).toBe(s.week + 1); expect(n.cash).toBe(s.cash - 30); expect(n.random).toEqual(s.random);
     expect(n.handOfOrder.bottles[0]!.status).toBe('PLAYER'); expect(n.injuries).toEqual(s.injuries); assertValidSliceState(n);
   }, 120_000);
-  it('requires three genuine failures, paid request and actual next week for fresh independent bottles', () => {
+  it('blocks fresh independent supply after three failures and exposes same-original recovery instead', () => {
     let s = taught('THREE_FAILURES'); rejectHandOfOrder(s, { type: 'REQUEST_SUPPLY' });
     for (let number = 1; number <= 3; number++) { const bottleId = `hand-of-order-potion-${number}`; s = prepareBottle(s, bottleId); s = hoo(s, { type: 'CONSUME', bottleId, confirmed: true }); expect(s.progression.sequence).toBe(2); }
-    s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 }); const before = s.cash;
-    s = hoo(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100); const requested = s.handOfOrder.resupply.requestedWeek!;
-    rejectHandOfOrder(s, { type: 'RECEIVE_SUPPLY' }); s = ready(s, { afterWeek: requested }); s = hoo(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.handOfOrder.bottles).toHaveLength(6); expect(s.handOfOrder.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.handOfOrder.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true); assertValidSliceState(s);
+    s = ready(s, { ap: 2, cash: 120, health: 100, mind: 100 }); const before = structuredClone(s);
+    rejectHandOfOrder(s, { type: 'REQUEST_SUPPLY' }); rejectHandOfOrder(s, { type: 'RECEIVE_SUPPLY' });
+    expect(s).toEqual(before); expect(s.handOfOrder.bottles).toHaveLength(3);
+    expect(handOfOrderAcquisitionBlock(s, { type: 'REQUEST_RECOVERY_V1', bottleId: 'hand-of-order-potion-1' })).toBeNull();
+    assertValidSliceState(s);
   }, 240_000);
   it('rejects tampered source receipts, random evidence and forgedS1/S0 states', () => {
     for (const mutate of [
