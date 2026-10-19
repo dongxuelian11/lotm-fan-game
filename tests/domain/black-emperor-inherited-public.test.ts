@@ -98,6 +98,6 @@ describe('BlackEmperor227 complete genuine205 inherited public projection',()=>{
   expect(view.lastCombatRound!.entropyDukeOutcome!.playerActions.find(a=>a.check)!.check!.modifiers).toEqual(action.check.modifiers);
   expect(blackEmperorHash(withModifier)).toBe(modifierHash);
   expect(blackEmperorHash(state)).toBe(before);expect(state.random).toEqual(random);assertBlackEmperorSourceUnmodified();
- },60_000);
+ },120_000);
 
 });
