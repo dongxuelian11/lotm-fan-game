@@ -1,0 +1,111 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.227.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.227.0_black_emperor_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 7580419,
+      "sha256": "f4a5e66748a83799b9fcbfc9593dbbd12d883531267e0500ff201c23a2637297",
+      "members": [
+        "tests/fixtures/black-emperor-v02270/checkpoint.json.gz",
+        "tests/fixtures/black-emperor-v02270/commands.jsonl",
+        "tests/fixtures/black-emperor-v02270/key-1004-periodic.json.gz",
+        "tests/fixtures/black-emperor-v02270/key-1014-terminal.json.gz",
+        "tests/fixtures/black-emperor-v02270/key-924-initial.json.gz",
+        "tests/fixtures/black-emperor-v02270/key-940-periodic.json.gz",
+        "tests/fixtures/black-emperor-v02270/key-956-periodic.json.gz",
+        "tests/fixtures/black-emperor-v02270/key-972-periodic.json.gz",
+        "tests/fixtures/black-emperor-v02270/key-988-periodic.json.gz",
+        "tests/fixtures/black-emperor-v02270/key-996-before-consume.json.gz",
+        "tests/fixtures/black-emperor-v02270/key-997-after-consume.json.gz",
+        "tests/fixtures/black-emperor-v02270/producer-tests.mjs",
+        "tests/fixtures/black-emperor-v02270/producer.mjs",
+        "tests/fixtures/black-emperor-v02270/runtime-freeze.json",
+        "tests/fixtures/black-emperor-v02270/source-natural.json.gz",
+        "tests/fixtures/black-emperor-v02270/summary.json"
+      ]
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/black-emperor-v02270/checkpoint.json.gz",
+      "bytes": 441884,
+      "sha256": "6b741299a7d59c073c412e8e447f55b627e925d2dc72d179c66bf864333a6cf0"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/commands.jsonl",
+      "bytes": 558212,
+      "sha256": "f018d21692bb88c6580438f9b2fec31abf4e108eb13b566c3190793a86ba6b37"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-1004-periodic.json.gz",
+      "bytes": 714401,
+      "sha256": "3660473feaa8241106b65afcece9a0a9eea9935b3375ec09441d672f713b2d35"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-1014-terminal.json.gz",
+      "bytes": 717759,
+      "sha256": "beffcc86614abe9b91209d222a50e4eff6dc148c80dabe4fd7cd89f06f747a6a"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-924-initial.json.gz",
+      "bytes": 669978,
+      "sha256": "2f10011d99387c9e1fab5fde1f1068090b80e1ec3dcf1cb2cf1e59d47b1f8cc4"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-940-periodic.json.gz",
+      "bytes": 690826,
+      "sha256": "56a08fdbd476b3eb634576dde0c65b1e651d8092d5971fb272fa325cde01ec25"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-956-periodic.json.gz",
+      "bytes": 695517,
+      "sha256": "62b3f280ed41a4c9ce15d9b0d2acfc4f476befe626e05df02ef4a6e120e27cbb"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-972-periodic.json.gz",
+      "bytes": 700547,
+      "sha256": "a6232ce393584e9f4e9c7e178018f38f648374e042382b4c96a813bb65350769"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-988-periodic.json.gz",
+      "bytes": 706203,
+      "sha256": "f0271fb5cae4065e59d5c45be90f4c079f45058654559c572783145306e36d92"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-996-before-consume.json.gz",
+      "bytes": 709662,
+      "sha256": "5e58ebb4dec1e7061200564adc03ae95e51201cce94a81d9ca6a1968fbc8f80d"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/key-997-after-consume.json.gz",
+      "bytes": 711214,
+      "sha256": "7baa8750d13c9576ef6a0302090ee832f7be46182244705662c481555db0a098"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/producer-tests.mjs",
+      "bytes": 13354,
+      "sha256": "d6b4716de4fbb3d90aca5b7d3654b85d7e9b9017b614ed884585e85df87dd771"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/producer.mjs",
+      "bytes": 39566,
+      "sha256": "b76e2baab9f385776ece38c031512e8736a985edf969c9b55d50c33a959e54bc"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/runtime-freeze.json",
+      "bytes": 679840,
+      "sha256": "c964072ccc5bf131c1ae96b9bfc962a84a58420805007faee37a6e518b6ca4f9"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/source-natural.json.gz",
+      "bytes": 1061572,
+      "sha256": "8b62e443d41430807c689212898f4d87d0d3e7af79a1cd898906e4498dfc29a3"
+    },
+    {
+      "path": "tests/fixtures/black-emperor-v02270/summary.json",
+      "bytes": 5762,
+      "sha256": "dd7bdeaa934065ad1475bcb012f707133e634b07f38b419b1de50c634889e852"
+    }
+  ]
+}
