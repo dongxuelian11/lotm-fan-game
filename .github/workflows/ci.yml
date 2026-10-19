@@ -27,6 +27,20 @@ jobs:
       - run: node --test scripts/test-ci-batches.test.mjs
       - run: node scripts/test-ci-batches.mjs --check-inventory
       - run: npm run build
+      - name: Exercise the built Windows desktop and restart boundaries
+        timeout-minutes: 5
+        env:
+          LOTM_QA_DIR: output/windows-electron-smoke
+        run: |
+          New-Item -ItemType Directory -Force output/windows-electron-smoke | Out-Null
+          node tests/integration/run-slice-electron-smoke.mjs 2>&1 | Tee-Object -FilePath output/windows-electron-smoke/run.log
+          exit $LASTEXITCODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-electron-smoke
+          path: output/windows-electron-smoke/
+          if-no-files-found: ignore
 
   historical:
     needs: contract
