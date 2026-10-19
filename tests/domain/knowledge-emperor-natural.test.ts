@@ -15,6 +15,7 @@ import { currentKnowledgeEmperorCombatSource, replayKnowledgeEmperorCombatRound,
   knowledgeEmperorActionCount, knowledgeEmperorEnemyActionCount } from '../../src/domain/knowledge-emperor/combat.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentKnowledgeEmperorReplayExpectation } from '../helpers/knowledge-emperor-current-replay.js';
 import { KNOWLEDGE_EMPEROR_CAPTURE_EVIDENCE as expected } from './knowledge-emperor-capture-evidence.js';
 import { KNOWLEDGE_EMPEROR_ROOT as ROOT, KNOWLEDGE_EMPEROR_SOURCE as SOURCE, KNOWLEDGE_EMPEROR_PRIOR as PRIOR,
   KNOWLEDGE_EMPEROR_PREFIX_COUNT as PREFIX, KNOWLEDGE_EMPEROR_INHERITED_COUNT as INHERITED,
@@ -127,7 +128,7 @@ describe('Knowledge Emperor exact651 natural history and actual831-command publi
       if (index === PREFIX - 1) same(state, original);
       if (index >= PREFIX) assertOriginalContinuity(state, original);
     }
-    same(state, capturedState('final')); same(captureBody(state), expected.final);
+    same(state, currentKnowledgeEmperorReplayExpectation(capturedState('final'))); same(captureBody(state), expected.final);
     assertValidSliceState(state); same(migrateSliceState(state), state);
     expect(state.revision).toBe(capturedState('initial').revision + expected.commands);
     expect(naturalEntry('stage')).toBe(expected.stage); expect(naturalEntry('error')).toBeNull();

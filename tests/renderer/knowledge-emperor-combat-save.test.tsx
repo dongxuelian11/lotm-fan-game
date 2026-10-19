@@ -89,7 +89,12 @@ function assertEnvelope(game: SavedGame, before: SliceState, intent: SliceIntent
 function assertCurrentBody(state: SliceState) {
   const site = state.knowledgeEmperor.encounter.currentSite!;
   const value = projectSliceState(state), body = screen.getByRole('region', { name: '知识皇帝原人原物当前状态' });
-  same(value.knowledgeEmperor.life.site, site);
+  // The public body contains every current site field except its private
+  // ancestry snapshot. Keep complete equality for all remaining fields.
+  const { source: privateSource, ...publicSite } = site;
+  expect(privateSource).toBeDefined();
+  same(value.knowledgeEmperor.life.site, publicSite);
+  expect(Object.hasOwn(value.knowledgeEmperor.life.site, 'source')).toBe(false);
   expect(site.playerLocation).toBe('YARD'); expect(site.body).toBe('SOLID'); expect(site.form.active).toBe(false);
   expect(body.textContent).toContain(`本人当前在独立阅览院，精力${site.playerEnergy}/100，累计普通步行${site.playerTravelMetres}米，现场时钟${site.clockSeconds}秒`);
   expect(body.textContent).toContain('当前身体：完整实体；当前没有信息形态窗口');

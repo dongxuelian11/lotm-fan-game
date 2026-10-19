@@ -12,6 +12,7 @@ import { KNOWLEDGE_EMPEROR_SOURCE_KEYS, KNOWLEDGE_EMPEROR_ABILITY_IDS } from '..
 import { getKnowledgeEmperorCurrentSite, knowledgeEmperorLifeMasteryGains } from '../../src/domain/knowledge-emperor/life.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentKnowledgeEmperorReplayExpectation } from '../helpers/knowledge-emperor-current-replay.js';
 
 export const KNOWLEDGE_EMPEROR_ROOT = 'tests/fixtures/knowledge-emperor-v02000';
 export const KNOWLEDGE_EMPEROR_SOURCE = 'tests/fixtures/sage-v01780/natural.json';
@@ -90,7 +91,11 @@ export function assertPublicCaptureControl(state: SliceState, intent: SliceInten
 export function replayCaptureBoundary(name: string) {
   const save = namedBoundary(name);
   if (save.count > KNOWLEDGE_EMPEROR_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-  sameCaptureValue(applySliceIntent(save.before, save.intent), save.final);
+  // Restored boundaries retain historical prose. Only replaying LEARN_GUIDANCE
+  // itself creates the exact current guidance record.
+  const expected = save.intent.type === 'KNOWLEDGE_EMPEROR' && save.intent.command.type === 'LEARN_GUIDANCE'
+    ? currentKnowledgeEmperorReplayExpectation(save.final) : save.final;
+  sameCaptureValue(applySliceIntent(save.before, save.intent), expected);
   return save;
 }
 export const captureBody = (s: SliceState) => ({ status: s.status, revision: s.revision, week: s.week, date: s.date,

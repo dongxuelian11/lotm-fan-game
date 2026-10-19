@@ -9,6 +9,7 @@ import { assertValidSliceState, projectSliceState, validateSlicePayload } from '
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
+import { currentKnowledgeEmperorReplayExpectation } from '../helpers/knowledge-emperor-current-replay.js';
 import { KNOWLEDGE_CAPTURE as ROOT, KNOWLEDGE_SOURCE as SOURCE, KNOWLEDGE_PRIOR as PRIOR,
   KNOWLEDGE_SOURCE_SHA as SOURCE_SHA, KNOWLEDGE_PRIOR_SHA as PRIOR_SHA,
   KNOWLEDGE_PREFIX_COUNT as PREFIX_COUNT, KNOWLEDGE_PREFIX_SHA as PREFIX_SHA,
@@ -123,7 +124,9 @@ describe('Knowledge Emperor immutable natural capture and representative SQLite 
     expect(save.count).toBe(observed.step); same(save.intent, commands[save.count - 1]); same(save.intent, observed.intent);
     expect(save.final.status).toBe(observed.status); expect(save.final.revision).toBe(save.before.revision + 1);
     if (save.count > PREFIX_COUNT) publicControl(save.before, save.intent); else same(save.final, current(source('final')));
-    exerciseSqlite(save.before, save.intent, save.final, `knowledge-emperor200:${save.count}`);
+    const currentFinal = save.intent.type === 'KNOWLEDGE_EMPEROR' && save.intent.command.type === 'LEARN_GUIDANCE'
+      ? currentKnowledgeEmperorReplayExpectation(save.final) : save.final;
+    exerciseSqlite(save.before, save.intent, currentFinal, `knowledge-emperor200:${save.count}`);
     expect(await captureFileHash(save.path)).toBe(originalHash);
   }, 80_000);
 });
