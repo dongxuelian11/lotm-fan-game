@@ -37,7 +37,7 @@
 | 3 | 沉默门徒 | 沉默蓄咒、变形、寄物 | silent-curse, transfiguration |
 | 2 | 古代邪物 | 天使级诅咒、巢穴/容器 | ancient-vessel |
 | 1 | 神孽 | 有限灵性束障、短促震声 | chained.s1.spirit-barrier, chained.s1.brief-cry |
-| 0 | 被缚者 | 诅咒、束缚、异类、物权柄 | chained-authority |
+| 0 | 被缚者 | 本版有限原绳束缚与本人一次箱件承冲 | chained.s0.local-binding / chained.s0.impact-burden |
 
 序列4不是“沉默”，序列3不是笼统“邪物”，序列1不是“被缚权能”；旧公共能力方向表不能直接当名册。序列0名称使用被缚者，不混同原著人物称号与旧日全权柄。
 

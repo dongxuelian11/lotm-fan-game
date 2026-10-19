@@ -1,4 +1,4 @@
-/** Actual living Unclean Monarch fixture, then the paid Chained route.
+/** Actual living Abomination fixture, then the paid Chained route.
  * Only future d100 rolls at/after cursor291 are controlled; real advancement
  * includes the paid investigations. Keep the same seam through cold validation.
  * One failed write, identical retry and reopen test the durable boundary. */
@@ -105,8 +105,14 @@ describe('Chained225 controlled real-history SQLite transaction', () => {
       expect(stored(file, before.runId).state).toEqual(before);
       expect(stored(file, before.runId).state.random).toEqual(before.random);
       expect(before.random.seed).toBe(route.source.random.seed);
-      // All preparation used ordinary paid work and tools; the first new draw is consumption.
-      expect(before.random).toEqual(route.source.random);
+      // The paid investigation of failed original1 already consumed one real draw.
+      const preparationDraws = before.chained.journal.filter(event => event.randomReceipts.length);
+      expect(preparationDraws).toHaveLength(1);
+      expect(preparationDraws[0]!.command).toEqual({ type: 'INVESTIGATE_REMAINS', originalId: 'abomination-potion-1' });
+      expect(preparationDraws[0]!.randomReceipts).toMatchObject([{
+        cursorBefore: route.source.random.cursor, cursorAfter: route.source.random.cursor + 1,
+      }]);
+      expect(before.random).toEqual({ ...route.source.random, cursor: route.source.random.cursor + 1 });
       expect(beforeView.chained.promoted).toBe(false);
 
       fail = false; watching = true;

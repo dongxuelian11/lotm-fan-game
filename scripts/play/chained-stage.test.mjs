@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { chooseAction, parseOptions, portableSourcePath, sealRow, snapshotReasons, SOURCE, stable, stateHash, verifyCommandChain, verifyRow } from './chained-stage.mjs';
+import { assertPublicOnly, chooseAction, parseOptions, portableSourcePath, sealRow, snapshotReasons, SOURCE, stable, stateHash, verifyCommandChain, verifyRow } from './chained-stage.mjs';
 
 // Pure helpers only: no dist import, original archive, build, session or action.
 test('canonical hashes retain meaning and reject non-JSON values', () => {
@@ -60,4 +60,14 @@ test('explicit source/output and zero/one/N boundaries allow no policy overrides
   assert.throws(() => parseOptions(['--out', 'capture']));
   assert.throws(() => parseOptions(['--source', 'input', '--out', 'capture', '--seed', 'override']));
   assert.throws(() => parseOptions(['--source', 'input', '--out', 'capture', '--max-new-actions=-1']));
+});
+
+// Actual old bodily movement IDs are public, while authority actor IDs stay private.
+test('accepts only the named inherited physical movement roles on their exact ledger path', () => {
+  const view = actorId => ({ abomination: { life: { ledger: [{ moves: [{ actorId, from: 'START', to: 'A', metres: 4 }] }] } } });
+  for (const id of ['PLAYER', 'SD3-ELSA']) assert.doesNotThrow(() => assertPublicOnly(view(id)));
+  for (const id of ['UNKNOWN', 'PRIVATE-AUTHORITY', null]) assert.throws(() => assertPublicOnly(view(id)));
+  assert.throws(() => assertPublicOnly({ actorId: 'SD3-ELSA' }));
+  assert.throws(() => assertPublicOnly({ chained: { actions: [{ command: { actorId: 'SD3-ELSA' } }] } }));
+  assert.throws(() => assertPublicOnly({ ...view('SD3-ELSA'), randomCursor: 291 }));
 });

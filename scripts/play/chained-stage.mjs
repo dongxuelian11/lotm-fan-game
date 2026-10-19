@@ -85,7 +85,7 @@ export function assertPublicOnly(value, path = '$') {
     'originalWorldDigest', 'combatHistoryDigest', 'originalsDigest', 'acquisitionDigest', 'compoundDigest', 'beforeDigest', 'afterDigest',
     'actorId', 'predecessorActorId', 'incumbentActorId', 'custodianActorId', 'preparationRoll', 'futureRoll', 'nextRoll', 'privateSource']);
   for (const [key, child] of Object.entries(value)) {
-    const next = `${path}.${key}`, physicalActor = key === 'actorId' && (/^\$\.chained\.actions\.\d+\.command\.actorId$/.test(next) && ['PLAYER','CH225-VERA','CH225-EDWIN'].includes(child) || /^\$\.abomination\.life\.ledger\.\d+\.moves\.\d+\.actorId$/.test(next) && child==='PLAYER'), inheritedNull = key === 'actorId' && child === null &&
+    const next = `${path}.${key}`, physicalActor = key === 'actorId' && (/^\$\.chained\.actions\.\d+\.command\.actorId$/.test(next) && ['PLAYER','CH225-VERA','CH225-EDWIN'].includes(child) || /^\$\.abomination\.life\.ledger\.\d+\.moves\.\d+\.actorId$/.test(next) && ['PLAYER','SD3-ELSA'].includes(child)), inheritedNull = key === 'actorId' && child === null &&
       ['$.divineHand.life.site.guard.actorId', '$.glory.life.site.guard.actorId'].includes(next);
     assert(!(forbidden.has(key) && !inheritedNull && !physicalActor) && !(key === 'source' && child !== null && typeof child === 'object'), `Private public field ${next}`);
     assertPublicOnly(child, next);
