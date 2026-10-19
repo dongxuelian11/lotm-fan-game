@@ -14,13 +14,37 @@ export type PrinceOfAbolitionPreparationId = typeof PRINCE_OF_ABOLITION_PREPARAT
 export type PrinceOfAbolitionAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: PrinceOfAbolitionPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type PrinceOfAbolitionCommand = PrinceOfAbolitionAcquisitionCommand | PrinceOfAbolitionActivityCommand | PrinceOfAbolitionEncounterCommand;
+export type PrinceOfAbolitionOriginalBottleId = 'prince-of-abolition-potion-1' | 'prince-of-abolition-potion-2' | 'prince-of-abolition-potion-3';
+/** The vessel may change; the three finite original characteristics do not. */
+export interface PrinceOfAbolitionRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_PRINCE_OF_ABOLITION_PREPARATION'; custodian: 'BE227-PRINCE_OF_ABOLITION-SUPPLIER';
+}
+export interface PrinceOfAbolitionRecovery extends PrinceOfAbolitionRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface PrinceOfAbolitionRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_PRINCE_OF_ABOLITION_PREPARATION'; originals: PrinceOfAbolitionOriginals;
+  permission: { personId: 'BE227-PRINCE_OF_ABOLITION-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface PrinceOfAbolitionOriginalCharacteristic {
+  characteristicId: string; originalBottleId: PrinceOfAbolitionOriginalBottleId; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface PrinceOfAbolitionOriginalCharacteristics {
+  characteristics: PrinceOfAbolitionOriginalCharacteristic[];
+  embodiedOriginalBottleId: PrinceOfAbolitionOriginalBottleId | null; embodiedBottleId: string | null;
+}
 export interface PrinceOfAbolitionBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: PrinceOfAbolitionRecovery;
 }
 export interface PrinceOfAbolitionPrices { guidance: number; potion: number; labourCredit: number; labourBalance: number; preparation: number; resupply: number }
 export type PrinceOfAbolitionFinance = Pick<SliceState, 'weeklyBudget' | 'lifeTier' | 'nextLifeTier' | 'debts' | 'missedWeeks' | 'credit'>;
@@ -34,6 +58,7 @@ export interface PrinceOfAbolitionAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'black-emperor'; entropyDukePromotionWeek: number; lawyerPromotionWeek: number };
   before: PrinceOfAbolitionAcquisitionBudget; after: PrinceOfAbolitionAcquisitionBudget; finance: PrinceOfAbolitionFinance;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: PrinceOfAbolitionRecoverySite;
 }
 export const PRINCE_OF_ABOLITION_SOURCE_KEYS = ['lawyer', 'barbarian', 'briber', 'corruptionBaron', 'mentorDisorder', 'fallenEarl', 'frenzyMage', 'entropyDuke'] as const;
 export type PrinceOfAbolitionSourceHistory = Pick<SliceState, typeof PRINCE_OF_ABOLITION_SOURCE_KEYS[number]>;
@@ -50,7 +75,7 @@ export interface PrinceOfAbolitionSourceScene {
 }
 export interface PrinceOfAbolitionState {
   guidanceKnown: boolean; sourceWeek: number | null; bottles: PrinceOfAbolitionBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: PrinceOfAbolitionRecoveryRequest };
   promotionWeek: number | null; entropyDukeActingAtPromotion: number | null;
   preparations: { taskId: PrinceOfAbolitionPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: PrinceOfAbolitionAcquisitionEvent[];

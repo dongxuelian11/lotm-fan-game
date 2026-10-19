@@ -189,7 +189,7 @@ describe('PrinceOfAbolition independent bottles and authenticated original deliv
     expect(commands.some(c => c.type === 'EVENT_CHOICE' && (c.choiceId === 'PAY' || c.choiceId === 'CREDIT'))).toBe(false);
     expect(oldBlackEmperorRoots(s)).toEqual(oldBlackEmperorRoots(source)); expect(source.cash).toBe(800); expect(source.health).toBe(100); assertValidSliceState(s);
   }, 240_000);
-  it('requires all three real failed bottles and a real following week for independent resupply', () => {
+  it('rejects independent extra originals after three failures while retaining their costs and consumed history', () => {
     const initial = directedInitial2('THREE_FAILURES'); initial.actionsRemaining = initial.weeklyBudget = 3; // Explicit pre-journal UNIT budget.
     let s = poa(initial, { type: 'LEARN_GUIDANCE' }); rejectPrinceOfAbolition(s, { type: 'REQUEST_SUPPLY' });
     for (let number = 1; number <= 3; number++) {
@@ -197,11 +197,12 @@ describe('PrinceOfAbolition independent bottles and authenticated original deliv
       expect(s.progression.sequence).toBe(2);
     }
     s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 });
-    const before = s.cash; s = poa(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100);
-    const requested = s.princeOfAbolition.resupply.requestedWeek!; rejectPrinceOfAbolition(s, { type: 'RECEIVE_SUPPLY' });
-    s = ready(s, { afterWeek: requested }); s = poa(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.princeOfAbolition.bottles).toHaveLength(6); expect(s.princeOfAbolition.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.princeOfAbolition.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
+    const before = structuredClone(s);
+    rejectPrinceOfAbolition(s, { type: 'REQUEST_SUPPLY' });
+    rejectPrinceOfAbolition(s, { type: 'RECEIVE_SUPPLY' });
+    expect(s).toEqual(before);
+    expect(s.princeOfAbolition.bottles).toHaveLength(3);
+    expect(s.princeOfAbolition.bottles.every(b => b.status === 'CONSUMED' && b.outcome === 'FAILURE')).toBe(true);
     expect(validatePrinceOfAbolitionState(s)).toBe(true);
   }, 240_000);
   it('closes old actions and rejectsS0, wrong path and invented promotion state', () => {
