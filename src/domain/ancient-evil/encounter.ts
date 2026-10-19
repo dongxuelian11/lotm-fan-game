@@ -1,3 +1,5 @@
+import { publicPryerDate, publicPryerFields as publicFields } from '../sage/life.js';
+import { publicAncientEvilBudget } from './public.js';
 import type { PublicGameDate } from '../../shared/contracts.js';
 import { compareGameDates, gameDaysBetween, isValidGameDate } from '../game-calendar.js';
 import type { AncientEvilAcquisitionBudget } from './types.js';
@@ -62,7 +64,7 @@ export interface AncientEvilEncounterState extends AncientEvilCombatBody {
 export type AncientEvilEncounterCommand = { type: 'BUY_BLOCKS' | 'PREPARE_ENCOUNTER' | 'ENCOUNTER_TALK' | 'ENCOUNTER_FIGHT' | 'LEAVE_ENCOUNTER' };
 export interface AncientEvilEncounterAction { id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: AncientEvilEncounterCommand }
 export interface AncientEvilEncounterProjection {
-  title: string; story: string; status: AncientEvilEncounterState['status']; inside: boolean; preparation: AncientEvilPreparation | null;
+  title: string; story: string; status: AncientEvilEncounterState['status']; inside: boolean; preparation: AncientEvilPublicPreparation | null;
   scene: null | { courtId: 'SD3-QUIET-ROOM'; playerLocation: string; elsaLocation: string; guideLocation: string; ordinaryExit: 'OPEN'; distanceMetres: number; clockSeconds: number; playerTravelMetres: number };
   enemy: null | { id: typeof ANCIENT_EVIL_TARGET_ID; name: '莱娜'; age: 45; pathway: 'audience'; sequence: 3; health: number; mind: number; spirituality: number; status: AncientEvilCombatBody['enemyStatus'];
     form: 'HUMAN' | 'RABBIT'; formRemainingSeconds: number; weaponId: 'AE2-LENA-STAFF'; weaponLocation: 'HAND' | 'COURT'; powerUses: Record<AncientEvilPowerId, number>; abilities: string[] };
@@ -212,10 +214,16 @@ export function ancientEvilEncounterActions(s: SliceState): AncientEvilEncounter
     const command: AncientEvilEncounterCommand = { type }, reason = blockAncientEvilEncounter(s, command); return { id: `ancientEvil-${type}`, label, cost, command, enabled: reason === null, reason };
   });
 }
+export function projectAncientEvilPreparation(p: AncientEvilPreparation) { return {
+  ...publicFields(p, ['week', 'revision', 'mindPaid', 'lifeJournalLength', 'lifeClockSeconds']), date: publicPryerDate(p.date),
+  before: publicFields(p.before, ['cash', 'actions', 'health', 'mind', 'spirituality']), after: publicFields(p.after, ['cash', 'actions', 'health', 'mind', 'spirituality']),
+  fullBefore: publicAncientEvilBudget(p.fullBefore), fullAfter: publicAncientEvilBudget(p.fullAfter),
+}; }
+export type AncientEvilPublicPreparation = ReturnType<typeof projectAncientEvilPreparation>;
 export function projectAncientEvilEncounter(s: SliceState): AncientEvilEncounterProjection {
   const e = s.ancientEvil.encounter, p = s.silentDisciple.life;
   if (!stage(s)) return { title: '尚未开放的通行争议', story: '', status: e.status, inside: false, preparation: null, scene: null, enemy: null, actions: [], facts: [] };
-  return { title: '莱娜的通行争议', story: ANCIENT_EVIL_ENCOUNTER_STORY, status: e.status, inside: hasAncientEvilEncounterLock(s), preparation: e.preparation ? structuredClone(e.preparation) : null,
+  return { title: '莱娜的通行争议', story: ANCIENT_EVIL_ENCOUNTER_STORY, status: e.status, inside: hasAncientEvilEncounterLock(s), preparation: e.preparation ? projectAncientEvilPreparation(e.preparation) : null,
     scene: { courtId: 'SD3-QUIET-ROOM', playerLocation: p.playerLocation, elsaLocation: p.volunteer.location, guideLocation: p.guide.location, ordinaryExit: 'OPEN', distanceMetres: p.playerLocation === 'START' ? 6 : 2, clockSeconds: p.clockSeconds, playerTravelMetres: p.playerTravelMetres },
     enemy: { id: e.targetId, name: '莱娜', age: 45, pathway: 'audience', sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus,
       form: e.enemyForm, formRemainingSeconds: Math.max(0, (e.enemyFormUntilSeconds ?? p.clockSeconds) - p.clockSeconds), weaponId: 'AE2-LENA-STAFF', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses }, abilities: ANCIENT_EVIL_POWERS.map(x => x.label) }, actions: ancientEvilEncounterActions(s),

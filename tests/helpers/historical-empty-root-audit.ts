@@ -1,3 +1,4 @@
+import { assertEmptyChainedState, assertEmptyChainedPublic } from './empty-chained-capture.js';
 import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types.js';
@@ -52,9 +53,9 @@ const EARLY_EMPTY_ROOTS = {
   moon: EMPTY_MOON, darkness: EMPTY_DARKNESS, whiteTower: EMPTY_WHITE_TOWER,
   tyrant: EMPTY_TYRANT, sun: EMPTY_SUN,
 };
-const FOOL_ADDITIONS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss'] as const;
-const VISIONARY_ADDITIONS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss'] as const;
-const PERFECTER_ADDITIONS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss'] as const;
+const FOOL_ADDITIONS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'] as const;
+const VISIONARY_ADDITIONS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'] as const;
+const PERFECTER_ADDITIONS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'] as const;
 type AddedRoot = typeof FOOL_ADDITIONS[number];
 
 function exactView(current: SliceState, originalKeys: readonly string[], additions: readonly AddedRoot[],
@@ -66,8 +67,8 @@ function exactView(current: SliceState, originalKeys: readonly string[], additio
   // Exact keys FIRST: an unknown/extra key, even undefined, must never disappear.
   assert.deepEqual(Object.keys(current).sort(), [...originalKeys, ...additions].sort());
   assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current); assertEmptyTwilightGiantState(current); assertEmptyDemonessState(current);
-  assertEmptyHermitState(current); assertEmptyHangedManState(current); assertEmptyAbyssState(current);
-  for (const root of additions) if (root !== 'death' && root !== 'door' && root !== 'errorAscent' && root !== 'twilightGiant' && root !== 'demoness' && root !== 'hermit' && root !== 'hangedMan' && root !== 'abyss') {
+  assertEmptyHermitState(current); assertEmptyHangedManState(current); assertEmptyAbyssState(current); assertEmptyChainedState(current);
+  for (const root of additions) if (root !== 'death' && root !== 'door' && root !== 'errorAscent' && root !== 'twilightGiant' && root !== 'demoness' && root !== 'hermit' && root !== 'hangedMan' && root !== 'abyss' && root !== 'chained') {
     assert.equal(Object.hasOwn(current, root), true);
     assert.deepEqual(current[root], EARLY_EMPTY_ROOTS[root]);
   }
@@ -90,9 +91,9 @@ export function historicalPerfecterStateForEmptyRootAudit(current: SliceState, h
   return exactView(current, Object.keys(historical), PERFECTER_ADDITIONS, [208, 'perfecter-v208']);
 }
 
-/** Remove only these SEVEN independently pinned empty public roots. All other public
+/** Remove only these EIGHT independently pinned empty public roots. All other public
  * fields, including unknown additions, stay in the caller's complete hash. */
-export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss'> {
+export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjection, state: SliceState): Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'> {
   assertEmptyDoorState(state); assertEmptyDoorPublic(projection, state);
   assertEmptyErrorAscentState(state); assertEmptyErrorAscentPublic(projection, state);
   assertEmptyTwilightGiantState(state); assertEmptyTwilightGiantPublic(projection, state);
@@ -100,7 +101,8 @@ export function historicalWithoutEmptyDoorAndErrorPublic(projection: SliceProjec
   assertEmptyHermitState(state); assertEmptyHermitPublic(projection, state);
   assertEmptyHangedManState(state); assertEmptyHangedManPublic(projection, state);
   assertEmptyAbyssState(state); assertEmptyAbyssPublic(projection, state);
+  assertEmptyChainedState(state); assertEmptyChainedPublic(projection, state);
   const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
-    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, ...allOtherFields } = historicalInactiveCalamitySourcePublic(projection, state);
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...allOtherFields } = historicalInactiveCalamitySourcePublic(projection, state);
   return allOtherFields;
 }

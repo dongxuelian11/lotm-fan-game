@@ -1,3 +1,4 @@
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -13,11 +14,11 @@ import { ABYSS_SOURCE_FILE, ABYSS_SOURCE_COMMAND_COUNT, abyssHash, authenticAbys
 
 const fresh = (): SliceState => createSliceRun('abyss-schema-run', sliceDefaultCreationSelection, 'abyss-schema-seed');
 const legacy220 = () => {
-  const { abyss: _root, ...state } = fresh();
+  const { abyss: _root, chained: _chained, ...state } = fresh();
   return { ...state, schemaVersion: 220 as const, contentVersion: 'hanged-man-v220' as const };
 };
 const historicalFields = (state: object) => Object.fromEntries(Object.entries(state)
-  .filter(([key]) => !['schemaVersion', 'contentVersion', 'abyss'].includes(key)));
+  .filter(([key]) => !['schemaVersion', 'contentVersion', 'abyss', 'chained'].includes(key)));
 
 describe('Abyss schema221 exact additive admission', () => {
   it('creates precisely the empty root without granting an owned session', () => {
@@ -32,8 +33,9 @@ describe('Abyss schema221 exact additive admission', () => {
   it('upgrades original220 by changing only format and adding an explicit empty abyss root', () => {
     const source = legacy220(), sourceHash = abyssHash(source), historicalHash = abyssHash(historicalFields(source));
     const current = migrateSliceState(source);
+    assertEmptyChainedState(current);
     expect(abyssHash(source)).toBe(sourceHash);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'abyss'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'abyss', 'chained'].sort());
     expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.abyss).toStrictEqual(createAbyssState());
     expect(abyssHash(historicalFields(current))).toBe(historicalHash);

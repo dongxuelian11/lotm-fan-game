@@ -13,13 +13,37 @@ export type AbominationPreparationId = typeof ABOMINATION_PREPARATION_IDS[number
 export type AbominationAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: AbominationPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type AbominationCommand = AbominationAcquisitionCommand | AbominationActivityCommand | AbominationEncounterCommand;
+export type AbominationOriginalBottleId = 'abomination-potion-1' | 'abomination-potion-2' | 'abomination-potion-3';
+/** The vessel may change; the three finite original characteristics do not. */
+export interface AbominationRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_ABOMINATION_PREPARATION'; custodian: 'TG225-ABOMINATION-SUPPLIER';
+}
+export interface AbominationRecovery extends AbominationRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface AbominationRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_ABOMINATION_PREPARATION'; originals: AbominationOriginals;
+  permission: { personId: 'TG225-ABOMINATION-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface AbominationOriginalCharacteristic {
+  characteristicId: string; originalBottleId: AbominationOriginalBottleId; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface AbominationOriginalCharacteristics {
+  characteristics: AbominationOriginalCharacteristic[];
+  embodiedOriginalBottleId: AbominationOriginalBottleId | null; embodiedBottleId: string | null;
+}
 export interface AbominationBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: AbominationRecovery;
 }
 export interface AbominationPrices { guidance: number; potion: number; labourCredit: number; labourBalance: number; preparation: number; resupply: number }
 export type AbominationFinance = Pick<SliceState, 'weeklyBudget' | 'lifeTier' | 'nextLifeTier' | 'debts' | 'missedWeeks' | 'credit'>;
@@ -33,6 +57,7 @@ export interface AbominationAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'chained'; ancientEvilPromotionWeek: number; prisonerPromotionWeek: number };
   before: AbominationAcquisitionBudget; after: AbominationAcquisitionBudget; finance: AbominationFinance;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: AbominationRecoverySite;
 }
 export const ABOMINATION_SOURCE_KEYS = ['prisoner', 'madman', 'werewolf', 'zombie', 'wraith', 'puppet', 'silentDisciple', 'ancientEvil'] as const;
 export type AbominationSourceHistory = Pick<SliceState, typeof ABOMINATION_SOURCE_KEYS[number]>;
@@ -51,7 +76,7 @@ export interface AbominationSourceScene {
 }
 export interface AbominationState {
   guidanceKnown: boolean; sourceWeek: number | null; bottles: AbominationBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: AbominationRecoveryRequest };
   promotionWeek: number | null; ancientEvilActingAtPromotion: number | null;
   preparations: { taskId: AbominationPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: AbominationAcquisitionEvent[];
