@@ -1,3 +1,8 @@
+import { historicalInactiveHermitPublic, type HistoricalInactiveHermitProjection } from './inactive-hermit-public-capture.js';
+import { assertEmptyHermitState, assertEmptyHermitPublic } from './empty-hermit-capture.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from './empty-hanged-man-capture.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from './empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from './empty-chained-capture.js';
 import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -12,7 +17,7 @@ import { assertEmptyDoorState, assertEmptyDoorPublic } from './empty-death-captu
 
 /** Independent immutable NEW217 reader. Never imports/executes the producer,
  * gameplay replay, migration, SQLite or controlled scenario builders.
- * Current comparisons independently verify only the introduced empty Door root. */
+ * Current comparisons independently verify the named introduced empty roots. */
 export const ROOT = process.env.DEATH_CAPTURE_ROOT ?? 'tests/fixtures/death-v02170';
 export const SOURCE = 'tests/fixtures/pale-emperor-v01950/natural.json';
 export const SOURCE_SHA = '14be49645e7fa18b4127c7ec34b39875eff1302fbba8052b9037ed149a42d66c';
@@ -305,21 +310,26 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   assert(!before.death.guidanceKnown && after.death.guidanceKnown);
   return { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
-export type HistoricalDeathState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'> & {
+export type HistoricalDeathState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'> & {
   schemaVersion: 214; contentVersion: 'death-v214';
 };
-export type HistoricalDeathPublic = Omit<SliceProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'>;
-/** Exactly the schema215 Door, schema216 Error, schema217 Twilight Giant and schema218 Demoness defaults may be omitted. Every original field and
+export type HistoricalDeathPublic = Omit<HistoricalInactiveHermitProjection, 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'>;
+/** Exactly the schema215 Door, schema216 Error, schema217 Twilight Giant, schema218 Demoness,
+ * schema219 Hermit, schema220 Hanged Man, schema221 Abyss and schema222 Chained defaults may be omitted. Every original field and
  * unknown root remains in the historical hash; raw schema/content never move. */
 export function historicalDeathState(state: SliceState): HistoricalDeathState {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
-  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = state;
+  assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...originalFields } = state;
   return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
 }
 export function historicalDeathPublic(projection: SliceProjection, state: SliceState): HistoricalDeathPublic {
   historicalDeathState(state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state); assertEmptyDemonessPublic(projection, state);
-  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = historicalInactiveCalamitySourcePublic(projection, state);
+  assertEmptyHermitPublic(projection, state); assertEmptyHangedManPublic(projection, state); assertEmptyAbyssPublic(projection, state); assertEmptyChainedPublic(projection, state);
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...originalFields } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(projection, state), state);
   return originalFields;
 }
 /** Raw214 authentication stays independent of current projection admission. */
@@ -334,12 +344,15 @@ export function assertCapturedGlobal(actual: SliceProjection, action: Action, si
   assert.equal(hash(actual), side === 'before' ? action.audit.globalPublicBeforeSha256 : action.audit.globalPublicAfterSha256);
   same(capturePublic(actual), side === 'before' ? action.publicBefore : action.public); assertGlobalPublic(actual, state);
 }
-/** Current projection requires the exact empty Door, Error, Twilight Giant and Demoness roots before comparison of
+/** Current projection requires the exact empty Door, Error, Twilight Giant, Demoness,
+ * Hermit, Hanged Man, Abyss and Chained roots before comparison of
  * every historical public leaf. Missing roots never select a permissive path. */
 export function assertCurrentGlobal(actual: SliceProjection, action: Action, side: 'before' | 'after'): void {
   const state = side === 'before' ? action.beforeLast : action.final;
   assertEmptyDoorPublic(actual, state); assertEmptyErrorAscentPublic(actual, state); assertEmptyTwilightGiantPublic(actual, state); assertEmptyDemonessPublic(actual, state);
-  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...historicalPublic } = historicalInactiveCalamitySourcePublic(actual, state);
+  assertEmptyHermitPublic(actual, state); assertEmptyHangedManPublic(actual, state); assertEmptyAbyssPublic(actual, state); assertEmptyChainedPublic(actual, state);
+  const { door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...historicalPublic } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(actual, state), state);
   assertCapturedGlobal(historicalPublic as SliceProjection, action, side);
   assertGlobalPublic(actual, state);
 }

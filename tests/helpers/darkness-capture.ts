@@ -1,3 +1,8 @@
+import { historicalInactiveHermitPublic, type HistoricalInactiveHermitProjection } from './inactive-hermit-public-capture.js';
+import { assertEmptyHermitState, assertEmptyHermitPublic } from './empty-hermit-capture.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from './empty-hanged-man-capture.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from './empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from './empty-chained-capture.js';
 import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -64,11 +69,11 @@ export interface Manifest { format: string; files: Member[] }
 export interface Freeze { sha256: string; nodeVersion: string; files: Array<FilePin & { file: string }> }
 export interface BoundaryIndex extends FilePin { file: string; kind: string; commandCount: number }
 export interface Outcome { status: SliceState['status']; promoted: boolean; arrivals: number }
-/** The immutable raw210 capture predates exactly these eight current roots. */
-export type HistoricalDarknessState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'> & {
+/** The immutable raw210 capture predates exactly these twelve current roots. */
+export type HistoricalDarknessState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'> & {
   schemaVersion: 210; contentVersion: 'darkness-v210';
 };
-export type HistoricalDarknessPublic = Omit<SliceProjection, 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'>;
+export type HistoricalDarknessPublic = Omit<HistoricalInactiveHermitProjection, 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained'>;
 export interface Row {
   commandCount: number; intent: SliceIntent; commandSha256: string; reason: string; publicLabel: string; publicCost: string;
   startedAt: string; elapsedMilliseconds: number; revision: number; week: number;
@@ -256,7 +261,9 @@ export function historicalDarknessState(state: SliceState): HistoricalDarknessSt
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
   assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
-  const { whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = state;
+  assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  const { whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...originalFields } = state;
   return { ...originalFields, schemaVersion: 210, contentVersion: 'darkness-v210' };
 }
 /** Pin the entire inactive public additions. Never normalize historical prose,
@@ -266,6 +273,7 @@ export function historicalDarknessPublic(projection: SliceProjection, state: Sli
   assert.deepEqual(state.whiteTower, EMPTY_WHITE_TOWER);
   assert.deepEqual(state.tyrant, EMPTY_TYRANT); assert.deepEqual(state.sun, EMPTY_SUN);
   assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
+  assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
   assert.equal(state.progression.pathwayId, 'darkness');
   assert.equal(Object.hasOwn(projection, 'whiteTower'), true);
   assert.deepEqual(projection.whiteTower, {
@@ -312,17 +320,19 @@ export function historicalDarknessPublic(projection: SliceProjection, state: Sli
       preferredAction: true }],
   });
   assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state); assertEmptyDemonessPublic(projection, state);
-  const { whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = historicalInactiveCalamitySourcePublic(projection, state);
+  assertEmptyHermitPublic(projection, state); assertEmptyHangedManPublic(projection, state); assertEmptyAbyssPublic(projection, state); assertEmptyChainedPublic(projection, state);
+  const { whiteTower: _emptyWhiteTower, tyrant: _emptyTyrant, sun: _emptySun, death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained, ...originalFields } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(projection, state), state);
   return originalFields;
 }
 /** Strict current ingress preserves every original raw210 field and tag in a
  * historical view; the raw object itself is never rewritten. */
 export function migrateCapturedDarknessState(raw: HistoricalDarknessState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [210, 'darkness-v210']);
-  for (const key of ['whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness']) assert.equal(Object.hasOwn(raw, key), false);
+  for (const key of ['whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained']) assert.equal(Object.hasOwn(raw, key), false);
   const before = hash(raw), current = migrateSliceState(raw);
   assert.deepEqual([current.schemaVersion, current.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assertValidSliceState(current); exactKeys(current, [...Object.keys(raw), 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness']);
+  assertValidSliceState(current); exactKeys(current, [...Object.keys(raw), 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained']);
   same(historicalDarknessState(current), raw, 'Current ingress changed complete captured state');
   assert.equal(hash(raw), before, 'Ingress mutated immutable input'); return current;
 }
@@ -386,8 +396,8 @@ export function loadCapture(): LoadedCapture {
   assert.equal(hash(historicalDarknessPublic(initialPublic, initial)), PINS.initialGlobalPublicSha256); assert.equal(hash(capturePublic(initialPublic)), PINS.initialPublicSha256);
   const migrated = json<{ originalStateSha256: string; migratedStateSha256: string; publicSha256: string; globalPublicSha256: string; final: HistoricalDarknessState }>('migration-initial.json.gz');
   assert.deepEqual([migrated.final.schemaVersion, migrated.final.contentVersion], [210, 'darkness-v210']);
-  for (const key of ['whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness']) assert.equal(Object.hasOwn(migrated.final, key), false);
-  exactKeys(initial, [...Object.keys(migrated.final), 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness']);
+  for (const key of ['whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained']) assert.equal(Object.hasOwn(migrated.final, key), false);
+  exactKeys(initial, [...Object.keys(migrated.final), 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained']);
   same(migrated, { originalStateSha256: SOURCE_PINS[1][3], migratedStateSha256: PINS.initialStateSha256,
     publicSha256: PINS.initialPublicSha256, globalPublicSha256: PINS.initialGlobalPublicSha256, final: historicalDarknessState(initial) });
   const wrapper = json<{ sha256: string; payload: Checkpoint }>('checkpoint.json.gz'); exactKeys(wrapper, ['sha256', 'payload']);

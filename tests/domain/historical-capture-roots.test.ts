@@ -1,3 +1,7 @@
+import { assertEmptyHermitState, assertEmptyHermitPublic } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from '../helpers/empty-chained-capture.js';
 import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from '../helpers/empty-demoness-capture.js';
 import { createHash } from 'node:crypto';
 import { stableStringify } from '../../src/domain/canonical.js';
@@ -63,7 +67,7 @@ describe('Exact historical capture root adapters', () => {
     expect(hash(state)).toBe(privateHash); expect(hash(projection)).toBe(publicHash);
   });
 
-  it('preserves raw216 actual219 initial and terminal through only the exact empty Twilight Giant and Demoness additions', () => {
+  it('preserves raw216 actual219 initial and terminal through only the exact schema217-222 empty additions', () => {
     for (const which of ['initial', 'terminal'] as const) {
       const raw = readErrorNaturalSnapshot(which);
       expect([raw.final.schemaVersion, raw.final.contentVersion]).toEqual([216, 'error-ascent-v216']);
@@ -76,12 +80,44 @@ describe('Exact historical capture root adapters', () => {
       const currentHash = errorNaturalHash(current), projectionHash = errorNaturalHash(projection);
       assertEmptyTwilightGiantState(current); assertEmptyTwilightGiantPublic(projection, current);
       assertEmptyDemonessState(current); assertEmptyDemonessPublic(projection, current);
+      assertEmptyHermitState(current); assertEmptyHermitPublic(projection, current);
+      assertEmptyHangedManState(current); assertEmptyHangedManPublic(projection, current);
+      assertEmptyAbyssState(current); assertEmptyAbyssPublic(projection, current);
+      assertEmptyChainedState(current); assertEmptyChainedPublic(projection, current);
       const stateKeys = Object.keys(raw.final), publicKeys = Object.keys(raw.public);
-      expect(Object.keys(current).sort()).toEqual([...stateKeys, 'twilightGiant', 'demoness'].sort());
-      expect(Object.keys(projection).sort()).toEqual([...publicKeys, 'twilightGiant', 'demoness'].sort());
+      expect(Object.keys(current).sort()).toEqual([...stateKeys, 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'].sort());
+      expect(Object.keys(projection).sort()).toEqual([...publicKeys, 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'].sort());
       expect(historicalErrorNaturalState(current, stateKeys)).toEqual(raw.final);
       expect(historicalErrorNaturalPublic(projection, current, publicKeys)).toEqual(raw.public);
       expect(currentErrorNaturalAnchor(current, projection, raw)).toEqual(raw.anchor);
+      for (const root of ['knowledgeEmperor', 'sage'] as const) {
+        expect(Reflect.get(raw.public[root].encounter, 'preparation')).toBe(null);
+        expect(Object.hasOwn(raw.public[root].encounter, 'preparationSummary')).toBe(false);
+        expect(Reflect.get(raw.public[root].life.site, 'source')).toBe(null);
+        for (const leaked of [null, undefined, { privateMarker: 'must-not-be-public' }]) {
+          const sourceLeak = { ...projection, [root]: { ...projection[root], life: { ...projection[root].life,
+            site: { ...projection[root].life.site, source: leaked } } } } as SliceProjection;
+          expect(() => historicalErrorNaturalPublic(sourceLeak, current, publicKeys)).toThrow();
+          const preparationLeak = { ...projection, [root]: { ...projection[root],
+            encounter: { ...projection[root].encounter, preparation: leaked } } } as SliceProjection;
+          expect(() => historicalErrorNaturalPublic(preparationLeak, current, publicKeys)).toThrow();
+        }
+        const missingSummary = { ...projection[root].encounter }; Reflect.deleteProperty(missingSummary, 'preparationSummary');
+        expect(() => historicalErrorNaturalPublic({ ...projection, [root]: { ...projection[root],
+          encounter: missingSummary } } as SliceProjection, current, publicKeys)).toThrow();
+        for (const preparationSummary of [undefined, { week: current.week }])
+          expect(() => historicalErrorNaturalPublic({ ...projection, [root]: { ...projection[root],
+            encounter: { ...projection[root].encounter, preparationSummary } } } as SliceProjection, current, publicKeys)).toThrow();
+        const activeSource = { ...current, [root]: { ...current[root], life: { ...current[root].life,
+          site: { ...current[root].life.site, source: { privateMarker: 'must-stay-private' } } } } } as SliceState;
+        expect(() => historicalErrorNaturalPublic(projection, activeSource, publicKeys)).toThrow();
+        const activePreparation = { ...current, [root]: { ...current[root],
+          encounter: { ...current[root].encounter, preparation: { week: current.week } } } } as SliceState;
+        expect(() => historicalErrorNaturalPublic(projection, activePreparation, publicKeys)).toThrow();
+        expect(() => historicalErrorNaturalPublic({ ...projection, [root]: { ...projection[root], promoted: true } }, current, publicKeys)).toThrow();
+      }
+      expect(() => historicalErrorNaturalPublic(projection,
+        { ...current, progression: { ...current.progression, pathwayId: 'hermit' } }, publicKeys)).toThrow();
       expect(errorNaturalHash(historicalErrorNaturalState(current, stateKeys))).toBe(privateHash);
       expect(errorNaturalHash(historicalErrorNaturalPublic(projection, current, publicKeys))).toBe(publicHash);
       expect(() => migrateSliceState({ ...raw.final, twilightGiant: current.twilightGiant })).toThrow();
@@ -99,6 +135,22 @@ describe('Exact historical capture root adapters', () => {
         { ...projection.twilightGiant, actions: [{ ...projection.twilightGiant.actions[0]!, enabled: true }] },
         { ...projection.twilightGiant, resources: { ...projection.twilightGiant.resources, cash: 'forged' } }])
         expect(() => historicalErrorNaturalPublic({ ...projection, twilightGiant } as SliceProjection, current, publicKeys)).toThrow();
+      for (const root of ['hermit', 'hangedMan', 'abyss', 'chained'] as const) {
+        expect(Object.hasOwn(raw.final, root)).toBe(false); expect(Object.hasOwn(raw.public, root)).toBe(false);
+        expect(() => migrateSliceState({ ...raw.final, [root]: current[root] })).toThrow();
+        const missingState = { ...current }; Reflect.deleteProperty(missingState, root);
+        expect(() => historicalErrorNaturalState(missingState, stateKeys)).toThrow();
+        for (const value of [null, { ...current[root], guidanceKnown: true },
+          { ...current[root], unexpected: undefined },
+          { ...current[root], promotionStability: { preparations: [], unexpected: undefined } }])
+          expect(() => historicalErrorNaturalState({ ...current, [root]: value } as SliceState, stateKeys)).toThrow();
+        const missingView = { ...projection }; Reflect.deleteProperty(missingView, root);
+        expect(() => historicalErrorNaturalPublic(missingView, current, publicKeys)).toThrow();
+        for (const value of [null, { ...projection[root], promoted: true }, { ...projection[root], unexpected: undefined },
+          { ...projection[root], actions: [{ ...projection[root].actions[0]!, enabled: true }] },
+          { ...projection[root], resources: { ...projection[root].resources, cash: 'forged' } }])
+          expect(() => historicalErrorNaturalPublic({ ...projection, [root]: value } as SliceProjection, current, publicKeys)).toThrow();
+      }
       for (const unexpectedRoot of [null, undefined]) {
         expect(() => historicalErrorNaturalState({ ...current, unexpectedRoot } as SliceState, stateKeys)).toThrow();
         expect(() => historicalErrorNaturalPublic({ ...projection, unexpectedRoot } as SliceProjection, current, publicKeys)).toThrow();
@@ -119,7 +171,7 @@ describe('Exact historical capture root adapters', () => {
     const raw = boundary.beforeLast, rawHash = hash(raw);
     expect(rawHash).toBe(boundary.audit.beforeStateSha256);
     const current = migrateCapturedDarknessState(raw), currentHash = hash(current);
-    const additions = ['whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
+    const additions = ['whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'] as const;
     expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), ...additions].sort());
     same(historicalDarknessState(current), raw);
     for (const root of additions) {
@@ -164,7 +216,7 @@ describe('Exact historical capture root adapters', () => {
     const raw = boundary.final, rawHash = hash(raw);
     expect(rawHash).toBe(boundary.audit.afterStateSha256);
     const current = migrateCapturedMoonState(raw), currentHash = hash(current);
-    const additions = ['darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
+    const additions = ['darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'] as const;
     expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), ...additions].sort());
     same(historicalMoonState(current), raw);
     for (const root of additions) {
@@ -200,12 +252,12 @@ describe('Exact historical capture root adapters', () => {
     expect(sha(readFileSync(path))).toBe(pin);
   }, 60_000);
 
-  it('preserves raw214 Death1039 and admits only the exact schema215 Door, schema216 Error, schema217 Twilight Giant and schema218 Demoness additions', () => {
+  it('preserves raw214 Death1039 and admits only the exact schema215-222 empty additions', () => {
     const action = readDeathActionAt(1039), raw = action.beforeLast, rawHash = hash(raw);
     expect([raw.schemaVersion, raw.contentVersion]).toEqual([214, 'death-v214']);
     expect(rawHash).toBe(action.audit.beforeStateSha256); expect(Object.hasOwn(raw, 'door')).toBe(false); expect(Object.hasOwn(raw, 'errorAscent')).toBe(false); expect(Object.hasOwn(raw, 'twilightGiant')).toBe(false); expect(Object.hasOwn(raw, 'demoness')).toBe(false);
     const current = migrateSliceState(raw), currentHash = hash(current);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'door', 'errorAscent', 'twilightGiant', 'demoness'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained'].sort());
     same(historicalDeathState(current), raw);
     const missing = { ...current }; Reflect.deleteProperty(missing, 'door');
     expect(() => historicalDeathState(missing)).toThrow();
@@ -266,6 +318,25 @@ describe('Exact historical capture root adapters', () => {
       { ...projection.twilightGiant, resources: { ...projection.twilightGiant.resources, cash: 'forged' } }]) {
       expect(() => historicalDeathPublic({ ...projection, twilightGiant } as SliceProjection, current)).toThrow();
       expect(() => assertCurrentDeathGlobal({ ...projection, twilightGiant } as SliceProjection, action, 'before')).toThrow();
+    }
+    for (const root of ['hermit', 'hangedMan', 'abyss', 'chained'] as const) {
+      expect(Object.hasOwn(raw, root)).toBe(false); expect(Object.hasOwn(action.globalPublicBefore, root)).toBe(false);
+      expect(() => migrateSliceState({ ...raw, [root]: current[root] })).toThrow();
+      const missingState = { ...current }; Reflect.deleteProperty(missingState, root);
+      expect(() => historicalDeathState(missingState)).toThrow();
+      for (const value of [null, { ...current[root], guidanceKnown: true },
+        { ...current[root], unexpected: undefined },
+        { ...current[root], promotionStability: { preparations: [], unexpected: undefined } }])
+        expect(() => historicalDeathState({ ...current, [root]: value } as SliceState)).toThrow();
+      const missingView = { ...projection }; Reflect.deleteProperty(missingView, root);
+      expect(() => historicalDeathPublic(missingView, current)).toThrow();
+      expect(() => assertCurrentDeathGlobal(missingView, action, 'before')).toThrow();
+      for (const value of [null, { ...projection[root], promoted: true }, { ...projection[root], unexpected: undefined },
+        { ...projection[root], actions: [{ ...projection[root].actions[0]!, enabled: true }] },
+        { ...projection[root], resources: { ...projection[root].resources, cash: 'forged' } }]) {
+        expect(() => historicalDeathPublic({ ...projection, [root]: value } as SliceProjection, current)).toThrow();
+        expect(() => assertCurrentDeathGlobal({ ...projection, [root]: value } as SliceProjection, action, 'before')).toThrow();
+      }
     }
     expect(() => assertCurrentDeathGlobal({ ...projection, cash: projection.cash + 1 }, action, 'before')).toThrow();
     expect(() => assertCurrentDeathGlobal({ ...projection, unexpectedRoot: null } as SliceProjection, action, 'before')).toThrow();
