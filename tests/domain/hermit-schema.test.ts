@@ -1,3 +1,11 @@
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { describe, expect, it } from 'vitest';
 import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
@@ -10,8 +18,16 @@ import { validateSlicePayload } from '../../src/domain/slice/validation.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 
 const fresh = (): SliceState => createSliceRun('hermit-schema-run', sliceDefaultCreationSelection, 'hermit-schema-seed');
+const ADDITIVE_ROOTS = ['hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const assertEmptyAdditiveRoots = (state: SliceState): void => {
+  assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state); assertEmptyBlackEmperorState(state); assertEmptyJusticiarState(state); assertEmptyMotherState(state);
+};
 const legacy218 = () => {
-  const { hermit: _root, hangedMan: _next, ...state } = fresh();
+  const current = fresh();
+  assertEmptyAdditiveRoots(current);
+  const { hermit: _root, hangedMan: _next, abyss: _abyss, chained: _chained, wheelOfFortune: _wheel,
+    blackEmperor: _emperor, justiciar: _justiciar, mother: _mother, ...state } = current;
   return { ...state, schemaVersion: 218 as const, contentVersion: 'demoness-v218' as const };
 };
 
@@ -25,13 +41,14 @@ describe('Hermit schema219 exact additive admission', () => {
     expect(() => openHermitRuntimeSession(state)).toThrow();
   });
 
-  it('upgrades218 by adding only the empty root and format while preserving all old fields', () => {
+  it('upgrades218 by adding only the named empty current roots and format while preserving all old fields', () => {
     const source = legacy218(), before = structuredClone(source), current = migrateSliceState(source);
     expect(source).toStrictEqual(before);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'hermit', 'hangedMan'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), ...ADDITIVE_ROOTS].sort());
     expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.hermit).toStrictEqual(createHermitState());
     expect(current.hangedMan).toStrictEqual(createHangedManState());
+    assertEmptyAdditiveRoots(current);
     for (const [key, value] of Object.entries(source)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(current[key as keyof SliceState], `Changed original ${key}`).toStrictEqual(value);
@@ -52,8 +69,7 @@ describe('Hermit schema219 exact additive admission', () => {
       { ...current, schemaVersion: CURRENT_SCHEMA_VERSION + 1 },
       { ...current, contentVersion: 'future-v219' },
       { ...current, contentVersion: 'demoness-v218' },
-      { ...legacy, hermit: createHermitState() },
-      { ...legacy, hermit: undefined },
+      ...ADDITIVE_ROOTS.flatMap(key => [{ ...legacy, [key]: current[key] }, { ...legacy, [key]: undefined }]),
       { ...legacy, futureChapter: {} },
       { ...legacy, contentVersion: CURRENT_CONTENT_VERSION },
       { ...legacy, demoness: { ...legacy.demoness, forged: true } },

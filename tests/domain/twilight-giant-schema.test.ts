@@ -1,3 +1,11 @@
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
 import { describe, expect, it } from 'vitest';
@@ -10,8 +18,18 @@ import { validateSlicePayload } from '../../src/domain/slice/validation.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 
 const fresh = (): SliceState => createSliceRun('twilight-schema-run', sliceDefaultCreationSelection, 'twilight-schema-seed');
+const ADDITIVE_ROOTS = ['twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained',
+  'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const assertEmptyAdditiveRoots = (state: SliceState): void => {
+  expect(state.twilightGiant).toStrictEqual(createTwilightGiantState()); assertEmptyDemonessState(state);
+  assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state); assertEmptyBlackEmperorState(state); assertEmptyJusticiarState(state); assertEmptyMotherState(state);
+};
 const legacy216 = () => {
-  const { twilightGiant: _root, demoness: _demoness, ...state } = fresh();
+  const current = fresh();
+  assertEmptyAdditiveRoots(current);
+  const { twilightGiant: _root, demoness: _demoness, hermit: _hermit, hangedMan: _hangedMan, abyss: _abyss,
+    chained: _chained, wheelOfFortune: _wheel, blackEmperor: _emperor, justiciar: _justiciar, mother: _mother, ...state } = current;
   return { ...state, schemaVersion: 216 as const, contentVersion: 'error-ascent-v216' as const };
 };
 
@@ -28,10 +46,10 @@ describe('TwilightGiant schema217 exact additive admission', () => {
   it('upgrades216 by adding only the explicit empty roots and format while preserving all old fields', () => {
     const source = legacy216(), before = structuredClone(source), current = migrateSliceState(source);
     expect(source).toStrictEqual(before);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), 'twilightGiant', 'demoness'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(source), ...ADDITIVE_ROOTS].sort());
     expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(current.twilightGiant).toStrictEqual(createTwilightGiantState());
-    assertEmptyDemonessState(current);
+    assertEmptyAdditiveRoots(current);
     for (const [key, value] of Object.entries(source)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(current[key as keyof SliceState], `Changed original ${key}`).toStrictEqual(value);
@@ -52,8 +70,7 @@ describe('TwilightGiant schema217 exact additive admission', () => {
       { ...current, schemaVersion: CURRENT_SCHEMA_VERSION + 1 },
       { ...current, contentVersion: `future-v${CURRENT_SCHEMA_VERSION + 1}` },
       { ...current, contentVersion: 'error-ascent-v216' },
-      { ...legacy, twilightGiant: createTwilightGiantState() },
-      { ...legacy, twilightGiant: undefined },
+      ...ADDITIVE_ROOTS.flatMap(key => [{ ...legacy, [key]: current[key] }, { ...legacy, [key]: undefined }]),
       { ...legacy, futureChapter: {} },
       { ...legacy, contentVersion: 'twilight-giant-v217' },
       { ...legacy, errorAscent: { ...legacy.errorAscent, forged: true } },

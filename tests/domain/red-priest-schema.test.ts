@@ -38,10 +38,12 @@ const historicalSnapshots = {
     contentVersion: 'nature-walker-v204', revision: 852, week: 212,
   },
 } as const;
+const LATER_ROOTS = ['twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained',
+  'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
 const introducedRoots = {
-  203: ['natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
-  204: ['fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
-  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
+  203: ['natureWalker', 'fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...LATER_ROOTS],
+  204: ['fool', 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...LATER_ROOTS],
+  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...LATER_ROOTS],
 } as const;
 const historicalStates = new Map<203 | 204 | 205, Record<string, unknown>>();
 function legacy(version: 203 | 204 | 205): Record<string, unknown> {
@@ -89,7 +91,7 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     for (const [key, value] of Object.entries(input)) {
       if (key !== 'schemaVersion' && key !== 'contentVersion') same(migrated[key as keyof SliceState], value);
     }
-    for (const key of introducedRoots[205]) same(migrated[key], defaults[key]);
+    for (const key of introducedRoots[205]) expect(migrated[key], `Exact empty root ${key}`).toStrictEqual(defaults[key]);
     same(migrated.redPriest, createRedPriestState()); same(migrated.fool, input.fool);
     same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState()); same(migrated.sun, createSunState());same(migrated.death,createDeathState());expect(migrated.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(migrated);
     expect(stableStringify(input)).toBe(bytes);
@@ -107,7 +109,7 @@ describe('Red Priest exact slice schema and migration boundary', () => {
     for (const [key, value] of Object.entries(input)) {
       if (key !== 'schemaVersion' && key !== 'contentVersion') same(migrated[key as keyof SliceState], value);
     }
-    for (const key of introducedRoots[version]) same(migrated[key], defaults[key]);
+    for (const key of introducedRoots[version]) expect(migrated[key], `Exact empty root ${key}`).toStrictEqual(defaults[key]);
     same(migrated.fool, createFoolState()); same(migrated.redPriest, createRedPriestState());
     same(migrated.visionary, createVisionaryState()); same(migrated.tyrant, createTyrantState()); same(migrated.sun, createSunState());same(migrated.death,createDeathState());expect(migrated.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(migrated);
     expect(stableStringify(input)).toBe(bytes);

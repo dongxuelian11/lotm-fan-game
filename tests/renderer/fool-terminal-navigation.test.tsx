@@ -19,6 +19,9 @@ import { projectPlayerText } from '../../src/shared/player-text.js';
 import type { SliceBridge, SliceRunSummary } from '../../src/shared/slice-contracts.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
+import { historicalFoolStateForEmptyRootAudit, historicalWithoutEmptyDoorAndErrorPublic, EMPTY_SUN } from '../helpers/historical-empty-root-audit.js';
+import { historicalInactiveHermitPublic } from '../helpers/inactive-hermit-public-capture.js';
+import { assertEmptyDeathPublic } from '../helpers/empty-death-capture.js';
 
 // Actual completed 2083-command campaign, not an S1 save patched into S0.
 // One production strict projection supplies every displayed fact. No output/
@@ -30,7 +33,10 @@ const FINAL_SHA256 = '66b91d08d03b564d4e19d8acb8bcd47ead3233da1ba39561bc3d8945ca
 const PUBLIC_SHA256 = '0e0d77363984f154ac14fc8e5260d9bda59119a582aaf8bcd7549b727f34f5b3';
 const PANEL = '愚者 · 当前现场';
 const hash = (value: unknown): string => sha256Hex(stableStringify(value));
-type OriginalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'redPriest' | 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant'> & {
+const ADDED_ROOTS = ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant',
+  'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan',
+  'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+type OriginalFoolState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | typeof ADDED_ROOTS[number]> & {
   schemaVersion: 205; contentVersion: 'fool-v205';
 };
 const EMPTY_DARKNESS: SliceState['darkness'] = {
@@ -49,7 +55,7 @@ const EMPTY_TYRANT: SliceState['tyrant'] = {
 
 function assertExactMigration(original: OriginalFoolState, current: SliceState): void {
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  expect(Object.keys(current).sort()).toEqual([...Object.keys(original), 'redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'].sort());
+  expect(Object.keys(current).sort()).toEqual([...Object.keys(original), ...ADDED_ROOTS].sort());
   expect(current.redPriest).toStrictEqual(createRedPriestState());
   expect(current.visionary).toStrictEqual(createVisionaryState());
   expect(current.perfecter).toStrictEqual(createPerfecterState());
@@ -57,6 +63,7 @@ function assertExactMigration(original: OriginalFoolState, current: SliceState):
   expect(current.darkness).toStrictEqual(EMPTY_DARKNESS);
   expect(current.whiteTower).toStrictEqual(EMPTY_WHITE_TOWER);
   expect(current.tyrant).toStrictEqual(EMPTY_TYRANT);
+  expect(hash(historicalFoolStateForEmptyRootAudit(current, Object.keys(original)))).toBe(hash(original));
   const now = current as unknown as Record<string, unknown>;
   // Every old field is covered, including all nested history, body and RNG data.
   // Hashes avoid retaining giant private trees in assertion failure diffs.
@@ -66,7 +73,7 @@ function assertExactMigration(original: OriginalFoolState, current: SliceState):
 }
 
 function historicalPublicHash(value: SliceProjection, current: SliceState): string {
-  // Remove only the seven fully verified fresh-root projections. Everything else,
+  // Remove only the twenty-one fully verified fresh-root projections. Everything else,
   // including unexpected additions or missing old public fields, stays hash-bound.
   expect(current.redPriest).toStrictEqual(createRedPriestState());
   expect(current.visionary).toStrictEqual(createVisionaryState());
@@ -136,8 +143,29 @@ function historicalPublicHash(value: SliceProjection, current: SliceState): stri
     for (const key of ['source', 'frame', 'journal']) expect(Object.hasOwn(root, key)).toBe(false);
   }
   expect(value.perfecter.sections).toEqual([]); expect(value.moon.sections).toEqual([]); expect(value.darkness.sections).toEqual([]); expect(value.whiteTower.sections).toEqual([]); expect(value.tyrant.sections).toEqual([]);
-  const { redPriest: _redPriest, visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, whiteTower: _whiteTower, tyrant: _tyrant, ...historical } = value;
-  return hash(historical);
+  expect(current.sun).toStrictEqual(EMPTY_SUN);
+  expect(Object.hasOwn(value, 'sun')).toBe(true);
+  expect(value.sun).toStrictEqual({
+    title: '序列0 太阳', guidanceKnown: false, promoted: false,
+    story: '玛拉与芦影、原采光廊和投降的西拉斯都留在原处，旧许可、伤势和耗料继续保留。街区接待处有洗衣房与邻楼后阶两件居民求助；须亲自问清情况、处理实际原物并完成交接，普通手段也能完成。',
+    nextStep: '完成两件居民服务与现场核验；核清本人已有的一份和另外两份原特性，实地确认同一太阳唯一性空位，再为同一本人的同一瓶付费准备。实际晋1满十二周才可服药。',
+    risk: '成功率按本人实际意志与本瓶付费准备计算，不重掷。失败留下真实重伤和污染并可能死亡。幸存者只能在原处封存同一残余，隔周付费回收，再用剩余有价载体重配；总共只有三件载体。',
+    resources: { health: current.health, mind: current.mind, spirituality: current.spirituality,
+      cash: `${current.cash}便士`, actionsRemaining: current.actionsRemaining },
+    abilities: [], sections: [], insideCase: false,
+    actions: [{ id: 'sun:0:LEARN_GUIDANCE', label: '听取两件服务与三份原特性指导', cost: '1行动、100便士',
+      command: { type: 'LEARN_GUIDANCE' }, enabled: false,
+      reason: current.status === 'ACTIVE' ? '须由仍活着的纯白天使本人继续。' : '已经死亡或结束的角色不能继续行动。',
+      preferredAction: true }],
+  });
+  assertEmptyDeathPublic(value, current);
+  const { redPriest: _redPriest, visionary: _visionary, perfecter: _perfecter, moon: _moon,
+    darkness: _darkness, whiteTower: _whiteTower, tyrant: _tyrant, sun: _sun, death: _death,
+    ...historical } = historicalWithoutEmptyDoorAndErrorPublic(value, current);
+  // The original view predates the Hermit privacy whitelist. This existing
+  // seam pins both inactive chapters before restoring only their null fields.
+  const inactive = historicalInactiveHermitPublic(value, current);
+  return hash({ ...historical, knowledgeEmperor: inactive.knowledgeEmperor, sage: inactive.sage });
 }
 
 // The bridge owns only a detached PUBLIC value. It never captures the 9 MB
@@ -260,6 +288,7 @@ describe('Fool SliceApp actual completed S0 terminal navigation', () => {
     expect(Object.hasOwn(original, 'perfecter')).toBe(false); expect(Object.hasOwn(original, 'moon')).toBe(false);
     expect(Object.hasOwn(original, 'darkness')).toBe(false); expect(Object.hasOwn(original, 'whiteTower')).toBe(false);
     expect(Object.hasOwn(original, 'tyrant')).toBe(false);
+    for (const root of ADDED_ROOTS) expect(Object.hasOwn(original, root)).toBe(false);
     expect(EMPTY_DARKNESS).toStrictEqual(createDarknessState());
     expect(EMPTY_WHITE_TOWER).toStrictEqual(createWhiteTowerState());
     expect(EMPTY_TYRANT).toStrictEqual(createTyrantState());
@@ -268,7 +297,7 @@ describe('Fool SliceApp actual completed S0 terminal navigation', () => {
     expect(() => assertExactMigration(original, { ...current, unexpectedRoot: null } as SliceState)).toThrow();
     const missingRoot = { ...current }; Reflect.deleteProperty(missingRoot, 'fool');
     expect(() => assertExactMigration(original, missingRoot)).toThrow();
-    for (const key of ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'] as const) {
+    for (const key of ADDED_ROOTS) {
       const { [key]: _missing, ...missing } = current;
       expect(() => assertExactMigration(original, missing as SliceState)).toThrow();
       expect(() => assertExactMigration(original, { ...current, [key]: { ...current[key], guidanceKnown: true } })).toThrow();
@@ -289,7 +318,7 @@ describe('Fool SliceApp actual completed S0 terminal navigation', () => {
     expect(historicalPublicHash({ ...value, unexpectedRoot: null } as SliceProjection, current)).not.toBe(PUBLIC_SHA256);
     const missingPublicRoot = { ...value }; Reflect.deleteProperty(missingPublicRoot, 'fool');
     expect(historicalPublicHash(missingPublicRoot, current)).not.toBe(PUBLIC_SHA256);
-    for (const key of ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant'] as const) {
+    for (const key of ADDED_ROOTS) {
       const { [key]: _missing, ...missing } = value;
       expect(() => historicalPublicHash(missing as SliceProjection, current)).toThrow();
       expect(() => historicalPublicHash({ ...value, [key]: { ...value[key], guidanceKnown: true } }, current)).toThrow();

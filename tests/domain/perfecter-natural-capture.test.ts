@@ -1,3 +1,13 @@
+import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
 import { historicalPerfecterStateForEmptyRootAudit } from '../helpers/historical-empty-root-audit.js';
 import { assertEmptyDeathState, assertEmptyDoorState } from '../helpers/empty-death-capture.js';
@@ -113,31 +123,36 @@ const ADDED_ROOTS = ['beautyGoddess', 'misfortuneKnight', 'allKnowingEye', 'thun
   'paleEmperor', 'starKey', 'timeWorm', 'divineHand', 'apocalypseDemoness', 'knowledgeEmperor', 'darkAngel',
   'uncleanMonarch', 'abomination', 'mercurySnake', 'princeOfAbolition', 'handOfOrder', 'natureWalker',
   'fool', 'redPriest', 'visionary', 'perfecter'].sort();
+const LATER_ROOTS = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent',
+  'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune',
+  'blackEmperor', 'justiciar', 'mother'] as const;
 let raw: SliceState, initial: SliceState, captureInitial: SliceState, defaults: SliceState;
 let cp: Checkpoint, rows: Row[], boundaries: Boundary[];
 
 /** The only migration seam: retain every historical field, normalize only the
  * two version labels, and require every newly introduced known root to equal
  * its complete fresh CURRENT default. Unknown or nonempty additions fail. */
-function captureHash(current: SliceState, historical: SliceState): string {
+function captureHash(current: SliceState, historical: SliceState, expectedDefaults = defaults): string {
   if (Number(historical.schemaVersion) === 208) return hash(historicalPerfecterStateForEmptyRootAudit(current, historical as unknown as Record<string, unknown>));
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   const old = historical as unknown as Record<string, unknown>, now = current as unknown as Record<string, unknown>;
-  const fresh = defaults as unknown as Record<string, unknown>;
-  const laterRoots = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'] as const;
+  const fresh = expectedDefaults as unknown as Record<string, unknown>;
   expect([186, 208]).toContain(historical.schemaVersion);
-  const added = Number(historical.schemaVersion) === 186 ? [...ADDED_ROOTS, ...laterRoots] : [...laterRoots];
+  const added = Number(historical.schemaVersion) === 186 ? [...ADDED_ROOTS, ...LATER_ROOTS] : [...LATER_ROOTS];
   for (const key of added) expect(Object.hasOwn(old, key), `Unexpected historical root ${key}`).toBe(false);
   assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current);
+  assertEmptyTwilightGiantState(current); assertEmptyDemonessState(current); assertEmptyHermitState(current);
+  assertEmptyHangedManState(current); assertEmptyAbyssState(current); assertEmptyChainedState(current);
+  assertEmptyWheelOfFortuneState(current); assertEmptyBlackEmperorState(current); assertEmptyJusticiarState(current); assertEmptyMotherState(current);
   expect(Object.keys(now).sort()).toEqual([...Object.keys(old), ...added].sort());
-  for (const key of added) same(now[key], fresh[key]);
+  for (const key of added) expect(now[key], `Exact empty root ${key}`).toStrictEqual(fresh[key]);
   return hash({ ...Object.fromEntries(Object.keys(old).map(key => [key, now[key]])),
     schemaVersion: historical.schemaVersion, contentVersion: historical.contentVersion });
 }
-function migrateExactly(historical: SliceState): SliceState {
+function migrateExactly(historical: SliceState, expectedDefaults = defaults): SliceState {
   const before = hash(historical), migrated = migrateSliceState(historical);
   expect(hash(historical), 'Migration must leave every historical field intact').toBe(before);
-  expect(captureHash(migrated, historical)).toBe(before); return migrated;
+  expect(captureHash(migrated, historical, expectedDefaults)).toBe(before); return migrated;
 }
 
 /** Literal finalFacts pins make actual residents, apparatus, custody, injuries,
@@ -227,34 +242,62 @@ function selected(c: PerfecterCommand, seen: Set<string>): string | null {
   return c.type === 'EPILOGUE' ? `actual-archive-${c.command.type.toLowerCase()}` : null;
 }
 
-beforeAll(() => {
-  const p = pins(); expect(filePin(join(p.root, 'manifest.json')).sha256).toBe(p.manifestSha256);
-  const manifest = json<{ format: string; files: Member[] }>('manifest.json');
-  expect(manifest.format).toBe('PERFECTER211_CAPTURE_FILES_V1'); expect(manifest.files).toHaveLength(36);
-  expect(inventory(p.root).sort()).toEqual([...manifest.files.map(f => f.file), 'manifest.json'].sort());
-  for (const f of manifest.files) {
-    expect(f.file.includes('\\')).toBe(false); expect(f.file.split('/').every(part => part && part !== '.' && part !== '..')).toBe(true);
-    expect(filePin(join(p.root, f.file)), f.file).toEqual({ bytes: f.bytes, sha256: f.sha256 });
-  }
-  expect(filePin(SOURCE).sha256).toBe(SOURCE_SHA); raw = readObjectEntry<SliceState>(SOURCE, 'final');
-  defaults = createSliceRun(raw.runId, readObjectEntry<Parameters<typeof createSliceRun>[1]>(SOURCE, 'creation'), raw.random.seed);
-  initial = migrateExactly(raw); captureInitial = entry<SliceState>('boundary-798-learn_guidance.json', 'beforeLast');
-  expect([captureInitial.schemaVersion, captureInitial.contentVersion]).toEqual([208, 'perfecter-v208']);
-  expect(Object.keys(captureInitial).filter(key => !Object.hasOwn(raw, key)).sort()).toEqual(ADDED_ROOTS);
-  for (const [key, value] of Object.entries(raw)) if (!['schemaVersion', 'contentVersion'].includes(key)) same(captureInitial[key as keyof SliceState], value);
-  for (const key of ADDED_ROOTS) same(captureInitial[key as keyof SliceState], defaults[key as keyof SliceState]);
-  expect(hash(captureInitial)).toBe(p.initialSha256); expect(captureHash(initial, captureInitial)).toBe(p.initialSha256);
-  same(initial, migrateExactly(captureInitial)); same(initial.perfecter, createPerfecterState());
-  const wrapped = json<{ sha256: string; payload: Checkpoint }>('checkpoint.json');
-  expect(wrapped.sha256).toBe(hash(wrapped.payload)); cp = wrapped.payload;
-  boundaries = json<Boundary[]>('boundaries.index.json'); same(boundaries, cp.boundaries); expect(boundaries).toHaveLength(28);
-  const ledger = readFileSync(join(p.root, 'commands.ndjson'), 'utf8');
-  expect(ledger === '' || ledger.endsWith('\n')).toBe(true);
-  rows = ledger === '' ? [] : ledger.trimEnd().split('\n').map(line => JSON.parse(line) as Row);
-  same(rows, cp.rows); expect(rows).toHaveLength(p.newCommands);
-}, 30_000);
+describe('Perfecter historical migration root guard', () => {
+  it.each([186, 208] as const)('admits the authentic schema%i with only named empty current roots', version => {
+    expect(filePin(SOURCE).sha256).toBe(SOURCE_SHA);
+    const original = readObjectEntry<SliceState>(SOURCE, 'final');
+    const boundary = 'boundary-798-learn_guidance.json';
+    expect(filePin(join(pins().root, boundary)).sha256).toBe('7c713fd6b70b4fd6c6a5eb9d0abe1eb782912260673db9319ecc4f2fba64f4f7');
+    const historical = version === 186 ? original : entry<SliceState>(boundary, 'beforeLast');
+    expect([historical.schemaVersion, historical.contentVersion]).toEqual(
+      version === 186 ? [186, 'civilization-enlightener-v186'] : [208, 'perfecter-v208'],
+    );
+    if (version === 208) expect(hash(historical)).toBe(pins().initialSha256);
+    const expectedDefaults = createSliceRun(original.runId,
+      readObjectEntry<Parameters<typeof createSliceRun>[1]>(SOURCE, 'creation'), original.random.seed);
+    const before = hash(historical), current = migrateExactly(historical, expectedDefaults);
+    expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+    expect(captureHash(current, historical, expectedDefaults)).toBe(before);
+    expect(() => captureHash({ ...current, unexpectedRoot: undefined } as SliceState, historical, expectedDefaults)).toThrow();
+    for (const root of LATER_ROOTS) {
+      const { [root]: _missing, ...missing } = current;
+      expect(() => captureHash(missing as SliceState, historical, expectedDefaults)).toThrow();
+      expect(() => captureHash({ ...current, [root]: { ...current[root], unexpectedField: undefined } }, historical, expectedDefaults)).toThrow();
+      expect(() => captureHash({ ...current, [root]: { ...current[root], guidanceKnown: true } }, historical, expectedDefaults)).toThrow();
+    }
+    expect(captureHash({ ...current, random: { ...current.random, cursor: current.random.cursor + 1 } }, historical, expectedDefaults)).not.toBe(before);
+    expect(hash(historical)).toBe(before);
+  }, 30_000);
+});
 
 describe('Perfecter immutable actual211 original797 continuation', () => {
+  beforeAll(() => {
+    const p = pins(); expect(filePin(join(p.root, 'manifest.json')).sha256).toBe(p.manifestSha256);
+    const manifest = json<{ format: string; files: Member[] }>('manifest.json');
+    expect(manifest.format).toBe('PERFECTER211_CAPTURE_FILES_V1'); expect(manifest.files).toHaveLength(36);
+    expect(inventory(p.root).sort()).toEqual([...manifest.files.map(f => f.file), 'manifest.json'].sort());
+    for (const f of manifest.files) {
+      expect(f.file.includes('\\')).toBe(false); expect(f.file.split('/').every(part => part && part !== '.' && part !== '..')).toBe(true);
+      expect(filePin(join(p.root, f.file)), f.file).toEqual({ bytes: f.bytes, sha256: f.sha256 });
+    }
+    expect(filePin(SOURCE).sha256).toBe(SOURCE_SHA); raw = readObjectEntry<SliceState>(SOURCE, 'final');
+    defaults = createSliceRun(raw.runId, readObjectEntry<Parameters<typeof createSliceRun>[1]>(SOURCE, 'creation'), raw.random.seed);
+    initial = migrateExactly(raw); captureInitial = entry<SliceState>('boundary-798-learn_guidance.json', 'beforeLast');
+    expect([captureInitial.schemaVersion, captureInitial.contentVersion]).toEqual([208, 'perfecter-v208']);
+    expect(Object.keys(captureInitial).filter(key => !Object.hasOwn(raw, key)).sort()).toEqual(ADDED_ROOTS);
+    for (const [key, value] of Object.entries(raw)) if (!['schemaVersion', 'contentVersion'].includes(key)) same(captureInitial[key as keyof SliceState], value);
+    for (const key of ADDED_ROOTS) same(captureInitial[key as keyof SliceState], defaults[key as keyof SliceState]);
+    expect(hash(captureInitial)).toBe(p.initialSha256); expect(captureHash(initial, captureInitial)).toBe(p.initialSha256);
+    same(initial, migrateExactly(captureInitial)); same(initial.perfecter, createPerfecterState());
+    const wrapped = json<{ sha256: string; payload: Checkpoint }>('checkpoint.json');
+    expect(wrapped.sha256).toBe(hash(wrapped.payload)); cp = wrapped.payload;
+    boundaries = json<Boundary[]>('boundaries.index.json'); same(boundaries, cp.boundaries); expect(boundaries).toHaveLength(28);
+    const ledger = readFileSync(join(p.root, 'commands.ndjson'), 'utf8');
+    expect(ledger === '' || ledger.endsWith('\n')).toBe(true);
+    rows = ledger === '' ? [] : ledger.trimEnd().split('\n').map(line => JSON.parse(line) as Row);
+    same(rows, cp.rows); expect(rows).toHaveLength(p.newCommands);
+  }, 30_000);
+
   it('authenticates the unchanged source, complete command prefix, exact migration and frozen producer', () => {
     const p = pins(), prefix = readObjectEntry<SliceIntent[]>(SOURCE, 'commands'), commands = entry<SliceIntent[]>('natural.json', 'commands');
     expect(prefix).toHaveLength(PREFIX); expect(compactHash(prefix)).toBe(PREFIX_SHA);

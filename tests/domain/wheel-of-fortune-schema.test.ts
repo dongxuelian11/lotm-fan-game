@@ -1,10 +1,14 @@
+import { CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { assertValidSliceState, createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { validateSlicePayload } from '../../src/domain/slice/validation.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
-import { createWheelOfFortuneState, validateWheelOfFortuneState } from '../../src/domain/wheel-of-fortune/index.js';
+import { validateWheelOfFortuneState } from '../../src/domain/wheel-of-fortune/index.js';
 import { openWheelOfFortuneRuntimeSession } from '../../src/domain/wheel-of-fortune/owned-session.js';
 import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
@@ -12,21 +16,29 @@ import { WHEEL_OF_FORTUNE_SOURCE_FILE, wheelOfFortuneHash, authenticWheelOfFortu
   assertWheelOfFortuneSourceUnmodified } from '../helpers/wheel-of-fortune-scenario.js';
 
 const fresh = (): SliceState => createSliceRun('wheel-of-fortune-schema', sliceDefaultCreationSelection, 'wheel-of-fortune-schema-seed');
+const ADDITIVE_ROOTS = ['wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const assertEmptyAdditiveRoots = (state: SliceState): void => {
+  assertEmptyWheelOfFortuneState(state); assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state); assertEmptyMotherState(state);
+};
 const legacy222 = () => {
-  const { wheelOfFortune: _root, ...state } = fresh();
+  const current = fresh();
+  assertEmptyAdditiveRoots(current);
+  const { wheelOfFortune: _root, blackEmperor: _emperor, justiciar: _justiciar, mother: _mother, ...state } = current;
   return { ...state, schemaVersion: 222 as const, contentVersion: 'chained-v222' as const };
 };
 
 describe('WheelOfFortune schema223 exact additive admission', () => {
-  it('adds one exact empty root and preserves every older field and input', () => {
+  it('adds exactly four empty roots to222 and preserves every older field and input', () => {
     const state = fresh(), old = legacy222(), before = structuredClone(old);
-    expect([state.schemaVersion, state.contentVersion]).toEqual([223, 'wheel-of-fortune-v223']);
-    assertEmptyWheelOfFortuneState(state);
+    expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+    assertEmptyAdditiveRoots(state);
     expect(validateWheelOfFortuneState(state)).toBe(true);
     expect(() => openWheelOfFortuneRuntimeSession(state)).toThrow();
     const migrated = migrateSliceState(old);
-    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(old), 'wheelOfFortune'].sort());
-    assertEmptyWheelOfFortuneState(migrated);
+    expect(Object.keys(migrated).sort()).toEqual([...Object.keys(old), ...ADDITIVE_ROOTS].sort());
+    expect([migrated.schemaVersion, migrated.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+    assertEmptyAdditiveRoots(migrated);
     for (const [key, value] of Object.entries(old)) {
       if (key === 'schemaVersion' || key === 'contentVersion') continue;
       expect(migrated[key as keyof SliceState], `Changed old root ${key}`).toStrictEqual(value);
@@ -40,8 +52,8 @@ describe('WheelOfFortune schema223 exact additive admission', () => {
     const state = fresh(), old = legacy222(), { wheelOfFortune: _root, ...missing } = state;
     const invalids = [missing, { ...state, wheelOfFortune: undefined }, { ...state, wheelOfFortune: null },
       { ...state, wheelOfFortune: { ...state.wheelOfFortune, extra: undefined } },
-      { ...state, futureChapter: {} }, { ...state, schemaVersion: 224 }, { ...state, contentVersion: 'chained-v222' },
-      { ...old, wheelOfFortune: createWheelOfFortuneState() }, { ...old, wheelOfFortune: undefined },
+      { ...state, futureChapter: {} }, { ...state, schemaVersion: CURRENT_SCHEMA_VERSION + 1 }, { ...state, contentVersion: 'chained-v222' },
+      ...ADDITIVE_ROOTS.flatMap(key => [{ ...old, [key]: state[key] }, { ...old, [key]: undefined }]),
       { ...old, chained: { ...old.chained, forged: true } },
       { ...old, mercurySnake: { ...old.mercurySnake, resupply: { ...old.mercurySnake.resupply, recovery: null } } },
       { ...old, mercurySnake: { ...old.mercurySnake, acquisitionJournal: [{ command: { type: 'REQUEST_RECOVERY_V1', bottleId: 'mercury-snake-potion-1' } }] } },
@@ -79,7 +91,10 @@ describe('WheelOfFortune schema223 exact additive admission', () => {
       expect(wheelOfFortuneHash(current[key as keyof SliceState]), `Changed original841 ${key}`).toBe(wheelOfFortuneHash(value));
     }
     const added = Object.keys(current).filter(key => !Object.hasOwn(raw, key));
-    expect(added).toContain('wheelOfFortune');
+    expect(added.sort()).toEqual(['princeOfAbolition', 'handOfOrder', 'natureWalker', 'fool', 'redPriest',
+      'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door',
+      'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained', ...ADDITIVE_ROOTS].sort());
+    assertEmptyAdditiveRoots(current);
     for (const key of added) expect(current[key as keyof SliceState]).toStrictEqual(defaults[key as keyof SliceState]);
     expect(wheelOfFortuneHash(raw)).toBe(before);
     expect(() => assertValidSliceState(current)).not.toThrow();
