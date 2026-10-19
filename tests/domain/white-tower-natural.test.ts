@@ -17,6 +17,9 @@ import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/curr
  * is byte-authenticated and admitted through strict migration, never replayed as
  * another historical command loop. Every actual action has its own full capture.
  * Guidance uses normal ingress; all later turns use real owned drafts/commits. */
+const LATER_ROOTS = ['twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained',
+  'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const ADDITIVE_ROOTS = ['tyrant', 'sun', 'death', 'door', 'errorAscent', ...LATER_ROOTS] as const;
 const BLOCKS = [[667, 700, 34], [701, 735, 35], [736, 774, 39], [775, 803, 29]] as const;
 let data: LoadedCapture;
 beforeAll(() => { data = loadCapture(); }, 180_000);
@@ -50,11 +53,19 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
     expect(counts).toEqual(data.rows.map(row => row.commandCount)); expect(new Set(counts).size).toBe(137);
   });
 
-  it('admits only the exact empty Tyrant, Sun, Death, Door and Error additions while retaining every raw211 private and public field', () => {
+  it('admits only the fifteen named empty Tyrant-through-Mother additions while retaining every raw211 private and public field', () => {
     const current = data.initial, raw = actionAt(667).beforeLast, originalHash = hash(raw), currentHash = hash(current);
     same(historicalWhiteTowerState(current), raw);
-    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'tyrant', 'sun', 'death', 'door', 'errorAscent'].sort());
+    expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), ...ADDITIVE_ROOTS].sort());
     expect(current.sun).toStrictEqual(createSunState());
+    for (const root of LATER_ROOTS) {
+      expect(Object.hasOwn(raw, root), root).toBe(false);
+      expect(() => migrateCapturedWhiteTowerState({ ...raw, [root]: current[root] } as HistoricalWhiteTowerState)).toThrow();
+      const { [root]: _missingRoot, ...missingRoot } = current;
+      expect(() => historicalWhiteTowerState(missingRoot as SliceState)).toThrow();
+      for (const value of [null, { ...current[root], guidanceKnown: true }, { ...current[root], unexpectedField: undefined }])
+        expect(() => historicalWhiteTowerState({ ...current, [root]: value } as SliceState)).toThrow();
+    }
     expect(Object.hasOwn(raw, 'sun')).toBe(false); expect(Object.hasOwn(raw, 'death')).toBe(false);
     expect(() => migrateCapturedWhiteTowerState({ ...raw, death: current.death } as HistoricalWhiteTowerState)).toThrow();
     expect(Object.hasOwn(raw, 'door')).toBe(false); expect(Object.hasOwn(raw, 'errorAscent')).toBe(false);
@@ -81,7 +92,18 @@ describe('WhiteTower214 complete immutable natural803 capture', () => {
     expect(hash(historicalWhiteTowerState({ ...current, unexpectedRoot: null } as SliceState))).not.toBe(originalHash);
     expect(hash(historicalWhiteTowerState({ ...current, cash: current.cash + 1 }))).not.toBe(originalHash);
     const publicValue = projectSliceState(current), publicHash = hash(publicValue);
-    expect(hash(historicalWhiteTowerPublic(publicValue, current))).toBe(PINS.initialGlobalPublicSha256);
+    const historicalPublic = historicalWhiteTowerPublic(publicValue, current);
+    expect(hash(historicalPublic)).toBe(PINS.initialGlobalPublicSha256);
+    expect(Object.keys(historicalPublic).sort()).toEqual(
+      Object.keys(publicValue).filter(key => !(ADDITIVE_ROOTS as readonly string[]).includes(key)).sort(),
+    );
+    for (const root of LATER_ROOTS) {
+      expect(Object.hasOwn(historicalPublic, root), root).toBe(false);
+      const { [root]: _missingRoot, ...missingRoot } = publicValue;
+      expect(() => historicalWhiteTowerPublic(missingRoot as typeof publicValue, current)).toThrow();
+      for (const value of [null, { ...publicValue[root], promoted: true }, { ...publicValue[root], unexpectedField: undefined }])
+        expect(() => historicalWhiteTowerPublic({ ...publicValue, [root]: value } as typeof publicValue, current)).toThrow();
+    }
     const { death: _missingDeathPublic, ...missingDeathPublic } = publicValue;
     expect(() => historicalWhiteTowerPublic(missingDeathPublic as typeof publicValue, current)).toThrow();
     for (const death of [null, { ...publicValue.death, promoted: true },

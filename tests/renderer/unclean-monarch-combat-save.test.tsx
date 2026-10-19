@@ -29,7 +29,7 @@ function savedGame(input: SliceState) {
   let nextSaveBarrier: Promise<void> | null = null;
   const attemptedStates: SliceState[] = [], receipts = new Map<string, SliceReceipt>();
   assertValidSliceState(state);
-  const submit = vi.fn<SliceBridge['submitIntent']>(async envelope => {
+  const submit = vi.fn<SliceBridge['submitIntent']>().mockImplementation(async envelope => {
     const prior = receipts.get(envelope.intentId);
     if (prior) return { ok: true, value: { ...structuredClone(prior), replayed: true } };
     if (envelope.payload.type === 'CREATE') throw new Error('The actual natural campaign already exists.');
@@ -65,8 +65,8 @@ async function chooseSavedRun(game: SavedGame, value = projectSliceState(game.st
 async function mount(game: SavedGame, presentationOnly?: (value: SliceProjection) => void) {
   expect([game.state.schemaVersion, game.state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   function projection() { const value = projectSliceState(game.state); presentationOnly?.(value); return value; }
-  const value = projection(), loadRun = vi.fn<SliceBridge['loadRun']>(async () => ({ ok: true, value: projection() }));
-  window.sliceGame = { getBootstrap: vi.fn<SliceBridge['getBootstrap']>(async () => ({ ok: true, value: {
+  const value = projection(), loadRun = vi.fn<SliceBridge['loadRun']>().mockImplementation(async () => ({ ok: true, value: projection() }));
+  window.sliceGame = { getBootstrap: vi.fn<SliceBridge['getBootstrap']>().mockImplementation(async () => ({ ok: true, value: {
     mode: 'desktop', activeState: value, runs: [{ runId: value.runId, name: value.character.name, portraitId: value.character.portraitId,
       week: value.week, date: value.date, status: value.status, revision: value.revision, updatedAt: '2026-10-16T00:00:00Z' }],
   } })), loadRun, submitIntent: game.submit };
@@ -144,7 +144,9 @@ beforeEach(() => {
   Object.defineProperty(HTMLDialogElement.prototype, 'close', { configurable: true, value: function (this: HTMLDialogElement) { this.removeAttribute('open'); } });
 });
 afterEach(() => {
-  cleanup(); delete window.sliceGame; vi.restoreAllMocks();
+  // Install implementations separately so reset releases completed saved campaigns.
+  // vi.fn(initialImplementation) would retain the original saved-state closure.
+  cleanup(); delete window.sliceGame; vi.resetAllMocks(); vi.restoreAllMocks();
   if (showModal) Object.defineProperty(HTMLDialogElement.prototype, 'showModal', showModal); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal');
   if (close) Object.defineProperty(HTMLDialogElement.prototype, 'close', close); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'close');
 });

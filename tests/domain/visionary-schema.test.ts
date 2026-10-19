@@ -1,4 +1,13 @@
-import { createErrorAscentState } from '../../src/domain/error-ascent/index.js';
+import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -6,10 +15,6 @@ import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { stableStringify } from '../../src/domain/canonical.js';
 import { createVisionaryState } from '../../src/domain/visionary/index.js';
-import { createPerfecterState } from '../../src/domain/perfecter/index.js';
-import { createMoonState } from '../../src/domain/moon/index.js';
-import { createDarknessState } from '../../src/domain/darkness/index.js';
-import { createWhiteTowerState } from '../../src/domain/white-tower/index.js';
 import { createTyrantState } from '../../src/domain/tyrant/index.js';
 import { createSunState } from '../../src/domain/sun/index.js';
 import { createDoorState } from '../../src/domain/door/index.js';
@@ -35,9 +40,23 @@ const historicalCaptures = {
     contentVersion: 'red-priest-v206', revision: 1138,
   },
 } as const;
+const laterRoots = ['twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained',
+  'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const assertEmptyLaterRoots = (state: SliceState): void => {
+  assertEmptyTwilightGiantState(state);
+  assertEmptyDemonessState(state);
+  assertEmptyHermitState(state);
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+};
 const introducedRoots = {
-  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
-  206: ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'],
+  205: ['redPriest', 'visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...laterRoots],
+  206: ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', ...laterRoots],
 } as const;
 const historicalStates = new Map<205 | 206, Record<string, unknown>>();
 function old(version: 205 | 206): Record<string, unknown> {
@@ -60,7 +79,7 @@ describe('Visionary exact current schema boundary', () => {
   it('creates one exact empty root and a detached valid current save', () => {
     const state=fresh(), before=stableStringify(state), copy=migrateSliceState(state);
     expect([state.schemaVersion,state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
-    same(state.visionary,createVisionaryState());same(state.tyrant,createTyrantState());same(state.sun,createSunState());same(state.death,createDeathState());expect(state.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(state);same(state,copy);expect(copy).not.toBe(state);
+    same(state.visionary,createVisionaryState());same(state.tyrant,createTyrantState());same(state.sun,createSunState());same(state.death,createDeathState());expect(state.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(state);assertEmptyLaterRoots(state);same(state,copy);expect(copy).not.toBe(state);
     expect(copy.visionary).not.toBe(state.visionary);expect(copy.tyrant).not.toBe(state.tyrant);expect(copy.sun).not.toBe(state.sun);expect(copy.death).not.toBe(state.death);expect(copy.door).not.toBe(state.door);expect(copy.errorAscent).not.toBe(state.errorAscent);assertValidSliceState(copy);expect(stableStringify(state)).toBe(before);
   });
   for (const version of [205,206] as const) {
@@ -72,7 +91,7 @@ describe('Visionary exact current schema boundary', () => {
     expect(Object.keys(next).sort()).toEqual([...Object.keys(state), ...introducedRoots[version]].sort());
     for(const [key,value] of Object.entries(state)) if(key!=='schemaVersion'&&key!=='contentVersion') same(next[key as keyof SliceState],value);
     for(const key of introducedRoots[version]) same(next[key],defaults[key]);
-    same(next.tyrant,createTyrantState());same(next.sun,createSunState());same(next.death,createDeathState());expect(next.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(next);
+    same(next.tyrant,createTyrantState());same(next.sun,createSunState());same(next.death,createDeathState());expect(next.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(next);assertEmptyLaterRoots(next);
     expect(stableStringify(state)).toBe(before);
     expect(hash(readFileSync(historicalCaptures[version].path))).toBe(historicalCaptures[version].sha256);
   }, version === 205 ? 60_000 : 5_000);
@@ -82,9 +101,10 @@ describe('Visionary exact current schema boundary', () => {
     [205, 'darkness'], [205, 'whiteTower'], [205, 'tyrant'], [205, 'sun'], [205, 'death'], [205, 'door'], [205, 'errorAscent'],
     [206, 'visionary'], [206, 'perfecter'], [206, 'moon'],
     [206, 'darkness'], [206, 'whiteTower'], [206, 'tyrant'], [206, 'sun'], [206, 'death'], [206, 'door'], [206, 'errorAscent'],
+    ...laterRoots.map(root => [205, root] as const),
+    ...laterRoots.map(root => [206, root] as const),
   ] as const)('rejects a future root smuggled into %i: %s',(version, root)=>{
-    const defaults = { visionary: createVisionaryState(), perfecter: createPerfecterState(), moon: createMoonState(),
-      darkness: createDarknessState(), whiteTower: createWhiteTowerState(), tyrant: createTyrantState(), sun: createSunState(), death: createDeathState(), door: createDoorState(), errorAscent: createErrorAscentState() };
+    const defaults = fresh();
     for (const value of [defaults[root], { ...defaults[root], guidanceKnown: true }, null]) {
       const state={...old(version),[root]:value},before=stableStringify(state);
       expect(()=>migrateSliceState(state)).toThrow();expect(stableStringify(state)).toBe(before);
@@ -92,7 +112,7 @@ describe('Visionary exact current schema boundary', () => {
   });
   it('rejects missing or altered later roots without repairing the input',()=>{
     const state=fresh();
-    for(const root of ['perfecter','moon','darkness','whiteTower','tyrant','sun','death','door','errorAscent'] as const){
+    for(const root of ['perfecter','moon','darkness','whiteTower','tyrant','sun','death','door','errorAscent',...laterRoots] as const){
       const { [root]: _missing, ...missing } = state;
       for(const value of [missing,{...state,[root]:{...state[root],guidanceKnown:true}},
         {...state,[root]:{...state[root],unexpectedField:true}}]){
