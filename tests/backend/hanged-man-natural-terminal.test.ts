@@ -18,11 +18,87 @@ import { resolveDarkAngelOriginalsSnapshot } from '../../src/domain/dark-angel/i
 import { DARK_ANGEL_ABILITY_IDS } from '../../src/domain/dark-angel/types.js';
 import {
   HANGED_MAN223_FROZEN_ROOTS, HANGED_MAN223_SOURCE_STATE_SHA, assertHangedManNaturalRetainedFreeze,
-  hangedManNaturalAnchor, hangedManNaturalHash, hangedManNaturalOutcome, hangedManNaturalPublicBudget,
+  hangedManNaturalHash, hangedManNaturalOutcome, hangedManNaturalPublicBudget,
   hangedManNaturalReceipt, hangedManNaturalSha, readHangedManNaturalArchive, readHangedManNaturalRows,
   readHangedManNaturalSnapshot, readHangedManNaturalSource, readHangedManNaturalSummary,
   type HangedManNaturalActionRow,
 } from '../helpers/hanged-man-natural-capture.js';
+
+import assert from 'node:assert/strict';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from '../helpers/empty-mother-capture.js';
+
+/** Raw220 captures stay immutable. Only these named, exactly empty later roots
+ * and format metadata are removed from detached historical hash views. */
+const LATER_EMPTY_ROOTS = ['abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+function historicalNaturalState(state: SliceState, originalKeys: readonly string[]) {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  const { abyss: _emptyAbyss, chained: _emptyChained, wheelOfFortune: _emptyWheelOfFortune,
+    blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 220, contentVersion: 'hanged-man-v220' };
+}
+function historicalNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]) {
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  assertEmptyAbyssPublic(view, state);
+  assertEmptyChainedPublic(view, state);
+  assertEmptyWheelOfFortunePublic(view, state);
+  assertEmptyBlackEmperorPublic(view, state);
+  assertEmptyJusticiarPublic(view, state);
+  assertEmptyMotherPublic(view, state);
+  const { abyss: _emptyAbyss, chained: _emptyChained, wheelOfFortune: _emptyWheelOfFortune,
+    blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = view;
+  return originalFields;
+}
+function capturedNaturalAnchor(state: SliceState, view: SliceProjection,
+  original: { final: SliceState; public: SliceProjection }) {
+  return { revision: state.revision,
+    privateStateSha256: hangedManNaturalHash(historicalNaturalState(state, Object.keys(original.final))),
+    publicStateSha256: hangedManNaturalHash(historicalNaturalPublic(view, state, Object.keys(original.public))),
+    random: state.random, randomSha256: hangedManNaturalHash(state.random) };
+}
+
+it('audits current-schema initial and terminal snapshots without replay', () => {
+  for (const which of ['initial', 'terminal'] as const) {
+    const original = readHangedManNaturalSnapshot(which), rawHash = hangedManNaturalHash(original);
+    const state = migrateSliceState(structuredClone(original.final)), view = projectSliceState(state);
+    const stateKeys = Object.keys(original.final), publicKeys = Object.keys(original.public);
+    expect(historicalNaturalState(state, stateKeys)).toEqual(original.final);
+    expect(historicalNaturalPublic(view, state, publicKeys)).toEqual(original.public);
+    expect(capturedNaturalAnchor(state, view, original)).toEqual(original.anchor);
+    // Exact-key checks reject unknown roots, even if their value is undefined.
+    expect(() => historicalNaturalState(Object.assign({}, state, { unexpectedFutureRoot: undefined }), stateKeys)).toThrow();
+    expect(() => historicalNaturalPublic(Object.assign({}, view, { unexpectedFutureRoot: undefined }), state, publicKeys)).toThrow();
+    for (const root of LATER_EMPTY_ROOTS) {
+      expect(() => historicalNaturalState({ ...state, [root]: { ...state[root], guidanceKnown: true } }, stateKeys)).toThrow();
+      expect(() => historicalNaturalPublic({ ...view, [root]: { ...view[root], guidanceKnown: true } }, state, publicKeys)).toThrow();
+    }
+    expect(hangedManNaturalHash(historicalNaturalState({ ...state, cash: state.cash + 1 }, stateKeys)))
+      .not.toBe(original.anchor.privateStateSha256);
+    expect(hangedManNaturalHash(historicalNaturalPublic({ ...view, cash: view.cash + 1 }, state, publicKeys)))
+      .not.toBe(original.anchor.publicStateSha256);
+    expect(hangedManNaturalHash(original)).toBe(rawHash);
+  }
+}, 180_000);
 
 function unwrap<T>(result: SliceResult<T>): T {
   if (!result.ok) throw Error(result.error.code + ': ' + result.error.message);
@@ -176,8 +252,9 @@ it('verifies every actual new private/public/RNG boundary and the real terminal,
   expect(state.hangedMan.source).toBeNull(); expect(state.hangedMan.journal).toEqual([]);
   for (const [key, value] of Object.entries(source)) if (!['schemaVersion', 'contentVersion'].includes(key))
     expect(state[key as keyof SliceState], `original migration root ${key}`).toEqual(value);
-  expect(state).toEqual(initial.final); expect(view).toEqual(initial.public);
-  let anchor = hangedManNaturalAnchor(state, view), before = state;
+  expect(historicalNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
+  let anchor = capturedNaturalAnchor(state, view, initial), before = state;
   expect(anchor).toEqual(initial.anchor);
   const actions = rows.slice(723) as HangedManNaturalActionRow[];
   let session: HangedManRuntimeSession | undefined, previousIntent: SliceIntent | null = null;
@@ -205,12 +282,13 @@ it('verifies every actual new private/public/RNG boundary and the real terminal,
     expect(row.receipt).toEqual(hangedManNaturalReceipt(state, before));
     expect(row.actual).toEqual(hangedManNaturalOutcome(state));
     expect(state.random.seed).toBe(source.random.seed); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor);
-    anchor = hangedManNaturalAnchor(state, view);
+    anchor = capturedNaturalAnchor(state, view, initial);
     expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
     previousIntent = row.intent;
   }
   const terminal = readHangedManNaturalSnapshot('terminal');
-  expect(state).toEqual(terminal.final); expect(view).toEqual(terminal.public);
+  expect(historicalNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
   expect(state.revision).toBe(summary.revision); expect(hangedManNaturalOutcome(state)).toEqual(summary.actual);
   expect(predecessorFreeze).toEqual(summary.predecessorFreeze);
   for (const key of [...HANGED_MAN223_FROZEN_ROOTS.filter(key => key !== 'darkAngel'), 'world', 'combatHistory'] as const)

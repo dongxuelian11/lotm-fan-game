@@ -15,10 +15,92 @@ import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import type { SliceEnvelope, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   HERMIT222_FROZEN_ROOTS, HERMIT222_SOURCE_STATE_SHA, assertHermitNaturalRetainedFreeze,
-  hermitNaturalAnchor, hermitNaturalHash, hermitNaturalOutcome, hermitNaturalSha, hermitNaturalTerminalPin,
+  hermitNaturalHash, hermitNaturalOutcome, hermitNaturalSha, hermitNaturalTerminalPin,
   readHermitNaturalArchive, readHermitNaturalRows, readHermitNaturalSnapshot, readHermitNaturalSource,
   readHermitNaturalSummary, type HermitNaturalActionRow,
 } from '../helpers/hermit-natural-capture.js';
+
+import assert from 'node:assert/strict';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from '../helpers/empty-mother-capture.js';
+
+/** Raw219 captures stay immutable. Only these named, exactly empty later roots
+ * and format metadata are removed from detached historical hash views. */
+const LATER_EMPTY_ROOTS = ['hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+function historicalNaturalState(state: SliceState, originalKeys: readonly string[]) {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  const { hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar,
+    mother: _emptyMother, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 219, contentVersion: 'hermit-v219' };
+}
+function historicalNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]) {
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  assertEmptyHangedManPublic(view, state);
+  assertEmptyAbyssPublic(view, state);
+  assertEmptyChainedPublic(view, state);
+  assertEmptyWheelOfFortunePublic(view, state);
+  assertEmptyBlackEmperorPublic(view, state);
+  assertEmptyJusticiarPublic(view, state);
+  assertEmptyMotherPublic(view, state);
+  const { hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar,
+    mother: _emptyMother, ...originalFields } = view;
+  return originalFields;
+}
+function capturedNaturalAnchor(state: SliceState, view: SliceProjection,
+  original: { final: SliceState; public: SliceProjection }) {
+  return { revision: state.revision,
+    privateStateSha256: hermitNaturalHash(historicalNaturalState(state, Object.keys(original.final))),
+    publicStateSha256: hermitNaturalHash(historicalNaturalPublic(view, state, Object.keys(original.public))),
+    random: state.random, randomSha256: hermitNaturalHash(state.random) };
+}
+
+it('audits current-schema initial and terminal snapshots without replay', () => {
+  for (const which of ['initial', 'terminal'] as const) {
+    const original = readHermitNaturalSnapshot(which), rawHash = hermitNaturalHash(original);
+    const state = migrateSliceState(structuredClone(original.final)), view = projectSliceState(state);
+    const stateKeys = Object.keys(original.final), publicKeys = Object.keys(original.public);
+    expect(historicalNaturalState(state, stateKeys)).toEqual(original.final);
+    expect(historicalNaturalPublic(view, state, publicKeys)).toEqual(original.public);
+    expect(capturedNaturalAnchor(state, view, original)).toEqual(original.anchor);
+    // Exact-key checks reject unknown roots, even if their value is undefined.
+    expect(() => historicalNaturalState(Object.assign({}, state, { unexpectedFutureRoot: undefined }), stateKeys)).toThrow();
+    expect(() => historicalNaturalPublic(Object.assign({}, view, { unexpectedFutureRoot: undefined }), state, publicKeys)).toThrow();
+    for (const root of LATER_EMPTY_ROOTS) {
+      expect(() => historicalNaturalState({ ...state, [root]: { ...state[root], guidanceKnown: true } }, stateKeys)).toThrow();
+      expect(() => historicalNaturalPublic({ ...view, [root]: { ...view[root], guidanceKnown: true } }, state, publicKeys)).toThrow();
+    }
+    expect(hermitNaturalHash(historicalNaturalState({ ...state, cash: state.cash + 1 }, stateKeys)))
+      .not.toBe(original.anchor.privateStateSha256);
+    expect(hermitNaturalHash(historicalNaturalPublic({ ...view, cash: view.cash + 1 }, state, publicKeys)))
+      .not.toBe(original.anchor.publicStateSha256);
+    expect(hermitNaturalHash(original)).toBe(rawHash);
+  }
+}, 180_000);
 
 function unwrap<T>(result: SliceResult<T>): T {
   if (!result.ok) throw Error(result.error.code + ': ' + result.error.message);
@@ -44,10 +126,11 @@ function replayCapturedNatural(): Replay {
     previous = rowSha256;
   }
   let state = migrateSliceState(structuredClone(source)), view = projectSliceState(state);
-  expect(state).toEqual(initial.final); expect(view).toEqual(initial.public);
+  expect(historicalNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
   for (const [key, value] of Object.entries(source)) if (!['schemaVersion', 'contentVersion'].includes(key))
     expect(state[key as keyof SliceState], `migrated original ${key}`).toEqual(value);
-  let anchor = hermitNaturalAnchor(state, view), before = state;
+  let anchor = capturedNaturalAnchor(state, view, initial), before = state;
   expect(anchor).toEqual(initial.anchor);
   const actions = rows.slice(827) as HermitNaturalActionRow[];
   let session: HermitRuntimeSession | undefined;
@@ -73,14 +156,15 @@ function replayCapturedNatural(): Replay {
       expect(row.receipt).toEqual({ id: last.id, checks: last.randomReceipts, finance: last.financeReceipts,
         notes: last.notes, beforeDigest: last.beforeDigest, afterDigest: last.afterDigest });
     }
-    view = session.project(); anchor = hermitNaturalAnchor(state, view);
+    view = session.project(); anchor = capturedNaturalAnchor(state, view, initial);
     expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
     expect(state.random.seed).toBe(source.random.seed);
     expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor);
     expect(hermitNaturalOutcome(state)).toEqual(row.actual);
   }
   const terminal = readHermitNaturalSnapshot('terminal');
-  expect(state).toEqual(terminal.final); expect(view).toEqual(terminal.public);
+  expect(historicalNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
   expect(actions.reduce((count, row) => count + row.receipt.checks.length, 0)).toBe(hermitNaturalTerminalPin().checkCount);
   expect(actions.flatMap(row => row.receipt.checks.map(item => ({ command: row.commandCount,
     chance: item.check.chance, roll: item.check.roll, tier: item.check.tier,
@@ -121,8 +205,9 @@ function replayCapturedNatural(): Replay {
 }
 
 function assertLastCommandSave({ before, final: state, public: view, last }: Replay): void {
-  expect(hermitNaturalAnchor(before, projectSliceState(before))).toEqual(last.before);
-  expect(hermitNaturalAnchor(state, view)).toEqual(last.after);
+  const initial = readHermitNaturalSnapshot('initial');
+  expect(capturedNaturalAnchor(before, projectSliceState(before), initial)).toEqual(last.before);
+  expect(capturedNaturalAnchor(state, view, initial)).toEqual(last.after);
   const directory = mkdtempSync(join(tmpdir(), 'lotm-hermit222-natural-')), file = join(directory, 'save.sqlite');
   const importedAt = '2026-10-19T00:00:00.000Z', committedAt = '2026-10-19T00:00:01.000Z';
   const request: SliceEnvelope = { intentId: 'hermit222-natural-last', runId: before.runId,

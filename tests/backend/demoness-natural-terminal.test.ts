@@ -16,17 +16,45 @@ import type { SliceEnvelope, SliceResult } from '../../src/shared/slice-contract
 import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
 import {
   DEMONESS221_FROZEN_ROOTS, DEMONESS221_SOURCE_STATE_SHA, assertDemonessNaturalRetainedFreeze,
-  currentDemonessNaturalAnchor, demonessNaturalArchivedPublic, demonessNaturalHash, demonessNaturalOutcome, demonessNaturalPublicBudget,
+  demonessNaturalArchivedPublic, demonessNaturalHash, demonessNaturalOutcome, demonessNaturalPublicBudget,
   demonessNaturalReceipt, demonessNaturalSha, readDemonessNaturalArchive, readDemonessNaturalRows,
   readDemonessNaturalSnapshot, readDemonessNaturalSource, readDemonessNaturalSummary,
-  type DemonessNaturalActionRow,
+  type DemonessNaturalActionRow, type DemonessNaturalPublic,
 } from '../helpers/demoness-natural-capture.js';
+
+import { historicalDemonessNaturalState as historicalNaturalState, historicalDemonessNaturalPublic as historicalNaturalPublic,
+  currentDemonessNaturalAnchor as capturedNaturalAnchor } from '../helpers/demoness-natural-capture.js';
+
+const LATER_EMPTY_ROOTS = ['hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+
+it('audits current-schema initial and terminal snapshots without replay', () => {
+  for (const which of ['initial', 'terminal'] as const) {
+    const original = readDemonessNaturalSnapshot(which), rawHash = demonessNaturalHash(original);
+    const state = migrateSliceState(structuredClone(original.final)), view = projectSliceState(state);
+    const stateKeys = Object.keys(original.final), publicKeys = Object.keys(original.public);
+    expect(historicalNaturalState(state, stateKeys)).toEqual(original.final);
+    expect(historicalNaturalPublic(view, state, publicKeys)).toEqual(original.public);
+    expect(capturedNaturalAnchor(state, view, original)).toEqual(original.anchor);
+    // Exact-key checks reject unknown roots, even if their value is undefined.
+    expect(() => historicalNaturalState(Object.assign({}, state, { unexpectedFutureRoot: undefined }), stateKeys)).toThrow();
+    expect(() => historicalNaturalPublic(Object.assign({}, view, { unexpectedFutureRoot: undefined }), state, publicKeys)).toThrow();
+    for (const root of LATER_EMPTY_ROOTS) {
+      expect(() => historicalNaturalState({ ...state, [root]: { ...state[root], guidanceKnown: true } }, stateKeys)).toThrow();
+      expect(() => historicalNaturalPublic({ ...view, [root]: { ...view[root], guidanceKnown: true } }, state, publicKeys)).toThrow();
+    }
+    expect(demonessNaturalHash(historicalNaturalState({ ...state, cash: state.cash + 1 }, stateKeys)))
+      .not.toBe(original.anchor.privateStateSha256);
+    expect(demonessNaturalHash(historicalNaturalPublic({ ...view, cash: view.cash + 1 }, state, publicKeys)))
+      .not.toBe(original.anchor.publicStateSha256);
+    expect(demonessNaturalHash(original)).toBe(rawHash);
+  }
+}, 180_000);
 
 function unwrap<T>(result: SliceResult<T>): T {
   if (!result.ok) throw Error(result.error.code + ': ' + result.error.message);
   return result.value;
 }
-function assertPublicControl(view: SliceProjection, row: DemonessNaturalActionRow, previous: SliceIntent | null): void {
+function assertPublicControl(view: DemonessNaturalPublic, row: DemonessNaturalActionRow, previous: SliceIntent | null): void {
   expect(view.status).toBe('ACTIVE'); expect(view.activeEvent).toBeNull(); expect(view.combat).toBeNull();
   const action = row.publicAction;
   expect(action.enabled).toBe(true);
@@ -173,10 +201,11 @@ it('verifies every actual new private/public/RNG boundary and the real terminal,
   assertEmptyDemonessState(state);
   for (const [key, value] of Object.entries(source)) if (!['schemaVersion', 'contentVersion'].includes(key))
     expect(state[key as keyof SliceState], `original migration root ${key}`).toEqual(value);
-  expect(state).toEqual(initial.final); expect(view).toEqual(initial.public);
-  let anchor = currentDemonessNaturalAnchor(state, view, initial), before = state;
+  expect(historicalNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
+  let anchor = capturedNaturalAnchor(state, view, initial), before = state;
   expect(anchor).toEqual(initial.anchor);
-  let archivedView = demonessNaturalArchivedPublic(view, 688, projectionAudit);
+  let archivedView = demonessNaturalArchivedPublic(historicalNaturalPublic(view, state, Object.keys(initial.public)), 688, projectionAudit);
   const actions = rows.slice(688) as DemonessNaturalActionRow[];
   let session: DemonessRuntimeSession | undefined, previousIntent: SliceIntent | null = null;
   let predecessorFreeze: typeof summary.predecessorFreeze = null;
@@ -206,16 +235,17 @@ it('verifies every actual new private/public/RNG boundary and the real terminal,
     expect(row.receipt).toEqual(demonessNaturalReceipt(state, before));
     expect(row.actual).toEqual(demonessNaturalOutcome(state));
     expect(state.random.seed).toBe(source.random.seed); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor);
-    anchor = currentDemonessNaturalAnchor(state, view, initial);
+    anchor = capturedNaturalAnchor(state, view, initial);
     expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
     if (row.commandCount <= projectionAudit.proof.commandCount)
-      archivedView = demonessNaturalArchivedPublic(view, row.commandCount, projectionAudit);
+      archivedView = demonessNaturalArchivedPublic(historicalNaturalPublic(view, state, Object.keys(initial.public)), row.commandCount, projectionAudit);
     previousIntent = row.intent;
   }
   expect([...projectionAudit.verifiedDifferences].sort((a, b) => a - b))
     .toEqual(projectionAudit.proof.publicDifferences.map(item => item.commandCount).sort((a, b) => a - b));
   const terminal = readDemonessNaturalSnapshot('terminal');
-  expect(state).toEqual(terminal.final); expect(view).toEqual(terminal.public);
+  expect(historicalNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
   expect(state.revision).toBe(summary.revision); expect(demonessNaturalOutcome(state)).toEqual(summary.actual);
   expect(predecessorFreeze).toEqual(summary.predecessorFreeze);
   for (const key of [...DEMONESS221_FROZEN_ROOTS.filter(key => key !== 'apocalypseDemoness'), 'world', 'combatHistory'] as const)

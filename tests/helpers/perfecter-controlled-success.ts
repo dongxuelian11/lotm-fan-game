@@ -1,3 +1,13 @@
+import { assertEmptyTwilightGiantState } from './empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from './empty-demoness-capture.js';
+import { assertEmptyHermitState } from './empty-hermit-capture.js';
+import { assertEmptyHangedManState } from './empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from './empty-abyss-capture.js';
+import { assertEmptyChainedState } from './empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from './empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from './empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from './empty-justiciar-capture.js';
+import { assertEmptyMotherState } from './empty-mother-capture.js';
 import { assertEmptyErrorAscentState } from './empty-error-ascent-capture.js';
 import { assertEmptyDeathState, assertEmptyDoorState } from './empty-death-capture.js';
 import { createHash } from 'node:crypto';
@@ -45,11 +55,16 @@ function captureHash(current: SliceState, historical: SliceState): string {
     readObjectEntry<Parameters<typeof createSliceRun>[1]>(ORIGINAL, 'creation'), historical.random.seed);
   const old = historical as unknown as Record<string, unknown>, now = current as unknown as Record<string, unknown>;
   const fresh = defaults as unknown as Record<string, unknown>;
-  const laterRoots = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'] as const;
+  const laterRoots = ['moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent',
+    'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss', 'chained',
+    'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
   expect(historical.schemaVersion).toBe(208);
   const added = [...laterRoots];
   for (const key of added) expect(Object.hasOwn(old, key), `Unexpected historical root ${key}`).toBe(false);
   assertEmptyDeathState(current); assertEmptyDoorState(current); assertEmptyErrorAscentState(current);
+  assertEmptyTwilightGiantState(current); assertEmptyDemonessState(current);
+  assertEmptyHermitState(current); assertEmptyHangedManState(current); assertEmptyAbyssState(current); assertEmptyChainedState(current);
+  assertEmptyWheelOfFortuneState(current); assertEmptyBlackEmperorState(current); assertEmptyJusticiarState(current); assertEmptyMotherState(current);
   expect(Object.keys(now).sort()).toEqual([...Object.keys(old), ...added].sort());
   for (const key of added) expect(now[key], `New root ${key} must remain the complete fresh current default`).toEqual(fresh[key]);
   return captureValueHash({ ...Object.fromEntries(Object.keys(old).map(key => [key, now[key]])),

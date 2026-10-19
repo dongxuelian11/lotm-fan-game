@@ -1,3 +1,13 @@
+import { assertEmptyHermitState, assertEmptyHermitPublic } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from '../helpers/empty-mother-capture.js';
+import { historicalInactiveHermitPublic } from '../helpers/inactive-hermit-public-capture.js';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { assertEmptyErrorAscentState, emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
 import { assertEmptyTwilightGiantState, emptyTwilightGiantPublic } from '../helpers/empty-twilight-giant-capture.js';
 import { assertEmptyDemonessState, emptyDemonessPublic, historicalInactiveCalamitySourcePublic } from '../helpers/empty-demoness-capture.js';
@@ -50,6 +60,8 @@ function assertPlayerProjection(local: RedPriestProjection, global: RedPriestPro
   expect(global.resources).toEqual(local.resources);
 }
 const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
+const POST218_CHAPTER_ROOTS = ['hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+const ALL_LATER_CHAPTER_ROOTS = [...LATER_CHAPTER_ROOTS, ...POST218_CHAPTER_ROOTS] as const;
 /** Independently specified complete empty roots, not a filter for arbitrary
  * current defaults. The 0.209 capture itself uses schema206/red-priest-v206. */
 const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]> = {
@@ -79,18 +91,24 @@ const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]>
   demoness: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     passage: null, materials: null, preparations: [], journal: [] },
 };
-/** Preserve every historical public field. Only these twelve explicitly named
+/** Preserve every historical public field. Only these twenty explicitly named
  * later chapter roots may be omitted, after checking their complete empty
  * private states and complete inactive player-facing projections. Unknown
  * public fields remain in the historical hash and therefore cannot be hidden. */
 function historicalPublicHash(current: SliceProjection, state: SliceState, capturedRoot: SliceState): string {
   expect([capturedRoot.schemaVersion, capturedRoot.contentVersion]).toEqual([206, 'red-priest-v206']);
+  expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   expect(state.progression.pathwayId).toBe('hunter');
   expect(createTyrantState()).toStrictEqual(EMPTY_LATER_CHAPTERS.tyrant);
   expect(createSunState()).toStrictEqual(EMPTY_LATER_CHAPTERS.sun);
   assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state);
   assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
-  expect(Object.keys(state).sort()).toEqual([...Object.keys(capturedRoot), ...LATER_CHAPTER_ROOTS].sort());
+  assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state); assertEmptyBlackEmperorState(state); assertEmptyJusticiarState(state); assertEmptyMotherState(state);
+  assertEmptyHermitPublic(current, state); assertEmptyHangedManPublic(current, state); assertEmptyAbyssPublic(current, state); assertEmptyChainedPublic(current, state);
+  assertEmptyWheelOfFortunePublic(current, state); assertEmptyBlackEmperorPublic(current, state); assertEmptyJusticiarPublic(current, state); assertEmptyMotherPublic(current, state);
+  expect(Object.keys(state).sort()).toEqual([...Object.keys(capturedRoot), ...ALL_LATER_CHAPTER_ROOTS].sort());
+  for (const key of POST218_CHAPTER_ROOTS) expect(Object.hasOwn(capturedRoot, key)).toBe(false);
   for (const key of LATER_CHAPTER_ROOTS) {
     expect(Object.hasOwn(capturedRoot, key)).toBe(false);
     expect(state[key]).toStrictEqual(EMPTY_LATER_CHAPTERS[key]);
@@ -145,10 +163,12 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
   }
   // The historical capture contains this exact inactive null. The helper
   // rejects any supplied current source or active history before restoring it.
-  const historicalView = historicalInactiveCalamitySourcePublic(current, state);
+  const historicalView = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(current, state), state);
   const { visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, whiteTower: _whiteTower,
     tyrant: _tyrant, sun: _sun, death: _death, door: _door, errorAscent: _errorAscent,
-    twilightGiant: _twilightGiant, demoness: _demoness, ...historical } = historicalView;
+    twilightGiant: _twilightGiant, demoness: _demoness,
+    hermit: _hermit, hangedMan: _hangedMan, abyss: _abyss, chained: _chained,
+    wheelOfFortune: _wheelOfFortune, blackEmperor: _blackEmperor, justiciar: _justiciar, mother: _mother, ...historical } = historicalView;
   return hash(historical);
 }
 function persisted(path: string): string {
@@ -170,7 +190,7 @@ describe('Red Priest209 planned captured transition through SQLite', () => {
     const state = migrateSliceState(root.state), current = openRedPriestRuntimeSession(state).project();
     const stateHash = hash(state), publicHash = hash(current), historical = historicalPublicHash(current, state, root.state);
     expect(historical).toBe(finalUiProof().replay.rows[0]!.publicSliceBeforeSha256);
-    for (const key of LATER_CHAPTER_ROOTS) {
+    for (const key of ALL_LATER_CHAPTER_ROOTS) {
       const missingState = { ...state }; Reflect.deleteProperty(missingState, key);
       const missingPublic = { ...current }; Reflect.deleteProperty(missingPublic, key);
       expect(() => historicalPublicHash(current, missingState, root.state)).toThrow();

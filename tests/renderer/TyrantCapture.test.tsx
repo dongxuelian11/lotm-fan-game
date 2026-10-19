@@ -10,7 +10,7 @@ import { TYRANT_ABILITY_IDS } from '../../src/domain/tyrant/types.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { projectPlayerText } from '../../src/shared/player-text.js';
 import type { SliceBridge, SliceEnvelope, SliceReceipt } from '../../src/shared/slice-contracts.js';
-import { assertGlobalPublic, hash, migrateCapturedTyrantState, sha } from '../helpers/tyrant-capture.js';
+import { assertGlobalPublic, hash, historicalTyrantPublic, migrateCapturedTyrantState, sha } from '../helpers/tyrant-capture.js';
 
 // NEW215 is the rebuilt natural864 death route: original701 + actual new163.
 // These five immutable captures supply the complete real public receipts. The
@@ -62,10 +62,10 @@ function captured(name: keyof typeof PINS) {
     { state: boundary.final, expected: boundary.audit.afterStateSha256 });
   const beforeState = migrateCapturedTyrantState(boundary.beforeLast), state = migrateCapturedTyrantState(boundary.final);
   const before = projectSliceState(beforeState), value = projectSliceState(state);
-  // Entire captured globals are compared, including identifiers, old people,
-  // exact numbers, commands and order; no roots or private history are deleted.
-  expect(before).toEqual(projectPlayerText(structuredClone(boundary.globalPublicBefore), beforeState.character.name));
-  expect(value).toEqual(projectPlayerText(structuredClone(boundary.globalPublic), state.character.name));
+  // Entire historical globals are compared after independently validating only
+  // the named new empty roots; old identifiers, numbers, commands and order remain.
+  expect(historicalTyrantPublic(before, beforeState)).toEqual(projectPlayerText(structuredClone(boundary.globalPublicBefore), beforeState.character.name));
+  expect(historicalTyrantPublic(value, state)).toEqual(projectPlayerText(structuredClone(boundary.globalPublic), state.character.name));
   expect(value.character).toEqual(boundary.final.character); expect(value.character.name).toBe('托林');
   assertGlobalPublic(before, beforeState); assertGlobalPublic(value, state);
   return { boundary, beforeState, state, before, value };

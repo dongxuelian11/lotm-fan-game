@@ -16,6 +16,7 @@ import { playerText, projectPlayerText } from '../../src/shared/player-text.js';
 import type { SliceBridge } from '../../src/shared/slice-contracts.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
+import { historicalVisionaryStateForEmptyRootAudit } from '../helpers/historical-empty-root-audit.js';
 
 // Genuine actual210 boundaries, not a manufactured successful save. Only the
 // captured next intent can commit. This adapter tests public navigation/delivery;
@@ -59,15 +60,22 @@ function boundaryFile(count: number): string {
 }
 
 type HistoricalVisionaryState = Omit<SliceState, 'schemaVersion' | 'contentVersion' |
-  'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun'> & {
+  'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' | 'death' | 'door' |
+  'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained' |
+  'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'> & {
     schemaVersion: 207; contentVersion: 'visionary-v207';
   };
-const VISIONARY_ADDED_ROOTS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun'] as const;
+const VISIONARY_ADDED_ROOTS = ['perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun',
+  'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss',
+  'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
 function historicalVisionaryState(current: SliceState): HistoricalVisionaryState {
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   // Independently pin the complete empty additions. Unknown roots and all old
   // fields survive this detached comparison view and must match the raw hash.
-  const { perfecter, moon, darkness, whiteTower, tyrant, sun, ...originalFields } = current;
+  const { perfecter, moon, darkness, whiteTower, tyrant, sun, death: _death, door: _door,
+    errorAscent: _errorAscent, twilightGiant: _twilightGiant, demoness: _demoness, hermit: _hermit,
+    hangedMan: _hangedMan, abyss: _abyss, chained: _chained, wheelOfFortune: _wheelOfFortune,
+    blackEmperor: _blackEmperor, justiciar: _justiciar, mother: _mother, ...originalFields } = current;
   expect(perfecter).toStrictEqual({
     version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     works: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
@@ -94,7 +102,9 @@ function historicalVisionaryState(current: SliceState): HistoricalVisionaryState
     services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },
   });
   expect(tyrant).toStrictEqual(createTyrantState()); expect(sun).toStrictEqual(createSunState());
-  return { ...originalFields, schemaVersion: 207, contentVersion: 'visionary-v207' };
+  const historical: HistoricalVisionaryState = { ...originalFields, schemaVersion: 207, contentVersion: 'visionary-v207' };
+  historicalVisionaryStateForEmptyRootAudit(current, historical);
+  return historical;
 }
 function migrateCapturedVisionaryState(raw: HistoricalVisionaryState): SliceState {
   const rawHash = hash(raw);

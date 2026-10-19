@@ -1,3 +1,12 @@
+import { historicalInactiveHermitPublic, type HistoricalInactiveHermitProjection } from './inactive-hermit-public-capture.js';
+import { assertEmptyHermitState, assertEmptyHermitPublic } from './empty-hermit-capture.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from './empty-hanged-man-capture.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from './empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from './empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from './empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from './empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from './empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from './empty-mother-capture.js';
 import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -152,7 +161,7 @@ export function authenticateInputs(): void {
 const PUBLIC_FIELDS = ['runId', 'revision', 'status', 'week', 'date', 'actionsRemaining', 'weeklyBudget', 'cash', 'weeklyWage', 'wagePaid',
   'health', 'mind', 'spirituality', 'maxHealth', 'maxMind', 'maxSpirituality', 'pollution', 'injuries', 'injuryRisk',
   'debtTotal', 'debts', 'canAct', 'actionBlockedReason', 'activeEvent', 'combat'] as const;
-export function capturePublic(projection: SliceProjection) {
+export function capturePublic(projection: Pick<SliceProjection, typeof PUBLIC_FIELDS[number] | 'progression' | 'sun'>) {
   const ordinary = Object.fromEntries(PUBLIC_FIELDS.map(key => [key, structuredClone(projection[key])])) as Pick<SliceProjection, typeof PUBLIC_FIELDS[number]>;
   return { ...ordinary, progression: { sequence: projection.progression.sequence, acting: projection.progression.acting,
     mastery: structuredClone(projection.progression.mastery) }, sun: structuredClone(projection.sun) };
@@ -174,7 +183,7 @@ export function assertPublicOnly(value: unknown, state: SliceState): void {
   for (const secret of [state.random.seed, state.sun.source?.actorId, state.sun.source?.historyDigest])
     if (secret) assert(!text.includes(secret), 'An actual private value leaked');
 }
-export const assertGlobalPublic = (value: SliceProjection, state: SliceState): void => assertPublicOnly(value, state);
+export const assertGlobalPublic = (value: SliceProjection | HistoricalSunPublic, state: SliceState): void => assertPublicOnly(value, state);
 export const outcome = (view: CapturedPublic): Outcome => ({ status: view.status, sequence: view.progression.sequence,
   promoted: view.sun.promoted, guidance: view.sun.guidanceKnown });
 export function assertPublicAction(view: CapturedPublic, row: Pick<Row, 'intent' | 'publicLabel' | 'publicCost'>): void {
@@ -190,30 +199,42 @@ export function actualReceipts(after: SliceState, before: SliceState): Row['rece
   return { checks: [], finance: [], notes: after.chronicle.slice(before.chronicle.length) };
 }
 
-export type HistoricalSunState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'> & {
+export type HistoricalSunState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' |
+  'hermit' | 'hangedMan' | 'abyss' | 'chained' | 'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'> & {
   schemaVersion: 213; contentVersion: 'sun-v213';
 };
-export type HistoricalSunPublic = Omit<SliceProjection, 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness'>;
-/** Only the independently verified empty Death, Door, Error, Twilight Giant and Demoness roots may be removed. All old
+export type HistoricalSunPublic = Omit<HistoricalInactiveHermitProjection, 'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' |
+  'hermit' | 'hangedMan' | 'abyss' | 'chained' | 'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'>;
+/** Only the independently verified schema214–226 empty chapter roots may be removed. All old
  * fields and every unrecognized future root remain in the historical hash. */
 export function historicalSunState(state: SliceState): HistoricalSunState {
-  assert.deepEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION], [218, 'demoness-v218'],
-    'Review and explicitly pin each post218 migration addition before accepting a new schema');
+  assert.deepEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION], [226, 'mother-v226'],
+    'Review and explicitly pin each post226 migration addition before accepting a new schema');
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state); assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
-  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = state;
+  assertEmptyHermitState(state); assertEmptyHangedManState(state); assertEmptyAbyssState(state); assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state); assertEmptyBlackEmperorState(state); assertEmptyJusticiarState(state); assertEmptyMotherState(state);
+  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = state;
   return { ...originalFields, schemaVersion: CAPTURE_SCHEMA, contentVersion: CAPTURE_CONTENT };
 }
 export function historicalSunPublic(projection: SliceProjection, state: SliceState): HistoricalSunPublic {
   historicalSunState(state); assertEmptyDeathPublic(projection, state); assertEmptyDoorPublic(projection, state); assertEmptyErrorAscentPublic(projection, state); assertEmptyTwilightGiantPublic(projection, state); assertEmptyDemonessPublic(projection, state);
-  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...originalFields } = historicalInactiveCalamitySourcePublic(projection, state);
+  assertEmptyHermitPublic(projection, state); assertEmptyHangedManPublic(projection, state); assertEmptyAbyssPublic(projection, state); assertEmptyChainedPublic(projection, state);
+  assertEmptyWheelOfFortunePublic(projection, state); assertEmptyBlackEmperorPublic(projection, state); assertEmptyJusticiarPublic(projection, state); assertEmptyMotherPublic(projection, state);
+  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(projection, state), state);
   return originalFields;
 }
 export function migrateCapturedSunState(raw: SliceState): SliceState {
   assert.deepEqual([raw.schemaVersion, raw.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
   assert.equal(Object.hasOwn(raw, 'death'), false); assert.equal(Object.hasOwn(raw, 'door'), false); assert.equal(Object.hasOwn(raw, 'errorAscent'), false); assert.equal(Object.hasOwn(raw, 'twilightGiant'), false); assert.equal(Object.hasOwn(raw, 'demoness'), false);
   const before = hash(raw), current = migrateSliceState(raw); assertValidSliceState(current);
-  exactKeys(current, [...Object.keys(raw), 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness']); same(historicalSunState(current), raw, 'Current ingress changed a complete captured state');
+  exactKeys(current, [...Object.keys(raw), 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness',
+    'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother']);
+  same(historicalSunState(current), raw, 'Current ingress changed a complete captured state');
   assert.equal(hash(raw), before, 'Migration mutated the original capture'); return current;
 }
 /** Reviewed public corrections: the genuine Sun0 maximum30→150 from923-after,
@@ -272,7 +293,11 @@ export function assertCurrentGlobal(actual: SliceProjection, action: Action, sid
   const expected = expectedCurrentGlobal(action, side);
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CAPTURE_SCHEMA, CAPTURE_CONTENT]);
   assertEmptyDeathPublic(actual, state); assertEmptyDoorPublic(actual, state); assertEmptyErrorAscentPublic(actual, state); assertEmptyTwilightGiantPublic(actual, state); assertEmptyDemonessPublic(actual, state);
-  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness, ...historicalPublic } = historicalInactiveCalamitySourcePublic(actual, state);
+  assertEmptyHermitPublic(actual, state); assertEmptyHangedManPublic(actual, state); assertEmptyAbyssPublic(actual, state); assertEmptyChainedPublic(actual, state);
+  assertEmptyWheelOfFortunePublic(actual, state); assertEmptyBlackEmperorPublic(actual, state); assertEmptyJusticiarPublic(actual, state); assertEmptyMotherPublic(actual, state);
+  const { death: _emptyDeath, door: _emptyDoor, errorAscent: _emptyErrorAscent, twilightGiant: _emptyTwilightGiant, demoness: _emptyDemoness,
+    hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...historicalPublic } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(actual, state), state);
   same(historicalPublic, expected,
     `Complete global public ${action.commandCount} ${side}`);
   same(capturePublic(actual), capturePublic(expected));

@@ -16,11 +16,65 @@ import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import type { SliceEnvelope, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   JUSTICIAR228_PREFIX_COUNT, JUSTICIAR228_SOURCE_REVISION, JUSTICIAR228_SOURCE_STATE_SHA,
-  assertJusticiarNaturalPublic, justiciarNaturalAnchor, justiciarNaturalHash, justiciarNaturalOutcome,
+  assertJusticiarNaturalPublic, justiciarNaturalHash, justiciarNaturalOutcome,
   justiciarNaturalPins, justiciarNaturalReceipt, justiciarNaturalRolls, justiciarNaturalSha, justiciarNaturalStateFacts,
   loadJusticiarNaturalPolicy, readJusticiarNaturalRows, readJusticiarNaturalSnapshot, readJusticiarNaturalSource,
   readJusticiarNaturalSummary, type JusticiarNaturalActionRow,
 } from '../helpers/justiciar-natural-capture.js';
+
+import assert from 'node:assert/strict';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from '../helpers/empty-mother-capture.js';
+
+/** Raw225 captures stay immutable. Only these named, exactly empty later roots
+ * and format metadata are removed from detached historical hash views. */
+const LATER_EMPTY_ROOTS = ['mother'] as const;
+function historicalNaturalState(state: SliceState, originalKeys: readonly string[]) {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyMotherState(state);
+  const { mother: _emptyMother, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 225, contentVersion: 'justiciar-v225' };
+}
+function historicalNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]) {
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyMotherState(state);
+  assertEmptyMotherPublic(view, state);
+  const { mother: _emptyMother, ...originalFields } = view;
+  return originalFields;
+}
+function capturedNaturalAnchor(state: SliceState, view: SliceProjection,
+  original: { final: SliceState; public: SliceProjection }) {
+  return { revision: state.revision,
+    privateStateSha256: justiciarNaturalHash(historicalNaturalState(state, Object.keys(original.final))),
+    publicStateSha256: justiciarNaturalHash(historicalNaturalPublic(view, state, Object.keys(original.public))),
+    random: state.random, randomSha256: justiciarNaturalHash(state.random) };
+}
+
+it('audits current-schema initial and terminal snapshots without replay', () => {
+  for (const which of ['initial', 'terminal'] as const) {
+    const original = readJusticiarNaturalSnapshot(which), rawHash = justiciarNaturalHash(original);
+    const state = migrateSliceState(structuredClone(original.final)), view = projectSliceState(state);
+    const stateKeys = Object.keys(original.final), publicKeys = Object.keys(original.public);
+    expect(historicalNaturalState(state, stateKeys)).toEqual(original.final);
+    expect(historicalNaturalPublic(view, state, publicKeys)).toEqual(original.public);
+    expect(capturedNaturalAnchor(state, view, original)).toEqual(original.anchor);
+    // Exact-key checks reject unknown roots, even if their value is undefined.
+    expect(() => historicalNaturalState(Object.assign({}, state, { unexpectedFutureRoot: undefined }), stateKeys)).toThrow();
+    expect(() => historicalNaturalPublic(Object.assign({}, view, { unexpectedFutureRoot: undefined }), state, publicKeys)).toThrow();
+    for (const root of LATER_EMPTY_ROOTS) {
+      expect(() => historicalNaturalState({ ...state, [root]: { ...state[root], guidanceKnown: true } }, stateKeys)).toThrow();
+      expect(() => historicalNaturalPublic({ ...view, [root]: { ...view[root], guidanceKnown: true } }, state, publicKeys)).toThrow();
+    }
+    expect(justiciarNaturalHash(historicalNaturalState({ ...state, cash: state.cash + 1 }, stateKeys)))
+      .not.toBe(original.anchor.privateStateSha256);
+    expect(justiciarNaturalHash(historicalNaturalPublic({ ...view, cash: view.cash + 1 }, state, publicKeys)))
+      .not.toBe(original.anchor.publicStateSha256);
+    expect(justiciarNaturalHash(original)).toBe(rawHash);
+  }
+}, 180_000);
 
 function unwrap<T>(result: SliceResult<T>): T {
   if (!result.ok) throw Error(result.error.code + ': ' + result.error.message);
@@ -128,9 +182,10 @@ it('replays the sole natural actual706 continuation and faults/retries/reopens i
   let state = migrateSliceState(structuredClone(source)), view = projectSliceState(state), before = state;
   for (const [key, value] of Object.entries(source)) if (!['schemaVersion', 'contentVersion'].includes(key))
     expect(state[key as keyof SliceState], `migration root ${key}`).toEqual(value);
-  expect(state).toEqual(initial.final); expect(view).toEqual(initial.public);
+  expect(historicalNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
   expect(state.justiciar).toMatchObject({ guidanceKnown: false, source: null, journal: [] });
-  let anchor = justiciarNaturalAnchor(state, view), freeze: ReturnType<typeof policy.freezePredecessors> | null = null;
+  let anchor = capturedNaturalAnchor(state, view, initial), freeze: ReturnType<typeof policy.freezePredecessors> | null = null;
   expect(anchor).toEqual(initial.anchor); policy.assertOriginalRoots(state, source, JUSTICIAR_FROZEN_SOURCE_KEYS, freeze);
   const actions = rows.slice(JUSTICIAR228_PREFIX_COUNT) as JusticiarNaturalActionRow[];
   expect(actions).toHaveLength(summary.newCount);
@@ -172,10 +227,11 @@ it('replays the sole natural actual706 continuation and faults/retries/reopens i
     expect(row.elapsedWeeks).toBe(state.week - before.week);
     expect(state.random.seed).toBe(source.random.seed); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor);
     assertJusticiarNaturalPublic(view); policy.auditPublic(view, state);
-    anchor = justiciarNaturalAnchor(state, view); expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
+    anchor = capturedNaturalAnchor(state, view, initial); expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
   }
   const terminal = readJusticiarNaturalSnapshot('terminal');
-  assertValidSliceState(state); expect(state).toEqual(terminal.final); expect(view).toEqual(terminal.public);
+  assertValidSliceState(state); expect(historicalNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
   expect(justiciarNaturalStateFacts(state)).toEqual(pins.state);
   expect(justiciarNaturalOutcome(state)).toEqual(pins.actual); expect(justiciarNaturalRolls(state, source)).toEqual(pins.rolls);
   expect(state.justiciar.source ? justiciarNaturalHash(state.justiciar.source) : null).toBe(pins.handoffSourceSha256);

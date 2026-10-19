@@ -15,10 +15,82 @@ import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import type { SliceEnvelope, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   ABYSS224_FROZEN_ROOTS, ABYSS224_SOURCE_STATE_SHA, assertAbyssNaturalRetainedFreeze,
-  abyssNaturalAnchor, abyssNaturalHash, abyssNaturalOutcome, abyssNaturalReceipt, abyssNaturalSha,
+  abyssNaturalHash, abyssNaturalOutcome, abyssNaturalReceipt, abyssNaturalSha,
   readAbyssNaturalRows, readAbyssNaturalSnapshot, readAbyssNaturalSource, readAbyssNaturalSummary,
   type AbyssNaturalActionRow,
 } from '../helpers/abyss-natural-capture.js';
+
+import assert from 'node:assert/strict';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from '../helpers/empty-mother-capture.js';
+
+/** Raw221 captures stay immutable. Only these named, exactly empty later roots
+ * and format metadata are removed from detached historical hash views. */
+const LATER_EMPTY_ROOTS = ['chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+function historicalNaturalState(state: SliceState, originalKeys: readonly string[]) {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  const { chained: _emptyChained, wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor,
+    justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 221, contentVersion: 'abyss-v221' };
+}
+function historicalNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]) {
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  assertEmptyChainedPublic(view, state);
+  assertEmptyWheelOfFortunePublic(view, state);
+  assertEmptyBlackEmperorPublic(view, state);
+  assertEmptyJusticiarPublic(view, state);
+  assertEmptyMotherPublic(view, state);
+  const { chained: _emptyChained, wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor,
+    justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = view;
+  return originalFields;
+}
+function capturedNaturalAnchor(state: SliceState, view: SliceProjection,
+  original: { final: SliceState; public: SliceProjection }) {
+  return { revision: state.revision,
+    privateStateSha256: abyssNaturalHash(historicalNaturalState(state, Object.keys(original.final))),
+    publicStateSha256: abyssNaturalHash(historicalNaturalPublic(view, state, Object.keys(original.public))),
+    random: state.random, randomSha256: abyssNaturalHash(state.random) };
+}
+
+it('audits current-schema initial and terminal snapshots without replay', () => {
+  for (const which of ['initial', 'terminal'] as const) {
+    const original = readAbyssNaturalSnapshot(which), rawHash = abyssNaturalHash(original);
+    const state = migrateSliceState(structuredClone(original.final)), view = projectSliceState(state);
+    const stateKeys = Object.keys(original.final), publicKeys = Object.keys(original.public);
+    expect(historicalNaturalState(state, stateKeys)).toEqual(original.final);
+    expect(historicalNaturalPublic(view, state, publicKeys)).toEqual(original.public);
+    expect(capturedNaturalAnchor(state, view, original)).toEqual(original.anchor);
+    // Exact-key checks reject unknown roots, even if their value is undefined.
+    expect(() => historicalNaturalState(Object.assign({}, state, { unexpectedFutureRoot: undefined }), stateKeys)).toThrow();
+    expect(() => historicalNaturalPublic(Object.assign({}, view, { unexpectedFutureRoot: undefined }), state, publicKeys)).toThrow();
+    for (const root of LATER_EMPTY_ROOTS) {
+      expect(() => historicalNaturalState({ ...state, [root]: { ...state[root], guidanceKnown: true } }, stateKeys)).toThrow();
+      expect(() => historicalNaturalPublic({ ...view, [root]: { ...view[root], guidanceKnown: true } }, state, publicKeys)).toThrow();
+    }
+    expect(abyssNaturalHash(historicalNaturalState({ ...state, cash: state.cash + 1 }, stateKeys)))
+      .not.toBe(original.anchor.privateStateSha256);
+    expect(abyssNaturalHash(historicalNaturalPublic({ ...view, cash: view.cash + 1 }, state, publicKeys)))
+      .not.toBe(original.anchor.publicStateSha256);
+    expect(abyssNaturalHash(original)).toBe(rawHash);
+  }
+}, 180_000);
 
 function unwrap<T>(result: SliceResult<T>): T {
   if (!result.ok) throw Error(result.error.code + ': ' + result.error.message);
@@ -121,9 +193,10 @@ it('replays only the actual new Abyss commands with exact private/public/RNG has
   let state = migrateSliceState(structuredClone(source)), view = projectSliceState(state);
   for (const [key, value] of Object.entries(source)) if (!['schemaVersion', 'contentVersion'].includes(key))
     expect(state[key as keyof SliceState], `original migration root ${key}`).toEqual(value);
-  expect(state).toEqual(initial.final); expect(view).toEqual(initial.public);
+  expect(historicalNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
   expect(state.abyss.guidanceKnown).toBe(false); expect(state.abyss.source).toBeNull(); expect(state.abyss.journal).toEqual([]);
-  let anchor = abyssNaturalAnchor(state, view), before = state;
+  let anchor = capturedNaturalAnchor(state, view, initial), before = state;
   expect(anchor).toEqual(initial.anchor);
   const actions = rows.slice(821) as AbyssNaturalActionRow[];
   let session: AbyssRuntimeSession | undefined;
@@ -147,14 +220,15 @@ it('replays only the actual new Abyss commands with exact private/public/RNG has
     expect(row.receipt).toEqual(abyssNaturalReceipt(state, before));
     expect(row.actual).toEqual(abyssNaturalOutcome(state));
     expect(state.random.seed).toBe(source.random.seed); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor);
-    anchor = abyssNaturalAnchor(state, view);
+    anchor = capturedNaturalAnchor(state, view, initial);
     expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
     if (row.commandCount === 916) expect(state.lastCheck).toMatchObject({ chance: 70, roll: 73, tier: 'FAILURE' });
     if (row.commandCount === 941) expect(state.lastCheck).toMatchObject({ chance: 70, roll: 30, tier: 'SUCCESS' });
   }
   const terminal = readAbyssNaturalSnapshot('terminal');
   assertValidSliceState(state);
-  expect(state).toEqual(terminal.final); expect(view).toEqual(terminal.public);
+  expect(historicalNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
   expect(state.revision).toBe(summary.revision); expect(abyssNaturalOutcome(state)).toEqual(summary.actual);
   expect(state).toMatchObject({ revision: 965, status: 'ACTIVE', week: 227, health: 100, mind: 84,
     spirituality: 92, cash: 600, actionsRemaining: 2, injuries: [],

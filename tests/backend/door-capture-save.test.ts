@@ -50,8 +50,10 @@ describe('Door218 actual natural928 representative SQLite captures', () => {
     const row = rows[count - PREFIX - 1]!, action = readAction(row);
     const before = migrateSliceState(action.beforeLast), after = migrateSliceState(action.final);
     same(historicalDoorState(before), action.beforeLast); same(historicalDoorState(after), action.final);
-    expect(Object.keys(before).sort()).toEqual([...Object.keys(action.beforeLast), 'errorAscent', 'twilightGiant', 'demoness'].sort());
-    expect(Object.keys(after).sort()).toEqual([...Object.keys(action.final), 'errorAscent', 'twilightGiant', 'demoness'].sort());
+    expect(Object.keys(before).sort()).toEqual([...Object.keys(action.beforeLast), 'errorAscent', 'twilightGiant', 'demoness',
+      'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'].sort());
+    expect(Object.keys(after).sort()).toEqual([...Object.keys(action.final), 'errorAscent', 'twilightGiant', 'demoness',
+      'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'].sort());
     const beforeHash = hash(before), afterHash = hash(after), publicBefore = projectSliceState(before), publicAfter = projectSliceState(after);
     assertCurrentGlobal(publicBefore, action, 'before'); assertCurrentGlobal(publicAfter, action, 'after');
     assertGlobalPublic(publicBefore, before); assertGlobalPublic(publicAfter, after);

@@ -1,3 +1,12 @@
+import { assertEmptyHermitState, assertEmptyHermitPublic } from './empty-hermit-capture.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from './empty-hanged-man-capture.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from './empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from './empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from './empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from './empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from './empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from './empty-mother-capture.js';
+import { historicalInactiveHermitPublic } from './inactive-hermit-public-capture.js';
 import { assertEmptyDemonessState, assertEmptyDemonessPublic, historicalInactiveCalamitySourcePublic } from './empty-demoness-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -20,10 +29,8 @@ export const TWILIGHT220_FROZEN_ROOTS = ['warrior', 'gladiator', 'weaponmaster',
   'guardian', 'demonHunter', 'silverKnight', 'glory', 'divineHand'] as const;
 export const twilightNaturalSha = (bytes: string | Uint8Array) => createHash('sha256').update(bytes).digest('hex');
 export const twilightNaturalHash = (value: unknown) => twilightNaturalSha(stableStringify(value));
-type HistoricalTwilightNaturalState = Omit<SliceState, 'schemaVersion' | 'contentVersion' | 'demoness'> & {
-  schemaVersion: 217; contentVersion: 'twilight-giant-v217';
-};
-type HistoricalTwilightNaturalPublic = Omit<SliceProjection, 'demoness'>;
+type HistoricalTwilightNaturalState = ReturnType<typeof historicalTwilightNaturalState>;
+type HistoricalTwilightNaturalPublic = ReturnType<typeof historicalTwilightNaturalPublic>;
 export const twilightNaturalAnchor = (state: SliceState | HistoricalTwilightNaturalState, view: SliceProjection | HistoricalTwilightNaturalPublic) => ({
   revision: state.revision, privateStateSha256: twilightNaturalHash(state),
   publicStateSha256: twilightNaturalHash(view), random: state.random, randomSha256: twilightNaturalHash(state.random),
@@ -131,29 +138,61 @@ export function readTwilightNaturalSnapshot(which: 'initial' | 'terminal'): Twil
   assert.equal(value.anchor.publicStateSha256, item.publicSha256);
   return value;
 }
-/** Raw217 evidence remains untouched. Remove only the independently pinned
- * schema218 Demoness default and metadata; never strip arbitrary keys. */
-export function historicalTwilightNaturalState(state: SliceState, originalKeys: readonly string[]): HistoricalTwilightNaturalState {
+/** Raw217 captures stay immutable. Only these named, exactly empty later roots
+ * and format metadata are removed from detached historical hash views. */
+const LATER_EMPTY_ROOTS = ['demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+export function historicalTwilightNaturalState(state: SliceState, originalKeys: readonly string[]) {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assert.equal(originalKeys.includes('demoness'), false);
-  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, 'demoness'].sort());
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
   assertEmptyDemonessState(state);
-  const { demoness: _emptyDemoness, ...originalFields } = state;
-  return { ...originalFields, schemaVersion: 217, contentVersion: 'twilight-giant-v217' };
+  assertEmptyHermitState(state);
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  const { demoness: _emptyDemoness, hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss,
+    chained: _emptyChained, wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor,
+    justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 217 as const, contentVersion: 'twilight-giant-v217' as const };
 }
-export function historicalTwilightNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]): HistoricalTwilightNaturalPublic {
-  assert.equal(originalKeys.includes('demoness'), false);
-  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, 'demoness'].sort());
-  assertEmptyDemonessState(state); assertEmptyDemonessPublic(view, state);
-  const { demoness: _emptyDemoness, ...originalFields } = historicalInactiveCalamitySourcePublic(view, state);
+export function historicalTwilightNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]) {
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyDemonessState(state);
+  assertEmptyHermitState(state);
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  assertEmptyDemonessPublic(view, state);
+  assertEmptyHermitPublic(view, state);
+  assertEmptyHangedManPublic(view, state);
+  assertEmptyAbyssPublic(view, state);
+  assertEmptyChainedPublic(view, state);
+  assertEmptyWheelOfFortunePublic(view, state);
+  assertEmptyBlackEmperorPublic(view, state);
+  assertEmptyJusticiarPublic(view, state);
+  assertEmptyMotherPublic(view, state);
+  const { demoness: _emptyDemoness, hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss,
+    chained: _emptyChained, wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor,
+    justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = historicalInactiveHermitPublic(historicalInactiveCalamitySourcePublic(view, state), state);
   return originalFields;
 }
-export function currentTwilightNaturalAnchor(state: SliceState, view: SliceProjection, original: TwilightNaturalSnapshot): Anchor {
-  return twilightNaturalAnchor(historicalTwilightNaturalState(state, Object.keys(original.final)),
-    historicalTwilightNaturalPublic(view, state, Object.keys(original.public)));
+export function currentTwilightNaturalAnchor(state: SliceState, view: SliceProjection,
+  original: { final: SliceState; public: SliceProjection }) {
+  return { revision: state.revision,
+    privateStateSha256: twilightNaturalHash(historicalTwilightNaturalState(state, Object.keys(original.final))),
+    publicStateSha256: twilightNaturalHash(historicalTwilightNaturalPublic(view, state, Object.keys(original.public))),
+    random: state.random, randomSha256: twilightNaturalHash(state.random) };
 }
 
-/** A retained actual command boundary for the separate last-command save test. */
 export function readTwilightNaturalSnapshotAt(commandCount: number): TwilightNaturalSnapshot {
   const item = readTwilightNaturalSummary().keySnapshots.find(item => item.commandCount === commandCount);
   assert(item, `No retained actual snapshot at command ${commandCount}`);

@@ -15,11 +15,38 @@ import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import type { SliceEnvelope, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   TWILIGHT220_FROZEN_ROOTS, TWILIGHT220_SOURCE_STATE_SHA, assertTwilightNaturalRetainedFreeze,
-  currentTwilightNaturalAnchor, historicalTwilightNaturalPublic, historicalTwilightNaturalState,
   readTwilightNaturalArchive, readTwilightNaturalRows, readTwilightNaturalSnapshot,
   readTwilightNaturalSource, readTwilightNaturalSummary, readTwilightNaturalSnapshotAt, twilightNaturalHash, twilightNaturalSha,
   type TwilightNaturalActionRow,
 } from '../helpers/twilight-giant-natural-capture.js';
+
+import { historicalTwilightNaturalState as historicalNaturalState, historicalTwilightNaturalPublic as historicalNaturalPublic,
+  currentTwilightNaturalAnchor as capturedNaturalAnchor } from '../helpers/twilight-giant-natural-capture.js';
+
+const LATER_EMPTY_ROOTS = ['demoness', 'hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+
+it('audits current-schema initial and terminal snapshots without replay', () => {
+  for (const which of ['initial', 'terminal'] as const) {
+    const original = readTwilightNaturalSnapshot(which), rawHash = twilightNaturalHash(original);
+    const state = migrateSliceState(structuredClone(original.final)), view = projectSliceState(state);
+    const stateKeys = Object.keys(original.final), publicKeys = Object.keys(original.public);
+    expect(historicalNaturalState(state, stateKeys)).toEqual(original.final);
+    expect(historicalNaturalPublic(view, state, publicKeys)).toEqual(original.public);
+    expect(capturedNaturalAnchor(state, view, original)).toEqual(original.anchor);
+    // Exact-key checks reject unknown roots, even if their value is undefined.
+    expect(() => historicalNaturalState(Object.assign({}, state, { unexpectedFutureRoot: undefined }), stateKeys)).toThrow();
+    expect(() => historicalNaturalPublic(Object.assign({}, view, { unexpectedFutureRoot: undefined }), state, publicKeys)).toThrow();
+    for (const root of LATER_EMPTY_ROOTS) {
+      expect(() => historicalNaturalState({ ...state, [root]: { ...state[root], guidanceKnown: true } }, stateKeys)).toThrow();
+      expect(() => historicalNaturalPublic({ ...view, [root]: { ...view[root], guidanceKnown: true } }, state, publicKeys)).toThrow();
+    }
+    expect(twilightNaturalHash(historicalNaturalState({ ...state, cash: state.cash + 1 }, stateKeys)))
+      .not.toBe(original.anchor.privateStateSha256);
+    expect(twilightNaturalHash(historicalNaturalPublic({ ...view, cash: view.cash + 1 }, state, publicKeys)))
+      .not.toBe(original.anchor.publicStateSha256);
+    expect(twilightNaturalHash(original)).toBe(rawHash);
+  }
+}, 180_000);
 
 function unwrap<T>(result: SliceResult<T>): T {
   if (!result.ok) throw Error(result.error.code + ': ' + result.error.message);
@@ -47,9 +74,9 @@ function replayCapturedNatural() {
     previous = rowSha256;
   }
   let state = migrateSliceState(structuredClone(source)), view = projectSliceState(state);
-  expect(historicalTwilightNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
-  expect(historicalTwilightNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
-  let anchor = currentTwilightNaturalAnchor(state, view, initial), before = state;
+  expect(historicalNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
+  let anchor = capturedNaturalAnchor(state, view, initial), before = state;
   expect(anchor).toEqual(initial.anchor);
   const actions = rows.slice(287) as TwilightNaturalActionRow[];
   let session: TwilightGiantRuntimeSession | undefined;
@@ -78,12 +105,12 @@ function replayCapturedNatural() {
         notes: last.notes, beforeDigest: last.beforeDigest, afterDigest: last.afterDigest });
     }
     view = session.project();
-    anchor = currentTwilightNaturalAnchor(state, view, initial);
+    anchor = capturedNaturalAnchor(state, view, initial);
     expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
   }
   const terminal = readTwilightNaturalSnapshot('terminal');
-  expect(historicalTwilightNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
-  expect(historicalTwilightNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
+  expect(historicalNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
   for (const key of [...TWILIGHT220_FROZEN_ROOTS, 'world', 'combatHistory'] as const)
     expect(state[key], `original ${key}`).toEqual(source[key]);
   expect(state.twilightGiant.source!.character).toEqual(source.character);
@@ -137,8 +164,8 @@ describe('Twilight220 actual natural terminal', () => {
     const before = migrateSliceState(structuredClone(penultimate.final));
     const state = migrateSliceState(structuredClone(terminal.final)), view = projectSliceState(state);
     const last = readTwilightNaturalRows().at(-1)! as TwilightNaturalActionRow;
-    expect(currentTwilightNaturalAnchor(before, projectSliceState(before), penultimate)).toEqual(last.before);
-    expect(currentTwilightNaturalAnchor(state, view, terminal)).toEqual(last.after);
+    expect(capturedNaturalAnchor(before, projectSliceState(before), penultimate)).toEqual(last.before);
+    expect(capturedNaturalAnchor(state, view, terminal)).toEqual(last.after);
     const directory = mkdtempSync(join(tmpdir(), 'lotm-twilight220-natural-')), file = join(directory, 'save.sqlite');
     const importedAt = '2026-10-18T22:00:00.000Z', committedAt = '2026-10-18T22:00:01.000Z';
     const request: SliceEnvelope = { intentId: 'twilight220-natural-last', runId: before.runId,

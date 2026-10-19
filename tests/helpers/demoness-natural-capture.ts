@@ -1,3 +1,12 @@
+import { assertEmptyHermitState, assertEmptyHermitPublic } from './empty-hermit-capture.js';
+import { assertEmptyHangedManState, assertEmptyHangedManPublic } from './empty-hanged-man-capture.js';
+import { assertEmptyAbyssState, assertEmptyAbyssPublic } from './empty-abyss-capture.js';
+import { assertEmptyChainedState, assertEmptyChainedPublic } from './empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState, assertEmptyWheelOfFortunePublic } from './empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from './empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from './empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from './empty-mother-capture.js';
+import { historicalInactiveHermitPublic } from './inactive-hermit-public-capture.js';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -144,14 +153,58 @@ export function readDemonessNaturalSnapshot(which: 'initial' | 'terminal'): Demo
   }
   return value;
 }
-/** Capture218 is already current: no arbitrary root removal or projection reconstruction. */
-export function currentDemonessNaturalAnchor(state: SliceState, view: SliceProjection, original: DemonessNaturalSnapshot): Anchor {
+/** Raw218 captures stay immutable. Only these named, exactly empty later roots
+ * and format metadata are removed from detached historical hash views. */
+const LATER_EMPTY_ROOTS = ['hermit', 'hangedMan', 'abyss', 'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'] as const;
+export function historicalDemonessNaturalState(state: SliceState, originalKeys: readonly string[]) {
   assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  assert.deepEqual([state.schemaVersion, state.contentVersion], [original.final.schemaVersion, original.final.contentVersion]);
-  assert.deepEqual(Object.keys(state).sort(), Object.keys(original.final).sort());
-  assert.deepEqual(Object.keys(view).sort(), Object.keys(original.public).sort());
-  return demonessNaturalAnchor(state, view);
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyHermitState(state);
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  const { hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar,
+    mother: _emptyMother, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 218 as const, contentVersion: 'demoness-v218' as const };
 }
+export function historicalDemonessNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]) {
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyHermitState(state);
+  assertEmptyHangedManState(state);
+  assertEmptyAbyssState(state);
+  assertEmptyChainedState(state);
+  assertEmptyWheelOfFortuneState(state);
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  assertEmptyHermitPublic(view, state);
+  assertEmptyHangedManPublic(view, state);
+  assertEmptyAbyssPublic(view, state);
+  assertEmptyChainedPublic(view, state);
+  assertEmptyWheelOfFortunePublic(view, state);
+  assertEmptyBlackEmperorPublic(view, state);
+  assertEmptyJusticiarPublic(view, state);
+  assertEmptyMotherPublic(view, state);
+  const { hermit: _emptyHermit, hangedMan: _emptyHangedMan, abyss: _emptyAbyss, chained: _emptyChained,
+    wheelOfFortune: _emptyWheelOfFortune, blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar,
+    mother: _emptyMother, ...originalFields } = historicalInactiveHermitPublic(view, state);
+  return originalFields;
+}
+export function currentDemonessNaturalAnchor(state: SliceState, view: SliceProjection,
+  original: { final: SliceState; public: SliceProjection }) {
+  return { revision: state.revision,
+    privateStateSha256: demonessNaturalHash(historicalDemonessNaturalState(state, Object.keys(original.final))),
+    publicStateSha256: demonessNaturalHash(historicalDemonessNaturalPublic(view, state, Object.keys(original.public))),
+    random: state.random, randomSha256: demonessNaturalHash(state.random) };
+}
+
 interface RuntimeFreeze {
   sha256: string; source: { sha256: string }; history: { sha256: string };
   files: { file: string; sha256: string; bytes: number }[];
@@ -296,8 +349,9 @@ export function assertDemonessNaturalRetainedFreeze(summary: DemonessNaturalSumm
 }
 /** Reconstruct only the three explicitly audited recommendation paths. Every
  * other public leaf must reproduce the old full hash during the single replay. */
-export function demonessNaturalArchivedPublic(view: SliceProjection, commandCount: number,
-  audit: DemonessNaturalProjectionAudit): SliceProjection {
+export type DemonessNaturalPublic = SliceProjection | ReturnType<typeof historicalDemonessNaturalPublic>;
+export function demonessNaturalArchivedPublic(view: DemonessNaturalPublic, commandCount: number,
+  audit: DemonessNaturalProjectionAudit): DemonessNaturalPublic {
   assert(commandCount >= 688 && commandCount <= 883);
   const oldAnchor = commandCount === 688 ? audit.initial : (audit.rows[commandCount - 1] as DemonessNaturalActionRow).after;
   const currentHash = demonessNaturalHash(view), difference = audit.proof.publicDifferences.find(item => item.commandCount === commandCount);
@@ -332,7 +386,7 @@ export function demonessNaturalArchivedPublic(view: SliceProjection, commandCoun
   audit.verifiedDifferences.add(commandCount);
   return restored;
 }
-export const demonessNaturalPublicBudget = (view: SliceProjection) => ({ week: view.week, health: view.health,
+export const demonessNaturalPublicBudget = (view: DemonessNaturalPublic) => ({ week: view.week, health: view.health,
   mind: view.mind, spirituality: view.spirituality, cash: view.cash, actionsRemaining: view.actionsRemaining,
   pollution: view.pollution, wagePaid: view.wagePaid });
 export function demonessNaturalReceipt(next: SliceState, before: SliceState) {

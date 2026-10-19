@@ -4,6 +4,7 @@ import { createSliceRun } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
+import { historicalSunState } from '../helpers/sun-capture.js';
 
 const legacyRecoveryError = 'Unexpected PaleEmperor recovery state in a legacy save';
 type Pale = SliceState['paleEmperor'];
@@ -14,8 +15,9 @@ let sun: Legacy;
 beforeAll(() => {
   natural = readObjectEntry<SliceState>('tests/fixtures/pale-emperor-v01950/natural.json', 'final');
   current = createSliceRun('death-legacy-recovery-schema', sliceDefaultCreationSelection, 'death-legacy-recovery-schema');
-  const { death: _death, ...previous } = current;
-  sun = { ...previous, schemaVersion: 213, contentVersion: 'sun-v213' };
+  // Pin all thirteen post213 defaults before removing their named roots.
+  // A version-label change alone would retain fields no legacy save admits.
+  sun = historicalSunState(current) as unknown as Legacy;
 });
 
 const fields: [string, (pale: Pale, value: unknown) => unknown][] = [
@@ -59,14 +61,15 @@ describe('Death recovery evidence cannot be backdated by legacy migration', () =
     });
   }
 
-  it('preserves an untouched schema213 snapshot and only adds the exact current root and versions', () => {
+  it('preserves an untouched schema213 snapshot and only adds the exact current roots and versions', () => {
     expect(migrateSliceState(sun)).toEqual(current);
-    expect(sun).not.toHaveProperty('death');
+    for (const key of ['death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss',
+      'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother']) expect(sun).not.toHaveProperty(key);
     expect(sun.schemaVersion).toBe(213);
     expect(sun.contentVersion).toBe('sun-v213');
   });
 
-  it('leaves schema214 recovery admission to the full current validator', () => {
+  it('leaves current-schema recovery admission to the full current validator', () => {
     expect(migrateSliceState(current)).toEqual(current);
     const malformed = { ...current, paleEmperor: { ...current.paleEmperor, recoveryScene: null } };
     expect(() => migrateSliceState(malformed)).toThrow();

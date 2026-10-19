@@ -62,9 +62,11 @@ function capturedFinal() {
 
   const current = migrateCapturedMoonState(raw);
   expect([current.schemaVersion, current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
-  // Only the exact reviewed default Darkness and White Tower roots may be added.
+  // Only these exact reviewed default roots through schema226 may be added.
   // Every old field remains covered by the immutable historical capture hash.
-  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'darkness', 'whiteTower'].sort());
+  expect(Object.keys(current).sort()).toEqual([...Object.keys(raw), 'darkness', 'whiteTower', 'tyrant', 'sun',
+    'death', 'door', 'errorAscent', 'twilightGiant', 'demoness', 'hermit', 'hangedMan', 'abyss',
+    'chained', 'wheelOfFortune', 'blackEmperor', 'justiciar', 'mother'].sort());
   expect(current.darkness).toStrictEqual({
     version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     evacuation: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] },

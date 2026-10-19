@@ -10,6 +10,23 @@ import { projectSliceState } from '../../src/domain/slice/index.js';
 import { createVisionaryState, projectVisionary } from '../../src/domain/visionary/index.js';
 import { createPerfecterState, projectPerfecter } from '../../src/domain/perfecter/index.js';
 import { createMoonState, projectMoon } from '../../src/domain/moon/index.js';
+import { createDarknessState } from '../../src/domain/darkness/index.js';
+import { createWhiteTowerState } from '../../src/domain/white-tower/index.js';
+import { createTyrantState } from '../../src/domain/tyrant/index.js';
+import { createSunState } from '../../src/domain/sun/index.js';
+import { createDeathState } from '../../src/domain/death/index.js';
+import { createDoorState } from '../../src/domain/door/index.js';
+import { createErrorAscentState } from '../../src/domain/error-ascent/index.js';
+import { createTwilightGiantState } from '../../src/domain/twilight-giant/index.js';
+import { createDemonessState } from '../../src/domain/demoness/index.js';
+import { createHermitState } from '../../src/domain/hermit/index.js';
+import { createHangedManState } from '../../src/domain/hanged-man/index.js';
+import { createAbyssState } from '../../src/domain/abyss/index.js';
+import { createChainedState } from '../../src/domain/chained/index.js';
+import { createWheelOfFortuneState } from '../../src/domain/wheel-of-fortune/index.js';
+import { createBlackEmperorState } from '../../src/domain/black-emperor/index.js';
+import { createJusticiarState } from '../../src/domain/justiciar/index.js';
+import { createMotherState } from '../../src/domain/mother/index.js';
 import type { SliceIntent, SliceProjection, SliceState } from '../../src/domain/slice/types.js';
 import { RedPriestPanel } from '../../src/renderer/RedPriestPanel.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
@@ -28,9 +45,16 @@ const digest = (value: unknown) => createHash('sha256').update(stableStringify(v
 const fileDigest = () => createHash('sha256').update(readFileSync(FILE)).digest('hex');
 // Review additions here explicitly if a future format adds a default root. Never
 // normalize away an old field or infer an allowed default from migrated output.
-const NEW_DEFAULT_ROOTS: Pick<SliceState, 'visionary' | 'perfecter' | 'moon'> = {
+const NEW_DEFAULT_ROOTS = {
   visionary: createVisionaryState(), perfecter: createPerfecterState(), moon: createMoonState(),
-};
+  darkness: createDarknessState(), whiteTower: createWhiteTowerState(), tyrant: createTyrantState(), sun: createSunState(),
+  death: createDeathState(), door: createDoorState(), errorAscent: createErrorAscentState(), twilightGiant: createTwilightGiantState(),
+  demoness: createDemonessState(), hermit: createHermitState(), hangedMan: createHangedManState(), abyss: createAbyssState(),
+  chained: createChainedState(), wheelOfFortune: createWheelOfFortuneState(), blackEmperor: createBlackEmperorState(),
+  justiciar: createJusticiarState(), mother: createMotherState(),
+} satisfies Pick<SliceState, 'visionary' | 'perfecter' | 'moon' | 'darkness' | 'whiteTower' | 'tyrant' | 'sun' |
+  'death' | 'door' | 'errorAscent' | 'twilightGiant' | 'demoness' | 'hermit' | 'hangedMan' | 'abyss' | 'chained' |
+  'wheelOfFortune' | 'blackEmperor' | 'justiciar' | 'mother'>;
 let raw: SliceState, current: SliceState, publicState: SliceProjection;
 let originalFileSha: string, originalCurrentSha: string, originalPublicSha: string;
 
@@ -130,11 +154,13 @@ afterAll(() => {
 describe('Red Priest actual final capture in the renderer', () => {
   it('rejects missing, forged or altered newly added defaults and public chapters', () => {
     expect(() => assertCurrentMigration({ ...current, unexpectedRoot: null } as SliceState)).toThrow();
-    for (const key of ['visionary', 'perfecter', 'moon'] as const) {
+    for (const key of Object.keys(NEW_DEFAULT_ROOTS) as (keyof typeof NEW_DEFAULT_ROOTS)[]) {
       const { [key]: _missing, ...missing } = current;
       expect(() => assertCurrentMigration(missing as SliceState)).toThrow();
       expect(() => assertCurrentMigration({ ...current, [key]: { ...current[key], guidanceKnown: true } })).toThrow();
       expect(() => assertCurrentMigration({ ...current, [key]: { ...current[key], unexpectedField: undefined } })).toThrow();
+    }
+    for (const key of ['visionary', 'perfecter', 'moon'] as const) {
       expect(() => assertInactiveCurrentChapters({ ...publicState, [key]: { ...publicState[key], guidanceKnown: true } })).toThrow();
       expect(() => assertInactiveCurrentChapters({ ...publicState, [key]: { ...publicState[key], privateProbe: undefined } })).toThrow();
     }

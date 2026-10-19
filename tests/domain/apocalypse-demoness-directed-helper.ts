@@ -4,6 +4,7 @@ import { applySliceIntent, assertValidSliceState, projectSliceState } from '../.
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { APOCALYPSE_DEMONESS_PREPARATION_IDS, type ApocalypseDemonessCommand } from '../../src/domain/apocalypse-demoness/types.js';
+import { APOCALYPSE_DEMONESS_PRICES } from '../../src/domain/apocalypse-demoness/content.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../src/resolution/normal-check.js';
 import type { PublicResolutionTier } from '../../src/shared/contracts.js';
@@ -104,7 +105,9 @@ export const dose = { type: 'CONSUME', bottleId: 'apocalypse-demoness-potion-1',
 export function prepareBottle(s: SliceState, bottleId: string, commands?: SliceIntent[]): SliceState {
   for (const taskId of APOCALYPSE_DEMONESS_PREPARATION_IDS) if (!s.apocalypseDemoness.preparations.some(p => p.taskId === taskId)) s = ae(ready(s, {}, commands), { type: 'PREPARE_TASK', taskId }, commands);
   while (s.apocalypseDemoness.bottles.find(b => b.id === bottleId)!.labourSteps < 5) s = ae(ready(s, {}, commands), { type: 'POTION_WORK', bottleId }, commands);
-  s = ready(s, { ap: 1, cash: 1250, health: 100, mind: 100, spirituality: 120, pollution: 0, afterWeek: s.calamityDemoness.promotionWeek! + 11 }, commands);
+  const bottle = s.apocalypseDemoness.bottles.find(b => b.id === bottleId)!;
+  const price = bottle.recovery ? APOCALYPSE_DEMONESS_PRICES.recoveryLabourBalance : APOCALYPSE_DEMONESS_PRICES.labourBalance;
+  s = ready(s, { ap: 1, cash: price + APOCALYPSE_DEMONESS_PRICES.preparation, health: 100, mind: 100, spirituality: 120, pollution: 0, afterWeek: s.calamityDemoness.promotionWeek! + 11 }, commands);
   s = ae(s, { type: 'BUY_POTION', bottleId }, commands);
   return ae(s, { type: 'PREPARE_PROMOTION' }, commands);
 }
@@ -114,7 +117,8 @@ export function prepared(): SliceState {
   return structuredClone(preparedCache);
 }
 let promotedCache: SliceState | undefined;
-/** Actual same-seed original bottles are attempted in order; every failure
+/** Actual same-seed originals are attempted in order, then the latest failed
+ * dose's same characteristic is recovered for a new carrier. Every failure
  * remains. The cap is a test guard, not an alternate outcome or seed search. */
 export function promoted(): SliceState {
   if (!promotedCache) {
@@ -125,8 +129,8 @@ export function promoted(): SliceState {
       s = ae(s, { type: 'CONSUME', bottleId: bottle.id, confirmed: true });
       if (s.progression.sequence === 1) { assertValidSliceState(s); promotedCache = s; break; }
       if (s.apocalypseDemoness.bottles.every(b => b.status === 'CONSUMED')) {
-        s = ae(ready(s, { ap: 1, cash: 100 }), { type: 'REQUEST_SUPPLY' });
-        s = ae(ready(s, { afterWeek: s.apocalypseDemoness.resupply.requestedWeek! }), { type: 'RECEIVE_SUPPLY' });
+        s = ae(ready(s, { ap: 1, cash: APOCALYPSE_DEMONESS_PRICES.recovery }), { type: 'REQUEST_RECOVERY_V1', bottleId: bottle.id });
+        s = ae(ready(s, { ap: 1, afterWeek: s.apocalypseDemoness.resupply.requestedWeek! }), { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: bottle.id });
       }
       const next = s.apocalypseDemoness.bottles.find(b => b.status === 'SUPPLIER')!;
       s = prepareBottle(s, next.id);

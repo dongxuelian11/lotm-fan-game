@@ -16,10 +16,72 @@ import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import type { SliceEnvelope, SliceResult } from '../../src/shared/slice-contracts.js';
 import {
   WHEEL_OF_FORTUNE226_FROZEN_ROOTS, WHEEL_OF_FORTUNE226_SOURCE_STATE_SHA, assertWheelOfFortuneNaturalRetainedFreeze,
-  wheelOfFortuneNaturalAnchor, wheelOfFortuneNaturalHash, wheelOfFortuneNaturalOutcome, wheelOfFortuneNaturalReceipt, wheelOfFortuneNaturalSha,
+  wheelOfFortuneNaturalHash, wheelOfFortuneNaturalOutcome, wheelOfFortuneNaturalReceipt, wheelOfFortuneNaturalSha,
   readWheelOfFortuneNaturalRows, readWheelOfFortuneNaturalSnapshot, readWheelOfFortuneNaturalSource, readWheelOfFortuneNaturalSummary,
   type WheelOfFortuneNaturalActionRow,
 } from '../helpers/wheel-of-fortune-natural-capture.js';
+
+import assert from 'node:assert/strict';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyBlackEmperorState, assertEmptyBlackEmperorPublic } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState, assertEmptyJusticiarPublic } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState, assertEmptyMotherPublic } from '../helpers/empty-mother-capture.js';
+
+/** Raw223 captures stay immutable. Only these named, exactly empty later roots
+ * and format metadata are removed from detached historical hash views. */
+const LATER_EMPTY_ROOTS = ['blackEmperor', 'justiciar', 'mother'] as const;
+function historicalNaturalState(state: SliceState, originalKeys: readonly string[]) {
+  assert.deepEqual([state.schemaVersion, state.contentVersion], [CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(state).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  const { blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = state;
+  return { ...originalFields, schemaVersion: 223, contentVersion: 'wheel-of-fortune-v223' };
+}
+function historicalNaturalPublic(view: SliceProjection, state: SliceState, originalKeys: readonly string[]) {
+  for (const root of LATER_EMPTY_ROOTS) assert.equal(originalKeys.includes(root), false);
+  assert.deepEqual(Object.keys(view).sort(), [...originalKeys, ...LATER_EMPTY_ROOTS].sort());
+  assertEmptyBlackEmperorState(state);
+  assertEmptyJusticiarState(state);
+  assertEmptyMotherState(state);
+  assertEmptyBlackEmperorPublic(view, state);
+  assertEmptyJusticiarPublic(view, state);
+  assertEmptyMotherPublic(view, state);
+  const { blackEmperor: _emptyBlackEmperor, justiciar: _emptyJusticiar, mother: _emptyMother, ...originalFields } = view;
+  return originalFields;
+}
+function capturedNaturalAnchor(state: SliceState, view: SliceProjection,
+  original: { final: SliceState; public: SliceProjection }) {
+  return { revision: state.revision,
+    privateStateSha256: wheelOfFortuneNaturalHash(historicalNaturalState(state, Object.keys(original.final))),
+    publicStateSha256: wheelOfFortuneNaturalHash(historicalNaturalPublic(view, state, Object.keys(original.public))),
+    random: state.random, randomSha256: wheelOfFortuneNaturalHash(state.random) };
+}
+
+it('audits current-schema initial and terminal snapshots without replay', () => {
+  for (const which of ['initial', 'terminal'] as const) {
+    const original = readWheelOfFortuneNaturalSnapshot(which), rawHash = wheelOfFortuneNaturalHash(original);
+    const state = migrateSliceState(structuredClone(original.final)), view = projectSliceState(state);
+    const stateKeys = Object.keys(original.final), publicKeys = Object.keys(original.public);
+    expect(historicalNaturalState(state, stateKeys)).toEqual(original.final);
+    expect(historicalNaturalPublic(view, state, publicKeys)).toEqual(original.public);
+    expect(capturedNaturalAnchor(state, view, original)).toEqual(original.anchor);
+    // Exact-key checks reject unknown roots, even if their value is undefined.
+    expect(() => historicalNaturalState(Object.assign({}, state, { unexpectedFutureRoot: undefined }), stateKeys)).toThrow();
+    expect(() => historicalNaturalPublic(Object.assign({}, view, { unexpectedFutureRoot: undefined }), state, publicKeys)).toThrow();
+    for (const root of LATER_EMPTY_ROOTS) {
+      expect(() => historicalNaturalState({ ...state, [root]: { ...state[root], guidanceKnown: true } }, stateKeys)).toThrow();
+      expect(() => historicalNaturalPublic({ ...view, [root]: { ...view[root], guidanceKnown: true } }, state, publicKeys)).toThrow();
+    }
+    expect(wheelOfFortuneNaturalHash(historicalNaturalState({ ...state, cash: state.cash + 1 }, stateKeys)))
+      .not.toBe(original.anchor.privateStateSha256);
+    expect(wheelOfFortuneNaturalHash(historicalNaturalPublic({ ...view, cash: view.cash + 1 }, state, publicKeys)))
+      .not.toBe(original.anchor.publicStateSha256);
+    expect(wheelOfFortuneNaturalHash(original)).toBe(rawHash);
+  }
+}, 180_000);
 
 function unwrap<T>(result: SliceResult<T>): T {
   if (!result.ok) throw Error(result.error.code + ': ' + result.error.message);
@@ -122,9 +184,10 @@ it('replays only the actual new WheelOfFortune commands with exact private/publi
   let state = migrateSliceState(structuredClone(source)), view = projectSliceState(state);
   for (const [key, value] of Object.entries(source)) if (!['schemaVersion', 'contentVersion'].includes(key))
     expect(state[key as keyof SliceState], `original migration root ${key}`).toEqual(value);
-  expect(state).toEqual(initial.final); expect(view).toEqual(initial.public);
+  expect(historicalNaturalState(state, Object.keys(initial.final))).toEqual(initial.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(initial.public))).toEqual(initial.public);
   expect(state.wheelOfFortune.guidanceKnown).toBe(false); expect(state.wheelOfFortune.source).toBeNull(); expect(state.wheelOfFortune.journal).toEqual([]);
-  let anchor = wheelOfFortuneNaturalAnchor(state, view), before = state;
+  let anchor = capturedNaturalAnchor(state, view, initial), before = state;
   expect(anchor).toEqual(initial.anchor);
   const actions = rows.slice(841) as WheelOfFortuneNaturalActionRow[];
   let session: WheelOfFortuneRuntimeSession | undefined;
@@ -148,12 +211,13 @@ it('replays only the actual new WheelOfFortune commands with exact private/publi
     expect(row.receipt).toEqual(wheelOfFortuneNaturalReceipt(state, before));
     expect(row.actual).toEqual(wheelOfFortuneNaturalOutcome(state));
     expect(state.random.seed).toBe(source.random.seed); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor);
-    anchor = wheelOfFortuneNaturalAnchor(state, view);
+    anchor = capturedNaturalAnchor(state, view, initial);
     expect(anchor, `after command ${row.commandCount}`).toEqual(row.after);
   }
   const terminal = readWheelOfFortuneNaturalSnapshot('terminal');
   assertValidSliceState(state);
-  expect(state).toEqual(terminal.final); expect(view).toEqual(terminal.public);
+  expect(historicalNaturalState(state, Object.keys(terminal.final))).toEqual(terminal.final);
+  expect(historicalNaturalPublic(view, state, Object.keys(terminal.public))).toEqual(terminal.public);
   expect(state.revision).toBe(summary.revision); expect(wheelOfFortuneNaturalOutcome(state)).toEqual(summary.actual);
   expect(state).toMatchObject({ revision: 930, status: 'ACTIVE', week: 216, health: 95, mind: 68,
     spirituality: 32, cash: 70, actionsRemaining: 0, injuries: [],
