@@ -5415,6 +5415,7 @@ export function SliceApp() {
         {recoveryNotice}
         <p className="slice-muted">健康{state.health} / 精神{state.mind} / 灵性{state.spirituality} · 本周行动{state.actionsRemaining}</p>
         {error && <ErrorNotice error={error} onRetry={retryLast} busy={busy}/>}
+        {abyssPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("ABYSS")}>查看深渊晋升准备</button>}
         {isEnding ? <Ending state={state} onInspect={() => setInspect(true)} onTitle={title} onContinue={() => command({type:"CONTINUE_LIFE"})} busy={busy} error={error} onRetry={retryLast}/> :
         <UncleanMonarchPanel value={state.uncleanMonarch} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
           onCommand={c => command({type:"UNCLEAN_MONARCH",command:c})}
@@ -5430,7 +5431,6 @@ export function SliceApp() {
         {recoveryNotice}
         <p className="slice-muted">健康{state.health} / 精神{state.mind} / 灵性{state.spirituality} · 本周行动{state.actionsRemaining}</p>
         {error && <ErrorNotice error={error} onRetry={retryLast} busy={busy}/>}
-        {abyssPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("ABYSS")}>查看深渊晋升准备</button>}
         {hangedManPageAvailable(state) && !combat && !event && !isEnding && <button className="slice-button" disabled={busy || error !== null || pending.current !== null} onClick={() => setDrawer("HANGED_MAN")}>查看倒吊人晋升准备</button>}
         {isEnding ? <Ending state={state} onInspect={() => setInspect(true)} onTitle={title} onContinue={() => command({type:"CONTINUE_LIFE"})} busy={busy} error={error} onRetry={retryLast}/> :
         <DarkAngelPanel value={state.darkAngel} busy={busy} blocked={error !== null || pending.current !== null || state.status !== "ACTIVE" || !!combat || !!event} error={error?.message ?? null}
