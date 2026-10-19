@@ -1,6 +1,6 @@
 # 0.221.0 魔女：原石拱通行
 
-状态：已接线并在冻结前验证，自然路线尚未开始。基线220最终7b08eed2c19b3b225715cc3ed006a32deb152e0b。采用关键路线、保存及界面测试，紧凑自然命令/hash和关键快照，避免重复全历史和逐步大快照。
+状态：已接线，自然路线实际运行至883活态并安全暂停；推荐器修复后等待同态续行。基线220最终7b08eed2c19b3b225715cc3ed006a32deb152e0b。采用关键路线、保存及界面测试，紧凑自然命令/hash和关键快照，避免重复全历史和逐步大快照。
 
 ## 真实来源与材料
 
@@ -60,3 +60,24 @@ ordinary-shoring action after optional return abilities. Settlement is unchanged
 The five focused regression tests are running; a single exact195-command private
 state/RNG replay and narrowly bounded recommendation-field audit are pending.
 The old883 capture and runtime have independently restored and been backed up.
+
+883 recommendation check: all5 focused tests plus all4 death-schema regressions pass (75.03s). Main typecheck and compilation pass. The first test run was4passed/1failed because its expectation omitted actual energy recovery; the corrected test now checks real outdoor rest and week costs. The195-action equivalence audit is running; no new natural action has been submitted.
+
+The current-runtime audit completed all195 commands and196 boundaries with exact
+private state/RNG and original receipts. Thirty public states differ only in the
+chapter nextStep, selected action's optional preferredAction and the identical
+global nextStep. The first audit rejected791 because its reconstruction added
+false fields instead of preserving their omission and missed the global mirror;
+that refusal and exact diff are retained. No product change followed that refusal.
+Current freeze:18fc9cd5ec0e514b7a6caa5a0c936f69c1cfa6c5cebe47874b58fcafd9c61259.
+Independent runtime-delta restoration and a strict zero-action reopen at883 passed.
+The next actual recommended action is NEXT_WEEK. Original V2 costs remain.
+
+Current test-only CI compatibility edits explicitly add the named current empty
+roots to Death/RedPriest captures and use CURRENT format in Error's migrated helper.
+Moon's second complete saved-capture case has a measured186.265s runtime, so only
+that instance receives300s; the other two retain180s. Their old full DB files are
+NOT_RUN locally; the actual Death-schema file passed4/4. New final-capture helpers
+and terminal SQLite/UI checks are checkpointed with a pending terminal SHA, and
+are NOT_RUN until the real route finishes. The frozen883 recommendation input is
+retained by its original byte SHA and will ship with the compact fixture pack.

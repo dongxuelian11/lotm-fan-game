@@ -1,4 +1,6 @@
 import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
+import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -17,18 +19,33 @@ describe('Death schema214 exact additive admission',()=>{
   it('migrates original192 with all old fields exact and a precise empty current root',()=>{
     const before=deathScenarioHash(source),current=migrateSliceState(source);
     expect([source.schemaVersion,source.contentVersion]).toEqual([192,'pale-emperor-v192']);
-    const additions=['abomination','apocalypseDemoness','darkAngel','darkness','death','divineHand','door','errorAscent',
+    const additions=['abomination','apocalypseDemoness','darkAngel','darkness','death','demoness','divineHand','door','errorAscent',
       'fool','handOfOrder','knowledgeEmperor','mercurySnake','moon','natureWalker','perfecter','princeOfAbolition',
-      'redPriest','starKey','sun','timeWorm','tyrant','uncleanMonarch','visionary','whiteTower'] as const;
+      'redPriest','starKey','sun','timeWorm','twilightGiant','tyrant','uncleanMonarch','visionary','whiteTower'] as const;
     for(const root of additions)expect(Object.hasOwn(source,root)).toBe(false);
     expect(Object.keys(current).sort()).toEqual([...Object.keys(source),...additions].sort());
     expect(deathScenarioHash(source)).toBe(before);expect([current.schemaVersion,current.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);expect(current.death).toEqual(createDeathState());expect(current.door).toStrictEqual(createDoorState());assertEmptyErrorAscentState(current);
+    assertEmptyTwilightGiantState(current);assertEmptyDemonessState(current);
     for(const[key,value]of Object.entries(source))if(!['schemaVersion','contentVersion'].includes(key))expect(deathScenarioHash(current[key as keyof SliceState]),key).toBe(deathScenarioHash(value));assertValidSliceState(current);
   },120_000);
   it('rejects a legacy injected root,missing current root and unimplemented future format',()=>{
     expect(()=>migrateSliceState({...source,death:createDeathState()})).toThrow();
     expect(()=>migrateSliceState({...source,door:createDoorState()})).toThrow();
     const current=migrateSliceState(source),{death:_root,...missing}=current;
+    assertEmptyTwilightGiantState(current);assertEmptyDemonessState(current);
+    for(const root of ['twilightGiant','demoness'] as const){
+      for(const value of [current[root],null,{...current[root],guidanceKnown:true}]){
+        const legacy={...source,[root]:value},before=structuredClone(legacy);
+        expect(()=>migrateSliceState(legacy)).toThrow();expect(legacy).toStrictEqual(before);
+      }
+      const {[root]:_missingRoot,...missingRoot}=current;
+      for(const value of [missingRoot,{...current,[root]:null},
+        {...current,[root]:{...current[root],guidanceKnown:true}},
+        {...current,[root]:{...current[root],unexpectedField:undefined}}]){
+        const before=structuredClone(value);expect(()=>migrateSliceState(value)).toThrow();
+        expect(value).toStrictEqual(before);
+      }
+    }
     expect(()=>migrateSliceState(missing)).toThrow();expect(()=>migrateSliceState({...current,schemaVersion:CURRENT_SCHEMA_VERSION+1})).toThrow();
     const forged=structuredClone(current);forged.death.guidanceKnown=true;expect(()=>assertValidSliceState(forged)).toThrow();
   },120_000);

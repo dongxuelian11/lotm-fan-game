@@ -1,4 +1,6 @@
 import { assertEmptyErrorAscentState, emptyErrorAscentPublic } from '../helpers/empty-error-ascent-capture.js';
+import { assertEmptyTwilightGiantState, emptyTwilightGiantPublic } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState, emptyDemonessPublic, historicalInactiveCalamitySourcePublic } from '../helpers/empty-demoness-capture.js';
 import { describe, expect, it } from 'vitest';
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -47,7 +49,7 @@ function assertPlayerProjection(local: RedPriestProjection, global: RedPriestPro
     .toEqual(local.actions.map(({ id, command, cost, enabled }) => ({ id, command, cost, enabled })));
   expect(global.resources).toEqual(local.resources);
 }
-const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent'] as const;
+const LATER_CHAPTER_ROOTS = ['visionary', 'perfecter', 'moon', 'darkness', 'whiteTower', 'tyrant', 'sun', 'death', 'door', 'errorAscent', 'twilightGiant', 'demoness'] as const;
 /** Independently specified complete empty roots, not a filter for arbitrary
  * current defaults. The 0.209 capture itself uses schema206/red-priest-v206. */
 const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]> = {
@@ -72,8 +74,12 @@ const EMPTY_LATER_CHAPTERS: Pick<SliceState, typeof LATER_CHAPTER_ROOTS[number]>
     services: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
   errorAscent: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
     ritual: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  twilightGiant: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    works: null, materials: null, epilogue: null, journal: [], promotionStability: { preparations: [] } },
+  demoness: { version: 1, guidanceKnown: false, source: null, frame: null, promotionWeek: null,
+    passage: null, materials: null, preparations: [], journal: [] },
 };
-/** Preserve every historical public field. Only these ten explicitly named
+/** Preserve every historical public field. Only these twelve explicitly named
  * later chapter roots may be omitted, after checking their complete empty
  * private states and complete inactive player-facing projections. Unknown
  * public fields remain in the historical hash and therefore cannot be hidden. */
@@ -83,6 +89,7 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
   expect(createTyrantState()).toStrictEqual(EMPTY_LATER_CHAPTERS.tyrant);
   expect(createSunState()).toStrictEqual(EMPTY_LATER_CHAPTERS.sun);
   assertEmptyDeathState(state); assertEmptyDoorState(state); assertEmptyErrorAscentState(state);
+  assertEmptyTwilightGiantState(state); assertEmptyDemonessState(state);
   expect(Object.keys(state).sort()).toEqual([...Object.keys(capturedRoot), ...LATER_CHAPTER_ROOTS].sort());
   for (const key of LATER_CHAPTER_ROOTS) {
     expect(Object.hasOwn(capturedRoot, key)).toBe(false);
@@ -120,6 +127,7 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
         preferredAction: true }],
     },
     death: emptyDeathPublic(state), door: emptyDoorPublic(state), errorAscent: emptyErrorAscentPublic(state),
+    twilightGiant: emptyTwilightGiantPublic(state), demoness: emptyDemonessPublic(state),
   }, state.character.name);
   for (const key of LATER_CHAPTER_ROOTS) {
     expect(Object.hasOwn(current, key)).toBe(true);
@@ -127,15 +135,20 @@ function historicalPublicHash(current: SliceProjection, state: SliceState, captu
     expect(root).toStrictEqual(expected[key]);
     expect(Object.keys(root).sort()).toEqual(['title', 'guidanceKnown', 'promoted', 'story', 'nextStep', 'risk',
       'resources', 'abilities', 'actions', 'sections', 'insideCase',
-      ...(['death', 'door', 'errorAscent'].includes(key) ? ['injuries', 'injuryRisk'] : [])].sort());
+      ...(['death', 'door', 'errorAscent', 'twilightGiant', 'demoness'].includes(key) ? ['injuries', 'injuryRisk'] : []),
+      ...(key === 'demoness' ? ['available'] : [])].sort());
     expect([root.guidanceKnown, root.promoted, root.insideCase]).toEqual([false, false, false]);
     expect(root.abilities).toEqual([]); expect(root.sections).toEqual([]);
     expect(root.actions).toHaveLength(1);
     expect(root.actions[0]!.command).toEqual({ type: 'LEARN_GUIDANCE' });
     expect(root.actions[0]!.enabled).toBe(false);
   }
+  // The historical capture contains this exact inactive null. The helper
+  // rejects any supplied current source or active history before restoring it.
+  const historicalView = historicalInactiveCalamitySourcePublic(current, state);
   const { visionary: _visionary, perfecter: _perfecter, moon: _moon, darkness: _darkness, whiteTower: _whiteTower,
-    tyrant: _tyrant, sun: _sun, death: _death, door: _door, errorAscent: _errorAscent, ...historical } = current;
+    tyrant: _tyrant, sun: _sun, death: _death, door: _door, errorAscent: _errorAscent,
+    twilightGiant: _twilightGiant, demoness: _demoness, ...historical } = historicalView;
   return hash(historical);
 }
 function persisted(path: string): string {

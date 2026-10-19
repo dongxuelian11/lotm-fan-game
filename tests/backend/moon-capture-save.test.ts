@@ -52,7 +52,7 @@ function publicState(state: SliceState): SliceProjection {
 const head = (state: SliceState) => state.moon.guidanceKnown ? { runId: state.runId, revision: state.revision, status: state.status } : null;
 
 describe('Moon212 compressed captured transitions through real SQLite', () => {
-  it.each([0, 1, 2] as const)('rolls back, retries, reopens and deduplicates reviewed actual representative %i', sample => {
+  for (const sample of [0, 1, 2] as const) it(`rolls back, retries, reopens and deduplicates reviewed actual representative ${sample}`, () => {
     const { checkpoint: cp, rows, pins } = data!;
     const count = pins.sqliteCommandCounts[sample], selected = cp.boundaries.find(item => item.commandCount === count)!;
     const row = rows[count - PREFIX - 1]!;
@@ -137,5 +137,5 @@ describe('Moon212 compressed captured transitions through real SQLite', () => {
     } finally {
       injection = null; spy.mockRestore(); store?.close(); rmSync(directory, { recursive: true, force: true });
     }
-  }, 180_000);
+  }, sample === 2 ? 300_000 : 180_000);
 });

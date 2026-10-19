@@ -11,6 +11,7 @@ import { ERROR_ASCENT_FROZEN_SOURCE_KEYS } from '../../src/domain/error-ascent/s
 import type { ErrorAscentCommand } from '../../src/domain/error-ascent/types.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 import { readObjectEntry } from './read-object-entry.js';
+import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from './current-save-format.js';
 
 export const ERROR_ASCENT_SOURCE_FILE = 'tests/fixtures/time-worm-v01970/natural.json';
 export const ERROR_ASCENT_SOURCE_SHA = 'e9920991623fdd3f1b8ecf4e5c8049720f362145462703d6b804afa9dfd390cf';
@@ -34,7 +35,7 @@ export function authenticErrorAscentSource(): SliceState {
   for (const [key, value] of Object.entries(raw)) if (!['schemaVersion', 'contentVersion'].includes(key))
     expect(errorAscentScenarioHash(state[key as keyof SliceState]), `Changed inherited ${key}`).toBe(errorAscentScenarioHash(value));
   expect(errorAscentScenarioHash(raw)).toBe(ERROR_ASCENT_FINAL_SHA);
-  expect(state).toMatchObject({ schemaVersion: 216, contentVersion: 'error-ascent-v216', revision: 657, week: 147,
+  expect(state).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION, revision: 657, week: 147,
     status: 'ACTIVE', health: 70, mind: 96, spirituality: 112, cash: 867, actionsRemaining: 3,
     progression: { pathwayId: 'error', sequence: 1, acting: 100 },
     character: { coreStats: { physique: 29, perception: 28, will: 26, knowledge: 26 } },
