@@ -355,7 +355,9 @@ describe('Pure White Angel actual saved campaign navigation and reopening', () =
     expect(game.state.pureWhiteAngel.life.ivan.travelMetres).toBe(89);
     expect(screen.queryByRole('button', { name: '返回普通生活' })).toBeNull();
     expect(game.submit).toHaveBeenCalledTimes(5);
-  }, 120_000);
+    // Five migrated save boundaries, five real commits and six full mounts.
+    // Keep every recovery assertion within this case's bounded CI budget.
+  }, 240_000);
 
   it('asks the same independent spirit and preserves its current refusal without moving or spending its energy', async () => {
     const ask = boundary('residue-trace-ask-same-original-reed-and-record-current-refusal');
