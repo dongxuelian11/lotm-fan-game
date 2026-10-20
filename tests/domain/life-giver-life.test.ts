@@ -142,7 +142,8 @@ describe('Life Giver finite life support, current consent and authoritative orig
     expect(s.lifeGiver.life.beads).toEqual([]); expect(s.lifeGiver.life.cases[TIRED].result).toBe('ORDINARY');
     expect(attempt(s)).toMatchObject({ playerTravelMetres: 124, guestTravelMetres: 60, guestTrips: 0, ordinaryCompleted: true, guestReturned: true, closed: true });
     expect(s.spirituality).toBe(before.spirituality); expect(guest(s).stamina).toBe(guest(before).stamina); expect(LIFE_GIVER_ABILITY_IDS.map(id => s.progression.mastery[id])).toEqual([0, 0]);
-  });
+    // Windows run39354205666 measured 6.538s for this complete ordinary return route.
+  }, 10_000);
 
   it('charges paid original HOME rest once in a later week without healing health or creating a body', () => {
     const b = lifeGiverBoundary('original-guest-paid-rest'), before = b.beforeLast, after = b.final;
