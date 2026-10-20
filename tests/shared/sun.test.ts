@@ -11,6 +11,18 @@ import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import { assertValidSliceState, openValidatedSunSlice, validateSlicePayload } from '../../src/domain/slice/validation.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { assertEmptyDeathState, assertEmptyDoorState } from '../helpers/empty-death-capture.js';
+import { assertEmptyErrorAscentState } from '../helpers/empty-error-ascent-capture.js';
+import { assertEmptyTwilightGiantState } from '../helpers/empty-twilight-giant-capture.js';
+import { assertEmptyDemonessState } from '../helpers/empty-demoness-capture.js';
+import { assertEmptyHermitState } from '../helpers/empty-hermit-capture.js';
+import { assertEmptyHangedManState } from '../helpers/empty-hanged-man-capture.js';
+import { assertEmptyAbyssState } from '../helpers/empty-abyss-capture.js';
+import { assertEmptyChainedState } from '../helpers/empty-chained-capture.js';
+import { assertEmptyWheelOfFortuneState } from '../helpers/empty-wheel-of-fortune-capture.js';
+import { assertEmptyBlackEmperorState } from '../helpers/empty-black-emperor-capture.js';
+import { assertEmptyJusticiarState } from '../helpers/empty-justiciar-capture.js';
+import { assertEmptyMotherState } from '../helpers/empty-mother-capture.js';
 const CAPTURE='tests/fixtures/tyrant-v02150/action-702.json.gz';
 const SHA='a0b1d05e83bf69c5763a4294acd7d7f949f578dbd68bba78c7bb18df1924d430';
 const hash=(v:Buffer)=>createHash('sha256').update(v).digest('hex');
@@ -33,12 +45,26 @@ describe('Sun exact current schema and command boundary',()=>{
   expect([s.schemaVersion,s.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
   same(s.sun,createSunState());same(s.death,createDeathState());same(copy,s);expect(copy.sun).not.toBe(s.sun);expect(copy.death).not.toBe(s.death);assertValidSliceState(copy);expect(stableStringify(s)).toBe(before);
  });
- it.each(['beforeLast','final'] as const)('migrates actual captured212 %s with only the named empty Sun and Death roots',key=>{
+ it.each(['beforeLast','final'] as const)('migrates actual captured212 %s with only the named empty schema213–226 roots',key=>{
   const bytes=readFileSync(CAPTURE),s=JSON.parse(gunzipSync(bytes).toString('utf8'))[key] as Record<string,unknown>;
   expect(hash(bytes)).toBe(SHA);expect([s.schemaVersion,s.contentVersion]).toEqual([212,'tyrant-v212']);
+  const addedRoots=['sun','death','door','errorAscent','twilightGiant','demoness','hermit','hangedMan',
+   'abyss','chained','wheelOfFortune','blackEmperor','justiciar','mother'] as const;
+  for(const root of addedRoots)expect(Object.hasOwn(s,root)).toBe(false);
   const before=stableStringify(s),copy=migrateSliceState(s);
-  expect(Object.keys(copy).filter(k=>!Object.hasOwn(s,k)).sort()).toEqual(['death', 'sun']);same(copy.sun,createSunState());same(copy.death,createDeathState());
+  expect([copy.schemaVersion,copy.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION,CURRENT_CONTENT_VERSION]);
+  expect(Object.keys(copy).filter(k=>!Object.hasOwn(s,k)).sort()).toEqual([...addedRoots].sort());
+  expect(Object.keys(copy).sort()).toEqual([...Object.keys(s),...addedRoots].sort());
+  same(copy.sun,createSunState());same(copy.death,createDeathState());
+  assertEmptyDeathState(copy);assertEmptyDoorState(copy);assertEmptyErrorAscentState(copy);assertEmptyTwilightGiantState(copy);
+  assertEmptyDemonessState(copy);assertEmptyHermitState(copy);assertEmptyHangedManState(copy);assertEmptyAbyssState(copy);
+  assertEmptyChainedState(copy);assertEmptyWheelOfFortuneState(copy);assertEmptyBlackEmperorState(copy);
+  assertEmptyJusticiarState(copy);assertEmptyMotherState(copy);
   for(const [k,v]of Object.entries(s))if(!['schemaVersion','contentVersion'].includes(k))same(copy[k as keyof SliceState],v);
+  const originalFields={...copy} as Record<string,unknown>;
+  for(const root of addedRoots)delete originalFields[root];
+  originalFields.schemaVersion=s.schemaVersion;originalFields.contentVersion=s.contentVersion;
+  expect(hash(Buffer.from(stableStringify(originalFields)))).toBe(hash(Buffer.from(before)));
   same(migrateSliceState(copy),copy);expect(stableStringify(s)).toBe(before);expect(readFileSync(CAPTURE).equals(bytes)).toBe(true);
  },60_000);
  it('rejects future root in real212 and undeclared current fields without mutation',()=>{
