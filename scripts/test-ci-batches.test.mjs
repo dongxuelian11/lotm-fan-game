@@ -114,6 +114,26 @@ test('missing, duplicate, or unexpected file assignments fail coverage', () => {
   assert.throws(() => createPlan(discovered.filter(file => file !== ISOLATED_TESTS[0])), /exactly equal/);
 });
 
+test('measured long-file balancing changes only three assignments and preserves complete discovery', () => {
+  const moves = new Map([
+    ['tests/domain/fool-natural-capture.test.ts', 6],
+    ['tests/domain/pale-emperor-save.test.ts', 14],
+    ['tests/domain/mercury-snake-natural-save.test.ts', 11],
+  ]);
+  const original = discoverTestFiles(repo);
+  for (const discovered of [original, [...original, 'tests/backend/new-regression.test.ts']]) {
+    const plan = createPlan(discovered);
+    assertCoverage(discovered, plan.shards);
+    assert.deepEqual(createPlan([...discovered].reverse()), plan);
+    const ordered = [...discovered].sort().filter(file => !ISOLATED_TESTS.includes(file));
+    for (const [index, file] of ordered.entries()) {
+      const expected = moves.has(file) ? moves.get(file) - 1 : index % SHARD_COUNT;
+      assert.equal(plan.shards.findIndex(shard => shard.includes(file)), expected, file);
+      assert.equal(plan.shards.flat().filter(member => member === file).length, 1, file);
+    }
+  }
+});
+
 test('empty discovery, empty shards, and invalid shard numbers are rejected before execution', t => {
   for (const files of [[], [...ISOLATED_TESTS], [...ISOLATED_TESTS, ...sampleFiles.slice(0, 3)],
     [...ISOLATED_TESTS, ...sampleFiles.slice(0, 15)]]) {

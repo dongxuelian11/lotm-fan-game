@@ -70,6 +70,20 @@ export function createPlan(discovered) {
   const shards = Array.from({ length: SHARD_COUNT }, () => []);
   [...discovered].sort().filter(file => !ISOLATED_TESTS.includes(file))
     .forEach((file, index) => shards[index % SHARD_COUNT].push(file));
+  // Run 39296253709 measured 43.68m / 6.92m / 10.39m for these files.
+  // Move only these members after partitioning; do not shift every later file.
+  for (const [file, target] of [
+    ['tests/domain/fool-natural-capture.test.ts', 6],
+    ['tests/domain/pale-emperor-save.test.ts', 14],
+    ['tests/domain/mercury-snake-natural-save.test.ts', 11],
+  ]) {
+    const source = shards.findIndex(shard => shard.includes(file));
+    if (source >= 0 && source !== target - 1) {
+      shards[source].splice(shards[source].indexOf(file), 1);
+      shards[target - 1].push(file);
+      shards[target - 1].sort();
+    }
+  }
   assertCoverage(discovered, shards);
   return { discovered: [...discovered].sort(), shards, isolated: [...ISOLATED_TESTS] };
 }
