@@ -45,7 +45,7 @@ jobs:
   historical:
     needs: contract
     runs-on: windows-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       max-parallel: 2
