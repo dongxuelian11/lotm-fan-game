@@ -206,9 +206,10 @@ describe.skipIf(evidence.observed === null)('Prince of Abolition literal origina
     expect(naturalEntry('stage')).toBe(e.stage); expect(naturalEntry('error')).toBe(e.error); expect(naturalEntry('failurePhase')).toBe(e.failurePhase); same(naturalEntry('pendingIntent'), e.pendingIntent);
     same(treatments, e.treatments); same(treatments, naturalEntry('treatments')); same(treatments, summaryEntry('treatments'));
     expect(await captureFileHash(SOURCE)).toBe(evidence.sourceSha256); expect(await captureFileHash(PRIOR)).toBe(evidence.priorSha256);
-    // A single realistic budget for the whole inherited campaign and every new command.
+    // Windows run39354205666 reached the old 900s budget at912.162s with no assertion failure.
+    // Give this full inherited campaign replay headroom without changing its checkpoints.
     // No global timeout change, producer invocation, giant output, seed/cursor search or state substitution.
-  }, 900_000);
+  }, 1_200_000);
 
   it('accounts for real acquisition and life receipts without assuming successes, clinic visits or invented resources', () => {
     const e = observedCapture(), s = capturedState('final'), original = originalLivingPrefix(), stage = s.princeOfAbolition, life = stage.life;
