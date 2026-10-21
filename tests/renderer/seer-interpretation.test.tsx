@@ -39,6 +39,9 @@ describe('saved first-commission interpretation', () => {
     const restored = JSON.parse(JSON.stringify(s)) as typeof s;
     const onCommand = vi.fn();
     render(<SeerPanel seer={projectSeer(restored)} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    const nextStep = screen.getByRole('region', { name: '成长下一步' });
+    expect(nextStep.textContent).toContain('回应书签主人的追问');
+    expect(nextStep.textContent).not.toContain('只说明观察所得');
     const story = screen.getByRole('region', { name: '当前委托' });
     expect(story.textContent).toContain('你没有看见它的来历');
     expect(story.textContent).toContain('观察已完成 · 等待解释');

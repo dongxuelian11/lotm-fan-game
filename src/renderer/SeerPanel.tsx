@@ -113,6 +113,10 @@ export function SeerPanel({
     ?? (seer.promoted && seer.practice?.reflection.enabled ? seer.practice.reflection : undefined)
     ?? seer.actions[0];
 
+  const nextStepLabel = nextAction?.command.type === "PRACTICE" && nextAction.command.approachId.startsWith("report-")
+    ? "回应书签主人的追问，决定怎样解释观察所得"
+    : nextAction?.label;
+
   useEffect(() => {
     if (selectedBottleId && (!selectedBottle || seer.promoted)) setSelectedBottleId(null);
   }, [selectedBottleId, selectedBottle, seer.promoted]);
@@ -176,7 +180,7 @@ export function SeerPanel({
         <span className="seer-seal">{seer.promoted ? "序列 9" : "成长卷宗"}</span>
         <h3>{seer.title}</h3>
         {nextAction ? (
-          <p className="seer-next"><strong>下一步：</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</p>
+          <p className="seer-next"><strong>下一步：</strong>{nextStepLabel}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</p>
         ) : (
           <p className="seer-next">{seer.promoted ? "运用已掌握的能力，继续生活与调查。" : "暂时没有可执行的成长行动。"}</p>
         )}
