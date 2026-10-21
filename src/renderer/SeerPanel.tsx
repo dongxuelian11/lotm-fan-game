@@ -202,6 +202,8 @@ export function SeerPanel({
         </div>
       )}
 
+      {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} busy={busy} blocked={blocked} onCommand={onCommand} />}
+
       {seer.discovered && seer.bottles.length > 0 && (
         <section className="seer-bottles" aria-label="已调配的魔药">
           <h3>已调配的魔药</h3>
@@ -240,8 +242,6 @@ export function SeerPanel({
           <p className="slice-muted">以上是配方用量。材料是否备齐，以可执行的调配行动为准。</p>
         </details>
       )}
-
-      {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} busy={busy} blocked={blocked} onCommand={onCommand} />}
 
       {seer.promoted && (
         <section className="seer-abilities" aria-label="占卜家能力与消化">
