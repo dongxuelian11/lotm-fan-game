@@ -190,6 +190,31 @@ describe("Compact dashboard navigation", () => {
   });
 });
 
+describe("Rest action feedback", () => {
+  it("shows actual recovery and week settlement without changing persisted historical prose", async () => {
+    let raw = createSliceRun("rest-feedback", sliceDefaultCreationSelection, "rest-feedback");
+    raw.activeEvent = null; raw.character.name = "艾琳";
+    raw.health = 91; raw.mind = 94; raw.spirituality = 12; raw.seer.pollution = 7;
+    raw.cash = 1000; raw.actionsRemaining = 1;
+    const value = bridge(projectSliceState(raw));
+    let committed: SliceProjection | undefined;
+    vi.mocked(value.submitIntent).mockImplementation(async envelope => {
+      if (envelope.payload.type === "CREATE") throw new Error("This test continues an existing run.");
+      raw = applySliceIntent(raw, envelope.payload);
+      committed = projectSliceState(raw);
+      return receipt(committed, envelope);
+    });
+    await enter(value);
+    await userEvent.click(screen.getByRole("button", { name: /^休养，/ }));
+    expect(screen.getByRole("heading", { name: "完成休养", level: 1 })).toBeTruthy();
+    expect(screen.getByText("休养及本次结算后：健康91→100；精神94→100；灵性12→14.25；魔药排异7→0。")).toBeTruthy();
+    expect(screen.getByRole("region", { name: "本次行动与周结算" }).textContent).toContain("新的一周");
+    expect(raw.week).toBe(2);
+    expect(raw.chronicle.find(record => record.title === "完成休养")?.text).toBe("健康91→100；精神100，灵性14.25。");
+    expect(committed?.chronicle.find(record => record.title === "完成休养")?.text).toBe("健康91→100；精神100，灵性14.25。");
+  });
+});
+
 describe("Town items and trade drawer", () => {
   it("keeps real consecutive purchases and equipment changes in place, with action and week outcomes together", async () => {
     let raw = createSliceRun("continuous-shop", sliceDefaultCreationSelection, "continuous-shop");

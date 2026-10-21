@@ -29,7 +29,7 @@ function observed() {
     roll: min => min,
     note: () => {},
   };
-  applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'sight' }, c);
+  applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'observe-sight' }, c);
   return { s, c };
 }
 

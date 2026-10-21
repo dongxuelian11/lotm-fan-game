@@ -327,7 +327,7 @@ export function applySeerCommand(s: SliceState, command: SeerCommand, c: SeerCon
     case 'DISCOVER':
       s.actionsRemaining -= 1;
       s.seer.discovered = true;
-      c.note('一扇安静的门', `俱乐部散场后，${SEER_GUIDE}把你领进带着旧纸气味的侧室。他需要有人接手那些费工夫、报酬微薄的查验委托，不愿再见学徒拿模糊预感吓唬客人。“先学会把不知道的事说清楚。”他愿意从配方与材料保管教起，费用可用抄录、盘点抵扣。这次会面只建立渠道，没有赋予你非凡能力。`);
+      c.note('一扇安静的门', `你拜访了${SEER_GUIDE}。对方愿意指导配方，并说明现有三批备料的购买与劳动交换方式。这次会面没有赋予你非凡能力。`);
       return;
     case 'LEARN_FORMULA':
       s.actionsRemaining -= 1;
@@ -391,13 +391,13 @@ export function applySeerCommand(s: SliceState, command: SeerCommand, c: SeerCon
         s.character.coreStats.perception = Math.min(500, s.character.coreStats.perception + 3);
         s.character.coreStats.will = Math.min(500, s.character.coreStats.will + 2);
         s.character.coreStats.knowledge = Math.min(500, s.character.coreStats.knowledge + 3);
-        c.note('成为占卜家', `苦涩沿着舌根散开，钟摆声忽然近得像在耳边。你重新握稳玻璃杯，${SEER_GUIDE}才松开扶着椅背的手：“先坐稳，别急着证明自己。”第${batchNumber({ id: bottle.batchId })}批原瓶已耗尽。意志判定${result.roll}/${result.chance}，${result.tier === 'GREAT_SUCCESS' ? '大成功' : '成功'}：精神−${mentalCost}，感知+3、意志+2、知识+3。四项非凡能力从0掌握开始，灵性上限提高到30，当前灵性没有补满。马洛压低声音叮嘱：你只是在扮演，不要把自己完全当成另一个人，也别向不知情的人宣讲这些经验。${s.arc.stage === 'ENDED' ? '首案已收尾，马洛请你恢复后从一条蓝布书签的委托开始。' : '首案尚未收尾；新的能力只会帮助你检查已有线索，不会替你给出结论。'}`);
+        c.note('成为占卜家', `原瓶${bottle.id}已耗尽。意志判定${result.roll}/${result.chance}，${result.tier === 'GREAT_SUCCESS' ? '大成功' : '成功'}：精神−${mentalCost}，感知+3、意志+2、知识+3。四项非凡能力从0掌握开始，灵性上限提高到30，当前灵性没有补满。`);
       } else {
         const severe = result.tier === 'GREAT_FAILURE';
         s.mind -= severe ? 40 : 20;
         s.health -= severe ? 20 : 10;
         s.seer.pollution = Math.min(100, s.seer.pollution + (severe ? 50 : 25));
-        c.note(severe ? '指导者中断了晋升' : '魔药发生排异', `${severe ? '钟摆声碎成刺耳的重音，椅背在你眼前扭曲。' : '胃里一阵翻搅，杯沿在眼前晃出重影。'}${SEER_GUIDE}扶住你：“先把呼吸放慢。这瓶已经用完，今天先休养。”第${batchNumber({ id: bottle.batchId })}批原瓶已耗尽。意志判定${result.roll}/${result.chance}，${severe ? '灾难' : '失败'}：精神−${severe ? 40 : 20}、健康−${severe ? 20 : 10}、排异+${severe ? 50 : 25}。你仍是普通人。指导者处理了现场，未发生死亡；需要休养，重试须另备一瓶。`);
+        c.note(severe ? '指导者中断了晋升' : '魔药发生排异', `原瓶${bottle.id}已耗尽。意志判定${result.roll}/${result.chance}，${severe ? '灾难' : '失败'}：精神−${severe ? 40 : 20}、健康−${severe ? 20 : 10}、排异+${severe ? 50 : 25}。你仍是普通人。指导者处理了现场，未发生死亡；需要休养，重试须另备一瓶。`);
       }
       return;
     }
@@ -480,7 +480,7 @@ export function projectSeer(s: SliceState): SeerProjection {
     bottles: s.seer.discovered ? s.seer.bottles.map(bottle => ({
       id: bottle.id,
       title: `第${batchNumber({ id: bottle.batchId })}批 · 占卜家魔药`,
-      source: `${SEER_GUIDE}调配台 · 第${bottle.brewedWeek}周 · 第${batchNumber({ id: bottle.batchId })}批七项材料，仅供这一原瓶`,
+      source: `${SEER_GUIDE}调配台，第${bottle.brewedWeek}周；仅由${bottle.batchId}的七项材料调配，原瓶${bottle.id}`,
       status: bottle.status === 'PREPARED' ? '已调配，尚未服用' : `已耗尽 · ${bottle.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : bottle.outcome === 'SUCCESS' ? '成功晋升' : bottle.outcome === 'GREAT_FAILURE' ? '严重排异，中断晋升' : '排异，未晋升'}`,
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],

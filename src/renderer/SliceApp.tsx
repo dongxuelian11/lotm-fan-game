@@ -201,6 +201,7 @@ import type {
   SliceStance,
 } from "../domain/slice/types";
 import { SeerPanel } from "./SeerPanel";
+import { seerFeedbackText, seerReadableText } from "./seer-feedback";
 import { TownPanel } from "./TownPanel";
 import { ClownPanel } from "./ClownPanel";
 import { ClownHistory, MagicianPanel, SeerHistory } from "./MagicianPanel";
@@ -2389,7 +2390,7 @@ function Chronicle({ state }: { state: SliceProjection }) {
         <li key={record.id}>
           <small className="slice-muted">第 {record.week} 周</small>
           <h3>{record.title}</h3>
-          <p>{record.text}</p>
+          <p>{seerReadableText(record.text)}</p>
         </li>
       ))}
     </ol>
@@ -4445,7 +4446,13 @@ export function SliceApp() {
       ) {
         if (!current || next.runId !== current.runId || next.revision > current.revision) {
           const previousRecords = new Set(current?.chronicle.map(record => record.id));
-          setActionResults(next.chronicle.filter(record => !previousRecords.has(record.id)));
+          const newRecords = next.chronicle.filter(record => !previousRecords.has(record.id));
+          // Display confirmed resource changes without rewriting deterministic save history.
+          const resting = current?.runId === next.runId && envelope.payload.type === "ACTION" && envelope.payload.action === "REST";
+          setActionResults(newRecords.map(record => resting && record.title === "完成休养" ? {
+            ...record,
+            text: `休养及本次结算后：健康${current.health}→${next.health}；精神${current.mind}→${next.mind}；灵性${current.spirituality}→${next.spirituality}；魔药排异${current.seer.pollution}→${next.seer.pollution}。`,
+          } : record));
         }
         stateRef.current = next;
         setState(next);
@@ -7312,12 +7319,12 @@ export function SliceApp() {
                         : (primaryResult?.title ?? "这一周的生活")}
                     </h1>
                     <p>
-                      {primaryResult?.text ??
-                        "按自己的步调安排工作、学习、调查与休养。"}
+                      {primaryResult ? seerFeedbackText(primaryResult, state.caseArchive.length > 0)
+                        : "按自己的步调安排工作、学习、调查与休养。"}
                     </p>
                   </section>
                   {actionResults.length > 1 && <section className="slice-week-result" aria-label="本次行动与周结算">
-                    {actionResults.slice(1).map(record => <p key={record.id}><strong>{record.title}</strong> {record.text}</p>)}
+                    {actionResults.slice(1).map(record => <p key={record.id}><strong>{record.title}</strong> {seerFeedbackText(record, state.caseArchive.length > 0)}</p>)}
                   </section>}
                   {state.lastCheck && (
                     <details className="slice-week-result">
@@ -7471,7 +7478,7 @@ export function SliceApp() {
                   .map((record) => (
                     <div key={record.id} className="slice-recent-item">
                       <strong>{record.title}</strong>
-                      <p>{record.text}</p>
+                      <p>{seerFeedbackText(record, state.caseArchive.length > 0)}</p>
                       <small>第 {record.week} 周</small>
                     </div>
                   ))}
@@ -7558,7 +7565,7 @@ export function SliceApp() {
               if (routes) { routes.open = true; routes.scrollIntoView({ block: "start" }); }
             }}>{ordinary ? "查看其他途径" : "查看成长卷宗与经历"}</a>}
             {(drawer === "SEER" || drawer === "TOWN") && actionResults.length > 0 && <section className="slice-action-feedback" role="status" aria-label="本次行动结果">
-              {actionResults.map(record => <p key={record.id}><strong>{record.title}</strong> {record.text}</p>)}
+              {actionResults.map(record => <p key={record.id}><strong>{record.title}</strong> {seerFeedbackText(record, state.caseArchive.length > 0)}</p>)}
             </section>}
             {drawer === "SEER" && showingDetective && (state.progression.sequence===6||state.progression.sequence===5||state.progression.sequence===4) && state.detective && <PolymathDetectiveHistory detective={state.detective}/> }
             {drawer === "SEER" && showingDetective && state.progression.sequence!==6 && state.progression.sequence!==5 && state.progression.sequence!==4 && state.detective && (

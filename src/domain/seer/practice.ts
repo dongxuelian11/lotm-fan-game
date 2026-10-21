@@ -3,7 +3,7 @@ import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from './index.js';
 import type { SeerAbilityId } from './types.js';
-import { SEER_GUIDE } from './content.js';
+import { SEER_MENTOR } from './content.js';
 
 export type SeerPracticeCommand =
   | { type: 'PRACTICE'; caseId: string; approachId: string }
@@ -167,6 +167,11 @@ const sourceId = (caseId: string) => `seer-practice:${caseId}`;
 const FIRST_COMMISSION = SEER_PRACTICE_CASE_IDS[0];
 const INTERPRETATIONS = ['report-bounded', 'report-cause'] as const;
 const isInterpretation = (approachId: string) => INTERPRETATIONS.some(id => id === approachId);
+// Old sight/inspect commands remain replayable. Only explicit new observations pause for a reply.
+const isObservation = (caseId: string, approachId: string) => caseId === FIRST_COMMISSION
+  && (approachId === 'observe-sight' || approachId === 'observe-inspect');
+const inspectionId = (caseId: string, approachId: string) => isObservation(caseId, approachId)
+  ? approachId.slice('observe-'.length) : approachId;
 const successful = (tier: PublicCheckResult['tier']) => tier === 'GREAT_SUCCESS' || tier === 'SUCCESS';
 const completedCount = (s: SliceState) => s.seer.practice.cases.filter(entry => entry.status === 'COMPLETED').length;
 
@@ -187,7 +192,7 @@ function commandBlock(s: SliceState, command: SeerPracticeCommand): string | nul
   if (command.type !== 'PRACTICE' && command.type !== 'REFLECT') return '未知的俱乐部行动。';
   if (command.type === 'PRACTICE') {
     const entry = CASES.find(candidate => candidate.id === command.caseId);
-    const approach = entry?.approaches.find(candidate => candidate.id === command.approachId);
+    const approach = entry?.approaches.find(candidate => candidate.id === inspectionId(command.caseId, command.approachId));
     const interpreting = entry?.id === FIRST_COMMISSION && isInterpretation(command.approachId);
     if (!entry || (!approach && !interpreting)) return '这项委托或处理方法不存在。';
     const record = s.seer.practice.cases.find(candidate => candidate.id === entry.id);
@@ -234,13 +239,13 @@ export function applySeerPractice(
       record.status = 'DISPUTED';
       // The observation roll stays true; the unsupported interpretation is what fails.
       record.attemptWeek = s.week;
-      c.note('书签折痕里的冷意 · 答复受到质疑', `你断言先前的演示给书签留下了诅咒。艾达攥住布边，追问你凭什么知道。${SEER_GUIDE}推回记录：“你看见了什么，和你认定是谁造成的，是两件事。”这份因果断言没有依据，艾达暂不接受报告。此前的1行动与灵性不退还，本次答复不再收费，也没有报酬、掌握或扮演奖励；下周可重新检查。书签仍由艾达持有。`);
+      c.note('书签折痕里的冷意 · 答复受到质疑', `你断言先前的演示给书签留下了诅咒。艾达攥住布边，追问你凭什么知道。${SEER_MENTOR}推回记录：“你看见了什么，和你认定是谁造成的，是两件事。”这份因果断言没有依据，艾达暂不接受报告。此前的1行动与灵性不退还，本次答复不再收费，也没有报酬、掌握或扮演奖励；下周可重新检查。书签仍由艾达持有。`);
       return;
     }
-    deliverCommission(s, entry, observedWith, c, award, '答复不另耗行动或灵性，不再判定。');
+    deliverCommission(s, entry, observedWith, c, award, '答复不另耗行动或灵性，不再判定。', true);
     return;
   }
-  const approach = entry.approaches.find(candidate => candidate.id === command.approachId)!;
+  const approach = entry.approaches.find(candidate => candidate.id === inspectionId(command.caseId, command.approachId))!;
   s.actionsRemaining -= 1;
   s.spirituality -= approach.spirituality;
   const result = c.check(approach.stat, approach.difficulty);
@@ -256,7 +261,7 @@ export function applySeerPractice(
     c.note(`${entry.title} · 尚未完成`, `${costs}，${result.tier === 'GREAT_FAILURE' ? '灾难' : '失败'}。${approach.failure}${entry.originalName}原物已交还${entry.owner}，仍归本人所有。本次时间与灵性已经消耗，没有报酬、掌握或扮演奖励；下周可重新尝试。`);
     return;
   }
-  if (entry.id === FIRST_COMMISSION) {
+  if (isObservation(command.caseId, command.approachId)) {
     record.status = 'OBSERVED';
     c.note(`${entry.title} · 等待你的答复`, `${costs}，${result.tier === 'GREAT_SUCCESS' ? '大成功' : '成功'}。${bookmarkObservation(record)}艾达停了片刻，追问：“所以，是那次演示害的？”书签已交还她，报酬尚未收取。你需要决定怎样解释眼前的发现；答复不另耗行动或灵性。`);
     return;
@@ -272,7 +277,7 @@ function bookmarkObservation(record: SeerPracticeCaseRecord): string {
 
 function deliverCommission(
   s: SliceState, entry: PracticeCase, approach: PracticeApproach, c: SeerContext,
-  award: (sourceId: string, amount: 5 | 8) => void, resultText: string,
+  award: (sourceId: string, amount: 5 | 8) => void, resultText: string, interpreted = false,
 ): void {
   const record = s.seer.practice.cases.find(candidate => candidate.id === entry.id)!;
   record.status = 'COMPLETED';
@@ -280,7 +285,7 @@ function deliverCommission(
   s.progression.acting = Math.min(100, beforeActing + 12);
   s.cash += SEER_PRACTICE_REWARD;
   award(sourceId(entry.id), approach.ability ? 8 : 5);
-  c.note(`${entry.title} · 已交付`, `${resultText}${approach.success}${entry.id === FIRST_COMMISSION ? `艾达松开攥紧的布边。${SEER_GUIDE}点了点记录：“先把看见的说清楚。”` : ''}${entry.originalName}原物已交还${entry.owner}，报告交付，原物仍归本人所有。收取一次报酬${SEER_PRACTICE_REWARD}便士，扮演${beforeActing}→${s.progression.acting}/100；本案只记一次成长。`);
+  c.note(`${entry.title} · 已交付`, `${resultText}${approach.success}${interpreted ? `艾达松开攥紧的布边。${SEER_MENTOR}点了点记录：“先把看见的说清楚。”` : ''}${entry.originalName}原物已交还${entry.owner}，报告交付，原物仍归本人所有。收取一次报酬${SEER_PRACTICE_REWARD}便士，扮演${beforeActing}→${s.progression.acting}/100；本案只记一次成长。`);
 }
 
 function choice(s: SliceState, id: string, label: string, cost: string, command: SeerPracticeCommand): SeerPracticeChoice {
@@ -293,7 +298,7 @@ export function projectSeerPractice(s: SliceState): SeerPracticeProjection {
   return {
     title: '俱乐部委托',
     body: available
-      ? `首案已收尾，${SEER_GUIDE}把下一张委托推到你面前：“别再向旧案索求答案，看看眼前这件东西。”八份委托各有两种检查方法，每次1行动，失败也消耗时间与灵性，同案下周才能重试。第一份书签检查后，由你决定怎样解释；可靠交付一次12便士、扮演12与一份掌握成长。原物始终归委托人。`
+      ? `首案已收尾，${SEER_MENTOR}把下一张委托推到你面前：“别再向旧案索求答案，看看眼前这件东西。”八份委托各有两种检查方法，每次1行动，失败也消耗时间与灵性，同案下周才能重试。第一份书签检查后，由你决定怎样解释；可靠交付一次12便士、扮演12与一份掌握成长。原物始终归委托人。`
       : '首案收尾并成为占卜家后，可在贝克兰德接取有限的专业委托。',
     completed, total: CASES.length,
     cases: available ? CASES.map(entry => {
@@ -302,7 +307,7 @@ export function projectSeerPractice(s: SliceState): SeerPracticeProjection {
         id: entry.id, title: entry.title, body: record.status === 'OBSERVED'
           ? `${bookmarkObservation(record)}艾达把书签折回原样，问：“所以，是那次演示害的？”你该怎样回答？检查费用已经付出，答复不另耗行动或灵性。`
           : record.status === 'DISPUTED'
-            ? `${entry.body}上次你把冷意断言成诅咒的证据，艾达没有接受。${SEER_GUIDE}让你下次把观察与推测分开。`
+            ? `${entry.body}上次你把冷意断言成诅咒的证据，艾达没有接受。${SEER_MENTOR}让你下次把观察与推测分开。`
             : entry.body,
         status: record.status === 'OBSERVED' ? '观察已完成 · 等待解释'
           : record.status === 'DISPUTED' ? `答复受到质疑 · ${record.attemptWeek! >= s.week ? '下周可重试' : '现在可重试'}`
@@ -313,7 +318,7 @@ export function projectSeerPractice(s: SliceState): SeerPracticeProjection {
           choice(s, 'bookmark-report-cause', '断言先前的演示给书签留下了诅咒', '0行动 · 0灵性 · 现有观察无法证明这一因果', { type: 'PRACTICE', caseId: entry.id, approachId: 'report-cause' }),
         ] : entry.approaches.map(approach => choice(s, `${entry.id}:${approach.id}`, approach.label,
           `1行动 · ${approach.spirituality}灵性 · ${approach.stat === 'knowledge' ? '知识' : approach.stat === 'will' ? '意志' : '感知'}难度${approach.difficulty} · 成功率${computeCheckChance({ baseAbility: s.character.coreStats[approach.stat], difficulty: approach.difficulty, modifiers: [] })}% · 成功交付掌握+${approach.ability ? 8 : 5}`,
-          { type: 'PRACTICE', caseId: entry.id, approachId: approach.id })),
+          { type: 'PRACTICE', caseId: entry.id, approachId: entry.id === FIRST_COMMISSION ? `observe-${approach.id}` : approach.id })),
       };
     }) : [],
     reflection: choice(s, 'seer-practice-reflection', '整理八份委托的共同原则', '1行动 · 扮演+4 · 仅一次', { type: 'REFLECT' }),

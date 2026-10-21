@@ -37,7 +37,7 @@ describe('continuing an actual surviving first case',()=>{
 describe('first commission save and public reply routing', () => {
  for (const approachId of ['report-bounded', 'report-cause']) it(`restores OBSERVED and persists ${approachId} through the real slice router`, () => {
   const s = applySliceIntent(migrateSliceState(capture.final), { type: 'CONTINUE_LIFE' });
-  applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'sight' }, {
+  applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'observe-sight' }, {
    check: (ability, difficulty) => resolveNormalCheck({ ability, baseAbility: s.character.coreStats[ability], difficulty, modifiers: [], roll: 20 }),
    roll: min => min, note: () => {},
   });

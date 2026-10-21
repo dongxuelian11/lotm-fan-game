@@ -108,7 +108,7 @@ describe('eight finite, original-object club commissions', () => {
       const original = { ...s.seer.practice.cases.find(entry => entry.id === id)! };
       const before = { cash: s.cash, ap: s.actionsRemaining, spirit: s.spirituality, arc: JSON.stringify(s.arc), world: JSON.stringify(s.world), ending: JSON.stringify(s.ending) };
       const ctx = attemptAndDeliver(s, offer.command);
-      expect(offer.command).toEqual({ type: 'PRACTICE', caseId: id, approachId: method === 0 ? specialId : ordinaryId });
+      expect(offer.command).toEqual({ type: 'PRACTICE', caseId: id, approachId: `${id === 'folded-bookmark' ? 'observe-' : ''}${method === 0 ? specialId : ordinaryId}` });
       expect(ctx.checks).toEqual([[method === 0 ? specialStat : ordinaryStat, method === 0 ? specialDifficulty : ordinaryDifficulty]]);
       expect(offer.cost).toContain(`成功率${s.lastCheck!.chance}%`);
       expect([s.actionsRemaining, s.spirituality, s.cash, s.progression.acting]).toEqual([before.ap - 1, before.spirit - (method === 0 ? spirit : 0), before.cash + SEER_PRACTICE_REWARD, 12]);
@@ -431,5 +431,31 @@ describe('the first commission leaves interpretation to the player', () => {
     expect(validateSeerPractice(historical)).toBe(true);
     expect(projectSeerPractice(historical).cases[0]!.choices).toEqual([]);
     expect(JSON.stringify(historical)).toBe(bytes);
+  });
+});
+
+describe('historical first-commission commands', () => {
+  for (const approachId of ['sight', 'inspect']) it(`keeps ${approachId} immediate completion, costs and mastery draw`, () => {
+    const s = ready(), beforeCash = s.cash, ctx = context(s);
+    applySeerPractice(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId }, ctx.c, ctx.award);
+    expect(s.seer.practice.cases[0]).toMatchObject({ status: 'COMPLETED', approachId, outcome: 'SUCCESS' });
+    expect([s.actionsRemaining, s.spirituality, s.cash, s.progression.acting]).toEqual([29, approachId === 'sight' ? 28 : 30, beforeCash + 12, 12]);
+    expect(ctx.checks).toHaveLength(1);
+    expect(ctx.draws).toEqual([[1, 20]]);
+    expect(ctx.awards).toEqual([['seer-practice:folded-bookmark', approachId === 'sight' ? 8 : 5]]);
+    expect(ctx.notes.at(-1)!.title).toBe('书签折痕里的冷意 · 已交付');
+    expect(ctx.notes.at(-1)!.text).not.toContain('马洛');
+    expect(validateSeerPractice(s)).toBe(true);
+    rejection(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId }, /已经交付/);
+  });
+
+  it('only exposes new observation commands for the first commission', () => {
+    const s = ready(), first = projectSeerPractice(s).cases[0]!;
+    expect(first.choices.map(choice => choice.command)).toEqual([
+      { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'observe-sight' },
+      { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'observe-inspect' },
+    ]);
+    rejection(s, { type: 'PRACTICE', caseId: 'mourning-ribbon', approachId: 'observe-sight' });
+    rejection(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'observe-divine' });
   });
 });

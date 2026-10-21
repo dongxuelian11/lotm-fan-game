@@ -47,16 +47,17 @@ function beforeEncounter(): SliceState {
 afterEach(() => vi.restoreAllMocks());
 
 describe('shared read-only recovery projection and existing public medical route', () => {
-  it('reports actual recovery deltas including potion rejection at a week boundary', () => {
+  it('keeps historical rest prose while recovering actual resources and potion rejection at a week boundary', () => {
     const state = wounded();
     state.health = 91; state.mind = 94; state.spirituality = 12; state.seer.pollution = 7;
     state.actionsRemaining = 1;
     const next = rest(state);
     const result = next.chronicle.find(record => record.title === '完成休养');
-    expect(result?.text).toContain(`健康91→${next.health}`);
-    expect(result?.text).toContain(`精神94→${next.mind}`);
-    expect(result?.text).toContain(`灵性12→${next.spirituality}`);
-    expect(result?.text).toContain('魔药排异7→0');
+    expect(next.health).toBe(100);
+    expect(next.mind).toBe(100);
+    expect(next.spirituality).toBe(14.25);
+    expect(next.seer.pollution).toBe(0);
+    expect(result?.text).toBe('健康91→100；精神100，灵性14.25。');
     expect(next.week).toBe(state.week + 1);
     expect(next.chronicle.some(record => record.title === '新的一周')).toBe(true);
     assertValidSliceState(next);
