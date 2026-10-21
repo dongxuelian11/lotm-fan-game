@@ -3,7 +3,8 @@ import type { SeerAbilityId } from './types.js';
 /** Ingredient names and amounts: 《诡秘之主》第一部，第31章《魔药》.
  * The club, teaching, three-batch supply rounds and prices below are original game content. */
 export const SEER_FORMULA_SOURCE = '《诡秘之主》第一部，第31章《魔药》（材料名与用量）；俱乐部渠道、劳动与价格为本作原创。';
-export const SEER_GUIDE = '占卜俱乐部指导者';
+// An original side-story mentor, not a character borrowed from the novel.
+export const SEER_GUIDE = '占卜俱乐部指导者马洛·里德';
 export const SEER_PRICES = { formula: 120, mainMaterials: 600, auxiliaryMaterials: 60, brewing: 60 } as const;
 export const SEER_BATCH_IDS = ['seer-batch-1', 'seer-batch-2', 'seer-batch-3'] as const;
 export const SEER_FORMULA = [

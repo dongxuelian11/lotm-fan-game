@@ -132,7 +132,7 @@ export function SeerPanel({
         <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
         <p className="seer-bottle-source">来源：{selectedBottle.source}</p>
         <dl className="seer-facts">
-          <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
+          <div><dt>这一瓶</dt><dd>{selectedBottle.title}</dd></div>
           <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
           <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
           <div><dt>本次消耗</dt><dd>{selectedAction.cost}</dd></div>

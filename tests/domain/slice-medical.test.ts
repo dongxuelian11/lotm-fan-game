@@ -47,6 +47,21 @@ function beforeEncounter(): SliceState {
 afterEach(() => vi.restoreAllMocks());
 
 describe('shared read-only recovery projection and existing public medical route', () => {
+  it('reports actual recovery deltas including potion rejection at a week boundary', () => {
+    const state = wounded();
+    state.health = 91; state.mind = 94; state.spirituality = 12; state.seer.pollution = 7;
+    state.actionsRemaining = 1;
+    const next = rest(state);
+    const result = next.chronicle.find(record => record.title === '完成休养');
+    expect(result?.text).toContain(`健康91→${next.health}`);
+    expect(result?.text).toContain(`精神94→${next.mind}`);
+    expect(result?.text).toContain(`灵性12→${next.spirituality}`);
+    expect(result?.text).toContain('魔药排异7→0');
+    expect(next.week).toBe(state.week + 1);
+    expect(next.chronicle.some(record => record.title === '新的一周')).toBe(true);
+    assertValidSliceState(next);
+  });
+
   it('keeps an untreated heavy wound and accumulated risk after ordinary REST at H100', () => {
     const s = wounded(), before = JSON.stringify(s), next = rest(s);
     expect(next.health).toBe(100);

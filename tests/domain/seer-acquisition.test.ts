@@ -240,7 +240,8 @@ describe('one-bottle promotion and honest risk', () => {
 
   it('publishes detached formula, commands, abilities and original-bottle descriptions', () => {
     const s = promoted(), before = JSON.stringify(s), p = projectSeer(s);
-    expect(p.bottles[0]!.source).toContain(s.seer.bottles[0]!.id);
+    expect(p.bottles[0]!.source).toContain('第1批七项材料');
+    expect(p.bottles[0]!.source).not.toContain(s.seer.bottles[0]!.id);
     p.formula[0]!.quantity = 999;
     p.abilities[0]!.mastery = 500;
     p.bottles[0]!.source = 'different';
@@ -362,5 +363,45 @@ describe('local save continuity checks', () => {
       const invalid = { ...s, seer: malformed } as unknown as SliceState;
       expect(validateSeerState(invalid)).toBe(false);
     }
+  });
+});
+
+describe('first potion story and resolved-case guidance', () => {
+  for (const roll of [1, 20, 90, 100]) it(`keeps potion roll ${roll} consequences and readable bottle provenance`, () => {
+    const s = prepared(), ctx = context(s, roll);
+    s.arc.stage = 'ENDED';
+    const bottle = s.seer.bottles[0]!;
+    expect(projectSeer(s).bottles[0]!.source).toContain('第1批七项材料');
+    expect(projectSeer(s).bottles[0]!.source).not.toContain('seer-batch');
+    applySeerCommand(s, { type: 'CONSUME', bottleId: bottle.id, confirmed: true }, ctx.c);
+    const text = ctx.notes.at(-1)!.text;
+    expect(text).toContain('马洛·里德');
+    expect(text).toContain('第1批原瓶已耗尽');
+    expect(text).not.toContain('seer-batch');
+    expect(ctx.checks).toEqual([['will', 5]]);
+    expect(bottle.status).toBe('CONSUMED');
+    if (roll <= 20) {
+      expect(text).toContain('蓝布书签');
+      expect(s.progression.sequence).toBe(9);
+    } else {
+      expect(text).toContain('今天先休养');
+      expect(s.progression.pathwayId).toBeNull();
+      expect(s.seer.pollution).toBe(roll === 100 ? 50 : 25);
+    }
+    expect(validateSeerState(s)).toBe(true);
+  });
+
+  it('replaces obsolete first-case divination guidance with existing commissions without rewriting the old omen', () => {
+    const s = promoted();
+    apply(s, { type: 'DIVINE', targetId: 'FIRST_CASE' });
+    s.arc.stage = 'ENDED';
+    const before = JSON.stringify(s.seer.omen), p = projectSeer(s);
+    expect(p.actions.some(action => action.command.type === 'DIVINE')).toBe(false);
+    const description = p.abilities.find(ability => ability.id === 'diviner.s9.divination')!.description;
+    expect(description).toContain('装箱单与行程委托');
+    expect(description).not.toContain('下一次首案判定');
+    expect(p.risk).not.toContain('当前保有一枚');
+    expect(p.practice.body).toContain('首案已收尾');
+    expect(JSON.stringify(s.seer.omen)).toBe(before);
   });
 });

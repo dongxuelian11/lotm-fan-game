@@ -134,7 +134,8 @@ describe("Seer progression dossier", () => {
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶魔药」/ }));
     expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.queryByText("71%")).toBeNull();
-    expect(screen.getByText("bottle-b")).toBeTruthy();
+    expect(screen.queryByText("bottle-b")).toBeNull();
+    expect(screen.getAllByText("第二瓶魔药")).toHaveLength(2);
     expect(screen.getByText(value.risk)).toBeTruthy();
     const current = screen.getByRole("region", { name: "服药前当前资源" });
     for (const text of ["76 / 100", "88 / 100", "12 / 15", resources.cash]) expect(within(current).getByText(text)).toBeTruthy();
@@ -204,6 +205,8 @@ describe("Seer progression dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "SEER", command: { type: "CONSUME", bottleId: "bottle-b", confirmed: true } });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });

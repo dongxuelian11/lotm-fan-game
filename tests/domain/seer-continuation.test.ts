@@ -3,6 +3,8 @@ import {describe,it,expect} from 'vitest';
 import {readFileSync} from 'node:fs';
 import {createSliceRun,applySliceIntent,assertValidSliceState,projectSliceState,validateSlicePayload} from '../../src/domain/slice/index.js';
 import {migrateSliceState} from '../../src/domain/slice/migration.js';
+import {applySeerCommand} from '../../src/domain/seer/index.js';
+import {resolveNormalCheck} from '../../src/resolution/normal-check.js';
 const capture=JSON.parse(readFileSync(new URL('../fixtures/seer-v030/natural.json',import.meta.url),'utf8'));
 describe('continuing an actual surviving first case',()=>{
  it('migrates real 0.3.0 terminal without rewriting any old fact',()=>{
@@ -28,5 +30,29 @@ describe('continuing an actual surviving first case',()=>{
  });
  it('never lets a dead archive resume and accepts only the exact public command',()=>{
   const s=migrateSliceState(capture.final);s.status='DEAD';s.ending!.kind='DEATH';expect(()=>applySliceIntent(s,{type:'CONTINUE_LIFE'})).toThrow();expect(validateSlicePayload({type:'CONTINUE_LIFE'})).toBe(true);expect(validateSlicePayload({type:'CONTINUE_LIFE',cash:999})).toBe(false);
+ });
+});
+
+
+describe('first commission save and public reply routing', () => {
+ for (const approachId of ['report-bounded', 'report-cause']) it(`restores OBSERVED and persists ${approachId} through the real slice router`, () => {
+  const s = applySliceIntent(migrateSliceState(capture.final), { type: 'CONTINUE_LIFE' });
+  applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'sight' }, {
+   check: (ability, difficulty) => resolveNormalCheck({ ability, baseAbility: s.character.coreStats[ability], difficulty, modifiers: [], roll: 20 }),
+   roll: min => min, note: () => {},
+  });
+  const pending = JSON.parse(JSON.stringify(s)) as typeof s;
+  expect(pending.seer.practice.cases[0]!.status).toBe('OBSERVED');
+  assertValidSliceState(pending);
+  expect(migrateSliceState(pending)).toEqual(pending);
+  const payload = { type: 'SEER' as const, command: { type: 'PRACTICE' as const, caseId: 'folded-bookmark', approachId } };
+  expect(validateSlicePayload(payload)).toBe(true);
+  const replied = applySliceIntent(pending, payload);
+  assertValidSliceState(replied);
+  expect(replied.seer.practice.cases[0]!.status).toBe(approachId === 'report-bounded' ? 'COMPLETED' : 'DISPUTED');
+  expect(replied.actionsRemaining).toBe(pending.actionsRemaining);
+  expect(replied.spirituality).toBe(pending.spirituality);
+  expect(replied.cash - pending.cash).toBe(approachId === 'report-bounded' ? 12 : 0);
+  expect(replied.caseArchive).toEqual(pending.caseArchive);
  });
 });
