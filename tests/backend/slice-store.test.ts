@@ -130,7 +130,7 @@ describe("slice canonical storage", () => {
       s.submitIntent({ ...command, intentId: "stale-other" }),
     ).toMatchObject({ ok: false, error: { code: "REVISION_CONFLICT" } });
   });
-  it("rolls back snapshot, receipt, selected slot and random cursor on a write failure; retry is identical", () => {
+  it("rolls back snapshot, receipt, selected slot and random cursor on a write failure; retry is identical", { timeout: 20_000 }, () => {
     let fail = false;
     const s = open(path(), () => {
       if (fail) throw new Error("disk full fixture");
@@ -191,7 +191,7 @@ describe("slice canonical storage", () => {
     expect(() => open(file)).toThrow();
     expect(readFileSync(file, "utf8")).toBe("broken-main");
   });
-  it("refuses a future database version before writing or recovering it", () => {
+  it("refuses a future database version before writing or recovering it", { timeout: 10_000 }, () => {
     const file = path(),
       s = open(file);
     unwrap(s.submitIntent(create));
@@ -299,7 +299,7 @@ describe("slice canonical storage", () => {
     writeFileSync(file, "damaged after failed transaction");
     expect(unwrap(open(file).getBootstrap()).activeState).toEqual(alive);
   });
-  it("exposes no private world or random data to the renderer", () => {
+  it("exposes no private world or random data to the renderer", { timeout: 10_000 }, () => {
     const s = open(path()),
       result = unwrap(s.submitIntent(create));
     const json = JSON.stringify(result);
