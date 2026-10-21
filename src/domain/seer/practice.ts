@@ -42,6 +42,7 @@ export const SEER_PRACTICE_CASE_IDS = [
   'mourning-ribbon', 'uncertain-journey', 'stage-rehearsal', 'mixed-catalogue',
 ] as const;
 export const SEER_PRACTICE_REWARD = 12;
+const CURRENT_BOOKMARK_STORY = '夜班风波留下的议论还没散去，装订匠艾达·沃恩便带着自己的蓝布书签找上门。她怕它也卷进了什么异常。它曾放在俱乐部一次已结束的灵性演示旁，此后她总说折痕发冷。她允许你当面检查整条书签，只想知道该如何描述这件事。检查范围是眼前的布、折痕与实际残留，不能据此找出施术者。';
 
 /** Original side stories. Named clients, their originals and observable facts are fixed;
  * outcome prose is not published until that particular approach succeeds. */
@@ -49,7 +50,7 @@ const CASES: PracticeCase[] = [
   {
     id: 'folded-bookmark', title: '书签折痕里的冷意', owner: '装订匠艾达·沃恩',
     originalId: 'practice-original:ada-bookmark', originalName: '蓝布书签',
-    body: '夜班风波留下的议论还没散去，装订匠艾达·沃恩便带着自己的蓝布书签找上门。她怕它也卷进了什么异常。它曾放在俱乐部一次已结束的灵性演示旁，此后她总说折痕发冷。她允许你当面检查整条书签，只想知道该如何描述这件事。检查范围是眼前的布、折痕与实际残留，不能据此找出施术者。',
+    body: '装订匠艾达·沃恩带来自己的蓝布书签。它曾放在俱乐部一次已结束的灵性演示旁，此后她总说折痕发冷。她允许你当面检查整条书签，只想知道该如何描述这件事。检查范围是眼前的布、折痕与实际残留，不能据此找出施术者。',
     approaches: [
       { id: 'sight', label: '开启灵视，比较折痕与布面', ability: 'diviner.s9.spiritual-sight', spirituality: 2, stat: 'perception', difficulty: 10,
         success: '你在折痕附近辨出微弱灵性残留，其他布面没有同样表现。你把观察范围写给艾达，注明这无法认定来源、施术者或所谓诅咒。',
@@ -295,20 +296,23 @@ function choice(s: SliceState, id: string, label: string, cost: string, command:
 export function projectSeerPractice(s: SliceState): SeerPracticeProjection {
   const available = s.arc.stage === 'ENDED' && promoted(s);
   const completed = available ? completedCount(s) : 0;
+  const currentSeer = s.progression.sequence === 9;
   return {
     title: '俱乐部委托',
     body: available
-      ? `首案已收尾，${SEER_MENTOR}把下一张委托推到你面前：“别再向旧案索求答案，看看眼前这件东西。”八份委托各有两种检查方法，每次1行动，失败也消耗时间与灵性，同案下周才能重试。第一份书签检查后，由你决定怎样解释；可靠交付一次12便士、扮演12与一份掌握成长。原物始终归委托人。`
+      ? currentSeer ? `首案已收尾，${SEER_MENTOR}把下一张委托推到你面前：“别再向旧案索求答案，看看眼前这件东西。”八份委托各有两种检查方法，每次1行动，失败也消耗时间与灵性，同案下周才能重试。第一份书签检查后，由你决定怎样解释；可靠交付一次12便士、扮演12与一份掌握成长。原物始终归委托人。`
+        : '八份有限委托，各有两种处理方法。每次1行动，失败也消耗时间与灵性，同案下周才能重试；成功交付一次12便士、扮演12，并将一份掌握成长分给已知能力。原物归委托人，不会收入背包。'
       : '首案收尾并成为占卜家后，可在贝克兰德接取有限的专业委托。',
     completed, total: CASES.length,
     cases: available ? CASES.map(entry => {
       const record = s.seer.practice.cases.find(candidate => candidate.id === entry.id)!;
+      const body = currentSeer && entry.id === FIRST_COMMISSION ? CURRENT_BOOKMARK_STORY : entry.body;
       return {
         id: entry.id, title: entry.title, body: record.status === 'OBSERVED'
           ? `${bookmarkObservation(record)}艾达把书签折回原样，问：“所以，是那次演示害的？”你该怎样回答？检查费用已经付出，答复不另耗行动或灵性。`
           : record.status === 'DISPUTED'
-            ? `${entry.body}上次你把冷意断言成诅咒的证据，艾达没有接受。${SEER_MENTOR}让你下次把观察与推测分开。`
-            : entry.body,
+            ? `${body}上次你把冷意断言成诅咒的证据，艾达没有接受。${SEER_MENTOR}让你下次把观察与推测分开。`
+            : body,
         status: record.status === 'OBSERVED' ? '观察已完成 · 等待解释'
           : record.status === 'DISPUTED' ? `答复受到质疑 · ${record.attemptWeek! >= s.week ? '下周可重试' : '现在可重试'}`
           : record.status === 'COMPLETED' ? `已交付 · 原物已归还${entry.owner}`

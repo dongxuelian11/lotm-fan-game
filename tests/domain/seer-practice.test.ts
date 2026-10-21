@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { createSliceRun } from '../../src/domain/slice/index.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
-import { awardSeerMastery, type SeerContext } from '../../src/domain/seer/index.js';
+import { awardSeerMastery, projectSeer, type SeerContext } from '../../src/domain/seer/index.js';
 import { SEER_ABILITY_IDS } from '../../src/domain/seer/types.js';
+import { SEER_ABILITIES } from '../../src/domain/seer/content.js';
 import {
   applySeerPractice, createSeerPractice, projectSeerPractice, validateSeerPractice,
   SEER_PRACTICE_CASE_IDS, SEER_PRACTICE_REWARD, type SeerPracticeCommand,
@@ -159,6 +160,34 @@ describe('eight finite, original-object club commissions', () => {
     expect(Object.values(s.progression.mastery).reduce((a, b) => a + b, 0)).toBe(8);
     expect(s.seer.practice.cases).toHaveLength(8);
     expect(s.seer.practice.cases[0]!.outcome).toBe('GREAT_SUCCESS');
+  });
+});
+
+describe('current Seer guidance does not rewrite advanced historical dossiers', () => {
+  it('keeps the post-case scene, ability direction and new observation choices for current sequence9', () => {
+    const s = ready(), before = JSON.stringify(s), p = projectSeer(s);
+    expect(p.practice.body).toContain('马洛·里德');
+    expect(p.practice.cases[0]!.body).toContain('夜班风波');
+    expect(p.abilities.find(ability => ability.id === 'diviner.s9.divination')!.description).toContain('首案已结');
+    expect(p.practice.cases[0]!.choices.map(choice => choice.command)).toEqual([
+      { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'observe-sight' },
+      { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'observe-inspect' },
+    ]);
+    expect(JSON.stringify(s)).toBe(before);
+  });
+
+  it.each([8, 7, 6, 5, 4, 3, 2, 1] as const)('retains the original completed dossier at sequence%s', sequence => {
+    const s = ready();
+    finishAll(s);
+    s.progression.sequence = sequence;
+    const before = JSON.stringify(s), p = projectSeer(s);
+    expect(p.practice.body).toBe('八份有限委托，各有两种处理方法。每次1行动，失败也消耗时间与灵性，同案下周才能重试；成功交付一次12便士、扮演12，并将一份掌握成长分给已知能力。原物归委托人，不会收入背包。');
+    expect(p.practice.cases[0]!.body).toBe('装订匠艾达·沃恩带来自己的蓝布书签。它曾放在俱乐部一次已结束的灵性演示旁，此后她总说折痕发冷。她允许你当面检查整条书签，只想知道该如何描述这件事。检查范围是眼前的布、折痕与实际残留，不能据此找出施术者。');
+    expect(p.abilities.find(ability => ability.id === 'diviner.s9.divination')!.description)
+      .toBe(SEER_ABILITIES.find(ability => ability.id === 'diviner.s9.divination')!.description);
+    expect(p.practice.completed).toBe(8);
+    expect(p.practice.cases.every(entry => entry.choices.length === 0)).toBe(true);
+    expect(JSON.stringify(s)).toBe(before);
   });
 });
 
@@ -365,6 +394,8 @@ describe('the first commission leaves interpretation to the player', () => {
     const afterObservation = [s.actionsRemaining, s.spirituality];
     applySeerPractice(s, cause, ctx.c, ctx.award);
     expect(s.seer.practice.cases[0]).toMatchObject({ status: 'DISPUTED', outcome: 'GREAT_SUCCESS' });
+    expect(projectSeerPractice(s).cases[0]!.body).toContain('夜班风波');
+    expect(projectSeerPractice(s).cases[0]!.body).toContain('艾达没有接受');
     expect([s.actionsRemaining, s.spirituality]).toEqual(afterObservation);
     expect([s.cash, s.progression.acting]).toEqual([beforeCash, 0]);
     expect([ctx.checks.length, ctx.draws.length, ctx.awards.length]).toEqual([1, 0, 0]);

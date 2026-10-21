@@ -484,7 +484,7 @@ export function projectSeer(s: SliceState): SeerProjection {
       status: bottle.status === 'PREPARED' ? '已调配，尚未服用' : `已耗尽 · ${bottle.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : bottle.outcome === 'SUCCESS' ? '成功晋升' : bottle.outcome === 'GREAT_FAILURE' ? '严重排异，中断晋升' : '排异，未晋升'}`,
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
-    abilities: isPromoted ? SEER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, description: ability.id === 'diviner.s9.divination' && s.arc.stage === 'ENDED'
+    abilities: isPromoted ? SEER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, description: ability.id === 'diviner.s9.divination' && s.progression.sequence === 9 && s.arc.stage === 'ENDED'
       ? '首案已结，不再为它准备预示。可在俱乐部的装箱单与行程委托中，围绕已知线索占卜，再实际核查；预示不是因果证明。'
       : ability.description, mastery: s.progression.mastery[ability.id]! })) : [],
     acting: !isPromoted?0:s.progression.sequence!==9?(s.clown.seerActingAtPromotion??100):s.progression.acting,
