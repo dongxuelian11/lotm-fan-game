@@ -20,8 +20,8 @@ describe('Seer scene presentation without rewriting historical records', () => {
     ['成为占卜家', '意志判定20/72，成功：精神−10，感知+3、意志+2、知识+3。四项非凡能力从0掌握开始，灵性上限提高到30，当前灵性没有补满。'],
     ['魔药发生排异', '意志判定90/72，失败：精神−20、健康−10、排异+25。你仍是普通人。指导者处理了现场，未发生死亡；需要休养，重试须另备一瓶。'],
     ['指导者中断了晋升', '意志判定100/72，灾难：精神−40、健康−20、排异+50。你仍是普通人。指导者处理了现场，未发生死亡；需要休养，重试须另备一瓶。'],
-  ]) it(`shows mentor reaction while preserving the exact ${result.slice(0, 18)} result`, () => {
-    const record = { title: title!, text: `原瓶seer-batch-2:bottle已耗尽。${result}` }, bytes = JSON.stringify(record);
+  ] as const) it(`shows mentor reaction while preserving the exact ${result.slice(0, 18)} result`, () => {
+    const record = { title, text: `原瓶seer-batch-2:bottle已耗尽。${result}` }, bytes = JSON.stringify(record);
     const text = seerFeedbackText(record, true);
     expect(text).toContain('马洛·里德');
     expect(text).toContain(`第2批原瓶已耗尽。${result}`);
