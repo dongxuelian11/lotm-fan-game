@@ -277,6 +277,8 @@ describe("Marauder sequence-nine original-object dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "MARAUDER", command });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 
@@ -294,6 +296,8 @@ describe("Marauder sequence-nine original-object dossier", () => {
     expect(screen.getByText("柜员保管")).toBeTruthy(); expect(screen.queryByText("你暂时持有")).toBeNull();
     const envelope = vi.mocked(api.submitIntent).mock.calls[0]![0];
     await act(async () => { finish(receipt(next, envelope)); });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     await openMarauder();
     expect(screen.getByText("你暂时持有")).toBeTruthy(); expect(screen.getByText("委托人安娜")).toBeTruthy();
     await userEvent.selectOptions(screen.getByRole("combobox", { name: "选择原物实践" }), "sealed-dispatch");

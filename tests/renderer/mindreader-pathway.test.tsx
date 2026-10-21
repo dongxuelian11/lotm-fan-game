@@ -327,7 +327,7 @@ describe("Mindreader pathway dossier", () => {
     expect(within(screen.getByRole("region", { name: "已了解的观众渠道" })).queryByRole("button")).toBeNull();
   });
 
-  it("submits the chosen social command once and returns to life only after saving", async () => {
+  it("submits the chosen social command once and keeps the saved dossier open until manually closed", async () => {
     const state = fixture(social(), 8);
     const value = bridge(state);
     let finish!: (result: SliceResult<SliceReceipt>) => void;
@@ -342,6 +342,8 @@ describe("Mindreader pathway dossier", () => {
     const envelope = vi.mocked(value.submitIntent).mock.calls[0]![0];
     expect(envelope.payload).toEqual({ type: "MINDREADER", command: { type: "DISCUSS", caseId: "receipt", approach: "ASK" } });
     await act(async () => { finish(receipt({ ...state, revision: state.revision + 1, mindreader: { ...state.mindreader, acting: 48 } }, envelope)); });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
     await openMindreader();
     await userEvent.click(screen.getByText("读心者能力与消化 · 2 项能力"));
@@ -373,6 +375,8 @@ describe("Mindreader pathway dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "MINDREADER", command: { type: "CONSUME", bottleId: "mindreader-batch-2:bottle", confirmed: true } });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });
