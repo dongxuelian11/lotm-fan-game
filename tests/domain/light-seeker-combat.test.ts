@@ -306,7 +306,7 @@ describe('LightSeeker actual wheels and explicitly directed slot-only rules', ()
       expect(u.state.spirituality).toBe(3); expect(u.random.cursor).toBe(original.random.cursor);
     }
   });
-  it('actual low enemy pool cannot refill or borrow player spirituality, and all unaffordable powers use only its ordinary body', () => {
+  it('actual low enemy pool cannot refill or borrow player spirituality, and all unaffordable powers use only its ordinary body', { tags: ['historical-replay'] }, () => {
     const b = lightSeekerBoundaryForIntent(i => i.type === 'COMBAT_ROUND',
       b => b.beforeLast.combat?.encounterId === 'LIGHT_SEEKER_DISPUTE' && b.beforeLast.lightSeeker.encounter.enemySpirituality < 6);
     const u = scenario([], openLine, b.beforeLast), spirituality = u.state.spirituality, enemyS = u.state.lightSeeker.encounter.enemySpirituality;

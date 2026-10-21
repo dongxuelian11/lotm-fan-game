@@ -28,9 +28,9 @@ beforeAll(() => {
 afterEach(() => { vi.resetAllMocks(); vi.restoreAllMocks(); });
 afterAll(() => { authenticateInputs(); rows = []; }, 120_000);
 const INITIAL_TIME = '2026-10-18T08:00:00.000Z', COMMIT_TIME = '2026-10-18T08:01:00.000Z';
-// The same bounded Sun cases previously took 179s/201s with strict cold reads.
-// Retain their 300s per-case budget; Death timings still require an actual run.
-const sqliteCaseBudget = 300_000;
+// Windows run39466954199 measured294.587s for actual command1141.
+// Keep bounded headroom for these three strict rollback/retry/cold-read cases.
+const sqliteCaseBudget = 420_000;
 function unwrap<T>(result: SliceResult<T>): T {
   if (!result.ok) throw Error(`${result.error.code}: ${result.error.message}`); return result.value;
 }

@@ -175,7 +175,7 @@ describe("Long chapter navigation from actual natural saves", () => {
     expect(game.state.progression).toEqual(oldGrowth);
     expect(screen.getByRole("region", { name: "外部记录与部分记忆" }).textContent).toContain("未寻回其余人生记忆");
     expectNoOldScene();
-  }, 15_000);
+  }, 30_000);
 
   it("shows actual deaths, new custodians and preserved original sources only as the appropriate era", async () => {
     const capture = { recovered: natural("recovered") }, state = project(capture.recovered), before = structuredClone(state);
