@@ -40,7 +40,7 @@ describe('actual public paid care from the saved living pre-contact branch',()=>
   expect(original.lastCombatRound!.consequence).toContain('95/100');expect(now.lastCombatRound!.consequence).toContain('95/100');
   expect(original.status).toBe('DEAD');expect(now.status).toBe('ACTIVE');expect(now.health).toBe(70);
  });
- it('replays every saved public care and encounter boundary without direct state edits',()=>{
+ it('replays every saved public care and encounter boundary without direct state edits',{ tags: ['historical-replay'] },()=>{
   for(const key of ['actual-clinic-discovery','actual-clinic-invitation','paid-original-wound-treatment','later-real-rest','same-original-contact-after-care','same-original-battle-after-care','first-actual-treated-round','actual-terminal']){
    const b=boundary(key),before=migrateSliceState(b.beforeLast),after=applySliceIntent(before,b.lastIntent);
    assertValidSliceState(after);expect(after).toEqual(migrateSliceState(b.final));expect(projectSliceState(after)).toEqual(projectSliceState(migrateSliceState(b.final)));

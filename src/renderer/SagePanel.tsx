@@ -128,7 +128,7 @@ export function SagePanel({ value, busy, blocked = false, error = null, onComman
     return <section aria-label="贤者可选遭遇"><h3>{encounter.title}</h3><p>{STATUS[encounter.status]}</p><p>{encounter.story}</p>
       {enemy && <><p>{enemy.name}，{enemy.age}岁，序列{enemy.sequence}；健康{enemy.health}/100、精神{enemy.mind}/100、独立灵性{enemy.spirituality}/120。{enemy.status === 'DEAD' ? '已经死亡，原身体留在后院。' : enemy.status === 'SURRENDERED' ? '已经投降，停止抵抗。' : '仍有自己的判断与抵抗。'}</p>
         <p>同一原棍（{enemy.weaponId}）{enemy.weaponLocation === 'HAND' ? '仍在本人手中。' : '留在后院原交战位置。'}</p><p>弧光已用{enemy.powerUses.ARC_BOLT}次（每次5灵性）；屏护已用{enemy.powerUses.WARD}次（每次4灵性）；假动作已用{enemy.powerUses.FEINT}次（实际耗费时每次3灵性）。</p></>}
-      {encounter.preparation ? <p>第{encounter.preparation.week}周已实际花{encounter.preparation.mindPaid}精神整理注意力；没有领取新卷轴，也没有补满资源。</p> : <p>尚未完成本场另行付费的注意力准备。</p>}
+      {encounter.preparationSummary ? <p>第{encounter.preparationSummary.week}周已实际花{encounter.preparationSummary.mindPaid}精神整理注意力；没有领取新卷轴，也没有补满资源。</p> : <p>尚未完成本场另行付费的注意力准备。</p>}
       <ul>{encounter.facts.map((fact, i) => <li key={i}>{fact}</li>)}</ul>
       <p>这场冲突是额外选择，不能补做晋升前的止灾仪式。信息形态仅缓冲随后一次真实身体攻势；筛取只准备下一次真实攻击的有限加成，均不提前造成伤害。</p>
     </section>;

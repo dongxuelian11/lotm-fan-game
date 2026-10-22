@@ -11,6 +11,7 @@ import { currentDivineHandCombatSource, replayDivineHandCombatRound, divineHandA
   divineHandEnemyActionCount } from '../../src/domain/divine-hand/combat.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentDivineHandReplayExpectation } from '../helpers/divine-hand-current-replay.js';
 import { DIVINE_HAND_CAPTURE_EVIDENCE as expected } from './divine-hand-capture-evidence.js';
 import { DIVINE_HAND_ROOT, DIVINE_HAND_SOURCE, DIVINE_HAND_PREFIX_COUNT, captureCommands, boundaryIndex, boundarySteps,
   snapshotIndex, naturalEntry, sourceEntry, summaryEntry, capturedState, capturedSnapshot, currentCapture,
@@ -95,7 +96,7 @@ describe('Divine Hand exact158 source and actual297-command public continuation'
       if (index === 157) same(state, original);
       if (index >= 158) assertOriginalContinuity(state, original);
     }
-    same(state, capturedState('final')); assertValidSliceState(state); same(migrateSliceState(state), state);
+    same(state, currentDivineHandReplayExpectation(capturedState('final'))); assertValidSliceState(state); same(migrateSliceState(state), state);
     same(captureBody(state), expected.final); expect(state.revision).toBe(capturedState('initial').revision + 297);
     expect(naturalEntry('stage')).toBe('ACTUAL_TERMINAL_WITH_DIRECTED70_HISTORY'); expect(naturalEntry('error')).toBeNull();
     expect(naturalEntry('pendingIntent')).toBeNull(); expect(naturalEntry('failurePhase')).toBe('IDLE');

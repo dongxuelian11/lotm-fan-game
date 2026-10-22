@@ -1,0 +1,1996 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.217.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_1_2026-10-15.tar.gz",
+      "bytes": 17884463,
+      "sha256": "be1700d654213f05150fa4fc9a709085c0322150fa960a7bba0083b168f139b9"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_2_2026-10-15.tar.gz",
+      "bytes": 17867496,
+      "sha256": "113dd9f5005f9d332d3b0090d65f0ff971fadc3fdf4b7bf579b506d6ab908614"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_3_2026-10-15.tar.gz",
+      "bytes": 17666794,
+      "sha256": "e50238c83b2f6a33c949f4310a425c56e39b16446b06be0c29949a2038f1194e"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_4_2026-10-15.tar.gz",
+      "bytes": 17754054,
+      "sha256": "98ae5c57dadd35cb3824be9cb1dbd73e02fce2e354d35337d2a6d02c8163bac7"
+    },
+    {
+      "name": "lotm_release_0.195.0_pale_emperor_test_inputs_5_2026-10-15.tar.gz",
+      "bytes": 7483024,
+      "sha256": "05e2488c53f45830776b908c219ea0a07c7909ee303fc529992c491735fe1fe3"
+    },
+    {
+      "name": "lotm_release_0.217.0_death_source173_test_inputs_2026-10-18.tar.gz",
+      "bytes": 869016,
+      "sha256": "64051793f901d9c261c6c374f813b63f794a70ffe485dd61180e17320c59db8b",
+      "members": [
+        "tests/fixtures/death-consul-v01730/natural.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_1_2026-10-18.tar.gz",
+      "bytes": 14561239,
+      "sha256": "30d7abe92506ec489a55a0dd90f668df15e8fad0e2e20f613bb5e342b61a8a2e",
+      "members": [
+        "tests/fixtures/death-v02170/action-1039.json.gz",
+        "tests/fixtures/death-v02170/action-1040.json.gz",
+        "tests/fixtures/death-v02170/action-1041.json.gz",
+        "tests/fixtures/death-v02170/action-1042.json.gz",
+        "tests/fixtures/death-v02170/action-1043.json.gz",
+        "tests/fixtures/death-v02170/action-1044.json.gz",
+        "tests/fixtures/death-v02170/action-1045.json.gz",
+        "tests/fixtures/death-v02170/action-1046.json.gz",
+        "tests/fixtures/death-v02170/action-1047.json.gz",
+        "tests/fixtures/death-v02170/action-1048.json.gz",
+        "tests/fixtures/death-v02170/action-1049.json.gz",
+        "tests/fixtures/death-v02170/action-1050.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_2_2026-10-18.tar.gz",
+      "bytes": 14702046,
+      "sha256": "e79f033b332d5f216b246195221bbc3122c03673f8262eeecd97cc5d9fa6676b",
+      "members": [
+        "tests/fixtures/death-v02170/action-1051.json.gz",
+        "tests/fixtures/death-v02170/action-1052.json.gz",
+        "tests/fixtures/death-v02170/action-1053.json.gz",
+        "tests/fixtures/death-v02170/action-1054.json.gz",
+        "tests/fixtures/death-v02170/action-1055.json.gz",
+        "tests/fixtures/death-v02170/action-1056.json.gz",
+        "tests/fixtures/death-v02170/action-1057.json.gz",
+        "tests/fixtures/death-v02170/action-1058.json.gz",
+        "tests/fixtures/death-v02170/action-1059.json.gz",
+        "tests/fixtures/death-v02170/action-1060.json.gz",
+        "tests/fixtures/death-v02170/action-1061.json.gz",
+        "tests/fixtures/death-v02170/action-1062.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_3_2026-10-18.tar.gz",
+      "bytes": 13610325,
+      "sha256": "f8ab08a8182a542a2ce6100d1929796902008a0764605a66213e6518d7813306",
+      "members": [
+        "tests/fixtures/death-v02170/action-1063.json.gz",
+        "tests/fixtures/death-v02170/action-1064.json.gz",
+        "tests/fixtures/death-v02170/action-1065.json.gz",
+        "tests/fixtures/death-v02170/action-1066.json.gz",
+        "tests/fixtures/death-v02170/action-1067.json.gz",
+        "tests/fixtures/death-v02170/action-1068.json.gz",
+        "tests/fixtures/death-v02170/action-1069.json.gz",
+        "tests/fixtures/death-v02170/action-1070.json.gz",
+        "tests/fixtures/death-v02170/action-1071.json.gz",
+        "tests/fixtures/death-v02170/action-1072.json.gz",
+        "tests/fixtures/death-v02170/action-1073.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_4_2026-10-18.tar.gz",
+      "bytes": 13723983,
+      "sha256": "5b68c5b4b355e275b8c1080f7498f171fccde488aacea19c48c4a85b2910db77",
+      "members": [
+        "tests/fixtures/death-v02170/action-1074.json.gz",
+        "tests/fixtures/death-v02170/action-1075.json.gz",
+        "tests/fixtures/death-v02170/action-1076.json.gz",
+        "tests/fixtures/death-v02170/action-1077.json.gz",
+        "tests/fixtures/death-v02170/action-1078.json.gz",
+        "tests/fixtures/death-v02170/action-1079.json.gz",
+        "tests/fixtures/death-v02170/action-1080.json.gz",
+        "tests/fixtures/death-v02170/action-1081.json.gz",
+        "tests/fixtures/death-v02170/action-1082.json.gz",
+        "tests/fixtures/death-v02170/action-1083.json.gz",
+        "tests/fixtures/death-v02170/action-1084.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_5_2026-10-18.tar.gz",
+      "bytes": 13789645,
+      "sha256": "3dbcbf6e98d63e95562de489d3d9446b90d165a6f587460733a50bb1964d16b3",
+      "members": [
+        "tests/fixtures/death-v02170/action-1085.json.gz",
+        "tests/fixtures/death-v02170/action-1086.json.gz",
+        "tests/fixtures/death-v02170/action-1087.json.gz",
+        "tests/fixtures/death-v02170/action-1088.json.gz",
+        "tests/fixtures/death-v02170/action-1089.json.gz",
+        "tests/fixtures/death-v02170/action-1090.json.gz",
+        "tests/fixtures/death-v02170/action-1091.json.gz",
+        "tests/fixtures/death-v02170/action-1092.json.gz",
+        "tests/fixtures/death-v02170/action-1093.json.gz",
+        "tests/fixtures/death-v02170/action-1094.json.gz",
+        "tests/fixtures/death-v02170/action-1095.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_6_2026-10-18.tar.gz",
+      "bytes": 13849408,
+      "sha256": "1a76a445067793d4a21645d7108eaf07edd4d15706abc883ec30b91fc540fc8e",
+      "members": [
+        "tests/fixtures/death-v02170/action-1096.json.gz",
+        "tests/fixtures/death-v02170/action-1097.json.gz",
+        "tests/fixtures/death-v02170/action-1098.json.gz",
+        "tests/fixtures/death-v02170/action-1099.json.gz",
+        "tests/fixtures/death-v02170/action-1100.json.gz",
+        "tests/fixtures/death-v02170/action-1101.json.gz",
+        "tests/fixtures/death-v02170/action-1102.json.gz",
+        "tests/fixtures/death-v02170/action-1103.json.gz",
+        "tests/fixtures/death-v02170/action-1104.json.gz",
+        "tests/fixtures/death-v02170/action-1105.json.gz",
+        "tests/fixtures/death-v02170/action-1106.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_7_2026-10-18.tar.gz",
+      "bytes": 13912499,
+      "sha256": "647b60a884f31bcb2f9ba1e8bccfcd99593f67f397a1c5a550efee1e728aa46d",
+      "members": [
+        "tests/fixtures/death-v02170/action-1107.json.gz",
+        "tests/fixtures/death-v02170/action-1108.json.gz",
+        "tests/fixtures/death-v02170/action-1109.json.gz",
+        "tests/fixtures/death-v02170/action-1110.json.gz",
+        "tests/fixtures/death-v02170/action-1111.json.gz",
+        "tests/fixtures/death-v02170/action-1112.json.gz",
+        "tests/fixtures/death-v02170/action-1113.json.gz",
+        "tests/fixtures/death-v02170/action-1114.json.gz",
+        "tests/fixtures/death-v02170/action-1115.json.gz",
+        "tests/fixtures/death-v02170/action-1116.json.gz",
+        "tests/fixtures/death-v02170/action-1117.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_8_2026-10-18.tar.gz",
+      "bytes": 13983149,
+      "sha256": "ed653080d02c5d5274a61dd03b1fc5d120c3fc574b9b8a51248c22bed54823ea",
+      "members": [
+        "tests/fixtures/death-v02170/action-1118.json.gz",
+        "tests/fixtures/death-v02170/action-1119.json.gz",
+        "tests/fixtures/death-v02170/action-1120.json.gz",
+        "tests/fixtures/death-v02170/action-1121.json.gz",
+        "tests/fixtures/death-v02170/action-1122.json.gz",
+        "tests/fixtures/death-v02170/action-1123.json.gz",
+        "tests/fixtures/death-v02170/action-1124.json.gz",
+        "tests/fixtures/death-v02170/action-1125.json.gz",
+        "tests/fixtures/death-v02170/action-1126.json.gz",
+        "tests/fixtures/death-v02170/action-1127.json.gz",
+        "tests/fixtures/death-v02170/action-1128.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_9_2026-10-18.tar.gz",
+      "bytes": 14181025,
+      "sha256": "1158bef56d494f789d56e1cfd088f35ce4d7995be98e180bc03d038d32ec3176",
+      "members": [
+        "tests/fixtures/death-v02170/action-1129.json.gz",
+        "tests/fixtures/death-v02170/action-1130.json.gz",
+        "tests/fixtures/death-v02170/action-1131.json.gz",
+        "tests/fixtures/death-v02170/action-1132.json.gz",
+        "tests/fixtures/death-v02170/action-1133.json.gz",
+        "tests/fixtures/death-v02170/action-1134.json.gz",
+        "tests/fixtures/death-v02170/action-1135.json.gz",
+        "tests/fixtures/death-v02170/action-1136.json.gz",
+        "tests/fixtures/death-v02170/action-1137.json.gz",
+        "tests/fixtures/death-v02170/action-1138.json.gz",
+        "tests/fixtures/death-v02170/action-1139.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.217.0_death_test_inputs_10_2026-10-18.tar.gz",
+      "bytes": 4928014,
+      "sha256": "ffe21f7901db91b2cea1b45b7a8012863c244a90882d9dbe0090f5ca8f2d3fd2",
+      "members": [
+        "tests/fixtures/death-v02170/action-1140.json.gz",
+        "tests/fixtures/death-v02170/action-1141.json.gz",
+        "tests/fixtures/death-v02170/archived-original195-natural.json.gz",
+        "tests/fixtures/death-v02170/boundaries.index.json",
+        "tests/fixtures/death-v02170/checkpoint.json.gz",
+        "tests/fixtures/death-v02170/commands.ndjson.gz",
+        "tests/fixtures/death-v02170/input-freeze.json",
+        "tests/fixtures/death-v02170/migration-initial.json.gz",
+        "tests/fixtures/death-v02170/natural.json.gz",
+        "tests/fixtures/death-v02170/producer-tests.mjs",
+        "tests/fixtures/death-v02170/producer.mjs",
+        "tests/fixtures/death-v02170/recovery-manifest.json",
+        "tests/fixtures/death-v02170/runtime-freeze.json",
+        "tests/fixtures/death-v02170/summary.json"
+      ]
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/death-consul-v01730/natural.json",
+      "bytes": 6509067,
+      "sha256": "283fa4554282597027a6e65f2a31c561750769fb3f93343e570abebac11fdee9"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1039.json.gz",
+      "bytes": 1173765,
+      "sha256": "be423eb421fc4f283d5f68dd7f53ed84b14699c9a66f6e437859abf19acb4e29"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1040.json.gz",
+      "bytes": 1229740,
+      "sha256": "898709020f2a50e3fa99066928d103bc8c3ae9f10733049ba3dac5cbe775e0e7"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1041.json.gz",
+      "bytes": 1230975,
+      "sha256": "6f126fb3f1c7d44699263cbdda17363680d62d6446d9be22324eb9048e64e72c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1042.json.gz",
+      "bytes": 1231270,
+      "sha256": "2642dd7b1db56e8c4c883cb5c40833078aed72adbb985b32aa287db71d6e183d"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1043.json.gz",
+      "bytes": 1231732,
+      "sha256": "eed96440f3e650d39248350397ea5638653131726b23cb2a317a56dbd000ceb6"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1044.json.gz",
+      "bytes": 1232233,
+      "sha256": "3e6bdcc1f491b1b299901681e6f86ebe90f0036bb14171f9ccf5691a8e99306c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1045.json.gz",
+      "bytes": 1232821,
+      "sha256": "18b574a0e0c9d61db0e04f14d6b92fa3e4561c13ea39cc5a31698f7b13f474f2"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1046.json.gz",
+      "bytes": 1233799,
+      "sha256": "290bff6ad0409239917eab0e6234e453eed7d0981080c422e7b7d35208a469cc"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1047.json.gz",
+      "bytes": 1234988,
+      "sha256": "21beafe88760860cfd688c18349f6e52d81fcba5ae8510f694c71a783bf1c3c4"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1048.json.gz",
+      "bytes": 1235795,
+      "sha256": "aed270671e0559eb3668b03aebe760c9c9ce012c83d7ef2355263dacf795691b"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1049.json.gz",
+      "bytes": 1236243,
+      "sha256": "ec800a6b71f28f275e48ebcd280e0d8770a2ed2715f421720167cbeeb2cb9faa"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1050.json.gz",
+      "bytes": 1236661,
+      "sha256": "3d40429175fcfc24edbb20d276f59f6e5c7fe9a473e856fa9ed98eea123f3fe8"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1051.json.gz",
+      "bytes": 1236924,
+      "sha256": "f6aebdb93ec58b723c2c50df9dec199eac42e9f50a56212536237d6808bddfdf"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1052.json.gz",
+      "bytes": 1237756,
+      "sha256": "c8e54c4a4add8fe731d57d2b9ab070b024aa4aa530298cffdbf762e61abc7717"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1053.json.gz",
+      "bytes": 1238519,
+      "sha256": "121c17fccb21c909c871a311f013362e1b54a4772dcdf759eccf345adbdb4eb5"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1054.json.gz",
+      "bytes": 1238993,
+      "sha256": "6744a7bfc711d04c59d7968f3c23d4c030c80e4326634d8062ba0d43396c2fc1"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1055.json.gz",
+      "bytes": 1239351,
+      "sha256": "5ed9d45b4983ad1e3d75b4d4fa3942e24531f81f6436ff1f17d02d200b07294d"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1056.json.gz",
+      "bytes": 1239218,
+      "sha256": "b0bca53370d2112745ad154e86967935c5fe790f840234cc8b68ac1454864a78"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1057.json.gz",
+      "bytes": 1239110,
+      "sha256": "55bae65b17332054a979ed8c2ed8a75ce62a3969f457618775437bb66b2a6e64"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1058.json.gz",
+      "bytes": 1239857,
+      "sha256": "025bcd61d8276804a0cb16d48704bdd7d1883b697719f797281492b5dae1835d"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1059.json.gz",
+      "bytes": 1242563,
+      "sha256": "990a295bbd063c1cfe354761ec8d6bf4c9b0fc5e7e69f00c5d5969aa3380e485"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1060.json.gz",
+      "bytes": 1244014,
+      "sha256": "6abe896f381c192836068b306a3bf195744142be59ee23ea8bde0ec3b3975934"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1061.json.gz",
+      "bytes": 1245420,
+      "sha256": "6084f373c6bb0bc38e692feeffaa4c74bf16215f23e53154b468add23221093a"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1062.json.gz",
+      "bytes": 1246002,
+      "sha256": "8bd727e83825de405cb24d0e15ced10f7ff3d8b615dc4bf3696b8a4a0412bbd7"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1063.json.gz",
+      "bytes": 1247867,
+      "sha256": "a35bff0718a3c8f474f1dbcb338a29a2e15d67c5ffcb56cdc360f717b41886c6"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1064.json.gz",
+      "bytes": 1249677,
+      "sha256": "9ec84fa26c30473536fd7cb27734171ec1dfc056f1b19fc9dfd0af26a2733451"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1065.json.gz",
+      "bytes": 1250548,
+      "sha256": "267de9b42ac942bf56b63e7b91c6d01fd1a47de071da4cd58e7235a519ac7548"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1066.json.gz",
+      "bytes": 1251606,
+      "sha256": "133e4e18ccec1a7a1730588dfbd53c0eb472e43bbb2b01c757fd4961a7709e38"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1067.json.gz",
+      "bytes": 1252913,
+      "sha256": "4fd44a0573cbcc9f382274915f07f22788e891ef260cb8d42d38e2633dc82eba"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1068.json.gz",
+      "bytes": 1253699,
+      "sha256": "5b8eb10be7ecffc421aa3370361ede9840f4cfada44ef14f23438057abe82a31"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1069.json.gz",
+      "bytes": 1254741,
+      "sha256": "ded88534c48d37c70825d9b15bf75e60aa4bdeaa0c033066b14d0748f6058570"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1070.json.gz",
+      "bytes": 1255134,
+      "sha256": "1ec7dc2db195ec0d8af10545dd31727aba4862016dfc7d312a6ef58b12f3b448"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1071.json.gz",
+      "bytes": 1255757,
+      "sha256": "24cc93bda632c15023f66651ff8a2b22fcc416c8e1c75464bb3a3c7152722e15"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1072.json.gz",
+      "bytes": 1257681,
+      "sha256": "dee50405040cdcc291e69dc8c8611a0be40433479be4f8a3e0a298804fac2cd0"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1073.json.gz",
+      "bytes": 1258894,
+      "sha256": "7fab93e3114ea4f05e48a8087d58d24efe4010fa3db29e0eebdc41ffd99be930"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1074.json.gz",
+      "bytes": 1259962,
+      "sha256": "6e05f5efe79ff059f7b653382ec2332361cbdc974ae4d28683c707ed0a0007f8"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1075.json.gz",
+      "bytes": 1262611,
+      "sha256": "a84a4e4b6b8992d199181bb278af54b7dc66afe792920d29c12b7a15d1116757"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1076.json.gz",
+      "bytes": 1263201,
+      "sha256": "8d184f13d1700380485e7e1d271def9b80011fdc6d886fab2e9a25a7627c35a2"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1077.json.gz",
+      "bytes": 1263436,
+      "sha256": "f158d6aca2c884182e3d9cdf404ffdf236d4d3406b8ebbb5818f7b9e37846c7c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1078.json.gz",
+      "bytes": 1263902,
+      "sha256": "8923fcc81b6d7ded8303d9b2faa8b67256e8493320e00fd2ae5fdaf1fe896a25"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1079.json.gz",
+      "bytes": 1264323,
+      "sha256": "8822576c1443c99aec862c657b4ffea036c97ce37bb2132a69f9bd64a628ff7d"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1080.json.gz",
+      "bytes": 1264454,
+      "sha256": "b0ec85325a976da240b0c780ad43ac0929951b49a1976c6991c712674cbd8105"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1081.json.gz",
+      "bytes": 1265226,
+      "sha256": "878c7b692f938cd87430395429aa22d7780b7b963eb09e9a812871849a568dfa"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1082.json.gz",
+      "bytes": 1265285,
+      "sha256": "9484d335426a51d4c7222520940ec3966947091e203602af80a603f1e42bbdef"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1083.json.gz",
+      "bytes": 1266156,
+      "sha256": "9d0a07a25b1124387340a105ca6056c0a3ec756f95566bd07561c243850168f5"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1084.json.gz",
+      "bytes": 1267092,
+      "sha256": "c8fe2765a8d28f27011a7ec671ee98970701730b5e6cfeedaa422d1d9268956e"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1085.json.gz",
+      "bytes": 1267587,
+      "sha256": "7b224c6a3a45859929420e82f83010570b31e2eac671d4af2fe888755bd0be19"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1086.json.gz",
+      "bytes": 1268668,
+      "sha256": "e3b147ea514560296643e90a1e6385aa7b610f546ac208f412ac30b0c73fbb14"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1087.json.gz",
+      "bytes": 1269365,
+      "sha256": "ecd85b028bdac2be3bc1a5ecaccdec77ca592cd87d80939b890c9c058611c2df"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1088.json.gz",
+      "bytes": 1270488,
+      "sha256": "0a49ae19ca42b2c5909d758e99c32f4d3bee02ec70a37785828bab31e5b702a1"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1089.json.gz",
+      "bytes": 1270957,
+      "sha256": "dcf66405c0316c44652e00a1604a12e054ee4c72a2f032244cf15b7cf373dd60"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1090.json.gz",
+      "bytes": 1270752,
+      "sha256": "a3f97cd8f6a2b1381ee0341c6fb784f3cfc18de6d96d24e2e3b7b1b122adf971"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1091.json.gz",
+      "bytes": 1271054,
+      "sha256": "ef60762de25f5735c8330353ac7cf59b47151d98e982f0ac3d3c73446fe00c85"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1092.json.gz",
+      "bytes": 1271808,
+      "sha256": "0584e84da9782cf478ee40355673714ee81e7c5bf3d39dd72e9f7acc8cd01988"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1093.json.gz",
+      "bytes": 1272870,
+      "sha256": "a1d0deef5fe0509c8db1ad82730d214458a82ee7fb2d64efb8b99c6eb1707a1c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1094.json.gz",
+      "bytes": 1273500,
+      "sha256": "0d67a95335f1fd0e23ed1b1184ecadcc0deca298f37cbee8e32b69af6adf9273"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1095.json.gz",
+      "bytes": 1274139,
+      "sha256": "b4629b0bc1e5ea2710265ebbd5f53909b0a8c4c1c315a38068464e7b4c36fbb3"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1096.json.gz",
+      "bytes": 1274374,
+      "sha256": "5d11bed9e4e1ec89a816e796d9b08019149189ab359b835b4227312ee5180591"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1097.json.gz",
+      "bytes": 1274799,
+      "sha256": "36b78d1297d098123d37b62de75f8163310534c87bf75780f2e4cbd47ef3f51f"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1098.json.gz",
+      "bytes": 1275085,
+      "sha256": "8ee722e5c50d044a8389dadba5bf378ac12d0edbb19dc4145c3bf22672ca4d6f"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1099.json.gz",
+      "bytes": 1275595,
+      "sha256": "fdf19bbc11c654691999d995a078de0d8dc52119191baebba1e7321ed3d25d2b"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1100.json.gz",
+      "bytes": 1275989,
+      "sha256": "5211fda8eb00d0efa34a0456b6eec49b532574ab25f21c51f16628c9d6b410e1"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1101.json.gz",
+      "bytes": 1275869,
+      "sha256": "7d22eced75fd0f3bd35dcb36a3d06299fc917a3a73cf9488273b1d2b5f0f2c6b"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1102.json.gz",
+      "bytes": 1276339,
+      "sha256": "840530930bd501cc9cbbe7d3075f04c3cd98884c344df712cbf0f8c0f390f7dc"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1103.json.gz",
+      "bytes": 1277152,
+      "sha256": "7996c613d267d2d5c5741b7e8acbf889c43b0261b5ef910ba1341e6f0a3f6a6c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1104.json.gz",
+      "bytes": 1277764,
+      "sha256": "1f62d86c5afc366c1f917cbdb89b11153c2839b77ddc85085035c1838361cdc8"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1105.json.gz",
+      "bytes": 1278343,
+      "sha256": "651fd8adcf4e4a83f78604602a93489624651f3c765dcc253c0771919aee0f94"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1106.json.gz",
+      "bytes": 1278375,
+      "sha256": "a9ed85b9dd20de322d0e346ad17c400b6a5eb5955edb91230d5c4546b57e9763"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1107.json.gz",
+      "bytes": 1279311,
+      "sha256": "f4514a15e892c0ddab5f1a0dd832cde4aae5c700e8b9f1f362e76b727f9dbc6e"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1108.json.gz",
+      "bytes": 1279973,
+      "sha256": "5755e4720ff21785ac76cc560f03d530e38ad36220964fbd5a409885aeeba6d2"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1109.json.gz",
+      "bytes": 1280540,
+      "sha256": "1b2f7f0021e0ecdb7b6207175e1867736cfe918f27c25c977db413b7fedb6291"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1110.json.gz",
+      "bytes": 1281899,
+      "sha256": "ed8d1c5d56e4d6263222a0f56223937828ea7f2c8daa948cd29dc359b680b24b"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1111.json.gz",
+      "bytes": 1282643,
+      "sha256": "bed7a692e26fdff0d6ed13ec4f976cab5d9c5d267cd818972026688d00865b11"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1112.json.gz",
+      "bytes": 1282568,
+      "sha256": "63b483c648806826c37c77270d2dcd9ca6cd48d92c4e1ee45539a590100f2821"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1113.json.gz",
+      "bytes": 1283233,
+      "sha256": "0b56ea01d8e1e9d7b792fbc83a47ac24f2419e25ded3605996472946d3509cb0"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1114.json.gz",
+      "bytes": 1283733,
+      "sha256": "9d6cfc9e2c12594e8da0abb7bbc3458f67c0b7beac9313330260288bb2dbe407"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1115.json.gz",
+      "bytes": 1284366,
+      "sha256": "6d941f5ddc6cb547a7bc0d761dfdd0c021c780bf29da104b9bba9d4e7fef2a7c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1116.json.gz",
+      "bytes": 1284576,
+      "sha256": "337a3efe690b1e43a2f62b93d3e2d95dc9f00bff8bedeee00db8bd023591b8c0"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1117.json.gz",
+      "bytes": 1285290,
+      "sha256": "b88a9e3dfe4a9d298df742d0174e754077eca6b51b250a8c6b6760e98f047d6d"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1118.json.gz",
+      "bytes": 1285834,
+      "sha256": "e184515f1d6ba84edf7bb907d06455341ba9e3d1a3b9655df135662fc2394220"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1119.json.gz",
+      "bytes": 1286204,
+      "sha256": "df394b9b0660a92b4eee65a7db2936c0d8a5a6446be9b124fce4834221fb6d32"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1120.json.gz",
+      "bytes": 1286503,
+      "sha256": "3ddd866d16f41b269f5ff0fce2ca7e2c8e458c71be6ebb92c373348f1c13d1e1"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1121.json.gz",
+      "bytes": 1287318,
+      "sha256": "3a35d88d0aa12f72a3b9a14c432dc7d6c1b559cd8fb9791408a2f5ea32df7673"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1122.json.gz",
+      "bytes": 1288129,
+      "sha256": "3df35655e85acc8d46acd20550928b12c20ed6b5e71279874ae21cac50fcb9ee"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1123.json.gz",
+      "bytes": 1290076,
+      "sha256": "caac34f79e2d98c612ff8bf6736dd8686633177f35a310fb94595c6d366c3d81"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1124.json.gz",
+      "bytes": 1291140,
+      "sha256": "88cbe5a9890e2d16b7c3c19f1d5411e4060154da93af16599a51609be05553e3"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1125.json.gz",
+      "bytes": 1291132,
+      "sha256": "96332631d97c8315d7f84b6243aa0638261b0caec1b22c754e206c71ec0c7d5c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1126.json.gz",
+      "bytes": 1291753,
+      "sha256": "6e3a9f79bf1a7fc126349915cbe0f32fafaa3fe67229b18a2c0c1eb5ab1616d3"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1127.json.gz",
+      "bytes": 1293989,
+      "sha256": "d880004a87b307cbd38c083858ec5a9189aba7baf1ab0f2a9c9ea52f181ae70e"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1128.json.gz",
+      "bytes": 1296663,
+      "sha256": "e389933146acf209547e7808317321ad23935e7eae8a7f37098ce445f8df57c3"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1129.json.gz",
+      "bytes": 1296203,
+      "sha256": "b0bec04da59347da5b4e4a6e387f92660fd5cb8910bc283d1137e7774896b248"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1130.json.gz",
+      "bytes": 1302127,
+      "sha256": "7ccf885b9e8a394c399b663ec05368f4d56d9a8f5e6f31b3222426988a597a62"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1131.json.gz",
+      "bytes": 1307241,
+      "sha256": "38c1df51eb66f749ba30b35e3b0b0f65ed46bcc0865e92c0710f1cce2a522a96"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1132.json.gz",
+      "bytes": 1307405,
+      "sha256": "8ec3be635fea2d7ce48771cb6f4288a2552b315624047cc8cab428e64c2d0681"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1133.json.gz",
+      "bytes": 1308220,
+      "sha256": "b49cf53fd512a4b0e32953bc7da081181b5a0f48959cedc5698993d4342e6d17"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1134.json.gz",
+      "bytes": 1309973,
+      "sha256": "f288473efa19363d31919ab9d6276af5b80c03e524b94bdf5bcd4e8d47ef1510"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1135.json.gz",
+      "bytes": 1311219,
+      "sha256": "e98b54c9e6da3c8a3b229971974deca443032cddec6df330c15a0e517a263b1d"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1136.json.gz",
+      "bytes": 1312005,
+      "sha256": "046fdb4e5c7ae4e2053edd4d4e45ce08865974a64665f7d03dda76ffbe41d056"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1137.json.gz",
+      "bytes": 1313266,
+      "sha256": "db2af78439088bff4cf310cc9d6ae4cbf8b2dafd609b03adb1350356910c79e2"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1138.json.gz",
+      "bytes": 1314455,
+      "sha256": "e5b2847ffb44ff0da72dbdb7214bfba161fc38dcc093b85c657ad92d3bd4ba07"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1139.json.gz",
+      "bytes": 1314970,
+      "sha256": "d251e041609d28ffaaa93f1397c86539f8733b0503c6b83fe028d81b867d0b13"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1140.json.gz",
+      "bytes": 1316022,
+      "sha256": "51c251a243675a584e6064f939cd2679b168c7b375a58362fd26f69e5381197a"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/action-1141.json.gz",
+      "bytes": 1317464,
+      "sha256": "ca78f6f40b30204b8bb2b902908561db36ad10cf0019d768819da3627a5ac5d2"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/archived-original195-natural.json.gz",
+      "bytes": 738655,
+      "sha256": "1c22ada6f71f4a78f50265949b620034060ebdb4a458467ca949f9edd6fb6edc"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/boundaries.index.json",
+      "bytes": 11134,
+      "sha256": "6996452292e514c396a2f3ae067075f231215f38fc9dc77a388f380522f85bce"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/checkpoint.json.gz",
+      "bytes": 398042,
+      "sha256": "8c460e6e9bb427161dfd41a822108e98e3d0e3b988a62be083949d012937cf1c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/commands.ndjson.gz",
+      "bytes": 38151,
+      "sha256": "92684becf50cf2f773fc92266cf10173f45d998d40ee54a1a0a42195b120e57a"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/input-freeze.json",
+      "bytes": 637,
+      "sha256": "b08a92b4c06b1af954ba39b8595e4b340f8884d2b92c697323aa4630c87cece8"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/migration-initial.json.gz",
+      "bytes": 556641,
+      "sha256": "0dcbdae5a584e9d9ab17fb687f01e9f04c9964170bd77220a50945e9a1ce6d0c"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/natural.json.gz",
+      "bytes": 362641,
+      "sha256": "841538acdf10f0fe99317e5eeb68461125fbe528abbd3cb1ebc23abbec375a95"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/producer-tests.mjs",
+      "bytes": 22191,
+      "sha256": "7cb861a8850ca0c40bbf72448b1e46aac56f301c0b63b79f36ae99a179619c3d"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/producer.mjs",
+      "bytes": 56688,
+      "sha256": "9ac76877273f4c80240e6e579272c52976b9c0a8373ea1b67dc94eae832e0fd2"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/recovery-manifest.json",
+      "bytes": 14541,
+      "sha256": "1e6afdccd62b6dbd0a0dc82fe6eb594373f537bc355238b692740f428520efcc"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/runtime-freeze.json",
+      "bytes": 627047,
+      "sha256": "fbfc7b2514236b17e9c029370b3454c7f97d69165aa6df95c7565e566ffd22f8"
+    },
+    {
+      "path": "tests/fixtures/death-v02170/summary.json",
+      "bytes": 18477,
+      "sha256": "ea382f09a890a04190cc73be8a34489bfb2fed2930e7b4a17239195858798d9c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundaries.index.json",
+      "bytes": 16715,
+      "sha256": "67b4194bc9ae6ba48d33e0be29bc0bd78063a65e294d52052c8df14d0a0149ab"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-consume-pale-emperor-potion-1.json",
+      "bytes": 3013690,
+      "sha256": "26c44c876ea57d9595ed0f916d05bcd60457e3253645cf385b36ecd25daa7c86"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-consume-pale-emperor-potion-2.json",
+      "bytes": 3310803,
+      "sha256": "be9a1614086a8c3c1869f8426c47b8548d5a84763aac3d3121c84a6e5bcd048d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-consume-pale-emperor-potion-3.json",
+      "bytes": 3625510,
+      "sha256": "8b0b44d14e54607f331169e47c5339d8ddf81b42aa263f4bc7a8425e9685c293"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-current-era-60p-care-without-healing.json",
+      "bytes": 2637656,
+      "sha256": "0cacadfc37bed1e03d27a216560b93194695bb7f4ff06c7a50c3b4b176bbad6e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-current-era-paid-work-after-living16m-exit.json",
+      "bytes": 6910137,
+      "sha256": "405d4e91749baf749651db5069c71311f48093657403f343a97900fd2d2e38aa"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-preparation-PLAN_RETURN.json",
+      "bytes": 2858861,
+      "sha256": "6a733d0bdb7551da639f91d0169cd8e698f02fd8c6e1a2cde878bc7555873d92"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-preparation-VERIFY_PROVENANCE.json",
+      "bytes": 2824296,
+      "sha256": "a88c74d97c2542226d0a144a53074f5dea9950ae89fdb60c202017044002a9c0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual-preparation-VERIFY_RESIDUAL.json",
+      "bytes": 2849592,
+      "sha256": "c97008c3e804d275eab41297ea5d72046b3aef6bb27377cd7299b4705fb5a204"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual120p-guidance-frozen-eight-stages-and-long-history.json",
+      "bytes": 2741745,
+      "sha256": "977cf8000cc2d73c013360c3d241a969b1aaff91c494f1267ad088533703c6ea"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual16m16s-arrival-independent-alden.json",
+      "bytes": 5209051,
+      "sha256": "303fb4d47e106a7a7b1b25dfaff3ea748338404267cd9913a66244cd475ebf70"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual20p-current-week-preparation-pale-emperor-potion-1.json",
+      "bytes": 3004061,
+      "sha256": "4826e015040aee8e956c30365a39f3b5297e262cf73345e3af8e9d2f710044dc"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual20p-current-week-preparation-pale-emperor-potion-2.json",
+      "bytes": 3301234,
+      "sha256": "bd50fde7456c8ae2dcd88c76c3c32982b91220b0c7741eec74099ac63e559cd1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual20p-current-week-preparation-pale-emperor-potion-3.json",
+      "bytes": 3615142,
+      "sha256": "fa115645722fc7f6675172444a4b0d88211abbf3b7b3302c42e25385689f09a0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual80p-buy-pale-emperor-potion-1.json",
+      "bytes": 2995315,
+      "sha256": "0124eccd806df89cc5fe9f2415e9a3b97944eed6f664603b05bc1b68e0f38c5e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual80p-buy-pale-emperor-potion-2.json",
+      "bytes": 3150309,
+      "sha256": "5bac16c13e3758cb3790844de08813edf13c05fa52bd8e2f7fcfdb598603b831"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual80p-buy-pale-emperor-potion-3.json",
+      "bytes": 3447585,
+      "sha256": "9ef4066683d224d9b6b8befba00fc63d0fe98f6ef4f6ef392991bd306d3ca3df"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-actual8p-only-two-original-seals.json",
+      "bytes": 3705152,
+      "sha256": "32f153ba49c5b56d17e8b703c15ee88fc38c40b649ee4f5839a6918185eca14f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-1.json",
+      "bytes": 6123537,
+      "sha256": "1a2df9568b7bad6c77e9ba0557dac74d8599469e15ea0dff57a3bd68c972f5ab"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-10.json",
+      "bytes": 6823647,
+      "sha256": "b864f51154cf51f5ba69a159537f53aa304672b03932a9664c85e868aaabb1c0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-11.json",
+      "bytes": 6915616,
+      "sha256": "addeacc9456e880f9a0bdb4555bcae5aac1811c160342762a20ca8e738b51246"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-12.json",
+      "bytes": 6919805,
+      "sha256": "80431fc301e92237e7198cb44462a15003e4c750aad763d48aafde754d766312"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-2.json",
+      "bytes": 6275375,
+      "sha256": "79417f698acba3ca46a42f5dbe03acce81c9c8c9f3af2b68c4658972f22b6f1f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-3.json",
+      "bytes": 6368814,
+      "sha256": "71f8c4f1067b1771681c65fd8860dcdd86d9690f9a6bc1be6ab82f20a98c638d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-4.json",
+      "bytes": 6384420,
+      "sha256": "0c10598bc6a8fd24fc2f865395ac7978210496f030cc3214422efb9c8049ccdf"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-5.json",
+      "bytes": 6425883,
+      "sha256": "9ee4962af1abb65b918d0e5b259cbaf410ab1e6cb836d730e38cc8f31e8fe477"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-6.json",
+      "bytes": 6507636,
+      "sha256": "a9a2d0892460578b0dfd5820f8742dfcc70d898d719008502da557773838e789"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-7.json",
+      "bytes": 6559525,
+      "sha256": "8ce9466174dd7143ac827b329fdb425a9b665341b21854fd785d0157c2cdd7c8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-8.json",
+      "bytes": 6619160,
+      "sha256": "39068a3c004e9ef77b9a661bf39c75bd729e097eb0d4c6854ed7d35ef28e5edd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-combat-round-9.json",
+      "bytes": 6707973,
+      "sha256": "74e51cf5b863a2132de14924c8fc2663799226ca66c0d6e772bf2d8148ab4e46"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-exact-original815-command-living-source.json",
+      "bytes": 2634941,
+      "sha256": "afaeaa20f2f5064f4750a979776598ba54355908a177c8e362361f402292b69d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-fixed-all-policy-before-independent-encounter.json",
+      "bytes": 6005975,
+      "sha256": "7233394cb4066b58ca916eeac95977e4aa24cb5d37244e22dc3f66c25ed8bf5f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-actual-source-and-ordinary-alternative.json",
+      "bytes": 3897514,
+      "sha256": "edb18ab53f7986a2b72fcf089f358b997e9cfa8861f2f9529a73ce5dff169673"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-actual-walk-and-open-same-vessel.json",
+      "bytes": 4006518,
+      "sha256": "2bf2621582b4ea1d6e1784124b05579d62dc82b9a71bddb1622f61947aa75537"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-actual12m12s-road-arrival-1AP.json",
+      "bytes": 3946972,
+      "sha256": "704b3ea431687276e37cc23b8c5ee2285b5318c27313defc643969c85a5da947"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-actual4m-carry-or-ordinary-fallback.json",
+      "bytes": 4050939,
+      "sha256": "9363dccd86040873f256b252b6e208de1b0978ee65b467077b8be9b706ac18f9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-consume-one-actual-original-seal.json",
+      "bytes": 4079692,
+      "sha256": "9da76ecd21aa39feebab0ecd6801246f28fe0fdb0a09087d14cf28acc3faa0b4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-fresh-ability-consent.json",
+      "bytes": 3991994,
+      "sha256": "ac61510ea6eac812d979b7c95a549969d3dcd7320249b4246736343741ab6a59"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-fresh-custodian-consent.json",
+      "bytes": 3977397,
+      "sha256": "120b30f270e5acf94448839352736a82a4259548016948bad7fe03e1924f5bbf"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-fresh10p1AP-nora-invitation.json",
+      "bytes": 3962166,
+      "sha256": "2b14727b9acdf7f0bcca4bca521cbb39e13ddba8d8a043d3fbd8ca70b9c81a18"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-honest-report-of-actual-applications-and-failures.json",
+      "bytes": 4123374,
+      "sha256": "ef773aa337ee970fc012f9f00800ab83b2fefbdb83a42db673df42c5c0b422d3"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-nora-actual-exit-and-player12m-road-return.json",
+      "bytes": 4108708,
+      "sha256": "01b0cc31dd8392efbed585b8f1c8d443958995482312e7c38560f82743d37294"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-observe-current-original-and4m-line.json",
+      "bytes": 4021011,
+      "sha256": "ce733415209780e08613a1f7ab1060835c08fe56483ff226eac5c9165ef087b0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-one-paid-window-attempt.json",
+      "bytes": 4036096,
+      "sha256": "20a4220f558f14ce89e39acb7a19d958978639592b50011fdf6733727539fe6c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-ordinary-original-screen-and-lid-with-real-scuff.json",
+      "bytes": 4065202,
+      "sha256": "14c17f13c4c175c1fd37f0174191d20393ecdbf6d3bb4fc0d1e0b76456d97097"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-guarded-carry-return-same-original-loan-safe-box.json",
+      "bytes": 4094199,
+      "sha256": "314960b97c37bc57ecf17b7c05b1a10cd5dd0ef9544576d74ca3bce3543674eb"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-one-optional-independent-alden-fight.json",
+      "bytes": 6030419,
+      "sha256": "393fe8f8427cffe050ccd8f4fe917e36e67a54eb0d13a225e22a470375ec7fb5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job-2.json",
+      "bytes": 2876535,
+      "sha256": "9385f77104db30e4ef27201297fe74a2524f15b88504d206e16f0a0ae2c4e9f4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job-3.json",
+      "bytes": 2902508,
+      "sha256": "20706dd2e3a858000da08dce5d41eddc0328aba04a3f40f6e9dc5800157cd4fa"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job-4.json",
+      "bytes": 2911271,
+      "sha256": "761569be2196e601071734a54cd12985b76ede9215a3033ce28956820302057c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job-5.json",
+      "bytes": 2920160,
+      "sha256": "7394c23c540695653f35a46b78a0282ab0b16ceb2b00c4cf5a3a033381d92754"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-1-actual-bottle-specific-job.json",
+      "bytes": 2867796,
+      "sha256": "a6660d482d36d21e76f90a6db6003aa2297de9a630d3f2f67455c0a4e3811d5d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job-2.json",
+      "bytes": 3031586,
+      "sha256": "7e2f7b05faa4592c64d283e8e88c1943a1ebb96426d5381bdadb0c4eefc49e4f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job-3.json",
+      "bytes": 3057560,
+      "sha256": "830780b8acf4032913503ce37d3c7c019c19825fe147f36eba5bc3b21bb27fa1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job-4.json",
+      "bytes": 3066320,
+      "sha256": "5672b3972f1ea07729786f252b757b16563e8c52d18c9b4ffd531a94dbc63f82"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job-5.json",
+      "bytes": 3075207,
+      "sha256": "6ce6c5600d00b8db5114d9756096f3ef44b655196d511a6a226818ba73d8c04a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-2-actual-bottle-specific-job.json",
+      "bytes": 3023044,
+      "sha256": "e60fcbf538899c06a2ea3d5bb23da6536f029bbdabcf3b472f850f145d5e1272"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job-2.json",
+      "bytes": 3345645,
+      "sha256": "72a297941edfc242af5a42360481b6df02dbc583e626c9771f2c1f772c9b1b83"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job-3.json",
+      "bytes": 3354527,
+      "sha256": "e6ae9f0cf7f6c95766be0d26ee1d517747949f81dc7e7eb180fb4e5cc8b74bd5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job-4.json",
+      "bytes": 3363415,
+      "sha256": "398a03a67d4bee8f129bb524a47570e7b666e1bb947fc945c257b1d03f1d3349"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job-5.json",
+      "bytes": 3389384,
+      "sha256": "18b797af1d94c945663311ced9b5cd0be31a39269ab6de0981a8cd3565d3f7c2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-pale-emperor-potion-3-actual-bottle-specific-job.json",
+      "bytes": 3336892,
+      "sha256": "a9ab15bc88f317ea71f87b34989c4cefabb482b5c77e37ddde89148842d9bf73"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-actual-lid-action-or-ordinary-fallback.json",
+      "bytes": 3808144,
+      "sha256": "4c00642ca56b67ebb555fd0d760972027072f51ecfd5e6a362f989d14f50d96a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-actual-source-and-ordinary-alternative.json",
+      "bytes": 3635781,
+      "sha256": "315e91c673aba04bd32541e54273f5e7ed0d00f8a644e2f6b18d10c04dad74a2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-actual-walk-and-open-same-vessel.json",
+      "bytes": 3764188,
+      "sha256": "34184a32a61125dabc9a8d33bb24989147efdbdc7c4ce0221af15b6e5db8eda2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-actual12m12s-road-arrival-1AP.json",
+      "bytes": 3690690,
+      "sha256": "e23e03dfcf5b719bdefd6e83f15395ea94c6de2f1d1eb43583064699583204e7"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-consume-one-actual-original-seal.json",
+      "bytes": 3822324,
+      "sha256": "a362898cf694f2b5eace9089b964266ea97d0b1c4583e79dde56b744cf2f58b4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-fresh-ability-consent.json",
+      "bytes": 3749800,
+      "sha256": "6b9942fe9a30192c02ddfbe3e7046b8c6b5cfd9c87c2f57316a4a25804a6687a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-fresh-custodian-consent.json",
+      "bytes": 3735347,
+      "sha256": "fe965bca105abe98dc4b7df87907adbfefc757dc17f3ce09b7e21f229715474d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-fresh10p1AP-nora-invitation.json",
+      "bytes": 3720238,
+      "sha256": "b7232b3de5fc4790b0a75d1d49c33db578a33a9909534732e1e3f7f26b5af042"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-honest-report-of-actual-applications-and-failures.json",
+      "bytes": 3883051,
+      "sha256": "38181f20d21d41d865772e18fada2a6251ec946d3eff85680803d59ca67c1e41"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-nora-actual-exit-and-player12m-road-return.json",
+      "bytes": 3851125,
+      "sha256": "b6deeda2aa317e3aa29751761b393f03c4e23ec08ddb784b33501a8c84950e7f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-observe-current-original-and4m-line.json",
+      "bytes": 3778553,
+      "sha256": "cb8e6862bf34aa0f41688d0b6e052fd3d371f8c5d645de4faaa24a71cf316099"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-one-paid-window-attempt.json",
+      "bytes": 3793454,
+      "sha256": "17ca12ae29120500cf8b85917b128968c9c527e54e279da9fb93adca6796c0a4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-quiet-lid-return-same-original-loan-safe-box.json",
+      "bytes": 3836723,
+      "sha256": "c33c012cc9ea11597a3562cb29d4c99a9574250f009b0732e6929bce552572a9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1001-era_work.json",
+      "bytes": 4149741,
+      "sha256": "d2bfb46aa94fcfbc135d4bd7bd03e0ccbfa38e7576a594d24058969f574cfc0c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1002-era_next_week.json",
+      "bytes": 4158684,
+      "sha256": "046e461899e8276bbaa3bda4bc4ca2aa1f3678442c7b7876bde0feacb69417fd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1003-era_work.json",
+      "bytes": 4167514,
+      "sha256": "44e6e98c88c9c1a04540c97a8d7306f9e40196c69c1aff09f325b199a38ac1b5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1004-era_rest.json",
+      "bytes": 4176398,
+      "sha256": "702cac8f47a8931eff437010df5762392b5b4cbce2da27e47d43b0e91f96c225"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1016-era_work.json",
+      "bytes": 4348782,
+      "sha256": "fb11a31df0c7d3ff77717fc163053084182975fad2a4759812f6fee61b1cebfd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1017-era_next_week.json",
+      "bytes": 4357792,
+      "sha256": "aa61d90bcd68baefd28af7e13b96a477eb36cd683262f4363fc0a4875be27e24"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1020-era_work.json",
+      "bytes": 4396351,
+      "sha256": "4b2d09d0948df6dcd2d849db57878d1ac8ef2c175cf304c32cb3751270c06578"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1021-era_rest.json",
+      "bytes": 4405588,
+      "sha256": "c98859d4d9b09c6f9047234632fdb5897c94f9f182719a781e8f830427b08240"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-1022-era_next_week.json",
+      "bytes": 4414854,
+      "sha256": "040bc368bb9767ff14fb5f811b79f0e269b29859202bd159d0b0e82218409d4b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-816-era_work.json",
+      "bytes": 2635362,
+      "sha256": "93c328fb5fc3017257024b2856cc861ed91e4c25b5a50b6e1d30e4ef8d0d8d99"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-817-era_next_week.json",
+      "bytes": 2636199,
+      "sha256": "4ef5ab1eb885217bbf6e9ca3cd4ec59fb8f1a6cc254bd371838028b7b87f0ee4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-818-era_work.json",
+      "bytes": 2636830,
+      "sha256": "3b4a6419690ad91ba838075868b367d61a4a7d4a916fefb396e6a5ab91a4e4a3"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-819-era_work.json",
+      "bytes": 2637074,
+      "sha256": "9c8d5607880c62af0d1b5f0fca2cf212f63289639334e8718a4ff8ac07b4755a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-821-era_work.json",
+      "bytes": 2638166,
+      "sha256": "526034147d5daf91fb8a2c80053dd9820b814d9c2d3a5c9ff1938f5576b158c2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-822-era_next_week.json",
+      "bytes": 2638931,
+      "sha256": "659fb538d6115d3984cc669d93365aea27eaa82b92e42d927afc36c9cb543a9c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-823-era_work.json",
+      "bytes": 2639562,
+      "sha256": "e672d3dde010ef27813d443b4450262653b0baec717861d9fb9fed7860591079"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-824-era_rest.json",
+      "bytes": 2640003,
+      "sha256": "3c282f732e0bcdb9a9a76c469f977bfee7e9fdb7068e681b9b132686d1ab078b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-825-era_rest.json",
+      "bytes": 2640738,
+      "sha256": "c4cf6a4708bcb98fc3a658bfd2797a5a4990e48af589ab3dcba9a5d7d0b4e5e1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-826-era_work.json",
+      "bytes": 2641178,
+      "sha256": "f943937cf83189b302af2f7e7765873d7cc8866e26b08d345b337c287fb4dfe8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-827-era_next_week.json",
+      "bytes": 2641914,
+      "sha256": "4d547cb66d70c552e9152561542daa569162d97c273479e0f403a96ac051d618"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-828-era_work.json",
+      "bytes": 2642543,
+      "sha256": "bc17d957621c937922545e057363742e9a1af58d3a5d3adc1a54c6166254ad85"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-829-era_rest.json",
+      "bytes": 2642984,
+      "sha256": "c334f8dcae7b0470c74014809ffeb4b4eaf00a0dc293ae4e56f854c01fe60547"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-830-era_rest.json",
+      "bytes": 2643718,
+      "sha256": "6abbb47f843c5b5e201e0ef03e95ac254e5908775682d9c61e2a7e5787a0f858"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-831-era_rest.json",
+      "bytes": 2644354,
+      "sha256": "272a4ab0c61a9d1a665d7ffa75ce87be3c59f78305412804aee5e06df659a5fd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-832-era_next_week.json",
+      "bytes": 2645191,
+      "sha256": "530020452789122525903453970908f1a0d88d0639d93c6a349fd2a17ed49a85"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-833-era_work.json",
+      "bytes": 2645725,
+      "sha256": "4e2e39a1f1708e11da1a212525a1b35ea57f7860bdf45eb8cba5d77108222af5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-834-era_work.json",
+      "bytes": 2645970,
+      "sha256": "4f6409361397ad3e7df9bef41fa4808ca8b41b8cfd1eb2df050ed5caff211cdf"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-835-era_rest.json",
+      "bytes": 2646606,
+      "sha256": "8ff1de7e5144b938de21089f3b798e7899181389d46e557c21814970fcd1fe17"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-836-era_rest.json",
+      "bytes": 2647340,
+      "sha256": "df38e0bcd20fb83923c627713a460ce901b8e1319f0addf5d436a048e2cd4585"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-837-era_next_week.json",
+      "bytes": 2648177,
+      "sha256": "82b52220a900d51169030d0a024281a479939c72cd479266b059a74e35bce8e0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-838-era_work.json",
+      "bytes": 2648710,
+      "sha256": "ee7c441fcbc5f79cfe84bd084bb4fa9235799ada51102dac195dd1c95ddb2377"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-839-era_rest.json",
+      "bytes": 2649150,
+      "sha256": "db0ce43ba1ee085445a2b0b6c39485dd542a51eda9f98a34361e4b7645055d06"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-840-era_work.json",
+      "bytes": 2649688,
+      "sha256": "9ccd5cc29f3b2a3d5c162102fcdecb22d0fec7025432a2bf2fe515f6ada7dee9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-841-era_rest.json",
+      "bytes": 2650226,
+      "sha256": "189e27f081fc465435fde0b420a4a1f812ab5bfb0140e52c7673a51935bd5c06"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-842-era_next_week.json",
+      "bytes": 2651161,
+      "sha256": "f3b1f2bdaf8ad537c9a374b8161da5fa14f3626668c8e9e6d73be3b3376f4765"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-843-era_work.json",
+      "bytes": 2651694,
+      "sha256": "bd7d8534ae37226a39dc35cc4aba824f7848a90c640c6adf9451536ddc1ad932"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-844-era_rest.json",
+      "bytes": 2652134,
+      "sha256": "3bce5448cf5639c6f3ba0539350ac850814b7ee6a05a172d7bac1178139f323a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-845-era_rest.json",
+      "bytes": 2652868,
+      "sha256": "924a3008ba62069a549d84b1ea67603ce958d51de1d9c78deaaceada43044aa0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-846-era_work.json",
+      "bytes": 2653308,
+      "sha256": "81b3001bf154956f27c39262d3be8a294ea7c60d4df6a69c6928dbe53e32bbf9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-847-era_next_week.json",
+      "bytes": 2654044,
+      "sha256": "3f59de74f154095aa5e46a06d6d4e235dccc830659072d9b5e75a8f43069e6d0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-848-era_work.json",
+      "bytes": 2654673,
+      "sha256": "b845c8518130e00fde45324f33e07292ddad7052c044e3eae6c6ca4e61ed0048"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-849-era_rest.json",
+      "bytes": 2654676,
+      "sha256": "f299121c94ee61dc0b712f013055e76cdf11a076aeb0c6e3e8050bee20108660"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-850-era_rest.json",
+      "bytes": 2654936,
+      "sha256": "3187d4c64ede99d73b3e1612136a9fe13522728af7d40a4c046180e3bd44ef75"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-851-era_rest.json",
+      "bytes": 2655536,
+      "sha256": "9e8c1e620518ccfec0fe84a060bd8e52d8538d631f4c15a9b131d553a9568dae"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-852-era_next_week.json",
+      "bytes": 2656370,
+      "sha256": "3f145b7f13d7589d87d7117843d4e62568bf5ad9a6b65eac9b1d605470682f4d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-853-era_work.json",
+      "bytes": 2656902,
+      "sha256": "7c503f8453b80e7c23aa072e2aec0376282daf66e04c31755364d3e3710e92f1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-854-era_work.json",
+      "bytes": 2657148,
+      "sha256": "f2a576eb4bef6bba9fe229244322710d51ab46ed8c9feaff2a02df2158569a63"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-855-era_rest.json",
+      "bytes": 2657784,
+      "sha256": "d517007f0dc8c2bbd7dd90565109ec42343576ed4232174c6567b68c4d24a91b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-856-era_rest.json",
+      "bytes": 2658519,
+      "sha256": "512da5fe182b2ec18caad28806265c19ae2aed9eedfaf5dc5ffd864b682b7123"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-857-era_next_week.json",
+      "bytes": 2659358,
+      "sha256": "129d4abf1c1f8b7dd0b06f7c3cffcb9f56fc33f45d4a282f900a5a80d854d410"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-858-era_work.json",
+      "bytes": 2659892,
+      "sha256": "f5d04052880fe6615f446502fb7024a0314dad6e932f59636b613c1c02662451"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-859-era_work.json",
+      "bytes": 2660136,
+      "sha256": "c868c9a5a98bfba70107a5867e13cdc721be6e6272988443beacc1eae964263a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-860-era_work.json",
+      "bytes": 2660576,
+      "sha256": "0ed6cb2a40b8cfdb0c8ac5a39106ca1576cf06a22488947b3c9c7d59ebbe13dd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-861-era_work.json",
+      "bytes": 2661017,
+      "sha256": "6b7b2be08ea106c89c57cff3c914c8bd7b9f7da6fce91e62488af2e34a897c9b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-862-era_next_week.json",
+      "bytes": 2661854,
+      "sha256": "3dfd044f5af411a709ab4ee1373c04a58a2f8c02696058b291cf483f99693e5b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-863-era_work.json",
+      "bytes": 2662485,
+      "sha256": "bf5e02a16c6fcb72067daf5e363d675af62da46e9c6f5edf67f74ed77bea9321"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-864-era_work.json",
+      "bytes": 2662730,
+      "sha256": "79c6dbef2f2c97bed6353369e657b6ae6341c5fe73c5bc57fd0652b8fa5d9725"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-867-era_work.json",
+      "bytes": 2832047,
+      "sha256": "4e531b51842e37e5152e0828b9b4e35faca2e2402e318f456a95276f0a52b3cb"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-868-era_next_week.json",
+      "bytes": 2840509,
+      "sha256": "4faa24abab35e6ec05910bb1d63508c63bec6d0f90a0b904462debb557e8554c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-873-era_work.json",
+      "bytes": 2885136,
+      "sha256": "995bf57dcf7fc4807b7481e4ecd3264bea30b75c4fd9db72094614815434a136"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-874-era_next_week.json",
+      "bytes": 2893749,
+      "sha256": "d1c72f2fcbc358c2f08c32a70cb28a33a371acaa697eba19b35c273f41e1e427"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-878-era_work.json",
+      "bytes": 2928588,
+      "sha256": "d5842cf63205d265331bb5ef2e7e008507b0f60b76ad272f2425dd7cf2d39f07"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-879-era_next_week.json",
+      "bytes": 2937121,
+      "sha256": "da090bfd04808d037e461df31247f92bec28e9c9e021e32cc9edf750285d8921"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-880-era_work.json",
+      "bytes": 2945516,
+      "sha256": "7868f97eb5f7a79eb02f9b0efa8cb94a8808c3a7efb53addfbbc39d5c344aa19"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-881-era_work.json",
+      "bytes": 2953517,
+      "sha256": "2a945977d9279a1dc02675d5e381387cddaac4af3b81970df7a375848bfe5059"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-882-era_work.json",
+      "bytes": 2961715,
+      "sha256": "28976c06b36b94d0be3cc3915001966d2aaf158955b67b7399c73b6b421b92f5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-883-era_work.json",
+      "bytes": 2969915,
+      "sha256": "a217ebd656c209a63ea7fae09a4773ee9a9d427bc5f8cdbd4199a80d4ee2971c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-884-era_next_week.json",
+      "bytes": 2978519,
+      "sha256": "54f03812f5598a3b97cb941381fd144ed0165131d58d046129b5bf4802c74434"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-885-era_work.json",
+      "bytes": 2986916,
+      "sha256": "de1e853faa462b14ebc6506db2a6083039c7e42f0e6f01cde292c2cc519fe8f0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-891-era_work.json",
+      "bytes": 3040186,
+      "sha256": "03d3c44bc3055ae61499272e1725b00e1aa77cba143acec18c2635a290a5a44f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-892-era_next_week.json",
+      "bytes": 3048801,
+      "sha256": "c5c8781acf8fc2544aa7cbd9e5a1362e5e97e7b5d6f3866452b68c3d10043713"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-896-era_work.json",
+      "bytes": 3083634,
+      "sha256": "210531acf7001a37bfba862405941d1727cd8a3f8d1aec129b785863dd8a9b14"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-897-era_next_week.json",
+      "bytes": 3092161,
+      "sha256": "3fe3ec988bc870c0fd2c3362d51b854e3b4087ab1958641d46ba24bbb790dcf1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-898-era_work.json",
+      "bytes": 3100547,
+      "sha256": "b9486e8e95cbaf2784421dedd8acb7dd49d36ed54166cb0d5aabe3da18700b78"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-899-era_work.json",
+      "bytes": 3108541,
+      "sha256": "9e3f302107f1cc997dd46b0028da36dcbc77be8573a23aa79aa1da825b003af6"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-900-era_work.json",
+      "bytes": 3116731,
+      "sha256": "b9f8c0dd20cae04481975eefe34e526755da5a95c045ff7154841d60ab2a919f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-901-era_work.json",
+      "bytes": 3124923,
+      "sha256": "bc6084569be9e10b2572775b421c1dcc73e00001a205b7ea685ca1e5c1fc5807"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-902-era_next_week.json",
+      "bytes": 3133521,
+      "sha256": "2b0b4f9acb3a3446b902bb6eb6b0fb8d48c98a0f00e2aa9809b355d3fc306119"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-903-era_work.json",
+      "bytes": 3141914,
+      "sha256": "2f2d265b7e162854d0b371f45fcdc641c10c55f3db30b6047e436d5954bf1b5d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-905-era_work.json",
+      "bytes": 3158777,
+      "sha256": "080fd06e57aeed48f13fac0a2863f91949438ea6dd9f312d1bcd943bbb3e0e10"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-906-era_rest.json",
+      "bytes": 3167127,
+      "sha256": "bf54e1ae5bccf19ddd7acdd8b056e2b3a9b8d3be16ef2c7b33e2c0fe1ee8748a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-907-era_rest.json",
+      "bytes": 3175615,
+      "sha256": "b6d6f94e53102a276de958b9411b374c211e08ae8f3efefc09953c4780013125"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-908-era_next_week.json",
+      "bytes": 3184213,
+      "sha256": "89d01dc049af52d4a01dba8deda114f0b0a33e00cf167f87ff9c4fb2bc7b17ba"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-909-era_work.json",
+      "bytes": 3192506,
+      "sha256": "98c7b1734b5f97ec2635052608914038b1df4eec86cf24ad5f3031a71e44ca2d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-910-era_rest.json",
+      "bytes": 3200701,
+      "sha256": "1823acc66cd2ec6bf2e130c44b499225583e0710de75ccb0804e9672e13c3f5e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-911-era_work.json",
+      "bytes": 3208997,
+      "sha256": "7e9a1eaef299e9e0c78fe012d5bb664dd15cbf8e2dfd0e6f3ab9aa4ac796dc84"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-912-era_rest.json",
+      "bytes": 3217295,
+      "sha256": "2d870f69da5a71f5cd7da0d8b8cb97d65283fbc262f2cf37b1fcf275c8d95f09"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-913-era_next_week.json",
+      "bytes": 3225999,
+      "sha256": "b57cb88d0ca0d8f78749358fe30ba3275cca8c4a68b0c90d7c1eefd52ecd8277"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-914-era_work.json",
+      "bytes": 3234300,
+      "sha256": "25da8544eae9953ff3ba52ffb0ca27f99dbddc11cd441101abeaf3550efaf809"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-915-era_rest.json",
+      "bytes": 3242501,
+      "sha256": "492559d8ac77c32f11ad6865d3dc34798a5d982a6896b790982561bec2944e65"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-916-era_rest.json",
+      "bytes": 3250995,
+      "sha256": "09aa99c4621eda7506c4c8a82ec18b62934b8ecaba0b2d1910090572e6144173"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-917-era_work.json",
+      "bytes": 3259193,
+      "sha256": "671be20d9f2bc1e6ea60dae59f726044aa022138ac09ce85acba3d5bd5045bd3"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-918-era_next_week.json",
+      "bytes": 3267693,
+      "sha256": "1138de6aa997b0b802920ecb17e2d24c1bf2239feaf540785f643b805877dbae"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-919-era_work.json",
+      "bytes": 3276083,
+      "sha256": "2bafe06d5953a7d1c19073ecfd86f9e3c740a9c740e3d16f83b152e7a4bd4c0b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-920-era_rest.json",
+      "bytes": 3284277,
+      "sha256": "430b61203572720d1dc29ab23c7cf4e8e3eb78dcb020697b81e130cec9e294c2"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-921-era_rest.json",
+      "bytes": 3292765,
+      "sha256": "3bbf201b035c1dcb525b556d051fac691a05de25c251f59238c15445b1de7688"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-924-era_work.json",
+      "bytes": 3319870,
+      "sha256": "2cd6faf150c25ed1edee1807ba3397ac6233bbf3da09b652e2ca10152c616ae1"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-925-era_next_week.json",
+      "bytes": 3328137,
+      "sha256": "1df7e182d835e2123f9b9724ecce88ac389c5adb1b14ceba5d71966c20e21eb8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-930-era_work.json",
+      "bytes": 3372015,
+      "sha256": "4a3c4c576e30331a2c8c721f304fedd87171ce60a7cf1ffe6266cff01cb1694b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-931-era_next_week.json",
+      "bytes": 3380625,
+      "sha256": "440c2057510835609d46d38cc43ceacbf24f5e1a7eecdea956d8c509a7183bf7"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-933-era_work.json",
+      "bytes": 3397684,
+      "sha256": "bdf86a33517b8896fa795466bbf9dda0682c2dde11bd6ed4df6c4d076787cea4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-934-era_work.json",
+      "bytes": 3405811,
+      "sha256": "d6ac9e403b211cb0c48b217177755eb7aa08e851a897cb954462a5d834333fed"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-935-era_work.json",
+      "bytes": 3414005,
+      "sha256": "531d24f21c704a3e751f9f67c45af54b332cffd40943b18175ac7660003f462e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-936-era_next_week.json",
+      "bytes": 3422603,
+      "sha256": "c8fe03174f6a59dba137ff39868f4999c01d1e091a2530acd114ee1533c3c077"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-937-era_work.json",
+      "bytes": 3430994,
+      "sha256": "1c14d4bfd200e8cdc40bf300e1b8fc99496f045dc7f91ca908a0b28a47bd4c24"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-938-era_work.json",
+      "bytes": 3438993,
+      "sha256": "49ad249f8681f0764b4970fcd27a360a4061cc0d60319b89e0f2a6730a5cf067"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-940-era_work.json",
+      "bytes": 3456053,
+      "sha256": "2b80ac55929dd518e0b9882110514ca2d70363bd0a1e6e400b38ada89f33adbb"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-941-era_rest.json",
+      "bytes": 3464403,
+      "sha256": "41838ff8f9fa7ff71635edd6f3d642686859bb4a42e503051e4cb94303badc3b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-942-era_next_week.json",
+      "bytes": 3473099,
+      "sha256": "31d1ea24f209c4aa09d0403d9923b79c29fee0428a6d469a2abb6f1543b6c574"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-943-era_work.json",
+      "bytes": 3481392,
+      "sha256": "7068bbf62f48e9cfd8611f3204c3291c124ee08222174d99325004dad8a7acfd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-944-era_rest.json",
+      "bytes": 3489585,
+      "sha256": "c6549bc26a9f71fb7ca1a2258e974831f97c62b3cc3de1ef5a6cf3edc506b98f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-945-era_rest.json",
+      "bytes": 3498075,
+      "sha256": "77a74f6791e406a1bf2376656f4aff519d49a0d2afe0bcfa1c8905aed22a4333"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-946-era_work.json",
+      "bytes": 3506273,
+      "sha256": "d925af81fd54a3cbd42be4e65c33440315c72e0f65506c9dd0e4e562b8a25358"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-947-era_next_week.json",
+      "bytes": 3514769,
+      "sha256": "f4d00e5e1dbef57da4c4c46ab58b9f242f42fc620e22406a986ad941f0a81ecd"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-948-era_work.json",
+      "bytes": 3523154,
+      "sha256": "ee05fcbe4b3f7c0c34dbbf460319283f364d8c971f7d6b7bcb81dd05e50708f8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-949-era_rest.json",
+      "bytes": 3531347,
+      "sha256": "52d6defe53bdd0938e85f1a9e56b9e57436eafc66b49a412ed6486feeda0812d"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-950-era_rest.json",
+      "bytes": 3539835,
+      "sha256": "568e63853abedecbe3456ae7f7dcc3cd99a03345d5c47a5999f3cbd20aef248f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-951-era_rest.json",
+      "bytes": 3548223,
+      "sha256": "e7ba7246764fc52dd38480bab1bbc539551456b3b6c7675a2adc18be2517ddfc"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-952-era_next_week.json",
+      "bytes": 3556815,
+      "sha256": "91eefd64b2363a720cb641f53f87a18490bd4dd40cacd2a1804a6fbee5ba6fe4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-953-era_work.json",
+      "bytes": 3565105,
+      "sha256": "f28cb76c850504074d937445040fd33701b3a7fbcca66e7480db121be9a1cc6a"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-954-era_work.json",
+      "bytes": 3573103,
+      "sha256": "235c5f1fc8d3cea7e307c9cf055e92a16e4117cdbd564a6bccc5c98ed4883000"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-955-era_rest.json",
+      "bytes": 3581493,
+      "sha256": "4651e844b40d88b547b8b1e4eaba8315bac7438b40a7eb930225f78ec455d475"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-956-era_rest.json",
+      "bytes": 3589981,
+      "sha256": "894e7767ebfb301ae96bfe141c5cd3df68ab46ae549f400f9598c136c07bec28"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-957-era_next_week.json",
+      "bytes": 3598577,
+      "sha256": "24204a2160e3f89f3d5dc6faebb73bd9a2bdc1d4b55277fe6e8ad56ffb5f5a49"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-958-era_work.json",
+      "bytes": 3606869,
+      "sha256": "becb17963cc01c1ccbc49b46c5b375f7ef33e3053240e749d88675db95fd155b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-962-era_work.json",
+      "bytes": 3644370,
+      "sha256": "8a26e058e41d6c9263b84489cdfb1789ed80a7aeaf4317127e459fe677e48c8e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-963-era_rest.json",
+      "bytes": 3653091,
+      "sha256": "f215bc610e6f3aaed70a000ecd458672246165499ca8dc96e13c10a45030be25"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-964-era_next_week.json",
+      "bytes": 3661837,
+      "sha256": "f8f4a61bc5a6f9f18b85dc488d355ff423a061762c19e8ea50126d592b72785e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-965-era_work.json",
+      "bytes": 3670305,
+      "sha256": "bdb32c760cf1987a44072f8e4208651b39ca362d18bc54afd8599f1ee4329914"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-966-era_rest.json",
+      "bytes": 3678925,
+      "sha256": "2e78f7b35914bf91a19f53bb63572cc1afb9e6df224736807b4f19d0051525ae"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-979-era_work.json",
+      "bytes": 3862771,
+      "sha256": "4db42b896b5c97056afd05857254c053325012191fe5d30735b92ddf8d927e3c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-980-era_next_week.json",
+      "bytes": 3871511,
+      "sha256": "5ed5c2d993f8a3f02542acdab33e8608adfe8fe96ae9e7e2394e0cd2aae3b6b8"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-983-era_work.json",
+      "bytes": 3909064,
+      "sha256": "494138f8a87528559fab27e1dbee18229f1be26f59adf1b0c10bedb23a0ef2bf"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-984-era_rest.json",
+      "bytes": 3917907,
+      "sha256": "7c319e603805805f40e80dd54bb35acc7e8462a1c20196fe25f802c4ff6e326e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-985-era_work.json",
+      "bytes": 3926623,
+      "sha256": "b7d8f1151283d1f8dbbc2b9005acee780a09f5a9422e59b72e08c698a3ce9cfc"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-step-986-era_next_week.json",
+      "bytes": 3935299,
+      "sha256": "e1f9d64d18237fda4520291d9cd53de878b2cc484ab0e570140e60016c178cc6"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-three-honest-reports-reflected.json",
+      "bytes": 4384396,
+      "sha256": "c4d26c6faae520c5bf76c1edea941fc99724eda374e50cb47f4e353204bac81f"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-actual-current-withdrawal-no-refund.json",
+      "bytes": 4293051,
+      "sha256": "db6afca9bacb54c95b488d04b94a904a20874c4d7eab26315bf6c296a18bdaf9"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-actual-source-and-ordinary-alternative.json",
+      "bytes": 4138056,
+      "sha256": "3c21780c08508a6a86e698a3fa7921dcdc2d77318a0f2d1e9f68e722460a39c7"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-actual-walk-and-open-same-vessel.json",
+      "bytes": 4248236,
+      "sha256": "91c729622ca44f510c5068b261480e29cc8f47e6f7b33941c9ed5f7bdc6861c0"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-actual12m12s-road-arrival-1AP.json",
+      "bytes": 4188227,
+      "sha256": "dc45965217ac729534b2f1dd685b25a19cd892f3de5d3c6277c1039b069dd583"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-fresh-ability-consent.json",
+      "bytes": 4233593,
+      "sha256": "fb3070cbb05d5835d7a79370e76b62532207f448486f7fde900a3421bf797e06"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-fresh-custodian-consent.json",
+      "bytes": 4218876,
+      "sha256": "666d668188cd84f5c8caf2cac8c15981216ecca8097f9fc3cf81fd71db343965"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-fresh10p1AP-nora-invitation.json",
+      "bytes": 4203523,
+      "sha256": "a21f4351c2f56540425d1fcd05b65081e35d9d4d8f48db36dd1c490ebc573211"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-honest-report-of-actual-applications-and-failures.json",
+      "bytes": 4369628,
+      "sha256": "88b64d7596d295ea422121b57c3ac54ffa87ffa2aca664747e01ce30f64f971b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-nora-actual-exit-and-player12m-road-return.json",
+      "bytes": 4336877,
+      "sha256": "55c9a43c2ba1544695651db2591ea78c970d7cdc4d19f8b91cc6edd794280ec5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-observe-current-original-and4m-line.json",
+      "bytes": 4262845,
+      "sha256": "bfb976c15989b4b7c8ce77fcac8271cb7b849bf003038db3e1225dd2ad3429c4"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-one-paid-window-attempt.json",
+      "bytes": 4278046,
+      "sha256": "31bed8dde755e4d65d54b9f662dbba9455000438cd40094f9ea6d1b4cdeb8119"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-return-same-original-loan-safe-box.json",
+      "bytes": 4322253,
+      "sha256": "f8bc9778d31aee69f73d3b771d48b2e9dd9f113d33f0285cf96d618c2bd269db"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/boundary-withdrawn-return-screened-same-vessel4m-return-no-new-seal.json",
+      "bytes": 4307546,
+      "sha256": "26363d0049810c3106498b4882c6001ff75165a65baff4768c37f55040e14170"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/capture-integrity.json",
+      "bytes": 26411,
+      "sha256": "bbd00338dcf3735f8843c319a1b2c48cff5aac6805174867612a5c38ca26ca63"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/commands.jsonl",
+      "bytes": 1972335,
+      "sha256": "4c5879c9223f70e48b3b2824f75b0dfaaca9b753dbb3b76242fa88098560fabb"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/natural.json",
+      "bytes": 8904695,
+      "sha256": "14be49645e7fa18b4127c7ec34b39875eff1302fbba8052b9037ed149a42d66c"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/public.jsonl",
+      "bytes": 100216,
+      "sha256": "1b9f198bb161c42d02f1be5874d086db94d30a90a88922965ba9ee17f7c856c3"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-combatStart.json",
+      "bytes": 3023745,
+      "sha256": "749b8136c4c7f9974f207b475d3452d29f6e1d082de0422f56d5a22d953ed189"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-combatTerminal.json",
+      "bytes": 3452440,
+      "sha256": "ceabae148e587029e6c4d8f7621b76001a4dbc5020a1e3ac127f47d93d5bdd15"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-departure.json",
+      "bytes": 1317518,
+      "sha256": "5a425e1890d9f41d88324af8f97951a1b3190538a006b2c0b2ae8d90ab1bbe27"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-practiced.json",
+      "bytes": 2195856,
+      "sha256": "cfb55d02c84c029ed3a7266325aff7e5b78badcc13492cc08ea550b0c9eaf51b"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-promoted.json",
+      "bytes": 1815658,
+      "sha256": "940f334c00ab09ba7fd2dc8a7e407da0dab61faa0081d7036eee51dd19caca60"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-recoveredBeforeEncounter.json",
+      "bytes": 2209649,
+      "sha256": "adeccd42282426b556462a8d1be8683080bc259863d0fd2995c1c332021a50e5"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/snapshot-recoveredOriginalInjuries.json",
+      "bytes": 1329881,
+      "sha256": "cb69b5c3b2ae6381d087723ae54acb2bddea5f23bdcf339806a187e9e1c1761e"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/source-prefix.json",
+      "bytes": 53721,
+      "sha256": "f9d48079aa7498c109a00532cc3e5c727b5a62af4adb1635aec694df8d667b43"
+    },
+    {
+      "path": "tests/fixtures/pale-emperor-v01950/summary.json",
+      "bytes": 697709,
+      "sha256": "441d2466d46c0c9d38ad9c6d914b9fe429546df1935a34716f289106562e9e1a"
+    }
+  ]
+}

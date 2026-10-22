@@ -1,12 +1,25 @@
-# 诡秘之主同人游戏 · 0.208.0 阶段版
+# 诡秘之主同人游戏 · 0.229.0 全途径阶段候选
 
-基于《诡秘之主》设定的原创角色单机RPG，使用React、TypeScript、Vite和Electron/SQLite。按周工作、学习、调查与休养，取得魔药并在有限故事与战斗中成长。
+基于《诡秘之主》设定的原创角色单机 RPG，使用 React、TypeScript、Vite 和 Electron/SQLite。按周工作、学习、调查与休养，取得魔药，在有限故事与战斗中成长。
 
-当前22条途径均包含9→2有限可玩切片，并已有有限序列1基础；0.208.0补入占卜家的一条有限序列0愚者路线。其余21条序列0和完整1.0仍未完成。门、银骑士部分高阶验证使用定向起点，不代表全部路线自然通关。每阶段保留原有失败记录，并分别记录玩法结果、保存验证与桌面体验验收。
+## 第一次玩
+
+1. 选“新建角色”，完成背景与职业选择，在最后一步确认开始。先处理出现的事件，再安排这一周。
+2. 平时用工作、学习、调查和休养推进。行动、生活费、伤势与精神都会影响后续选择；重要行动前先看费用和风险。
+3. 在对应途径页面按当前提示取得材料、消化与晋升。进入专属场景后使用该章按钮；普通返回、停止或交还也能完成许多任务，不必强刷每项能力成功。
+4. 桌面版每次成功行动自动保存。保存失败时重试同一次操作；重新打开后选“继续游戏”。死亡会封存这一周目，不能通过重复点击改骰。浏览器试玩刷新会丢失进度。
+
+## 当前范围
+
+- 22条途径均有9→2有限可玩切片及有限序列1实现。
+- 22条途径均已有有限序列0实现。其中18条保有自然晋0实路；完美者、倒吊人、被缚者的自然线晋0服药失败死亡，暴君重建自然线在单独挑战太阳神时死亡，成功分支分别由受控测试验证。
+- 完整1.0的整体操作、安装交付与当前累积CI验收正在收口。部分高阶来源使用定向起点，不据此宣称所有途径从普通人完整自然通关。
+
+当前0.229母亲已从真实重伤活态完成诊疗、原苗往返、晋0与普通退出；27项唯一Vitest、10项纯脚本、类型与生产构建通过。PR32已通过全部10项Windows检查并正常合并；最新累积版本已承接其历史与修复，仍须以当前提交的检查为准。可见桌面实机与最终玩家验收尚未完成。
 
 ## 安装和启动
 
-请先用Git检出本阶段PR分支，保留仓库声明的行尾属性；历史输入与源码的严格字节校验以该检出结果为准。需要Node.js24.15–24.x、npm及图形桌面。npm ci会安装锁定依赖；Electron44在首次启动时按需下载桌面运行时，因此首次启动也需要网络。可提前执行 `npx --no-install install-electron` 准备运行时。当前云环境没有进行可见窗口验证；Windows GitHub Actions 执行严格类型、烟测和存档回归，桌面实机体验尚未验证。
+使用 Node.js 24.15–24.x、npm和图形桌面。检出本阶段分支时保留仓库行尾属性，历史输入与源码按原始字节校验。首次安装、首次下载Electron 44运行时需要网络；也可预先执行 `npx --no-install install-electron`。
 
 ```sh
 npm ci
@@ -14,19 +27,147 @@ npm run build
 npm start
 ```
 
-浏览器开发界面可运行 `npm run dev:renderer`。Electron桌面开发使用 `npm run dev`。浏览器内存试玩不是正式持久存档；桌面版通过SQLite保存。Windows桌面和可见Electron窗口尚未实机验证，GitHub Actions 自动检查不代替桌面试玩。
+浏览器开发运行 `npm run dev:renderer`，Electron桌面开发运行 `npm run dev`。浏览器内存试玩不是持久存档，桌面版使用SQLite。云环境测试不代替可见桌面试玩；当前构建仍有大分块警告。
 
-## 测试输入
+## 0.229.0：母亲与风损温室
 
-所有测试源码和原始输入均保留。为避开GitHub单文件限制，历史输入以完整文件tar.gz包保存在test-inputs；包数、体积和原文件总数以当前manifest.json清单为准，清单列每包和每个原文件的SHA256。三个短烟测原输入已直接随源码提供。
+从原955活终态继续119动作，先治疗原两重两轻伤，再带原活苗往返温室、用普通浇灌和楔撑完成准备。第1050动作以70%掷29晋0；维护72%掷87失败，支撑70%掷6成功，两项掌握真实0/8。最后交还原苗、普通退出并报告，终1074、W250，健康80、精神68、灵性54，165便士、1行动，无伤。
+
+两原活苗最终46/45，死样仍死、旧根垫仍5；没有补回失败或重抽。一次119动作全态/公开/RNG回放与真实末动作保存重试、冷重开和界面检查通过。详见[母亲阶段记录](docs/MOTHER_PLAYABLE_STAGE.md)。
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/mother229.manifest.json
+npm test -- tests/backend/mother-natural-terminal.test.ts tests/renderer/mother-natural-terminal.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.228.0：审判者与双道短码头
+
+从原706存活前三败边界继续209条真实动作，原801第四瓶成功后死亡线保持独立。追回原第3份重配，70%掷22真实晋1；两次S1应用失败仍普通结案，掌握保持8/0。原1/2失败残余实际调查与付费回收，原三份和唯一性守恒。
+
+两成年货主携各自原货分道通过，随后第894动作以70%掷11晋0。单闸短约束与本人待动作优先均实际成功，各掌握8。最后普通侧路退出、关闸并报告；终915、W201，健康100、精神70、灵性54，现金1350便士、0行动，无伤。详见[审判者阶段记录](docs/JUSTICIAR_PLAYABLE_STAGE.md)。
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/justiciar228.manifest.json
+npm test -- tests/backend/justiciar-natural-terminal.test.ts tests/renderer/justiciar-natural-terminal.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.227.0：黑皇帝与三城九陵
+
+从原924条命令后的真实活态继续90个动作。三城九万人实际授予统治、执行反常秩序，九座独立陵寝分九个付费施工节点建成，共27周施工。两次施工失败均真实付费修复，七万二千人在三城参加祭祀，本人在陵寝中第997动作以70%掷4大成功晋0。
+
+有限秩序扭曲与延迟冲击分别成功，随后停止设施、两位工人与本人退出并报告。终W261，健康88、精神51、灵性43，30便士、0行动，无伤。原16项掌握保留，两项新技巧均为8；本版不实现复活。详见[黑皇帝阶段记录](docs/BLACK_EMPEROR_PLAYABLE_STAGE.md)。
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/black-emperor227.manifest.json
+npm test -- tests/backend/black-emperor-natural-terminal.test.ts tests/renderer/black-emperor-natural-terminal.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.222.0：隐者与短廊档案移交
+
+从知识皇帝第827动作后的真实和平活态继续114条，原831死亡线另存。原两份失败特性经真实调查与回收，第895条以70%掷20晋0，材料始终为原三份与唯一性。返程中本人有限信息化通过已查明空缝、接触读取后把有限记录誊到实购封签，两项各掌握8；原两项S1掌握仍0。
+
+终941、W205，活S0，健康100、精神79、灵性63/150，45便士、2行动，无伤。原档已归艾瑞丝，成人各自走普通出口并完成报告。26文件约9.23MB保留来源、命令/hash链、关键快照和一次审计误拒的原910停点。公共恢复器已独立恢复全部文件。一次114条全态/RNG/公开重放、同一末动作SQLite故障重试与冷重开、末态UI两项完整检查通过，详见[隐者阶段记录](docs/stages/0222-hermit.md)。
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/hermit222.manifest.json
+npm test -- tests/backend/hermit-natural-terminal.test.ts tests/renderer/hermit-natural-terminal.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.221.0：魔女与原石拱通行
+
+从原第688动作后的活态沿同一随机流继续273条，原三次晋1失败、费用和随机记录保留；旧854条第六独立瓶成功另存，不作为新来源。同三份残余有价回收重配，第710条再次失败后，第729条以68%掷55晋1。真实实践、报告、等待与材料交接后，第935条、第201周以70%掷50晋0。两项有限序列0技巧均实际应用，掌握各8。
+
+终态第961动作、W203，ACTIVE、序列0，健康100、精神79、灵性67/150，30便士、0行动，无伤；居民与玩家均普通退出并完成报告。第708条选择器交接和第883条推荐循环的原命令、费用及证据完整保留；195条旧段私态/RNG精确审计通过，公开差异仅限三条明确推荐路径。273条全段重放及末条保存/UI两项完整检查通过，共479.53秒。
+
+两包47份完整文件共19,096,573字节已由公共恢复器独立恢复；首次错误前缀拒绝及修正后的成功恢复均保留记录。来源、终态与验证边界见[魔女阶段记录](docs/stages/0221-demoness.md)。
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/demoness221.manifest.json
+npm test -- tests/backend/demoness-natural-terminal.test.ts tests/renderer/demoness-natural-terminal.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.220.0：黄昏巨人与短桥返程
+
+从神明之手原第287动作后的和平活态继续，原第297死亡线另存。付费修复同一桥梁、两名成人真实跨桥退出，取得原三份材料和唯一性后，第371条以70%掷84失败；真实治疗、休养和同物回收重配后，第393条以70%掷3晋0。两项有限技巧随后各以72%成功，并在原梁支撑和车轴推行中实际生效，各掌握8。原两项S1仍0。
+
+终态第416动作、W196，活S0，健康95、精神71、灵性67/150，1657便士、0行动，无伤。三人已普通退桥并报告，仍在原修护室室外。保留原甲55和已耗物，没有自动返家或补资源。22文件约9.11MB保存来源、命令hash链及关键快照；一次129动作全态/RNG/公开重放、实际末条保存故障重试与冷重开、末态界面检查通过。详见[黄昏巨人阶段记录](docs/stages/0220-twilight-giant.md)。
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/twilight220.manifest.json
+npm test -- tests/backend/twilight-giant-natural-terminal.test.ts tests/renderer/twilight-giant-natural-terminal.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.219.0：错误与潮汐钟塔
+
+继承时之虫原656条完整历史，治疗原重伤、有价筹备自己的三份时之虫与唯一性，争取独立候选人真实成神仪式中的一次替位机会。自然路线增加74动作：第723条以68%成功率掷8晋0，对方被替位后存活且保有其原材料。尾声技巧以72%掷99大失败，玩家走普通侧梯、报告并实际返程，两新掌握仍0。终态为活S0，第165周，健康86、精神78、灵性64/150，127便士、1行动。
+
+本阶段用源文件、命令/hash链和关键快照保存完整自然证据，15文件约6.14MB；一次74步重放、一次末态SQLite冷重开和实际界面重新载入通过，不逐步重复保存完整历史。受控失败/死亡、保存回滚同意图重试和普通退路另有覆盖。完整范围见[错误阶段记录](docs/stages/0219-error.md)。此前[死神](docs/stages/0217-death.md)与[门](docs/stages/0218-door.md)阶段也已发布独立草稿PR。
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/error219.manifest.json
+npm test -- tests/backend/error-natural-terminal.test.ts tests/renderer/error-natural-terminal.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.216.0：太阳与街区停炉
+
+从纯白天使原853条命令后的活终态沿同一随机流继续81条，共934条。本人已融合的原份、实际交接的另两份与同一唯一性守恒；完成两件居民服务并真实等满晋1后十二周，第923条、第214周首次服药，以74%成功率掷57晋0。
+
+尾声定向光热以70%掷14成功，下一真实操作清除四份有限非生物残留，掌握增至8；温热护持以70%掷95失败，留下8点健康损耗与一处轻伤，掌握仍0。随后普通停炉封闭、实际步行退出并报告。终态第215周仍为ACTIVE、序列0，健康92、精神64、灵性38/150、现款36便士、0行动，原伤势与失败成本保留。
+
+原捕获冻结下34个唯一SQLite转换通过。随后修正中央公开资源上限与普通行动禁用状态，81条命令私态与随机逐态一致，公开变化严格限于三字段及其12个既有恢复区派生字段；修后11项完整回放检查、2个真实保存代表及7项捕获界面检查通过。本地去重38个完整文件621项通过，另3项迁移聚焦与24项脚本合同。完整证据与尚待项目见[太阳验收说明](docs/SUN_RELEASE_ACCEPTANCE.md)，玩法与原著边界见[太阳阶段记录](docs/stages/0216-sun.md)。
+
+本阶段输入及原来源可按专用清单恢复，原始853条历史字节和哈希保持：
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/sun216-required-inputs.manifest.json
+npm test -- tests/domain/sun-natural.test.ts --maxWorkers=1 --no-file-parallelism
+npm test -- tests/backend/sun-capture-save.test.ts --maxWorkers=1 --no-file-parallelism
+npm test -- tests/renderer/sun-captured-result.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.215.0：暴君重建候选
+
+从公开0.214.0基线重新实现；此前执行环境丢失的未上传215源码与证据未恢复，旧摘要不计本次验收。从原701条命令后的合法活态沿原随机流继续163条，第717条回收原第1份特性重新调配晋1，三岸当前共同追随者达到270000。第864条在太阳神挑战第9次敌对交换中死亡，终态为195周、序列1、健康0；未满足生还条件、未晋0。原失败、费用、伤势与随机结果全部保留。
+
+最终运行下163条新增动作的13项完整回放、717检定显示的25项测试、4个实际SQLite代表、6项捕获界面、严格类型和生产构建已通过。原28唯一SQLite边界的完整验收保留；显示修正后没有重复声称全28新跑。相关去重证据为57个完整文件853项（含20文件287项保留回执），另3项迁移聚焦；未重复全游戏历史测试。完整范围、恢复与限制见[暴君验收说明](docs/TYRANT_RELEASE_ACCEPTANCE.md)和[阶段记录](docs/stages/0215-tyrant-rebuild.md)。
+
+本阶段聚焦复验需原193四包与新215十五包。使用组合清单完整恢复依赖；它不覆盖全部历史回归：
+
+```sh
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/tyrant215-required-inputs.manifest.json
+npm test -- tests/domain/tyrant-natural.test.ts --maxWorkers=1 --no-file-parallelism
+npm test -- tests/backend/tyrant-capture-save.test.ts --maxWorkers=1 --no-file-parallelism
+npm test -- tests/renderer/TyrantCapture.test.tsx --maxWorkers=1 --no-file-parallelism
+```
+
+## 0.214.0：白塔通路与机械闸
+
+从全知之眼原666条命令后的活态沿同一随机流继续137条，共803条；原666条完整来源保留，本轮没有重新执行全部旧历史。三位居民实际走完各自通路并于下一真实周复核；第三处施工大失败后保留耗材、伤势与撤回许可，另购唯一备用包普通修复。本人已容纳的一份与实际交接的另两份原特性、同一唯一性组成三加一，第775条、第170周首次服药，以70%成功率掷34晋0。
+
+尾声结构洞察实际帮助独立核验，掌握增至8；对手重构使旧窗口失效。有限弱处掷96大失败，留下本人未治疗重伤与瑟拉擦伤，掌握仍为0。重新取得同意后，双方经普通机械操作和真实同行抵达十二米安全出口。最终第174周仍为ACTIVE、序列0，健康84、精神77、灵性122/150、现款0便士、欠款80便士、1行动；伤势保留，两项掌握8/0。
+
+137条新增命令四段连续逐态重放、26/26个选定唯一SQLite转换、3项真实保存代表与4项捕获界面检查通过。最终55个完整测试文件范围776项、另2项仅选定聚焦检查、66项Node合同、严格类型与生产构建通过；4,500个运行冻结成员逐字节一致。8个输入包已独立完整恢复并核验148个成员及142个内层gzip。范围与限制见[白塔验收说明](docs/WHITE_TOWER_RELEASE_ACCEPTANCE.md)，玩法与原创边界见[白塔阶段记录](docs/WHITE_TOWER_PLAYABLE_STAGE.md)。
+
+## 0.213.0：黑暗长夜撤离
+
+从厄难骑士原679条命令的和平活态，按同一随机流继续155条，共834条；另一路694条死亡历史完整保留。四位原居民实际走到安全屋，两份失败原特性调查并隔周交接，唯一性真实保管链核清后，第814条、第189周首次服用黑暗魔药，以70%成功率掷50晋0。全程只沿用三份原特性，未生成第四份。
+
+尾声短隐秘掷31成功，但普通锁定悬物时窗口过期；有限厄难偏导掷85失败。两名原居民随后沿普通侧路实际撤出，两项新掌握均为0。最终第192周仍为ACTIVE、序列0，健康92、精神83、灵性128、752便士、1行动，一处未治轻伤、风险1；没有重抽或补施。
+
+155条新增命令的四连续块逐态私态、随机、章节及全局公开核验通过；22/22个选定唯一SQLite转换与3个实际保存代表通过，真实晋0回执即显、失败与最终报告的3项UI测试通过。53个完整测试文件826项、另1项聚焦回归、58项脚本合同及严格类型/生产构建通过；完整结果见[黑暗验收说明](docs/DARKNESS_RELEASE_ACCEPTANCE.md)。玩法与原创边界见[黑暗阶段记录](docs/DARKNESS_PLAYABLE_STAGE.md)。此前月亮与完美者各自结果仍见[月亮](docs/MOON_RELEASE_ACCEPTANCE.md)及[完美者](docs/PERFECTER_PLAYABLE_STAGE.md)阶段记录。
+
+## 测试与完整输入
+
+历史原始输入以完整文件压缩包交付，包数、体积、文件数与SHA256以 `test-inputs/manifest.json` 为准。恢复器拒绝不安全路径、损坏包和不同内容覆盖；可以安全重试。三个短烟测的原输入直接随源码提供。
 
 ```sh
 npm run typecheck
 npm run test:smoke
 npm run test:fixture-restore
+npm run fixtures:check
 ```
 
-运行全部历史测试前恢复完整输入（需另预留清单所列原文件的展开空间）：
+全量历史测试前恢复完整输入，并按清单预留展开空间：
 
 ```sh
 npm run fixtures:restore
@@ -35,353 +176,35 @@ npm run test:catastrophe-isolated
 npm run test:wisdom-angel-life-isolated
 ```
 
-本次云环境运行天灾共享测试、智慧天使生活测试整文件时出现 worker 意外退出；请分别使用 `npm run test:catastrophe-isolated` 和 `npm run test:wisdom-angel-life-isolated`，将原15个和33个案例逐项放在独立进程运行。两命令核对完整案例名单，任何失败、漏项或异常退出都会返回非零状态。其他测试仍可通过 Vitest 的文件参数分批执行。 `npm run check`仍调用默认整文件测试，受同一限制；在此环境请采用上列分步命令。
+本云环境的天灾共享、智慧天使生活测试曾在整文件运行时出现worker异常退出。两个隔离命令分别核对原15项、33项完整名单，逐项在独立进程执行，失败、漏项或异常退出均返回非零。`npm run check`仍调用默认整文件测试，受同一限制；上列命令是复验方法，不表示0.214.0已完成全部历史测试。本阶段智慧天使生活33项已按完整名单逐项独立执行并全部通过，计入55个完整文件范围；天灾共享15项本地未重跑。本阶远端CI结果仍待发布后核实。
 
-恢复脚本使用Node标准库，拒绝不安全路径、损坏包和不同内容覆盖，可安全重试。也可仅恢复某个测试目录，例如：
-
-```sh
-npm run fixtures:restore -- --only-prefix calamity-demoness-v01770 --only-prefix unaging-demoness-v01530
-```
-
-若只复现177验收中的60个历史输入相关测试，必须同时恢复其旧存档和辅助模块依赖；不能只恢复补充输入包。下面的命令与177发布树验证使用的58个目录一致（298个文件，约232MB展开空间）。完整测试仍使用上面的全量恢复命令。
-
-<details>
-<summary>60个相关测试的完整输入恢复命令</summary>
-
-```sh
-npm run fixtures:restore -- --only-prefix apothecary-v0130 --only-prefix appraiser-v0180 --only-prefix apprentice-v0350 --only-prefix archaeologist-v0120 --only-prefix artisan-v0760 --only-prefix astrologer-v0370 --only-prefix astronomer-v0980 --only-prefix audience-v080 --only-prefix biologist-v0940 --only-prefix bizarro-sorcerer-v01170 --only-prefix clown-v050 --only-prefix conspirator-v0740 --only-prefix corpsecollector-v0320 --only-prefix crimson-scholar-v0990 --only-prefix cryptologist-v0410 --only-prefix dawn-paladin-v0850 --only-prefix demon-v0890 --only-prefix desire-apostle-v01110 --only-prefix dream-stealer-v01060 --only-prefix dreamwalker-v0970 --only-prefix faceless-v0730 --only-prefix fire-thief-v0840 --only-prefix gatekeeper-v01040 --only-prefix gladiator-v0430 --only-prefix gravedigger-v0330 --only-prefix guardian-v01070 --only-prefix harvestpriest-v0710 --only-prefix hunter-v060 --only-prefix hypnotist-v0750 --only-prefix iron-blood-knight-v01180 --only-prefix magician-v0150 --only-prefix manipulator-v01190 --only-prefix marauder-tool-v0390 --only-prefix marauder-v0380 --only-prefix marionettist-v0950 --only-prefix mindreader-v090 --only-prefix notary-v0810 --only-prefix potion-professor-v0770 --only-prefix priest-of-light-v01030 --only-prefix provoker-v070 --only-prefix psychologist-v0170 --only-prefix pyromaniac-v0160 --only-prefix reaper-v0960 --only-prefix recorder-v0830 --only-prefix release-legacy-output-v0177 --only-prefix savant-v0110 --only-prefix seer-v040 --only-prefix spirit-guide-v0820 --only-prefix spiritmedium-v0340 --only-prefix sunpriest-v0310 --only-prefix swindler-v0400 --only-prefix tamer-v0140 --only-prefix town-v0100 --only-prefix traveler-v01050 --only-prefix trickmaster-v0360 --only-prefix vampire-v0190 --only-prefix warrior-v0420 --only-prefix weaponmaster-v0440
-```
-
-</details>
-
-`npm run fixtures:check`只流式验证完整输入，不创建展开副本。完整历史测试类型与全量测试的最终验收状态见发布验收报告，不能把专项通过当全量通过。
-
-贤者专项输入与公开续行：
-
-```sh
-npm run fixtures:restore -- --only-prefix prophecy-master-v01540 --only-prefix sage-v01780
-npx vitest run tests/domain/sage-acquisition.test.ts tests/domain/sage-life.test.ts tests/domain/sage-combat.test.ts tests/domain/sage-inheritance.test.ts tests/renderer/sage-panel.test.tsx tests/renderer/sage-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-```
-
-秽语长老专项输入与公开续行：
-
-```sh
-npm run fixtures:restore -- --only-prefix three-headed-templar-v01550 --only-prefix elder-v01790
-npx vitest run tests/domain/elder-acquisition.test.ts tests/domain/elder-life.test.ts tests/domain/elder-combat.test.ts tests/domain/elder-inheritance.test.ts tests/domain/elder-shared.test.ts tests/renderer/elder-panel.test.tsx tests/renderer/elder-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/elder-save.mjs --expected-boundaries 53
-```
-
-鲜血大公专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix blatherer-v01560 --only-prefix blood-duke-v01800
-npx vitest run tests/domain/blood-duke-acquisition.test.ts tests/domain/blood-duke-life.test.ts tests/domain/blood-duke-combat.test.ts tests/domain/blood-duke-inheritance.test.ts tests/domain/blood-duke-shared.test.ts tests/renderer/blood-duke-panel.test.tsx tests/renderer/blood-duke-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/blood-duke-save.mjs --expected-boundaries 64
-```
-
-古代邪物专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix silent-disciple-v01570 --only-prefix ancient-evil-v01810
-npx vitest run tests/domain/ancient-evil-acquisition.test.ts tests/domain/ancient-evil-life.test.ts tests/domain/ancient-evil-combat.test.ts tests/domain/ancient-evil-inheritance.test.ts tests/domain/ancient-evil-shared.test.ts tests/renderer/ancient-evil-panel.test.tsx tests/renderer/ancient-evil-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/ancient-evil-save.mjs --expected-boundaries 65
-```
-
-先知专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix chaos-walker-v01580 --only-prefix fate-prophet-v01820
-npx vitest run tests/domain/fate-prophet-acquisition.test.ts tests/domain/fate-prophet-life.test.ts tests/domain/fate-prophet-combat.test.ts tests/domain/fate-prophet-inheritance.test.ts tests/domain/fate-prophet-shared.test.ts tests/renderer/fate-prophet-panel.test.tsx tests/renderer/fate-prophet-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/fate-prophet-save.mjs --expected-boundaries 64
-node --expose-gc scripts/play/fate-prophet-save.mjs --key directed --expected-boundaries 11 --tag finance-directed
-```
-
-熵之公爵专项输入、公开续行与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix frenzy-mage-v01590 --only-prefix entropy-duke-v01830
-npx vitest run tests/domain/entropy-duke-acquisition.test.ts tests/domain/entropy-duke-life.test.ts tests/domain/entropy-duke-combat.test.ts tests/domain/entropy-duke-inheritance.test.ts tests/domain/entropy-duke-shared.test.ts tests/renderer/entropy-duke-panel.test.tsx tests/renderer/entropy-duke-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/entropy-duke-stage.mjs
-node --expose-gc scripts/play/entropy-duke-save.mjs --expected-boundaries 84
-node --expose-gc scripts/play/entropy-duke-save.mjs --key directed --source-directory tests/fixtures/entropy-duke-v01830/directed --expected-boundaries 5
-```
-
-公开续行脚本将新记录写入独立的output/play/entropy-duke-01830-*目录，保留原558条死亡记录；保存命令分别检查已交付的84个自然边界和5个明确标注的定向财务边界，定向输入不计入自然路线。这些命令均不等于可见窗口试玩。
-
-## 当前验证与限制
-
-195增量：死神新增有限序列1苍白皇帝。原815条当代活档真实劳动筹措诊疗与休养，原种子续至1038条，前两瓶失败、第三瓶晋升。三次生活施术均失败，手工完成原容器处理，两项新掌握仍为零；独立可选战12轮对手死亡，玩家保留一重两轻伤，沿16米原路退出后真实劳动。原六十年经历、旧人物与器具履历保持。224个唯一SQLite转换全覆盖，9个新增测试文件135项、39个同链文件733项及共享界面12项通过；最终严格类型、构建和32项恢复/CI工具通过，五包238个新输入独立恢复核验。本阶段未重跑全部历史测试，详见[苍白皇帝阶段记录](docs/PALE_EMPEROR_PLAYABLE_STAGE.md)。
-
-199增量：魔女新增有限序列1末日魔女。原585条活档同种子续至854条，前五瓶失败后真实补货、第六瓶晋升。脉冲收束和镜面缓冲生活各实际应用一次；可选遭遇四轮对手投降，本人带两处轻伤沿原路退出再工作。原消耗、撤回与独立实体连续性详见[末日魔女阶段记录](docs/APOCALYPSE_DEMONESS_PLAYABLE_STAGE.md)。
-
-194增量：太阳新增有限序列1纯白天使。原729条活档实际诊疗休养后同种子续至853条，首瓶晋升；净光一次实际清除原残留，温光未应用的零掌握如实保留。独立可选战一轮对手投降，玩家无伤沿原路退出再工作。127个命名保存边界、125种不同转换已完整通过SQLite专项。原物耗损、失效窗口及验证范围详见[纯白天使阶段记录](docs/PURE_WHITE_ANGEL_PLAYABLE_STAGE.md)。
-
-193增量：水手新增有限序列1雷神。原599条和平活档继续，三次药败后真实补货、第四瓶晋升，原小湾引导与护持各有一次实际应用。可选战10轮玩家死亡，原602条死亡分支保留。旧原物、正常收束与真实代价详见[雷神阶段记录](docs/THUNDER_GOD_PLAYABLE_STAGE.md)。
-
-191增量：黑夜新增有限序列1厄难骑士。沿原518条和平活档继续，第三瓶成功晋升；同一原盒接取与校准轻触中，两项新技巧各实际应用一次，撤回许可后仍可普通收束。可选新敌交战九轮后玩家死亡，保留实际伤势、资源和死亡终档。详见[厄难骑士阶段记录](docs/MISFORTUNE_KNIGHT_PLAYABLE_STAGE.md)。
-
-190增量：月亮新增有限序列1美神。原572条活档同种子继续，七次魔药失败后第八瓶成功；身体变化在晋升前单独说明确认。原流灯亲自完成两米搬运并消耗真实精力，遮挡和撤回会关闭未用窗口；两轮可选战斗后对手投降，玩家无伤沿原路离开并工作。详见[美神阶段记录](docs/BEAUTY_GODDESS_PLAYABLE_STAGE.md)。
-
-188增量：观众新增有限序列1作家。原580条洞察者活档同种子续至667条，首瓶晋升；互知线索实际成功、合理安排失败后普通归还，三项生活事务及反思完成。可选新敌五轮战斗中玩家实际死亡，原终档保留；47个唯一转换已完成SQLite回滚、重开、重试与死亡旁档验证。相关36文件484项、32项恢复/CI工具、完整严格类型与生产构建通过；54个新增原始输入独立恢复核验。详见[作家阶段记录](docs/WRITER_PLAYABLE_STAGE.md)。
-
-187增量：猎人新增有限序列1征服者。沿原658条活分支公开命令继续至795条，前两瓶失败、第三瓶成功；原五位疲劳同伴真实付费跨周恢复，两项新能力分别在生活中实际应用，第三项按撤回的许可普通完成。可选新敌八轮战斗后死亡，玩家保留两处轻伤，普通退出后工作跨周，最终第200周ACTIVE、健康80、精神100、灵性120。48个唯一自然边界全部SQLite验证。详见[征服者阶段记录](docs/CONQUEROR_PLAYABLE_STAGE.md)。
-
-186增量验证：占卜家新增有限序列1诡秘侍者，24原身体、六设施、十二个实际生活周及三位外客形成新灵界区域。沿原1038条公开命令继续，首瓶失败、第二瓶成功，三项原物实践实际应用；可选新敌三轮重伤投降，玩家带一处新轻伤普通退出、跨周后工作。44个自然边界/43唯一状态全部SQLite验证；新增11文件128项、12同链文件299项、48项烟测、16项存档回归、严格类型/构建和32项恢复/CI工具通过。49个新原输入独立恢复，48包2197文件hash全部核验；1053文件枚举无漏重，本阶段未全量重跑。详见[诡秘侍者阶段记录](docs/ATTENDANT_MYSTERIES_PLAYABLE_STAGE.md)。
-
-185增量验证：22条途径现均有有限序列2基础。新增7文件218项、34同链文件642项、旧迁移8项和保存辅助6项通过；90个唯一自然SQLite边界及5个定向财务边界全部通过。完整严格类型、生产构建和32项恢复/CI工具通过。105个新原输入独立恢复，全部46包2148文件hash核验；1042测试文件枚举无漏重，本阶段没有全量重跑。沿原674条活档命令续至851条，真实诊疗休养后三瓶成功晋升，原活植休眠和根垫承冲各实际取得掌握8，新敌两轮重伤投降，玩家普通离场后继续工作；最终第212周ACTIVE/H100/M96/S114。初始失败日志保留，四处旧“序列2尚未开放”断言与真实175迁移测试已按当前阶段更新。详见[荒芜主母阶段记录](docs/BARREN_MATRIARCH_PLAYABLE_STAGE.md)。
-
-184增量验证：新增7文件238项、38相关文件682项、迁移26项与巫师共享17项通过；594条原seed公开续行的76个唯一自然SQLite边界及5个定向财务边界通过。完整严格类型、生产构建、32项恢复/CI工具及6项保存辅助通过。91个新增原始输入独立恢复，全部44包2043输入hash核验；CI枚举1035文件无漏重，不等于全量重跑。首瓶晋升后新敌五轮战斗中玩家受伤撤退，回到普通工作，最终第135周ACTIVE、健康60、精神96、灵性120、现金690、3行动；原轻重伤保留。有限抵御自然仅施术未实际减伤，独立定向测试覆盖其生效窗口。上版Windows三处测试阻点本版窄修并整文件复验，新远端矩阵待实际终值。详见[平衡者阶段记录](docs/BALANCER_PLAYABLE_STAGE.md)。
-
-183增量验证：新增领域及实档共享125项、界面41项，共166项通过；743条公开命令续行的84个唯一自然SQLite边界及另5个定向财务SQLite边界全部通过。同seed的555条活分支继续，原558条死亡分支保留；实际支付60便士诊疗后，前三瓶失败，第四瓶大成功晋升。生活延效与战斗增幅各获得实际掌握8，新对手第三轮投降，玩家普通离场后回到工作，最终第185周ACTIVE、健康100、精神95、灵性94、现金800便士、3行动。37个相关回归文件676项已去重通过；两项旧序列2普通盘断言按当前规则更新，所缺旧输入由原包恢复。新增99个JSON原始输入以3包归档并独立恢复核验，最终41包、1952个输入的全部hash通过。完整main/renderer严格类型和32项恢复/CI工具通过，CI枚举1028个测试文件无漏重，但枚举不等于执行全量测试。生产构建、6项保存辅助及48项烟测最终复验通过，烟测已包含于相关回归，不重复计数；详见[熵之公爵阶段记录](docs/ENTROPY_DUKE_PLAYABLE_STAGE.md)。本阶段未声称重跑全部历史测试或完成1.0。PR6远端CI已确认两项Windows单案例超时：贿赂者完整重放5075ms超过5秒、古代学者工作/休息/跨周导航16022ms超过15秒。本次仅将这两项预算分别调至10秒和25秒，保留全部原断言并完成整文件复验；古代学者7项另计，新远端矩阵仍待实际终值。
-
-182增量验证：新增领域124项、界面44项、64个唯一自然SQLite边界与11个定向财务边界通过。完整551条命运之轮原活档继续至703条，第三瓶晋先知，新对手三轮投降，玩家存活并回到普通工作。修复真实零行动战斗终局与公共账单/还款衔接，保持原费用、随机与伤势；合法欠款和信用提示也有实际保存复验。新增85个输入在独立目录恢复并核验。完整严格类型、生产构建、48烟测、6保存辅助和32恢复/CI工具检查通过。本阶段未重跑整日历史全量验收；相关旧格式断言和Windows CI问题已按受影响范围完成121文件1775项去重复验；新远端矩阵仍以实际终值为准。
-
-
-177验收时，主工程与干净发布树完整严格类型检查、生产构建均通过。其最终影响范围488个测试文件、8608个断言通过，覆盖全部296个界面文件；其余495个未改测试保留基线通过记录。干净发布树60个历史输入相关文件、466断言，以及48项烟测、17项恢复工具测试通过。全部范围、两项整文件运行限制和未验证内容见[验收报告](docs/RELEASE_ACCEPTANCE.md)。
-
-178增量验证：领域73项、界面53项、旧窥秘链484项、保存工具6项及54个独立SQLite边界通过；完整严格类型、48项烟测、17项恢复工具测试和构建通过。此为相关范围复验，未声称重跑全部992个测试文件。
-
-179增量验证：新增领域82项、界面17项、保存工具6项及53个唯一SQLite边界通过；旧秘祈链24文件441项覆盖后，对失败的过时断言逐项修正并复验。完整严格类型、48项烟测、17项恢复工具、14项CI分片工具与生产构建通过。新增输入包62个文件在独立目录实际恢复并校验。本阶段没有重新运行整个历史测试集。
-
-180增量验证：获取/生活/继承/战斗及实档共享87项、界面30项、64个唯一SQLite边界、共享保存辅助6项通过；旧深渊链25文件508项和相邻4文件126项完成相关复验。完整严格类型、48项烟测、17项恢复工具、14项CI分片工具和构建通过。新增71个原始输入实际独立恢复。原592条死亡记录保留，从同seed583条活分叉续行至724条；第一瓶失败、第二瓶晋升，第三轮真实身体后果死亡。最终冻结代码逐条重放全部724命令与64边界完全一致，详见[鲜血大公阶段记录](docs/BLOOD_DUKE_PLAYABLE_STAGE.md)。
-
-181增量验证：新增领域103项、界面32项、65个唯一SQLite边界通过；旧被缚者链25文件561项及旧界面9文件143项完成相关复验。完整严格类型、48项烟测、6项共享保存工具、32项恢复/CI工具及构建通过，全部74个新增原始输入已在独立目录恢复并核hash。同seed507条原活档续至642条，真实诊疗原重伤、第二瓶晋升、第三生活案两能力实际成功；可选战首轮新敌死亡，玩家普通离场后继续工作。详见[古代邪物阶段记录](docs/ANCIENT_EVIL_PLAYABLE_STAGE.md)。
-
-本版仍有构建大分块警告；可见Electron窗口、Windows实机及全路线自然通关尚未验证。门与银骑士部分高阶使用定向起点。178贤者阶段沿原507条公开命令继续到651条：亲自停止原灾难，第二瓶晋升，两次实际信息通道往返；筛读失败后通过普通核对完成生活事务，战斗第5轮撤退后保留两处重伤并回到生活。阶段记录见[贤者](docs/SAGE_PLAYABLE_STAGE.md)。177阶段原585条公开命令及54命名/50唯一SQLite转换证据见[阶段记录](docs/CALAMITY_DEMONESS_PLAYABLE_STAGE.md)。
-
-187增量验证：新领域69项、新界面32项通过；含旧链、共享保存及烟测的32文件共451项通过，另32项恢复/CI工具通过。48个唯一SQLite边界与56份新增输入独立恢复验证完成，严格类型及生产构建通过。原658条天气术士活分支自然续至795条，第三瓶晋1；五位原队员实际休整和协作后归家，独立战斗8轮对手死亡，玩家保留两处轻伤继续普通生活。详见[征服者阶段记录](docs/CONQUEROR_PLAYABLE_STAGE.md)。
-
-## 来源与许可
-
-仓库不包含上传小说全文、个人存档、凭据、node_modules或生成测试输出。原创代码许可和第三方设定/素材权利分别见LICENSE、NOTICE及public/assets/ART_SOURCES.txt。源码、游戏资源和测试输入通过明确清单交付。
-
-平衡者专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix recovery-v01620 --only-prefix chaos-hunter-v01600 --only-prefix balancer-v01840
-npx vitest run tests/domain/balancer-acquisition.test.ts tests/domain/balancer-life.test.ts tests/domain/balancer-combat.test.ts tests/domain/balancer-inheritance.test.ts tests/domain/balancer-shared.test.ts tests/renderer/balancer-panel.test.tsx tests/renderer/balancer-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/balancer-save.mjs --expected-boundaries 76
-node --expose-gc scripts/play/balancer-save.mjs --key directed --source-directory tests/fixtures/balancer-v01840/directed --expected-boundaries 5
-```
-
-平衡者记录与本阶段验证见 [阶段说明](docs/BALANCER_PLAYABLE_STAGE.md)。旧死亡记录保留；本次完整续行原483条实际生还分支，诊疗后晋升并在新战斗受伤撤离。
-
-荒芜主母专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix coffin-bearer-v01610 --only-prefix balancer-v01840 --only-prefix barren-matriarch-v01850
-npx vitest run tests/domain/barren-matriarch-acquisition.test.ts tests/domain/barren-matriarch-inheritance.test.ts tests/domain/barren-matriarch-life.test.ts tests/domain/barren-matriarch-combat.test.ts tests/domain/barren-matriarch-shared.test.ts tests/renderer/barren-matriarch-panel.test.tsx tests/renderer/barren-matriarch-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/barren-matriarch-save.mjs --expected-boundaries 90
-node --expose-gc scripts/play/barren-matriarch-save.mjs --key directed --source-directory tests/fixtures/barren-matriarch-v01850/directed --expected-boundaries 5
-```
-
-新增两包保存105份原始输入；90边界重放分为六组15条，保留同一851条命令与全部断言。阶段范围与真实结果见[荒芜主母阶段记录](docs/BARREN_MATRIARCH_PLAYABLE_STAGE.md)。
-
-作家专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix discerner-v01660 --only-prefix writer-v01880
-npx vitest run tests/domain/writer-acquisition.test.ts tests/domain/writer-life.test.ts tests/domain/writer-combat.test.ts tests/domain/writer-inheritance.test.ts tests/domain/writer-shared.test.ts tests/domain/writer-natural.test.ts tests/renderer/writer-panel.test.tsx tests/renderer/writer-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/writer-save.mjs --expected-boundaries 47
-```
-
-文明启蒙者专项：
-
-```sh
-npm run fixtures:restore -- --only-prefix knowledge-mentor-v01670 --only-prefix civilization-enlightener-v01890
-npx vitest run tests/domain/civilization-enlightener-acquisition.test.ts tests/domain/civilization-enlightener-life.test.ts tests/domain/civilization-enlightener-combat.test.ts tests/domain/civilization-enlightener-inheritance.test.ts tests/domain/civilization-enlightener-shared.test.ts tests/domain/civilization-enlightener-natural.test.ts tests/renderer/civilization-enlightener-panel.test.tsx tests/renderer/civilization-enlightener-source.test.tsx tests/renderer/civilization-enlightener-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/civilization-enlightener-save.mjs --expected-boundaries 69
-```
-
-同一691条通识者原分支自然续行至797条：真实诊治、首瓶晋1、原护架付费修理和失败后的普通操作均保留。可选战斗第四轮撤退，玩家仍活并保留新伤。详见[文明启蒙者阶段](docs/CIVILIZATION_ENLIGHTENER_PLAYABLE_STAGE.md)。
-
-### 美神阶段专项恢复与检查
+可按需恢复原有输入，例如：
 
 ```sh
 npm run fixtures:restore -- --only-prefix life-giver-v01680 --only-prefix beauty-goddess-v01900
-npx vitest run tests/domain/beauty-goddess-acquisition.test.ts tests/domain/beauty-goddess-life.test.ts tests/domain/beauty-goddess-combat.test.ts tests/domain/beauty-goddess-inheritance.test.ts tests/domain/beauty-goddess-shared.test.ts tests/domain/beauty-goddess-natural.test.ts tests/renderer/beauty-goddess-panel.test.tsx tests/renderer/beauty-goddess-source.test.tsx tests/renderer/beauty-goddess-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/beauty-goddess-save.mjs --expected-boundaries 102
 ```
 
-### 厄难骑士阶段专项恢复与检查
+白塔本阶段8个完整输入包共137,236,894字节，独立恢复148份文件共138,951,275字节（147份原捕获加1份完整性清单）；完整集合、逐字节/SHA及全部142个内层gzip原始内容均已核验。[白塔输入描述文件](test-inputs/white-tower-v02140-inputs.json)列出全部包与成员hash，其SHA256为`f612edace067e88be660f07c65cf2b449e00665bbbf351eccd9d4fbd40c1cf89`；[各包大小与SHA256](docs/WHITE_TOWER_RELEASE_ACCEPTANCE.md#公开输入与复验)见验收说明。恢复本阶段与原来源后可运行对应测试：
 
 ```sh
-npm run fixtures:restore -- --only-prefix concealment-servant-v01690 --only-prefix misfortune-knight-v01910
-npx vitest run tests/domain/misfortune-knight-acquisition.test.ts tests/domain/misfortune-knight-life.test.ts tests/domain/misfortune-knight-combat.test.ts tests/domain/misfortune-knight-inheritance.test.ts tests/domain/misfortune-knight-shared.test.ts tests/domain/misfortune-knight-natural.test.ts tests/renderer/misfortune-knight-panel.test.tsx tests/renderer/misfortune-knight-source.test.tsx tests/renderer/misfortune-knight-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/misfortune-knight-save.mjs --expected-boundaries 80
+node test-inputs/restore-test-inputs.mjs --manifest test-inputs/white-tower-v02140-inputs.json
+npm run fixtures:restore -- --only-prefix all-knowing-eye-v01920
 ```
 
-### 雷神阶段专项恢复与检查
+独立恢复可添加`--destination white-tower-restored`；此参数是fixtures根目录，直接生成其下的`white-tower-v02140/`及同级完整性清单，不是仓库根目录。运行测试仍使用默认`tests/fixtures`位置。
+
+此前黑暗输入已打包：34份完整捕获文件，共10,601,189字节。公共恢复器已在独立目录实际恢复全部34份，文件集合一致，逐字节及各gzip原始内容比对通过。
+
+包为 `test-inputs/lotm_release_0.213.0_darkness_test_inputs_1_2026-10-17.tar.gz`，9,950,211字节；SHA256为 `9c2b94d4eab29e7a1cdaa5dd3db081b7792847b456facb607c32996542f3702d`。按需恢复黑暗阶段输入与原来源：
 
 ```sh
-npm run fixtures:restore -- --only-prefix catastrophe-v01710 --only-prefix thunder-god-v01930
-npx vitest run tests/domain/thunder-god-acquisition.test.ts tests/domain/thunder-god-life.test.ts tests/domain/thunder-god-combat.test.ts tests/domain/thunder-god-inheritance.test.ts tests/domain/thunder-god-shared.test.ts tests/domain/thunder-god-natural.test.ts tests/renderer/thunder-god-panel.test.tsx tests/renderer/thunder-god-source.test.tsx tests/renderer/thunder-god-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/thunder-god-save.mjs --expected-boundaries 222
+npm run fixtures:restore -- --only-prefix misfortune-knight-v01910 --only-prefix darkness-v02130
 ```
 
-这些输入保留原599条活分支、原602条死亡记录以及本次820条独立死亡分支。可选战斗失败仍为终档；输入恢复只用于验证，不改变玩家存档。
+本地结果属于本阶段定点及受影响回归，未将全部历史测试重新运行一遍。本阶远端CI与Windows以对应提交的实际终值为准；可见Electron窗口、桌面实机体验、安装包及玩家验收仍为NOT_RUN。
 
-纯白天使专项输入与保存复验：
+历史验证范围见[既有发布验收说明](docs/RELEASE_ACCEPTANCE.md)及各阶段说明；历史通过记录不替代本阶段复验。
 
-```sh
-npm run fixtures:restore -- --only-prefix light-seeker-v01720 --only-prefix pure-white-angel-v01940
-npm run typecheck
-npx vitest run tests/domain/pure-white-angel-acquisition.test.ts tests/domain/pure-white-angel-life.test.ts tests/domain/pure-white-angel-combat.test.ts tests/domain/pure-white-angel-inheritance.test.ts tests/domain/pure-white-angel-shared.test.ts tests/domain/pure-white-angel-natural.test.ts tests/domain/pure-white-angel-save.test.ts tests/renderer/pure-white-angel-panel.test.tsx tests/renderer/pure-white-angel-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/pure-white-angel-save.mjs --expected-boundaries 127
-```
+## 来源与许可
 
-苍白皇帝专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix death-consul-v01730 --only-prefix pale-emperor-v01950
-npm run typecheck
-npx vitest run tests/domain/pale-emperor-acquisition.test.ts tests/domain/pale-emperor-life.test.ts tests/domain/pale-emperor-combat.test.ts tests/domain/pale-emperor-inheritance.test.ts tests/domain/pale-emperor-shared.test.ts tests/domain/pale-emperor-natural.test.ts tests/domain/pale-emperor-save.test.ts tests/renderer/pale-emperor-panel.test.tsx tests/renderer/pale-emperor-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/pale-emperor-save.mjs --expected-boundaries 224
-```
-
-完整专项逐一检验224个命名边界。Vitest 保留全输入完整性校验与关键事务代表测试，二者验证范围分别记录。恢复输入保留原当代人物、六十年经历、实际失败和新伤，不改变玩家存档。
-
-时之虫专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix fate-trojan-v01750 --only-prefix deceit-mentor-v01510 --only-prefix time-worm-v01970
-npm run build:main
-node --expose-gc scripts/play/time-worm-save.mjs --expected-boundaries 110
-```
-
-该专项包含110个命名边界、106个唯一转换和4个原字节相同的别名。原551条活档继续至656条，639条公开按钮遗漏修复后从原活终态接续，首瓶及此前随机结果保持；旧456条死亡分支独立封存。详见[时之虫阶段记录](docs/TIME_WORM_PLAYABLE_STAGE.md)。
-
-星之匙专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix planeswalker-v01740 --only-prefix wanderer-v01500 --only-prefix star-key-v01960
-npm run typecheck
-npx vitest run tests/domain/star-key-acquisition.test.ts tests/domain/star-key-life.test.ts tests/domain/star-key-combat.test.ts tests/domain/star-key-inheritance.test.ts tests/domain/star-key-shared.test.ts tests/domain/star-key-natural.test.ts tests/domain/star-key-save.test.ts tests/renderer/star-key-panel.test.tsx tests/renderer/star-key-navigation.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc scripts/play/star-key-save.mjs --expected-boundaries 126
-```
-
-专项核验126个命名边界，其中3个名称与另一名称记录同一实际转换，按原字节核对并分别计数为123个唯一转换。输入保留原707条与209条死亡分支、813命令首次校验拒绝与修复后完全相同的结算。当前活分支沿原701和平截点继续至823条；旧死亡档不会因此复起。门路线早期序列4起点有定向验证背景，不能当作普通人9→1完整自然通关。详见[星之匙阶段记录](docs/STAR_KEY_PLAYABLE_STAGE.md)。
-
-神明之手专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix glory-v01760 --only-prefix silver-knight-v01520 --only-prefix preparation-audit-v01630 --only-prefix divine-hand-v01980
-npm run build:main
-node --expose-gc scripts/play/divine-hand-save.mjs --expected-boundaries 142
-```
-
-原158条活档继续至297条；继承的70条银骑士起点为定向验证。第二瓶晋升成功，生活中的两项新技巧均未成功应用；可选遭遇第七轮玩家死亡，敌人存活，护甲合势在实战中实际应用一次。原死亡终档封存。专项覆盖142个命名边界、140个独立转换，详见[神明之手阶段记录](docs/DIVINE_HAND_PLAYABLE_STAGE.md)。
-
-末日魔女专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix unaging-demoness-v01530 --only-prefix calamity-demoness-v01770 --only-prefix apocalypse-demoness-v01990
-npm run build:main
-node --expose-gc --max-old-space-size=768 scripts/play/apocalypse-demoness-save.mjs --expected-boundaries 277
-npx vitest run tests/domain/apocalypse-demoness-natural.test.ts tests/domain/apocalypse-demoness-save.test.ts --maxWorkers=1 --no-file-parallelism
-```
-
-本次854条公开命令保留原585及此前487条真实历史，前五药败与跨周补货均未回滚。生活两项新技巧各实际应用一次，可选交战四轮对手投降，本人普通退场后工作并保留两轻伤。专项按277个命名边界、270个唯一转换和7个同字节别名核验，完整进展与最终验证范围见[末日魔女阶段记录](docs/APOCALYPSE_DEMONESS_PLAYABLE_STAGE.md)。
-
-0.199.0阶段验收：50个相关测试文件、1086项全部通过；277个命名保存边界对应270个唯一事务转换。新增6个历史输入包恢复出286个原文件并逐字节核对，严格类型与生产构建通过。远端Windows检查状态见对应PR；完整1.0、剩余序列1和全部序列0仍在开发。
-
-知识皇帝专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix prophecy-master-v01540 --only-prefix sage-v01780 --only-prefix knowledge-emperor-v02000
-npm run build:main
-node --expose-gc --max-old-space-size=768 scripts/play/knowledge-emperor-save.mjs --expected-boundaries 184
-npx vitest run tests/domain/knowledge-emperor-natural.test.ts tests/integration/knowledge-emperor-save.test.ts tests/renderer/knowledge-emperor-combat-save.test.tsx --maxWorkers=1 --no-file-parallelism
-```
-
-原651条贤者历史继续至831条，实际诊疗、两瓶失败和第三瓶成功均保留。三案施术全部失败，新技巧掌握保持0；第194周健康100无伤进入可选交战，首轮身体后果骰97导致死亡，终档封存。专项按184个命名边界、181个唯一转换与3个原字节相同别名分别核验，完整范围见[知识皇帝阶段记录](docs/KNOWLEDGE_EMPEROR_PLAYABLE_STAGE.md)。
-
-0.200.0阶段验收：55个相关测试文件、948项全部通过；184个命名保存边界对应181个唯一事务与3个别名。新增4包实际恢复198个原文件并逐字节核验，严格类型和生产构建通过。Windows远端结果见本阶段PR；可见桌面体验与完整1.0仍待完成。
-
-
-暗天使专项输入与保存复验：
-
-```bash
-npm run fixtures:restore -- --only-prefix dark-angel-v02010 --only-prefix elder-v01790 --only-prefix three-headed-templar-v01550 --only-prefix knowledge-emperor-v02000
-npm run build:main
-node --expose-gc --max-old-space-size=768 scripts/play/dark-angel-save.mjs --expected-boundaries 215
-```
-
-201增量：倒吊人新增有限序列1暗天使。原615条活档同种子续至824条，真实诊疗休养、前三瓶失败及付费隔周新供货后第四瓶晋升均保留。生活中引导、护持各实际应用一次，撤回案没有应用或奖励；原双灵灵性实际消耗，无新灵库存。独立可选战三轮后对手投降，本人无伤沿4米原路退出再工作；战中新引导窗口失效、实际增益为0。详见[暗天使阶段记录](docs/DARK_ANGEL_PLAYABLE_STAGE.md)。本阶段51个相关测试文件854项、215个命名保存边界对应210个唯一事务均通过；严格类型与生产构建通过。227个原始输入以完整文件压缩分包交付，采用全成员逐字节核验与代表实解。Windows结果以本阶段PR为准，桌面实机体验与完整1.0仍待验收。
-
-
-污秽君王专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix blood-duke-v01800 --only-prefix blatherer-v01560 --only-prefix unclean-monarch-v02020
-npm run build:main
-node --expose-gc --max-old-space-size=768 scripts/play/unclean-monarch-save.mjs --source-directory tests/fixtures/unclean-monarch-v02020 --expected-boundaries 106
-npx vitest run tests/domain/unclean-monarch-natural.test.ts tests/renderer/unclean-monarch-combat-save.test.tsx --maxWorkers=1 --no-file-parallelism
-```
-
-202增量：深渊新增有限序列1污秽君王。原718条和平活截点同种子续至821条，首瓶晋升，两项新技巧各在生活中实际应用并报告一次，第三案失败后普通归还。新邻院对手两轮死亡，玩家无伤步行退出后劳动；战中冲动收束实际应用一次，定向扰动未应用。原724条及更早592条死亡分支各自保留，原十六项掌握与负荷均不重置。详细费用、实际结果和本阶段最终验证范围见[污秽君王阶段记录](docs/UNCLEAN_MONARCH_PLAYABLE_STAGE.md)。
-
-0.202.0阶段验收：49个相关测试文件888项、106个命名保存边界对应104个唯一事务全部通过，严格类型和生产构建通过。119个历史输入分3包交付，并完成全成员字节核对与4个代表文件实际恢复。Windows检查以本阶段PR为准；剩余5条序列1、全部序列0和完整1.0验收继续推进。
-
-
-神孽专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix silent-disciple-v01570 --only-prefix ancient-evil-v01810 --only-prefix abomination-v02030
-npm run build:main
-node --expose-gc --max-old-space-size=768 scripts/play/abomination-save.mjs --source-directory tests/fixtures/abomination-v02030 --expected-boundaries 140
-```
-
-203增量：被缚者新增有限序列1神孽。原642条完整活档同种子续至778条，第一瓶失败、第二瓶第169周成功；生活束障实际把一次精神压力45减至15并报告，新短声尝试失败。可选遭遇四轮对手投降，玩家无伤普通步行退出后劳动；战中两项新能力均没有实际应用。旧蕾娜死亡、卡尔德投降及原人物衣包保持。详见[神孽阶段记录](docs/ABOMINATION_PLAYABLE_STAGE.md)。
-
-204增量：怪物新增有限序列1水银之蛇。原703条活档同种子续至841条，第一瓶失败、第二瓶第196周晋升。生活中原车与同一封包实际重启一次；可选遭遇第二轮回到本次记录位置并抵去25点未结算身体冲量，随后对手投降，本人普通步行退出并完成实际周结，保留一处新轻伤。片刻维系虽施放成功但没有实际应用，掌握仍为0。日期、费用、原物、原投降者和死亡历史均不回滚。详见[水银之蛇阶段记录](docs/MERCURY_SNAKE_PLAYABLE_STAGE.md)。
-
-
-205增量：黑皇帝新增有限序列1弑序亲王。原743条完整活档同种子续至924条，前两瓶失败、第三瓶第216周晋升。原球在新旁侧承接区中实际投掷、维持飞行与撤回后普通归还，两项新技巧各在生活中应用一次。独立可选遭遇六轮后对手投降，定向放大实际应用一次，延效被抵抗；本人沿四米原路退出，保留两处新轻伤。原十五份贿赂物使用唯一有效账本，已赠物与旧投降者没有重置。真实结果、有限范围与验收状态见[弑序亲王阶段记录](docs/PRINCE_OF_ABOLITION_PLAYABLE_STAGE.md)。
-
-
-206增量：仲裁人新增有限序列1秩序之手。原594条完整活档同种子续至801条，真实诊治休养后前三瓶失败，付费调查隔周新供货后第四瓶在第179周晋升。原封包在相邻区完成真实交接、撤回和普通归还，划分实际应用一次，余波失败后普通支撑磨损原护板。可选新遭遇三轮后玩家死亡，死亡结局保留；战中两项新技巧没有实际应用。有限范围、原人物物品连续性及最终验证结果见[秩序之手阶段记录](docs/HAND_OF_ORDER_PLAYABLE_STAGE.md)。本地58个测试文件1161项、7项冻结负例、完整208个唯一SQLite转换、修后代表与界面回归通过，严格类型检查和构建通过；远端Windows矩阵以本次PR实际状态为准。
-
-秩序之手专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix chaos-hunter-v01600 --only-prefix recovery-v01620 --only-prefix balancer-v01840 --only-prefix hand-of-order-v02060
-npx vitest run tests/domain/hand-of-order-acquisition.test.ts tests/domain/hand-of-order-life.test.ts tests/domain/hand-of-order-combat.test.ts tests/domain/hand-of-order-inheritance.test.ts tests/renderer/hand-of-order-panel.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc --max-old-space-size=768 scripts/play/hand-of-order-save.mjs --expected-boundaries 283
-```
-
-
-207增量：大地新增有限序列1自然行者。原851条完整活档同种子续至955条，第一瓶第221周晋升。生机辨应与根系承冲各在生活中实际应用一次；另一次辨应施术成功后许可撤回，改为普通照料，不计能力应用。独立可选遭遇九轮后对手投降，两项新能力战斗实际应用均为0；原根垫与旧护腕继续真实消耗。本人沿四米原路退出后实际工作，第228周仍活着，保留两重两轻伤与累计风险3。有限范围、原人物物品连续性及验证状态见[自然行者阶段记录](docs/NATURE_WALKER_PLAYABLE_STAGE.md)。本地53个测试文件1113项、13项输入冻结/公开边界脚本测试及完整105个唯一SQLite转换通过，严格类型和构建通过。122个输入分4包，全部成员流式字节核对并实际恢复4个代表文件；远端Windows状态以本阶段PR为准。
-
-自然行者专项输入与保存复验：
-
-```sh
-npm run fixtures:restore -- --only-prefix coffin-bearer-v01610 --only-prefix barren-matriarch-v01850 --only-prefix nature-walker-v02070
-npx vitest run tests/domain/nature-walker-natural.test.ts tests/domain/nature-walker-natural-save.test.ts tests/renderer/nature-walker-combat-save.test.tsx --maxWorkers=1 --no-file-parallelism
-npm run build:main
-node --expose-gc --max-old-space-size=768 scripts/play/nature-walker-save.mjs --source-directory tests/fixtures/nature-walker-v02070 --expected-boundaries 146
-```
-
-208增量：占卜家新增有限序列0愚者。原1868条完整活档按原种子、原策略接续至2083条，首瓶于第2072条命令、第16005周晋升；准备失败、付费重试、原材料与伤亡账本均保留。撤离中的新技巧只尝试片刻盲愚且失败，随后步行检定失败，本人受伤35、两位信使各受伤18，再沿12米普通退路退出；前刻留影未施放，两项新技巧均未实际应用、掌握保持0。最终第16006周仍活着，健康65、精神96、灵性92、现金71便士、2行动。原物、历史迷雾与商运因果的有限范围见[愚者阶段记录](docs/FOOL_PLAYABLE_STAGE.md)。
-
-逐步验证已保留修复前215条命令、216状态的完整严格对照。随后修复旧序列1战斗结果中的内部字段泄漏，修复后216份安全公开投影和隔离审计对照通过，原私态与随机不变；严格复查覆盖起点、首步及终态，没有重跑修复后的完整215条严格对照。公开字段修复版的32个唯一SQLite提交边界（34个命名点）、3项采集检查和1项终态界面测试均已通过。首批相关回归暴露启动读取误走写事务与备份流程。只读事务修复已通过3个后端文件41项，原写事务与领域结果不变；最终65个相关文件1138项串行复验全部通过。原32项完整事务与修复后的定点覆盖分开记录。
-
-最终只读修复版Linux/Node后端实测：构造与启动读取合计53.08秒，显式加载19.19—20.60秒，最后报告动作的实际SQLite热提交3.56秒（含公开投影、事务提交与提交后备份），重复回执约56毫秒。私态、随机及当前安全公开结果完全匹配。这些测量不含Electron窗口、IPC与绘制，较慢的冷启动和加载仍是体验限制。远端Windows CI待实际结果，桌面实机体验尚未验收；新增13份Fool输入已由一个小于20MB的完整文件包交付，公开恢复脚本在干净目录实际恢复并逐字节核验。本阶段不是完整1.0。
-
-愚者复验输入与命令见[阶段记录](docs/FOOL_PLAYABLE_STAGE.md#输入恢复与复验命令)。当前0.208.0清单包含本阶段完整输入与最终版本证明。
+仓库不包含小说全文、个人存档、凭据、node_modules或生成测试输出。原创代码许可及第三方设定、素材权利分别见LICENSE、NOTICE和 `public/assets/ART_SOURCES.txt`。源码、游戏资源和完整测试输入按明确清单交付。

@@ -10,8 +10,8 @@ import { PLEASURE_ABILITY_IDS } from '../pleasure/types.js';
 import { PAIN_ABILITY_IDS } from '../pain/types.js';
 import { DESPAIR_ABILITY_IDS } from '../despair/types.js';
 import { UNAGING_DEMONESS_ABILITY_IDS } from '../unaging-demoness/types.js';
-import { validateCalamityDemonessSiteState, type CalamityDemonessSiteState } from './life.js';
-import { CALAMITY_DEMONESS_TARGET_ID, CALAMITY_DEMONESS_POWER_IDS, CALAMITY_DEMONESS_POWERS, hasCalamityDemonessDisputeOpponent,
+import { projectDemonessPublicFields, projectDemonessPublicInjury, projectCalamityDemonessPublicSite, validateCalamityDemonessSiteState, type CalamityDemonessSiteState } from './life.js';
+import { projectCalamityDemonessPowerUses, projectCalamityDemonessCombatPlate, CALAMITY_DEMONESS_TARGET_ID, CALAMITY_DEMONESS_POWER_IDS, CALAMITY_DEMONESS_POWERS, hasCalamityDemonessDisputeOpponent,
   validateCalamityDemonessPreparation, type CalamityDemonessPreparation,
   type CalamityDemonessEnemyIntent, type CalamityDemonessPowerId } from './encounter.js';
 
@@ -305,16 +305,36 @@ export function finishCalamityDemonessCombatRound(s: SliceState, r: CalamityDemo
   return structuredClone(outcome);
 }
 export function calamityDemonessRoundOutcome(r: CalamityDemonessRoundContext): CalamityDemonessRoundOutcome { if (!r.outcome) throw new Error('回合尚未结束。'); return structuredClone(r.outcome); }
+export type CalamityDemonessPublicPlayerAction = Omit<CalamityDemonessPlayerAction, 'randomCursorBefore' | 'randomCursorAfter'>;
+export type CalamityDemonessPublicEnemyAction = Omit<CalamityDemonessEnemyAction, 'randomCursorBefore' | 'randomCursorAfter'>;
+export type CalamityDemonessPublicRoundOutcome = Omit<CalamityDemonessRoundOutcome, 'source' | 'randomCursorAfter' | 'playerActions' | 'enemyActions'> &
+  { playerActions: CalamityDemonessPublicPlayerAction[]; enemyActions: CalamityDemonessPublicEnemyAction[] };
+const publicCalamityAction = (a: ActionEvidence) => ({ ...projectDemonessPublicFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure',
+  'order', 'atSeconds', 'elapsedSeconds', 'paidCost', 'physicalFactor', 'playerHealthAfter', 'playerSpiritualityAfter', 'enemySpiritualityAfter', 'chargeGranted',
+  'chargeConsumedByOrder', 'chargeCancelledByOrder', 'appliedAmount', 'consumedScreenOrder', 'consumedGuardOrder', 'plateChargeSpent', 'plateChargesAfter']), rolls: [...a.rolls] });
+export function projectCalamityDemonessPlayerAction(a: CalamityDemonessPlayerAction): CalamityDemonessPublicPlayerAction {
+  return { ...publicCalamityAction(a), id: a.id, attempted: a.attempted, succeeded: a.succeeded, applied: a.applied, resisted: a.resisted, fallback: a.fallback };
+}
+export function projectCalamityDemonessEnemyAction(a: CalamityDemonessEnemyAction): CalamityDemonessPublicEnemyAction {
+  return { ...publicCalamityAction(a), planned: a.planned, actual: a.actual, attackKind: a.attackKind };
+}
+export function projectCalamityDemonessRoundOutcome(o: CalamityDemonessRoundOutcome): CalamityDemonessPublicRoundOutcome {
+  return { ...projectDemonessPublicFields(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore',
+    'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'playerRiskAfter', 'enemyRiskAfter', 'screenAttempted', 'flameAttempted', 'guardAttempted',
+    'expiredScreenOrder', 'expiredGuardOrder', 'pendingScreenAfter', 'pendingGuardAfter', 'plateChargesAfter', 'plateChargesSpent', 'clockSecondsAfter', 'elapsedSeconds']),
+    playerInjuriesAfter: o.playerInjuriesAfter.map(projectDemonessPublicInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(projectDemonessPublicInjury),
+    powerUses: projectCalamityDemonessPowerUses(o.powerUses), playerActions: o.playerActions.map(projectCalamityDemonessPlayerAction), enemyActions: o.enemyActions.map(projectCalamityDemonessEnemyAction) };
+}
 export function projectCalamityDemonessCombat(s: SliceState) {
   const e = s.calamityDemoness.encounter, visible = isCalamityDemoness(s), site = e.currentSite;
   const last = s.combat?.encounterId === 'CALAMITY_DEMONESS_DISPUTE' ? s.combat.lastRound?.calamityDemonessOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.calamityDemonessOutcome : null;
   return { enemyName: visible ? '伊瑞丝（45岁）' : '', targetId: visible ? e.targetId : null,
     playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
     enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
-    powerUses: visible ? { ...e.powerUses } : null, site: visible && site ? structuredClone(site) : null,
-    plate: visible && e.plate ? structuredClone(e.plate) : null,
-    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0, source: visible ? currentCalamityDemonessCombatSource(s) : null,
-    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...structuredClone(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...structuredClone(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
+    powerUses: visible ? projectCalamityDemonessPowerUses(e.powerUses) : null, site: visible && site ? projectCalamityDemonessPublicSite(site) : null,
+    plate: visible && e.plate ? projectCalamityDemonessCombatPlate(e.plate) : null,
+    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0,
+    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...projectCalamityDemonessPlayerAction(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...projectCalamityDemonessEnemyAction(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
     countWheel: CALAMITY_DEMONESS_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: CALAMITY_DEMONESS_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: CALAMITY_DEMONESS_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
     summary: visible ? '镜幕缓冲每轮最多尝试一次，花6灵性、知识20检验，成功耗用实际付费镜片的一次耐用次数，只削弱随后一次身体攻击45。镜片一共三次，不自动修补；扰断或过期不退款。黑焰导引每轮最多尝试一次，花6灵性、知识20检验，成功取得85×身体状态攻势。冰霜花6灵性、知识18检验，以原掌握取得35×掌握系数有限减势。全力防守整轮放弃普通打击和黑焰；伊瑞丝的屏护只削弱一次实际打击或黑焰40。各动作5秒、每回合60秒；只有你继续交战时恢复12灵性，对手不恢复。没有同行者，原镜仍在馆内，伤势与死亡如实保留。' : '' };
 }

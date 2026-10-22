@@ -278,7 +278,7 @@ describe("Audience pathway dossier", () => {
     expect(screen.queryByRole("region", { name: "观众能力与消化" })).toBeNull();
   });
 
-  it("submits the chosen public social action once and returns to life only after saving", async () => {
+  it("submits the chosen public social action once and keeps the saved dossier open until manually closed", async () => {
     const state = fixture(social(), true);
     const value = bridge(state);
     let finish!: (result: SliceResult<SliceReceipt>) => void;
@@ -293,6 +293,8 @@ describe("Audience pathway dossier", () => {
     const envelope = vi.mocked(value.submitIntent).mock.calls[0]![0];
     expect(envelope.payload).toEqual({ type: "AUDIENCE", command: { type: "DISCUSS", caseId: "counter-receipt", approach: "ASK" } });
     await act(async () => { finish(receipt({ ...state, revision: state.revision + 1, audience: { ...state.audience, trust: 3 } }, envelope)); });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
     await openAudience();
     expect(screen.getByText("交往信任：3")).toBeTruthy();
@@ -323,6 +325,8 @@ describe("Audience pathway dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "AUDIENCE", command: { type: "CONSUME", bottleId: "audience-potion-2", confirmed: true } });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });

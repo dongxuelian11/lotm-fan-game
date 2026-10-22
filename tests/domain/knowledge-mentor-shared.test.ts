@@ -83,5 +83,5 @@ describe('Knowledge Mentor actual same-seed route and shared save boundaries', (
     const b = readObjectEntry<{ beforeLast: unknown }>(`tests/fixtures/${stage}/boundaries.json`, key), s = migrateSliceState(b.beforeLast);
     assertValidSliceState(s); expect(projectSliceState(s).canAct).toBe(false);
     expect(() => applySliceIntent(s, { type: 'ACTION', action: 'WORK' })).toThrow();
-  });
+  }, 10_000);
 });

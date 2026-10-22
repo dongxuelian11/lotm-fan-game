@@ -5,6 +5,8 @@ import { stableStringify } from '../canonical.js';
 import { compareGameDates, gameDaysBetween, isValidGameDate } from '../game-calendar.js';
 import type { ProphecyMasterLifeState } from '../prophecy-master/life.js';
 import type { SeerContext } from '../seer/index.js';
+import type { SliceInjury } from '../slice/types.js';
+import type { ScrollProfessorScroll, ScrollProfessorWorkshop } from '../scroll-professor/types.js';
 import type { SliceState } from '../slice/types.js';
 import { hasSageOldPractice } from './index.js';
 
@@ -49,7 +51,7 @@ export interface SageCheckSource { caseId: SageCaseId; abilityId: SageLifeAbilit
 export interface SageLifeEvent { week: number; date: PublicGameDate; command: SageActivityCommand; tier: PublicResolutionTier | null; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null; source: SageCheckSource | null; inheritedScene: SageSceneSource | null; paid: SageLifeCost; budget: SageLifeBudget }
 export interface SageLifeState { activeCase: SageCaseId | null; reflected: boolean; site: SageSiteState; cases: Record<SageCaseId, SageCaseState>; journal: SageLifeEvent[] }
 export interface SageLifeAction { id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: SageActivityCommand }
-export interface SageLifeProjection { title: string; story: string; environment: string; activeCase: SageCaseId | null; inside: boolean; insideCase: boolean; reflected: boolean; site: SageSiteState; clockSeconds: number; playerLocation: SageLocation; playerTravelMetres: number; currentAttempt: SageAttempt | null; cases: { id: SageCaseId; title: string; story: string; observations: string[]; status: string; method: 'ABILITY' | 'ORDINARY' | null; result: string | null; contactOpen: boolean; returned: boolean; closes: number; attempts: SageAttempt[] }[]; actions: SageLifeAction[] }
+export interface SageLifeProjection { title: string; story: string; environment: string; activeCase: SageCaseId | null; inside: boolean; insideCase: boolean; reflected: boolean; site: SagePublicSite; clockSeconds: number; playerLocation: SageLocation; playerTravelMetres: number; currentAttempt: SagePublicAttempt | null; cases: { id: SageCaseId; title: string; story: string; observations: string[]; status: string; method: 'ABILITY' | 'ORDINARY' | null; result: string | null; contactOpen: boolean; returned: boolean; closes: number; attempts: SagePublicAttempt[] }[]; actions: SageLifeAction[] }
 const FORM: SageLifeAbilityId = 'hermit.s2.information-form', SIFT: SageLifeAbilityId = 'hermit.s2.information-sift';
 const ORIGIN: PublicGameDate = { epoch: 'FIFTH_EPOCH', year: 1349, month: 6, day: 28 };
 const POSITION: Record<SageLocation, number> = { ENTRY: 0, A: 6, B: 10, OUTSIDE: -2, YARD: -4 };
@@ -237,7 +239,7 @@ export function sageLifeActions(s: SliceState): SageLifeAction[] {
   }
   return out;
 }
-export function projectSageLife(s: SliceState): SageLifeProjection { const l = s.sage.life, p = s.sage.encounter.currentSite ?? l.site; return { title: '原仓库的有限信息实践', story: SAGE_LIFE_STORY, environment: SAGE_LIFE_ENVIRONMENT, activeCase: l.activeCase, inside: hasSageLifeLock(s), insideCase: contactOpen(l), reflected: l.reflected, site: structuredClone(p), clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: structuredClone(current(l)), cases: CASES.map(d => { const r = l.cases[d.id], a = r.attempts.at(-1); return { ...d, observations: a ? [`实付${a.penniesSpent}便士、${a.spiritualitySpent}灵性、${a.mindSpent}精神；移动${a.playerTravelMetres}米、经过${a.elapsedSeconds}秒、耗${a.energySpent}精力。`, ...a.information, ...(a.correction ? [a.correction] : []), ...(a.permissionWithdrawn ? ['原成人已撤回当前许可，后续只可普通收尾。'] : []), `已实际应用并待如实报告的技巧：${a.appliedAbilityIds.length}项。`] : [], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '实际能力应用与核验记录已保留。' : '普通方法或明确停止，不增加未应用技巧的掌握。', contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: structuredClone(r.attempts) }; }), actions: sageLifeActions(s) }; }
+export function projectSageLife(s: SliceState): SageLifeProjection { const l = s.sage.life, p = s.sage.encounter.currentSite ?? l.site; return { title: '原仓库的有限信息实践', story: SAGE_LIFE_STORY, environment: SAGE_LIFE_ENVIRONMENT, activeCase: l.activeCase, inside: hasSageLifeLock(s), insideCase: contactOpen(l), reflected: l.reflected, site: publicSageSite(p), clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: current(l) ? publicSageAttempt(current(l)!) : null, cases: CASES.map(d => { const r = l.cases[d.id], a = r.attempts.at(-1); return { ...d, observations: a ? [`实付${a.penniesSpent}便士、${a.spiritualitySpent}灵性、${a.mindSpent}精神；移动${a.playerTravelMetres}米、经过${a.elapsedSeconds}秒、耗${a.energySpent}精力。`, ...a.information, ...(a.correction ? [a.correction] : []), ...(a.permissionWithdrawn ? ['原成人已撤回当前许可，后续只可普通收尾。'] : []), `已实际应用并待如实报告的技巧：${a.appliedAbilityIds.length}项。`] : [], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '实际能力应用与核验记录已保留。' : '普通方法或明确停止，不增加未应用技巧的掌握。', contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: r.attempts.map(publicSageAttempt) }; }), actions: sageLifeActions(s) }; }
 export function validateSageSceneSource(v: unknown): v is SageSceneSource {
   try {
     if (!record(v) || !shape(v, ['root', 'promotionWeek', 'introducedWeek', 'snapshot']) || v.root !== 'prophecyMaster.life' || !integer(v.promotionWeek, 1) || !integer(v.introducedWeek, v.promotionWeek) || !record(v.snapshot)) return false;
@@ -331,3 +333,43 @@ export function validateSageLife(s: SliceState): boolean {
   } catch { return false; }
 }
 export const validateSageLifeState = validateSageLife;
+
+/** Positive public evidence helpers for the inherited Pryer chain. Never copy replay provenance. */
+export function publicPryerFields<T, K extends keyof T>(value: T, keys: readonly K[]): Pick<T, K> {
+  return Object.fromEntries(keys.map(key => [key, value[key]])) as Pick<T, K>;
+}
+export const publicPryerDate = (d: PublicGameDate): PublicGameDate => publicPryerFields(d, ['epoch', 'year', 'month', 'day']);
+export const publicPryerInjury = (i: SliceInjury): SliceInjury => publicPryerFields(i, ['id', 'severity', 'acquiredRevision', 'treatedRevision']);
+export const publicPryerCheck = (c: PublicCheckResult | null): PublicCheckResult | null => c ? ({
+  ...publicPryerFields(c, ['ability', 'baseAbility', 'effectiveAbility', 'difficulty', 'chance', 'roll', 'tier']),
+  modifiers: c.modifiers.map(m => publicPryerFields(m, ['source', 'value'])),
+}) : null;
+export const publicPryerScroll = (s: Pick<ScrollProfessorScroll, 'id' | 'materialId' | 'makerSequence' | 'inscriptionMastery'>) =>
+  publicPryerFields(s, ['id', 'materialId', 'makerSequence', 'inscriptionMastery']);
+export const publicPryerWorkshop = (w: ScrollProfessorWorkshop): ScrollProfessorWorkshop => ({
+  ...publicPryerFields(w, ['kitsBought', 'lastKitWeek', 'craftAttempts', 'craftFailures']),
+  materials: w.materials.map(m => publicPryerFields(m, ['id', 'acquiredWeek', 'status', 'spentWeek'])),
+  scrolls: w.scrolls.map(s => publicPryerFields(s, ['id', 'kind', 'makerSequence', 'inscriptionMastery', 'materialId', 'createdWeek', 'status', 'usedWeek', 'authorized'])),
+});
+export const publicSageMovement = (m: SageMovement): SageMovement => ({
+  ...publicPryerFields(m, ['actorId', 'from', 'to', 'mode', 'metres', 'seconds']),
+  ...(m.itemIds ? { itemIds: [...m.itemIds] } : {}),
+});
+export function publicSageSite(p: SageSiteState) { return {
+  ...publicPryerFields(p, ['siteId', 'introducedWeek', 'clockSeconds', 'playerLocation', 'playerTravelMetres', 'playerEnergy', 'formEnergySpent', 'assimilationExposure', 'body']),
+  introducedDate: p.introducedDate ? publicPryerDate(p.introducedDate) : null,
+  form: publicPryerFields(p.form, ['active', 'expiresAt', 'anchorId']),
+  iris: p.iris ? publicPryerFields(p.iris, ['id', 'name', 'age', 'alive', 'willing', 'location', 'energy', 'travelMetres', 'consent']) : null,
+  record: p.record ? publicPryerFields(p.record, ['id', 'owner', 'quantity', 'location', 'travelMetres']) : null,
+  conduit: publicPryerFields(p.conduit, ['id', 'from', 'to', 'metres', 'connected', 'traversals']),
+  archive: publicPryerFields(p.archive, ['id', 'owner', 'quantity', 'location', 'readings', 'verifications']),
+  materials: p.materials.map(m => publicPryerFields(m, ['id', 'caseId', 'ownerId', 'quantity', 'status', 'location', 'wear', 'paidPennies', 'preparedWeek'])),
+  actorMoves: p.actorMoves.map(publicSageMovement),
+}; }
+export type SagePublicSite = ReturnType<typeof publicSageSite>;
+export function publicSageAttempt(a: SageAttempt) { return {
+  ...publicPryerFields(a, ['week', 'method', 'closed', 'result', 'stopped', 'inspected', 'permissionWithdrawn', 'consent', 'elapsedSeconds', 'playerTravelMetres', 'energySpent', 'spiritualitySpent', 'mindSpent', 'penniesSpent', 'materialId', 'itemsReturned', 'anchorInstalled', 'formTier', 'siftTier', 'traversed', 'reassembled', 'expired', 'waits', 'ownerAccompanied', 'ownerReturned', 'read', 'verified', 'correction']),
+  information: [...a.information], appliedAbilityIds: [...a.appliedAbilityIds], playerMoves: a.playerMoves.map(publicSageMovement), actorMoves: a.actorMoves.map(publicSageMovement),
+  siteAtStart: publicSageSite(a.siteAtStart), siteAtClose: a.siteAtClose ? publicSageSite(a.siteAtClose) : null,
+}; }
+export type SagePublicAttempt = ReturnType<typeof publicSageAttempt>;

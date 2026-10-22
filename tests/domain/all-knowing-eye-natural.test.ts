@@ -21,7 +21,30 @@ const DEFENSIVE_SHA = '6d34a93817e084cc3937eb15cde42300137d9d3b71c8ff84d814c42c8
 const [INSIGHT, FORECAST] = ALL_KNOWING_EYE_ABILITY_IDS;
 const entry = <T>(key: string): T => readObjectEntry<T>(`${ROOT}/natural.json`, key);
 const captured = (key: string): SliceState => migrateSliceState(entry<unknown>(key));
-const same = (actual: unknown, expected: unknown) => expect(stableStringify(actual)).toBe(stableStringify(expected));
+const same = (actual: unknown, expected: unknown) => {
+  const a = stableStringify(actual), b = stableStringify(expected);
+  const digest = (value: string) => createHash('sha256').update(value).digest('hex');
+  expect(a === b, `Exact canonical bytes differ: ${a.length}/${digest(a)} versus ${b.length}/${digest(b)}`).toBe(true);
+};
+// A fresh LEARN_GUIDANCE writes the same-original recovery wording. Historical
+// captures stay untouched; only this exact record changes in replay expectations.
+const currentGuidanceExpected = (historical: SliceState): SliceState => {
+  const currentExpected = structuredClone(historical);
+  const guidance = currentExpected.chronicle[838]!;
+  expect({ id: guidance.id, week: guidance.week, title: guidance.title }).toEqual({
+    id: 'record-540-838', week: 125, title: '听取全知之眼独立成品与专业准备指导',
+  });
+  expect(currentExpected.chronicle.filter(record => record.id === guidance.id)).toHaveLength(1);
+  expect(currentExpected.chronicle.filter(record => record.title === guidance.title)).toEqual([guidance]);
+  const guidanceIsLatest = currentExpected.lastResult?.id === guidance.id;
+  if (guidanceIsLatest) expect(currentExpected.lastResult).toEqual(guidance);
+  expect(guidance.text).toBe('花1行动、500便士。旧私人借阅馆导师塞缪尔·维克说明原渠道记录。塞缪尔介绍独立封存的全知之眼成品魔药。当前渠道只交付成品，服用前须完成专业准备：核对阅读者至智慧天使八阶原瓶、三份实际报告与反思，写明亲眼观察到的条件和检验方式，再亲自走查停止、还物与返回路线。三项准备完成后，另付费检查当周场地，再独立确认饮用所选原瓶。智慧天使消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原19项掌握和智慧天使消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通休养。原纸不复制，原示范器不充能，旧样本、微光片与材料不补充。全部原瓶失败后须付1行动与100便士申请下一批，至少跨一真实周才有新三瓶到货。');
+  expect(createHash('sha256').update(guidance.text).digest('hex')).toBe('2b51b62010c5800f8f99a140c423860f4bd1a7248bd2a811aadda4d2132eaa54');
+  guidance.text = '花1行动、500便士。旧私人借阅馆导师塞缪尔·维克说明原渠道记录。塞缪尔介绍独立封存的全知之眼成品魔药。当前渠道只交付成品，服用前须完成专业准备：核对阅读者至智慧天使八阶原瓶、三份实际报告与反思，写明亲眼观察到的条件和检验方式，再亲自走查停止、还物与返回路线。三项准备完成后，另付费检查当周场地，再独立确认饮用所选原瓶。智慧天使消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原19项掌握和智慧天使消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通休养。原纸不复制，原示范器不充能，旧样本、微光片与材料不补充。最初三瓶均真实失败后，可付1行动与120便士，在原资料室出口当面取得玛拉本次许可，调查指定最新失败载体遗留的同一份原特性；隔一真实周再以1行动原处核验交接。新普通药液与调配另付900便士或五项新劳动后90便士，本次场地准备仍须150便士、1行动；旧费用、失败与原瓶全部保留，不增加第四份特性。';
+  if (guidanceIsLatest) currentExpected.lastResult!.text = guidance.text;
+  else expect(currentExpected.lastResult).toEqual(historical.lastResult);
+  return currentExpected;
+};
 const index = (): Record<string, string> => JSON.parse(readFileSync(`${ROOT}/boundaries.index.json`, 'utf8'));
 const boundary = (name: string) => {
   const filename = index()[name];
@@ -93,7 +116,8 @@ describe('All-Knowing Eye exact original537-command public continuation', () => 
       state = applySliceIntent(state, intent);
       if (i === 536) same(state, original);
     }
-    same(state, final); assertValidSliceState(state); same(migrateSliceState(state), state);
+    const currentExpected = currentGuidanceExpected(final);
+    same(state, currentExpected); assertValidSliceState(state); same(migrateSliceState(state), state);
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(state.revision).toBe(captured('initial').revision + commands.length);
     expect(entry('pendingIntent')).toBeNull(); expect(entry('error')).toBeNull(); expect(entry('continuationSource')).toBeNull();
@@ -123,7 +147,10 @@ describe('All-Knowing Eye exact original537-command public continuation', () => 
   }, 180_000);
 
   it('replays paid guidance, five labour steps, purchase, preparation and the first actual successful bottle', () => {
-    const guidance = replayBoundary('actual500p-guidance-and-frozen-eight-root-source');
+    const guidance = boundary('actual500p-guidance-and-frozen-eight-root-source');
+    expect(guidance.intent).toEqual({ type: 'ALL_KNOWING_EYE', command: { type: 'LEARN_GUIDANCE' } });
+    expect(guidance.before.chronicle).toHaveLength(838); expect(guidance.final.chronicle).toHaveLength(839);
+    same(applySliceIntent(guidance.before, guidance.intent), currentGuidanceExpected(guidance.final));
     expect(guidance.before.cash - guidance.final.cash).toBe(500);
     const buy = replayBoundary('actual1100p-buy-all-knowing-eye-potion-1');
     const prepared = replayBoundary('actual150p-current-week-preparation-all-knowing-eye-potion-1');

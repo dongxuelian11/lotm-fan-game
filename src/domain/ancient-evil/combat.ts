@@ -1,3 +1,5 @@
+import { publicPryerFields as publicFields, publicPryerInjury } from '../sage/life.js';
+import { publicAncientEvilBlock, publicAncientEvilBody, publicChainedOriginalSite } from './public.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -282,11 +284,20 @@ export function ancientEvilCombatConsequence(round: SliceCombatRound): string {
   if (round.consequenceDomain === 'BODY' && o.enemyActions.some(a => a.mentalPressure)) text += '莱娜的精神梦刺也实际参与优势计算；本次身体后果仅由实际身体攻击触发。';
   return text + ` 本轮实际经过60秒。莱娜仍是同一身体，当前${o.enemyForm === 'RABBIT' ? `兔形尚余${o.enemyFormUntilSeconds! - o.rootAfter.clockSeconds}秒` : '人形'}；原杖${o.weaponLocation === 'HAND' ? '由她持握' : '仍在地面'}。停止输入不等于复原，伤势与已付费用保留。`;
 }
+export function projectAncientEvilAction(a: AncientEvilActionEvidence) { return {
+  ...publicFields(a, ['order', 'actor', 'id', 'planned', 'mode', 'label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'attackKind', 'paidCost', 'mindCost', 'physicalFactor', 'checkChance', 'resistanceChance', 'succeeded', 'resisted', 'atSeconds', 'elapsedSeconds', 'travelMetres', 'blockId', 'enemyFormBefore', 'enemyFormAfter', 'weaponBefore', 'weaponAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'enemySpiritualityAfter']), rolls: [...a.rolls],
+}; }
+export function projectAncientEvilRoundOutcome(o: AncientEvilRoundOutcome) { return {
+  ...publicAncientEvilBody(o), ...publicFields(o, ['targetId', 'round', 'stance', 'continuing', 'cursePolicy', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'playerRiskAfter', 'elapsedSeconds']),
+  madmanBurst: publicFields(o.madmanBurst, ['policy', 'triggered', 'mentalCost', 'spiritualCost']), playerInjuriesAfter: o.playerInjuriesAfter.map(publicPryerInjury), rootAfter: publicChainedOriginalSite(o.rootAfter),
+  playerActions: o.playerActions.map(projectAncientEvilAction), enemyActions: o.enemyActions.map(projectAncientEvilAction),
+}; }
+export type AncientEvilPublicRoundOutcome = ReturnType<typeof projectAncientEvilRoundOutcome>;
 export function projectAncientEvilCombat(s: SliceState) {
   const e = s.ancientEvil.encounter, visible = isAncientEvil(s), last = s.combat?.encounterId === 'ANCIENT_EVIL_DISPUTE' ? s.combat.lastRound?.ancientEvilOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.ancientEvilOutcome : null;
   return { enemyName: visible ? '莱娜（45岁，织梦人）' : '', targetId: visible ? e.targetId : null, enemyHealth: e.enemyHealth, enemyMind: e.enemyMind, enemySpirituality: e.enemySpirituality,
-    distanceMetres: s.silentDisciple.life.playerLocation === 'A' ? e.enemyDistanceMetres : e.enemyDistanceMetres + 4, enemyForm: e.enemyForm, enemyFormUntilSeconds: e.enemyFormUntilSeconds, weaponLocation: e.weaponLocation, form: e.form, link: e.link, blocks: structuredClone(e.blocks), powerUses: { ...e.powerUses },
-    lastActionSequence: last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order) : [], countWheel: ANCIENT_EVIL_COUNT_WHEEL, enemyCountWheel: ANCIENT_EVIL_ENEMY_COUNT_WHEEL, enemyAbilityWheel: ANCIENT_EVIL_ENEMY_ABILITY_WHEEL,
+    distanceMetres: s.silentDisciple.life.playerLocation === 'A' ? e.enemyDistanceMetres : e.enemyDistanceMetres + 4, enemyForm: e.enemyForm, enemyFormUntilSeconds: e.enemyFormUntilSeconds, weaponLocation: e.weaponLocation, form: e.form, link: e.link, blocks: e.blocks.map(publicAncientEvilBlock), powerUses: publicFields(e.powerUses, ['DREAM_SPIKE', 'DREAM_WARD', 'RESIST_FORM']),
+    lastActionSequence: last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(projectAncientEvilAction) : [], countWheel: ANCIENT_EVIL_COUNT_WHEEL, enemyCountWheel: ANCIENT_EVIL_ENEMY_COUNT_WHEEL, enemyAbilityWheel: ANCIENT_EVIL_ENEMY_ABILITY_WHEEL,
     summary: visible ? '真实接触后才能付费尝试持续90秒变形，对方可抵抗。停止输入或回合结束不会提前复原；兔形保留精神梦刺与抵抗，不能做原手势或持杖。复原后拾起原杖须另占实际行动。诅咒引导主要用于生活实践，只解除自己的有限诅咒，不增加无来源攻击。原卡尔德、旧三原木块、原伤势与资源保持原样。' : '' };
 }
 export type AncientEvilCombatProjection = ReturnType<typeof projectAncientEvilCombat>;

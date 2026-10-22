@@ -12,7 +12,21 @@ import { readObjectEntry } from '../helpers/read-object-entry';
 vi.setConfig({ testTimeout: 60_000 });
 const ROOT = 'tests/fixtures/conqueror-v01870';
 const PANEL = '征服者成长';
+const PREPARATION = '红祭司晋升筹备';
 const ENTRY = '征服者与原院协作';
+const ORIGINAL_MASTERY = {
+  'hunter.s9.tracking': 16, 'hunter.s9.trapcraft': 16,
+  'hunter.s9.physical-enhancement': 32, 'hunter.s9.hunting-instinct': 116,
+  'hunter.s8.provocation': 16, 'hunter.s8.hostility-aura': 74,
+  'hunter.s7.flame-control': 0, 'hunter.s7.compressed-fireball': 16,
+  'hunter.s7.flame-lance': 0, 'hunter.s7.fire-raven': 8,
+  'hunter.s6.reasoning-plan': 0, 'hunter.s6.targeted-persuasion': 16,
+  'hunter.s5.weakness-observation': 0, 'hunter.s5.precision-strike': 25,
+  'hunter.s4.flame-steel': 8, 'hunter.s4.comrade-link': 8,
+  'hunter.s3.formation-link': 8, 'hunter.s3.coordinated-action': 8,
+  'hunter.s2.battle-fog': 8, 'hunter.s2.frost': 0, 'hunter.s2.storm': 0,
+  'hunter.s1.formation-momentum': 8, 'hunter.s1.focused-flame': 8,
+};
 const boundary = (name: string) => `${ROOT}/boundary-${name}.json`;
 const capturedState = (file: string, entry: string) => migrateSliceState(readObjectEntry<unknown>(file, entry));
 
@@ -62,8 +76,46 @@ async function acknowledgeSavedRound() {
   if (reveal) await userEvent.click(within(reveal).getByRole('button', { name: /^(返回生活|进入下一回合)$/ }));
 }
 
-async function openCurrentGrowth() {
+async function openCurrentConquerorGrowth() {
   await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+  return screen.findByRole('region', { name: PANEL });
+}
+
+async function openCurrentPreparation(state: SliceState) {
+  const current = projectSliceState(state);
+  expect(state.progression).toMatchObject({ pathwayId: 'hunter', sequence: 1, acting: 100 });
+  expect(current.conqueror.life.reflected).toBe(true);
+  expect(current.redPriest).toMatchObject({ title: PREPARATION, guidanceKnown: false, promoted: false, insideCase: false });
+  await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+  const panel = await screen.findByRole('region', { name: PREPARATION });
+  expect(within(panel).getByRole('heading', { name: PREPARATION })).toBeTruthy();
+  expect(screen.queryByRole('region', { name: PANEL })).toBeNull();
+  expect(current.character.name).toBe('罗温');
+  expect(screen.getByText(`${current.character.name} · ${PREPARATION}`, { selector: 'header.slice-topbar > strong' })).toBeTruthy();
+  expect(current.redPriest.resources).toEqual({ health: state.health, mind: state.mind,
+    spirituality: state.spirituality, cash: `${state.cash}便士`, actionsRemaining: state.actionsRemaining });
+  expect(within(panel).getByText(`健康 ${state.health} · 精神 ${state.mind} · 灵性 ${state.spirituality} · ${state.cash}便士 · 本周行动 ${state.actionsRemaining}`, { selector: 'p' })).toBeTruthy();
+  expect(screen.getByRole('region', { name: '伤势与恢复路线' }).textContent)
+    .toContain('未治疗重伤0处 · 已处置待康复重伤0处 · 轻伤2处 · 累计风险1。');
+  expect(state.progression.mastery).toEqual(ORIGINAL_MASTERY);
+  expect(current.redPriest.abilities).toHaveLength(23);
+  expect(Object.fromEntries(current.redPriest.abilities.map(ability => [ability.id, ability.mastery]))).toEqual(ORIGINAL_MASTERY);
+  expect(current.redPriest.abilities.filter(ability => ability.mastery === 0)).toHaveLength(6);
+  const summary = within(panel).getByText('已掌握的能力', { selector: 'summary' });
+  await userEvent.click(summary);
+  const abilities = within(summary.parentElement!);
+  expect(abilities.getAllByRole('heading')).toHaveLength(23);
+  for (const ability of current.redPriest.abilities) {
+    expect(abilities.getByRole('heading', { name: `${ability.label} · 熟练 ${ability.mastery}` })).toBeTruthy();
+  }
+  return panel;
+}
+
+async function openConquerorHistory(preparation: HTMLElement) {
+  await userEvent.click(within(preparation).getByRole('button', { name: '返回当前生活' }));
+  await screen.findByRole('heading', { name: '人物卷宗' });
+  expect(screen.queryByRole('region', { name: PREPARATION })).toBeNull();
+  await userEvent.click(screen.getByRole('button', { name: ENTRY }));
   return screen.findByRole('region', { name: PANEL });
 }
 
@@ -170,8 +222,10 @@ describe('Conqueror original saved S1 navigation and actual combat continuation'
     expect(before.lastCombatRound?.conquerorOutcome).toBeUndefined();
     await mount(game);
     expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
-    const panel = await openCurrentGrowth();
+    const panel = await openCurrentConquerorGrowth();
     expect(within(panel).getByRole('heading', { name: current.conqueror.title })).toBeTruthy();
+    expect(before.progression.acting).toBe(0);
+    expect(screen.queryByRole('region', { name: PREPARATION })).toBeNull();
     expect(screen.queryByRole('region', { name: '天气术士' })).toBeNull();
     expect(screen.queryByRole('region', { name: '战争主教' })).toBeNull();
     expect(screen.queryByRole('button', { name: /独立确认服用第/ })).toBeNull();
@@ -180,14 +234,15 @@ describe('Conqueror original saved S1 navigation and actual combat continuation'
     expect(game.state).toEqual(before);
   });
 
-  it('reopens the natural week200 original name, current injured body, both mastery8 skills and original five people at home', async () => {
+  it('opens week200 Red Priest preparation with all original skills, then reopens the injured Conqueror and five people at home', async () => {
     const game = savedGame(readObjectEntry<unknown>(`${ROOT}/natural.json`, 'final'));
     const before = structuredClone(game.state), current = projectSliceState(before);
     expect(before).toMatchObject({ status: 'ACTIVE', week: 200, health: 80, mind: 100, spirituality: 120, injuryRisk: 1 });
     expect(before.injuries).toHaveLength(2);
     expect(before.injuries.every(injury => injury.severity === 'LIGHT' && injury.treatedRevision === null)).toBe(true);
     await mount(game); await acknowledgeSavedRound();
-    const panel = await openCurrentGrowth();
+    const preparation = await openCurrentPreparation(before);
+    const panel = await openConquerorHistory(preparation);
     assertCurrentIdentityAndResources(before);
     await userEvent.click(within(panel).getByText('能力、消化与继承经历', { selector: 'summary' }));
     for (const id of ['hunter.s1.formation-momentum', 'hunter.s1.focused-flame']) {
@@ -197,6 +252,14 @@ describe('Conqueror original saved S1 navigation and actual combat continuation'
     }
     const members = within(panel).getByRole('region', { name: '原五位同伴的实际状态' });
     expect(current.conqueror.life.members.map(member => member.id)).toEqual(['IB4-01', 'IB4-02', 'IB4-03', 'IB4-04', 'IB4-05']);
+    expect(current.conqueror.life.members.map(({ id, name, health, energy, location, present }) =>
+      ({ id, name, health, energy, location, present }))).toEqual([
+      { id: 'IB4-01', name: '艾达', health: 100, energy: 7, location: 'HOME', present: false },
+      { id: 'IB4-02', name: '本尼特', health: 100, energy: 7, location: 'HOME', present: false },
+      { id: 'IB4-03', name: '克拉拉', health: 100, energy: 7, location: 'HOME', present: false },
+      { id: 'IB4-04', name: '德里克', health: 100, energy: 7, location: 'HOME', present: false },
+      { id: 'IB4-05', name: '艾琳', health: 100, energy: 8, location: 'HOME', present: false },
+    ]);
     for (const member of current.conqueror.life.members) {
       expect(member).toMatchObject({ location: 'HOME', present: false });
       expect(members.textContent).toContain(`${member.name}：健康${member.health}/100 · 精力${member.energy}/20`);
@@ -205,12 +268,14 @@ describe('Conqueror original saved S1 navigation and actual combat continuation'
     expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
   });
 
-  it('closes current S1 growth to the ordinary dashboard with legal work and rest, without restoring old-stage actions', async () => {
+  it('closes current Red Priest preparation to ordinary work and rest, without restoring old-stage actions', async () => {
     const game = savedGame(readObjectEntry<unknown>(`${ROOT}/natural.json`, 'final'));
     const before = structuredClone(game.state);
-    await mount(game); await acknowledgeSavedRound(); await openCurrentGrowth();
-    await userEvent.click(screen.getByRole('button', { name: '返回普通生活' }));
+    await mount(game); await acknowledgeSavedRound();
+    const preparation = await openCurrentPreparation(before);
+    await userEvent.click(within(preparation).getByRole('button', { name: '返回当前生活' }));
     await screen.findByRole('heading', { name: '人物卷宗' });
+    expect(screen.queryByRole('region', { name: PREPARATION })).toBeNull();
     expect(screen.queryByRole('region', { name: PANEL })).toBeNull();
     expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
     expect((screen.getByRole('button', { name: /^工作，1行动/ }) as HTMLButtonElement).disabled).toBe(false);
@@ -221,8 +286,7 @@ describe('Conqueror original saved S1 navigation and actual combat continuation'
     expect(within(within(history).getByRole('group', { name: '天气术士公开行动' })).queryAllByRole('button')).toEqual([]);
     expect(within(history).queryByRole('button', { name: /独立确认服用|领取第|实际检查本次服药场地/ })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: '关闭天气术士页面' }));
-    await openCurrentGrowth();
-    assertCurrentIdentityAndResources(before);
+    await openCurrentPreparation(before);
     expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
   });
 
@@ -285,7 +349,11 @@ describe('Conqueror original saved S1 navigation and actual combat continuation'
       expectedRevision: before.revision, payload: intent });
     expect(game.state.conqueror.encounter).toEqual(before.conqueror.encounter);
     expect(game.state.weatherWarlock).toEqual(before.weatherWarlock);
-    await openCurrentGrowth();
+    expect(game.state.random).toEqual(before.random);
+    expect(game.state.random).toEqual(expected.random);
+    const preparation = await openCurrentPreparation(expected);
+    await openConquerorHistory(preparation);
+    assertCurrentIdentityAndResources(expected);
     await userEvent.selectOptions(screen.getByRole('combobox', { name: '征服者目标' }), 'encounter');
     const encounter = screen.getByRole('region', { name: '征服者可选真实交战' });
     expect(encounter.textContent).toContain('罗南·黑尔');

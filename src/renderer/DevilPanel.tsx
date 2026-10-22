@@ -57,7 +57,7 @@ type Confirmation = { action: DevilAction; contextKey: string };
 function PracticeFacts({ practice }: { practice: NonNullable<DevilProjection["practice"]> }) {
   return <section className="slice-notice" aria-label="魔鬼本次原物与实际情绪" aria-live="polite" aria-atomic="true"><h4>本次公开事实与原物</h4>
     <dl className="seer-facts"><div><dt>米蕾尔当次情绪</dt><dd>{practice.emotion}</dd></div>
-      <div><dt>本次种子与实际催化</dt><dd>{practice.seed}</dd></div><div><dt>当次同意与撤回</dt><dd>{practice.consent}</dd></div>
+      <div><dt>本次种子与实际催化</dt><dd>{practice.seedSummary}</dd></div><div><dt>当次同意与撤回</dt><dd>{practice.consent}</dd></div>
       <div><dt>米蕾尔自己的原节目单</dt><dd>{practice.program}</dd></div><div><dt>蕾娜与同一原邀请</dt><dd>{practice.invitation}</dd></div>
       <div><dt>本人实际位置与普通路线</dt><dd>{practice.route}</dd></div><div><dt>同一原便条与有限陈述</dt><dd>{practice.account}</dd></div></dl>
     {practice.history.length > 0 && <details className="seer-fold"><summary>实际埋种、走动与记录</summary><ul>{practice.history.map((entry, index) => <li key={index}>{entry}</li>)}</ul></details>}

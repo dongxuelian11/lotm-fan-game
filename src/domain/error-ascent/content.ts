@@ -1,0 +1,15 @@
+import { ERROR_ASCENT_MATERIAL_LOCATIONS } from './material-content.js';
+export const ERROR_ASCENT_GUIDANCE={cash:100,actions:1} as const;
+export const ERROR_ASCENT_HOME='ER219-RECEPTION';
+export const ERROR_ASCENT_WORKSHOP=ERROR_ASCENT_MATERIAL_LOCATIONS.workshop;
+export const ERROR_ASCENT_SUPPLIER=ERROR_ASCENT_MATERIAL_LOCATIONS.supplier;
+export const ERROR_ASCENT_ARCHIVE=ERROR_ASCENT_MATERIAL_LOCATIONS.archive;
+export const ERROR_ASCENT_VAULT=ERROR_ASCENT_MATERIAL_LOCATIONS.vault;
+export const ERROR_ASCENT_GATE='ER219-TIDE-BELL-TOWER';
+export const ERROR_ASCENT_CITY_PLACES=[{id:ERROR_ASCENT_HOME,title:'街区接待处'},{id:ERROR_ASCENT_SUPPLIER,title:'原时之虫供货处'},{id:ERROR_ASCENT_MATERIAL_LOCATIONS.originalRoom,title:'原失败残余调查处'},{id:ERROR_ASCENT_WORKSHOP,title:'封闭调配室'},{id:ERROR_ASCENT_ARCHIVE,title:'旧神位封存档案室'},{id:ERROR_ASCENT_VAULT,title:'原唯一性保管室'},{id:ERROR_ASCENT_GATE,title:'潮汐钟塔外侧检修口'}] as const;
+export const ERROR_ASCENT_SPIRITUALITY_CAP=150;
+export const ERROR_ASCENT_PROMOTION_STABILITY={actions:1,cash:150,spirituality:12,mind:8,seconds:3600,validSeconds:604800} as const;
+export const ERROR_ASCENT_STORY='潮汐钟塔正在筹备伊德里克·维尔的成神仪式。他已经取得自己的原件、沿海追随者与真正挑战后的生还记录，并不打算与你分享机会。你可以调查原线路和普通退路，在自己准备好后决定是否夺走这一次位置。';
+export const ERROR_ASCENT_GOAL='先处理旧伤，调查真实成神条件及一次性日期；核齐自己的三份时之虫与错误唯一性，完成有价准备，再选择进入或退出。';
+export const ERROR_ASCENT_RISK='这是夺走他人的成神机会。窗口只有一次，可能导致双方重伤或死亡；离开或失手不会让仪式重来。对方的三份雷神和唯一性不归你，原费用、伤势与人物后果永久保留。';
+export const ERROR_ASCENT_ABILITIES=[{id:'error.s0.short-motion-theft',label:'短时窃走行动',description:'对亲见、尚未完成的一次追赶尝试窃走三秒。已执行的动作与周行动不返还，必须实际利用空隙才增长掌握。'},{id:'error.s0.linked-release-error',label:'联系错置',description:'借眼前两只相似锁扣已有的真实联系，尝试把一次待释放传动导向另一只原锁扣。二十秒内须实际应用；联系可被切断，不复制物件或力量。'}] as const;

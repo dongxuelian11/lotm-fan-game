@@ -32,3 +32,12 @@ export function knowledgeEmperorConsumptionRisk(): string {
   return '贤者消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。三项专业准备各1行动，再实付1行动与180便士检查本周服药场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与当次准备均耗尽，专业支持只将本次排异后的健康精神保底到1。成功四属性各+1，13项原掌握不变，两项新掌握从0开始；灵性上限120，当前不补满。姓名、性别、身体、旧伤与既有性格保留。全批失败耗尽后，实付1行动与100便士申请独立三瓶，至少跨一真实周领取；每瓶另做五次劳动并付1200便士，或直接支付7200便士。';
 }
 export const KNOWLEDGE_EMPEROR_CONSUMPTION_RISK = knowledgeEmperorConsumptionRisk();
+
+/** Schema219 adds paid same-original recovery; the old risk string stays immutable for archived receipts. */
+export const KNOWLEDGE_EMPEROR_RECOVERY_SCHEMA_VERSION = 219;
+export const KNOWLEDGE_EMPEROR_RECOVERY_SITE_ID = 'BACKLUND_ORIGINAL_KNOWLEDGE_EMPEROR_PREPARATION' as const;
+export const KNOWLEDGE_EMPEROR_RECOVERY_PRICES = { recovery: 120, recoveryHandover: 30, recoveryDrug: 900, recoveryLabourBalance: 90 } as const;
+export const KNOWLEDGE_EMPEROR_CURRENT_CONSUMPTION_RISK = KNOWLEDGE_EMPEROR_CONSUMPTION_RISK.replace(
+  '全批失败耗尽后，实付1行动与100便士申请独立三瓶，至少跨一真实周领取；每瓶另做五次劳动并付1200便士，或直接支付7200便士。',
+  '最初三瓶全部失败耗尽后，只能在原服药准备与支持交接处以1行动和120便士调查同一原特性的归属与位置，经保管方本次许可实际核验封存；至少下一真实周以1行动和30便士当面交接。新普通药物与调配服务900便士，或五项新劳动后90便士；当周检查仍另付1行动和180便士。失败残留不会自动回收，旧瓶、原失败与旧成本不改写，不再供应第四份原特性。',
+);

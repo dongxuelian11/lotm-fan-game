@@ -12,7 +12,7 @@ import {
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // Keep every shard multi-batch, with shard 1 retaining its five-plus-two split.
-const sampleFiles = Array.from({ length: 49 }, (_, index) => `tests/domain/case-${String(index).padStart(2, '0')}.test.ts`);
+const sampleFiles = Array.from({ length: 97 }, (_, index) => `tests/domain/case-${String(index).padStart(2, '0')}.test.ts`);
 
 function fixture(t, files = [...sampleFiles, ...ISOLATED_TESTS]) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ci-batches-test-'));
@@ -49,6 +49,11 @@ function fakeSuccess(command, args, options) {
   return { status: 0, signal: null };
 }
 
+function readSummary(root) {
+  const [folder] = fs.readdirSync(path.join(root, 'output'));
+  return JSON.parse(fs.readFileSync(path.join(root, 'output', folder, 'summary.json'), 'utf8'));
+}
+
 test('repository discovery covers the exact configured glob, including new regression files', () => {
   const discovered = discoverTestFiles(repo);
   const independent = [...fs.globSync('tests/**/*.test.{ts,tsx}', { cwd: repo })].map(file => file.split(path.sep).join('/')).sort();
@@ -76,15 +81,15 @@ test('changed Vitest include or exclude fails closed', t => {
   }
 });
 
-test('eight deterministic shards plus exactly two fixed isolated exceptions cover every file once', () => {
-  assert.equal(SHARD_COUNT, 8);
+test('sixteen deterministic shards plus exactly two fixed isolated exceptions cover every file once', () => {
+  assert.equal(SHARD_COUNT, 16);
   assert.equal(BATCH_SIZE, 5);
   assert.deepEqual(ISOLATED_TESTS, ['tests/domain/catastrophe-shared.test.ts', 'tests/domain/wisdom-angel-life.test.ts']);
   assert.ok(Object.isFrozen(ISOLATED_TESTS));
   const discovered = [...sampleFiles, ...ISOLATED_TESTS];
   const plan = createPlan(discovered);
   assert.deepEqual(createPlan([...discovered].reverse()), plan);
-  assert.deepEqual(plan.shards.map(shard => shard.length), [7, 6, 6, 6, 6, 6, 6, 6]);
+  assert.deepEqual(plan.shards.map(shard => shard.length), [7, ...Array(15).fill(6)]);
   assert.deepEqual([...plan.shards.flat(), ...plan.isolated].sort(), [...discovered].sort());
   assert.equal(new Set([...plan.shards.flat(), ...plan.isolated]).size, discovered.length);
   assert.ok(plan.shards.flat().every(file => !ISOLATED_TESTS.includes(file)));
@@ -109,20 +114,51 @@ test('missing, duplicate, or unexpected file assignments fail coverage', () => {
   assert.throws(() => createPlan(discovered.filter(file => file !== ISOLATED_TESTS[0])), /exactly equal/);
 });
 
+test('measured long-file balancing changes only three assignments and preserves complete discovery', () => {
+  const moves = new Map([
+    ['tests/domain/fool-natural-capture.test.ts', 6],
+    ['tests/domain/pale-emperor-save.test.ts', 14],
+    ['tests/domain/mercury-snake-natural-save.test.ts', 11],
+  ]);
+  const original = discoverTestFiles(repo);
+  for (const discovered of [original, [...original, 'tests/backend/new-regression.test.ts']]) {
+    const plan = createPlan(discovered);
+    assertCoverage(discovered, plan.shards);
+    assert.deepEqual(createPlan([...discovered].reverse()), plan);
+    const ordered = [...discovered].sort().filter(file => !ISOLATED_TESTS.includes(file));
+    for (const [index, file] of ordered.entries()) {
+      const expected = moves.has(file) ? moves.get(file) - 1 : index % SHARD_COUNT;
+      assert.equal(plan.shards.findIndex(shard => shard.includes(file)), expected, file);
+      assert.equal(plan.shards.flat().filter(member => member === file).length, 1, file);
+    }
+  }
+});
+
 test('empty discovery, empty shards, and invalid shard numbers are rejected before execution', t => {
   for (const files of [[], [...ISOLATED_TESTS], [...ISOLATED_TESTS, ...sampleFiles.slice(0, 3)],
-    [...ISOLATED_TESTS, ...sampleFiles.slice(0, 7)]]) {
+    [...ISOLATED_TESTS, ...sampleFiles.slice(0, 15)]]) {
     assert.throws(() => createPlan(files), /nonempty/);
   }
   const discovered = [...sampleFiles, ...ISOLATED_TESTS];
   const plan = createPlan(discovered);
-  for (const shards of [plan.shards.slice(0, 7), [...plan.shards, []],
-    [...plan.shards.slice(0, 7), []]]) {
-    assert.throws(() => assertCoverage(discovered, shards), /Exactly eight nonempty/);
+  for (const shards of [plan.shards.slice(0, 15), [...plan.shards, []],
+    [...plan.shards.slice(0, 15), []]]) {
+    assert.throws(() => assertCoverage(discovered, shards), /Exactly 16 nonempty/);
   }
   const root = fixture(t);
-  for (const shard of [0, 9, 1.5, NaN, '1']) {
+  for (const shard of [0, 17, 1.5, NaN, '1']) {
     assert.throws(() => runShard({ repo: root, shard, execute: () => assert.fail('must not execute') }), /Shard must/);
+  }
+});
+
+test('fatal discovery and output setup errors stop before executing any batch', t => {
+  for (const invalidConfig of [true, false]) {
+    const root = fixture(t);
+    if (invalidConfig) fs.writeFileSync(path.join(root, 'vitest.config.mts'), 'export default {};');
+    else fs.writeFileSync(path.join(root, 'output'), 'not a directory');
+    assert.throws(() => runShard({ repo: root, shard: 1, log() {}, execute() {
+      assert.fail('must not execute after fatal setup failure');
+    } }), invalidConfig ? /changed Vitest/ : /EEXIST|ENOTDIR/);
   }
 });
 
@@ -158,32 +194,56 @@ test('batches never exceed five and every assigned file is reported passed exact
   assert.equal(result.success, true);
 });
 
-test('nonzero exits, signals, spawn errors and thrown execution failures cannot pass', t => {
+test('a failed first batch records diagnostics, runs later batches, and still fails the shard', t => {
   for (const result of [{ status: 7, signal: null }, { status: null, signal: 'SIGTERM' },
     { status: null, signal: null, error: new Error('spawn failed') }, null]) {
     const root = fixture(t);
+    const selected = createPlan(discoverTestFiles(root)).shards[0];
+    const logs = [];
     let calls = 0;
-    assert.throws(() => runShard({ repo: root, shard: 1, log() {}, execute() {
+    assert.throws(() => runShard({ repo: root, shard: 1, log: message => logs.push(message), execute(...args) {
       calls += 1;
+      if (calls > 1) return fakeSuccess(...args);
       if (result === null) throw new Error('executor threw');
       return result;
     } }), /failed|executor threw/);
-    assert.equal(calls, 1);
-    const [folder] = fs.readdirSync(path.join(root, 'output'));
-    const summary = JSON.parse(fs.readFileSync(path.join(root, 'output', folder, 'summary.json'), 'utf8'));
+    assert.equal(calls, 2);
+    const summary = readSummary(root);
     assert.equal(summary.success, false);
-    assert.equal(summary.passed.length, 0);
-    assert.ok(summary.error);
+    assert.deepEqual(summary.passed, selected.slice(BATCH_SIZE));
+    assert.deepEqual(summary.batches.map(batch => batch.passed), [false, true]);
+    const [failed] = summary.batches;
+    const expectedError = result === null ? 'executor threw'
+      : `Vitest batch 1 failed: ${result.error?.message ?? result.signal ?? `exit ${result.status}`}`;
+    assert.equal(failed.error, expectedError);
+    if (result === null) assert.equal(failed.result, undefined);
+    else assert.deepEqual(failed.result, {
+      status: result.status, signal: result.signal, ...(result.error ? { error: result.error.message } : {}),
+    });
+    assert.ok(summary.error.includes(expectedError));
+    assert.ok(logs.some(message => message.includes(expectedError)));
   }
 });
 
-test('a zero exit without a valid complete report is still failure', t => {
+test('missing, malformed, or incomplete first reports do not prevent later execution or allow success', t => {
   for (const report of [null, '{broken json', JSON.stringify({ success: true, testResults: [] })]) {
     const root = fixture(t);
-    assert.throws(() => runShard({ repo: root, shard: 1, log() {}, execute(command, args) {
-      if (report !== null) fs.writeFileSync(args.find(arg => arg.startsWith('--outputFile=')).slice('--outputFile='.length), report);
+    const selected = createPlan(discoverTestFiles(root)).shards[0];
+    let calls = 0;
+    assert.throws(() => runShard({ repo: root, shard: 1, log() {}, execute(...args) {
+      calls += 1;
+      if (calls > 1) return fakeSuccess(...args);
+      if (report !== null) fs.writeFileSync(args[1].find(arg => arg.startsWith('--outputFile=')).slice('--outputFile='.length), report);
       return { status: 0, signal: null };
-    } }));
+    } }), /failed batches/);
+    assert.equal(calls, 2);
+    const summary = readSummary(root);
+    assert.equal(summary.success, false);
+    assert.deepEqual(summary.passed, selected.slice(BATCH_SIZE));
+    assert.deepEqual(summary.batches.map(batch => batch.passed), [false, true]);
+    assert.deepEqual(summary.batches[0].result, { status: 0, signal: null });
+    assert.ok(summary.batches[0].error);
+    assert.ok(summary.error.includes(summary.batches[0].error));
   }
 });
 
@@ -236,9 +296,10 @@ test('report verification rejects failed, skipped, todo, empty and mismatched ex
 });
 
 test('CLI rejects malformed or missing shard arguments with a nonzero process exit', () => {
-  for (const args of [[], ['--shard', '0/8'], ['--shard', '9/8'], ['--shard', '1/4'],
-    ['--shard', '1/5'], ['--shard', '01/8'], ['--shard', '1/8\n'], ['--shard', '1/8 '],
-    ['--shard', '1/8', '--passWithNoTests'], ['--shard', '../1']]) {
+  for (const args of [[], ['--shard', '0/16'], ['--shard', '17/16'], ['--shard', '1/8'],
+    ['--shard', '1/5'], ['--shard', '01/16'], ['--shard', '1/16\n'], ['--shard', '1/16 '],
+    ['--shard', '1/16', '--passWithNoTests'], ['--shard', '../1'], ['--shard', '016/16'],
+    ['--shard', '16/016'], ['--shard', '16/16\n'], ['--shard', '+1/16'], ['--shard', '1.0/16']]) {
     const result = spawnSync(process.execPath, [path.join(repo, 'scripts/test-ci-batches.mjs'), ...args], { encoding: 'utf8' });
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Usage:/);
@@ -251,11 +312,12 @@ test('CLI propagates a real child process failure instead of claiming incomplete
   const runner = path.join(root, 'scripts/test-ci-batches.mjs');
   fs.copyFileSync(path.join(repo, 'scripts/test-ci-batches.mjs'), runner);
   // No Vitest is installed in this temporary fixture. Node must fail to launch it.
-  for (const shard of [1, 8]) {
-    const result = spawnSync(process.execPath, [runner, '--shard', `${shard}/8`], { encoding: 'utf8' });
+  for (const shard of [1, 9, 10, 16]) {
+    const result = spawnSync(process.execPath, [runner, '--shard', `${shard}/16`], { encoding: 'utf8' });
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Vitest batch 1 failed: exit 1/);
-    assert.ok(result.stdout.includes(`Shard ${shard}/8: 0/${shard === 1 ? 7 : 6} files passed.`));
+    assert.match(result.stderr, /Vitest batch 2 failed: exit 1/);
+    assert.ok(result.stdout.includes(`Shard ${shard}/16: 0/${shard === 1 ? 7 : 6} files passed.`));
   }
 });
 

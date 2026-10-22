@@ -295,6 +295,8 @@ describe("Magician S7 dossier", () => {
     expect(screen.queryByRole("button", { name: /重复旧小丑奖励|重新服用旧瓶|查看并准备服用/ })).toBeNull();
     await userEvent.click(screen.getByRole("button", { name: /购买实际纸张/ }));
     expect(vi.mocked(value.submitIntent).mock.calls[0]![0].payload).toEqual({ type: "CLOWN", command: { type: "BUY_PAPER" } });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     await userEvent.click(screen.getByRole("button", { name: /非凡成长/ }));
     expect(screen.getByRole("region", { name: "魔术师成长下一步" })).toBeTruthy();
   });
@@ -346,6 +348,8 @@ describe("Magician S7 dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "MAGICIAN", command });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });

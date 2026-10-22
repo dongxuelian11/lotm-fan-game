@@ -54,7 +54,18 @@ describe('Civilization Enlightener exact original691-command public continuation
       state = applySliceIntent(state, intent);
       if (i === 690) same(state, prefix);
     }
-    same(state, final); assertValidSliceState(state);
+    // A fresh replay gives the current recovery guidance at the original paid
+    // conversation. Migration keeps the captured historical wording intact.
+    // Only this one identified suffix differs; every other field stays exact.
+    const replayFinal = structuredClone(final), guidance = replayFinal.chronicle[1086]!;
+    const historicalSupply = '全部原瓶失败后须付1行动与100便士申请下一批，至少跨一真实周才有新瓶到货。';
+    const currentRecovery = '最初三瓶全部失败后，须付1行动与120便士调查指定原瓶遗留的同一份特性；至少跨一真实周再花1行动回原处核验封存。新普通药物和调配服务另付900便士，完成五项新劳务后90便士。旧失败和费用保留，未增加原特性。';
+    expect({ id: guidance.id, title: guidance.title, week: guidance.week }).toEqual({
+      id: 'record-700-1086', title: '听取文明启蒙者独立成品与专业准备指导', week: 171,
+    });
+    expect(guidance.text.endsWith(historicalSupply)).toBe(true);
+    guidance.text = guidance.text.slice(0, -historicalSupply.length) + currentRecovery;
+    same(state, replayFinal); assertValidSliceState(state);
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(state.revision).toBe(captured('initial').revision + commands.length);
     expect(entry('pendingIntent')).toBeNull(); expect(entry('error')).toBeNull();
@@ -218,6 +229,17 @@ describe('Civilization Enlightener exact original691-command public continuation
     same(work.final, final); same(applySliceIntent(work.before, work.intent), final);
     expect(final.cash - work.before.cash).toBe(150); same(final.injuries, work.before.injuries); same(final.random, work.before.random);
     same(final.lastCombatRound, work.before.lastCombatRound); same(final.civilizationEnlightener, work.before.civilizationEnlightener);
-    expect(projectSliceState(final).canAct).toBe(true); expect(projectSliceState(final).knowledgeMentor.actions).toEqual([]);
+    const beforeProjection = stableStringify(final), view = projectSliceState(final);
+    expect(view.canAct).toBe(true);
+    expect(view.knowledgeMentor.actions.map(action => action.command)).toEqual([
+      { type: 'RECHARGE', objectId: 'AL4-BOX-1' }, { type: 'RECHARGE', objectId: 'AL4-FRAME-1' },
+      { type: 'PREPARE_COMBAT_PLATE' }, { type: 'ENCOUNTER_TALK' }, { type: 'ENCOUNTER_FIGHT' }, { type: 'LEAVE_ENCOUNTER' },
+    ]);
+    for (const action of view.knowledgeMentor.actions) {
+      expect(action.enabled, action.id).toBe(false); expect(action.reason, action.id).toBeTruthy();
+    }
+    same(final.knowledgeMentor, final.civilizationEnlightener.sourceHistory!.knowledgeMentor);
+    expect(originals(final)).toEqual([['AL4-BOX-1', 0, 100, 'PLAYER', false], ['AL4-FRAME-1', 0, 95, 'PLAYER', false]]);
+    expect(stableStringify(final)).toBe(beforeProjection);
   });
 });

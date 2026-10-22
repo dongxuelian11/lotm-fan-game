@@ -240,7 +240,7 @@ describe('one-bottle promotion and honest risk', () => {
 
   it('publishes detached formula, commands, abilities and original-bottle descriptions', () => {
     const s = promoted(), before = JSON.stringify(s), p = projectSeer(s);
-    expect(p.bottles[0]!.source).toContain(s.seer.bottles[0]!.id);
+    expect(p.bottles[0]!.source).toBe('占卜俱乐部指导者调配台，第5周；仅由seer-batch-1的七项材料调配，原瓶seer-batch-1:bottle');
     p.formula[0]!.quantity = 999;
     p.abilities[0]!.mastery = 500;
     p.bottles[0]!.source = 'different';
@@ -362,5 +362,43 @@ describe('local save continuity checks', () => {
       const invalid = { ...s, seer: malformed } as unknown as SliceState;
       expect(validateSeerState(invalid)).toBe(false);
     }
+  });
+});
+
+describe('first potion story and resolved-case guidance', () => {
+  for (const roll of [1, 20, 90, 100]) it(`keeps potion roll ${roll} consequences and historical persisted prose`, () => {
+    const s = prepared(), ctx = context(s, roll);
+    s.arc.stage = 'ENDED';
+    const bottle = s.seer.bottles[0]!;
+    expect(projectSeer(s).bottles[0]!.source).toBe('占卜俱乐部指导者调配台，第5周；仅由seer-batch-1的七项材料调配，原瓶seer-batch-1:bottle');
+    applySeerCommand(s, { type: 'CONSUME', bottleId: bottle.id, confirmed: true }, ctx.c);
+    const text = ctx.notes.at(-1)!.text;
+    expect(text).toMatch(/^原瓶seer-batch-1:bottle已耗尽。意志判定/);
+    expect(text).not.toContain('马洛·里德');
+    expect(ctx.checks).toEqual([['will', 5]]);
+    expect(bottle.status).toBe('CONSUMED');
+    if (roll <= 20) {
+      expect(text).toBe(`原瓶seer-batch-1:bottle已耗尽。意志判定${roll}/${s.lastCheck!.chance}，${roll === 1 ? '大成功' : '成功'}：精神−${roll === 1 ? 5 : 10}，感知+3、意志+2、知识+3。四项非凡能力从0掌握开始，灵性上限提高到30，当前灵性没有补满。`);
+      expect(s.progression.sequence).toBe(9);
+    } else {
+      expect(text).toBe(`原瓶seer-batch-1:bottle已耗尽。意志判定${roll}/${s.lastCheck!.chance}，${roll === 100 ? '灾难' : '失败'}：精神−${roll === 100 ? 40 : 20}、健康−${roll === 100 ? 20 : 10}、排异+${roll === 100 ? 50 : 25}。你仍是普通人。指导者处理了现场，未发生死亡；需要休养，重试须另备一瓶。`);
+      expect(s.progression.pathwayId).toBeNull();
+      expect(s.seer.pollution).toBe(roll === 100 ? 50 : 25);
+    }
+    expect(validateSeerState(s)).toBe(true);
+  });
+
+  it('replaces obsolete first-case divination guidance with existing commissions without rewriting the old omen', () => {
+    const s = promoted();
+    apply(s, { type: 'DIVINE', targetId: 'FIRST_CASE' });
+    s.arc.stage = 'ENDED';
+    const before = JSON.stringify(s.seer.omen), p = projectSeer(s);
+    expect(p.actions.some(action => action.command.type === 'DIVINE')).toBe(false);
+    const description = p.abilities.find(ability => ability.id === 'diviner.s9.divination')!.description;
+    expect(description).toContain('装箱单与行程委托');
+    expect(description).not.toContain('下一次首案判定');
+    expect(p.risk).not.toContain('当前保有一枚');
+    expect(p.practice.body).toContain('首案已收尾');
+    expect(JSON.stringify(s.seer.omen)).toBe(before);
   });
 });

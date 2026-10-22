@@ -291,9 +291,21 @@ export function thunderGodCombatConsequence(round: SliceCombatRound): string {
 }
 
 
+/** Player-visible resolved facts. Original preparation/random authority stays private. */
+function thunderFacts<T,K extends keyof T>(value:T, keys:readonly K[]):Pick<T,K>{
+ return Object.fromEntries(keys.map(key=>[key,structuredClone(value[key])])) as Pick<T,K>;
+}
+export function projectThunderGodAction(a:ThunderGodActionEvidence){
+ return thunderFacts(a,['order','actor','id','planned','selectedAbility','fallbackReason','label','selfGain','enemyReduction','threatens','mentalPressure','attackKind','rawContribution','rawReduction','paidCost','mindCost','physicalFactor','check','resistanceRoll','resistanceChance','succeeded','finiteResult','windowsBefore','windowsAfter','pendingBefore','pendingAfter','masteryApplied','countered','rodChargeSpent','materialsBefore','materialsAfter','conditionVersionBefore','conditionVersionAfter','atSeconds','elapsedSeconds','travelMetres','travelPath','lateralTravelPath','playerMindAfter','playerSpiritualityAfter','enemyMindAfter','enemySpiritualityAfter'] as const);
+}
+export function projectThunderGodRoundOutcome(o:ThunderGodRoundOutcome){
+ return {...thunderFacts(o,['targetId','round','stance','continuing','enemyHealth','enemyMind','enemySpirituality','enemyStatus','enemyInjuries','enemyRisk','weaponLocation','powerUses','observations','inheritedApplications','screenReveals','totalOwnerMindSpent','guidedThunderAttempts','guidedThunderChecks','guidedThunderSuccesses','stormBraceAttempts','stormBraceChecks','stormBraceSuccesses','playerHealthAfter','playerMindAfter','playerSpiritualityAfter','playerInjuriesAfter','playerRiskAfter','materialsAfter','masteryAfter','rootAfter','elapsedSeconds','expiredWindows','windowsAfter','pendingEnemyActionAfter'] as const),playerActions:o.playerActions.map(projectThunderGodAction),enemyActions:o.enemyActions.map(projectThunderGodAction)};
+}
+export type ThunderGodPublicRoundOutcome=ReturnType<typeof projectThunderGodRoundOutcome>;
+
 export function projectThunderGodCombat(s:SliceState){
  const e=s.thunderGod.encounter,last=s.combat?.encounterId==='THUNDER_GOD_DISPUTE'?s.combat.lastRound?.thunderGodOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.thunderGodOutcome:null;
- return{enemyName:'欧伦·盖奇（48岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,scene:structuredClone(e.scene),materials:structuredClone(e.materials),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],constants:THUNDER_GOD_COMBAT_CONSTANTS,countWheel:THUNDER_GOD_COUNT_WHEEL,enemyCountWheel:THUNDER_GOD_ENEMY_COUNT_WHEEL,abilityWheel:thunderGodAbilityWheel(s,null),enemyAbilityWheel:THUNDER_GOD_ENEMY_ABILITY_WHEEL,facts:[
+ return{enemyName:'欧伦·盖奇（48岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,scene:structuredClone(e.scene),materials:structuredClone(e.materials),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order).map(projectThunderGodAction):[],constants:THUNDER_GOD_COMBAT_CONSTANTS,countWheel:THUNDER_GOD_COUNT_WHEEL,enemyCountWheel:THUNDER_GOD_ENEMY_COUNT_WHEEL,abilityWheel:thunderGodAbilityWheel(s,null),enemyAbilityWheel:THUNDER_GOD_ENEMY_ABILITY_WHEEL,facts:[
  '体35%、感25%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。',
  '雷势引导只辅助下一实际威胁攻击30；风雷护持只削弱下一已声明可见身体冲击30，精神压力单独结算。',
  '每轮各一次，失败照付；条件改变、视线遮挡、离场或满30秒使旧窗口失效，空窗口不涨掌握。',

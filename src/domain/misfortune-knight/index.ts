@@ -23,8 +23,8 @@ import { compareGameDates, gameDaysBetween, isValidGameDate } from '../game-cale
 import type { PublicGameDate, PublicCheckResult } from '../../shared/contracts.js';
 import { createMisfortuneKnightLifeState, initializeMisfortuneKnightLife, applyMisfortuneKnightActivity, projectMisfortuneKnightLife, misfortuneKnightLifeActions, validateMisfortuneKnightLife, validateMisfortuneKnightActivityCommand, hasMisfortuneKnightLifeLock, misfortuneKnightExpectedOriginals, misfortuneKnightLifeMasteryGains } from './life.js';
 import { createMisfortuneKnightEncounterState, applyMisfortuneKnightEncounterCommand, projectMisfortuneKnightEncounter, misfortuneKnightEncounterActions, validateMisfortuneKnightEncounter, validateMisfortuneKnightEncounterCommand, hasMisfortuneKnightEncounterLock, misfortuneKnightEncounterOriginalEvents } from './encounter.js';
-import { MISFORTUNE_KNIGHT_ABILITIES, MISFORTUNE_KNIGHT_INHERITED_ABILITIES, MISFORTUNE_KNIGHT_BOTTLE_IDS, MISFORTUNE_KNIGHT_CONSUMPTION_RISK, MISFORTUNE_KNIGHT_FORMULA_STATUS, MISFORTUNE_KNIGHT_GUIDE, MISFORTUNE_KNIGHT_LABOUR_STEPS, MISFORTUNE_KNIGHT_LABOUR_TASKS, MISFORTUNE_KNIGHT_MIN_CONCEALMENT_SERVANT_WEEKS, MISFORTUNE_KNIGHT_POTION_SOURCES, MISFORTUNE_KNIGHT_PREPARATIONS, MISFORTUNE_KNIGHT_PRICES, MISFORTUNE_KNIGHT_SOURCE_STATUS } from './content.js';
-import { MISFORTUNE_KNIGHT_ABILITY_IDS, MISFORTUNE_KNIGHT_PREPARATION_IDS, MISFORTUNE_KNIGHT_SOURCE_KEYS, type MisfortuneKnightOriginals, type MisfortuneKnightSourceHistory, type MisfortuneKnightAcquisitionBudget, type MisfortuneKnightAcquisitionEvent, type MisfortuneKnightAcquisitionCommand, type MisfortuneKnightAction, type MisfortuneKnightBottle, type MisfortuneKnightCommand, type MisfortuneKnightProjection, type MisfortuneKnightState } from './types.js';
+import { MISFORTUNE_KNIGHT_ABILITIES, MISFORTUNE_KNIGHT_INHERITED_ABILITIES, MISFORTUNE_KNIGHT_BOTTLE_IDS, MISFORTUNE_KNIGHT_CONSUMPTION_RISK, MISFORTUNE_KNIGHT_FORMULA_STATUS, MISFORTUNE_KNIGHT_GUIDE, MISFORTUNE_KNIGHT_LABOUR_STEPS, MISFORTUNE_KNIGHT_LABOUR_TASKS, MISFORTUNE_KNIGHT_MIN_CONCEALMENT_SERVANT_WEEKS, MISFORTUNE_KNIGHT_POTION_SOURCES, MISFORTUNE_KNIGHT_PREPARATIONS, MISFORTUNE_KNIGHT_PRICES, MISFORTUNE_KNIGHT_RECOVERY_SCHEMA_VERSION, MISFORTUNE_KNIGHT_RECOVERY_SITE_ID, MISFORTUNE_KNIGHT_SOURCE_STATUS } from './content.js';
+import { MISFORTUNE_KNIGHT_ABILITY_IDS, MISFORTUNE_KNIGHT_PREPARATION_IDS, MISFORTUNE_KNIGHT_SOURCE_KEYS, type MisfortuneKnightOriginals, type MisfortuneKnightSourceHistory, type MisfortuneKnightAcquisitionBudget, type MisfortuneKnightAcquisitionEvent, type MisfortuneKnightAcquisitionCommand, type MisfortuneKnightAction, type MisfortuneKnightBottle, type MisfortuneKnightCommand, type MisfortuneKnightProjection, type MisfortuneKnightState, type MisfortuneKnightRecoveryRequest, type MisfortuneKnightOriginalCharacteristics } from './types.js';
 
 const record = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const shape = (v: object, fields: readonly string[]) => Object.keys(v).sort().join('|') === [...fields].sort().join('|');
@@ -96,9 +96,44 @@ export const hasMisfortuneKnightOldSceneLock = hasMisfortuneKnightOldPractice;
 export const hasMisfortuneKnightRitualLock = (s: SliceState): boolean => s.misfortuneKnight.preparedWeek !== null;
 export const hasMisfortuneKnightLock = (s: SliceState): boolean => hasMisfortuneKnightRitualLock(s) || hasMisfortuneKnightLifeLock(s) || hasMisfortuneKnightEncounterLock(s);
 const bottleNumber = (b: Pick<MisfortuneKnightBottle, 'id'>) => Number(b.id.slice('misfortune-knight-potion-'.length));
-const potionPrice = (b: MisfortuneKnightBottle) => MISFORTUNE_KNIGHT_PRICES.potion - (b.labourSteps === MISFORTUNE_KNIGHT_LABOUR_STEPS ? MISFORTUNE_KNIGHT_PRICES.labourCredit : 0);
+const potionPrice = (b: MisfortuneKnightBottle) => b.recovery
+  ? b.labourSteps === MISFORTUNE_KNIGHT_LABOUR_STEPS ? MISFORTUNE_KNIGHT_PRICES.recoveryLabourBalance : MISFORTUNE_KNIGHT_PRICES.recoveryDrug
+  : MISFORTUNE_KNIGHT_PRICES.potion - (b.labourSteps === MISFORTUNE_KNIGHT_LABOUR_STEPS ? MISFORTUNE_KNIGHT_PRICES.labourCredit : 0);
+const legacySupply = (c: { type: string }) => c.type === 'REQUEST_SUPPLY' || c.type === 'RECEIVE_SUPPLY';
+const recoveryCommand = (c: { type: string }) => c.type === 'REQUEST_RECOVERY_V1' || c.type === 'RECOVER_CHARACTERISTIC_V1';
+const characteristicId = (bottleId: string) => `${bottleId}:characteristic`;
+const recoverySourceText = (id: string, recovery: MisfortuneKnightRecoveryRequest, week: number) => `${MISFORTUNE_KNIGHT_GUIDE}在原房间旁的安静交接处核验${recovery.sourceBottleId}排异后遗留的同一份厄难骑士特性${recovery.characteristicId}，核对同次原失败回执及原保管人${recovery.custodian}当面交接，第${week}周回收封存到重配瓶${id}。原特性来自${recovery.originalBottleId}；新普通药物与调配服务另付，旧原瓶及其实际结果不改写。`;
+/** Follow actual vessel ancestry without treating an attempt number as a fourth original. */
+function originalBottleId(state: MisfortuneKnightState, bottle: MisfortuneKnightBottle): string | null {
+  const seen = new Set<string>(); let current = bottle;
+  while (current.recovery) {
+    if (seen.has(current.id)) return null; seen.add(current.id);
+    const r = current.recovery, previous = state.bottles.find(b => b.id === r.sourceBottleId);
+    if (!previous || r.siteId !== MISFORTUNE_KNIGHT_RECOVERY_SITE_ID || r.custodian !== MISFORTUNE_KNIGHT_GUIDE || !integer(r.sourceReceiptRevision) || bottleNumber(previous) >= bottleNumber(current) || r.version !== 1 ||
+      !MISFORTUNE_KNIGHT_BOTTLE_IDS.includes(r.originalBottleId as typeof MISFORTUNE_KNIGHT_BOTTLE_IDS[number]) || r.characteristicId !== characteristicId(r.originalBottleId) ||
+      previous.status !== 'CONSUMED' || !failed(previous.outcome) || previous.consumedWeek === null || previous.consumedWeek > r.requestedWeek ||
+      r.recoveredWeek <= r.requestedWeek || current.stockedWeek !== r.recoveredWeek) return null;
+    if (previous.recovery && (previous.recovery.originalBottleId !== r.originalBottleId || previous.recovery.characteristicId !== r.characteristicId)) return null;
+    if (!previous.recovery && previous.id !== r.originalBottleId) return null;
+    current = previous;
+  }
+  return MISFORTUNE_KNIGHT_BOTTLE_IDS.includes(current.id as typeof MISFORTUNE_KNIGHT_BOTTLE_IDS[number]) ? current.id : null;
+}
+function recoverySource(state: MisfortuneKnightState, bottleId: string) {
+  const bottle = state.bottles.find(b => b.id === bottleId);
+  if (state.bottles.slice(3).some(b => !b.recovery)) return null;
+  if (!bottle || bottle.status !== 'CONSUMED' || !failed(bottle.outcome) || bottle.consumedWeek === null) return null;
+  const original = originalBottleId(state, bottle);
+  if (!original || state.bottles.some(b => b.recovery?.sourceBottleId === bottleId)) return null;
+  // Earlier consumed rows are receipts. A live vessel or an embodied original cannot be recovered again.
+  if (state.bottles.some(b => originalBottleId(state, b) === original && (b.status !== 'CONSUMED' || success(b.outcome)))) return null;
+  const consumed = state.acquisitionJournal.filter(e => e.command.type === 'CONSUME' && e.command.bottleId === bottleId);
+  if (consumed.length !== 1 || consumed[0]!.week !== bottle.consumedWeek || consumed[0]!.check?.tier !== bottle.outcome || consumed[0]!.after.sequence !== 2) return null;
+  return { bottle, receipt: consumed[0]!, originalBottleId: original, characteristicId: characteristicId(original) };
+}
 const concealmentServantWeeks = (s: SliceState) => Math.max(0, (s.misfortuneKnight.promotionWeek ?? s.week) - (s.concealmentServant.promotionWeek ?? s.week));
 const exhaustedSupply = (state: MisfortuneKnightState) => state.bottles.length >= 3 && state.bottles.every(b => b.status === 'CONSUMED' && ['FAILURE', 'GREAT_FAILURE'].includes(b.outcome ?? ''));
+const originalSupplyFailed = (state: MisfortuneKnightState) => state.bottles.length >= 3 && state.bottles.slice(0, 3).every((b, index) => b.id === MISFORTUNE_KNIGHT_BOTTLE_IDS[index] && !b.recovery && b.status === 'CONSUMED' && failed(b.outcome));
 const deliverySource = (number: number, week: number) => `${MISFORTUNE_KNIGHT_GUIDE}第${Math.ceil(number / 3)}批、第${week}周实际到货的序列1厄难骑士成品，独立封存编号misfortune-knight-potion-${number}。本瓶须另行取得并独立耗用。`;
 const hasPreparations = (s: SliceState) => MISFORTUNE_KNIGHT_PREPARATION_IDS.every(id => s.misfortuneKnight.preparations.some(p => p.taskId === id));
 function promotionBlock(s: SliceState): string | null {
@@ -108,21 +143,23 @@ function promotionBlock(s: SliceState): string | null {
   if (!concealmentServantReportsComplete(s)) return '先完成隐秘之仆的三份实际报告与反思，并收好旧核验现场。';
   return hasPreparations(s) ? null : '先分别核对八阶原瓶与既往报告、待发生动作及有限能力边界和普通返回路线；领取药瓶不能代做专业准备。';
 }
-export function validateMisfortuneKnightAcquisitionCommand(v: unknown): v is MisfortuneKnightAcquisitionCommand {
+function validateAcquisitionCommand(v: unknown, historicalReplay = false): v is MisfortuneKnightAcquisitionCommand {
   if (!record(v) || typeof v.type !== 'string') return false;
-  if (['LEARN_GUIDANCE', 'REQUEST_SUPPLY', 'RECEIVE_SUPPLY', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION'].includes(String(v.type))) return shape(v, ['type']);
+  if (legacySupply(v as { type: string })) return historicalReplay && shape(v, ['type']);
+  if (['LEARN_GUIDANCE', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION'].includes(String(v.type))) return shape(v, ['type']);
   if (v.type === 'PREPARE_TASK') return shape(v, ['type', 'taskId']) && MISFORTUNE_KNIGHT_PREPARATION_IDS.includes(v.taskId as typeof MISFORTUNE_KNIGHT_PREPARATION_IDS[number]);
   if (typeof v.bottleId !== 'string' || !/^misfortune-knight-potion-[1-9]\d{0,14}$/.test(v.bottleId)) return false;
-  if (['POTION_WORK', 'BUY_POTION'].includes(String(v.type))) return shape(v, ['type', 'bottleId']);
+  if (['POTION_WORK', 'BUY_POTION', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1'].includes(String(v.type))) return shape(v, ['type', 'bottleId']);
   return v.type === 'CONSUME' && shape(v, ['type', 'bottleId', 'confirmed']) && v.confirmed === true;
 }
+export function validateMisfortuneKnightAcquisitionCommand(v: unknown): v is MisfortuneKnightAcquisitionCommand { return validateAcquisitionCommand(v); }
 export const isMisfortuneKnightAcquisitionCommand = validateMisfortuneKnightAcquisitionCommand;
 export function validateMisfortuneKnightCommand(v: unknown): v is MisfortuneKnightCommand {
   return validateMisfortuneKnightAcquisitionCommand(v) || validateMisfortuneKnightActivityCommand(v) || validateMisfortuneKnightEncounterCommand(v);
 }
 export function misfortuneKnightAcquisitionBlock(s: SliceState, command: MisfortuneKnightAcquisitionCommand): string | null { return acquisitionBlock(s, command, false); }
 function acquisitionBlock(s: SliceState, command: MisfortuneKnightAcquisitionCommand, historicalReplay: boolean): string | null {
-  if (!validateMisfortuneKnightAcquisitionCommand(command)) return '厄难骑士准备命令无效。';
+  if (!validateAcquisitionCommand(command, historicalReplay)) return '厄难骑士准备命令无效。';
   if (s.status !== 'ACTIVE' || s.health <= 0 || s.mind <= 0) return '须本人仍活着且身体精神尚可；普通死亡不受指导服药保护。';
   if (s.activeEvent || s.combat || s.eventQueue.length || s.pulse !== 'NONE') return '先处理当前事件、真实战斗和未结周账。';
   if ((!historicalReplay && hasMisfortuneKnightOldPractice(s)) || hasMisfortuneKnightLifeLock(s) || hasMisfortuneKnightEncounterLock(s)) return '先停止负载并归还旧原物、召回原卷叶，沿普通路线离开旧现场；旧人物、伤势与实战后果继续保留。';
@@ -132,8 +169,9 @@ function acquisitionBlock(s: SliceState, command: MisfortuneKnightAcquisitionCom
   if (!shape(s.progression.mastery, INHERITED_ABILITY_IDS) || !Object.values(s.progression.mastery).every(v => integer(v, 0, 500))) return '不眠者至隐秘之仆的18项掌握记录不完整，暂不能继续晋升。';
   const state = s.misfortuneKnight;
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
+  if (!historicalReplay && state.bottles.slice(3).some(b => !b.recovery)) return '存在历史独立第4份及以后原特性，来源总量未解决；旧记录完整只读，不能改标成回收件或继续本入口。';
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
-  const ap = ['LEARN_GUIDANCE', 'POTION_WORK', 'REQUEST_SUPPLY', 'PREPARE_TASK', 'PREPARE_PROMOTION'].includes(command.type) ? 1 : 0;
+  const ap = ['LEARN_GUIDANCE', 'POTION_WORK', 'REQUEST_SUPPLY', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1', 'PREPARE_TASK', 'PREPARE_PROMOTION'].includes(command.type) ? 1 : 0;
   if (s.actionsRemaining < ap) return '本周剩余行动不足。';
   if (command.type === 'LEARN_GUIDANCE' && !concealmentServantReportsComplete(s)) return '先完成隐秘之仆三份生活报告与反思，再核对这次晋升的既往记录。';
   if (command.type === 'LEARN_GUIDANCE') return state.guidanceKnown ? '已经听取成品来源、专业准备与本次风险。' : s.cash < MISFORTUNE_KNIGHT_PRICES.guidance ? '本次专业指导需要500便士。' : null;
@@ -141,9 +179,22 @@ function acquisitionBlock(s: SliceState, command: MisfortuneKnightAcquisitionCom
   if (command.type === 'PREPARE_TASK') return state.preparations.some(p => p.taskId === command.taskId) ? '这一项专业准备已经真实完成，不能重复领取经历。' : null;
   if (command.type === 'PREPARE_PROMOTION') {
     const reason = promotionBlock(s); if (reason) return reason;
+    if (state.resupply.recovery) return '先完成已付费的原特性调查回收，再准备本次服药。';
     if (!state.bottles.some(b => b.status === 'PLAYER')) return '先实际取得至少一瓶尚未服用的厄难骑士原瓶。';
     return s.cash < MISFORTUNE_KNIGHT_PRICES.preparation ? '当次场地检查需要150便士。' : null;
   }
+  if (command.type === 'REQUEST_RECOVERY_V1' || command.type === 'RECOVER_CHARACTERISTIC_V1') {
+    if (s.schemaVersion < MISFORTUNE_KNIGHT_RECOVERY_SCHEMA_VERSION) return '这一原特性回收协议须使用对应的新版本存档。';
+    const room = s.concealmentServant.life;
+    if (room.playerLocation !== 'EXIT' || room.room.id !== 'CS2-ROOM' || room.room.doorBlocked || room.room.concealed || room.anchorLight.on) return '须本人回到原房间旁出口的实际交接处，原门畅通、隐秘与灯光窗口已停止；不能用旧起点覆盖当前位置。';
+    const source = recoverySource(state, command.bottleId), pending = state.resupply.recovery;
+    if (!originalSupplyFailed(state)) return '最初三瓶须实际耗尽失败，才能调查并回收同一份原特性。';
+    if (!source) return '须核验真实失败原瓶、同一原特性与实际服药记录；已回收或仍被持有的特性不能重复取得。';
+    if (command.type === 'REQUEST_RECOVERY_V1') return pending ? '已有指定失败原瓶的调查委托，须先完成回收。' : s.cash < MISFORTUNE_KNIGHT_PRICES.recovery ? '调查原特性需要1行动、120便士；旧费用不退。' : null;
+    if (!pending || pending.version !== 1 || pending.sourceBottleId !== command.bottleId || pending.originalBottleId !== source.originalBottleId || pending.characteristicId !== source.characteristicId || pending.requestedWeek !== state.resupply.requestedWeek || pending.sourceReceiptRevision !== source.receipt.revision || pending.siteId !== MISFORTUNE_KNIGHT_RECOVERY_SITE_ID || pending.custodian !== MISFORTUNE_KNIGHT_GUIDE) return '先支付对应失败原瓶的调查委托，不能更换原特性。';
+    return s.week <= pending.requestedWeek ? '调查后须隔一真实周，再到原房间旁的安静交接处核验并封存同一份原特性。' : null;
+  }
+  if (legacySupply(command) && (state.resupply.recovery || state.bottles.some(b => b.recovery) || state.acquisitionJournal.some(e => recoveryCommand(e.command)))) return '已经开始原特性回收，不能续接独立新原瓶的旧供货记录。';
   if (command.type === 'REQUEST_SUPPLY' && s.cash < MISFORTUNE_KNIGHT_PRICES.resupply) return '申请下一批需要100便士实际费用。';
   if (command.type === 'REQUEST_SUPPLY') return state.resupply.requestedWeek !== null ? '已经申请下一批，必须等下一真实周实际到货。' : exhaustedSupply(state) ? null : '现有全部原瓶须真实服用且失败，才能申请下一批。';
   if (command.type === 'RECEIVE_SUPPLY') return state.resupply.requestedWeek === null ? '尚未申请下一批厄难骑士原瓶。' : s.week <= state.resupply.requestedWeek ? '本周刚提出申请，下一真实周起才能确认到货。' : exhaustedSupply(state) ? null : '现有原瓶尚未全部耗尽失败。';
@@ -186,12 +237,27 @@ function applyAcquisitionMutation(s: SliceState, command: MisfortuneKnightAcquis
     case 'POTION_WORK': {
       const bottle = state.bottles.find(b => b.id === command.bottleId)!;
       s.actionsRemaining--; bottle.labourSteps++;
-      ctx.note(MISFORTUNE_KNIGHT_LABOUR_TASKS[bottle.labourSteps - 1]!, `实际完成原瓶${bottle.id}第${bottle.labourSteps}/5项工作，花1行动。五次只抵本瓶5500便士，余款1100便士；部分劳动不折现、不转给其他原瓶，也不替代三项专业准备。`); return;
+      if (bottle.recovery) ctx.note('核验同一原特性的本次新药调配', `实际完成重配瓶${bottle.id}第${bottle.labourSteps}/5项工作，花1行动。五次只抵本次新普通药物与调配服务810便士，余款90便士；旧劳务不转用，原特性不复制。`);
+      else ctx.note(MISFORTUNE_KNIGHT_LABOUR_TASKS[bottle.labourSteps - 1]!, `实际完成原瓶${bottle.id}第${bottle.labourSteps}/5项工作，花1行动。五次只抵本瓶5500便士，余款1100便士；部分劳动不折现、不转给其他原瓶，也不替代三项专业准备。`); return;
     }
     case 'BUY_POTION': {
       const bottle = state.bottles.find(b => b.id === command.bottleId)!, paid = potionPrice(bottle);
       s.cash -= paid; bottle.status = 'PLAYER'; bottle.acquiredWeek = s.week;
-      ctx.note('厄难骑士独立原瓶实际交付', `0行动、${paid}便士，实际领取${bottle.id}。${bottle.labourSteps === 5 ? '本瓶五项劳务抵5500便士。' : '未满五项劳动不部分抵扣。'}药瓶尚未服用，三项准备与当周场地检查仍须实际完成。`); return;
+      if (bottle.recovery) ctx.note('同一原特性的新药实际重配交付', `0行动、${paid}便士支付本次新普通药物与调配服务，领取${bottle.id}；其中原特性仍为${bottle.recovery.characteristicId}。当周场地检查仍须另付。`);
+      else ctx.note('厄难骑士独立原瓶实际交付', `0行动、${paid}便士，实际领取${bottle.id}。${bottle.labourSteps === 5 ? '本瓶五项劳务抵5500便士。' : '未满五项劳动不部分抵扣。'}药瓶尚未服用，三项准备与当周场地检查仍须实际完成。`); return;
+    }
+    case 'REQUEST_RECOVERY_V1': {
+      const source = recoverySource(state, command.bottleId)!;
+      s.actionsRemaining--; s.cash -= MISFORTUNE_KNIGHT_PRICES.recovery; state.resupply.requestedWeek = s.week;
+      state.resupply.recovery = { version: 1, sourceBottleId: command.bottleId, originalBottleId: source.originalBottleId, characteristicId: source.characteristicId, requestedWeek: s.week, sourceReceiptRevision: source.receipt.revision, siteId: MISFORTUNE_KNIGHT_RECOVERY_SITE_ID, custodian: MISFORTUNE_KNIGHT_GUIDE };
+      ctx.note('调查失败原瓶遗留的同一份特性', `1行动、120便士，本人与${MISFORTUNE_KNIGHT_GUIDE}在原交接处按第${source.receipt.week}周同次真实失败回执逐一核对，实际辨认并登记仍由赛琳封存保管的${source.characteristicId}，本次尚未交付。此项是现在发生的调查，不改写旧失败记载。隔一真实周再到同一原处当面复核、封存交接；原门受阻或人不在原处时不能回收。旧原瓶、失败、费用与伤势全部保留，不退款。`); return;
+    }
+    case 'RECOVER_CHARACTERISTIC_V1': {
+      const recovery = { ...state.resupply.recovery!, recoveredWeek: s.week }, id = `misfortune-knight-potion-${state.bottles.length + 1}`;
+      s.actionsRemaining--;
+      state.bottles.push({ ...freshBottle(id, recoverySourceText(id, recovery, s.week), s.week), recovery });
+      state.resupply.deliveries++; state.resupply.requestedWeek = null; delete state.resupply.recovery;
+      ctx.note('原处回收封存同一份厄难骑士特性', `1行动将${recovery.characteristicId}封存到重配瓶${id}，没有新增原特性。新普通药物与调配服务须另付900便士，五项新劳务后90便士；之后仍须1行动、150便士检查本次场地。`); return;
     }
     case 'REQUEST_SUPPLY':
       s.actionsRemaining--; s.cash -= MISFORTUNE_KNIGHT_PRICES.resupply; state.resupply.requestedWeek = s.week;
@@ -270,12 +336,13 @@ export function validateMisfortuneKnightAcquisitionJournal(s: SliceState): boole
   try {
     const journal = s.misfortuneKnight.acquisitionJournal, expected = createMisfortuneKnightState();
     if (!Array.isArray(journal) || journal.length > 10000) return false;
+    if (s.schemaVersion < MISFORTUNE_KNIGHT_RECOVERY_SCHEMA_VERSION && (s.misfortuneKnight.resupply.recovery || s.misfortuneKnight.bottles.some(b => b.recovery) || journal.some(e => recoveryCommand(e.command)))) return false;
     let previous: MisfortuneKnightAcquisitionEvent | null = null, nextCursor = s.misfortuneKnight.sourceScene?.random.cursor ?? 0;
     for (const raw of journal) {
       if (!record(raw) || !shape(raw, ['week', 'date', 'revision', 'command', 'actor', 'before', 'after', 'cursorBefore', 'cursorAfter', 'randomBefore', 'randomAfter', 'check']) ||
         !integer(raw.week, s.concealmentServant.promotionWeek ?? s.week, s.week) || !integer(raw.revision, 0, s.revision) || !isValidGameDate(raw.date) ||
         compareGameDates(raw.date, s.date) > 0 || raw.week !== Math.floor(gameDaysBetween(ORIGIN, raw.date) / 7) + 1 ||
-        !validateMisfortuneKnightAcquisitionCommand(raw.command) || !validAcquisitionBudget(raw.before) || !validAcquisitionBudget(raw.after) || raw.before.sequence !== 2 ||
+        !validateAcquisitionCommand(raw.command, true) || !validAcquisitionBudget(raw.before) || !validAcquisitionBudget(raw.after) || raw.before.sequence !== 2 ||
         !record(raw.actor) || !shape(raw.actor, ['name', 'gender', 'age', 'sourceHistoryDigest', 'sourceIdentityDigest', 'pathwayId', 'concealmentServantPromotionWeek', 'sleeplessPromotionWeek']) ||
         typeof raw.actor.name !== 'string' || raw.actor.name.length === 0 || raw.actor.name.length > 500 || typeof raw.actor.gender !== 'string' || raw.actor.gender.length === 0 || raw.actor.gender.length > 500 ||
         raw.actor.name !== s.character.name || raw.actor.gender !== raw.before.gender || raw.actor.age !== s.character.age ||
@@ -316,6 +383,7 @@ export function validateMisfortuneKnightAcquisitionJournal(s: SliceState): boole
       applyAcquisitionMutation(shadow, event.command, context, true);
       if (!same(acquisitionBudget(shadow), event.after)) return false;
       if (event.command.type === 'CONSUME' ? checks !== 1 : checks !== 0 || event.check !== null || event.randomBefore !== null || event.randomAfter !== null) return false;
+      expected.acquisitionJournal.push(event);
       nextCursor = event.cursorAfter; previous = event;
     }
     if (!same(acquisitionState(expected), acquisitionState(s.misfortuneKnight))) return false;
@@ -333,6 +401,114 @@ export function validateMisfortuneKnightAcquisitionJournal(s: SliceState): boole
     } else if (s.misfortuneKnight.guidanceKnown || isMisfortuneKnight(s)) return false;
     return true;
   } catch { return false; }
+}
+
+/** Snapshot-only custody replay for later stages. The enclosing source validator
+ * owns actor/root authenticity and deterministic RNG; this replay independently
+ * proves vessel genealogy, exact drug costs, failed-remain custody and timing. */
+export function resolveMisfortuneKnightOriginalCharacteristicsSnapshot(snapshot: Pick<MisfortuneKnightState, 'bottles' | 'acquisitionJournal' | 'resupply'>): MisfortuneKnightOriginalCharacteristics | null {
+  try {
+    if (!record(snapshot) || !Array.isArray(snapshot.bottles) || !Array.isArray(snapshot.acquisitionJournal) || snapshot.acquisitionJournal.length > 10000 || !record(snapshot.resupply)) return null;
+    const expected = createMisfortuneKnightState(); let previous: MisfortuneKnightAcquisitionEvent | null = null;
+    for (const raw of snapshot.acquisitionJournal) {
+      if (!record(raw) || !shape(raw, ['week', 'date', 'revision', 'command', 'actor', 'before', 'after', 'cursorBefore', 'cursorAfter', 'randomBefore', 'randomAfter', 'check']) ||
+        !validateAcquisitionCommand(raw.command, true) || !validAcquisitionBudget(raw.before) || !validAcquisitionBudget(raw.after) || raw.before.sequence !== 2 ||
+        !integer(raw.week, 1) || !integer(raw.revision) || !isValidGameDate(raw.date) || raw.week !== Math.floor(gameDaysBetween(ORIGIN, raw.date) / 7) + 1 ||
+        !record(raw.actor) || !shape(raw.actor, ['name', 'gender', 'age', 'sourceHistoryDigest', 'sourceIdentityDigest', 'pathwayId', 'concealmentServantPromotionWeek', 'sleeplessPromotionWeek']) ||
+        typeof raw.actor.name !== 'string' || raw.actor.name.length === 0 || raw.actor.name.length > 500 || !integer(raw.actor.age, 1) ||
+        !integer(raw.actor.sleeplessPromotionWeek, 1, raw.actor.concealmentServantPromotionWeek as number) ||
+        (['LEARN_GUIDANCE', 'CONSUME'].includes(raw.command.type) ? typeof raw.actor.sourceHistoryDigest !== 'string' || !/^[0-9a-f]{64}$/.test(raw.actor.sourceHistoryDigest) : raw.actor.sourceHistoryDigest !== null) ||
+        raw.actor.pathwayId !== 'darkness' || raw.actor.gender !== raw.before.gender || !integer(raw.actor.concealmentServantPromotionWeek, 1, raw.week) ||
+        typeof raw.actor.sourceIdentityDigest !== 'string' || !/^[0-9a-f]{64}$/.test(raw.actor.sourceIdentityDigest)) return null;
+      const e = raw as unknown as MisfortuneKnightAcquisitionEvent, c = e.command, budget = structuredClone(e.before);
+      if (!integer(e.cursorBefore, previous?.cursorAfter ?? 0) || e.cursorAfter !== e.cursorBefore + (c.type === 'CONSUME' ? 1 : 0) ||
+          c.type === 'CONSUME' && (e.randomBefore !== e.cursorBefore || e.randomAfter !== e.cursorAfter)) return null;
+      if (previous && (e.revision <= previous.revision || e.week < previous.week || compareGameDates(e.date, previous.date) < 0 || previous.after.sequence === 1 ||
+        e.actor.sourceIdentityDigest !== previous.actor.sourceIdentityDigest || e.actor.name !== previous.actor.name || e.actor.gender !== previous.actor.gender || e.actor.age !== previous.actor.age ||
+        e.actor.concealmentServantPromotionWeek !== previous.actor.concealmentServantPromotionWeek || e.actor.sleeplessPromotionWeek !== previous.actor.sleeplessPromotionWeek ||
+        INHERITED_ABILITY_IDS.some(id => e.before.mastery[id] !== previous!.after.mastery[id]) || !same(e.before.completedSources.slice(0, previous.after.completedSources.length), previous.after.completedSources) ||
+        expected.preparedWeek !== null && (e.week !== previous.week || !same(e.date, previous.date) || !same(e.before, previous.after)) ||
+        e.revision === previous.revision + 1 && e.week === previous.week && previous.after.actions > 0 && (!same(e.before, previous.after) || e.cursorBefore !== previous.cursorAfter))) return null;
+      if (e.after.gender !== e.before.gender || e.actor.sourceHistoryDigest !== null && e.actor.sourceHistoryDigest !== (previous ? expected.acquisitionJournal[0]!.actor.sourceHistoryDigest : e.actor.sourceHistoryDigest)) return null;
+      if (expected.preparedWeek !== null && !['CONSUME', 'LEAVE_PREPARATION'].includes(c.type)) return null;
+      if (c.type !== 'LEARN_GUIDANCE' && !expected.guidanceKnown) return null;
+      if (c.type === 'LEARN_GUIDANCE') {
+        if (expected.guidanceKnown) return null;
+        expected.guidanceKnown = true; budget.actions--; budget.cash -= MISFORTUNE_KNIGHT_PRICES.guidance;
+      } else if (c.type === 'PREPARE_TASK') {
+        if (expected.preparations.some(p => p.taskId === c.taskId)) return null;
+        expected.preparations.push({ taskId: c.taskId, completedWeek: e.week }); budget.actions--;
+      } else if (c.type === 'PREPARE_PROMOTION') {
+        if (expected.resupply.recovery || expected.preparations.length !== 3 || !expected.bottles.some(b => b.status === 'PLAYER') ||
+          budget.health <= 20 || budget.mind <= 40 || budget.acting !== 100 || e.week < e.actor.concealmentServantPromotionWeek + MISFORTUNE_KNIGHT_MIN_CONCEALMENT_SERVANT_WEEKS) return null;
+        expected.preparedWeek = e.week; budget.actions--; budget.cash -= MISFORTUNE_KNIGHT_PRICES.preparation;
+      } else if (c.type === 'LEAVE_PREPARATION') {
+        if (expected.preparedWeek === null) return null; expected.preparedWeek = null;
+      } else if (c.type === 'REQUEST_SUPPLY') {
+        // A pending archived commission may be superseded by the explicit paid investigation.
+        if (!exhaustedSupply(expected) || expected.resupply.requestedWeek !== null || expected.bottles.some(b => b.recovery) || expected.acquisitionJournal.some(j => recoveryCommand(j.command))) return null;
+        budget.actions--; budget.cash -= MISFORTUNE_KNIGHT_PRICES.resupply; expected.resupply.requestedWeek = e.week;
+      } else if (c.type === 'RECEIVE_SUPPLY') return null; // A fourth independent original is a conservation conflict.
+      else if (c.type === 'REQUEST_RECOVERY_V1' || c.type === 'RECOVER_CHARACTERISTIC_V1') {
+        const source = recoverySource(expected, c.bottleId), pending = expected.resupply.recovery;
+        if (!originalSupplyFailed(expected) || !source) return null;
+        budget.actions--;
+        if (c.type === 'REQUEST_RECOVERY_V1') {
+          if (pending) return null; budget.cash -= MISFORTUNE_KNIGHT_PRICES.recovery; expected.resupply.requestedWeek = e.week;
+          expected.resupply.recovery = { version: 1, sourceBottleId: c.bottleId, originalBottleId: source.originalBottleId, characteristicId: source.characteristicId, requestedWeek: e.week, sourceReceiptRevision: source.receipt.revision, siteId: MISFORTUNE_KNIGHT_RECOVERY_SITE_ID, custodian: MISFORTUNE_KNIGHT_GUIDE };
+        } else {
+          if (!pending || pending.sourceBottleId !== c.bottleId || pending.originalBottleId !== source.originalBottleId || pending.characteristicId !== source.characteristicId || e.week <= pending.requestedWeek || pending.requestedWeek !== expected.resupply.requestedWeek || pending.sourceReceiptRevision !== source.receipt.revision || pending.siteId !== MISFORTUNE_KNIGHT_RECOVERY_SITE_ID || pending.custodian !== MISFORTUNE_KNIGHT_GUIDE) return null;
+          const recovery = { ...pending, recoveredWeek: e.week }, id = `misfortune-knight-potion-${expected.bottles.length + 1}`;
+          expected.bottles.push({ ...freshBottle(id, recoverySourceText(id, recovery, e.week), e.week), recovery });
+          expected.resupply.deliveries++; expected.resupply.requestedWeek = null; delete expected.resupply.recovery;
+        }
+      } else {
+        if (!('bottleId' in c)) return null;
+        const bottle = expected.bottles.find(b => b.id === c.bottleId); if (!bottle) return null;
+        if (c.type === 'POTION_WORK') {
+          if (bottle.status !== 'SUPPLIER' || bottle.labourSteps >= MISFORTUNE_KNIGHT_LABOUR_STEPS) return null;
+          bottle.labourSteps++; budget.actions--;
+        } else if (c.type === 'BUY_POTION') {
+          if (bottle.status !== 'SUPPLIER') return null;
+          budget.cash -= potionPrice(bottle); bottle.status = 'PLAYER'; bottle.acquiredWeek = e.week;
+        } else if (c.type === 'CONSUME') {
+          if (bottle.status !== 'PLAYER' || expected.preparedWeek !== e.week || !e.check || (!failed(e.check.tier) && !success(e.check.tier)) ||
+            !integer(e.randomBefore) || e.randomAfter !== e.randomBefore + 1 || budget.health <= 20 || budget.mind <= 40 || budget.acting !== 100) return null;
+          if (!same(e.check, resolveNormalCheck({ ability: 'will', baseAbility: budget.coreStats.will, difficulty: 30, modifiers: [], roll: e.check.roll }))) return null;
+          bottle.status = 'CONSUMED'; bottle.outcome = e.check.tier; bottle.consumedWeek = e.week; bottle.preparationWeek = e.week; expected.preparedWeek = null;
+          if (success(e.check.tier)) {
+            expected.promotionWeek = e.week; expected.concealmentServantActingAtPromotion = budget.acting; budget.sequence = 1; budget.acting = 0;
+            budget.mind = Math.max(1, budget.mind - (e.check.tier === 'GREAT_SUCCESS' ? 8 : 15));
+            if (!budget.completedSources.includes('darkness-s1')) budget.completedSources.push('darkness-s1');
+            for (const id of MISFORTUNE_KNIGHT_ABILITY_IDS) budget.mastery[id] = 0;
+            for (const stat of ['physique', 'perception', 'will', 'knowledge'] as const) budget.coreStats[stat] = Math.min(500, budget.coreStats[stat] + 1);
+          } else {
+            const severe = e.check.tier === 'GREAT_FAILURE'; budget.health = Math.max(1, budget.health - (severe ? 25 : 15));
+            budget.mind = Math.max(1, budget.mind - (severe ? 45 : 25)); budget.pollution = Math.min(100, budget.pollution + (severe ? 60 : 30));
+          }
+        } else return null;
+      }
+      if (budget.actions < 0 || budget.cash < 0 || !same(budget, e.after) || c.type !== 'CONSUME' && (e.check !== null || e.randomBefore !== null || e.randomAfter !== null)) return null;
+      expected.acquisitionJournal.push(e); previous = e;
+    }
+    if (!same(expected.bottles, snapshot.bottles) || !same(expected.resupply, snapshot.resupply)) return null;
+    const characteristics: MisfortuneKnightOriginalCharacteristics['characteristics'] = [];
+    for (const id of MISFORTUNE_KNIGHT_BOTTLE_IDS) {
+      const attempts = expected.bottles.filter(b => originalBottleId(expected, b) === id), latest = attempts.at(-1);
+      if (!latest || attempts[0]!.id !== id) return null;
+      characteristics.push({ characteristicId: characteristicId(id), originalBottleId: id, latestBottleId: latest.id,
+        holder: latest.status === 'CONSUMED' ? success(latest.outcome) ? 'EMBODIED' : 'FAILED_REMAINS' : latest.status });
+    }
+    const embodied = characteristics.filter(c => c.holder === 'EMBODIED');
+    if (embodied.length > 1 || (expected.promotionWeek !== null) !== (embodied.length === 1)) return null;
+    return { characteristics, embodiedOriginalBottleId: embodied[0]?.originalBottleId ?? null, embodiedBottleId: embodied[0]?.latestBottleId ?? null };
+  } catch { return null; }
+}
+
+/** Read-only conservation view. Full acquisition validation owns the original
+ * source, identity and RNG before the same snapshot custody replay is used. */
+export function resolveMisfortuneKnightOriginalCharacteristics(s: SliceState): MisfortuneKnightOriginalCharacteristics | null {
+  return validateMisfortuneKnightSource(s) && validateMisfortuneKnightAcquisitionJournal(s) ? resolveMisfortuneKnightOriginalCharacteristicsSnapshot(s.misfortuneKnight) : null;
 }
 
 export function applyMisfortuneKnightCommand(s: SliceState, command: MisfortuneKnightCommand, ctx: SeerContext): void {
@@ -357,12 +533,12 @@ export function misfortuneKnightAcquisitionActions(s: SliceState): MisfortuneKni
     for (const task of MISFORTUNE_KNIGHT_PREPARATIONS) if (!state.preparations.some(p => p.taskId === task.id)) add(`misfortune-knight-prepare-${task.id}`, task.title, '1行动 · 专业准备', { type: 'PREPARE_TASK', taskId: task.id });
     if (state.preparedWeek === null) add('prepare-misfortune-knight-promotion', '实际检查本次服药场地', '1行动 · 150便士 · 仅本周有效', { type: 'PREPARE_PROMOTION' });
     else add('leave-misfortune-knight-preparation', '沿原出口结束本次准备', '0行动 · 不退成本 · 未服原瓶保留', { type: 'LEAVE_PREPARATION' });
-    if (state.resupply.requestedWeek !== null) add('receive-misfortune-knight-supply', '确认下一批三瓶实际到货', `0行动 · 最早第${state.resupply.requestedWeek + 1}周`, { type: 'RECEIVE_SUPPLY' });
-    else if (exhaustedSupply(state)) add('request-misfortune-knight-supply', '申请下一批独立厄难骑士成品', '1行动 · 100便士 · 下一真实周起收货', { type: 'REQUEST_SUPPLY' });
+    if (state.resupply.recovery) add('recover-misfortune-knight-characteristic', `回原房间旁的安静交接处封存${state.resupply.recovery.characteristicId}`, `1行动 · 最早第${state.resupply.recovery.requestedWeek + 1}周 · 新药另付`, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: state.resupply.recovery.sourceBottleId });
+    else if (originalSupplyFailed(state)) for (const bottle of state.bottles) if (recoverySource(state, bottle.id)) add(`request-recovery-${bottle.id}`, `调查${bottle.id}的同一份原特性`, '1行动 · 120便士 · 隔周原处回收 · 旧费用不退', { type: 'REQUEST_RECOVERY_V1', bottleId: bottle.id });
     for (const bottle of state.bottles) {
       if (bottle.status === 'SUPPLIER') {
-        if (bottle.labourSteps < MISFORTUNE_KNIGHT_LABOUR_STEPS) add(`work-${bottle.id}`, `第${bottleNumber(bottle)}瓶 · ${MISFORTUNE_KNIGHT_LABOUR_TASKS[bottle.labourSteps]}`, `1行动 · 劳动${bottle.labourSteps}/5 · 五次抵5500便士`, { type: 'POTION_WORK', bottleId: bottle.id });
-        add(`buy-${bottle.id}`, `领取第${bottleNumber(bottle)}瓶厄难骑士魔药`, `0行动 · ${potionPrice(bottle)}便士`, { type: 'BUY_POTION', bottleId: bottle.id });
+        if (bottle.labourSteps < MISFORTUNE_KNIGHT_LABOUR_STEPS) add(`work-${bottle.id}`, `第${bottleNumber(bottle)}瓶 · ${bottle.recovery ? `核验同一原特性本次第${bottle.labourSteps + 1}项新药调配` : MISFORTUNE_KNIGHT_LABOUR_TASKS[bottle.labourSteps]}`, `1行动 · 劳动${bottle.labourSteps}/5 · 五次抵${bottle.recovery ? 810 : 5500}便士`, { type: 'POTION_WORK', bottleId: bottle.id });
+        add(`buy-${bottle.id}`, `领取第${bottleNumber(bottle)}瓶${bottle.recovery ? '同一原特性重配' : '厄难骑士'}魔药`, `0行动 · ${potionPrice(bottle)}便士`, { type: 'BUY_POTION', bottleId: bottle.id });
       } else if (bottle.status === 'PLAYER') add(`consume-${bottle.id}`, `独立确认服用第${bottleNumber(bottle)}瓶厄难骑士魔药`, `0行动 · 隐秘之仆消化${s.progression.acting}/100 · ${concealmentServantWeeks(s)}/12整周`, { type: 'CONSUME', bottleId: bottle.id, confirmed: true });
     }
   }
@@ -381,9 +557,9 @@ export function projectMisfortuneKnight(s: SliceState): MisfortuneKnightProjecti
   return {
     title: '厄难骑士·黑暗序列1', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted,
     formulaKnown: false, formula: [], ...(available ? { story: `${MISFORTUNE_KNIGHT_FORMULA_STATUS}${MISFORTUNE_KNIGHT_SOURCE_STATUS}` } : {}),
-    supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶6600便士，或为本瓶完成五项真实劳动后支付1100便士；全部失败耗尽后才能申请下一批，跨真实周收货并逐瓶另行取得。` : '',
+    supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。初始原瓶每瓶6600便士或本瓶五工后1100；只调查三份原特性的最新真实失败载体，120便士、1行动，隔一真实周原处另1行动核验封存。新普通药物与调配服务900便士或五项新劳动后90便士，当周准备仍150便士、1行动。旧独立额外原瓶记录只读，来源总量未解决时不能进入黑夜材料流程。` : '',
     actions, nextStep: preferred ? `下一步：${preferred.label}。${preferred.cost}。` : actions.find(a => a.reason)?.reason ?? (promoted ? '已完成记录保留，可以继续正常生活。' : '先完成隐秘之仆的实际经历。'), preferredActionId: preferred?.id ?? null,
-    bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 厄难骑士成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周当次场地检查后服用。`}`,
+    bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · ${b.recovery ? '同一原特性重配' : '厄难骑士成品魔药'}`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周当次场地检查后服用。`}`,
       status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为隐秘之仆' : '排异，仍为隐秘之仆'}`,
       chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? MISFORTUNE_KNIGHT_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
@@ -536,8 +712,17 @@ export function validateMisfortuneKnightState(s: SliceState): boolean { try { re
 function validateState(s: SliceState): boolean {
   const raw: unknown = s.misfortuneKnight;
   if (!record(raw) || !shape(raw, ['guidanceKnown', 'bottles', 'resupply', 'promotionWeek', 'concealmentServantActingAtPromotion', 'preparations', 'preparedWeek', 'acquisitionJournal', 'sourceHistory', 'sourceScene', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
-  if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== MISFORTUNE_KNIGHT_BOTTLE_IDS.length * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations) || !Array.isArray(raw.acquisitionJournal)) return false;
+  if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries', ...(Object.hasOwn(raw.resupply, 'recovery') ? ['recovery'] : [])]) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || !Array.isArray(raw.preparations) || !Array.isArray(raw.acquisitionJournal)) return false;
   const state = raw as unknown as MisfortuneKnightState, promoted = isMisfortuneKnight(s), acquisitionStage = isMisfortuneKnightAcquisitionStage(s);
+  const recoveryDeliveries = state.bottles.filter(b => record(b) && Object.hasOwn(b, 'recovery')).length;
+  const legacyDeliveries = state.resupply.deliveries - recoveryDeliveries;
+  if (!integer(legacyDeliveries) || state.bottles.length !== 3 + legacyDeliveries * 3 + recoveryDeliveries) return false;
+  const validRecovery = (r: unknown, recovered: boolean): r is MisfortuneKnightRecoveryRequest => record(r) &&
+    shape(r, ['version', 'sourceBottleId', 'originalBottleId', 'characteristicId', 'requestedWeek', 'sourceReceiptRevision', 'siteId', 'custodian', ...(recovered ? ['recoveredWeek'] : [])]) &&
+    r.version === 1 && integer(r.sourceReceiptRevision) && r.siteId === MISFORTUNE_KNIGHT_RECOVERY_SITE_ID && r.custodian === MISFORTUNE_KNIGHT_GUIDE && typeof r.sourceBottleId === 'string' && /^misfortune-knight-potion-[1-9]\d{0,14}$/.test(r.sourceBottleId) &&
+    MISFORTUNE_KNIGHT_BOTTLE_IDS.includes(r.originalBottleId as typeof MISFORTUNE_KNIGHT_BOTTLE_IDS[number]) && r.characteristicId === characteristicId(String(r.originalBottleId)) &&
+    integer(r.requestedWeek, s.concealmentServant.promotionWeek ?? s.week, s.week) && (!recovered || integer(r.recoveredWeek, r.requestedWeek + 1, s.week));
+  if (Object.hasOwn(state.resupply, 'recovery') && !validRecovery(state.resupply.recovery, false)) return false;
   const firstWeek = s.concealmentServant.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + MISFORTUNE_KNIGHT_MIN_CONCEALMENT_SERVANT_WEEKS, lastAcquisitionWeek = state.promotionWeek ?? s.week;
   if (state.guidanceKnown && (!knownChannel(s) || !validateMisfortuneKnightSource(s))) return false;
   if (!state.guidanceKnown && (state.sourceHistory !== null || state.sourceScene !== null)) return false;
@@ -552,10 +737,15 @@ function validateState(s: SliceState): boolean {
   } else if (state.promotionWeek !== null || state.concealmentServantActingAtPromotion !== null || MISFORTUNE_KNIGHT_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {
-    if (!record(b) || !shape(b, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'preparationWeek', 'status', 'outcome']) || b.id !== `misfortune-knight-potion-${index + 1}` || !integer(b.labourSteps, 0, MISFORTUNE_KNIGHT_LABOUR_STEPS)) return false;
+    if (!record(b) || !shape(b, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'preparationWeek', 'status', 'outcome', ...(Object.hasOwn(b, 'recovery') ? ['recovery'] : [])]) || b.id !== `misfortune-knight-potion-${index + 1}` || !integer(b.labourSteps, 0, MISFORTUNE_KNIGHT_LABOUR_STEPS)) return false;
     const stockWeek = b.stockedWeek ?? firstWeek;
     if (index < MISFORTUNE_KNIGHT_BOTTLE_IDS.length) {
-      if (b.stockedWeek !== null || b.source !== MISFORTUNE_KNIGHT_POTION_SOURCES[index]!.source) return false;
+      if (b.stockedWeek !== null || b.source !== MISFORTUNE_KNIGHT_POTION_SOURCES[index]!.source || Object.hasOwn(b, 'recovery')) return false;
+    } else if (b.recovery) {
+      if (!validRecovery(b.recovery, true) || !state.guidanceKnown || !integer(b.stockedWeek, firstConsumptionWeek + 1, lastAcquisitionWeek) || b.recovery.recoveredWeek !== b.stockedWeek || b.source !== recoverySourceText(b.id, b.recovery, b.stockedWeek) || !originalBottleId(state, b)) return false;
+      const prefix = { ...state, bottles: state.bottles.slice(0, index) };
+      const source = recoverySource(prefix, b.recovery.sourceBottleId);
+      if (!originalSupplyFailed(prefix) || !source || source.originalBottleId !== b.recovery.originalBottleId || source.characteristicId !== b.recovery.characteristicId || source.receipt.revision !== b.recovery.sourceReceiptRevision || source.bottle.consumedWeek! > b.recovery.requestedWeek) return false;
     } else {
       if (!state.guidanceKnown || !integer(b.stockedWeek, firstConsumptionWeek + 1, lastAcquisitionWeek) || b.source !== deliverySource(index + 1, b.stockedWeek)) return false;
       const batchStart = index - index % MISFORTUNE_KNIGHT_BOTTLE_IDS.length;
@@ -574,7 +764,11 @@ function validateState(s: SliceState): boolean {
       } else return false;
     }
   }
-  if (state.resupply.requestedWeek !== null && (!integer(state.resupply.requestedWeek, firstConsumptionWeek, s.week) || !state.guidanceKnown || !acquisitionStage || state.preparedWeek !== null || !exhaustedSupply(state) || state.bottles.some(b => b.consumedWeek! > state.resupply.requestedWeek!))) return false;
+  if (state.resupply.requestedWeek !== null && (!integer(state.resupply.requestedWeek, firstConsumptionWeek, s.week) || !state.guidanceKnown || !acquisitionStage || state.preparedWeek !== null || !(state.resupply.recovery ? originalSupplyFailed(state) : exhaustedSupply(state)))) return false;
+  if (state.resupply.recovery) {
+    const pending = state.resupply.recovery, source = recoverySource(state, pending.sourceBottleId);
+    if (!source || pending.requestedWeek !== state.resupply.requestedWeek || pending.originalBottleId !== source.originalBottleId || pending.characteristicId !== source.characteristicId || pending.sourceReceiptRevision !== source.receipt.revision || pending.siteId !== MISFORTUNE_KNIGHT_RECOVERY_SITE_ID || pending.custodian !== MISFORTUNE_KNIGHT_GUIDE || source.bottle.consumedWeek! > pending.requestedWeek) return false;
+  } else if (state.resupply.requestedWeek !== null && state.bottles.some(b => b.consumedWeek! > state.resupply.requestedWeek!)) return false;
   if (successes !== (promoted ? 1 : 0) || !validateMisfortuneKnightAcquisitionJournal(s) || !validateMisfortuneKnightJournalContinuity(s) || !validateMisfortuneKnightLife(s) || !validateMisfortuneKnightEncounter(s)) return false;
   if (promoted) {
     const acting = Object.values(state.life.cases).filter(c => c.status === 'RESOLVED').length * 25 + (state.life.reflected ? 25 : 0);

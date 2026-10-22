@@ -8,6 +8,8 @@ import { applySliceIntent, projectSliceState, validateSlicePayload } from '../..
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { validateMercurySnakeSource } from '../../src/domain/mercury-snake/index.js';
+import { MERCURY_SNAKE_CURRENT_CONSUMPTION_RISK, MERCURY_SNAKE_FORMULA_STATUS, MERCURY_SNAKE_RECOVERY_SCHEMA_VERSION,
+  mercurySnakeConsumptionRisk, mercurySnakeSourceLabel } from '../../src/domain/mercury-snake/content.js';
 import { MERCURY_SNAKE_SOURCE_KEYS, MERCURY_SNAKE_ABILITY_IDS } from '../../src/domain/mercury-snake/types.js';
 import { MERCURY_SNAKE_CASE_IDS, getMercurySnakeCurrentSite, mercurySnakeLifeMasteryGains, validateMercurySnakeCurrentSite } from '../../src/domain/mercury-snake/life.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
@@ -59,6 +61,18 @@ export function currentCapture(value: unknown): SliceState {
   expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
   return state;
 }
+/** Current command replay says the new recovery sentence. Migration still keeps
+ * every archived record verbatim; only this exact frozen guidance is projected. */
+export function mercurySnakeReplayExpectation(state: SliceState): SliceState {
+  if (state.schemaVersion < MERCURY_SNAKE_RECOVERY_SCHEMA_VERSION) return state;
+  const prefix = `花1行动、500便士。${mercurySnakeSourceLabel()}说明当前渠道记录。${MERCURY_SNAKE_FORMULA_STATUS}`;
+  const oldText = prefix + mercurySnakeConsumptionRisk(), text = prefix + MERCURY_SNAKE_CURRENT_CONSUMPTION_RISK;
+  const matches = (row: SliceState['lastResult']) => row?.id === 'record-705-1131' && row.week === 177 &&
+    row.title === '听取水银之蛇独立成品与专业准备指导' && row.text === oldText;
+  if (!state.chronicle.some(matches)) return state;
+  return { ...state, chronicle: state.chronicle.map(row => matches(row) ? { ...row, text } : row),
+    lastResult: matches(state.lastResult) ? { ...state.lastResult!, text } : state.lastResult };
+}
 export function originalLivingPrefix(): SliceState { return currentCapture(sourceEntry<unknown>('final')); }
 export function capturedState(key: 'initial' | 'prefixFinal' | 'beforeLast' | 'final'): SliceState {
   observedCapture(); return currentCapture(naturalEntry<unknown>(key));
@@ -72,8 +86,8 @@ export function namedBoundary(name: string) {
   const filename = captureMetadata().boundaries[name];
   if (!filename) throw new Error(`No actual Mercury Snake boundary: ${name}`);
   const path = capturePath(filename);
-  return { path, count: readObjectEntry<number>(path, 'commandCount'), before: currentCapture(readObjectEntry<unknown>(path, 'beforeLast')),
-    intent: readObjectEntry<SliceIntent>(path, 'lastIntent'), final: currentCapture(readObjectEntry<unknown>(path, 'final')) };
+  return { path, count: readObjectEntry<number>(path, 'commandCount'), before: mercurySnakeReplayExpectation(currentCapture(readObjectEntry<unknown>(path, 'beforeLast'))),
+    intent: readObjectEntry<SliceIntent>(path, 'lastIntent'), final: mercurySnakeReplayExpectation(currentCapture(readObjectEntry<unknown>(path, 'final'))) };
 }
 export function assertPublicCaptureControl(state: SliceState, intent: SliceIntent): void {
   expect(validateSlicePayload(intent), JSON.stringify(intent)).toBe(true);

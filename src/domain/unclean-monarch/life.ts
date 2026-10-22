@@ -1,3 +1,5 @@
+import { publicPryerFields as publicFields, publicPryerDate, publicPryerCheck } from '../sage/life.js';
+import { publicAbyssOriginalSite, publicAbyssOperation, publicUncleanMonarchBudget, publicUncleanMonarchFinance } from './public.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { DeterministicActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
@@ -75,7 +77,7 @@ export interface UncleanMonarchLifeProjection {
   volunteerEffortSpent: number; conditionVersion: number; viewBlocked: boolean; impulse: UncleanMonarchImpulse | null; emotion: UncleanMonarchEmotion | null; pulse: UncleanMonarchPulse | null;
   pieces: UncleanMonarchPiece[]; pending: UncleanMonarchLifeWindow | null; pendingRemainingSeconds: number; currentAttempt: UncleanMonarchAttempt | null;
   cases: { id: UncleanMonarchCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; permission: Record<Permission, Consent>; permissionVersion: number; contactOpen: boolean; returned: boolean; attempts: UncleanMonarchAttempt[] }[];
-  ledger: UncleanMonarchLifeReceipt[]; actions: UncleanMonarchLifeAction[];
+  ledger: UncleanMonarchPublicLifeReceipt[]; actions: UncleanMonarchLifeAction[];
 }
 const BINDING: UncleanMonarchLifeAbilityId = 'abyss.s1.impulse-binding', INTERFERENCE: UncleanMonarchLifeAbilityId = 'abyss.s1.focused-interference';
 const POSITION: Record<UncleanMonarchSite['playerLocation'], number> = { START: 0, A: 4, B: 8, YARD: -4, OUTSIDE: -4 };
@@ -467,6 +469,23 @@ export function uncleanMonarchLifeActions(s: SliceState): UncleanMonarchLifeActi
   if (preferred) preferred.preferredAction = true;
   return out;
 }
+/** Display the actual settled checks and paid costs, never their replay cursor or input snapshot. */
+export function projectUncleanMonarchLifeReceipt(r: UncleanMonarchLifeReceipt) {
+  const c = r.command;
+  const command: UncleanMonarchActivityCommand = c.type === 'REFLECT' ? { type: c.type }
+    : 'method' in c ? publicFields(c, ['type', 'caseId', 'method'])
+    : 'permission' in c ? publicFields(c, ['type', 'caseId', 'permission'])
+    : publicFields(c, ['type', 'caseId']);
+  return {
+    ...publicFields(r, ['week', 'revision', 'checkBase', 'outcome', 'elapsedSeconds']), date: publicPryerDate(r.date), command, check: publicPryerCheck(r.check),
+    before: publicUncleanMonarchBudget(r.before), after: publicUncleanMonarchBudget(r.after), finance: publicUncleanMonarchFinance(r.finance),
+    paid: publicFields(r.paid, ['actions', 'pennies', 'spirituality', 'mind', 'volunteerEffort', 'pieceCharges']),
+    moves: r.moves.map(m => ({ ...publicFields(m, ['actorId', 'from', 'to', 'metres', 'seconds']), itemIds: [...m.itemIds] })),
+    siteBefore: publicAbyssOriginalSite(r.siteBefore), siteAfter: publicAbyssOriginalSite(r.siteAfter),
+    operationBefore: publicAbyssOperation(r.operationBefore), operationAfter: publicAbyssOperation(r.operationAfter),
+  };
+}
+export type UncleanMonarchPublicLifeReceipt = ReturnType<typeof projectUncleanMonarchLifeReceipt>;
 export function projectUncleanMonarchLife(s: SliceState): UncleanMonarchLifeProjection {
   const l = s.uncleanMonarch.life, site = projectedSite(s), actions = uncleanMonarchLifeActions(s), preferred = actions.find(a => a.preferredAction) ?? actions.find(a => a.enabled);
   return { title: '原安静室的有限冲动与情绪实践', story: '继续使用46岁诺拉、罗安和同一张原卡、原铃、原记录。每案只买一件耗材；许可、行走、实际代价和普通退路逐步留存。',
@@ -482,5 +501,5 @@ export function projectUncleanMonarchLife(s: SliceState): UncleanMonarchLifeProj
         ...(a.checkTier ? [`原卡实际核对${TIER_LABELS[a.checkTier]}，基础${a.checkBase}，本次收束加成${a.checkBonus}。`] : []), ...(a.baselinePressure ? [`原事件可见打断基线45，本次压力${a.feltPressure}，该事件已结束。`] : []), ...(a.withdrawn ? ['本案许可已真实撤回，未用窗口不恢复。'] : [])] : [],
       status: r.status, method: r.method, result: r.status === 'CANCELLED' ? '已普通退出，未完成的操作不领取报告成果。' : r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限作用已实际应用并记录。' : '已普通完成；没有未应用的能力奖励。',
       permission: structuredClone(r.permission), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }),
-    ledger: structuredClone(l.journal), actions };
+    ledger: l.journal.map(projectUncleanMonarchLifeReceipt), actions };
 }

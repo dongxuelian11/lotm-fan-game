@@ -4,10 +4,10 @@ import { createReadStream, readFileSync } from 'node:fs';
 import { basename } from 'node:path';
 import { createInterface } from 'node:readline';
 import { stableStringify } from '../../src/domain/canonical.js';
-import { applySliceIntent, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
+import { applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
-import { validateDarkAngelSource } from '../../src/domain/dark-angel/index.js';
+import { validateDarkAngelSource, validateDarkAngelAcquisitionJournal } from '../../src/domain/dark-angel/index.js';
 import { DARK_ANGEL_SOURCE_KEYS, DARK_ANGEL_ABILITY_IDS } from '../../src/domain/dark-angel/types.js';
 import { getDarkAngelCurrentSite, darkAngelLifeMasteryGains } from '../../src/domain/dark-angel/life.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
@@ -86,10 +86,57 @@ export function assertPublicCaptureControl(state: SliceState, intent: SliceInten
     expect(view.combat?.stances.some(stance => stance.id === intent.stance)).toBe(true);
   } else throw new Error(`Unexpected continuation command: ${JSON.stringify(intent)}`);
 }
+/** Only the one paid-guidance text changes when its command is executed now.
+ * The archived bytes, migration result, all costs and random evidence stay exact. */
+export function currentDarkAngelReplayExpectation(archived: SliceState): SliceState {
+  expect([archived.schemaVersion, archived.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
+  const expected = structuredClone(archived), guidance = expected.chronicle[954]!;
+  expect({ id: guidance.id, week: guidance.week, title: guidance.title }).toEqual({
+    id: 'record-624-954', week: 147, title: '听取暗天使独立成品与专业准备指导',
+  });
+  expect(expected.chronicle.filter(row => row.id === guidance.id)).toEqual([guidance]);
+  expect(createHash('sha256').update(guidance.text).digest('hex')).toBe('32aeae916bfc671d81e70b5a41ed24f5fd2a753aba1a8d77389d6b64b9fa443e');
+  const oldText = '全批失败耗尽后，实付1行动与100便士申请独立三瓶，至少跨一真实周领取；每瓶另做五次劳动并付1200便士，或直接支付7200便士。';
+  const newText = '最初三瓶全部失败耗尽后，只能在原服药准备与支持交接处以1行动和120便士调查同一原特性的归属与位置，经保管方本次许可实际核验封存；至少下一真实周以1行动和30便士当面交接。新普通药物与调配服务900便士，或五项新劳动后90便士；当周检查仍另付1行动和180便士。失败残留不会自动回收，旧瓶、原失败与旧成本不改写，不再供应第四份原特性。可另付60便士、8灵性、6精神为所选同瓶准备同场当周支持，0行动，意志临时+13；仍可能失败，换瓶、退出或跨周失效，已付成本不退。';
+  expect(guidance.text.endsWith(oldText)).toBe(true);
+  expect(expected.chronicle.reduce((count, row) => count + row.text.split(oldText).length - 1, 0)).toBe(1);
+  const mirrored = expected.lastResult?.id === guidance.id;
+  if (mirrored) sameCaptureValue(expected.lastResult, guidance);
+  guidance.text = guidance.text.slice(0, -oldText.length) + newText;
+  if (mirrored) expected.lastResult!.text = guidance.text;
+  return expected;
+}
+/** An old independent fourth+ acquisition is validated as recorded history,
+ * never dispatched as a current action or relabeled as recovered material. */
+export function archivedDarkAngelAcquisitionBoundary(name: string) {
+  const save = namedBoundary(name);
+  expect(save.intent.type).toBe('DARK_ANGEL');
+  if (save.intent.type !== 'DARK_ANGEL') throw new Error('Expected an archived Dark Angel acquisition.');
+  const command = save.intent.command;
+  expect(['REQUEST_SUPPLY', 'RECEIVE_SUPPLY'].includes(command.type) ||
+    save.before.darkAngel.bottles.slice(3).some(b => !b.recovery)).toBe(true);
+  assertValidSliceState(save.before); assertValidSliceState(save.final);
+  expect(validateDarkAngelAcquisitionJournal(save.before)).toBe(true);
+  expect(validateDarkAngelAcquisitionJournal(save.final)).toBe(true);
+  const receipt = save.final.darkAngel.acquisitionJournal.at(-1)!;
+  expect(receipt.revision).toBe(save.before.revision);
+  expect(save.final.revision).toBe(save.before.revision + 1);
+  sameCaptureValue({ type: 'DARK_ANGEL', command: receipt.command }, save.intent);
+  sameCaptureValue(save.final.darkAngel.acquisitionJournal.slice(0, -1), save.before.darkAngel.acquisitionJournal);
+  expect([receipt.cursorBefore, receipt.cursorAfter]).toEqual([save.before.random.cursor, save.final.random.cursor]);
+  expect(projectSliceState(save.before).darkAngel.actions.some(action => action.enabled &&
+    stableStringify(action.command) === stableStringify(command))).toBe(false);
+  const before = captureValueHash(save.before);
+  expect(() => applySliceIntent(save.before, save.intent)).toThrow();
+  expect(captureValueHash(save.before)).toBe(before);
+  return save;
+}
 export function replayCaptureBoundary(name: string) {
   const save = namedBoundary(name);
   if (save.count > DARK_ANGEL_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-  sameCaptureValue(applySliceIntent(save.before, save.intent), save.final);
+  const expected = save.intent.type === 'DARK_ANGEL' && save.intent.command.type === 'LEARN_GUIDANCE'
+    ? currentDarkAngelReplayExpectation(save.final) : save.final;
+  sameCaptureValue(applySliceIntent(save.before, save.intent), expected);
   return save;
 }
 export const captureBody = (s: SliceState) => ({ status: s.status, revision: s.revision, week: s.week, date: s.date,

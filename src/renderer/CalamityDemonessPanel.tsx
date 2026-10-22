@@ -119,7 +119,7 @@ export function CalamityDemonessPanel({ value, busy, blocked = false, error = nu
     </dl></section>;
   }
   function siteFacts() {
-    const p = site, source = p.source?.snapshot;
+    const p = site, source = life.historicalScene;
     return <section className="seer-current-case" aria-label="灾难魔女原镜与当前物资"><h3>同两面原镜与实际耗用</h3>
       {source ? <><p>旧馆记录留存：原镜A（{source.mirrorA.id}）{source.mirrorA.intact ? '完好' : '受损'}，原镜B（{source.mirrorB.id}）{source.mirrorB.intact ? '完好' : '受损'}；当时均属{source.vera.name}。这是旧状态留存，下面显示同一原物后来的当前状态。</p>
         <p>旧馆当时经过{source.clockSeconds}秒，本人累计行走{source.playerTravelMetres}米、在{SOURCE_POSITION[source.playerLocation]}；原入口{source.entry.held ? '尚保持' : '已结束'}，原镜B封板{source.shutter.state === 'OPEN' ? '已打开' : '已关闭'}。</p></> : <p>尚未亲自核对原馆舍的两面镜子和原人的既往位置。</p>}
@@ -138,7 +138,7 @@ export function CalamityDemonessPanel({ value, busy, blocked = false, error = nu
     </section>;
   }
   function peopleFacts() {
-    const p = site, a = life.currentAttempt, source = p.source?.snapshot;
+    const p = site, a = life.currentAttempt, source = life.historicalScene;
     return <section aria-label="灾难魔女原人位置与当前许可"><h3>原人位置与当前许可</h3>
       {source && <p>旧记录中的同一{source.vera.name}，{source.vera.age}岁，在{SOURCE_POSITION[source.vera.location]}；同一{source.marcus.name}，{source.marcus.age}岁，在{SOURCE_POSITION[source.marcus.location]}。旧位置只说明当时，进入附廊须本人沿普通旧廊实际走来。</p>}
       {p.introducedWeek === null ? <p>尚无本人的现场行程和本案当面许可。</p> : <><p>本人当前在{POSITION[p.playerLocation]}；本场精力{p.playerEnergy}/100，累计普通步行{p.playerTravelMetres}米。</p>

@@ -278,7 +278,9 @@ describe("repository-owned Fool transactions", () => {
       if (!store) seed(repository);
       const app = store ?? new SliceApplication(repository, "browser", () => "unused", () => now);
       const opens = observed.opens, migrations = observed.migrations;
-      const get = vi.spyOn(repository, "get");
+      // Only this repository exists while the absence spy is active. Observe
+      // the browser prototype so Vitest's restore closure cannot retain its save.
+      const get = vi.spyOn(mode === "browser" ? MemorySliceRepository.prototype : repository, "get");
       // These cases assert opens/current repository behavior, not old-session
       // revision callbacks. Do not let instrumentation retain replaced engines.
       observed.revisions.length = 0;
@@ -325,12 +327,15 @@ describe("repository-owned Fool transactions", () => {
       expect(store.getBootstrap()).toMatchObject({ ok: false, error: { code: "SAVE_UNAVAILABLE" } });
       expect(raw(file)).toBe(encoded);
     }
-    const invalidDate = { state: initial, updatedAt: "invalid-date" };
-    const future = structuredClone(initial); (future as { schemaVersion: number }).schemaVersion++;
-    const content = structuredClone(initial); (content as { contentVersion: string }).contentVersion = "unknown-content";
-    const rng = structuredClone(initial); rng.random.cursor++;
-    const malformed = structuredClone(initial); malformed.cash = -1;
-    for (const candidate of [invalidDate, ...[future, content, rng, malformed].map(state => ({ state, updatedAt: now }))]) {
+    // Keep only one detached malformed history live at a time. These are the
+    // same five failures; the timestamp-only case never mutates the shared save.
+    for (const failure of ["timestamp", "future", "content", "rng", "malformed"] as const) {
+      const candidate: StoredSlice = { state: failure === "timestamp" ? initial : structuredClone(initial),
+        updatedAt: failure === "timestamp" ? "invalid-date" : now };
+      if (failure === "future") (candidate.state as { schemaVersion: number }).schemaVersion++;
+      if (failure === "content") (candidate.state as { contentVersion: string }).contentVersion = "unknown-content";
+      if (failure === "rng") candidate.state.random.cursor++;
+      if (failure === "malformed") candidate.state.cash = -1;
       replace(file, candidate); const badBytes = raw(file);
       expect(store.loadRun(initial.runId)).toMatchObject({ ok: false, error: { code: "SAVE_UNAVAILABLE" } });
       expect(store.getBootstrap()).toMatchObject({ ok: false, error: { code: "SAVE_UNAVAILABLE" } });
@@ -406,7 +411,10 @@ describe("repository-owned Fool transactions", () => {
       expectedRuns.push(summarizeSlice({ state: initial, updatedAt: now }));
       const opens = observed.opens, migrations = observed.migrations;
       observed.revisions.length = 0;
-      const list = vi.spyOn(repository, "list"), get = vi.spyOn(repository, "get"), project = vi.spyOn(repository, "projectFoolRun");
+      // There is one browser repository until these absence spies are restored
+      // below, before the separate empty-bootstrap repository is constructed.
+      const observationTarget = mode === "browser" ? MemorySliceRepository.prototype : repository;
+      const list = vi.spyOn(observationTarget, "list"), get = vi.spyOn(observationTarget, "get"), project = vi.spyOn(observationTarget, "projectFoolRun");
       {
         const view = unwrap(app.getBootstrap());
         expect(view.runs).toEqual(expectedRuns);

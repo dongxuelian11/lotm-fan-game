@@ -317,12 +317,58 @@ export function conquerorCombatConsequence(round: SliceCombatRound): string {
   if (o.playerHealthAfter === 0) text += '本人的原身体真实死亡，本周目终结，不复活。'; else if (o.enemyHealth === 0) text += '罗南原身体真实死亡，唯一原铁杖留地。'; else if (o.enemyStatus === 'SURRENDERED') text += '罗南因实际伤势或精神耗尽自主停止抵抗。';
   return text + ' 本轮实际60秒；未使用的临时屏护到时结束，已花灵性、精神和水不退，原铁杖只自然冷却、不恢复耐久。队员仍在家中。';
 }
+/** Public facts use positive nested allowlists; replay inputs stay private. */
+const publicInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicWard = (w: ConquerorPendingWard) => ({ id: w.id, createdAt: w.createdAt, expiresAt: w.expiresAt, remaining: w.remaining });
+const publicMaterials = (m: ConquerorMaterials) => ({
+  weapon: { id: m.weapon.id, sourceId: m.weapon.sourceId, owner: m.weapon.owner, massKg: m.weapon.massKg, location: m.weapon.location,
+    temperatureC: m.weapon.temperatureC, condition: m.weapon.condition, deformations: m.weapon.deformations, heatingPulses: m.weapon.heatingPulses },
+  water: { id: m.water.id, sourceId: m.water.sourceId, owner: m.water.owner, initialLitres: m.water.initialLitres, remainingLitres: m.water.remainingLitres, uses: m.water.uses },
+});
+const publicScene = (p: ConquerorScene) => ({
+  siteId: p.siteId, playerLocation: p.playerLocation, playerCoordinate: p.playerCoordinate, enemyCoordinate: p.enemyCoordinate,
+  ordinaryExit: p.ordinaryExit, thirdPartiesInArea: p.thirdPartiesInArea, presentMemberIds: [...p.presentMemberIds],
+  observedSourceId: p.observedSourceId, observationWeek: p.observationWeek, clockSeconds: p.clockSeconds,
+  externalSeconds: p.externalSeconds, playerTravelMetres: p.playerTravelMetres,
+});
+const publicCheck = (c: PublicCheckResult | null): PublicCheckResult | null => c ? ({
+  ability: c.ability, baseAbility: c.baseAbility, modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+  effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier,
+}) : null;
+const publicPowerUses = (p: ConquerorCombatBody['powerUses']) => ({ FIRE_JET: p.FIRE_JET, WARD: p.WARD, COOL_WEAPON: p.COOL_WEAPON, MENTAL_PRESSURE: p.MENTAL_PRESSURE });
+const publicWheel = (w: SliceWheelEntry) => ({ id: w.id, label: w.label, weight: w.weight });
+export function projectConquerorAction(a: ConquerorActionEvidence) { return {
+  order: a.order, actor: a.actor, id: a.id, planned: a.planned, selectedAbility: a.selectedAbility, fallbackReason: a.fallbackReason, mode: a.mode, label: a.label,
+  selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure, attackKind: a.attackKind, rawContribution: a.rawContribution, rawReduction: a.rawReduction,
+  paidCost: a.paidCost, mindCost: a.mindCost, physicalFactor: a.physicalFactor, check: publicCheck(a.check), succeeded: a.succeeded,
+  wardBefore: a.wardBefore ? publicWard(a.wardBefore) : null, wardAfter: a.wardAfter ? publicWard(a.wardAfter) : null,
+  countered: [...a.countered], masteryApplied: [...a.masteryApplied], materialsBefore: publicMaterials(a.materialsBefore), materialsAfter: publicMaterials(a.materialsAfter),
+  materialSourceId: a.materialSourceId, heatingDegrees: a.heatingDegrees, coolingLitres: a.coolingLitres,
+  formationCast: a.formationCast, actualMemberIds: [...a.actualMemberIds], weaknessBefore: a.weaknessBefore, weaknessAfter: a.weaknessAfter,
+  atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, travelMetres: a.travelMetres,
+  playerHealthAfter: a.playerHealthAfter, playerMindAfter: a.playerMindAfter, playerSpiritualityAfter: a.playerSpiritualityAfter, enemySpiritualityAfter: a.enemySpiritualityAfter,
+}; }
+export type ConquerorPublicActionEvidence = ReturnType<typeof projectConquerorAction>;
+export function projectConquerorRoundOutcome(o: ConquerorRoundOutcome) { return {
+  enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+  enemyInjuries: o.enemyInjuries.map(publicInjury), enemyRisk: o.enemyRisk, weaponLocation: o.weaponLocation, powerUses: publicPowerUses(o.powerUses),
+  focusedAttempts: o.focusedAttempts, focusedSuccesses: o.focusedSuccesses, wardReady: o.wardReady,
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+  playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, playerSpiritualityAfter: o.playerSpiritualityAfter,
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicInjury), playerRiskAfter: o.playerRiskAfter, materialsAfter: publicMaterials(o.materialsAfter),
+  masteryAfter: Object.fromEntries([...CONQUEROR_INHERITED_SKILL_IDS, FORMATION_MOMENTUM, FOCUSED_FLAME].filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+  rootAfter: publicScene(o.rootAfter), elapsedSeconds: o.elapsedSeconds,
+  playerActions: o.playerActions.map(projectConquerorAction), enemyActions: o.enemyActions.map(projectConquerorAction), expiredWards: o.expiredWards.map(publicWard),
+}; }
+export type ConquerorPublicRoundOutcome = ReturnType<typeof projectConquerorRoundOutcome>;
+
 export function projectConquerorCombat(s: SliceState) {
   const e = s.conqueror.encounter, last = s.combat?.encounterId === 'CONQUEROR_DISPUTE' ? s.combat.lastRound?.conquerorOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.conquerorOutcome : null;
   return { enemyName: isConqueror(s) ? '罗南·黑尔（47岁，独立非凡者）' : '', targetId: e.targetId, enemyHealth: e.enemyHealth, enemyMind: e.enemyMind, enemySpirituality: e.enemySpirituality,
-    weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses }, policy: e.policy, materials: structuredClone(e.materials),
-    lastActionSequence: last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order) : [], countWheel: CONQUEROR_COUNT_WHEEL, enemyCountWheel: CONQUEROR_ENEMY_COUNT_WHEEL,
-    enemyAbilityWheel: CONQUEROR_ENEMY_ABILITY_WHEEL, facts: [
+    weaponLocation: e.weaponLocation, powerUses: publicPowerUses(e.powerUses), policy: e.policy, materials: publicMaterials(e.materials),
+    lastActionSequence: last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(projectConquerorAction) : [],
+    countWheel: CONQUEROR_COUNT_WHEEL.map(publicWheel), enemyCountWheel: CONQUEROR_ENEMY_COUNT_WHEEL.map(publicWheel),
+    enemyAbilityWheel: CONQUEROR_ENEMY_ABILITY_WHEEL.map(publicWheel), facts: [
       '本人四项属性仍按体质35%、感知30%、意志20%、知识15%；双方最多六动作，基础1250、最低125，灵性上限120。',
       '没有实际队友在场。阵势合力及继承团队能力只普通回退，不施放、不支付团队费用，不赠送军队增益。',
       '原铁杖与冷却水来自本次独立对手；热量、耐久、剩余水和落点连续保留，不动生活原铁块或旧人物原物。',

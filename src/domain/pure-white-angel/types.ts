@@ -10,13 +10,36 @@ export type PureWhiteAngelPreparationId = typeof PURE_WHITE_ANGEL_PREPARATION_ID
 export type PureWhiteAngelAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: PureWhiteAngelPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type PureWhiteAngelCommand = PureWhiteAngelAcquisitionCommand | PureWhiteAngelActivityCommand | PureWhiteAngelEncounterCommand;
+/** The vessel may change; the three finite original characteristics do not. */
+export interface PureWhiteAngelRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_GALLERY_ENTRY'; custodian: 'LS2-MARA';
+}
+export interface PureWhiteAngelRecovery extends PureWhiteAngelRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous, named permission and physical inspection. It is never inferred from old consent. */
+export interface PureWhiteAngelRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_GALLERY_ENTRY'; originals: PureWhiteAngelOriginals;
+  permission: { personId: 'LS2-MARA'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT'; custodyAfter: 'FAILED_REMNANT' | 'SUPPLIER';
+}
+export interface PureWhiteAngelOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface PureWhiteAngelOriginalCharacteristics {
+  characteristics: PureWhiteAngelOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface PureWhiteAngelBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: PureWhiteAngelRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface PureWhiteAngelAcquisitionBudget {
@@ -29,6 +52,7 @@ export interface PureWhiteAngelAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'sun'; lightSeekerPromotionWeek: number; bardPromotionWeek: number };
   before: PureWhiteAngelAcquisitionBudget; after: PureWhiteAngelAcquisitionBudget;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: PureWhiteAngelRecoverySite;
 }
 export const PURE_WHITE_ANGEL_SOURCE_KEYS = ['bard', 'lightprayer', 'sunpriest', 'notary', 'priestOfLight', 'unshadowed', 'justiceMentor', 'lightSeeker'] as const;
 export type PureWhiteAngelSourceHistory = Pick<SliceState, typeof PURE_WHITE_ANGEL_SOURCE_KEYS[number]>;
@@ -41,7 +65,7 @@ export interface PureWhiteAngelSourceScene {
 }
 export interface PureWhiteAngelState {
   guidanceKnown: boolean; bottles: PureWhiteAngelBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: PureWhiteAngelRecoveryRequest };
   promotionWeek: number | null; lightSeekerActingAtPromotion: number | null;
   preparations: { taskId: PureWhiteAngelPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: PureWhiteAngelAcquisitionEvent[];

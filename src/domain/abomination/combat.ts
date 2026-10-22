@@ -1,3 +1,6 @@
+import { publicPryerFields as publicFields, publicPryerInjury } from '../sage/life.js';
+import { publicAbominationBody, publicAbominationForceReceipt, publicAbominationMastery, publicAbominationPiece, publicAbominationPlate, publicAbominationWindow, publicAncientEvilOperation, publicChainedOriginalSite } from './public.js';
+import { publicAncientEvilBlock } from '../ancient-evil/public.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -356,15 +359,27 @@ export function abominationCombatConsequence(round: SliceCombatRound): string {
   if (o.playerHealthAfter === 0) text += '你已死亡，同一身体不能因形态复原而复活。'; else if (o.enemyStatus === 'DEAD') text += '罗德里克已死亡，原身体与原杖留在院落。'; else if (o.enemyStatus === 'SURRENDERED') text += '罗德里克因实际重伤停止抵抗并将原杖放在脚边。';
   return `${text} 本轮真实经过${o.elapsedSeconds}秒，包含${o.hesitationSeconds - o.source.body.hesitationSeconds}秒已执行迟疑；没有取消敌人原行动或费用。原杖${o.weaponLocation === 'HAND' ? '仍由同一主人持握' : '留在原地'}，当前${o.enemyForm === 'RABBIT' ? '兔形仍按真实期限保留' : '人形'}。同一辅助片余${o.piece!.charges}/3、磨损${o.piece!.wear}；原刻片余${o.plates.filter(p => p.status === 'HELD').length}/3。旧莱娜死亡、卡尔德投降及旧三木块耗尽原样保留。`;
 }
+export function projectAbominationAction(a: AbominationActionEvidence) { return {
+  ...publicFields(a, ['order', 'actor', 'id', 'planned', 'mode', 'label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'attackKind', 'paidCost', 'mindCost', 'physicalFactor', 'checkChance', 'resistanceChance', 'attempted', 'succeeded', 'resisted', 'atSeconds', 'elapsedSeconds', 'hesitationSeconds', 'travelMetres', 'blockId', 'enemyFormBefore', 'enemyFormAfter', 'weaponBefore', 'weaponAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'enemySpiritualityAfter', 'pieceChargePaid', 'pieceWearPaid', 'conditionVersion']),
+  rolls: [...a.rolls], masteryApplied: [...a.masteryApplied], windowGranted: a.windowGranted ? publicAbominationWindow(a.windowGranted) : null,
+  windowsApplied: a.windowsApplied.map(w => publicFields(w, ['kind', 'round', 'order', 'amount'])), windowsCancelled: a.windowsCancelled.map(publicAbominationWindow), receipt: a.receipt ? publicAbominationForceReceipt(a.receipt) : null,
+}; }
+export function projectAbominationRoundOutcome(o: AbominationRoundOutcome) { return {
+  ...publicAbominationBody(o), ...publicFields(o, ['targetId', 'round', 'stance', 'continuing', 'cursePolicy', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'playerRiskAfter', 'elapsedSeconds']),
+  madmanBurst: publicFields(o.madmanBurst, ['policy', 'triggered', 'mentalCost', 'spiritualCost']), playerInjuriesAfter: o.playerInjuriesAfter.map(publicPryerInjury),
+  siteAfter: publicChainedOriginalSite(o.siteAfter), masteryAfter: publicAbominationMastery(o.masteryAfter), operationAfter: publicAncientEvilOperation(o.operationAfter), expiredWindows: o.expiredWindows.map(publicAbominationWindow),
+  playerActions: o.playerActions.map(projectAbominationAction), enemyActions: o.enemyActions.map(projectAbominationAction),
+}; }
+export type AbominationPublicRoundOutcome = ReturnType<typeof projectAbominationRoundOutcome>;
 export function projectAbominationCombat(s: SliceState) {
   const e = s.abomination.encounter, visible = isAbomination(s), last = s.combat?.encounterId === 'ABOMINATION_DISPUTE' ? s.combat.lastRound?.abominationOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.abominationOutcome : null;
   return { enemyName: visible ? '罗德里克·霍尔（45岁）' : '', targetId: visible ? e.targetId : null, playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
-    enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null, powerUses: visible ? { ...e.powerUses } : null,
-    site: visible ? structuredClone(e.currentSite) : null, piece: visible ? structuredClone(e.piece) : null, plates: visible ? structuredClone(e.plates) : [], policy: e.policy,
-    enemyForm: e.enemyForm, enemyFormUntilSeconds: e.enemyFormUntilSeconds, weaponLocation: e.weaponLocation, form: e.form, link: e.link, blocks: structuredClone(e.blocks),
-    barrier: structuredClone(e.barrier), cry: structuredClone(e.cry), hesitationSeconds: e.hesitationSeconds, conditionVersion: e.conditionVersion,
-    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0, source: visible ? currentAbominationCombatSource(s) : null,
-    lastActionSequence: visible && last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(a => structuredClone(a)) : [],
+    enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null, powerUses: visible ? publicFields(e.powerUses, ['MIND_SPIKE', 'WARD', 'CALM']) : null,
+    site: visible && e.currentSite ? publicChainedOriginalSite(e.currentSite) : null, piece: visible && e.piece ? publicAbominationPiece(e.piece) : null, plates: visible ? e.plates.map(publicAbominationPlate) : [], policy: e.policy,
+    enemyForm: e.enemyForm, enemyFormUntilSeconds: e.enemyFormUntilSeconds, weaponLocation: e.weaponLocation, form: e.form, link: e.link, blocks: e.blocks.map(publicAncientEvilBlock),
+    barrier: e.barrier ? publicAbominationWindow(e.barrier) : null, cry: e.cry ? publicAbominationWindow(e.cry) : null, hesitationSeconds: e.hesitationSeconds, conditionVersion: e.conditionVersion,
+    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0,
+    lastActionSequence: visible && last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(projectAbominationAction) : [],
     countWheel: ABOMINATION_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: ABOMINATION_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: ABOMINATION_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
     summary: visible ? '体50%感20%意15%知15%；基础1500、核心上限300、状态最多减40%、底150。双方1至6动作10/15/25/25/15/10；旧六槽30/15/20/20/10/5，新两槽各20。每动作5秒，每轮60秒另加实际3秒迟疑；继续战斗仅本人回12灵性。束障只减下一可见精神攻势30，震声令下一精神动作实际迟疑3秒且贡献减30，原动作与费用保留。新片仅3次，实际应用才消耗；移动、遮挡、抵抗、真实到期都有效。身体与精神后果按实际攻势区分。' : '' };
 }

@@ -25,7 +25,7 @@ function cases(): DevilProjection["cases"] {
     result: null, contactOpen: "尚未开始本次接触", closes: 0 }));
 }
 const practice: NonNullable<DevilProjection["practice"]> = {
-  emotion: "当次情绪尚未公开观察，不能读取隐藏思想。", seedState: "NONE", seed: "没有本次原种子。",
+  emotion: "当次情绪尚未公开观察，不能读取隐藏思想。", seedState: "NONE", seedSummary: "没有本次原种子。",
   consent: "米蕾尔尚未作出当次同意。", program: "同一DV4-PROGRAM-1仍在米蕾尔自己手中。",
   invitation: "同一DV4-INVITATION-1仍在原导师处。", route: "本人在GUIDE原位置，实际走动0米。",
   account: "原导师自己的DV4-NOTE-1尚未填写；旧DA5-LEDGER-1不改。", history: [],
@@ -155,7 +155,7 @@ describe("Devil paid seed, consent and original ordinary records", () => {
       expect(screen.getByRole("region", { name: entry.title }).textContent).toContain(entry.story);
     }
     const facts = screen.getByRole("region", { name: "魔鬼本次原物与实际情绪" });
-    for (const text of [practice.emotion, practice.seed, practice.consent, practice.program, practice.invitation, practice.route, practice.account]) expect(facts.textContent).toContain(text);
+    for (const text of [practice.emotion, practice.seedSummary, practice.consent, practice.program, practice.invitation, practice.route, practice.account]) expect(facts.textContent).toContain(text);
     expect(screen.getByText("能力与使用范围").closest("details")?.open).toBe(false);
     expect(screen.getByText("已观察的事实与本次方法边界").closest("details")?.open).toBe(false);
     expect(screen.getByText("欲望聚焦（原创G） · 掌握 0")).toBeTruthy();
@@ -176,7 +176,7 @@ describe("Devil paid seed, consent and original ordinary records", () => {
     const catalyze = action({ type: "CATALYZE", caseId: "stage-decision" }, "继续催化同一原种子", true, "0行动 · 3灵性 · 知识18");
     const close = action({ type: "CLOSE", caseId: "stage-decision" }, "结束并等待原窗口到期");
     const value = trained({ insideCase: true, cases: scene("stage-decision", "PREPARED"), actions: [catalyze, close],
-      practice: { ...practice, seedState: "PLANTED", seed: "同一原种子已经实付4灵性埋下，尚未催化。", emotion: "原米蕾尔对自己选择的朗读公开兴奋。", consent: "只同意这一次有限试验。" } });
+      practice: { ...practice, seedState: "PLANTED", seedSummary: "同一原种子已经实付4灵性埋下，尚未催化。", emotion: "原米蕾尔对自己选择的朗读公开兴奋。", consent: "只同意这一次有限试验。" } });
     const before = structuredClone(value), { onCommand } = panel(value);
     const pending = screen.getByRole("region", { name: "已付费原种子仍待催化" });
     for (const text of ["尚未结算催化、报告或掌握奖励", "3灵性", "无论成败", "撤回同意", "60秒"]) expect(pending.textContent).toContain(text);
@@ -201,7 +201,7 @@ describe("Devil paid seed, consent and original ordinary records", () => {
     const value = trained({ insideCase: true, cases: scene("stage-decision", "PREPARED"), actions: [withdraw, close], practice: { ...practice, seedState: "PLANTED" } });
     const { onCommand, rerender } = panel(value); fireEvent.click(button(withdraw.label)); expect(onCommand).toHaveBeenCalledExactlyOnceWith(withdraw.command);
     expect(screen.getByRole("region", { name: "已付费原种子仍待催化" })).toBeTruthy();
-    rerender(update({ ...value, actions: [close], practice: { ...practice, seedState: "EXPIRED", seed: "因本人实际撤回而失效。", emotion: "本人已实际平静。", consent: "当次同意已明确撤回。" } }, onCommand));
+    rerender(update({ ...value, actions: [close], practice: { ...practice, seedState: "EXPIRED", seedSummary: "因本人实际撤回而失效。", emotion: "本人已实际平静。", consent: "当次同意已明确撤回。" } }, onCommand));
     expect(screen.queryByRole("region", { name: "已付费原种子仍待催化" })).toBeNull();
     expect(screen.getByRole("region", { name: "魔鬼本次原物与实际情绪" }).textContent).toContain("当次同意已明确撤回");
     expect(screen.getByText(practice.program)).toBeTruthy(); expect(button(close.label).disabled).toBe(false);

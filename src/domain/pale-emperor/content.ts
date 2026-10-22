@@ -11,6 +11,17 @@ export const PALE_EMPEROR_PRICES = {
 } as const;
 export const paleEmperorPrices = (era: PaleEmperorSourceEra): PaleEmperorPrices => PALE_EMPEROR_PRICES[era];
 export const paleEmperorSourceLabel = (era: PaleEmperorSourceEra): string => `${FERRYMAN_PROVIDERS[era].name}（${FERRYMAN_PROVIDERS[era].id}）介绍的${era === 'POST_CYCLE' ? '当代' : '原时代'}独立苍白皇帝成品渠道`;
+/** Save schema, not the release number. Old saves retain their exact shapes. */
+export const PALE_EMPEROR_RECOVERY_SCHEMA_VERSION = 214;
+export const PALE_EMPEROR_RECOVERY_PRICES = {
+  ORIGINAL: { investigation: 100, full: 1100, afterLabour: 100 },
+  POST_CYCLE: { investigation: 20, full: 120, afterLabour: 12 },
+} as const;
+/** Separate current adults and physical counters; neither is an old life NPC. */
+export const PALE_EMPEROR_RECOVERY_SITES = {
+  ORIGINAL: { id: 'DE1-S1-ORIGINAL-ROOM', location: 'DE1-S1-ORIGINAL-ROOM:COUNTER', custodianId: 'PE1-ORIGINAL-KEEPER', name: '马丁·格雷', age: 46 },
+  POST_CYCLE: { id: 'DE0-S1-ORIGINAL-ROOM', location: 'DE0-S1-ORIGINAL-ROOM:COUNTER', custodianId: 'PE1-CURRENT-KEEPER', name: '艾达·莫尔', age: 39 },
+} as const;
 export const PALE_EMPEROR_MIN_DEATH_CONSUL_WEEKS = 12;
 export const PALE_EMPEROR_LABOUR_STEPS = 5;
 export const PALE_EMPEROR_BOTTLE_IDS = ['pale-emperor-potion-1', 'pale-emperor-potion-2', 'pale-emperor-potion-3'] as const;
@@ -49,5 +60,5 @@ export const PALE_EMPEROR_INHERITED_ABILITIES = [
 ].map(([id, label, description]) => ({ id: id!, label: label!, description: description! }));
 export function paleEmperorConsumptionRisk(era: PaleEmperorSourceEra): string {
   const p = paleEmperorPrices(era);
-  return `死亡执政官消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。三项专业准备各1行动，再实付1行动与${p.preparation}便士检查本周服药场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与准备均耗尽，专业支持只将本次排异后的健康精神保底到1。成功四属性各+1，17项原掌握不变，两项新掌握从0开始；灵性上限120，当前不补满。姓名、性别、身体与旧伤保留。全批失败耗尽后，实付1行动与${p.resupply}便士申请独立三瓶，至少跨一真实周领取；每瓶另做劳动并付款。`;
+  return `死亡执政官消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。三项专业准备各1行动，再实付1行动与${p.preparation}便士检查本周服药场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与准备均耗尽，专业支持只将本次排异后的健康精神保底到1。成功四属性各+1，17项原掌握不变，两项新掌握从0开始；灵性上限120，当前不补满。姓名、性别、身体与旧伤保留。三份原特性全部真实失败后，只能调查最后失败留下的同一份原物：1行动与${PALE_EMPEROR_RECOVERY_PRICES[era].investigation}便士，至少七天后的真实下一周再花1行动原处交接；本次普通新药另付${PALE_EMPEROR_RECOVERY_PRICES[era].full}便士，或五次新劳务后${PALE_EMPEROR_RECOVERY_PRICES[era].afterLabour}便士。旧费用不退，旧劳动不抵新药；新容器不增加第四份特性。`;
 }

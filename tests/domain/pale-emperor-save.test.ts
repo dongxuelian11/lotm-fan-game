@@ -12,7 +12,7 @@ import { actualPaleEmperorEvidence } from './pale-emperor-capture-evidence.js';
 import { PALE_EMPEROR_ROOT, PALE_EMPEROR_SOURCE, PALE_EMPEROR_SOURCE_SHA, PALE_EMPEROR_PREFIX_COUNT,
   PALE_EMPEROR_PREFIX_SHA, PALE_EMPEROR_RAW_SOURCE_STATE_SHA, boundaryIndex, uniqueBoundaryFiles, captureCommands,
   capturePath, captureFileHash, captureValueHash, insertionOrderHash, captureJsonLines, captureBody, boundaryFile,
-  capturedState, assertPublicCaptureControl, sameCaptureValue as same, snapshotIndex, CAPTURE_BOUNDARY_TIMEOUT } from './pale-emperor-capture-helper.js';
+  capturedState, assertPublicCaptureControl, sameCaptureValue as same, snapshotIndex, CAPTURE_BOUNDARY_TIMEOUT, expectedPaleEmperorBoundaryReplay } from './pale-emperor-capture-helper.js';
 
 const expected = actualPaleEmperorEvidence();
 const integrity = JSON.parse(readFileSync(`${PALE_EMPEROR_ROOT}/capture-integrity.json`, 'utf8')) as {
@@ -97,16 +97,18 @@ describe('Pale Emperor exhaustive immutable capture and representative SQLite re
   }, Math.max(180_000, expected.uniqueBoundaryFiles * 3_000));
 
   // The independent pale-emperor-save.mjs run owns the complete224 real SQLite
-  // transactions. CI keeps ten observed representatives plus exhaustive hashes,
-  // validity, sequence continuity and public-intent checks above. No second
+  // transactions. CI keeps ten observed representatives plus the one current
+  // guidance-wording replay, exhaustive hashes, validity, sequence continuity
+  // and public-intent checks above. No second
   // all224 database suite is hidden here, and no player death is manufactured.
-  it.each(expected.sqliteRepresentatives)('%s survives actual rollback, reopen, commit and idempotent retry', async name => {
+  it.each([...expected.sqliteRepresentatives, 'actual120p-guidance-frozen-eight-stages-and-long-history'])('%s survives actual rollback, reopen, commit and idempotent retry', async name => {
     const filename = boundaryIndex[name]; if (!filename) throw new Error(`Missing actual SQLite representative: ${name}`);
     const path = capturePath(filename), sourceHash = await captureFileHash(path); expect(sourceHash).toBe(integrity.files[filename]);
     const save = boundaryFile(filename); same(save.intent, captureCommands[save.count - 1]);
     expect(save.count).toBeGreaterThanOrEqual(PALE_EMPEROR_PREFIX_COUNT); expect(save.count).toBeLessThanOrEqual(captureCommands.length);
     expect(save.before.status).toBe('ACTIVE'); expect(save.final.revision).toBe(save.before.revision + 1); expect(save.before.runId).toBe(save.final.runId);
     assertValidSliceState(save.before); assertValidSliceState(save.final); if (save.count > PALE_EMPEROR_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
+    const replayFinal = expectedPaleEmperorBoundaryReplay(save);
     const directory = mkdtempSync(join(tmpdir(), 'lotm-pale-emperor-actual-save-')), database = join(directory, 'boundary.sqlite');
     let app: SqliteSliceStore | undefined, fail = false;
     const envelope = { intentId: `pale-emperor-195:${name}`, runId: save.before.runId, expectedRevision: save.before.revision, payload: save.intent };
@@ -119,11 +121,11 @@ describe('Pale Emperor exhaustive immutable capture and representative SQLite re
       app.close(); app = undefined; app = new SqliteSliceStore(database);
       same(app.repository.get(save.before.runId)!.state, save.before); expect(app.repository.activeRun()).toBe(save.before.runId); expect(app.repository.receipt(envelope.intentId)).toBeNull();
       const committed = app.submitIntent(envelope); expect(committed.ok).toBe(true); if (!committed.ok) throw new Error(JSON.stringify(committed.error));
-      expect(committed.value.replayed).toBe(false); same(committed.value.state, projectSliceState(save.final));
-      same(app.repository.get(save.final.runId)!.state, save.final); same(app.repository.receipt(envelope.intentId)!.receipt, committed.value);
-      app.close(); app = undefined; app = new SqliteSliceStore(database); same(app.repository.get(save.final.runId)!.state, save.final);
+      expect(committed.value.replayed).toBe(false); same(committed.value.state, projectSliceState(replayFinal));
+      same(app.repository.get(save.final.runId)!.state, replayFinal); same(app.repository.receipt(envelope.intentId)!.receipt, committed.value);
+      app.close(); app = undefined; app = new SqliteSliceStore(database); same(app.repository.get(save.final.runId)!.state, replayFinal);
       const retried = app.submitIntent(envelope); expect(retried.ok).toBe(true); if (!retried.ok) throw new Error(JSON.stringify(retried.error));
-      same(retried.value, { ...committed.value, replayed: true }); same(app.repository.get(save.final.runId)!.state, save.final);
+      same(retried.value, { ...committed.value, replayed: true }); same(app.repository.get(save.final.runId)!.state, replayFinal);
       // Sealing is for actual player death. The observed Alden death leaves the
       // same injured player alive and therefore must not create this sidecar.
       if (save.final.status === 'DEAD') {

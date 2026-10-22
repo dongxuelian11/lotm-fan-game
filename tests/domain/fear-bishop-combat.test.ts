@@ -178,7 +178,7 @@ describe('Fear Bishop finite shared combat and the one inherited original Leaf',
   });
   it('keeps the independent enemy and combat summary hidden before actual S3', () => {
     const s = fixture(); s.progression.sequence = 4; const view = projectFearBishopCombat(s);
-    expect(view.source).toBeNull(); expect(view.targetId).toBeNull(); expect(view.enemySpirituality).toBeNull();
+    expect(view).not.toHaveProperty('source'); expect(view.targetId).toBeNull(); expect(view.enemySpirituality).toBeNull();
     expect(JSON.stringify(view)).not.toMatch(/HARLAN|哈兰|FB3-HARLAN-CLUB/);
   });
 });

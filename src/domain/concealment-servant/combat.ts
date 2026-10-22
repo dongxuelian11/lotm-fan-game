@@ -6,7 +6,7 @@ import type { SliceCombatRound, SliceInjury, SliceStance, SliceState, SliceWheel
 import type { SpiritWarlockCompanion } from '../spirit-warlock/types.js';
 import { hasNightwatcherOriginalSpirit } from '../nightwatcher/combat.js';
 import { CONCEALMENT_SERVANT_TARGET_ID, CONCEALMENT_SERVANT_POWERS, CONCEALMENT_SERVANT_POWER_IDS, hasConcealmentServantDisputeOpponent,
-  type ConcealmentServantEnemyIntent, type ConcealmentServantPowerId, type ConcealmentServantAbilityUses } from './encounter.js';
+  type ConcealmentServantEnemyIntent, type ConcealmentServantPowerId, type ConcealmentServantAbilityUses, type ConcealmentServantEncounterRoom } from './encounter.js';
 
 /** Original G2 bounded slice. Same Darkness35/25/25/15 core and shared consequences.
  * A hidden interior is not a removed body: both ordinary bodies can reach the known open threshold. */
@@ -257,22 +257,143 @@ export function finishConcealmentServantCombatRound(s: SliceState, r: Concealmen
   return structuredClone(r.outcome);
 }
 export function concealmentServantRoundOutcome(r: ConcealmentServantRoundContext): ConcealmentServantRoundOutcome { if (!r.outcome) throw new Error('先结束原隐秘回合。'); return structuredClone(r.outcome); }
-export function projectConcealmentServantCombat(s: SliceState) {
+/** Positive field lists preserve settled facts without replay sources or RNG positions. */
+function projectConcealmentServantCompanion(companion: SpiritWarlockCompanion) {
+  return {
+    source: companion.source, status: companion.status, acquiredWeek: companion.acquiredWeek, invitedWeek: companion.invitedWeek,
+    releases: companion.releases, deployments: companion.deployments, recalls: companion.recalls,
+  };
+}
+function projectConcealmentServantPowerUses(powerUses: Record<ConcealmentServantPowerId, number>) {
+  return { DARK_BOLT: powerUses.DARK_BOLT, WARD: powerUses.WARD, ANCHOR_LIGHT: powerUses.ANCHOR_LIGHT };
+}
+function projectConcealmentServantAbilityUses(abilityUses: ConcealmentServantAbilityUses) {
+  return {
+    BOUNDED_CONCEALMENT: {
+      attempts: abilityUses.BOUNDED_CONCEALMENT.attempts, successes: abilityUses.BOUNDED_CONCEALMENT.successes,
+      effects: abilityUses.BOUNDED_CONCEALMENT.effects,
+    },
+    TRACE_VEIL: { attempts: abilityUses.TRACE_VEIL.attempts, successes: abilityUses.TRACE_VEIL.successes, effects: abilityUses.TRACE_VEIL.effects },
+  };
+}
+function projectConcealmentServantWindow(window: ConcealmentServantWindow | null) {
+  return window === null ? null : { openedOrder: window.openedOrder, expiresAt: window.expiresAt };
+}
+function projectConcealmentServantWindows(windows: ConcealmentServantWindows) {
+  return {
+    concealment: projectConcealmentServantWindow(windows.concealment), veil: projectConcealmentServantWindow(windows.veil),
+    anchorReady: windows.anchorReady, anchorUsed: windows.anchorUsed,
+  };
+}
+function projectConcealmentServantInjury(injury: SliceInjury) {
+  return { id: injury.id, severity: injury.severity, acquiredRevision: injury.acquiredRevision, treatedRevision: injury.treatedRevision };
+}
+function projectConcealmentServantRoom(room: ConcealmentServantEncounterRoom) {
+  return {
+    id: room.id, widthMetres: room.widthMetres, doorId: room.doorId, doorStatus: room.doorStatus,
+    traceId: room.traceId, tracePresent: room.tracePresent,
+  };
+}
+function projectConcealmentServantWheelEntry(entry: SliceWheelEntry) {
+  return { id: entry.id, label: entry.label, weight: entry.weight };
+}
+interface PublicConcealmentServantActionEvidence {
+  label: string; selfGain: number; enemyReduction: number; threatens: boolean; mentalPressure: false;
+  order: number; atSeconds: number; paidCost: number; physicalFactor: number; rolls: number[];
+  playerSpiritualityAfter: number; enemySpiritualityAfter: number;
+  windowsBefore: ReturnType<typeof projectConcealmentServantWindows>; windowsAfter: ReturnType<typeof projectConcealmentServantWindows>;
+}
+export interface PublicConcealmentServantPlayerAction extends PublicConcealmentServantActionEvidence {
+  id: ConcealmentServantMoveId; spiritOperation: 'NONE' | 'DEPLOY' | 'ASSIST'; resisted: boolean; attempted: boolean; succeeded: boolean;
+}
+export interface PublicConcealmentServantEnemyAction extends PublicConcealmentServantActionEvidence {
+  planned: ConcealmentServantEnemyIntent; actual: ConcealmentServantEnemyIntent; anchorGranted: boolean;
+  interrupted: ('BOUNDED_CONCEALMENT' | 'TRACE_VEIL')[]; applied: ('BOUNDED_CONCEALMENT' | 'TRACE_VEIL')[];
+}
+export function projectConcealmentServantPlayerAction(action: ConcealmentServantPlayerAction): PublicConcealmentServantPlayerAction {
+  return {
+    label: action.label, selfGain: action.selfGain, enemyReduction: action.enemyReduction,
+    threatens: action.threatens, mentalPressure: action.mentalPressure, order: action.order, atSeconds: action.atSeconds,
+    paidCost: action.paidCost, physicalFactor: action.physicalFactor, rolls: action.rolls.map(roll => roll),
+    playerSpiritualityAfter: action.playerSpiritualityAfter, enemySpiritualityAfter: action.enemySpiritualityAfter,
+    windowsBefore: projectConcealmentServantWindows(action.windowsBefore), windowsAfter: projectConcealmentServantWindows(action.windowsAfter),
+    id: action.id, spiritOperation: action.spiritOperation, resisted: action.resisted, attempted: action.attempted, succeeded: action.succeeded,
+  };
+}
+export function projectConcealmentServantEnemyAction(action: ConcealmentServantEnemyAction): PublicConcealmentServantEnemyAction {
+  return {
+    label: action.label, selfGain: action.selfGain, enemyReduction: action.enemyReduction,
+    threatens: action.threatens, mentalPressure: action.mentalPressure, order: action.order, atSeconds: action.atSeconds,
+    paidCost: action.paidCost, physicalFactor: action.physicalFactor, rolls: action.rolls.map(roll => roll),
+    playerSpiritualityAfter: action.playerSpiritualityAfter, enemySpiritualityAfter: action.enemySpiritualityAfter,
+    windowsBefore: projectConcealmentServantWindows(action.windowsBefore), windowsAfter: projectConcealmentServantWindows(action.windowsAfter),
+    planned: action.planned, actual: action.actual, anchorGranted: action.anchorGranted,
+    interrupted: action.interrupted.map(id => id), applied: action.applied.map(id => id),
+  };
+}
+function projectConcealmentServantWindowSequenceEntry(action: Pick<ActionEvidence, 'order' | 'atSeconds' | 'label' | 'windowsBefore' | 'windowsAfter'>) {
+  return {
+    order: action.order, atSeconds: action.atSeconds, label: action.label,
+    windowsBefore: projectConcealmentServantWindows(action.windowsBefore), windowsAfter: projectConcealmentServantWindows(action.windowsAfter),
+  };
+}
+export interface PublicConcealmentServantRoundOutcome {
+  targetId: typeof CONCEALMENT_SERVANT_TARGET_ID; round: number; stance: SliceStance; continuing: boolean;
+  enemyHealth: number; enemyMind: number; enemySpirituality: number; enemyStatus: 'RESISTING' | 'SURRENDERED' | 'DEAD';
+  playerSpiritualityBefore: number; playerSpiritualityAfter: number; playerHealthAfter: number; playerMindAfter: number; enemySpiritualityBefore: number;
+  playerInjuriesAfter: ReturnType<typeof projectConcealmentServantInjury>[]; enemyInjuriesAfter: ReturnType<typeof projectConcealmentServantInjury>[];
+  playerRiskAfter: number; enemyRiskAfter: number;
+  powerUses: ReturnType<typeof projectConcealmentServantPowerUses>; abilityUses: ReturnType<typeof projectConcealmentServantAbilityUses>;
+  companionAfter: ReturnType<typeof projectConcealmentServantCompanion>; recalled: boolean;
+  windowsBeforeClose: ReturnType<typeof projectConcealmentServantWindows>; windowsAfter: ReturnType<typeof projectConcealmentServantWindows>;
+  elapsedSeconds: 60 | 62; playerLocationAfter: 'DOORSTEP' | 'OUTSIDE'; playerTravelMetresAfter: number; clockSecondsAfter: number;
+  playerActions: PublicConcealmentServantPlayerAction[]; enemyActions: PublicConcealmentServantEnemyAction[];
+}
+export function projectConcealmentServantRoundOutcome(outcome: ConcealmentServantRoundOutcome): PublicConcealmentServantRoundOutcome {
+  return {
+    targetId: outcome.targetId, round: outcome.round, stance: outcome.stance, continuing: outcome.continuing,
+    enemyHealth: outcome.enemyHealth, enemyMind: outcome.enemyMind, enemySpirituality: outcome.enemySpirituality, enemyStatus: outcome.enemyStatus,
+    playerSpiritualityBefore: outcome.playerSpiritualityBefore, playerSpiritualityAfter: outcome.playerSpiritualityAfter,
+    playerHealthAfter: outcome.playerHealthAfter, playerMindAfter: outcome.playerMindAfter, enemySpiritualityBefore: outcome.enemySpiritualityBefore,
+    playerInjuriesAfter: outcome.playerInjuriesAfter.map(projectConcealmentServantInjury), enemyInjuriesAfter: outcome.enemyInjuriesAfter.map(projectConcealmentServantInjury),
+    playerRiskAfter: outcome.playerRiskAfter, enemyRiskAfter: outcome.enemyRiskAfter,
+    powerUses: projectConcealmentServantPowerUses(outcome.powerUses), abilityUses: projectConcealmentServantAbilityUses(outcome.abilityUses),
+    companionAfter: projectConcealmentServantCompanion(outcome.companionAfter), recalled: outcome.recalled,
+    windowsBeforeClose: projectConcealmentServantWindows(outcome.windowsBeforeClose), windowsAfter: projectConcealmentServantWindows(outcome.windowsAfter),
+    elapsedSeconds: outcome.elapsedSeconds, playerLocationAfter: outcome.playerLocationAfter,
+    playerTravelMetresAfter: outcome.playerTravelMetresAfter, clockSecondsAfter: outcome.clockSecondsAfter,
+    playerActions: outcome.playerActions.map(projectConcealmentServantPlayerAction), enemyActions: outcome.enemyActions.map(projectConcealmentServantEnemyAction),
+  };
+}
+export interface PublicConcealmentServantCombatProjection {
+  enemyName: string; targetId: typeof CONCEALMENT_SERVANT_TARGET_ID | null;
+  playerHealth: number; playerMind: number; playerSpirituality: number; maxSpirituality: number;
+  enemyHealth: number | null; enemyMind: number | null; enemySpirituality: number | null;
+  powerUses: ReturnType<typeof projectConcealmentServantPowerUses> | null; abilityUses: ReturnType<typeof projectConcealmentServantAbilityUses> | null;
+  companion: ReturnType<typeof projectConcealmentServantCompanion> | null; room: ReturnType<typeof projectConcealmentServantRoom> | null;
+  playerLocation: 'DOORSTEP' | 'OUTSIDE'; playerTravelMetres: number; clockSeconds: number;
+  windows: ReturnType<typeof projectConcealmentServantWindows>; concealmentRemainingSeconds: number; veilRemainingSeconds: number; windowStatus: string;
+  lastWindowSequence: ReturnType<typeof projectConcealmentServantWindowSequenceEntry>[];
+  originalExit: boolean; pursuit: boolean; distanceMetres: number;
+  countWheel: ReturnType<typeof projectConcealmentServantWheelEntry>[]; enemyCountWheel: ReturnType<typeof projectConcealmentServantWheelEntry>[];
+  enemyAbilityWheel: ReturnType<typeof projectConcealmentServantWheelEntry>[]; summary: string;
+}
+export function projectConcealmentServantCombat(s: SliceState): PublicConcealmentServantCombatProjection {
   const e = s.concealmentServant.encounter, visible = isConcealmentServant(s);
   const last = s.combat?.encounterId === 'CONCEALMENT_SERVANT_DISPUTE' ? s.combat.lastRound?.concealmentServantOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.concealmentServantOutcome : null;
   return { enemyName: visible ? '奥斯温（47岁，原创有限G2非凡者）' : '', targetId: visible ? e.targetId : null,
     playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
     enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
-    powerUses: visible ? { ...e.powerUses } : null, abilityUses: visible ? structuredClone(e.abilityUses) : null,
-    companion: visible ? structuredClone(s.spiritWarlock.companion) : null, room: visible ? { ...e.room } : null,
+    powerUses: visible ? projectConcealmentServantPowerUses(e.powerUses) : null, abilityUses: visible ? projectConcealmentServantAbilityUses(e.abilityUses) : null,
+    companion: visible ? projectConcealmentServantCompanion(s.spiritWarlock.companion) : null, room: visible ? projectConcealmentServantRoom(e.room) : null,
     playerLocation: e.playerLocation, playerTravelMetres: e.playerTravelMetres, clockSeconds: e.clockSeconds,
-    windows: emptyWindows(), concealmentRemainingSeconds: 0, veilRemainingSeconds: 0,
+    windows: projectConcealmentServantWindows(emptyWindows()), concealmentRemainingSeconds: 0, veilRemainingSeconds: 0,
     windowStatus: '回合结算边界：本轮有限窗口均已实际收束；下一轮须重新付费。',
-    lastWindowSequence: visible && last ? [...last.playerActions.map(a => ({ order: a.order, atSeconds: a.atSeconds, label: a.label, windowsBefore: a.windowsBefore, windowsAfter: a.windowsAfter })),
-      ...last.enemyActions.map(a => ({ order: a.order, atSeconds: a.atSeconds, label: a.label, windowsBefore: a.windowsBefore, windowsAfter: a.windowsAfter }))].sort((a,b) => a.order-b.order) : [],
-    originalExit: e.room.doorStatus === 'OPEN', pursuit: false, distanceMetres: 2, source: visible ? currentConcealmentServantCombatSource(s) : null,
-    countWheel: CONCEALMENT_SERVANT_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: CONCEALMENT_SERVANT_ENEMY_COUNT_WHEEL.map(x => ({ ...x })),
-    enemyAbilityWheel: CONCEALMENT_SERVANT_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
+    lastWindowSequence: visible && last ? last.playerActions.map(projectConcealmentServantWindowSequenceEntry)
+      .concat(last.enemyActions.map(projectConcealmentServantWindowSequenceEntry)).sort((a,b) => a.order-b.order) : [],
+    originalExit: e.room.doorStatus === 'OPEN', pursuit: false, distanceMetres: 2,
+    countWheel: CONCEALMENT_SERVANT_COUNT_WHEEL.map(projectConcealmentServantWheelEntry), enemyCountWheel: CONCEALMENT_SERVANT_ENEMY_COUNT_WHEEL.map(projectConcealmentServantWheelEntry),
+    enemyAbilityWheel: CONCEALMENT_SERVANT_ENEMY_ABILITY_WHEEL.map(projectConcealmentServantWheelEntry),
     summary: visible ? 'G：黑暗原核心35/25/25/15、1250/底125，S120，仅继续轮恢复12。每实际槽5秒，≤60秒收束；隐秘/遮踪成功开窗不等于应用，后续暗矢实际减35/20才计效果。敌4S锚每轮一次只中断当前或下一窗口；原身体仍在已知可达门口，普通棍击、实际伤勢和50%普通撤离不豁免。原卷叶须真实已取得，2S派出/后槽2S协助/轮末召回。所有限额、费用与场景为原创G。' : '' };
 }
 

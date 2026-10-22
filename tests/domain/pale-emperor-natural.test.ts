@@ -14,7 +14,8 @@ import { PALE_EMPEROR_ROOT, PALE_EMPEROR_SOURCE, PALE_EMPEROR_SOURCE_SHA, PALE_E
   PALE_EMPEROR_PREFIX_SHA, PALE_EMPEROR_PREFIX_COUNT, PALE_EMPEROR_RAW_ROOT_HASHES, captureFileHash, captureValueHash,
   insertionOrderHash, sourceEntry, naturalEntry, summaryEntry, captureCommands, boundaryIndex, snapshotIndex,
   capturedState, capturedSnapshot, replayCaptureBoundary, assertPublicCaptureControl, assertEraTransition,
-  captureBody, sameCaptureValue as same, FULL_CAPTURE_REPLAY_TIMEOUT } from './pale-emperor-capture-helper.js';
+  captureBody, sameCaptureValue as same, FULL_CAPTURE_REPLAY_TIMEOUT, PALE_EMPEROR_GUIDANCE_REPLAY_DIFF, namedBoundary,
+  currentPaleEmperorGuidanceBoundaryExpected, currentPaleEmperorFullReplayExpected, expectedPaleEmperorBoundaryReplay } from './pale-emperor-capture-helper.js';
 
 const expected = actualPaleEmperorEvidence();
 const [QUIETING, INTERDICTION] = PALE_EMPEROR_ABILITY_IDS;
@@ -63,6 +64,46 @@ describe('Pale Emperor complete815-command original and actual public continuati
     same(capturedState('prefixFinal'), migrateSliceState(raw)); expect(naturalEntry('producerSha256')).toBe(expected.producerSha256);
   }, 120_000);
 
+  it('permits only the exact reviewed guidance wording delta and rejects altered or already-current evidence', () => {
+    const diff = PALE_EMPEROR_GUIDANCE_REPLAY_DIFF, save = namedBoundary('actual120p-guidance-frozen-eight-stages-and-long-history');
+    const boundaryHash = captureValueHash(save.final), oldFinal = capturedState('final'), finalHash = captureValueHash(oldFinal);
+    const boundaryExpected = expectedPaleEmperorBoundaryReplay(save), fullExpected = currentPaleEmperorFullReplayExpected(oldFinal);
+    same(boundaryExpected.chronicle[diff.index], { id: diff.id, week: diff.week, title: diff.title, text: diff.currentText });
+    same(boundaryExpected.lastResult, boundaryExpected.chronicle[diff.index]);
+    same(fullExpected.chronicle[diff.index], boundaryExpected.chronicle[diff.index]);
+    same(fullExpected.lastResult, oldFinal.lastResult);
+    // Put back exactly the named record (and its boundary lastResult alias),
+    // then compare every other private/public field, RNG and historical root.
+    const restoredBoundary = structuredClone(boundaryExpected), restoredFinal = structuredClone(fullExpected);
+    restoredBoundary.chronicle[diff.index] = structuredClone(save.final.chronicle[diff.index]!);
+    restoredBoundary.lastResult = structuredClone(save.final.lastResult);
+    restoredFinal.chronicle[diff.index] = structuredClone(oldFinal.chronicle[diff.index]!);
+    same(restoredBoundary, save.final); same(restoredFinal, oldFinal);
+    expect(captureValueHash(save.final)).toBe(boundaryHash); expect(captureValueHash(oldFinal)).toBe(finalHash);
+    same(migrateSliceState(save.final), save.final); same(migrateSliceState(oldFinal), oldFinal);
+    for (const change of [
+      (s: SliceState) => { s.chronicle[diff.index]!.text += 'wrong text'; },
+      (s: SliceState) => { s.chronicle[diff.index]!.id = 'wrong-id'; },
+      (s: SliceState) => { s.chronicle[diff.index]!.title += 'wrong title'; },
+      (s: SliceState) => { s.chronicle[diff.index]!.week++; },
+      (s: SliceState) => { s.revision++; },
+      (s: SliceState) => { s.paleEmperor.acquisitionJournal[0]!.revision++; },
+      (s: SliceState) => { s.chronicle[diff.index - 1] = structuredClone(s.chronicle[diff.index]!); },
+    ]) {
+      const boundary = structuredClone(save.final), final = structuredClone(oldFinal); change(boundary); change(final);
+      expect(() => currentPaleEmperorGuidanceBoundaryExpected(boundary), change.toString()).toThrow();
+      expect(() => currentPaleEmperorFullReplayExpected(final), change.toString()).toThrow();
+    }
+    const badLastResult = structuredClone(save.final); badLastResult.lastResult!.text += 'wrong text';
+    expect(() => currentPaleEmperorGuidanceBoundaryExpected(badLastResult)).toThrow();
+    expect(() => currentPaleEmperorGuidanceBoundaryExpected(boundaryExpected)).toThrow();
+    expect(() => currentPaleEmperorFullReplayExpected(fullExpected)).toThrow();
+    expect(() => expectedPaleEmperorBoundaryReplay({ ...save, count: save.count + 1 })).toThrow();
+    expect(() => expectedPaleEmperorBoundaryReplay({ ...save, before: { ...save.before, revision: save.before.revision + 1 } })).toThrow();
+    const last = { before: capturedState('beforeLast'), intent: captureCommands.at(-1)!, final: oldFinal, count: expected.commandCount };
+    expect(expectedPaleEmperorBoundaryReplay(last)).toBe(oldFinal);
+  }, 120_000);
+
   it('replays all1038 real commands, every public continuation control, current body and old roots', () => {
     const sourceCommands = sourceEntry<SliceIntent[]>('commands');
     expect(sourceCommands).toHaveLength(PALE_EMPEROR_PREFIX_COUNT); expect(captureCommands).toHaveLength(expected.commandCount);
@@ -99,7 +140,7 @@ describe('Pale Emperor complete815-command original and actual public continuati
         }
       }
     }
-    same(state, capturedState('final')); assertValidSliceState(state); same(migrateSliceState(state), state);
+    same(state, currentPaleEmperorFullReplayExpected(capturedState('final'))); assertValidSliceState(state); same(migrateSliceState(state), state);
     same(captureBody(state), expected.final); expect(state.revision).toBe(capturedState('initial').revision + expected.commandCount);
     expect(naturalEntry('stage')).toBe(expected.stage); expect(naturalEntry('error')).toBe(expected.error);
     expect(naturalEntry('pendingIntent')).toBeNull(); expect(naturalEntry('failurePhase')).toBe('IDLE');

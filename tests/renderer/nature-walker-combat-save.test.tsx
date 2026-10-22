@@ -10,6 +10,7 @@ import { playerText } from '../../src/shared/player-text.js';
 import { NATURE_WALKER_SOURCE_KEYS, type NatureWalkerAction } from '../../src/domain/nature-walker/types.js';
 import { getNatureWalkerCurrentSite } from '../../src/domain/nature-walker/life.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentNatureWalkerReplayExpectation } from '../helpers/nature-walker-current-replay.js';
 import { capturedSnapshot, capturedState, namedBoundary, observedCapture, captureBody, captureValueHash,
   currentCapture, sourceEntry, sameCaptureValue as same } from '../domain/nature-walker-capture-helper.js';
 import { GUIDANCE, LIFE_REOPEN_NAMES, UI_RETRY_NAMES, UI_ROUND_NAMES, presentObserved, distinctObserved, assertCapturedResources,
@@ -215,9 +216,12 @@ it('requires finalized actual207 capture before claiming renderer coverage', () 
 
 describe('NatureWalker actual saved UI and identical-intent retry', () => {
   it.each(UI_RETRY_NAMES)('%s keeps real resources uncommitted on failure and commits the identical retry once', async name => {
-    const boundary = namedBoundary(name), before = boundary.before, expected = boundary.final;
+    const boundary = namedBoundary(name), before = boundary.before;
     if (boundary.intent.type !== 'NATURE_WALKER') throw new Error('Expected a real panel operation.');
-    const command = boundary.intent.command, game = savedGame(before), releaseFailure = game.holdNextSave();
+    const command = boundary.intent.command;
+    // Only replaying guidance writes current wording; restored captures stay unchanged.
+    const expected = command.type === 'LEARN_GUIDANCE' ? currentNatureWalkerReplayExpectation(boundary.final) : boundary.final;
+    const game = savedGame(before), releaseFailure = game.holdNextSave();
     game.failNextSave(); await mount(game); await openPanel();
     const action = projectSliceState(before).natureWalker.actions.find(row => JSON.stringify(row.command) === JSON.stringify(command));
     if (!action) throw new Error('The captured operation is not publicly offered.');

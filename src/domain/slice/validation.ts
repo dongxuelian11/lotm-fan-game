@@ -1,3 +1,53 @@
+import type { MotherOwnedEngine } from '../mother/engine.js';
+import { validateMotherState, validateMotherCommand, openMotherOwnedHead, getMotherSourceView } from '../mother/index.js';
+import type { JusticiarOwnedEngine } from '../justiciar/engine.js';
+import { validateJusticiarState, validateJusticiarCommand, openJusticiarOwnedHead, getJusticiarSourceView } from '../justiciar/index.js';
+import type { BlackEmperorOwnedEngine } from '../black-emperor/engine.js';
+import { validateBlackEmperorState, validateBlackEmperorCommand, openBlackEmperorOwnedHead, blackEmperorSourceView } from '../black-emperor/index.js';
+import type { WheelOfFortuneOwnedEngine } from '../wheel-of-fortune/engine.js';
+import { validateWheelOfFortuneState, validateWheelOfFortuneCommand, openWheelOfFortuneOwnedHead, wheelOfFortuneSourceView } from '../wheel-of-fortune/index.js';
+import type { ChainedOwnedEngine } from '../chained/engine.js';
+import { validateChainedState, validateChainedCommand, openChainedOwnedHead, chainedSourceView } from '../chained/index.js';
+import type { AbyssOwnedEngine } from '../abyss/engine.js';
+import { validateAbyssState, validateAbyssCommand, openAbyssOwnedHead, abyssSourceView } from '../abyss/index.js';
+import type { HangedManOwnedEngine } from '../hanged-man/engine.js';
+import { validateHangedManState, validateHangedManCommand, openHangedManOwnedHead, hangedManSourceView } from '../hanged-man/index.js';
+import type { HermitOwnedEngine } from '../hermit/engine.js';
+import { validateHermitState, validateHermitCommand, openHermitOwnedHead, hermitSourceView } from '../hermit/index.js';
+import type { DemonessOwnedEngine } from '../demoness/engine.js';
+import { validateDemonessState, validateDemonessCommand, openDemonessOwnedHead, demonessSourceView } from '../demoness/index.js';
+import type { TwilightGiantOwnedEngine } from '../twilight-giant/engine.js';
+import { validateTwilightGiantState, validateTwilightGiantCommand, openTwilightGiantOwnedHead, twilightGiantSourceView } from '../twilight-giant/index.js';
+import type { ErrorAscentOwnedEngine } from '../error-ascent/engine.js';
+import { validateErrorAscentState, validateErrorAscentCommand, openErrorAscentOwnedHead, errorAscentSourceView } from '../error-ascent/index.js';
+import type { DoorOwnedEngine } from '../door/engine.js';
+import { validateDoorState, validateDoorCommand, openDoorOwnedHead, doorSourceView } from '../door/index.js';
+import type { DeathOwnedEngine } from '../death/engine.js';
+import { validateDeathState, validateDeathCommand, openDeathOwnedHead, deathSourceView } from '../death/index.js';
+import type { SunOwnedEngine } from '../sun/engine.js';
+import { validateSunState, validateSunCommand, openSunOwnedHead } from '../sun/index.js';
+import { sunSourceView } from '../sun/source.js';
+import type { TyrantOwnedEngine } from '../tyrant/engine.js';
+import { validateTyrantState, validateTyrantCommand, openTyrantOwnedHead } from '../tyrant/index.js';
+import { tyrantSourceView } from '../tyrant/source.js';
+import type { WhiteTowerOwnedEngine } from '../white-tower/engine.js';
+import { validateWhiteTowerState, validateWhiteTowerCommand, openWhiteTowerOwnedHead } from '../white-tower/index.js';
+import { whiteTowerSourceView } from '../white-tower/source.js';
+import type { DarknessOwnedEngine } from '../darkness/engine.js';
+import { validateDarknessState, validateDarknessCommand, openDarknessOwnedHead } from '../darkness/index.js';
+import { darknessSourceView } from '../darkness/source.js';
+import type { MoonOwnedEngine } from '../moon/engine.js';
+import { validateMoonState, validateMoonCommand, openMoonOwnedHead } from '../moon/index.js';
+import { moonSourceView } from '../moon/source.js';
+import type { PerfecterOwnedEngine } from '../perfecter/engine.js';
+import { validatePerfecterState, validatePerfecterCommand, openPerfecterOwnedHead } from '../perfecter/index.js';
+import { perfecterSourceView } from '../perfecter/source.js';
+import type { VisionaryOwnedEngine } from '../visionary/engine.js';
+import { validateVisionaryState, validateVisionaryCommand, openVisionaryOwnedHead } from '../visionary/index.js';
+import { visionarySourceView } from '../visionary/source.js';
+import type { RedPriestOwnedEngine } from '../red-priest/engine.js';
+import { validateRedPriestState, validateRedPriestCommand, openRedPriestOwnedHead } from '../red-priest/index.js';
+import { redPriestSourceView } from '../red-priest/source.js';
 import { stableStringify } from '../canonical.js';
 import type { FoolOwnedEngine } from '../fool/engine.js';
 import { validateFoolState, validateFoolCommand, foolSourceView, openFoolOwnedHead } from '../fool/index.js';
@@ -408,6 +458,27 @@ export function validateSlicePayload(v:unknown):v is SliceIntent{
     case 'PALE_EMPEROR':return keys(v,['type','command'])&&validatePaleEmperorCommand(v.command);
     case 'PURE_WHITE_ANGEL':return keys(v,['type','command'])&&validatePureWhiteAngelCommand(v.command);
     case 'THUNDER_GOD':return keys(v,['type','command'])&&validateThunderGodCommand(v.command);
+    case 'TYRANT':return keys(v,['type','command'])&&validateTyrantCommand(v.command);
+    case 'MOTHER':return keys(v,['type','command'])&&validateMotherCommand(v.command);
+    case 'JUSTICIAR':return keys(v,['type','command'])&&validateJusticiarCommand(v.command);
+    case 'BLACK_EMPEROR':return keys(v,['type','command'])&&validateBlackEmperorCommand(v.command);
+    case 'WHEEL_OF_FORTUNE':return keys(v,['type','command'])&&validateWheelOfFortuneCommand(v.command);
+    case 'CHAINED':return keys(v,['type','command'])&&validateChainedCommand(v.command);
+    case 'ABYSS':return keys(v,['type','command'])&&validateAbyssCommand(v.command);
+    case 'HANGED_MAN':return keys(v,['type','command'])&&validateHangedManCommand(v.command);
+    case 'HERMIT':return keys(v,['type','command'])&&validateHermitCommand(v.command);
+    case 'DEMONESS':return keys(v,['type','command'])&&validateDemonessCommand(v.command);
+    case 'TWILIGHT_GIANT':return keys(v,['type','command'])&&validateTwilightGiantCommand(v.command);
+    case 'ERROR_ASCENT':return keys(v,['type','command'])&&validateErrorAscentCommand(v.command);
+    case 'DOOR':return keys(v,['type','command'])&&validateDoorCommand(v.command);
+    case 'DEATH':return keys(v,['type','command'])&&validateDeathCommand(v.command);
+    case 'SUN':return keys(v,['type','command'])&&validateSunCommand(v.command);
+    case 'WHITE_TOWER':return keys(v,['type','command'])&&validateWhiteTowerCommand(v.command);
+    case 'DARKNESS':return keys(v,['type','command'])&&validateDarknessCommand(v.command);
+    case 'MOON':return keys(v,['type','command'])&&validateMoonCommand(v.command);
+    case 'PERFECTER':return keys(v,['type','command'])&&validatePerfecterCommand(v.command);
+    case 'VISIONARY':return keys(v,['type','command'])&&validateVisionaryCommand(v.command);
+    case 'RED_PRIEST':return keys(v,['type','command'])&&validateRedPriestCommand(v.command);
     case 'FOOL':return keys(v,['type','command'])&&validateFoolCommand(v.command);
     case 'NATURE_WALKER':return keys(v,['type','command'])&&validateNatureWalkerCommand(v.command);
     case 'HAND_OF_ORDER':return keys(v,['type','command'])&&validateHandOfOrderCommand(v.command);
@@ -661,50 +732,266 @@ export function assertValidSliceState(input:unknown):asserts input is SliceState
  * validation, never supplied by the caller. Nothing escapes if any later slice
  * or historical-root check fails; each call begins from a new detached input. */
 export function openValidatedFoolSlice(input:unknown):{state:SliceState;engine:FoolOwnedEngine}{
-  const state=structuredClone(input),engine=assertSliceState(state,true,true);
+  const state=structuredClone(input),{fool:engine}=assertSliceState(state,true,'fool');
   if(!engine)throw new TypeError('Invalid ordinary slice save state');
   return {state:state as SliceState,engine};
 }
-// Both switches are module-private. Public raw acceptance always checks every
-// history; opening retains the genuine Fool reconstruction instead of discarding
-// it and reconstructing it again after the identical remaining checks.
-function assertSliceState(input:unknown,validateHistories:boolean,retainFool=false):FoolOwnedEngine|undefined{
+/** Red Priest ingress retains only the head reconstructed inside this complete
+ * validation. A failure in any later field returns no head or partial state. */
+export function openValidatedRedPriestSlice(input:unknown):{state:SliceState;engine:RedPriestOwnedEngine}{
+  const state=structuredClone(input),{redPriest:engine}=assertSliceState(state,true,'redPriest');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedVisionarySlice(input:unknown):{state:SliceState;engine:VisionaryOwnedEngine}{
+  const state=structuredClone(input),{visionary:engine}=assertSliceState(state,true,'visionary');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedPerfecterSlice(input:unknown):{state:SliceState;engine:PerfecterOwnedEngine}{
+  const state=structuredClone(input),{perfecter:engine}=assertSliceState(state,true,'perfecter');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedMoonSlice(input:unknown):{state:SliceState;engine:MoonOwnedEngine}{
+  const state=structuredClone(input),{moon:engine}=assertSliceState(state,true,'moon');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedMotherSlice(input:unknown):{state:SliceState;engine:MotherOwnedEngine}{
+  const state=structuredClone(input),{mother:engine}=assertSliceState(state,true,'mother');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedJusticiarSlice(input:unknown):{state:SliceState;engine:JusticiarOwnedEngine}{
+  const state=structuredClone(input),{justiciar:engine}=assertSliceState(state,true,'justiciar');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedBlackEmperorSlice(input:unknown):{state:SliceState;engine:BlackEmperorOwnedEngine}{
+  const state=structuredClone(input),{blackEmperor:engine}=assertSliceState(state,true,'blackEmperor');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedWheelOfFortuneSlice(input:unknown):{state:SliceState;engine:WheelOfFortuneOwnedEngine}{
+  const state=structuredClone(input),{wheelOfFortune:engine}=assertSliceState(state,true,'wheelOfFortune');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedChainedSlice(input:unknown):{state:SliceState;engine:ChainedOwnedEngine}{
+  const state=structuredClone(input),{chained:engine}=assertSliceState(state,true,'chained');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedAbyssSlice(input:unknown):{state:SliceState;engine:AbyssOwnedEngine}{
+  const state=structuredClone(input),{abyss:engine}=assertSliceState(state,true,'abyss');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedHangedManSlice(input:unknown):{state:SliceState;engine:HangedManOwnedEngine}{
+  const state=structuredClone(input),{hangedMan:engine}=assertSliceState(state,true,'hangedMan');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedHermitSlice(input:unknown):{state:SliceState;engine:HermitOwnedEngine}{
+  const state=structuredClone(input),{hermit:engine}=assertSliceState(state,true,'hermit');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedDemonessSlice(input:unknown):{state:SliceState;engine:DemonessOwnedEngine}{
+  const state=structuredClone(input),{demoness:engine}=assertSliceState(state,true,'demoness');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedTwilightGiantSlice(input:unknown):{state:SliceState;engine:TwilightGiantOwnedEngine}{
+  const state=structuredClone(input),{twilightGiant:engine}=assertSliceState(state,true,'twilightGiant');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedErrorAscentSlice(input:unknown):{state:SliceState;engine:ErrorAscentOwnedEngine}{
+  const state=structuredClone(input),{errorAscent:engine}=assertSliceState(state,true,'errorAscent');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedDoorSlice(input:unknown):{state:SliceState;engine:DoorOwnedEngine}{
+  const state=structuredClone(input),{door:engine}=assertSliceState(state,true,'door');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedDeathSlice(input:unknown):{state:SliceState;engine:DeathOwnedEngine}{
+  const state=structuredClone(input),{death:engine}=assertSliceState(state,true,'death');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedSunSlice(input:unknown):{state:SliceState;engine:SunOwnedEngine}{
+  const state=structuredClone(input),{sun:engine}=assertSliceState(state,true,'sun');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedTyrantSlice(input:unknown):{state:SliceState;engine:TyrantOwnedEngine}{
+  const state=structuredClone(input),{tyrant:engine}=assertSliceState(state,true,'tyrant');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedWhiteTowerSlice(input:unknown):{state:SliceState;engine:WhiteTowerOwnedEngine}{
+  const state=structuredClone(input),{whiteTower:engine}=assertSliceState(state,true,'whiteTower');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+export function openValidatedDarknessSlice(input:unknown):{state:SliceState;engine:DarknessOwnedEngine}{
+  const state=structuredClone(input),{darkness:engine}=assertSliceState(state,true,'darkness');
+  if(!engine)throw new TypeError('Invalid ordinary slice save state');
+  return {state:state as SliceState,engine};
+}
+// These controls are module-private. Public raw acceptance always checks every
+// history; each concrete opening retains its genuine reconstruction rather than
+// reconstructing it a second time after the identical remaining checks.
+function assertSliceState(input:unknown,validateHistories:boolean,retain:'fool'|'redPriest'|'visionary'|'perfecter'|'moon'|'darkness'|'whiteTower'|'tyrant'|'sun'|'death'|'door'|'errorAscent'|'twilightGiant'|'demoness'|'hermit'|'hangedMan'|'abyss'|'chained'|'mother'|'justiciar'|'blackEmperor'|'wheelOfFortune'|null=null):{fool?:FoolOwnedEngine;redPriest?:RedPriestOwnedEngine;visionary?:VisionaryOwnedEngine;perfecter?:PerfecterOwnedEngine;moon?:MoonOwnedEngine;darkness?:DarknessOwnedEngine;whiteTower?:WhiteTowerOwnedEngine;tyrant?:TyrantOwnedEngine;sun?:SunOwnedEngine;death?:DeathOwnedEngine;door?:DoorOwnedEngine;errorAscent?:ErrorAscentOwnedEngine;twilightGiant?:TwilightGiantOwnedEngine;demoness?:DemonessOwnedEngine;hermit?:HermitOwnedEngine;hangedMan?:HangedManOwnedEngine;abyss?:AbyssOwnedEngine;chained?:ChainedOwnedEngine;mother?:MotherOwnedEngine;justiciar?:JusticiarOwnedEngine;blackEmperor?:BlackEmperorOwnedEngine;wheelOfFortune?:WheelOfFortuneOwnedEngine}{
   const fail=()=>{throw new TypeError('Invalid ordinary slice save state');};
   if(!record(input))return fail();const s=input;
-  const expected=['fool','natureWalker','handOfOrder','princeOfAbolition','mercurySnake','abomination','uncleanMonarch','darkAngel','knowledgeEmperor','apocalypseDemoness','divineHand','timeWorm','starKey','schemaVersion','contentVersion','runId','revision','status','character','week','date','actionsRemaining','weeklyBudget','wagePaidWeek','cash','lifeTier','nextLifeTier','health','mind','spirituality','injuries','injuryRisk','debts','missedWeeks','credit','knownTargets','completedTopics','knowledge','chronicle','activeEvent','eventQueue','pulse','billAmount','lastMedicalInviteWeek','aid','aidInjuryIds','marketUnlocked','careKnown','arc','world','combat','lastCombatRound','combatHistory','lastCheck','lastResult','ending','random','progression','seer','caseArchive','clown','hunter','provoker','audience','mindreader','town','savant','archaeologist','apothecary','tamer','magician','pyromaniac','psychologist','appraiser','vampire','sleepless','midnight','nightmare','reader','reasoner','detective','sailor','rager','navigator','bard','lightprayer','sunpriest','corpsecollector','gravedigger','spiritmedium','apprentice','trickmaster','astrologer','marauder','swindler','cryptologist','warrior','gladiator','weaponmaster','assassin','instigator','witch','pryer','combatScholar','wizard','secretSupplicant','listener','shadowAscetic','criminal','unwinged','serialKiller','prisoner','madman','werewolf','monster','machine','lucky','lawyer','barbarian','briber','arbiter','sheriff','interrogator','cultivator','physician','harvestpriest','faceless','conspirator','hypnotist','artisan','potionProfessor','soother','polymath','windBlessed','notary','spiritGuide','recorder','fireThief','dawnPaladin','pleasure','scrollProfessor','roseBishop','demon','zombie','calamityPriest','corruptionBaron','judge','biologist','marionettist','reaper','dreamwalker','astronomer','crimsonScholar','spiritWarlock','mysticismMagister','oceanSinger','priestOfLight','gatekeeper','traveler','dreamStealer','guardian','pain','starMystic','shepherd','desireApostle','wraith','winner','mentorDisorder','punishmentKnight','druid','bizarroSorcerer','ironBloodKnight','manipulator','alchemist','witchKing','nightwatcher','prophet','cataclysmPriest','unshadowed','undying','secretsSorcerer','parasite','demonHunter','despair','mystic','blackKnight','devil','puppet','misfortuneMage','fallenEarl','imperativeMage','ancientAlchemist','longChapter','ancientScholar','warBishop','dreamWeaver','arcaneScholar','summoningMaster','fearBishop','insightScholar','seaKing','justiceMentor','ferryman','wanderer','deceitMentor','silverKnight','unagingDemoness','prophecyMaster','threeHeadedTemplar','blatherer','silentDisciple','chaosWalker','frenzyMage','chaosHunter','coffinBearer','paleEmperor','pureWhiteAngel','thunderGod','allKnowingEye','misfortuneKnight','beautyGoddess','civilizationEnlightener','writer','conqueror','attendantMysteries','barrenMatriarch','balancer','entropyDuke','fateProphet','ancientEvil','bloodDuke','elder','sage','calamityDemoness','glory','fateTrojan','planeswalker','deathConsul','lightSeeker','catastrophe','wisdomAngel','concealmentServant','lifeGiver','knowledgeMentor','discerner','weatherWarlock','miracleWorker'];
-  if(!keys(s,expected)||s.schemaVersion!==205||s.contentVersion!=='fool-v205'||!str(s.runId,200)||!s.runId.length||!int(s.revision,1)||!one(s.status,['ACTIVE','SLICE_COMPLETE','DEAD','REVIVAL_PENDING']))return fail();
+  const expected=['mother','justiciar','blackEmperor','wheelOfFortune','chained','abyss','hangedMan','hermit','demoness','twilightGiant','errorAscent','door','death','sun','tyrant','whiteTower','darkness','moon','perfecter','visionary','redPriest','fool','natureWalker','handOfOrder','princeOfAbolition','mercurySnake','abomination','uncleanMonarch','darkAngel','knowledgeEmperor','apocalypseDemoness','divineHand','timeWorm','starKey','schemaVersion','contentVersion','runId','revision','status','character','week','date','actionsRemaining','weeklyBudget','wagePaidWeek','cash','lifeTier','nextLifeTier','health','mind','spirituality','injuries','injuryRisk','debts','missedWeeks','credit','knownTargets','completedTopics','knowledge','chronicle','activeEvent','eventQueue','pulse','billAmount','lastMedicalInviteWeek','aid','aidInjuryIds','marketUnlocked','careKnown','arc','world','combat','lastCombatRound','combatHistory','lastCheck','lastResult','ending','random','progression','seer','caseArchive','clown','hunter','provoker','audience','mindreader','town','savant','archaeologist','apothecary','tamer','magician','pyromaniac','psychologist','appraiser','vampire','sleepless','midnight','nightmare','reader','reasoner','detective','sailor','rager','navigator','bard','lightprayer','sunpriest','corpsecollector','gravedigger','spiritmedium','apprentice','trickmaster','astrologer','marauder','swindler','cryptologist','warrior','gladiator','weaponmaster','assassin','instigator','witch','pryer','combatScholar','wizard','secretSupplicant','listener','shadowAscetic','criminal','unwinged','serialKiller','prisoner','madman','werewolf','monster','machine','lucky','lawyer','barbarian','briber','arbiter','sheriff','interrogator','cultivator','physician','harvestpriest','faceless','conspirator','hypnotist','artisan','potionProfessor','soother','polymath','windBlessed','notary','spiritGuide','recorder','fireThief','dawnPaladin','pleasure','scrollProfessor','roseBishop','demon','zombie','calamityPriest','corruptionBaron','judge','biologist','marionettist','reaper','dreamwalker','astronomer','crimsonScholar','spiritWarlock','mysticismMagister','oceanSinger','priestOfLight','gatekeeper','traveler','dreamStealer','guardian','pain','starMystic','shepherd','desireApostle','wraith','winner','mentorDisorder','punishmentKnight','druid','bizarroSorcerer','ironBloodKnight','manipulator','alchemist','witchKing','nightwatcher','prophet','cataclysmPriest','unshadowed','undying','secretsSorcerer','parasite','demonHunter','despair','mystic','blackKnight','devil','puppet','misfortuneMage','fallenEarl','imperativeMage','ancientAlchemist','longChapter','ancientScholar','warBishop','dreamWeaver','arcaneScholar','summoningMaster','fearBishop','insightScholar','seaKing','justiceMentor','ferryman','wanderer','deceitMentor','silverKnight','unagingDemoness','prophecyMaster','threeHeadedTemplar','blatherer','silentDisciple','chaosWalker','frenzyMage','chaosHunter','coffinBearer','paleEmperor','pureWhiteAngel','thunderGod','allKnowingEye','misfortuneKnight','beautyGoddess','civilizationEnlightener','writer','conqueror','attendantMysteries','barrenMatriarch','balancer','entropyDuke','fateProphet','ancientEvil','bloodDuke','elder','sage','calamityDemoness','glory','fateTrojan','planeswalker','deathConsul','lightSeeker','catastrophe','wisdomAngel','concealmentServant','lifeGiver','knowledgeMentor','discerner','weatherWarlock','miracleWorker'];
+  if(!keys(s,expected)||s.schemaVersion!==226||s.contentVersion!=='mother-v226'||!str(s.runId,200)||!s.runId.length||!int(s.revision,1)||!one(s.status,['ACTIVE','SLICE_COMPLETE','DEAD','REVIVAL_PENDING']))return fail();
   if(!int(s.week,1)||!isValidGameDate(s.date)||!int(s.weeklyBudget,1,100)||!int(s.actionsRemaining,0,s.weeklyBudget as number)||!(s.wagePaidWeek===null||int(s.wagePaidWeek,1,s.week as number))||!int(s.cash)||!one(s.lifeTier,TIERS)||!one(s.nextLifeTier,TIERS))return fail();
-  let foolEngine:FoolOwnedEngine|undefined;
+  let foolEngine:FoolOwnedEngine|undefined,redPriestEngine:RedPriestOwnedEngine|undefined,visionaryEngine:VisionaryOwnedEngine|undefined,perfecterEngine:PerfecterOwnedEngine|undefined,moonEngine:MoonOwnedEngine|undefined,darknessEngine:DarknessOwnedEngine|undefined,whiteTowerEngine:WhiteTowerOwnedEngine|undefined,tyrantEngine:TyrantOwnedEngine|undefined,sunEngine:SunOwnedEngine|undefined,deathEngine:DeathOwnedEngine|undefined,doorEngine:DoorOwnedEngine|undefined,errorAscentEngine:ErrorAscentOwnedEngine|undefined,twilightGiantEngine:TwilightGiantOwnedEngine|undefined,demonessEngine:DemonessOwnedEngine|undefined,hermitEngine:HermitOwnedEngine|undefined,hangedManEngine:HangedManOwnedEngine|undefined,abyssEngine:AbyssOwnedEngine|undefined,chainedEngine:ChainedOwnedEngine|undefined,motherEngine:MotherOwnedEngine|undefined,justiciarEngine:JusticiarOwnedEngine|undefined,blackEmperorEngine:BlackEmperorOwnedEngine|undefined,wheelOfFortuneEngine:WheelOfFortuneOwnedEngine|undefined;
   if(validateHistories){
-    if(retainFool){try{foolEngine=openFoolOwnedHead(s as unknown as SliceState);}catch{return fail();}}
-    else if(!validateFoolState(s as unknown as SliceState))return fail();
+    if(retain==='mother'){try{motherEngine=openMotherOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateMotherState(s as unknown as SliceState))return fail();
+    // Only complete cold replay admits this chapter's frozen S1 predecessor.
+    // A bare Mother S0 marker or fabricated source cannot admit old empty roots.
+    const motherChecked=s as unknown as SliceState;
+    const motherPredecessor=motherChecked.mother.source?getMotherSourceView(motherChecked,motherChecked.mother.source):motherChecked;
+    if(retain==='justiciar'){try{justiciarEngine=openJusticiarOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateJusticiarState(motherPredecessor))return fail();
+    // Only a complete cold replay exposes the immutable S1 source to older roots.
+    // A fabricated sequence-zero marker never admits an empty predecessor.
+    const justiciarChecked=motherPredecessor;
+    const justiciarPredecessor=justiciarChecked.justiciar.source?getJusticiarSourceView(justiciarChecked,justiciarChecked.justiciar.source):justiciarChecked;
+    if(retain==='blackEmperor'){try{blackEmperorEngine=openBlackEmperorOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateBlackEmperorState(justiciarPredecessor))return fail();
+    // Only the complete cold-replayed BlackEmperor history admits its frozen S1 predecessor.
+    // An empty root or an unsupported sequence-zero marker cannot bypass old history validation.
+    const emperorChecked=justiciarPredecessor;
+    const emperorPredecessor=emperorChecked.blackEmperor.source?blackEmperorSourceView(emperorChecked,emperorChecked.blackEmperor.source):emperorChecked;
+    if(retain==='wheelOfFortune'){try{wheelOfFortuneEngine=openWheelOfFortuneOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateWheelOfFortuneState(emperorPredecessor))return fail();
+    // Only a complete, cold-replayed new chapter admits the actual frozen S1 source.
+    // A wheel S0 marker, fabricated source or empty journal never bypasses old roots.
+    const wheelChecked=emperorPredecessor;
+    const wheelPredecessor=wheelChecked.wheelOfFortune.source?wheelOfFortuneSourceView(wheelChecked,wheelChecked.wheelOfFortune.source):wheelChecked;
+    if(retain==='chained'){try{chainedEngine=openChainedOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateChainedState(wheelPredecessor))return fail();
+    // Only the fully cold-replayed chapter exposes its actual frozen S1 source.
+    const chainedChecked=wheelPredecessor;
+    const chainedPredecessor=chainedChecked.chained.source?chainedSourceView(chainedChecked,chainedChecked.chained.source):chainedChecked;
+    if(retain==='abyss'){try{abyssEngine=openAbyssOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateAbyssState(wheelPredecessor))return fail();
+    // Only a complete cold-replayed Abyss history admits its actual frozen S1 source.
+    const abyssChecked=chainedPredecessor;
+    const abyssPredecessor=abyssChecked.abyss.source?abyssSourceView(abyssChecked,abyssChecked.abyss.source):abyssChecked;
+    if(retain==='hangedMan'){try{hangedManEngine=openHangedManOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateHangedManState(wheelPredecessor))return fail();
+    // Only a complete cold-replayed HangedMan history admits its frozen S1 source.
+    const hangedManChecked=abyssPredecessor;
+    const hangedManPredecessor=hangedManChecked.hangedMan.source?hangedManSourceView(hangedManChecked,hangedManChecked.hangedMan.source):hangedManChecked;
+    if(retain==='hermit'){try{hermitEngine=openHermitOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateHermitState(wheelPredecessor))return fail();
+    // Only complete cold-replayed Hermit history admits the actual frozen S1 source.
+    const hermitChecked=hangedManPredecessor;
+    const hermitPredecessor=hermitChecked.hermit.source?hermitSourceView(hermitChecked,hermitChecked.hermit.source):hermitChecked;
+    if(retain==='demoness'){try{demonessEngine=openDemonessOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateDemonessState(wheelPredecessor))return fail();
+    // Only a cold-replayed Demoness history exposes its actual frozen S1 source.
+    // An S0 marker or an injected source alone never grants predecessor admission.
+    const demonessChecked=hermitPredecessor;
+    const demonessPredecessor=demonessChecked.demoness.source?demonessSourceView(demonessChecked,demonessChecked.demoness.source):demonessChecked;
+    if(retain==='twilightGiant'){try{twilightGiantEngine=openTwilightGiantOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateTwilightGiantState(wheelPredecessor))return fail();
+    // Only fully reconstructed Twilight history may expose the frozen S1 source
+    // to older empty roots. A warrior S0 marker alone never grants admission.
+    const twilightChecked=demonessPredecessor;
+    const twilightPredecessor=twilightChecked.twilightGiant.source?twilightGiantSourceView(twilightChecked,twilightChecked.twilightGiant.source):twilightChecked;
+    if(retain==='errorAscent'){try{errorAscentEngine=openErrorAscentOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateErrorAscentState(wheelPredecessor))return fail();
+    // Only a strictly reconstructed Error history may expose its frozen S1 source.
+    const errorChecked=twilightPredecessor;
+    const errorPredecessor=errorChecked.errorAscent.source?errorAscentSourceView(errorChecked,errorChecked.errorAscent.source):errorChecked;
+    if(retain==='door'){try{doorEngine=openDoorOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateDoorState(wheelPredecessor))return fail();
+    // A genuine Door history is fully checked before any empty predecessor root
+    // may be viewed at its frozen S1 source. No future-S0 marker grants admission.
+    const doorChecked=errorPredecessor;
+    const doorPredecessor=doorChecked.door.source?doorSourceView(doorChecked,doorChecked.door.source):doorChecked;
+    if(retain==='death'){try{deathEngine=openDeathOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateDeathState(wheelPredecessor))return fail();
+    const deathChecked=doorPredecessor;
+    const deathPredecessor=deathChecked.death.source?deathSourceView(deathChecked,deathChecked.death.source):deathChecked;
+    if(retain==='sun'){try{sunEngine=openSunOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateSunState(wheelPredecessor))return fail();
+    if(retain==='tyrant'){try{tyrantEngine=openTyrantOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateTyrantState(wheelPredecessor))return fail();
+    if(retain==='whiteTower'){try{whiteTowerEngine=openWhiteTowerOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateWhiteTowerState(wheelPredecessor))return fail();
+    if(retain==='darkness'){try{darknessEngine=openDarknessOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateDarknessState(wheelPredecessor))return fail();
+    if(retain==='moon'){try{moonEngine=openMoonOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateMoonState(wheelPredecessor))return fail();
+    if(retain==='perfecter'){try{perfecterEngine=openPerfecterOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validatePerfecterState(wheelPredecessor))return fail();
+    if(retain==='visionary'){try{visionaryEngine=openVisionaryOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateVisionaryState(wheelPredecessor))return fail();
+    if(retain==='redPriest'){try{redPriestEngine=openRedPriestOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateRedPriestState(wheelPredecessor))return fail();
+    if(retain==='fool'){try{foolEngine=openFoolOwnedHead(s as unknown as SliceState);}catch{return fail();}}
+    else if(!validateFoolState(deathPredecessor))return fail();
   }
-  if(!int(s.health,-19,100)||!int(s.mind,-39,100)||typeof s.spirituality!=='number'||!Number.isFinite(s.spirituality)||s.spirituality<0||s.spirituality>(record(s.progression)&&s.progression.pathwayId==='diviner'&&s.progression.sequence===0?120:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===1?120:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===2?120:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===3?120:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===4?120:record(s.progression)&&s.progression.sequence===5?100:record(s.progression)&&s.progression.sequence===6?80:record(s.progression)&&s.progression.sequence===7?60:record(s.progression)&&s.progression.sequence===8?45:record(s.progression)&&s.progression.pathwayId!==null?30:15)||!int(s.injuryRisk)||!int(s.missedWeeks)||!one(s.credit,['NORMAL','NOTICE','SUSPENDED']))return fail();
+  if(!int(s.health,-19,100)||!int(s.mind,-39,100)||typeof s.spirituality!=='number'||!Number.isFinite(s.spirituality)||s.spirituality<0||s.spirituality>(record(s.progression)&&(s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===0?150:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience')&&s.progression.sequence===0?120:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===1?120:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===2?120:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===3?120:record(s.progression)&&(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===4?120:record(s.progression)&&s.progression.sequence===5?100:record(s.progression)&&s.progression.sequence===6?80:record(s.progression)&&s.progression.sequence===7?60:record(s.progression)&&s.progression.sequence===8?45:record(s.progression)&&s.progression.pathwayId!==null?30:15)||!int(s.injuryRisk)||!int(s.missedWeeks)||!one(s.credit,['NORMAL','NOTICE','SUSPENDED']))return fail();
   if(validateHistories){
   const current=s as unknown as SliceState;
   const divinerHistoryView=current.fool.source?foolSourceView(current,current.fool.source):current;
-  if(!validateNatureWalkerState(s as unknown as SliceState)||!validateHandOfOrderState(s as unknown as SliceState)||!validatePrinceOfAbolitionState(s as unknown as SliceState)||!validateMercurySnakeState(s as unknown as SliceState)||!validateAbominationState(s as unknown as SliceState)||!validateUncleanMonarchState(s as unknown as SliceState)||!validateDarkAngelState(s as unknown as SliceState)||!validateKnowledgeEmperorState(s as unknown as SliceState)||!validateApocalypseDemonessState(s as unknown as SliceState)||!validateDivineHandState(s as unknown as SliceState)||!validateTimeWormState(s as unknown as SliceState)||!validateStarKeyState(s as unknown as SliceState)||!validatePaleEmperorState(s as unknown as SliceState)||!validatePureWhiteAngelState(s as unknown as SliceState)||!validateThunderGodState(s as unknown as SliceState)||!validateAllKnowingEyeState(s as unknown as SliceState)||!validateMisfortuneKnightState(s as unknown as SliceState)||!validateBeautyGoddessState(s as unknown as SliceState)||!validateCivilizationEnlightenerState(s as unknown as SliceState))return fail();
-  const motherHistoryView=natureWalkerInheritedView(s as unknown as SliceState);
-  const justiciarHistoryView=handOfOrderInheritedView(s as unknown as SliceState);
-  const blackEmperorHistoryView=princeOfAbolitionInheritedView(s as unknown as SliceState);
-  const wheelHistoryView=mercurySnakeInheritedView(s as unknown as SliceState);
-  const chainedHistoryView=abominationInheritedView(s as unknown as SliceState);
-  const abyssHistoryView=uncleanMonarchInheritedView(s as unknown as SliceState);
-  const hangedManHistoryView=darkAngelInheritedView(s as unknown as SliceState);
-  const hermitHistoryView=knowledgeEmperorInheritedView(s as unknown as SliceState);
-  const demonessHistoryView=apocalypseDemonessInheritedView(s as unknown as SliceState);
-  const warriorHistoryView=divineHandInheritedView(s as unknown as SliceState);
-  const errorHistoryView=timeWormInheritedView(s as unknown as SliceState);
-  const doorHistoryView=starKeyInheritedView(s as unknown as SliceState);
-  const readerHistoryView=allKnowingEyeInheritedView(s as unknown as SliceState);
-  const sailorHistoryView=thunderGodInheritedView(s as unknown as SliceState);
-  const deathHistoryView=paleEmperorInheritedView(s as unknown as SliceState);
-  if(!validateFerrymanEra(s as unknown as SliceState))return fail();
-  const sunHistoryView=pureWhiteAngelInheritedView(s as unknown as SliceState);
-  const darknessHistoryView=misfortuneKnightInheritedView(s as unknown as SliceState);
-  const moonHistoryView=beautyGoddessInheritedView(s as unknown as SliceState);
-  const paragonHistoryView=civilizationEnlightenerInheritedView(s as unknown as SliceState);
-  if(!validateWriterState(s as unknown as SliceState)||!validateConquerorState(s as unknown as SliceState)||!validateAttendantMysteriesState(divinerHistoryView)||!validateBarrenMatriarchState(motherHistoryView)||!validateBalancerState(justiciarHistoryView)||!validateEntropyDukeState(blackEmperorHistoryView)||!validateFateProphetState(wheelHistoryView)||!validateAncientEvilState(chainedHistoryView)||!validateBloodDukeState(abyssHistoryView)||!validateElderState(hangedManHistoryView)||!validateSageState(hermitHistoryView)||!validateCalamityDemonessState(demonessHistoryView)||!validateGloryState(warriorHistoryView)||!validateFateTrojanState(errorHistoryView)||!validatePlaneswalkerState(doorHistoryView)||!validateDeathConsulState(deathHistoryView)||!validateLightSeekerState(sunHistoryView)||!validateCatastropheState(sailorHistoryView)||!validateWisdomAngelState(readerHistoryView)||!validateConcealmentServantState(darknessHistoryView)||!validateLifeGiverState(moonHistoryView)||!validateKnowledgeMentorState(paragonHistoryView)||!validateDiscernerState(s as unknown as SliceState)||!validateWeatherWarlockState(s as unknown as SliceState)||!validateMiracleWorkerState(divinerHistoryView)||!validateCoffinBearerState(motherHistoryView)||!validateChaosHunterState(justiciarHistoryView)||!validateFrenzyMageState(blackEmperorHistoryView)||!validateChaosWalkerState(wheelHistoryView)||!validateSilentDiscipleState(chainedHistoryView)||!validateBlathererState(abyssHistoryView)||!validateThreeHeadedTemplarState(hangedManHistoryView)||!validateProphecyMasterState(hermitHistoryView)||!validateUnagingDemonessState(demonessHistoryView)||!validateSilverKnightState(warriorHistoryView)||!validateDeceitMentorState(errorHistoryView)||!validateWandererState(doorHistoryView)||!validateFerrymanState(deathHistoryView)||!validateJusticeMentorState(sunHistoryView)||!validateSeaKingState(sailorHistoryView)||!validateInsightScholarState(readerHistoryView)||!validateFearBishopState(darknessHistoryView)||!validateSummoningMasterState(moonHistoryView)||!validateArcaneScholarState(paragonHistoryView)||!validateDreamWeaverState(s as unknown as SliceState)||!validateWarBishopState(s as unknown as SliceState)||!validateAncientScholarState(divinerHistoryView)||!validateLongChapterState(divinerHistoryView)||!validateAncientAlchemistState(motherHistoryView)||!validateImperativeMageState(justiciarHistoryView)||!validateFallenEarlState(blackEmperorHistoryView)||!validateMisfortuneMageState(wheelHistoryView)||!validatePuppetState(chainedHistoryView)||!validateDevilState(abyssHistoryView)||!validateBlackKnightState(hangedManHistoryView)||!validateMysticState(hermitHistoryView)||!validateDespairState(demonessHistoryView)||!validateDemonHunterState(warriorHistoryView)||!validateParasiteState(errorHistoryView)||!validateSecretsSorcererState(doorHistoryView)||!validateUndyingState(deathHistoryView)||!validateUnshadowedState(sunHistoryView)||!validateCataclysmPriestState(sailorHistoryView)||!validateProphetState(readerHistoryView)||!validateNightwatcherState(darknessHistoryView)||!validateWitchKingState(moonHistoryView)||!validateAlchemistState(paragonHistoryView)||!validateManipulatorState(s as unknown as SliceState)||!validateIronBloodKnightState(s as unknown as SliceState)||!validateBizarroSorcererState(divinerHistoryView)||!validateDruidState(motherHistoryView)||!validateDruidLife(motherHistoryView)||!validatePunishmentKnightState(justiciarHistoryView)||!validatePunishmentKnightLife(justiciarHistoryView)||!validateMentorDisorderState(blackEmperorHistoryView)||!validateMentorDisorderLife(blackEmperorHistoryView)||!validateWinnerState(wheelHistoryView)||!validateWinnerLife(wheelHistoryView)||!validateWraithState(chainedHistoryView)||!validateWraithLife(s as unknown as SliceState)||!validateDesireApostleState(abyssHistoryView)||!validateDesireApostleLife(s as unknown as SliceState)||!validateShepherdState(hangedManHistoryView)||!validateShepherdLife(hangedManHistoryView)||!validateStarMysticState(hermitHistoryView)||!validateStarMysticLife(hermitHistoryView)||!validatePainState(demonessHistoryView)||!validatePainLife(demonessHistoryView)||!validateGuardianState(warriorHistoryView)||!validateGuardianLife(warriorHistoryView)||!validateDreamStealerState(errorHistoryView)||!validateDreamStealerLife(errorHistoryView)||!validateTravelerState(doorHistoryView)||!validateTravelerLife(doorHistoryView)||!validateGatekeeperState(deathHistoryView)||!validateGatekeeperLife(deathHistoryView)||!validatePriestOfLightState(sunHistoryView)||!validatePriestOfLightLife(sunHistoryView)||!validateOceanSingerState(sailorHistoryView)||!validateOceanSingerLife(sailorHistoryView)||!validateMysticismMagisterState(readerHistoryView)||!validateMysticismMagisterLife(readerHistoryView)||!validateSpiritWarlockState(darknessHistoryView)||!validateSpiritWarlockLife(darknessHistoryView)||!validateCrimsonScholarState(moonHistoryView)||!validateCrimsonScholarLife(moonHistoryView)||!validateAstronomerState(paragonHistoryView)||!validateAstronomerLife(s as unknown as SliceState)||!validateDreamwalkerState(s as unknown as SliceState)||!validateDreamwalkerLife(s as unknown as SliceState)||!validateReaperState(s as unknown as SliceState)||!validateReaperLife(s as unknown as SliceState)||!validateMarionettistState(divinerHistoryView)||!validateBiologistState(motherHistoryView)||!validateBiologistLife(motherHistoryView)||!validateJudgeState(justiciarHistoryView)||!validateJudgeLife(justiciarHistoryView)||!validateCorruptionBaronState(blackEmperorHistoryView)||!validateCorruptionBaronLife(blackEmperorHistoryView)||!validateCalamityPriestState(wheelHistoryView)||!validateCalamityPriestLife(wheelHistoryView)||!validateZombieState(chainedHistoryView)||!validateZombieLife(s as unknown as SliceState)||!validateDemonState(abyssHistoryView)||!validateDemonLife(s as unknown as SliceState)||!validateRoseBishopState(hangedManHistoryView)||!validateRoseBishopLife(hangedManHistoryView)||!validateScrollProfessorState(hermitHistoryView)||!validateScrollProfessorLife(hermitHistoryView)||!validatePleasureState(demonessHistoryView)||!validatePleasureLife(demonessHistoryView)||!validateDawnPaladinState(warriorHistoryView)||!validateDawnPaladinLife(warriorHistoryView)||!validateFireThiefState(errorHistoryView)||!validateFireThiefLife(errorHistoryView)||!validateRecorderState(doorHistoryView)||!validateRecorderLife(doorHistoryView)||!validateSpiritGuideState(deathHistoryView)||!validateSpiritGuideLife(deathHistoryView)||!validateNotaryState(sunHistoryView)||!validateNotaryLife(sunHistoryView)||!validateWindBlessedState(sailorHistoryView)||!validateWindBlessedLife(sailorHistoryView)||!validatePolymathState(readerHistoryView)||!validatePolymathLife(readerHistoryView)||!validateSootherState(darknessHistoryView)||!validateSootherLife(s as unknown as SliceState)||!validatePotionProfessorState(moonHistoryView)||!validatePotionProfessorLife(moonHistoryView)||!validateArtisanState(paragonHistoryView)||!validateArtisanLife(s as unknown as SliceState)||!validateHypnotistState(s as unknown as SliceState)||!validateHypnotistLife(s as unknown as SliceState)||!validateConspiratorState(s as unknown as SliceState)||!validateConspiratorLife(s as unknown as SliceState)||!validFacelessState(divinerHistoryView)||!validateHarvestpriestState(motherHistoryView)||!validateHarvestpriestLife(motherHistoryView)||!validatePhysicianState(motherHistoryView)||!validatePhysicianLife(motherHistoryView)||!validateCultivatorState(motherHistoryView)||!validateCultivatorLife(motherHistoryView)||!validateInterrogatorState(justiciarHistoryView)||!validateInterrogatorLife(justiciarHistoryView)||!validateSheriffState(justiciarHistoryView)||!validateSheriffLife(justiciarHistoryView)||!validateArbiterState(justiciarHistoryView)||!validateArbiterLife(justiciarHistoryView)||!validateBriberState(blackEmperorHistoryView)||!validateBriberLife(blackEmperorHistoryView)||!validateBarbarianState(blackEmperorHistoryView)||!validateBarbarianLife(blackEmperorHistoryView)||!validateLawyerState(blackEmperorHistoryView)||!validateLawyerLife(blackEmperorHistoryView)||!validateLuckyState(wheelHistoryView)||!validateLuckyLife(wheelHistoryView)||!validateMachineState(wheelHistoryView)||!validateMachineLife(wheelHistoryView)||!validateMonsterState(wheelHistoryView)||!validateMonsterLife(wheelHistoryView)||!validateWerewolfState(chainedHistoryView)||!validateWerewolfLife(s as unknown as SliceState)||!validateMadmanState(chainedHistoryView)||!validateMadmanLife(s as unknown as SliceState)||!validatePrisonerState(chainedHistoryView)||!validatePrisonerLife(s as unknown as SliceState)||!validateSerialKillerState(abyssHistoryView)||!validateSerialKillerLife(s as unknown as SliceState)||!validateUnwingedState(abyssHistoryView)||!validateUnwingedLife(s as unknown as SliceState)||!validateCriminalState(abyssHistoryView)||!validateCriminalLife(s as unknown as SliceState)||!validateShadowAsceticState(hangedManHistoryView)||!validateShadowAsceticLife(hangedManHistoryView)||!validateListenerState(hangedManHistoryView)||!validateListenerLife(hangedManHistoryView)||!validateSecretSupplicantState(hangedManHistoryView)||!validateSecretSupplicantLife(hangedManHistoryView)||!validateWizardState(hermitHistoryView)||!validateWizardLife(hermitHistoryView)||!validateCombatScholarState(hermitHistoryView)||!validateCombatScholarLife(hermitHistoryView)||!validatePryerState(hermitHistoryView)||!validatePryerLife(hermitHistoryView)||!validateWitchState(demonessHistoryView)||!validateWitchLife(demonessHistoryView)||!validateInstigatorState(demonessHistoryView)||!validateInstigatorLife(demonessHistoryView)||!validateAssassinState(demonessHistoryView)||!validateAssassinLife(demonessHistoryView)||!validateWeaponmasterState(warriorHistoryView)||!validateWeaponmasterLife(warriorHistoryView)||!validateGladiatorState(warriorHistoryView)||!validateGladiatorLife(warriorHistoryView)||!validateWarriorState(warriorHistoryView)||!validateWarriorLife(warriorHistoryView)||!validateCryptologistState(errorHistoryView)||!validateCryptologistLife(s as unknown as SliceState)||!validateSwindlerState(errorHistoryView)||!validateSwindlerLife(s as unknown as SliceState)||!validateMarauderDispute(s as unknown as SliceState)||!validateMarauderState(errorHistoryView)||!validateMarauderLife(s as unknown as SliceState)||!validateAstrologerState(doorHistoryView)||!validateAstrologerLife(s as unknown as SliceState)||!validateTrickmasterState(doorHistoryView)||!validateTrickmasterLife(s as unknown as SliceState)||!validateApprenticeState(doorHistoryView)||!validateApprenticeLife(s as unknown as SliceState)||!validateSpiritmediumState(deathHistoryView)||!validateSpiritmediumLife(deathHistoryView)||!validateGravediggerState(deathHistoryView)||!validateGravediggerLife(deathHistoryView)||!validateCorpsecollectorState(deathHistoryView)||!validateCorpsecollectorLife(deathHistoryView)||!validateSunpriestState(sunHistoryView)||!validateSunpriestLife(sunHistoryView)||!validateLightprayerState(sunHistoryView)||!validateLightprayerLife(sunHistoryView)||!validateBardState(sunHistoryView)||!validateBardLife(sunHistoryView)||!validateNavigatorState(sailorHistoryView)||!validateNavigatorLife(sailorHistoryView)||!validateRagerState(sailorHistoryView)||!validateRagerLife(sailorHistoryView)||!validateSailorState(sailorHistoryView)||!validateSailorLife(sailorHistoryView)||!validateDetectiveState(readerHistoryView)||!validateDetectiveLife(readerHistoryView)||!validateReasonerState(readerHistoryView)||!validateReasonerLife(readerHistoryView)||!validateReaderState(readerHistoryView)||!validateReaderLife(readerHistoryView)||!validateNightmareState(darknessHistoryView)||!validateNightmareLife(s as unknown as SliceState)||!validateMidnightState(darknessHistoryView)||!validateMidnightLife(s as unknown as SliceState)||!validateSleeplessState(darknessHistoryView)||!validateSleeplessWatch(s as unknown as SliceState)||!validateVampireState(moonHistoryView)||!validateVampireLife(moonHistoryView)||!validateAppraiserState(paragonHistoryView)||!validateAppraiserPractice(s as unknown as SliceState)||!validatePsychologistState(s as unknown as SliceState)||!validatePsychologistSocial(s as unknown as SliceState)||!validatePyromaniacState(s as unknown as SliceState)||!validatePyromaniacPractice(s as unknown as SliceState)||!validateMagicianState(divinerHistoryView)||!validateMagicianPractice(divinerHistoryView)||!validateTamerState(moonHistoryView)||!validateTamerAnimals(moonHistoryView)||!validateApothecaryState(moonHistoryView)||!validateApothecaryClinic(moonHistoryView)||!validateArchaeologistState(paragonHistoryView)||!validateArchaeologistExploration(s as unknown as SliceState)||!validateSavantState(paragonHistoryView)||!validateSavantCraft(s as unknown as SliceState)||!validateTownState(s as unknown as SliceState)||!validateMindreaderState(s as unknown as SliceState)||!validateMindreaderSocial(s as unknown as SliceState)||!validateAudienceState(s as unknown as SliceState)||!validateAudienceSocial(s as unknown as SliceState)||!validateProvokerState(s as unknown as SliceState)||!validateProvokerAdventure(s as unknown as SliceState)||!validateSeerState(divinerHistoryView)||!validateHunterState(s as unknown as SliceState)||!validateHunterAdventure(s as unknown as SliceState)||!validateClownState(divinerHistoryView)||!validateClownAdventure(divinerHistoryView))return fail();
+  const hunterHistoryView=current.redPriest.source?redPriestSourceView(current,current.redPriest.source):current;
+  const audienceHistoryView=current.visionary.source?visionarySourceView(current,current.visionary.source):current;
+  const motherS1HistoryView=current.mother.source?getMotherSourceView(current,current.mother.source):current;
+  const justiciarS1HistoryView=current.justiciar.source?getJusticiarSourceView(current,current.justiciar.source):current;
+  const emperorS1HistoryView=current.blackEmperor.source?blackEmperorSourceView(current,current.blackEmperor.source):current;
+  const wheelS1HistoryView=current.wheelOfFortune.source?wheelOfFortuneSourceView(current,current.wheelOfFortune.source):current;
+  const chainedS1HistoryView=current.chained.source?chainedSourceView(current,current.chained.source):current;
+  const abyssS1HistoryView=current.abyss.source?abyssSourceView(current,current.abyss.source):current;
+  const hangedManS1HistoryView=current.hangedMan.source?hangedManSourceView(current,current.hangedMan.source):current;
+  const hermitS1HistoryView=current.hermit.source?hermitSourceView(current,current.hermit.source):current;
+  const demonessS1HistoryView=current.demoness.source?demonessSourceView(current,current.demoness.source):current;
+  const warriorS1HistoryView=current.twilightGiant.source?twilightGiantSourceView(current,current.twilightGiant.source):current;
+  const errorS1HistoryView=current.errorAscent.source?errorAscentSourceView(current,current.errorAscent.source):current;
+  const doorS1HistoryView=current.door.source?doorSourceView(current,current.door.source):current;
+  const deathS1HistoryView=current.death.source?deathSourceView(current,current.death.source):current;
+  const sunS1HistoryView=current.sun.source?sunSourceView(current,current.sun.source):current;
+  const tyrantS1HistoryView=current.tyrant.source?tyrantSourceView(current,current.tyrant.source):current;
+  const whiteTowerS1HistoryView=current.whiteTower.source?whiteTowerSourceView(current,current.whiteTower.source):current;
+  const darknessS1HistoryView=current.darkness.source?darknessSourceView(current,current.darkness.source):current;
+  const moonS1HistoryView=current.moon.source?moonSourceView(current,current.moon.source):current;
+  const paragonS1HistoryView=current.perfecter.source?perfecterSourceView(current,current.perfecter.source):current;
+  const progressionHistoryView=current.mother.source?motherS1HistoryView:current.justiciar.source?justiciarS1HistoryView:current.blackEmperor.source?emperorS1HistoryView:current.wheelOfFortune.source?wheelS1HistoryView:current.chained.source?chainedS1HistoryView:current.abyss.source?abyssS1HistoryView:current.hangedMan.source?hangedManS1HistoryView:current.hermit.source?hermitS1HistoryView:current.demoness.source?demonessS1HistoryView:current.twilightGiant.source?warriorS1HistoryView:current.errorAscent.source?errorS1HistoryView:current.door.source?doorS1HistoryView:current.death.source?deathS1HistoryView:current.sun.source?sunS1HistoryView:current.tyrant.source?tyrantS1HistoryView:current.whiteTower.source?whiteTowerS1HistoryView:current.darkness.source?darknessS1HistoryView:current.moon.source?moonS1HistoryView:current.perfecter.source?paragonS1HistoryView:current.visionary.source?audienceHistoryView:current.redPriest.source?hunterHistoryView:divinerHistoryView;
+  if(!validateNatureWalkerState(motherS1HistoryView)||!validateHandOfOrderState(justiciarS1HistoryView)||!validatePrinceOfAbolitionState(emperorS1HistoryView)||!validateMercurySnakeState(wheelS1HistoryView)||!validateAbominationState(chainedS1HistoryView)||!validateUncleanMonarchState(abyssS1HistoryView)||!validateDarkAngelState(hangedManS1HistoryView)||!validateKnowledgeEmperorState(hermitS1HistoryView)||!validateApocalypseDemonessState(demonessS1HistoryView)||!validateDivineHandState(warriorS1HistoryView)||!validateTimeWormState(errorS1HistoryView)||!validateStarKeyState(doorS1HistoryView)||!validatePaleEmperorState(deathS1HistoryView)||!validatePureWhiteAngelState(sunS1HistoryView)||!validateThunderGodState(tyrantS1HistoryView)||!validateAllKnowingEyeState(whiteTowerS1HistoryView)||!validateMisfortuneKnightState(darknessS1HistoryView)||!validateBeautyGoddessState(moonS1HistoryView)||!validateCivilizationEnlightenerState(paragonS1HistoryView))return fail();
+  const motherHistoryView=natureWalkerInheritedView(motherS1HistoryView);
+  const justiciarHistoryView=handOfOrderInheritedView(justiciarS1HistoryView);
+  const blackEmperorHistoryView=princeOfAbolitionInheritedView(emperorS1HistoryView);
+  const wheelHistoryView=mercurySnakeInheritedView(wheelS1HistoryView);
+  const chainedHistoryView=abominationInheritedView(chainedS1HistoryView);
+  const abyssHistoryView=uncleanMonarchInheritedView(abyssS1HistoryView);
+  const hangedManHistoryView=darkAngelInheritedView(hangedManS1HistoryView);
+  const hermitHistoryView=knowledgeEmperorInheritedView(hermitS1HistoryView);
+  const demonessHistoryView=apocalypseDemonessInheritedView(demonessS1HistoryView);
+  const warriorHistoryView=divineHandInheritedView(warriorS1HistoryView);
+  const errorHistoryView=timeWormInheritedView(errorS1HistoryView);
+  const doorHistoryView=starKeyInheritedView(doorS1HistoryView);
+  const readerHistoryView=allKnowingEyeInheritedView(whiteTowerS1HistoryView);
+  const sailorHistoryView=thunderGodInheritedView(tyrantS1HistoryView);
+  const deathHistoryView=paleEmperorInheritedView(deathS1HistoryView);
+  if(!validateFerrymanEra(deathS1HistoryView))return fail();
+  const sunHistoryView=pureWhiteAngelInheritedView(sunS1HistoryView);
+  const darknessHistoryView=misfortuneKnightInheritedView(darknessS1HistoryView);
+  const moonHistoryView=beautyGoddessInheritedView(moonS1HistoryView);
+  const paragonHistoryView=civilizationEnlightenerInheritedView(paragonS1HistoryView);
+  if(!validateWriterState(audienceHistoryView)||!validateConquerorState(hunterHistoryView)||!validateAttendantMysteriesState(divinerHistoryView)||!validateBarrenMatriarchState(motherHistoryView)||!validateBalancerState(justiciarHistoryView)||!validateEntropyDukeState(blackEmperorHistoryView)||!validateFateProphetState(wheelHistoryView)||!validateAncientEvilState(chainedHistoryView)||!validateBloodDukeState(abyssHistoryView)||!validateElderState(hangedManHistoryView)||!validateSageState(hermitHistoryView)||!validateCalamityDemonessState(demonessHistoryView)||!validateGloryState(warriorHistoryView)||!validateFateTrojanState(errorHistoryView)||!validatePlaneswalkerState(doorHistoryView)||!validateDeathConsulState(deathHistoryView)||!validateLightSeekerState(sunHistoryView)||!validateCatastropheState(sailorHistoryView)||!validateWisdomAngelState(readerHistoryView)||!validateConcealmentServantState(darknessHistoryView)||!validateLifeGiverState(moonHistoryView)||!validateKnowledgeMentorState(paragonHistoryView)||!validateDiscernerState(audienceHistoryView)||!validateWeatherWarlockState(hunterHistoryView)||!validateMiracleWorkerState(divinerHistoryView)||!validateCoffinBearerState(motherHistoryView)||!validateChaosHunterState(justiciarHistoryView)||!validateFrenzyMageState(blackEmperorHistoryView)||!validateChaosWalkerState(wheelHistoryView)||!validateSilentDiscipleState(chainedHistoryView)||!validateBlathererState(abyssHistoryView)||!validateThreeHeadedTemplarState(hangedManHistoryView)||!validateProphecyMasterState(hermitHistoryView)||!validateUnagingDemonessState(demonessHistoryView)||!validateSilverKnightState(warriorHistoryView)||!validateDeceitMentorState(errorHistoryView)||!validateWandererState(doorHistoryView)||!validateFerrymanState(deathHistoryView)||!validateJusticeMentorState(sunHistoryView)||!validateSeaKingState(sailorHistoryView)||!validateInsightScholarState(readerHistoryView)||!validateFearBishopState(darknessHistoryView)||!validateSummoningMasterState(moonHistoryView)||!validateArcaneScholarState(paragonHistoryView)||!validateDreamWeaverState(audienceHistoryView)||!validateWarBishopState(hunterHistoryView)||!validateAncientScholarState(divinerHistoryView)||!validateLongChapterState(current.death.source?deathS1HistoryView:divinerHistoryView)||!validateAncientAlchemistState(motherHistoryView)||!validateImperativeMageState(justiciarHistoryView)||!validateFallenEarlState(blackEmperorHistoryView)||!validateMisfortuneMageState(wheelHistoryView)||!validatePuppetState(chainedHistoryView)||!validateDevilState(abyssHistoryView)||!validateBlackKnightState(hangedManHistoryView)||!validateMysticState(hermitHistoryView)||!validateDespairState(demonessHistoryView)||!validateDemonHunterState(warriorHistoryView)||!validateParasiteState(errorHistoryView)||!validateSecretsSorcererState(doorHistoryView)||!validateUndyingState(deathHistoryView)||!validateUnshadowedState(sunHistoryView)||!validateCataclysmPriestState(sailorHistoryView)||!validateProphetState(readerHistoryView)||!validateNightwatcherState(darknessHistoryView)||!validateWitchKingState(moonHistoryView)||!validateAlchemistState(paragonHistoryView)||!validateManipulatorState(audienceHistoryView)||!validateIronBloodKnightState(hunterHistoryView)||!validateBizarroSorcererState(divinerHistoryView)||!validateDruidState(motherHistoryView)||!validateDruidLife(motherHistoryView)||!validatePunishmentKnightState(justiciarHistoryView)||!validatePunishmentKnightLife(justiciarHistoryView)||!validateMentorDisorderState(blackEmperorHistoryView)||!validateMentorDisorderLife(blackEmperorHistoryView)||!validateWinnerState(wheelHistoryView)||!validateWinnerLife(wheelHistoryView)||!validateWraithState(chainedHistoryView)||!validateWraithLife(chainedHistoryView)||!validateDesireApostleState(abyssHistoryView)||!validateDesireApostleLife(abyssHistoryView)||!validateShepherdState(hangedManHistoryView)||!validateShepherdLife(hangedManHistoryView)||!validateStarMysticState(hermitHistoryView)||!validateStarMysticLife(hermitHistoryView)||!validatePainState(demonessHistoryView)||!validatePainLife(demonessHistoryView)||!validateGuardianState(warriorHistoryView)||!validateGuardianLife(warriorHistoryView)||!validateDreamStealerState(errorHistoryView)||!validateDreamStealerLife(errorHistoryView)||!validateTravelerState(doorHistoryView)||!validateTravelerLife(doorHistoryView)||!validateGatekeeperState(deathHistoryView)||!validateGatekeeperLife(deathHistoryView)||!validatePriestOfLightState(sunHistoryView)||!validatePriestOfLightLife(sunHistoryView)||!validateOceanSingerState(sailorHistoryView)||!validateOceanSingerLife(sailorHistoryView)||!validateMysticismMagisterState(readerHistoryView)||!validateMysticismMagisterLife(readerHistoryView)||!validateSpiritWarlockState(darknessHistoryView)||!validateSpiritWarlockLife(darknessHistoryView)||!validateCrimsonScholarState(moonHistoryView)||!validateCrimsonScholarLife(moonHistoryView)||!validateAstronomerState(paragonHistoryView)||!validateAstronomerLife(paragonHistoryView)||!validateDreamwalkerState(audienceHistoryView)||!validateDreamwalkerLife(audienceHistoryView)||!validateReaperState(hunterHistoryView)||!validateReaperLife(hunterHistoryView)||!validateMarionettistState(divinerHistoryView)||!validateBiologistState(motherHistoryView)||!validateBiologistLife(motherHistoryView)||!validateJudgeState(justiciarHistoryView)||!validateJudgeLife(justiciarHistoryView)||!validateCorruptionBaronState(blackEmperorHistoryView)||!validateCorruptionBaronLife(blackEmperorHistoryView)||!validateCalamityPriestState(wheelHistoryView)||!validateCalamityPriestLife(wheelHistoryView)||!validateZombieState(chainedHistoryView)||!validateZombieLife(chainedHistoryView)||!validateDemonState(abyssHistoryView)||!validateDemonLife(abyssHistoryView)||!validateRoseBishopState(hangedManHistoryView)||!validateRoseBishopLife(hangedManHistoryView)||!validateScrollProfessorState(hermitHistoryView)||!validateScrollProfessorLife(hermitHistoryView)||!validatePleasureState(demonessHistoryView)||!validatePleasureLife(demonessHistoryView)||!validateDawnPaladinState(warriorHistoryView)||!validateDawnPaladinLife(warriorHistoryView)||!validateFireThiefState(errorHistoryView)||!validateFireThiefLife(errorHistoryView)||!validateRecorderState(doorHistoryView)||!validateRecorderLife(doorHistoryView)||!validateSpiritGuideState(deathHistoryView)||!validateSpiritGuideLife(deathHistoryView)||!validateNotaryState(sunHistoryView)||!validateNotaryLife(sunHistoryView)||!validateWindBlessedState(sailorHistoryView)||!validateWindBlessedLife(sailorHistoryView)||!validatePolymathState(readerHistoryView)||!validatePolymathLife(readerHistoryView)||!validateSootherState(darknessHistoryView)||!validateSootherLife(darknessHistoryView)||!validatePotionProfessorState(moonHistoryView)||!validatePotionProfessorLife(moonHistoryView)||!validateArtisanState(paragonHistoryView)||!validateArtisanLife(paragonHistoryView)||!validateHypnotistState(audienceHistoryView)||!validateHypnotistLife(audienceHistoryView)||!validateConspiratorState(hunterHistoryView)||!validateConspiratorLife(hunterHistoryView)||!validFacelessState(divinerHistoryView)||!validateHarvestpriestState(motherHistoryView)||!validateHarvestpriestLife(motherHistoryView)||!validatePhysicianState(motherHistoryView)||!validatePhysicianLife(motherHistoryView)||!validateCultivatorState(motherHistoryView)||!validateCultivatorLife(motherHistoryView)||!validateInterrogatorState(justiciarHistoryView)||!validateInterrogatorLife(justiciarHistoryView)||!validateSheriffState(justiciarHistoryView)||!validateSheriffLife(justiciarHistoryView)||!validateArbiterState(justiciarHistoryView)||!validateArbiterLife(justiciarHistoryView)||!validateBriberState(blackEmperorHistoryView)||!validateBriberLife(blackEmperorHistoryView)||!validateBarbarianState(blackEmperorHistoryView)||!validateBarbarianLife(blackEmperorHistoryView)||!validateLawyerState(blackEmperorHistoryView)||!validateLawyerLife(blackEmperorHistoryView)||!validateLuckyState(wheelHistoryView)||!validateLuckyLife(wheelHistoryView)||!validateMachineState(wheelHistoryView)||!validateMachineLife(wheelHistoryView)||!validateMonsterState(wheelHistoryView)||!validateMonsterLife(wheelHistoryView)||!validateWerewolfState(chainedHistoryView)||!validateWerewolfLife(chainedHistoryView)||!validateMadmanState(chainedHistoryView)||!validateMadmanLife(chainedHistoryView)||!validatePrisonerState(chainedHistoryView)||!validatePrisonerLife(chainedHistoryView)||!validateSerialKillerState(abyssHistoryView)||!validateSerialKillerLife(abyssHistoryView)||!validateUnwingedState(abyssHistoryView)||!validateUnwingedLife(abyssHistoryView)||!validateCriminalState(abyssHistoryView)||!validateCriminalLife(abyssHistoryView)||!validateShadowAsceticState(hangedManHistoryView)||!validateShadowAsceticLife(hangedManHistoryView)||!validateListenerState(hangedManHistoryView)||!validateListenerLife(hangedManHistoryView)||!validateSecretSupplicantState(hangedManHistoryView)||!validateSecretSupplicantLife(hangedManHistoryView)||!validateWizardState(hermitHistoryView)||!validateWizardLife(hermitHistoryView)||!validateCombatScholarState(hermitHistoryView)||!validateCombatScholarLife(hermitHistoryView)||!validatePryerState(hermitHistoryView)||!validatePryerLife(hermitHistoryView)||!validateWitchState(demonessHistoryView)||!validateWitchLife(demonessHistoryView)||!validateInstigatorState(demonessHistoryView)||!validateInstigatorLife(demonessHistoryView)||!validateAssassinState(demonessHistoryView)||!validateAssassinLife(demonessHistoryView)||!validateWeaponmasterState(warriorHistoryView)||!validateWeaponmasterLife(warriorHistoryView)||!validateGladiatorState(warriorHistoryView)||!validateGladiatorLife(warriorHistoryView)||!validateWarriorState(warriorHistoryView)||!validateWarriorLife(warriorHistoryView)||!validateCryptologistState(errorHistoryView)||!validateCryptologistLife(s as unknown as SliceState)||!validateSwindlerState(errorHistoryView)||!validateSwindlerLife(s as unknown as SliceState)||!validateMarauderDispute(s as unknown as SliceState)||!validateMarauderState(errorHistoryView)||!validateMarauderLife(s as unknown as SliceState)||!validateAstrologerState(doorHistoryView)||!validateAstrologerLife(doorHistoryView)||!validateTrickmasterState(doorHistoryView)||!validateTrickmasterLife(doorHistoryView)||!validateApprenticeState(doorHistoryView)||!validateApprenticeLife(doorHistoryView)||!validateSpiritmediumState(deathHistoryView)||!validateSpiritmediumLife(deathHistoryView)||!validateGravediggerState(deathHistoryView)||!validateGravediggerLife(deathHistoryView)||!validateCorpsecollectorState(deathHistoryView)||!validateCorpsecollectorLife(deathHistoryView)||!validateSunpriestState(sunHistoryView)||!validateSunpriestLife(sunHistoryView)||!validateLightprayerState(sunHistoryView)||!validateLightprayerLife(sunHistoryView)||!validateBardState(sunHistoryView)||!validateBardLife(sunHistoryView)||!validateNavigatorState(sailorHistoryView)||!validateNavigatorLife(sailorHistoryView)||!validateRagerState(sailorHistoryView)||!validateRagerLife(sailorHistoryView)||!validateSailorState(sailorHistoryView)||!validateSailorLife(sailorHistoryView)||!validateDetectiveState(readerHistoryView)||!validateDetectiveLife(readerHistoryView)||!validateReasonerState(readerHistoryView)||!validateReasonerLife(readerHistoryView)||!validateReaderState(readerHistoryView)||!validateReaderLife(readerHistoryView)||!validateNightmareState(darknessHistoryView)||!validateNightmareLife(darknessHistoryView)||!validateMidnightState(darknessHistoryView)||!validateMidnightLife(darknessHistoryView)||!validateSleeplessState(darknessHistoryView)||!validateSleeplessWatch(darknessHistoryView)||!validateVampireState(moonHistoryView)||!validateVampireLife(moonHistoryView)||!validateAppraiserState(paragonHistoryView)||!validateAppraiserPractice(paragonHistoryView)||!validatePsychologistState(audienceHistoryView)||!validatePsychologistSocial(audienceHistoryView)||!validatePyromaniacState(hunterHistoryView)||!validatePyromaniacPractice(hunterHistoryView)||!validateMagicianState(divinerHistoryView)||!validateMagicianPractice(divinerHistoryView)||!validateTamerState(moonHistoryView)||!validateTamerAnimals(moonHistoryView)||!validateApothecaryState(moonHistoryView)||!validateApothecaryClinic(moonHistoryView)||!validateArchaeologistState(paragonHistoryView)||!validateArchaeologistExploration(paragonHistoryView)||!validateSavantState(paragonHistoryView)||!validateSavantCraft(paragonHistoryView)||!validateTownState(s as unknown as SliceState)||!validateMindreaderState(audienceHistoryView)||!validateMindreaderSocial(audienceHistoryView)||!validateAudienceState(audienceHistoryView)||!validateAudienceSocial(audienceHistoryView)||!validateProvokerState(hunterHistoryView)||!validateProvokerAdventure(hunterHistoryView)||!validateSeerState(progressionHistoryView)||!validateHunterState(hunterHistoryView)||!validateHunterAdventure(hunterHistoryView)||!validateClownState(divinerHistoryView)||!validateClownAdventure(divinerHistoryView))return fail();
   }
   const character=s.character;if(!record(character)||!keys(character,['name','portraitId','originId','originName','professionId','professionName','age','gender','education','learningBonus','weeklyWage','coreStats','birthplace','appearanceDescription','traits','flaw','acceptedConditionIds','creationCosts']))return fail();
   if(!['name','portraitId','originId','originName','professionId','professionName','gender','education'].every(k=>str(character[k],500))||!int(character.age,1,150)||!int(character.learningBonus,0,1)||!int(character.weeklyWage)||!record(character.coreStats)||!keys(character.coreStats,['physique','perception','will','knowledge'])||!Object.values(character.coreStats).every(v=>int(v,0,500)))return fail();
@@ -726,7 +1013,7 @@ function assertSliceState(input:unknown,validateHistories:boolean,retainFool=fal
   if(!Array.isArray(s.caseArchive)||s.caseArchive.length>1||!s.caseArchive.every(e=>record(e)&&keys(e,['kind','title','summary','workers','accountability','hazard','relationship'])&&one(e.kind,['COMPLETED','ABANDONED'])&&['title','summary','workers','accountability','hazard','relationship'].every(k=>str(e[k],3000))))return fail();
   if(s.status==='ACTIVE'&&ending!==null||s.status!=='ACTIVE'&&s.status!=='REVIVAL_PENDING'&&(ending===null||s.activeEvent!==null||s.combat!==null)||s.status==='DEAD'&&record(ending)&&ending.kind!=='DEATH')return fail();
   const ch=s.lastCheck;if(ch!==null&&(!record(ch)||!keys(ch,['ability','baseAbility','modifiers','effectiveAbility','difficulty','chance','roll','tier'])||!one(ch.ability,['physique','perception','will','knowledge'])||!int(ch.baseAbility,0,500)||!int(ch.difficulty,0,500)||!int(ch.chance,5,95)||!int(ch.roll,1,100)||!one(ch.tier,['GREAT_SUCCESS','SUCCESS','FAILURE','GREAT_FAILURE'])||!Array.isArray(ch.modifiers)||!ch.modifiers.every(m=>record(m)&&keys(m,['source','value'])&&str(m.source,128)&&int(m.value,-500,500))||!int(ch.effectiveAbility,-8000,8500)))return fail();
-  return foolEngine;
+  return {...(motherEngine?{mother:motherEngine}:{}),...(justiciarEngine?{justiciar:justiciarEngine}:{}),...(foolEngine?{fool:foolEngine}:{}),...(redPriestEngine?{redPriest:redPriestEngine}:{}),...(visionaryEngine?{visionary:visionaryEngine}:{}),...(perfecterEngine?{perfecter:perfecterEngine}:{}),...(moonEngine?{moon:moonEngine}:{}),...(darknessEngine?{darkness:darknessEngine}:{}),...(whiteTowerEngine?{whiteTower:whiteTowerEngine}:{}),...(tyrantEngine?{tyrant:tyrantEngine}:{}),...(sunEngine?{sun:sunEngine}:{}),...(deathEngine?{death:deathEngine}:{}),...(doorEngine?{door:doorEngine}:{}),...(errorAscentEngine?{errorAscent:errorAscentEngine}:{}),...(twilightGiantEngine?{twilightGiant:twilightGiantEngine}:{}),...(demonessEngine?{demoness:demonessEngine}:{}),...(hermitEngine?{hermit:hermitEngine}:{}),...(hangedManEngine?{hangedMan:hangedManEngine}:{}),...(abyssEngine?{abyss:abyssEngine}:{}),...(chainedEngine?{chained:chainedEngine}:{}),...(blackEmperorEngine?{blackEmperor:blackEmperorEngine}:{}),...(wheelOfFortuneEngine?{wheelOfFortune:wheelOfFortuneEngine}:{})};
 }
 
 /** Inductive transition check, never an import assertion or an authority mint.
@@ -747,6 +1034,408 @@ export function assertValidOwnedFoolTransition(previous:SliceState,next:SliceSta
   if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
   if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
   if(next.fool.journal.length!==previous.fool.journal.length+1||!same(previous.fool.journal,next.fool.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+/** Concrete Red Priest continuation. The caller owns the strictly opened
+ * previous head and verifies its next opaque engine after the real reducer.
+ * This cannot import a snapshot or produce a head from caller-supplied fields. */
+export function assertValidOwnedRedPriestTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Red Priest slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['redPriest','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.redPriest.guidanceKnown||!next.redPriest.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.redPriest.source,next.redPriest.source)||next.redPriest.journal.length!==previous.redPriest.journal.length+1||!same(previous.redPriest.journal,next.redPriest.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedVisionaryTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Visionary slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['visionary','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.visionary.guidanceKnown||!next.visionary.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.visionary.source,next.visionary.source)||next.visionary.journal.length!==previous.visionary.journal.length+1||!same(previous.visionary.journal,next.visionary.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedPerfecterTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Perfecter slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['perfecter','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.perfecter.guidanceKnown||!next.perfecter.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.perfecter.source,next.perfecter.source)||next.perfecter.journal.length!==previous.perfecter.journal.length+1||!same(previous.perfecter.journal,next.perfecter.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedMoonTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Moon slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['moon','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.moon.guidanceKnown||!next.moon.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.moon.source,next.moon.source)||next.moon.journal.length!==previous.moon.journal.length+1||!same(previous.moon.journal,next.moon.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedDarknessTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Darkness slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['darkness','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.darkness.guidanceKnown||!next.darkness.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.darkness.source,next.darkness.source)||next.darkness.journal.length!==previous.darkness.journal.length+1||!same(previous.darkness.journal,next.darkness.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedWhiteTowerTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned WhiteTower slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['whiteTower','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.whiteTower.guidanceKnown||!next.whiteTower.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.whiteTower.source,next.whiteTower.source)||next.whiteTower.journal.length!==previous.whiteTower.journal.length+1||!same(previous.whiteTower.journal,next.whiteTower.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedTyrantTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Tyrant slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['tyrant','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.tyrant.guidanceKnown||!next.tyrant.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.tyrant.source,next.tyrant.source)||next.tyrant.journal.length!==previous.tyrant.journal.length+1||!same(previous.tyrant.journal,next.tyrant.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedSunTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Sun slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['sun','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.sun.guidanceKnown||!next.sun.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.sun.source,next.sun.source)||next.sun.journal.length!==previous.sun.journal.length+1||!same(previous.sun.journal,next.sun.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedDeathTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Death slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['death','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.death.guidanceKnown||!next.death.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.death.source,next.death.source)||next.death.journal.length!==previous.death.journal.length+1||!same(previous.death.journal,next.death.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedDoorTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Door slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['door','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.door.guidanceKnown||!next.door.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.door.source,next.door.source)||next.door.journal.length!==previous.door.journal.length+1||!same(previous.door.journal,next.door.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedErrorAscentTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned ErrorAscent slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['errorAscent','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.errorAscent.guidanceKnown||!next.errorAscent.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.errorAscent.source,next.errorAscent.source)||next.errorAscent.journal.length!==previous.errorAscent.journal.length+1||!same(previous.errorAscent.journal,next.errorAscent.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedTwilightGiantTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned TwilightGiant slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['twilightGiant','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.twilightGiant.guidanceKnown||!next.twilightGiant.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.twilightGiant.source,next.twilightGiant.source)||next.twilightGiant.journal.length!==previous.twilightGiant.journal.length+1||!same(previous.twilightGiant.journal,next.twilightGiant.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedDemonessTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Demoness slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['demoness','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.demoness.guidanceKnown||!next.demoness.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.demoness.source,next.demoness.source)||next.demoness.journal.length!==previous.demoness.journal.length+1||!same(previous.demoness.journal,next.demoness.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedHermitTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Hermit slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['hermit','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.hermit.guidanceKnown||!next.hermit.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.hermit.source,next.hermit.source)||next.hermit.journal.length!==previous.hermit.journal.length+1||!same(previous.hermit.journal,next.hermit.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedHangedManTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned HangedMan slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['hangedMan','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.hangedMan.guidanceKnown||!next.hangedMan.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.hangedMan.source,next.hangedMan.source)||next.hangedMan.journal.length!==previous.hangedMan.journal.length+1||!same(previous.hangedMan.journal,next.hangedMan.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedAbyssTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Abyss slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['abyss','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.abyss.guidanceKnown||!next.abyss.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.abyss.source,next.abyss.source)||next.abyss.journal.length!==previous.abyss.journal.length+1||!same(previous.abyss.journal,next.abyss.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedChainedTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Chained slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['chained','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.chained.guidanceKnown||!next.chained.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.chained.source,next.chained.source)||next.chained.journal.length!==previous.chained.journal.length+1||!same(previous.chained.journal,next.chained.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedWheelOfFortuneTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned WheelOfFortune slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['wheelOfFortune','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.wheelOfFortune.guidanceKnown||!next.wheelOfFortune.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.wheelOfFortune.source,next.wheelOfFortune.source)||next.wheelOfFortune.journal.length!==previous.wheelOfFortune.journal.length+1||!same(previous.wheelOfFortune.journal,next.wheelOfFortune.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedBlackEmperorTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned BlackEmperor slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['blackEmperor','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.blackEmperor.guidanceKnown||!next.blackEmperor.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.blackEmperor.source,next.blackEmperor.source)||next.blackEmperor.journal.length!==previous.blackEmperor.journal.length+1||!same(previous.blackEmperor.journal,next.blackEmperor.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedJusticiarTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Justiciar slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['justiciar','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.justiciar.guidanceKnown||!next.justiciar.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.justiciar.source,next.justiciar.source)||next.justiciar.journal.length!==previous.justiciar.journal.length+1||!same(previous.justiciar.journal,next.justiciar.journal.slice(0,-1)))fail();
+  if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
+  if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
+  if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();
+}
+
+export function assertValidOwnedMotherTransition(previous:SliceState,next:SliceState):void {
+  assertSliceState(next,false);
+  const fail=()=>{throw new TypeError('Invalid owned Mother slice transition');};
+  const same=(a:unknown,b:unknown)=>stableStringify(a)===stableStringify(b);
+  const mutable=new Set<keyof SliceState>(['mother','revision','week','date','actionsRemaining','cash','health','mind','spirituality','status','injuries','injuryRisk','progression','character','seer','random','lastCheck','chronicle','lastResult','arc','ending','aid','combat','activeEvent','eventQueue','pulse','weeklyBudget','wagePaidWeek','lifeTier','nextLifeTier','debts','missedWeeks','credit']);
+  for(const key of Object.keys(previous) as (keyof SliceState)[])if(!mutable.has(key)&&!same(previous[key],next[key]))fail();
+  if(next.revision!==previous.revision+1||previous.status!=='ACTIVE'||!['ACTIVE','DEAD'].includes(next.status)||!next.mother.guidanceKnown||!next.mother.source)fail();
+  const unchangedExcept=(before:object,after:object,allowed:readonly string[]):boolean=>{
+    const omit=(value:object)=>Object.fromEntries(Object.entries(value).filter(([key])=>!allowed.includes(key)));
+    return same(omit(before),omit(after));
+  };
+  if(!unchangedExcept(previous.character,next.character,['coreStats'])||!unchangedExcept(previous.progression,next.progression,['sequence','acting','mastery'])||!unchangedExcept(previous.seer,next.seer,['pollution','completedSources']))fail();
+  if(next.chronicle.length<previous.chronicle.length||!same(previous.chronicle,next.chronicle.slice(0,previous.chronicle.length)))fail();
+  if(!same(previous.mother.source,next.mother.source)||next.mother.journal.length!==previous.mother.journal.length+1||!same(previous.mother.journal,next.mother.journal.slice(0,-1)))fail();
   if(next.status==='ACTIVE'&&(!same(previous.arc,next.arc)||!same(previous.aid,next.aid)||next.ending!==null))fail();
   if(next.status==='DEAD'&&!unchangedExcept(previous.arc,next.arc,['stage']))fail();
   if(next.combat!==null||next.activeEvent!==null||next.eventQueue.length!==0||next.pulse!=='NONE')fail();

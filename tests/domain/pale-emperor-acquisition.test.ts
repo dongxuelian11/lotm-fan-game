@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { validateDeathConsulState } from '../../src/domain/death-consul/index.js';
 import { assertValidSliceState } from '../../src/domain/slice/index.js';
 import { createPaleEmperorState, paleEmperorInheritedView, paleEmperorAcquisitionBlock, validatePaleEmperorState, validatePaleEmperorAcquisitionJournal, validatePaleEmperorEraJournal, validatePaleEmperorFinancialContinuity, PALE_EMPEROR_INHERITED_ABILITY_IDS } from '../../src/domain/pale-emperor/index.js';
+import { PALE_EMPEROR_BOTTLE_IDS } from '../../src/domain/pale-emperor/content.js';
 import { PALE_EMPEROR_ABILITY_IDS } from '../../src/domain/pale-emperor/types.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { originalDeathConsul, taught, prepared, promoted, pe, era, ready, dose, rejectPaleEmperor, rejectIntent, originalDeathRoots } from './pale-emperor-directed-helper.js';
@@ -64,15 +65,20 @@ describe('Pale Emperor independent original bottles and exact current-era receip
     expect(s.random.seed).toBe(source.random.seed); expect(s.combatHistory).toEqual(source.combatHistory); expect(originalDeathRoots(s)).toEqual(originalDeathRoots(source));
     rejectPaleEmperor(s, dose); assertValidSliceState(s);
   }, 300_000);
-  it('requires exhausted failed stock and a paid nextactualweek for any new bottles', () => {
+  it('closes independent resupply and preserves the native three-original success without inventing recovery', () => {
     const start = taught(); rejectPaleEmperor(start, { type: 'REQUEST_SUPPLY' }); rejectPaleEmperor(start, { type: 'RECEIVE_SUPPLY' });
+    rejectPaleEmperor(start, { type: 'REQUEST_RECOVERY_V1', bottleId: dose.bottleId });
+    rejectPaleEmperor(start, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: dose.bottleId });
     const s = promoted();
-    for (const e of journal(s).filter(e => e.command.type === 'REQUEST_SUPPLY')) {
-      expect(e.before.cash - e.after.cash).toBe(20); expect(e.before.actions - e.after.actions).toBe(1);
-      const next = journal(s).find(v => v.command.type === 'RECEIVE_SUPPLY' && v.revision > e.revision)!;
-      expect(next.week).toBeGreaterThan(e.week); expect(next.before).toEqual(next.after);
-    }
-    expect(new Set(s.paleEmperor.bottles.map(b => b.id)).size).toBe(s.paleEmperor.bottles.length);
+    expect(journal(s).filter(e => ['REQUEST_SUPPLY', 'RECEIVE_SUPPLY', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1'].includes(e.command.type))).toEqual([]);
+    expect(s.paleEmperor.bottles.map(b => b.id)).toEqual([...PALE_EMPEROR_BOTTLE_IDS]);
+    expect(s.paleEmperor.bottles.map(b => b.outcome)).toEqual(['FAILURE', 'FAILURE', 'SUCCESS']);
+    expect(s.paleEmperor.bottles.every(b => !Object.hasOwn(b, 'recovery'))).toBe(true);
+    expect(s.paleEmperor.resupply).toEqual({ requestedWeek: null, deliveries: 0 });
+    expect(s.paleEmperor.recoveryScene).toBeUndefined();
+    // Paid same-remnant recovery and historical fourth-plus read-only evidence
+    // are covered separately in pale-emperor-recovery.test.ts, never generated here.
+    assertValidSliceState(s);
   }, 300_000);
 });
 describe('Pale Emperor source, deterministic receipts and live financial continuity', () => {

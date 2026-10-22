@@ -1,3 +1,4 @@
+import { publicPryerFields } from '../sage/life.js';
 import type { ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -338,3 +339,13 @@ export function validateBlackKnightRoundOutcome(v: unknown): v is BlackKnightRou
   return p.enemySpiritualityBefore - enemySpent === p.enemySpirituality && p.playerSpiritualityBefore - playerSpent === p.playerSpiritualityAfter &&
     a.reservePoints - reserveSpent === p.playerReserveAfter && p.playerHealthAfter <= healedHealth;
 }
+
+
+/** Only already resolved public facts; replay provenance is never a renderer payload. */
+export function projectBlackKnightRoundOutcome(o: BlackKnightRoundOutcome) { return {
+  ...publicPryerFields(o, ['targetId', 'round', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'playerReserveAfter', 'enemySpiritualityBefore', 'shadowReady', 'bladeReady', 'wardIgnored']),
+  powerUses: publicPryerFields(o.powerUses, ['ARC_BOLT', 'WARD']),
+  playerActions: o.playerActions.map(a => publicPryerFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'order', 'id', 'paidCost', 'reserveCost', 'healthRestored', 'physicalFactor', 'checkChance', 'checkRoll', 'shadowPrepared', 'bladePaid', 'borrowedSpiritId', 'borrowedMethod'])),
+  enemyActions: o.enemyActions.map(a => publicPryerFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'order', 'planned', 'actual', 'paidCost', 'physicalFactor', 'shadowApplied', 'wardIgnoredBy'])),
+}; }
+export type BlackKnightPublicRoundOutcome = ReturnType<typeof projectBlackKnightRoundOutcome>;

@@ -40,7 +40,7 @@ function savedGame(input: unknown) {
   let state = migrateSliceState(input); assertValidSliceState(state);
   expect(state.schemaVersion).toBe(CURRENT_SCHEMA_VERSION);
   expect(state.contentVersion).toBe(CURRENT_CONTENT_VERSION);
-  const submit = vi.fn<SliceBridge['submitIntent']>(async envelope => {
+  const submit = vi.fn<SliceBridge['submitIntent']>().mockImplementation(async envelope => {
     if (envelope.payload.type === 'CREATE') throw new Error('The original campaign already exists.');
     expect(envelope.runId).toBe(state.runId); expect(envelope.expectedRevision).toBe(state.revision);
     state = applySliceIntent(state, envelope.payload); assertValidSliceState(state);
@@ -52,9 +52,9 @@ function savedGame(input: unknown) {
 type SavedGame = ReturnType<typeof savedGame>;
 async function mount(game: SavedGame) {
   const state = projectSliceState(game.state);
-  const loadRun = vi.fn<SliceBridge['loadRun']>(async () => ({ ok: true, value: projectSliceState(game.state) }));
+  const loadRun = vi.fn<SliceBridge['loadRun']>().mockImplementation(async () => ({ ok: true, value: projectSliceState(game.state) }));
   window.sliceGame = {
-    getBootstrap: vi.fn<SliceBridge['getBootstrap']>(async () => ({ ok: true, value: {
+    getBootstrap: vi.fn<SliceBridge['getBootstrap']>().mockImplementation(async () => ({ ok: true, value: {
       mode: 'browser', activeState: state, runs: [{ runId: state.runId, name: state.character.name, portraitId: state.character.portraitId,
         week: state.week, date: state.date, status: state.status, revision: state.revision, updatedAt: '2026-10-15T14:59:00Z' }],
     } })), loadRun, submitIntent: game.submit,
@@ -73,8 +73,14 @@ async function acknowledgeRound() {
   const reveal = screen.queryByRole('dialog', { name: '战斗回合结果' });
   if (reveal) await userEvent.click(within(reveal).getByRole('button', { name: /^(返回生活|进入下一回合|查看收尾卷宗)$/ }));
 }
-async function openGrowth() {
+async function openGrowth(viaSunPreparation = false) {
   await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+  if (viaSunPreparation) {
+    // Completed S1 now opens S0 preparation; the original S1 records remain reachable from ordinary life.
+    const preparation = await screen.findByRole('region', { name: '序列0 太阳' });
+    await userEvent.click(within(preparation).getByRole('button', { name: '返回普通生活' }));
+    await userEvent.click(screen.getByRole('button', { name: ENTRY }));
+  }
   return screen.findByRole('region', { name: PANEL });
 }
 async function ensurePanel() {
@@ -203,7 +209,9 @@ beforeEach(() => {
   Object.defineProperty(HTMLDialogElement.prototype, 'close', { configurable: true, value: function (this: HTMLDialogElement) { this.removeAttribute('open'); } });
 });
 afterEach(() => {
-  cleanup(); delete window.sliceGame; vi.restoreAllMocks();
+  // vi.fn(initialImplementation) retains that original closure on mockReset.
+  // Install implementations separately so reset releases completed saved campaigns.
+  cleanup(); delete window.sliceGame; vi.resetAllMocks(); vi.restoreAllMocks();
   if (showModal) Object.defineProperty(HTMLDialogElement.prototype, 'showModal', showModal); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal');
   if (close) Object.defineProperty(HTMLDialogElement.prototype, 'close', close); else Reflect.deleteProperty(HTMLDialogElement.prototype, 'close');
 });
@@ -347,7 +355,9 @@ describe('Pure White Angel actual saved campaign navigation and reopening', () =
     expect(game.state.pureWhiteAngel.life.ivan.travelMetres).toBe(89);
     expect(screen.queryByRole('button', { name: '返回普通生活' })).toBeNull();
     expect(game.submit).toHaveBeenCalledTimes(5);
-  }, 120_000);
+    // Five migrated save boundaries, five real commits and six full mounts.
+    // Keep every recovery assertion within this case's bounded CI budget.
+  }, 240_000);
 
   it('asks the same independent spirit and preserves its current refusal without moving or spending its energy', async () => {
     const ask = boundary('residue-trace-ask-same-original-reed-and-record-current-refusal');
@@ -368,7 +378,7 @@ describe('Pure White Angel actual saved campaign navigation and reopening', () =
   it('reopens all three honest reports and the same returned originals with only the one actual focused application rewarded', async () => {
     const practiced = snapshot('practiced'), game = savedGame(practiced);
     await mount(game); expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
-    await openGrowth(); assertResources(practiced);
+    await openGrowth(true); assertResources(practiced);
     expect(screen.getByRole('region', { name: '纯白天使阶段总览' }).textContent).toContain('生活报告3/3 · 反思已完成 · 纯白天使扮演100/100');
     for (const id of ['residue-trace', 'personal-impact', 'screened-return']) {
       await userEvent.selectOptions(screen.getByRole('combobox', { name: '纯白天使目标' }), id);
@@ -452,7 +462,7 @@ describe('Pure White Angel actual saved campaign navigation and reopening', () =
     expect(natural('final')).toEqual(save.final);
     expect(readObjectEntry<SliceIntent[]>(`${ROOT}/natural.json`, 'commands')).toHaveLength(853);
     cleanup(); await mount(game); assertRound(await screen.findByRole('dialog', { name: '战斗回合结果' }), game.state);
-    await acknowledgeRound(); await openGrowth(); assertResources(save.final);
+    await acknowledgeRound(); await openGrowth(true); assertResources(save.final);
     const encounter = screen.getByRole('region', { name: '纯白天使可选真实交战' });
     expect(encounter.textContent).toContain('健康70/100、精神100/100、灵性99/120');
     expect(encounter.textContent).toContain('已投降'); expect(encounter.textContent).toContain('光击储能3/4');

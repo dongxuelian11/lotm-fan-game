@@ -294,6 +294,45 @@ export function applyGloryCommand(s: SliceState, command: GloryCommand, ctx: See
   throw new Error('未知荣耀者命令。');
 }
 
+/** Public physical facts only. Guard and movement actor IDs identify actual people, not replay inputs. */
+export function projectGloryPublicSite(p: import('./life.js').GlorySiteState): import('./life.js').GlorySiteState {
+  const armor = (a: import('./life.js').GloryArmor) => ({ id: a.id, owner: a.owner, formed: a.formed, active: a.active, integrity: a.integrity, remainingSeconds: a.remainingSeconds });
+  const adult = (a: import('./life.js').GloryAdult) => ({ id: a.id, name: a.name, age: a.age, alive: a.alive, location: a.location, energy: a.energy, travelMetres: a.travelMetres });
+  return {
+    siteId: p.siteId, introducedWeek: p.introducedWeek,
+    introducedDate: p.introducedDate ? { epoch: p.introducedDate.epoch, year: p.introducedDate.year, month: p.introducedDate.month, day: p.introducedDate.day } : null,
+    clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, playerEnergy: p.playerEnergy,
+    celia: adult(p.celia), evan: adult(p.evan), armor: p.armor ? armor(p.armor) : null,
+    armorSource: p.armorSource ? { root: p.armorSource.root, promotionWeek: p.armorSource.promotionWeek, introducedWeek: p.armorSource.introducedWeek, actor: p.armorSource.actor, at: p.armorSource.at, snapshot: armor(p.armorSource.snapshot) } : null,
+    armorWorn: p.armorWorn,
+    pads: { id: p.pads.id, ownerId: p.pads.ownerId, issuedWithPlateId: p.pads.issuedWithPlateId, location: p.pads.location, remaining: p.pads.remaining, consumed: p.pads.consumed, worn: p.pads.worn },
+    load: { id: p.load.id, ownerId: p.load.ownerId, location: p.load.location, kilograms: p.load.kilograms, remainingLoads: p.load.remainingLoads, appliedLoads: p.load.appliedLoads, safetyStop: p.load.safetyStop },
+    bridge: { id: p.bridge.id, from: p.bridge.from, to: p.bridge.to, metres: p.bridge.metres, sidePathMetres: p.bridge.sidePathMetres, ordinaryPath: p.bridge.ordinaryPath, crossings: p.bridge.crossings, ordinaryCrossings: p.bridge.ordinaryCrossings },
+    temper: { active: p.temper.active, expiresAt: p.temper.expiresAt },
+    guard: { active: p.guard.active, actorId: p.guard.actorId, expiresAt: p.guard.expiresAt, sharedHealth: p.guard.sharedHealth, sharedEnergy: p.guard.sharedEnergy },
+    plates: p.plates.map(v => ({ id: v.id, caseId: v.caseId, ownerId: v.ownerId, quantity: v.quantity, charges: v.charges, location: v.location, paidPennies: v.paidPennies, preparedWeek: v.preparedWeek })),
+  };
+}
+function projectGloryPublicAttempt(a: import('./life.js').GloryAttempt): import('./life.js').GloryAttempt {
+  const move = (m: import('./life.js').GloryMovement) => ({ from: m.from, to: m.to, mode: m.mode, metres: m.metres, seconds: m.seconds, actorId: m.actorId });
+  return {
+    week: a.week, method: a.method, closed: a.closed, result: a.result, stopped: a.stopped, inspected: a.inspected, permissionWithdrawn: a.permissionWithdrawn,
+    elapsedSeconds: a.elapsedSeconds, playerTravelMetres: a.playerTravelMetres, energySpent: a.energySpent, spiritualitySpent: a.spiritualitySpent, penniesSpent: a.penniesSpent, healthSpent: a.healthSpent,
+    operatorConsent: a.operatorConsent, ownerConsent: a.ownerConsent, routeConsent: a.routeConsent, consentWeek: a.consentWeek, actorId: a.actorId,
+    plateId: a.plateId, plateReturned: a.plateReturned, abilityTier: a.abilityTier, window: a.window, windowExpiresAt: a.windowExpiresAt,
+    padWorn: a.padWorn, padRemoved: a.padRemoved, loadApplied: a.loadApplied, armorWear: a.armorWear, crossed: a.crossed, crossingMethod: a.crossingMethod, actorReturned: a.actorReturned, waits: a.waits,
+    appliedAbilityIds: [...a.appliedAbilityIds], playerMoves: a.playerMoves.map(move), actorMoves: a.actorMoves.map(move), siteAtStart: projectGloryPublicSite(a.siteAtStart), siteAtClose: a.siteAtClose ? projectGloryPublicSite(a.siteAtClose) : null,
+  };
+}
+function projectGloryPublicLife(s: SliceState): import('./life.js').GloryLifeProjection {
+  const p = projectGloryLife(s);
+  return { ...p, site: projectGloryPublicSite(p.site), currentAttempt: p.currentAttempt ? projectGloryPublicAttempt(p.currentAttempt) : null,
+    cases: p.cases.map(c => ({ ...c, attempts: c.attempts.map(projectGloryPublicAttempt) })) };
+}
+function projectGloryPublicEncounter(s: SliceState): import('./encounter.js').GloryEncounterProjection {
+  const p = projectGloryEncounter(s);
+  return { ...p, site: p.site ? projectGloryPublicSite(p.site) : null, startSite: p.startSite ? projectGloryPublicSite(p.startSite) : null };
+}
 export function projectGlory(s: SliceState): GloryProjection {
   const state = s.glory, available = knownChannel(s), promoted = hasGloryHistory(s), actions: GloryAction[] = [];
   const add = (id: string, label: string, cost: string, command: GloryAcquisitionCommand) => { const reason = gloryAcquisitionBlock(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason }); };
@@ -338,7 +377,7 @@ export function projectGlory(s: SliceState): GloryProjection {
       `洛肯健康${s.silverKnight.encounter.post.enemyHealth}/100、精神${s.silverKnight.encounter.post.enemyMind}/100、灵性${s.silverKnight.encounter.post.resources.enemySpirituality}；${s.silverKnight.encounter.post.status === 'DEAD' ? '已经死亡' : s.silverKnight.encounter.post.status === 'SURRENDERED' ? '已经投降' : '保留此前的接触结果'}，原手杖与伤势留在他自己的记录里。`,
       `此前${s.silverKnight.encounter.hunts.filter(h => h.status === 'DEAD').length}只亲猎原体已死亡，${s.silverKnight.encounter.hunts.filter(h => h.status === 'SURRENDERED').length}只已投降；${s.silverKnight.encounter.remains.filter(r => r.status === 'CONSUMED').length}份遗骸已经耗用，旧祝福与祭坛材料不会再次补发。`,
     ] : [],
-    life: projectGloryLife(s), encounter: projectGloryEncounter(s), insideCase: hasGloryLock(s),
+    life: projectGloryPublicLife(s), encounter: projectGloryPublicEncounter(s), insideCase: hasGloryLock(s),
     environment: available ? '修护室：门口0米，工作台2米，桥端8米，室外−2米，庭院−4米。41岁的西莉娅负责教学，36岁的埃文参与实践。每案重新确认同意，花20便士取得当次护具；有限护垫、同一件银甲与各人的身体持续留存。步行按实际距离耗时耗力，普通侧路与停止返程始终可选。' : '',
 
   };

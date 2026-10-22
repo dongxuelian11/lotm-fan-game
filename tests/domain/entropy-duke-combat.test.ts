@@ -201,7 +201,7 @@ describe('Entropy Duke original room encounter through public commands', () => {
     expect(e.clearance).toMatchObject({ darianMetres: 8, guideMetres: 4, elapsedSeconds: 16 }); expect(s.frenzyMage.life.clockSeconds - before.frenzyMage.life.clockSeconds).toBe(16);
     expect(e.enemyHealth).toBe(100); expect(e.enemyMind).toBe(100); expect(e.enemySpirituality).toBe(120); expect(s.frenzyMage.encounter).toEqual(before.frenzyMage.encounter); expect(s.combatHistory).toEqual(before.combatHistory);
     rejectIntent(s, { type: 'ACTION', action: 'REST' }); const bad = structuredClone(s); bad.frenzyMage.life.guide.location = 'START'; expect(validateEntropyDukeEncounter(bad)).toBe(false);
-  }, 10_000); // Includes the cold original prefix and three complete public practice cases.
+  }, 20_000); // Windows run39466954199 measured12.991s including the cold555-command prefix and three complete public practice cases.
   it('keeps preparation costs and ordinary exit without respawning or rewriting old history', () => {
     const before = ready(), prepared = ed(before, { type: 'PREPARE_ENCOUNTER' }); expect(prepared.mind).toBe(before.mind - 2); rejectEntropyDuke(prepared, { type: 'PREPARE_ENCOUNTER' });
     const left = ed(ed(prepared, { type: 'ENCOUNTER_TALK' }), { type: 'LEAVE_ENCOUNTER' }); expect(left.frenzyMage.life.playerLocation).toBe('START'); expect(left.entropyDuke.encounter.enemyHealth).toBe(100); expect(left.combatHistory).toEqual(before.combatHistory);

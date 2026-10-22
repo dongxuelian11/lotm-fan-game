@@ -300,9 +300,54 @@ export function paleEmperorCombatConsequence(round: SliceCombatRound): string {
 }
 
 
+/** Positive nested public allowlists preserve resolved facts without replay inputs. */
+export const projectPaleEmperorCheck = (c: PublicCheckResult | null): PublicCheckResult | null => c ? ({
+  ability: c.ability, baseAbility: c.baseAbility, effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier,
+  modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+}) : null;
+const publicPaleEmperorInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicPaleEmperorWindow = (w: PaleEmperorWindow) => ({ id: w.id, kind: w.kind, createdAt: w.createdAt, expiresAt: w.expiresAt, openedOrder: w.openedOrder, conditionVersion: w.conditionVersion, targetId: w.targetId, observedActionId: w.observedActionId, sourceEffectId: w.sourceEffectId, magnitude: w.magnitude });
+const publicPaleEmperorWindows = (w: PaleEmperorWindows) => ({
+  residualQuieting: w.residualQuieting ? publicPaleEmperorWindow(w.residualQuieting) : null,
+  spiritualInterdiction: w.spiritualInterdiction ? publicPaleEmperorWindow(w.spiritualInterdiction) : null,
+  enemySteady: w.enemySteady ? publicPaleEmperorWindow(w.enemySteady) : null,
+});
+const publicPaleEmperorPending = (p: PaleEmperorPendingAction | null) => p ? ({ id: p.id, planned: p.planned, actual: p.actual, declaredAt: p.declaredAt, observedAt: p.observedAt, observationSeconds: p.observationSeconds, conditionVersion: p.conditionVersion, visible: p.visible, bodyImpact: p.bodyImpact, sourceEffectId: p.sourceEffectId }) : null;
+export const projectPaleEmperorMaterials = (m: PaleEmperorMaterials) => ({
+  weapon: { id: m.weapon.id, sourceId: m.weapon.sourceId, owner: m.weapon.owner, massKg: m.weapon.massKg, location: m.weapon.location, condition: m.weapon.condition, visible: m.weapon.visible },
+  marks: { id: m.marks.id, sourceId: m.marks.sourceId, owner: m.marks.owner, capacity: m.marks.capacity, remaining: m.marks.remaining, pieces: m.marks.pieces.map(p => ({ id: p.id, state: p.state })) },
+  screen: { id: m.screen.id, sourceId: m.screen.sourceId, owner: m.screen.owner, coordinate: m.screen.coordinate, hood: m.screen.hood, durability: m.screen.durability, operations: m.screen.operations },
+  door: { id: m.door.id, sourceId: m.door.sourceId, state: m.door.state, operations: m.door.operations },
+});
+export const projectPaleEmperorScene = (p: PaleEmperorScene) => ({
+  siteId: p.siteId, playerLocation: p.playerLocation, playerCoordinate: p.playerCoordinate, enemyCoordinate: p.enemyCoordinate, ordinaryExit: p.ordinaryExit, visibleBodyLine: p.visibleBodyLine, conditionVersion: p.conditionVersion, observedConditionVersion: p.observedConditionVersion, thirdPartiesInArea: p.thirdPartiesInArea, observedSourceId: p.observedSourceId, observationWeek: p.observationWeek, clockSeconds: p.clockSeconds, externalSeconds: p.externalSeconds, playerTravelMetres: p.playerTravelMetres, roadTravelMetres: p.roadTravelMetres, forecourtTravelMetres: p.forecourtTravelMetres, knownPlayerName: p.knownPlayerName, knownEnemyName: p.knownEnemyName, presentMemberIds: [...p.presentMemberIds],
+});
+const publicPaleEmperorPowerUses = (p: PaleEmperorCombatBody['powerUses']) => ({ PALE_STRIKE: p.PALE_STRIKE, STEADY: p.STEADY, SPIRIT_PRESSURE: p.SPIRIT_PRESSURE, CLOSE_SCREEN: p.CLOSE_SCREEN });
+export function projectPaleEmperorAction(a: PaleEmperorActionEvidence) { return {
+  order: a.order, actor: a.actor, id: a.id, planned: a.planned, selectedAbility: a.selectedAbility, fallbackReason: a.fallbackReason, label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure, attackKind: a.attackKind, sourceEffectId: a.sourceEffectId, rawContribution: a.rawContribution, rawReduction: a.rawReduction, paidCost: a.paidCost, mindCost: a.mindCost, physicalFactor: a.physicalFactor, resistanceRoll: a.resistanceRoll, resistanceChance: a.resistanceChance, succeeded: a.succeeded, finiteResult: a.finiteResult, spiritMarksSpent: a.spiritMarksSpent, spiritMarkId: a.spiritMarkId, conditionVersionBefore: a.conditionVersionBefore, conditionVersionAfter: a.conditionVersionAfter, atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, travelMetres: a.travelMetres, playerMindAfter: a.playerMindAfter, playerSpiritualityAfter: a.playerSpiritualityAfter, enemyMindAfter: a.enemyMindAfter, enemySpiritualityAfter: a.enemySpiritualityAfter, check: projectPaleEmperorCheck(a.check),
+  windowsBefore: publicPaleEmperorWindows(a.windowsBefore), windowsAfter: publicPaleEmperorWindows(a.windowsAfter),
+  pendingBefore: publicPaleEmperorPending(a.pendingBefore), pendingAfter: publicPaleEmperorPending(a.pendingAfter),
+  masteryApplied: [...a.masteryApplied], countered: [...a.countered],
+  materialsBefore: projectPaleEmperorMaterials(a.materialsBefore), materialsAfter: projectPaleEmperorMaterials(a.materialsAfter),
+  travelPath: [...a.travelPath], lateralTravelPath: [...a.lateralTravelPath],
+}; }
+export type PaleEmperorPublicActionEvidence = ReturnType<typeof projectPaleEmperorAction>;
+export function projectPaleEmperorRoundOutcome(o: PaleEmperorRoundOutcome) { return {
+  enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus, enemyRisk: o.enemyRisk, weaponLocation: o.weaponLocation, screenReveals: o.screenReveals, totalOwnerMindSpent: o.totalOwnerMindSpent, residualQuietingAttempts: o.residualQuietingAttempts, residualQuietingChecks: o.residualQuietingChecks, residualQuietingSuccesses: o.residualQuietingSuccesses, spiritualInterdictionAttempts: o.spiritualInterdictionAttempts, spiritualInterdictionChecks: o.spiritualInterdictionChecks, spiritualInterdictionSuccesses: o.spiritualInterdictionSuccesses, targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing, consequenceDomain: o.consequenceDomain, playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, playerSpiritualityAfter: o.playerSpiritualityAfter, playerRiskAfter: o.playerRiskAfter, elapsedSeconds: o.elapsedSeconds, pendingEnemyActionAfter: o.pendingEnemyActionAfter,
+  enemyInjuries: o.enemyInjuries.map(publicPaleEmperorInjury), playerInjuriesAfter: o.playerInjuriesAfter.map(publicPaleEmperorInjury),
+  powerUses: publicPaleEmperorPowerUses(o.powerUses),
+  observations: o.observations.map(p => ({ power: p.power, conditionVersion: p.conditionVersion, round: p.round, order: p.order, atSeconds: p.atSeconds, paidCost: p.paidCost })),
+  inheritedApplications: Object.fromEntries(PALE_EMPEROR_INHERITED_SKILL_IDS.filter(id => Object.hasOwn(o.inheritedApplications, id)).map(id => [id, o.inheritedApplications[id]!])),
+  masteryAfter: Object.fromEntries([...PALE_EMPEROR_INHERITED_SKILL_IDS, ...PALE_EMPEROR_NEW_ABILITY_IDS].filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+  materialsAfter: projectPaleEmperorMaterials(o.materialsAfter), rootAfter: projectPaleEmperorScene(o.rootAfter),
+  playerActions: o.playerActions.map(projectPaleEmperorAction), enemyActions: o.enemyActions.map(projectPaleEmperorAction),
+  expiredWindows: o.expiredWindows.map(publicPaleEmperorWindow), windowsAfter: publicPaleEmperorWindows(o.windowsAfter),
+}; }
+export type PaleEmperorPublicRoundOutcome = ReturnType<typeof projectPaleEmperorRoundOutcome>;
+
 export function projectPaleEmperorCombat(s:SliceState){
  const e=s.paleEmperor.encounter,last=s.combat?.encounterId==='PALE_EMPEROR_DISPUTE'?s.combat.lastRound?.paleEmperorOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.paleEmperorOutcome:null;
- return{enemyName:'阿尔登·沃德（47岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,scene:structuredClone(e.scene),materials:structuredClone(e.materials),lastConsequenceDomain:last?.consequenceDomain??'NONE',lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],constants:PALE_EMPEROR_COMBAT_CONSTANTS,countWheel:PALE_EMPEROR_COUNT_WHEEL,enemyCountWheel:PALE_EMPEROR_ENEMY_COUNT_WHEEL,abilityWheel:paleEmperorAbilityWheel(s,null),enemyAbilityWheel:PALE_EMPEROR_ENEMY_ABILITY_WHEEL,facts:[
+ return{enemyName:'阿尔登·沃德（47岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:publicPaleEmperorPowerUses(e.powerUses),policy:e.policy,scene:projectPaleEmperorScene(e.scene),materials:projectPaleEmperorMaterials(e.materials),lastConsequenceDomain:last?.consequenceDomain??'NONE',lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order).map(projectPaleEmperorAction):[],constants:PALE_EMPEROR_COMBAT_CONSTANTS,countWheel:PALE_EMPEROR_COUNT_WHEEL,enemyCountWheel:PALE_EMPEROR_ENEMY_COUNT_WHEEL,abilityWheel:paleEmperorAbilityWheel(s,null),enemyAbilityWheel:PALE_EMPEROR_ENEMY_ABILITY_WHEEL,facts:[
  '体35%、感25%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮本人恢复12。',
  '残响安定与灵迹阻隔各只削弱下一次实际同源灵性或精神压力30；普通棍击不触发、不消耗窗口，已经发生的伤害不倒改。',
  '两项新能力每轮各一次，实付8或7灵性与2精神；条件改变、遮挡、离场或满20秒使窗口失效，失败和空窗口不涨掌握。',

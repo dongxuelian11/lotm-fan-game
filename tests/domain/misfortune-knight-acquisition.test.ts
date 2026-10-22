@@ -148,7 +148,7 @@ describe('Misfortune Knight finite acquisition with actual source journals', () 
     const identity = ({ coreStats: _stats, ...rest }: SliceState['character']) => rest;
     expect(identity(s.character)).toEqual(identity(before.character)); expect(originalDarknessRoots(s)).toEqual(originalDarknessRoots(before)); assertValidSliceState(s);
   }, 60_000);
-  it('three consumed failures need paid resupply, a real later week and three new IDs', () => {
+  it('three consumed failures expose same-original recovery and reject current independent resupply', () => {
     let s = taught('THREE_FAILURES'); for (const taskId of MISFORTUNE_KNIGHT_PREPARATION_IDS) s = mk(s, { type: 'PREPARE_TASK', taskId });
     for (let n = 1; n <= 3; n++) {
       s = recoverResources(s); const bottleId = `misfortune-knight-potion-${n}`;
@@ -156,11 +156,19 @@ describe('Misfortune Knight finite acquisition with actual source journals', () 
       expect(s.misfortuneKnight.bottles[n - 1]!.outcome).toBe('FAILURE'); expect(s.progression.sequence).toBe(2);
     }
     const old = structuredClone(s.misfortuneKnight.bottles), cash = s.cash, ap = s.actionsRemaining;
-    s = mk(s, { type: 'REQUEST_SUPPLY' }); expect([s.cash, s.actionsRemaining]).toEqual([cash - 100, ap - 1]); rejectMisfortuneKnight(s, { type: 'RECEIVE_SUPPLY' });
-    const requested = s.week, remaining = s.actionsRemaining; for (let n = 0; n < remaining; n++) s = step(s, { type: 'ACTION', action: 'REST' });
-    expect(s.week).toBeGreaterThan(requested); s = mk(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.misfortuneKnight.bottles.slice(0, 3)).toEqual(old); expect(s.misfortuneKnight.bottles.slice(3).map(b => b.id)).toEqual(['misfortune-knight-potion-4', 'misfortune-knight-potion-5', 'misfortune-knight-potion-6']);
-    expect(s.misfortuneKnight.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0)).toBe(true); assertValidSliceState(s);
+    rejectMisfortuneKnight(s, { type: 'REQUEST_SUPPLY' }); rejectMisfortuneKnight(s, { type: 'RECEIVE_SUPPLY' });
+    s = mk(s, { type: 'REQUEST_RECOVERY_V1', bottleId: dose.bottleId });
+    expect([s.cash, s.actionsRemaining]).toEqual([cash - 120, ap - 1]);
+    rejectMisfortuneKnight(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: dose.bottleId });
+    const requested = s.week, remaining = s.actionsRemaining;
+    for (let n = 0; n < remaining; n++) s = step(s, { type: 'ACTION', action: 'REST' });
+    expect(s.week).toBeGreaterThan(requested);
+    s = mk(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: dose.bottleId });
+    expect(s.misfortuneKnight.bottles.slice(0, 3)).toEqual(old);
+    expect(s.misfortuneKnight.bottles).toHaveLength(4);
+    expect(s.misfortuneKnight.bottles[3]).toMatchObject({ id: 'misfortune-knight-potion-4', labourSteps: 0, status: 'SUPPLIER',
+      recovery: { version: 1, sourceBottleId: dose.bottleId, originalBottleId: dose.bottleId, characteristicId: `${dose.bottleId}:characteristic` } });
+    assertValidSliceState(s);
   }, 60_000);
 });
 

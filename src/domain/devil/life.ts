@@ -47,7 +47,7 @@ export interface DevilLifeProjection {
   cases: { id: DevilCaseId; title: string; story: string; observations: string[]; preparation: string | null; result: string | null; status: string; contactOpen: string; closes: number }[];
   insideCase: boolean; environment: string;
   practice: null | {
-    emotion: string; seed: string; seedState: DevilLifeState['stage']['seed']; consent: string; program: string;
+    emotion: string; seedSummary: string; seedState: DevilLifeState['stage']['seed']; consent: string; program: string;
     invitation: string; route: string; account: string; history: string[];
   };
 }
@@ -268,10 +268,11 @@ export function projectDevilLife(s: SliceState): DevilLifeProjection {
       const result = planted ? '1行动4灵性已付，PLANTED只代表成功埋种，尚未催化、报告或取得奖励。可另3灵性尝试，或本人撤回/0行动停止。' : completed(r) ? reportText(s, p.id) + (r.contactOpen ? '本次接触尚未实际结束。' : '本次接触已经实际结束。') : r.attempts.length ? `实际尝试${r.attempts.length}次，未成结果和已付费用保留；${r.contactOpen ? '须0行动真实停止或原路返回。' : '下一真实周可重新准备。'}` : r.withdrawals ? '尚未实施的准备已经取消，未取得奖励。' : null;
       return { id: p.id, title: p.title, story: p.story, observations: r.status === 'AVAILABLE' ? [] : [...p.facts], preparation: r.status === 'PREPARED' && !r.contactOpen ? r.method === 'ABILITY' ? p.ability : p.ordinary : null, result, status: r.status, contactOpen: r.contactOpen ? '本次接触仍开着，须真实停止并完成原物交接' : '本次没有尚待结束的接触', closes: r.closes };
     }),
+    // This is the observed emotion-seed mechanic, not the private deterministic RNG seed.
     practice: {
       emotion: f.emotion === 'STRONG' ? '当前原米蕾尔因本人自主新朗读而强烈兴奋，来源为实际表情、语速与当面表述' : '当前没有正在进行的强烈情绪试验；旧S5情绪与费兰历史不重开',
       seedState: f.seed,
-      seed: f.seed === 'PLANTED' ? 'PLANTED：本次1行动4灵性已付，尚无催化效果；另3灵性知识18或0行动停止' : f.seed === 'SPENT' ? 'SPENT：同一种子已用于一次另付3灵性的催化，成功或失败保留' : f.seed === 'EXPIRED' ? 'EXPIRED：同一种子因撤回或实际等待到期，不能再催化' : 'NONE：没有本次可用种子',
+      seedSummary: f.seed === 'PLANTED' ? 'PLANTED：本次1行动4灵性已付，尚无催化效果；另3灵性知识18或0行动停止' : f.seed === 'SPENT' ? 'SPENT：同一种子已用于一次另付3灵性的催化，成功或失败保留' : f.seed === 'EXPIRED' ? 'EXPIRED：同一种子因撤回或实际等待到期，不能再催化' : 'NONE：没有本次可用种子',
       consent: `${f.consented ? '米蕾尔当面仅同意本次有限范围，仍可撤回' : '当前没有继续试验的同意'}；本人明确撤回${f.consentWithdrawals}次`,
       program: `同一DV4-PROGRAM-1始终由米蕾尔本人持有；实际新短读${f.readings}次，当前可见迟疑${f.pauseSeconds}秒，实际收束等待累计${f.waitedSeconds}秒G`,
       invitation: `同一DV4-INVITATION-1：${i.holder === 'GUIDE' ? '罗安保管' : i.holder === 'REINA' ? '蕾娜已实际接过查看' : '本人实际持有'}；${i.declined ? '蕾娜已自行拒绝，原拒绝永久保留' : '尚未作出本次选择'}；本人情绪CALM，无能力入口`,

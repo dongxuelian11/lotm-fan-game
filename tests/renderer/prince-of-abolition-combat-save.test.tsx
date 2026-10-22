@@ -10,6 +10,7 @@ import { playerText } from '../../src/shared/player-text.js';
 import { PRINCE_OF_ABOLITION_SOURCE_KEYS, type PrinceOfAbolitionAction } from '../../src/domain/prince-of-abolition/types.js';
 import { getPrinceOfAbolitionCurrentSite } from '../../src/domain/prince-of-abolition/life.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentPrinceOfAbolitionReplayExpectation } from '../helpers/prince-of-abolition-current-replay.js';
 import { PRINCE_OF_ABOLITION_CAPTURE_EVIDENCE as evidence } from '../domain/prince-of-abolition-capture-evidence.js';
 import { capturedSnapshot, capturedState, namedBoundary, observedCapture, captureBody, captureValueHash,
   currentCapture, sourceEntry, sameCaptureValue as same } from '../domain/prince-of-abolition-capture-helper.js';
@@ -220,7 +221,10 @@ it('requires the coordinator-frozen actual stage205 capture before claiming rend
 
 describe.skipIf(evidence.observed === null)('Prince of Abolition actual saved UI and identical-intent retry', () => {
   it.each(UI_RETRY_NAMES)('%s keeps real resources uncommitted on failure and commits the identical retry once', async name => {
-    const boundary = namedBoundary(name), before = boundary.before, expected = boundary.final;
+    const boundary = namedBoundary(name), before = boundary.before, originalRowHash = captureValueHash(boundary.final);
+    // Only newly committed guidance uses current text; loaded historical rows stay exact.
+    const expected = name === GUIDANCE ? currentPrinceOfAbolitionReplayExpectation(boundary.final) : boundary.final;
+    expect(captureValueHash(boundary.final)).toBe(originalRowHash);
     if (boundary.intent.type !== 'PRINCE_OF_ABOLITION') throw new Error('Expected a real panel operation.');
     const command = boundary.intent.command, game = savedGame(before), releaseFailure = game.holdNextSave();
     game.failNextSave(); await mount(game); await openPanel();
@@ -248,6 +252,7 @@ describe.skipIf(evidence.observed === null)('Prince of Abolition actual saved UI
     assertCurrentBody(expected); expect(screen.queryByRole('dialog', { name: ROUND })).toBeNull();
     await reopen(game); await openPanel(); assertCurrentBody(expected);
     same(game.state, expected); expect(game.submit).toHaveBeenCalledTimes(2); expect(game.commits).toBe(1);
+    expect(captureValueHash(boundary.final)).toBe(originalRowHash);
   }, 180_000);
 
   it.each((evidence.observed?.snapshots ?? []).filter(name => ['guidance', 'promoted'].includes(name)))

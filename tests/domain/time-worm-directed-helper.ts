@@ -4,6 +4,7 @@ import { applySliceIntent, assertValidSliceState, projectSliceState } from '../.
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { TIME_WORM_PREPARATION_IDS, type TimeWormCommand } from '../../src/domain/time-worm/types.js';
+import { TIME_WORM_PRICES, TIME_WORM_RECOVERY_PRICES } from '../../src/domain/time-worm/content.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../src/resolution/normal-check.js';
 import type { PublicResolutionTier } from '../../src/shared/contracts.js';
@@ -104,7 +105,9 @@ export const dose = { type: 'CONSUME', bottleId: 'time-worm-potion-1', confirmed
 export function prepareBottle(s: SliceState, bottleId: string, commands?: SliceIntent[]): SliceState {
   for (const taskId of TIME_WORM_PREPARATION_IDS) if (!s.timeWorm.preparations.some(p => p.taskId === taskId)) s = ae(ready(s, {}, commands), { type: 'PREPARE_TASK', taskId }, commands);
   while (s.timeWorm.bottles.find(b => b.id === bottleId)!.labourSteps < 5) s = ae(ready(s, {}, commands), { type: 'POTION_WORK', bottleId }, commands);
-  s = ready(s, { ap: 1, cash: 1250, health: 100, mind: 100, spirituality: 120, pollution: 0, afterWeek: s.fateTrojan.promotionWeek! + 11 }, commands);
+  const bottle = s.timeWorm.bottles.find(b => b.id === bottleId)!;
+  const price = bottle.recovery ? TIME_WORM_RECOVERY_PRICES.recoveryLabourBalance : TIME_WORM_PRICES.labourBalance;
+  s = ready(s, { ap: 1, cash: price + TIME_WORM_PRICES.preparation, health: 100, mind: 100, spirituality: 120, pollution: 0, afterWeek: s.fateTrojan.promotionWeek! + 11 }, commands);
   s = ae(s, { type: 'BUY_POTION', bottleId }, commands);
   return ae(s, { type: 'PREPARE_PROMOTION' }, commands);
 }
@@ -114,7 +117,8 @@ export function prepared(): SliceState {
   return structuredClone(preparedCache);
 }
 let promotedCache: SliceState | undefined;
-/** Actual same-seed original bottles are attempted in order; every failure
+/** Actual same-seed originals are attempted in order, then the latest failed
+ * dose's same characteristic is recovered for a new carrier. Every failure
  * remains. The cap is a test guard, not an alternate outcome or seed search. */
 export function promoted(): SliceState {
   if (!promotedCache) {
@@ -125,8 +129,8 @@ export function promoted(): SliceState {
       s = ae(s, { type: 'CONSUME', bottleId: bottle.id, confirmed: true });
       if (s.progression.sequence === 1) { assertValidSliceState(s); promotedCache = s; break; }
       if (s.timeWorm.bottles.every(b => b.status === 'CONSUMED')) {
-        s = ae(ready(s, { ap: 1, cash: 100 }), { type: 'REQUEST_SUPPLY' });
-        s = ae(ready(s, { afterWeek: s.timeWorm.resupply.requestedWeek! }), { type: 'RECEIVE_SUPPLY' });
+        s = ae(ready(s, { ap: 1, cash: TIME_WORM_RECOVERY_PRICES.recovery }), { type: 'REQUEST_RECOVERY_V1', bottleId: bottle.id });
+        s = ae(ready(s, { ap: 1, cash: TIME_WORM_RECOVERY_PRICES.recoveryHandover, afterWeek: s.timeWorm.resupply.requestedWeek! }), { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: bottle.id });
       }
       const next = s.timeWorm.bottles.find(b => b.status === 'SUPPLIER')!;
       s = prepareBottle(s, next.id);

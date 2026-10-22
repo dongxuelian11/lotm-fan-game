@@ -1,3 +1,4 @@
+import { projectFateTrojanRoundOutcome, projectFateTrojanPowerUses, projectFateTrojanSite, projectFateTrojanWheel } from './public.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -245,13 +246,14 @@ export function fateTrojanRoundOutcome(r: FateTrojanRoundContext): FateTrojanRou
 export function projectFateTrojanCombat(s: SliceState) {
   const e = s.fateTrojan.encounter, visible = isFateTrojan(s);
   const last = s.combat?.encounterId === 'FATE_TROJAN_DISPUTE' ? s.combat.lastRound?.fateTrojanOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.fateTrojanOutcome : null;
+  const publicLast = visible && last ? projectFateTrojanRoundOutcome(last) : null;
   return { enemyName: visible ? '伊莱亚斯（46岁）' : '', targetId: visible ? e.targetId : null,
     playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
     enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
-    powerUses: visible ? { ...e.powerUses } : null, site: visible ? structuredClone(s.fateTrojan.life.site) : null,
-    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, source: visible ? currentFateTrojanCombatSource(s) : null,
-    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...structuredClone(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...structuredClone(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
-    countWheel: FATE_TROJAN_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: FATE_TROJAN_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: FATE_TROJAN_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
+    powerUses: visible ? projectFateTrojanPowerUses(e.powerUses) : null, site: visible ? projectFateTrojanSite(s.fateTrojan.life.site) : null,
+    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false,
+    lastActionSequence: publicLast ? [...publicLast.playerActions.map(a => ({ ...a, actor: 'PLAYER' as const })), ...publicLast.enemyActions.map(a => ({ ...a, actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
+    countWheel: FATE_TROJAN_COUNT_WHEEL.map(projectFateTrojanWheel), enemyCountWheel: FATE_TROJAN_ENEMY_COUNT_WHEEL.map(projectFateTrojanWheel), enemyAbilityWheel: FATE_TROJAN_ENEMY_ABILITY_WHEEL.map(projectFateTrojanWheel),
     summary: visible ? '身份联系偏移每轮最多尝试一次，成功后只削弱伊莱亚斯随后一次实际身体攻击30；他能花3灵性辨识解除。命运承担每轮最多尝试一次，先实际支付7灵性和5健康，成功后只加强本轮随后一次自己的普通打击85，没用上也不退款。屏护每轮只准备一次，实际普通打击到来才减势40。每次动作5秒、每回合60秒；对手不恢复灵性，继续交战时你恢复12灵性。伤势和死亡仍按身体状况判断，战斗不增长掌握。' : '' };
 }
 const SOURCE_KEYS = ['runId', 'revision', 'week', 'round', 'encounterId', 'targetId', 'attemptWeek', 'startHistoryIndex', 'targetName', 'targetAge', 'targetSequence', 'targetCore', 'actualBody', 'independentMind', 'enemyWeapon', 'weaponLocation', 'yardId', 'playerPosition', 'enemyDistanceMetres', 'ordinaryExit', 'pursuit', 'thirdPartiesInArea', 'automaticAllyImmunity', 'playerHealth', 'playerMind', 'playerSpirituality', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'playerInjuries', 'enemyInjuries', 'playerRisk', 'enemyRisk', 'clubHeld', 'physique', 'perception', 'knowledge', 'will', 'powerUses', 'clockSeconds', 'randomSeed', 'randomCursor'] as const;

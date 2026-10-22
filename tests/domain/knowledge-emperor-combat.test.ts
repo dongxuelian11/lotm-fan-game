@@ -131,7 +131,18 @@ describe('Knowledge Emperor finite original-resource combat', () => {
     const e = s.knowledgeEmperor.encounter, t = e.terminal!;
     expect(e.currentSite?.playerLocation).toBe(t.outcome === 'PLAYER_DEAD' ? 'YARD' : 'OUTSIDE'); expect(t.exitMetres).toBe(t.outcome === 'PLAYER_DEAD' ? 0 : 4); expect(t.playerEnergyPaid).toBe(t.outcome === 'PLAYER_DEAD' ? 0 : 2);
     expect(e.weaponLocation).toBe(e.enemyStatus === 'RESISTING' ? 'HAND' : 'YARD'); expect(e.currentSite?.iris?.location).toBe('OUTSIDE');
-    expect(projectKnowledgeEmperorEncounter(s).site).toEqual(e.currentSite); expect(e.marks.filter(m => m.status === 'SPENT')).toHaveLength(e.powerUses.ARC_BOLT + e.powerUses.DREAD_MARK);
+    const privateSite = structuredClone(e.currentSite!);
+    const publicSite = projectKnowledgeEmperorEncounter(s).site;
+    expect(publicSite).toEqual({
+      siteId: privateSite.siteId, introducedWeek: privateSite.introducedWeek, introducedDate: privateSite.introducedDate,
+      clockSeconds: privateSite.clockSeconds, playerLocation: privateSite.playerLocation, playerTravelMetres: privateSite.playerTravelMetres,
+      playerEnergy: privateSite.playerEnergy, formEnergySpent: privateSite.formEnergySpent, assimilationExposure: privateSite.assimilationExposure,
+      body: privateSite.body, form: privateSite.form, iris: privateSite.iris, record: privateSite.record,
+      conduit: privateSite.conduit, archive: privateSite.archive, materials: privateSite.materials, actorMoves: privateSite.actorMoves,
+    });
+    expect(publicSite).not.toHaveProperty('source');
+    expect(e.currentSite).toEqual(privateSite); expect(e.currentSite!.source).toEqual(e.startSite!.source);
+    expect(e.marks.filter(m => m.status === 'SPENT')).toHaveLength(e.powerUses.ARC_BOLT + e.powerUses.DREAD_MARK);
     expect(e.enemySpirituality).toBe(120 - 7 * (e.powerUses.ARC_BOLT + e.powerUses.DREAD_MARK) - 4 * e.powerUses.WARD - 3 * e.powerUses.FEINT);
   }, 240_000);
   it('rejects forged receipt, enemy refill, extra counts, note refill, spent originals and rewritten ordered RNG evidence', () => {

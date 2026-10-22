@@ -118,7 +118,18 @@ describe('Wisdom Angel actual public-command combat and exact deterministic repl
     const p = projectWisdomAngelCombat(state), o = outcome(state.combatHistory.at(-1)!);
     expect(p.responseWindow).toBeNull(); expect(p.responseRemainingSeconds).toBe(0);
     expect(p.observations).toEqual(o.observations); expect(p.currentObservations).toEqual(o.observations.filter(v => v.conditionVersion === o.conditionVersion));
-    expect(p.lastWindowSequence).toEqual([...o.playerActions.map(a => ({ ...a, actor: 'PLAYER' })), ...o.enemyActions.map(a => ({ ...a, actor: 'ENEMY' }))].sort((a, b) => a.order - b.order));
+    const expectedSequence = [...o.playerActions.map(a => ({ ...a, actor: 'PLAYER' })), ...o.enemyActions.map(a => ({ ...a, actor: 'ENEMY' }))]
+      .sort((a, b) => a.order - b.order)
+      .map(({ randomCursorBefore, randomCursorAfter, ...visible }) => {
+        expect(Number.isInteger(randomCursorBefore)).toBe(true);
+        expect(Number.isInteger(randomCursorAfter)).toBe(true);
+        return visible;
+      });
+    expect(p.lastWindowSequence).toEqual(expectedSequence);
+    for (const action of p.lastWindowSequence) {
+      expect(action).not.toHaveProperty('randomCursorBefore');
+      expect(action).not.toHaveProperty('randomCursorAfter');
+    }
     expect(p.playerSpirituality).toBe(state.spirituality); expect(p.enemySpirituality).toBe(o.enemySpirituality); expect(p.abilityUses).toEqual(o.abilityUses);
     expect(p.crafts).toEqual(o.craftsAfter); expect(state).toEqual(frozen);
   });

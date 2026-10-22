@@ -1,3 +1,5 @@
+import { publicPryerFields as publicFields, publicPryerDate } from '../sage/life.js';
+import { publicMercurySnakeBudget, publicMercurySnakeFinance, publicMercurySnakeOriginals, publicMercurySnakeOperation, publicWheelOriginalSite, publicMercurySnakePiece, publicMercurySnakePlate, publicMercurySnakeLuck, publicMercurySnakeWindow } from './public.js';
 import { SLICE_LIFE } from '../../content/slice-events.js';
 import type { PublicGameDate } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
@@ -11,7 +13,7 @@ import type { MercurySnakeOriginals, MercurySnakeSite } from './types.js';
 import { resolveSliceWeeklyFinance } from '../slice/weekly-finance.js';
 import { mercurySnakeLifeClosed, validateMercurySnakeCurrentSite } from './life.js';
 import { MERCURY_SNAKE_ENEMY_ABILITY_WHEEL, currentMercurySnakeCombatSource, nextMercurySnakeCombatSource, validMercurySnakeCombatSource, validateMercurySnakeCombatRound,
-  validMercurySnakeInjuries,
+  validMercurySnakeInjuries, projectMercurySnakeAction,
   type MercurySnakeCombatSource, type MercurySnakeRoundOutcome } from './combat.js';
 
 export const MERCURY_SNAKE_TARGET_ID = 'MS1-OSWIN' as const;
@@ -212,17 +214,23 @@ export function mercurySnakeEncounterActions(s: SliceState) {
   ];
   return commands.map(({ command, label, cost }) => { const reason = blockMercurySnakeEncounter(s, command); return { id: `mercurySnake-${command.type}${command.type === 'SET_COMBAT_POLICY' ? `-${command.policy}` : ''}`, label, cost, command, enabled: reason === null, reason }; });
 }
+export function projectMercurySnakePreparation(p: MercurySnakePreparation) { return {
+  ...publicFields(p, ['week', 'revision', 'pricePaid', 'actionsPaid', 'lifeJournalLength', 'lifeClockSeconds']), date: publicPryerDate(p.date),
+  before: publicMercurySnakeBudget(p.before), after: publicMercurySnakeBudget(p.after), finance: publicMercurySnakeFinance(p.finance),
+  site: publicWheelOriginalSite(p.site), operation: publicMercurySnakeOperation(p.operation), originals: publicMercurySnakeOriginals(p.originals),
+}; }
+export type MercurySnakePublicPreparation = ReturnType<typeof projectMercurySnakePreparation>;
 export function projectMercurySnakeEncounter(s: SliceState) {
   const e = s.mercurySnake.encounter, visible = isMercurySnakeEncounterStage(s), p = e.currentSite ?? s.mercurySnake.life.site;
   const last = s.combat?.encounterId === 'MERCURY_SNAKE_DISPUTE' ? s.combat.lastRound?.mercurySnakeOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.mercurySnakeOutcome : null;
   return { title: visible ? '工坊旁院的独立争议' : '尚未开放的旁院', story: visible ? '44岁的奥斯温·贝尔在工坊旁院提出独立通行争议。原艾妲与薇拉先真实离场；你可交谈、选择交战或普通离开。洛温原已投降的结局保持。' : '',
     status: e.status, inside: hasMercurySnakeEncounterLock(s), policy: e.policy, enemyAbilityWheel: MERCURY_SNAKE_ENEMY_ABILITY_WHEEL.map(row => ({ ...row })),
-    site: visible ? structuredClone(p) : null, startSite: visible ? structuredClone(e.startSite) : null, preparation: visible && e.preparation ? { week: e.preparation.week, date: { ...e.preparation.date }, revision: e.preparation.revision, pricePaid: e.preparation.pricePaid, actionsPaid: e.preparation.actionsPaid, lifeClockSeconds: e.preparation.lifeClockSeconds, site: structuredClone(e.preparation.site) } : null,
-    piece: visible ? structuredClone(e.piece) : null, plates: visible ? structuredClone(e.plates) : [], luck: { ...s.mercurySnake.luck, capacity: 3 as const },
-    conditionVersion: e.conditionVersion, restart: structuredClone(e.restart), anchor: structuredClone(e.anchor), operation: visible ? { door: s.mercurySnake.life.operation.door } : null,
-    lastActionSequence: visible && last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(a => structuredClone(a)) : [],
+    site: visible ? publicWheelOriginalSite(p) : null, startSite: visible && e.startSite ? publicWheelOriginalSite(e.startSite) : null, preparation: visible && e.preparation ? projectMercurySnakePreparation(e.preparation) : null,
+    piece: visible && e.piece ? publicMercurySnakePiece(e.piece) : null, plates: visible ? e.plates.map(publicMercurySnakePlate) : [], luck: { ...publicMercurySnakeLuck(s.mercurySnake.luck), capacity: 3 as const },
+    conditionVersion: e.conditionVersion, restart: e.restart ? publicMercurySnakeWindow(e.restart) : null, anchor: e.anchor ? publicMercurySnakeWindow(e.anchor) : null, operation: visible ? { door: s.mercurySnake.life.operation.door } : null,
+    lastActionSequence: visible && last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(projectMercurySnakeAction) : [],
     playerLocalMetres: e.playerLocalMetres, restartApplications: e.restartApplications, anchorApplications: e.anchorApplications,
-    enemy: visible ? { id: e.targetId, name: '奥斯温·贝尔', age: 44, sequence: 1, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus, weaponId: 'MS1-OSWIN-ROD', weaponLocation: e.weaponLocation, position: e.enemyPosition, distanceMetres: 2 + e.playerLocalMetres, baseDistanceMetres: 2, powerUses: { ...e.powerUses } } : null,
+    enemy: visible ? { id: e.targetId, name: '奥斯温·贝尔', age: 44, sequence: 1, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus, weaponId: 'MS1-OSWIN-ROD', weaponLocation: e.weaponLocation, position: e.enemyPosition, distanceMetres: 2 + e.playerLocalMetres, baseDistanceMetres: 2, powerUses: publicFields(e.powerUses, ['MIND_SPIKE', 'WARD', 'CALM']) } : null,
     actions: mercurySnakeEncounterActions(s), facts: visible ? [
       '旧六槽30/15/20/20/10/5及17项掌握保留，新两槽各20；唯一积运账容量3，储存为0时不能免费风险调整。',
       '局部重启与片刻维系各8灵性2精神、知识20，失败总计4精神；只处理活着的本人的一个真实位置关系与尚未结算可见冲量。',

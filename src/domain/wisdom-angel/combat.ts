@@ -254,16 +254,59 @@ export function finishWisdomAngelCombatRound(s:SliceState,r:WisdomAngelRoundCont
     playerActions:structuredClone(r.playerActions),enemyActions:structuredClone(r.enemyActions)};return structuredClone(r.outcome);
 }
 export function wisdomAngelRoundOutcome(r:WisdomAngelRoundContext):WisdomAngelRoundOutcome{if(!r.outcome)throw new Error('先实际结束当前原回合。');return structuredClone(r.outcome);}
+/** The public record contains settled observations and rolls, not replay inputs or stream positions. */
+function wisdomFacts<T, K extends keyof T>(value: T, keys: readonly K[]): Pick<T, K> {
+  return Object.fromEntries(keys.map(key => [key, structuredClone(value[key])])) as Pick<T, K>;
+}
+function publicWisdomObservation(o: WisdomAngelObservation) {
+  return wisdomFacts(o, ['power', 'round', 'order', 'atSeconds', 'conditionVersion', 'paidCost']);
+}
+function publicWisdomWindow(w: WisdomAngelResponseWindow | null) {
+  return w === null ? null : { ...wisdomFacts(w, ['openedRound', 'openedOrder', 'expiresAt', 'conditionVersion', 'targetPower']),
+    observation: publicWisdomObservation(w.observation) };
+}
+function publicWisdomUses(u: WisdomAngelAbilityUses) {
+  return { SYNTHESIS: wisdomFacts(u.SYNTHESIS, ['attempts', 'successes', 'effects']), RESPONSE: wisdomFacts(u.RESPONSE, ['attempts', 'successes', 'effects']) };
+}
+function publicWisdomPowers(p: Record<WisdomAngelPowerId, number>) { return wisdomFacts(p, ['FLASH', 'WARD', 'FEINT']); }
+function publicWisdomCraft(c: MysticismMagisterCraft) { return wisdomFacts(c, ['id', 'sourceKitId', 'createdWeek', 'usedWeek', 'status', 'power']); }
+function publicWisdomInjury(i: SliceInjury) { return wisdomFacts(i, ['id', 'severity', 'acquiredRevision', 'treatedRevision']); }
+function publicWisdomAction(a: ActionEvidence) {
+  return { ...wisdomFacts(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'order', 'atSeconds', 'paidCost',
+    'physicalFactor', 'playerSpiritualityAfter', 'enemySpiritualityAfter', 'conditionVersionBefore', 'conditionVersionAfter', 'responseExpired']),
+    rolls: [...a.rolls], responseWindowBefore: publicWisdomWindow(a.responseWindowBefore), responseWindowAfter: publicWisdomWindow(a.responseWindowAfter) };
+}
+export function projectWisdomAngelPlayerAction(a: WisdomAngelPlayerAction) {
+  return { ...publicWisdomAction(a), ...wisdomFacts(a, ['id', 'consumedCraftId', 'attempted', 'succeeded', 'applied']),
+    requiredObservations: a.requiredObservations.map(publicWisdomObservation) };
+}
+export function projectWisdomAngelEnemyAction(a: WisdomAngelEnemyAction) {
+  return { ...publicWisdomAction(a), ...wisdomFacts(a, ['planned', 'actual', 'changedCondition', 'responseConsumed', 'responseApplied', 'responseInvalidated', 'responseReduction']),
+    observation: a.observation === null ? null : publicWisdomObservation(a.observation) };
+}
+export type PublicWisdomAngelPlayerAction = ReturnType<typeof projectWisdomAngelPlayerAction>;
+export type PublicWisdomAngelEnemyAction = ReturnType<typeof projectWisdomAngelEnemyAction>;
+export function projectWisdomAngelRoundOutcome(o: WisdomAngelRoundOutcome) {
+  return { ...wisdomFacts(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus',
+    'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'playerRiskAfter',
+    'enemyRiskAfter', 'conditionVersion', 'feintUsed', 'elapsedSeconds', 'playerLocationAfter', 'playerTravelMetresAfter', 'clockSecondsAfter']),
+    playerInjuriesAfter: o.playerInjuriesAfter.map(publicWisdomInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicWisdomInjury),
+    powerUses: publicWisdomPowers(o.powerUses), abilityUses: publicWisdomUses(o.abilityUses), observations: o.observations.map(publicWisdomObservation),
+    craftsAfter: o.craftsAfter.map(publicWisdomCraft), consumedCraftIds: [...o.consumedCraftIds],
+    responseWindowBeforeClose: publicWisdomWindow(o.responseWindowBeforeClose), responseWindowAfter: null,
+    playerActions: o.playerActions.map(projectWisdomAngelPlayerAction), enemyActions: o.enemyActions.map(projectWisdomAngelEnemyAction) };
+}
+export type PublicWisdomAngelRoundOutcome = ReturnType<typeof projectWisdomAngelRoundOutcome>;
 export function projectWisdomAngelCombat(s:SliceState){
   const e=s.wisdomAngel.encounter,visible=isWisdomAngel(s),last=s.combat?.encounterId==='WISDOM_ANGEL_DISPUTE'?s.combat.lastRound?.wisdomAngelOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.wisdomAngelOutcome:null;
   return{enemyName:visible?'维克托（49岁）':'',targetId:visible?e.targetId:null,playerHealth:s.health,playerMind:s.mind,playerSpirituality:s.spirituality,maxSpirituality:120,
-    enemyHealth:visible?e.enemyHealth:null,enemyMind:visible?e.enemyMind:null,enemySpirituality:visible?e.enemySpirituality:null,powerUses:visible?{...e.powerUses}:null,
-    abilityUses:visible?structuredClone(e.abilityUses):null,conditionVersion:e.conditionVersion,observations:visible?structuredClone(e.observations):[],currentObservations:visible?structuredClone(e.observations.filter(o=>o.conditionVersion===e.conditionVersion)):[],
-    responseWindow:visible?structuredClone(e.responseWindow):null,responseRemainingSeconds:0,room:visible?{...e.room}:null,playerLocation:e.playerLocation,playerTravelMetres:e.playerTravelMetres,clockSeconds:e.clockSeconds,
-    crafts:visible?structuredClone(s.mysticismMagister.crafts):[],remainingCraftIds:visible?s.mysticismMagister.crafts.filter(c=>c.status==='PLAYER').map(c=>c.id):[],
+    enemyHealth:visible?e.enemyHealth:null,enemyMind:visible?e.enemyMind:null,enemySpirituality:visible?e.enemySpirituality:null,powerUses:visible?publicWisdomPowers(e.powerUses):null,
+    abilityUses:visible?publicWisdomUses(e.abilityUses):null,conditionVersion:e.conditionVersion,observations:visible?e.observations.map(publicWisdomObservation):[],currentObservations:visible?e.observations.filter(o=>o.conditionVersion===e.conditionVersion).map(publicWisdomObservation):[],
+    responseWindow:visible?publicWisdomWindow(e.responseWindow):null,responseRemainingSeconds:0,room:visible?wisdomFacts(e.room, ['id', 'doorId', 'doorStatus']):null,playerLocation:e.playerLocation,playerTravelMetres:e.playerTravelMetres,clockSeconds:e.clockSeconds,
+    crafts:visible?s.mysticismMagister.crafts.map(publicWisdomCraft):[],remainingCraftIds:visible?s.mysticismMagister.crafts.filter(c=>c.status==='PLAYER').map(c=>c.id):[],
     windowStatus:'回合结算边界：应对窗已实际收束；下次仍须当前条件的真实已见证据与付费检验。',
-    lastWindowSequence:visible&&last?[...last.playerActions.map(a=>({...structuredClone(a),actor:'PLAYER' as const})),...last.enemyActions.map(a=>({...structuredClone(a),actor:'ENEMY' as const}))].sort((a,b)=>a.order-b.order):[],
-    originalExit:e.room.doorStatus==='OPEN',pursuit:false,distanceMetres:2,source:visible?currentWisdomAngelCombatSource(s):null,
+    lastWindowSequence:visible&&last?[...last.playerActions.map(a=>({...projectWisdomAngelPlayerAction(a),actor:'PLAYER' as const})),...last.enemyActions.map(a=>({...projectWisdomAngelEnemyAction(a),actor:'ENEMY' as const}))].sort((a,b)=>a.order-b.order):[],
+    originalExit:e.room.doorStatus==='OPEN',pursuit:false,distanceMetres:2,
     countWheel:WISDOM_ANGEL_COUNT_WHEEL.map(x=>({...x})),enemyCountWheel:WISDOM_ANGEL_ENEMY_COUNT_WHEEL.map(x=>({...x})),enemyAbilityWheel:WISDOM_ANGEL_ENEMY_ABILITY_WHEEL.map(x=>({...x})),
     summary:visible?'智慧天使·阅读者序列2候选，名称编号与新能力未原著核实，全部新量化为G。继承35/25/25/15核心、1250/底125、S120，仅继续轮恢复12。每槽5秒、轮60秒；综合须当前条件已见两种原术，应对只影响后续匹配实际付费原术。3S变招每轮一次，条件改变不改旧结果。原FLASH样本与原微光片有真实来源、成本及耗尽；原人原物与共同伤势保留。':''};
 }

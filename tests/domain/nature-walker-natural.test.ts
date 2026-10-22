@@ -10,6 +10,8 @@ import { NATURE_WALKER_SOURCE_KEYS, NATURE_WALKER_ABILITY_IDS } from '../../src/
 import { NATURE_WALKER_CASE_IDS, getNatureWalkerCurrentSite } from '../../src/domain/nature-walker/life.js';
 import { currentNatureWalkerCombatSource, projectNatureWalkerRoundOutcome, replayNatureWalkerCombatRound } from '../../src/domain/nature-walker/combat.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
+import { currentNatureWalkerReplayExpectation, currentNatureWalkerPublicReplayExpectation,
+  NATURE_WALKER_CAPTURE_GUIDE_REVISION } from '../helpers/nature-walker-current-replay.js';
 import { NATURE_WALKER_CAPTURE_EVIDENCE as evidence, NATURE_WALKER_METADATA_FILES as METADATA, NATURE_WALKER_CAPTURE_STAGES as STAGES } from './nature-walker-capture-evidence.js';
 import { NATURE_WALKER_ROOT as ROOT, NATURE_WALKER_SOURCE as SOURCE, NATURE_WALKER_PREDECESSOR as PREDECESSOR,
   NATURE_WALKER_PREFIX_COUNT as PREFIX, NATURE_WALKER_INHERITED_COUNT as INHERITED, NATURE_WALKER_SEED as SEED,
@@ -89,12 +91,13 @@ describe('Nature Walker literal same-seed natural capture', () => {
           expect(transition).toBeDefined(); expect(row.boundaryKey).toBe(transition!.key);
           const control = publicCaptureControl(before, row.intent), next = await publicRows.next(); if (next.done) throw new Error(`Missing actual public row ${count}`); proof = next.value;
           expect(Object.keys(proof).sort()).toEqual(['step', 'revision', 'command', 'control', 'before', 'after'].sort());
-          expect(proof.step).toBe(count); expect(proof.revision).toBe(before.revision); same(proof.command, row.intent); same(proof.control, control); same(proof.before, capturePublicBody(before));
+          expect(proof.step).toBe(count); expect(proof.revision).toBe(before.revision); same(proof.command, row.intent); same(proof.control, control);
+          same(currentNatureWalkerPublicReplayExpectation(proof.before), capturePublicBody(before));
           assertNoPrivateNatureWalkerFields(proof.before.natureWalker, [], false); assertNoPrivateNatureWalkerFields(proof.after.natureWalker, [], false);
         } else expect(row.boundaryKey).toBeNull();
         state = applySliceIntent(before, row.intent); assertValidSliceState(state);
         expect(state.revision).toBe(before.revision + 1); expect(state.random.seed).toBe(SEED); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor); same(captureBody(state), row.after);
-        if (proof) same(proof.after, capturePublicBody(state));
+        if (proof) same(currentNatureWalkerPublicReplayExpectation(proof.after), capturePublicBody(state));
         if (count === INHERITED) { same(state, currentCapture(sourceEntry('prefixFinal'))); same(state, currentCapture(readObjectEntry(PREDECESSOR, 'final'))); inheritedVerified = true; }
         if (row.intent.type === 'CONTINUE_LIFE') { expect(before.status).toBe('SLICE_COMPLETE'); expect(before.ending?.kind).not.toBe('DEATH'); expect(state.status).toBe('ACTIVE'); livingContinues++; }
         if (count === PREFIX) { same(state, original); prefixVerified = true; }
@@ -102,7 +105,9 @@ describe('Nature Walker literal same-seed natural capture', () => {
           const path = capturePath(transition.file); expect(readObjectEntry(path, 'commandCount')).toBe(count); same(readObjectEntry(path, 'lastIntent'), row.intent);
           for (const root of ['beforeLast', 'final']) {
             const raw = readObjectEntry<SliceState>(path, root); expect([raw.schemaVersion, raw.contentVersion]).toEqual([204, 'nature-walker-v204']);
-            same(root === 'beforeLast' ? before : state, currentCapture(raw));
+            const migrated = currentCapture(raw), expected = migrated.revision >= NATURE_WALKER_CAPTURE_GUIDE_REVISION
+              ? currentNatureWalkerReplayExpectation(migrated) : migrated;
+            same(root === 'beforeLast' ? before : state, expected);
           }
           stateHashes.set(state.revision, captureValueHash(state)); assertOriginalContinuity(state, original);
           if (count > PREFIX) {
@@ -114,9 +119,14 @@ describe('Nature Walker literal same-seed natural capture', () => {
       }
       expect((await publicRows.next()).done).toBe(true);
     } finally { await publicRows.return(undefined); }
-    expect(count).toBe(e.commands); expect(state.revision).toBe(e.commands + 1); same(state, capturedState('final')); same(captureBody(state), e.final);
+    expect(count).toBe(e.commands); expect(state.revision).toBe(e.commands + 1);
+    same(state, currentNatureWalkerReplayExpectation(capturedState('final'))); same(captureBody(state), e.final);
     expect(inheritedVerified).toBe(true); expect(prefixVerified).toBe(true); expect(livingContinues).toBeGreaterThan(0);
-    for (const file of new Set(Object.values(snapshots))) { const saved = currentCapture(JSON.parse(readFileSync(capturePath(file), 'utf8'))); expect(captureValueHash(saved), file).toBe(stateHashes.get(saved.revision)); }
+    for (const file of new Set(Object.values(snapshots))) {
+      const saved = currentCapture(JSON.parse(readFileSync(capturePath(file), 'utf8'))), expected = saved.revision >= NATURE_WALKER_CAPTURE_GUIDE_REVISION
+        ? currentNatureWalkerReplayExpectation(saved) : saved;
+      expect(captureValueHash(expected), file).toBe(stateHashes.get(saved.revision));
+    }
     same(treatments, e.treatments); same(treatments, naturalEntry('treatments')); same(treatments, summaryEntry('treatments')); same(inventory(), filesBefore); assertOriginalContinuity(state, original);
     // Only this complete851+ continuation replay receives600s. No global timeout,
     // dist/global-freeze dependency, producer invocation, fixture rewrite or RNG edit.

@@ -1,3 +1,4 @@
+import { projectDemonessPublicFields } from '../calamity-demoness/life.js';
 import type { ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
@@ -198,11 +199,19 @@ export function finishDespairCombatRound(s: SliceState, r: DespairRoundContext, 
     lastDiseaseRound: e.lastDiseaseRound, silkPrepared: e.silkPrepared, enemyActions: r.enemyActions.map(a => ({ ...a })),
     stoppedExposure: !e.fieldActive };
 }
+export type DespairPublicRoundOutcome = Omit<DespairRoundOutcome, 'source'>;
+const publicDespairPowers = (p: Record<DespairPowerId, number>) => ({ ARC_BOLT: p.ARC_BOLT, FROST_GUARD: p.FROST_GUARD, SPRINT_STRIKE: p.SPRINT_STRIKE });
+export function projectDespairRoundOutcome(o: DespairRoundOutcome): DespairPublicRoundOutcome {
+  return { ...projectDemonessPublicFields(o, ['targetId', 'round', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore',
+    'playerSpiritualityAfter', 'enemySpiritualityBefore', 'interruptionCount', 'lastInterruptionCheckRound', 'fieldActive', 'enemyDisease', 'diseaseBefore',
+    'diseaseApplications', 'lastDiseaseRound', 'silkPrepared', 'stoppedExposure']), powerUses: publicDespairPowers(o.powerUses),
+    enemyActions: o.enemyActions.map(a => projectDemonessPublicFields(a, ['planned', 'actual', 'paidCost', 'diseaseAtAction', 'symptomChance', 'symptomRoll', 'interrupted'])) };
+}
 export function projectDespairCombat(s: SliceState) {
   const e = s.despair.encounter;
   return { enemyName: '瓦伦·霍尔特（DP4-VALEN-HOLT，原创成年序列5对手，G）', targetId: e.targetId,
     enemySpirituality: e.enemySpirituality, fieldActive: e.fieldActive, enemyDisease: e.enemyDisease, interruptionCount: e.interruptionCount,
-    powerUses: { ...e.powerUses }, originalExit: true, pursuit: false, distanceMetres: 4, fieldRadiusMetres: 10,
+    powerUses: publicDespairPowers(e.powerUses), originalExit: true, pursuit: false, distanceMetres: 4, fieldRadiusMetres: 10,
     summary: `新增暴露${e.fieldActive ? '维持中，每后轮2灵性' : '已停止'}；持续症状${e.enemyDisease}/6，停场不治愈。防御或撤退会先停止场；原敌剩余灵性${e.enemySpirituality}/40，已中断${e.interruptionCount}次实际法术。`,
     enemyCountWheel: DESPAIR_ENEMY_COUNT_WHEEL, enemyAbilityWheel: DESPAIR_ENEMY_ABILITY_WHEEL };
 }

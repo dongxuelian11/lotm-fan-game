@@ -3,7 +3,7 @@ import type { HandOfOrderAction, HandOfOrderCommand, HandOfOrderProjection } fro
 import { playerText } from '../shared/player-text.js';
 import './seer-styles.css';
 
-const ACQUISITION = new Set(['LEARN_GUIDANCE', 'REQUEST_SUPPLY', 'RECEIVE_SUPPLY', 'PREPARE_TASK', 'POTION_WORK', 'BUY_POTION', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION', 'CONSUME']);
+const ACQUISITION = new Set(['LEARN_GUIDANCE', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1', 'STABILIZE_PROMOTION', 'REQUEST_SUPPLY', 'RECEIVE_SUPPLY', 'PREPARE_TASK', 'POTION_WORK', 'BUY_POTION', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION', 'CONSUME']);
 const CLEANUP_ORDER = ['LEAVE', 'CLOSE', 'WITHDRAW', 'LEAVE_ENCOUNTER', 'LEAVE_PREPARATION', 'RETURN_OBJECTS', 'TAKE_OBJECT', 'STOP', 'CANCEL_IMPULSE', 'WAIT_EFFECT', 'WITHDRAW_PERMISSION'];
 const CLEANUP = new Set(CLEANUP_ORDER);
 const STATUS: Record<string, string> = { AVAILABLE: '尚未接触', OBSERVED: '已观察', PREPARED: '已准备', ACTIVE: '尚未收束', EXAMINED: '待报告', RESOLVED: '已收束', CANCELLED: '已取消' };
@@ -20,10 +20,11 @@ export interface HandOfOrderPanelProps {
   error?: string | null;
   onCommand: (command: HandOfOrderCommand) => void;
   onClose?: () => void;
+  onAdvance?: (() => void) | undefined;
 }
 
 /** Only saved public facts are displayed; every operation remains a domain intent. */
-export function HandOfOrderPanel({ value, busy, blocked = false, error = null, onCommand, onClose }: HandOfOrderPanelProps) {
+export function HandOfOrderPanel({ value, busy, blocked = false, error = null, onCommand, onClose, onAdvance }: HandOfOrderPanelProps) {
   const [goal, setGoal] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState<{ action: HandOfOrderAction; facts: string } | null>(null);
   const [pending, setPending] = useState(false);
@@ -124,10 +125,11 @@ export function HandOfOrderPanel({ value, busy, blocked = false, error = null, o
 
   return <section className="seer-panel" aria-label="秩序之手成长" aria-busy={busy || pending}>
     <h2 ref={heading} tabIndex={-1}>{prose(value.title)}</h2>
-    <p className="seer-next"><strong>下一步：</strong>{value.resources?.health === 0 ? '本周目已经死亡，原身体、原人物与原物记录只读保留。' : complete && !inEncounter ? '三案已结束，可返回普通生活；旁院交战由你另行选择。' : inEncounter && encounterComplete ? '旁院经历已经结束，原物、费用与实际结果保留；可返回普通生活。' : prose(next?.label ?? value.nextStep)}</p>
+    <p className="seer-next"><strong>下一步：</strong>{value.resources?.health === 0 ? '本周目已经死亡，原身体、原人物与原物记录只读保留。' : complete && !inEncounter ? onAdvance ? '三案与反思已经结束，可以查看审判者晋升准备。' : '三案已结束，可返回普通生活；旁院交战由你另行选择。' : inEncounter && encounterComplete ? '旁院经历已经结束，原物、费用与实际结果保留；可返回普通生活。' : prose(next?.label ?? value.nextStep)}</p>
     {error !== null && <p role="alert">{error}。当前仍显示上次已保存的记录，请用页面的重试操作处理同一次保存，勿再次提交。</p>}
     {(busy || pending) && error === null && <p role="status">正在结算并保存这一次操作，请稍候。</p>}
     {resources()}
+    {onAdvance && !inside && <button className="slice-button" disabled={locked || confirmation !== null} onClick={onAdvance}>查看审判者晋升准备</button>}
     {!inside && onClose && <button className="slice-button quiet" disabled={locked || confirmation !== null} onClick={() => { if (!locked && !confirmation) onClose(); }}>返回普通生活</button>}
     <nav aria-label="秩序之手目标">
       {value.promoted ? <>

@@ -10,13 +10,36 @@ export type ApocalypseDemonessPreparationId = typeof APOCALYPSE_DEMONESS_PREPARA
 export type ApocalypseDemonessAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: ApocalypseDemonessPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1' | 'STABILIZE_PROMOTION'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type ApocalypseDemonessCommand = ApocalypseDemonessAcquisitionCommand | ApocalypseDemonessActivityCommand | ApocalypseDemonessEncounterCommand;
+/** The vessel may change; the three finite original characteristics do not. */
+export interface ApocalypseDemonessRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_GALLERY_EXIT'; custodian: 'UD3-MARCUS';
+}
+export interface ApocalypseDemonessRecovery extends ApocalypseDemonessRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous, named permission and physical inspection. It is never inferred from old consent. */
+export interface ApocalypseDemonessRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_GALLERY_EXIT'; originals: ApocalypseDemonessOriginals;
+  permission: { personId: 'UD3-MARCUS'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT'; custodyAfter: 'FAILED_REMNANT' | 'SUPPLIER';
+}
+export interface ApocalypseDemonessOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface ApocalypseDemonessOriginalCharacteristics {
+  characteristics: ApocalypseDemonessOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface ApocalypseDemonessBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: ApocalypseDemonessRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface ApocalypseDemonessAcquisitionBudget {
@@ -30,6 +53,7 @@ export interface ApocalypseDemonessAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'demoness'; calamityDemonessPromotionWeek: number; assassinPromotionWeek: number };
   before: ApocalypseDemonessAcquisitionBudget; after: ApocalypseDemonessAcquisitionBudget; finance: ApocalypseDemonessFinanceSnapshot;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: ApocalypseDemonessRecoverySite;
 }
 export const APOCALYPSE_DEMONESS_SOURCE_KEYS = ['assassin', 'instigator', 'witch', 'pleasure', 'pain', 'despair', 'unagingDemoness', 'calamityDemoness'] as const;
 export type ApocalypseDemonessSourceHistory = Pick<SliceState, typeof APOCALYPSE_DEMONESS_SOURCE_KEYS[number]>;
@@ -42,9 +66,10 @@ export interface ApocalypseDemonessSourceScene {
 }
 export interface ApocalypseDemonessState {
   guidanceKnown: boolean; bottles: ApocalypseDemonessBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: ApocalypseDemonessRecoveryRequest };
   promotionWeek: number | null; calamityDemonessActingAtPromotion: number | null;
   preparations: { taskId: ApocalypseDemonessPreparationId; completedWeek: number }[];
+  promotionStability?: { preparations: ApocalypseDemonessPromotionStability[] };
   preparedWeek: number | null; acquisitionJournal: ApocalypseDemonessAcquisitionEvent[];
   /** Single frozen eight-root history. The new life owns the sole continuing live scene; these roots never evolve. */
   sourceHistory: ApocalypseDemonessSourceHistory | null; sourceScene: ApocalypseDemonessSourceScene | null;
@@ -71,3 +96,9 @@ export interface ApocalypseDemonessProjection {
 export type ApocalypseDemonessPublicView = ApocalypseDemonessProjection;
 export type { ApocalypseDemonessActivityCommand, ApocalypseDemonessLifeProjection, ApocalypseDemonessLifeState } from './life.js';
 export type { ApocalypseDemonessEncounterCommand, ApocalypseDemonessEncounterProjection, ApocalypseDemonessEncounterState } from './encounter.js';
+
+/** Future-only paid support bound to the exact vessel and original site. */
+export interface ApocalypseDemonessPromotionStability {
+  id: string; bottleId: string; week: number; revision: number; actorDigest: string; sourceDigest: string;
+  location: 'BACKLUND_ORIGINAL_GALLERY_EXIT'; status: 'READY' | 'SPENT' | 'INVALIDATED';
+}

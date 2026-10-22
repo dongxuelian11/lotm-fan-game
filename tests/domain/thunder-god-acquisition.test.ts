@@ -12,12 +12,12 @@ import {
   THUNDER_GOD_INHERITED_ABILITY_IDS, createThunderGodState, hasThunderGodLock,
   projectThunderGod, thunderGodInheritedView, validateThunderGodAcquisitionJournal,
   validateThunderGodCommand, validateThunderGodSource, validateThunderGodState,
-  thunderGodAcquisitionBlock,
+  thunderGodAcquisitionBlock, resolveThunderGodOriginalsSnapshot,
 } from '../../src/domain/thunder-god/index.js';
 import { THUNDER_GOD_ABILITY_IDS, THUNDER_GOD_PREPARATION_IDS } from '../../src/domain/thunder-god/types.js';
 import { THUNDER_GOD_PRICES } from '../../src/domain/thunder-god/content.js';
 import {
-  tg, dose, originalTyrantRoots, originalCatastrophe, prepared, promoted, ready, rejectThunderGod,
+  tg, dose, originalTyrantRoots, originalCatastrophe, prepareBottle, prepared, promoted, ready, rejectThunderGod,
   rejectIntent, taught, catastropheNaturalPath, catastropheBranchPath, tyrantLegacyKeys, loadThunderGodFixture,
 } from './thunder-god-directed-helper.js';
 
@@ -156,16 +156,51 @@ describe('Thunder God finite actual acquisition', () => {
     for (const stat of ['physique', 'perception', 'will', 'knowledge'] as const) expect(receipt.after.coreStats[stat]).toBe(receipt.before.coreStats[stat] + 1);
     expect(receipt.after.spirituality).toBe(receipt.before.spirituality); assertValidSliceState(s);
   }, 60_000);
-  it('does not request free resupply before all originals actually fail', () => {
-    const s = taught(); rejectThunderGod(s, { type: 'REQUEST_SUPPLY' }); rejectThunderGod(s, { type: 'RECEIVE_SUPPLY' });
+  it('keeps legacy supply closed and pays to recover the same failed characteristic for a fresh carrier', () => {
+    let s = taught(); rejectThunderGod(s, { type: 'REQUEST_SUPPLY' }); rejectThunderGod(s, { type: 'RECEIVE_SUPPLY' });
+    rejectThunderGod(s, { type: 'REQUEST_RECOVERY_V1', bottleId: dose.bottleId });
     expect(s.thunderGod.bottles).toHaveLength(3); expect(s.thunderGod.resupply).toEqual({ requestedWeek: null, deliveries: 0 });
-    const finish = promoted();
-    for (const receipt of journal(finish).filter(e => e.command.type === 'REQUEST_SUPPLY')) {
-      expect(receipt.before.cash - receipt.after.cash).toBe(100); expect(receipt.before.actions - receipt.after.actions).toBe(1);
-      const delivery = journal(finish).find(e => e.command.type === 'RECEIVE_SUPPLY' && e.revision > receipt.revision)!;
-      expect(delivery.week).toBeGreaterThan(receipt.week); expect(delivery.before).toEqual(delivery.after);
+    for (let number = 1; number <= 3; number++) {
+      const bottleId = `thunder-god-potion-${number}`;
+      s = tg(prepareBottle(s, bottleId), { type: 'CONSUME', bottleId, confirmed: true });
     }
-    expect(new Set(finish.thunderGod.bottles.map(b => b.id)).size).toBe(finish.thunderGod.bottles.length);
+    expect(s.thunderGod.bottles.map(b => b.outcome)).toEqual(['FAILURE', 'FAILURE', 'FAILURE']);
+    rejectThunderGod(s, { type: 'REQUEST_SUPPLY' }); rejectThunderGod(s, { type: 'RECEIVE_SUPPLY' });
+    const originals = structuredClone(s.thunderGod.bottles), roots = originalTyrantRoots(s), random = { ...s.random };
+    const sourceBottleId = 'thunder-god-potion-3';
+    s = tg(ready(s, { ap: 2, cash: THUNDER_GOD_PRICES.recovery }), { type: 'REQUEST_RECOVERY_V1', bottleId: sourceBottleId });
+    const request = journal(s).at(-1)!;
+    expect([request.before.cash - request.after.cash, request.before.actions - request.after.actions]).toEqual([120, 1]);
+    expect(request.recoverySite).toMatchObject({ sourceBottleId, originalBottleId: sourceBottleId,
+      permission: { personId: 'CT2-NORA', purpose: 'INVESTIGATE' }, custodyBefore: 'FAILED_REMNANT', custodyAfter: 'FAILED_REMNANT' });
+    expect(s.thunderGod.bottles).toEqual(originals);
+    rejectThunderGod(s, { type: 'REQUEST_RECOVERY_V1', bottleId: sourceBottleId });
+    rejectThunderGod(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: sourceBottleId });
+    s = tg(ready(s, { ap: 1, afterWeek: request.week }), { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: sourceBottleId });
+    const recovery = journal(s).at(-1)!, recovered = s.thunderGod.bottles.at(-1)!;
+    expect(recovery.week).toBeGreaterThan(request.week);
+    expect([recovery.before.cash - recovery.after.cash, recovery.before.actions - recovery.after.actions]).toEqual([0, 1]);
+    expect(recovery.recoverySite).toMatchObject({ sourceBottleId, originalBottleId: sourceBottleId,
+      permission: { personId: 'CT2-NORA', purpose: 'RECOVER' }, custodyBefore: 'FAILED_REMNANT', custodyAfter: 'SUPPLIER' });
+    expect(recovered).toMatchObject({ id: 'thunder-god-potion-4', status: 'SUPPLIER', labourSteps: 0,
+      recovery: { sourceBottleId, originalBottleId: sourceBottleId, characteristicId: `${sourceBottleId}:characteristic`, requestedWeek: request.week, recoveredWeek: recovery.week } });
+    expect(s.thunderGod.bottles.slice(0, 3)).toEqual(originals); expect(s.thunderGod.bottles).toHaveLength(4);
+    expect(originalTyrantRoots(s)).toEqual(roots); expect(s.random).toEqual(random);
+    expect(resolveThunderGodOriginalsSnapshot(s.thunderGod)?.characteristics).toHaveLength(3);
+    s = prepareBottle(s, recovered.id);
+    const freshJobs = journal(s).filter(e => e.command.type === 'POTION_WORK' && e.command.bottleId === recovered.id);
+    expect(freshJobs).toHaveLength(5); expect(new Set(freshJobs.map(e => e.revision)).size).toBe(5);
+    expect(freshJobs.every(e => e.revision > recovery.revision && e.before.actions - e.after.actions === 1)).toBe(true);
+    const purchase = journal(s).find(e => e.command.type === 'BUY_POTION' && e.command.bottleId === recovered.id)!;
+    expect(purchase.before.cash - purchase.after.cash).toBe(90);
+    s = tg(s, { type: 'CONSUME', bottleId: recovered.id, confirmed: true });
+    expect(s.progression.sequence).toBe(1); expect(s.thunderGod.bottles.slice(0, 3)).toEqual(originals);
+    expect(s.random).toEqual({ seed: random.seed, cursor: random.cursor + 1 });
+    expect(journal(s).some(e => e.command.type === 'REQUEST_SUPPLY' || e.command.type === 'RECEIVE_SUPPLY')).toBe(false);
+    const conserved = resolveThunderGodOriginalsSnapshot(s.thunderGod);
+    expect(conserved?.characteristics).toHaveLength(3);
+    expect(conserved).toMatchObject({ embodiedOriginalBottleId: sourceBottleId, embodiedBottleId: recovered.id });
+    expect(validateThunderGodAcquisitionJournal(s)).toBe(true); assertValidSliceState(s);
   }, 60_000);
 });
 

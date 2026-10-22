@@ -14,13 +14,37 @@ export type DarkAngelPreparationId = typeof DARK_ANGEL_PREPARATION_IDS[number];
 export type DarkAngelAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: DarkAngelPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1' | 'STABILIZE_PROMOTION'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type DarkAngelCommand = DarkAngelAcquisitionCommand | DarkAngelActivityCommand | DarkAngelEncounterCommand;
+export type DarkAngelOriginalBottleId = 'dark-angel-potion-1' | 'dark-angel-potion-2' | 'dark-angel-potion-3';
+/** The vessel may change; the three finite original characteristics do not. */
+export interface DarkAngelRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_DARK_ANGEL_PREPARATION'; custodian: 'TG223-DARK-ANGEL-SUPPLIER';
+}
+export interface DarkAngelRecovery extends DarkAngelRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface DarkAngelRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_DARK_ANGEL_PREPARATION'; originals: DarkAngelOriginals;
+  permission: { personId: 'TG223-DARK-ANGEL-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface DarkAngelOriginalCharacteristic {
+  characteristicId: string; originalBottleId: DarkAngelOriginalBottleId; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface DarkAngelOriginalCharacteristics {
+  characteristics: DarkAngelOriginalCharacteristic[];
+  embodiedOriginalBottleId: DarkAngelOriginalBottleId | null; embodiedBottleId: string | null;
+}
 export interface DarkAngelBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: DarkAngelRecovery;
 }
 export interface DarkAngelPrices { guidance: number; potion: number; labourCredit: number; labourBalance: number; preparation: number; resupply: number }
 export type DarkAngelFinance = Pick<SliceState, 'weeklyBudget' | 'lifeTier' | 'nextLifeTier' | 'debts' | 'missedWeeks' | 'credit'>;
@@ -34,6 +58,7 @@ export interface DarkAngelAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'hanged-man'; elderPromotionWeek: number; secretSupplicantPromotionWeek: number };
   before: DarkAngelAcquisitionBudget; after: DarkAngelAcquisitionBudget; finance: DarkAngelFinance;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: DarkAngelRecoverySite;
 }
 export const DARK_ANGEL_SOURCE_KEYS = ['secretSupplicant', 'listener', 'shadowAscetic', 'roseBishop', 'shepherd', 'blackKnight', 'threeHeadedTemplar', 'elder'] as const;
 export type DarkAngelSourceHistory = Pick<SliceState, typeof DARK_ANGEL_SOURCE_KEYS[number]>;
@@ -52,7 +77,7 @@ export interface DarkAngelSourceScene {
 }
 export interface DarkAngelState {
   guidanceKnown: boolean; sourceWeek: number | null; bottles: DarkAngelBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: DarkAngelRecoveryRequest };
   promotionWeek: number | null; elderActingAtPromotion: number | null;
   preparations: { taskId: DarkAngelPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: DarkAngelAcquisitionEvent[];

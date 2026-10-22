@@ -12,7 +12,7 @@ import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/curr
 import { actualPureWhiteAngelEvidence } from './pure-white-angel-capture-evidence.js';
 import { PURE_WHITE_ROOT, PURE_WHITE_SOURCE, PURE_WHITE_SOURCE_SHA, PURE_WHITE_RAW_SOURCE_STATE_SHA, PURE_WHITE_PREFIX_SHA,
   PURE_WHITE_PREFIX_COUNT, captureFileHash, captureValueHash, sourceEntry, naturalEntry, captureCommands, boundaryIndex,
-  snapshotIndex, capturedState, capturedSnapshot, replayCaptureBoundary, assertPublicCaptureControl,
+  snapshotIndex, capturedState, capturedSnapshot, namedBoundary, replayCaptureBoundary, assertPublicCaptureControl, currentGuidanceCaptureExpected,
   sameCaptureValue as same, FULL_CAPTURE_REPLAY_TIMEOUT } from './pure-white-angel-capture-helper.js';
 
 const expected = actualPureWhiteAngelEvidence();
@@ -37,6 +37,28 @@ describe('Pure White Angel complete729-command original public continuation', ()
     expect(capturedState('final')).toMatchObject({ schemaVersion: CURRENT_SCHEMA_VERSION, contentVersion: CURRENT_CONTENT_VERSION });
     same(capturedState('prefixFinal'), migrateSliceState(raw));
     expect(naturalEntry('producerSha256')).toBe(expected.producerSha256);
+  }, 120_000);
+
+  it('limits the current guidance expectation to its exact original command record and preserves capture bytes', () => {
+    const guidance = namedBoundary('actual500p-guidance-and-frozen-eight-root-source');
+    expect([guidance.count, guidance.before.revision, guidance.final.revision]).toEqual([743, 743, 744]);
+    expect(captureCommands[742]).toEqual({ type: 'PURE_WHITE_ANGEL', command: { type: 'LEARN_GUIDANCE' } });
+    for (const original of [guidance.final, capturedState('final')]) {
+      const originalHash = captureValueHash(original);
+      const aligned = currentGuidanceCaptureExpected(original);
+      expect(aligned.chronicle[1160]!.text).not.toBe(original.chronicle[1160]!.text);
+      same({
+        ...aligned,
+        chronicle: aligned.chronicle.map((entry, index) => index === 1160 ? { ...entry, text: original.chronicle[index]!.text } : entry),
+        lastResult: original.revision === 744 ? { ...aligned.lastResult!, text: original.lastResult!.text } : aligned.lastResult,
+      }, original);
+      expect(captureValueHash(original)).toBe(originalHash);
+    }
+    expect(() => currentGuidanceCaptureExpected({ ...guidance.final, revision: 745 })).toThrow();
+    const changed = structuredClone(guidance.final);
+    changed.chronicle[1160]!.text += 'unexpected';
+    expect(() => currentGuidanceCaptureExpected(changed)).toThrow();
+    expect(() => same({ random: { cursor: 1 } }, { random: { cursor: 2 } })).toThrow('Capture byte mismatch: actual SHA-256');
   }, 120_000);
 
   it('replays every actual command in order and exposes every continuation control publicly', () => {
@@ -72,7 +94,7 @@ describe('Pure White Angel complete729-command original public continuation', ()
       expect(state.random.cursor).toBeGreaterThanOrEqual(cursor);
       if (index === PURE_WHITE_PREFIX_COUNT - 1) same(state, capturedState('prefixFinal'));
     }
-    same(state, capturedState('final')); assertValidSliceState(state); same(migrateSliceState(state), state);
+    same(state, currentGuidanceCaptureExpected(capturedState('final'))); assertValidSliceState(state); same(migrateSliceState(state), state);
     expect(state.revision).toBe(capturedState('initial').revision + expected.commandCount);
     expect(state).toMatchObject(expected.final);
     expect(naturalEntry('stage')).toBe(expected.stage); expect(naturalEntry('error')).toBe(expected.error);

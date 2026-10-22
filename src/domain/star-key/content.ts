@@ -41,4 +41,9 @@ export const STAR_KEY_INHERITED_ABILITIES = [
   ['door.s2.symbolic-transit', '象征通行', '在原场景已核实的两端间尝试有限象征通行，成功窗口后仍须身体与同一原物实际通过。'],
   ['door.s2.pattern-reproduction', '光纹复现', '只对本人亲见并理解的原灯式样尝试短时复现，实际投到原屏并核对才计应用。'],
 ].map(([id, label, description]) => ({ id: id!, label: label!, description: description! }));
-export const STAR_KEY_CONSUMPTION_RISK = '要求旅法师消化100、从其实际晋升周起满12整周、三份旧报告与反思完成、健康>20且精神>40。三项专业准备各1行动；另付1行动与150便士检查当周场地，再以0行动独立确认饮用所选原瓶，意志30。大成功晋升、精神−8；成功晋升、精神−15；失败仍为旅法师、健康−15精神−25排异+30；严重排异仍为旅法师、健康−25精神−45排异+60。原瓶与本次准备均耗尽；专业支持仅将本次排异后的健康与精神保底到1，不保护普通死亡或战斗。成功四属性各+1，十五项旧掌握保持原值，两项新掌握从0开始，灵性上限120且当前不补满。姓名、性别、年龄、性格、取向、原伤势与旧人的结局不变。三瓶全部失败耗尽后，可花1行动与100便士申请下一批，至少跨一真实周再接收三瓶；各瓶费用与准备单独结算。';
+export const STAR_KEY_CONSUMPTION_RISK = '要求旅法师消化100、从其实际晋升周起满12整周、三份旧报告与反思完成、健康>20且精神>40。三项专业准备各1行动；另付1行动与150便士检查当周场地，再以0行动独立确认饮用所选原瓶，意志30。大成功晋升、精神−8；成功晋升、精神−15；失败仍为旅法师、健康−15精神−25排异+30；严重排异仍为旅法师、健康−25精神−45排异+60。原瓶与本次准备均耗尽；专业支持仅将本次排异后的健康与精神保底到1，不保护普通死亡或战斗。成功四属性各+1，十五项旧掌握保持原值，两项新掌握从0开始，灵性上限120且当前不补满。姓名、性别、年龄、性格、取向、原伤势与旧人的结局不变。最初三瓶全部失败耗尽后，只能在原服药准备与支持交接处以1行动和120便士调查、核验并封存同一原特性，至少下一真实周以1行动和30便士当面回收；新普通药物与调配服务900便士，或五项新劳动后90便士。当周准备仍另行付费，旧瓶、原失败与旧成本不改写，不再供应第四份原特性。';
+
+/** Product R218 introduces recovery in save schema215. Legacy records remain readable without mutation. */
+export const STAR_KEY_RECOVERY_SCHEMA_VERSION = 215;
+export const STAR_KEY_RECOVERY_SITE_ID = 'BACKLUND_ORIGINAL_STAR_KEY_PREPARATION' as const;
+export const STAR_KEY_RECOVERY_PRICES = { recovery: 120, recoveryHandover: 30, recoveryDrug: 900, recoveryLabourBalance: 90 } as const;

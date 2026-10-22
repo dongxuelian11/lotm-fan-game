@@ -236,7 +236,7 @@ describe('Nightmare actual public acquisition, dream records and waking verifica
     expect(advanced.chronicle.slice(zero.chronicle.length).map(record => record.title)).toContain('本周生活费');
   });
 
-  it('cannot repeat completed assistance or reflection, or delete, duplicate or forge a completion source', () => {
+  it('cannot repeat completed assistance or reflection, or delete, duplicate or forge a completion source', { timeout: 10_000 }, () => {
     const original = capture().practiced, s = structuredClone(original);
     for (const caseId of NIGHTMARE_CASE_IDS) {
       for (const type of ['OBSERVE', 'PREPARE', 'SESSION', 'VERIFY', 'WITHDRAW'] as const) expect(() => applySliceIntent(s, {

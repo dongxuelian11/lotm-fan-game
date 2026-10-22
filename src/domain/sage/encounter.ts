@@ -1,7 +1,7 @@
 import { stableStringify } from '../canonical.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceInjury, SliceState } from '../slice/types.js';
-import { sageLifeClosed, validateSageSiteState, type SageSiteState } from './life.js';
+import { sageLifeClosed, validateSageSiteState, publicPryerFields, publicSageSite, type SageSiteState, type SagePublicSite } from './life.js';
 import { currentSageCombatSource, validateSageRoundOutcome, validateSageCombatRound, type SageCombatSource, type SageRoundOutcome } from './combat.js';
 
 /** Original individual G opponent. The 120S budget is individual, not a rule for all S3 people. */
@@ -37,8 +37,8 @@ export interface SageEncounterState {
 export type SageEncounterCommand = { type: 'PREPARE_ENCOUNTER' | 'ENCOUNTER_TALK' | 'ENCOUNTER_FIGHT' | 'LEAVE_ENCOUNTER' };
 export interface SageEncounterAction { id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: SageEncounterCommand }
 export interface SageEncounterProjection {
-  title: string; story: string; status: SageEncounterState['status']; inside: boolean; site: SageSiteState | null; startSite: SageSiteState | null;
-  preparation: SagePreparation | null;
+  title: string; story: string; status: SageEncounterState['status']; inside: boolean; site: SagePublicSite | null; startSite: SagePublicSite | null;
+  preparationSummary: Pick<SagePreparation, 'week' | 'mindPaid'> | null;
   enemy: null | { id: typeof SAGE_TARGET_ID; name: '梅林·阿什'; age: 47; sequence: 3; health: number; mind: number; spirituality: number;
     status: SageEncounterState['enemyStatus']; weaponId: 'SG2-MERRIN-ROD'; weaponLocation: 'HAND' | 'YARD'; powerUses: Record<SagePowerId, number> };
   actions: SageEncounterAction[]; facts: string[];
@@ -181,9 +181,9 @@ export function sageEncounterActions(s: SliceState): SageEncounterAction[] {
 }
 export function projectSageEncounter(s: SliceState): SageEncounterProjection {
   const e = s.sage.encounter;
-  if (!stage(s)) return { title: '尚未开放的档案馆后院', story: '', status: e.status, inside: false, site: null, startSite: null, preparation: null, enemy: null, actions: [], facts: [] };
-  return { title: '档案馆后院的争议', story: SAGE_ENCOUNTER_STORY, status: e.status, inside: hasSageEncounterLock(s), site: structuredClone(e.currentSite ?? s.sage.life.site), startSite: structuredClone(e.startSite), preparation: structuredClone(e.preparation),
-    enemy: { id: SAGE_TARGET_ID, name: '梅林·阿什', age: 47, sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus, weaponId: 'SG2-MERRIN-ROD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } },
+  if (!stage(s)) return { title: '尚未开放的档案馆后院', story: '', status: e.status, inside: false, site: null, startSite: null, preparationSummary: null, enemy: null, actions: [], facts: [] };
+  return { title: '档案馆后院的争议', story: SAGE_ENCOUNTER_STORY, status: e.status, inside: hasSageEncounterLock(s), site: publicSageSite(e.currentSite ?? s.sage.life.site), startSite: e.startSite ? publicSageSite(e.startSite) : null, preparationSummary: e.preparation ? publicPryerFields(e.preparation, ['week', 'mindPaid']) : null,
+    enemy: { id: SAGE_TARGET_ID, name: '梅林·阿什', age: 47, sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus, weaponId: 'SG2-MERRIN-ROD', weaponLocation: e.weaponLocation, powerUses: publicPryerFields(e.powerUses, ['ARC_BOLT', 'WARD', 'FEINT']) },
     actions: sageEncounterActions(s), facts: [e.clearance ? '艾瑞丝已依此次同意亲自到院外；原记录与三份归还物资留在主人处。' : '交谈前将征求艾瑞丝此次离场同意，再由她亲自步行到院外；原记录与归还物资留在主人处。', '信息化尝试每轮一次，付6灵性、2精神、6精力并增加一次同化暴露；成功只减随后一次身体攻势，不能免伤或复活。',
       '信息筛取每轮一次，付6灵性、2精神并增加一次暴露；只读取眼前真实棍势，可能误读或被抵抗。成功仅准备下一次真实攻击的有限加成。',
       '旧法术、牢笼、迟钟回声与模糊预兆保留原成本和预算。旧卷只消耗实际持有且已授权的原件，没有赠卷或回填旧库存。',

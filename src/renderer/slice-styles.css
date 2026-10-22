@@ -1683,3 +1683,10 @@ body {
 .slice-recovery-notice { margin: 12px 0; padding: 14px 16px; border: 1px solid #a36a48; border-left: 4px solid #9d5138; border-radius: 8px; background: #fff7ed; color: #3a2921; line-height: 1.6; }
 .slice-recovery-notice p { margin: 6px 0; }
 .slice-recovery-notice .slice-button { margin-top: 8px; }
+
+/* Keep the next step visible; route browsing is optional. */
+.slice-growth-routes { margin: 0 0 18px; }
+.slice-growth-routes > summary { cursor: pointer; color: var(--slice-ink); padding: 8px 0; }
+.slice-growth-routes[open] > summary { margin-bottom: 12px; }
+.slice-action-feedback { position: sticky; top: 0; z-index: 2; padding: 10px 16px; margin: 0 0 18px; background: #f5f0e4; border-left: 3px solid #63795e; box-shadow: 0 2px 8px #0001; font-size: 16px; }
+.slice-action-feedback p { margin: 4px 0; }

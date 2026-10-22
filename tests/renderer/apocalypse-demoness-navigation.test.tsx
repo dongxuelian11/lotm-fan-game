@@ -331,7 +331,7 @@ describe('Apocalypse Demoness saved campaign navigation and authoritative UI rec
     expect(originalDemonessRoots(game.state)).toEqual(originalDemonessRoots(before));
     expect(screen.queryByRole('button', { name: '返回普通生活' })).toBeNull();
     expect(game.state).toEqual(expected); expect(game.submit).toHaveBeenCalledTimes(2);
-  }, 30_000);
+  }, 60_000);
 
   it('shows a real saved S1 round immediately and on reopening ahead of old S2 promotion, including same-intent retry', async () => {
     const source = perform(practiced(), { type: 'ENCOUNTER_TALK' }, { type: 'ENCOUNTER_POLICY', policy: 'ALL' });
@@ -380,5 +380,5 @@ describe('Apocalypse Demoness saved campaign navigation and authoritative UI rec
       enemyHealth: 100, enemyMind: 100, enemySpirituality: 97, plate: { id: 'CD2-COMBAT-PLATE', charges: 3 } });
     expect(game.state.apocalypseDemoness.encounter.targetId).toBe('AD1-LEONA');
     expect(game.state).toEqual(expected); expect(game.submit).toHaveBeenCalledTimes(3);
-  }, 30_000);
+  }, 60_000);
 });

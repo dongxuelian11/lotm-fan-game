@@ -1,3 +1,16 @@
+export type { MotherCommand, MotherProjection } from '../domain/mother/types.js';
+export type { JusticiarCommand, JusticiarProjection } from '../domain/justiciar/types.js';
+export type { BlackEmperorCommand, BlackEmperorProjection } from '../domain/black-emperor/types.js';
+export type { WheelOfFortuneCommand, WheelOfFortuneProjection } from '../domain/wheel-of-fortune/types.js';
+export type { ChainedCommand, ChainedProjection } from '../domain/chained/types.js';
+export type { AbyssCommand, AbyssProjection } from '../domain/abyss/types.js';
+export type { HangedManCommand, HangedManProjection } from '../domain/hanged-man/types.js';
+export type { HermitCommand, HermitProjection } from '../domain/hermit/types.js';
+export type { DemonessCommand, DemonessProjection } from '../domain/demoness/types.js';
+export type { TwilightGiantCommand, TwilightGiantProjection } from '../domain/twilight-giant/types.js';
+export type { ErrorAscentCommand, ErrorAscentProjection } from '../domain/error-ascent/types.js';
+export type { DoorCommand, DoorProjection } from '../domain/door/types.js';
+export type { DeathCommand, DeathProjection } from '../domain/death/types.js';
 import type { SliceCreationSelection } from "../content/slice-creation.js";
 import type { SliceIntent, SliceProjection } from "../domain/slice/types.js";
 

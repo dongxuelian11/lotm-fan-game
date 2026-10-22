@@ -7,12 +7,12 @@ import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.
 import { assertValidSliceState, createSliceRun } from '../../src/domain/slice/index.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import {
-  TIME_WORM_INHERITED_ABILITY_IDS, createTimeWormState, hasTimeWormLock, projectTimeWorm,
+  TIME_WORM_INHERITED_ABILITY_IDS, createTimeWormState, hasTimeWormLock, projectTimeWorm, resolveTimeWormOriginals,
   validateTimeWormAcquisitionJournal, validateTimeWormCommand, validateTimeWormSource, validateTimeWormState,
   timeWormAcquisitionBlock, timeWormCompletedAcquisitionBudgetMatches, timeWormFinanceSnapshot,
 } from '../../src/domain/time-worm/index.js';
 import { TIME_WORM_ABILITY_IDS, TIME_WORM_PREPARATION_IDS } from '../../src/domain/time-worm/types.js';
-import { TIME_WORM_PRICES } from '../../src/domain/time-worm/content.js';
+import { TIME_WORM_PRICES, TIME_WORM_RECOVERY_PRICES } from '../../src/domain/time-worm/content.js';
 import {
   ae, dose, originalErrorRoots, originalFateTrojan, prepared, promoted, ordinary,
   rejectTimeWorm, rejectIntent, taught, fateTrojanNaturalPath, deceitMentorPeacefulPath, deceitMentorDeathPath, recoveredSource, ready,
@@ -65,6 +65,7 @@ describe('Time Worm genuine Error source and strict commands', () => {
     ]) expect(validateTimeWormCommand(command)).toBe(false);
     expect(validateTimeWormCommand(dose)).toBe(true);
     expect(TIME_WORM_PRICES).toEqual({ guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100 });
+    expect(TIME_WORM_RECOVERY_PRICES).toEqual({ recovery: 120, recoveryHandover: 30, recoveryDrug: 900, recoveryLabourBalance: 90 });
   });
 });
 
@@ -174,22 +175,44 @@ describe('Time Worm per-bottle acquisition and actual weekly economy', () => {
     for (const id of TIME_WORM_INHERITED_ABILITY_IDS) expect(e.after.mastery[id]).toBe(e.before.mastery[id]);
     expect(validateTimeWormAcquisitionJournal(s)).toBe(true); assertValidSliceState(s);
   }, 60_000);
-  it('requires three real failed bottles, paid replacement and the next real week in an isolated directed branch', () => {
+  it('requires three real failed bottles, paid same-original recovery and the next real week in an isolated directed branch', () => {
     let s = directedPrepared(['FAILURE', 'GREAT_FAILURE', 'FAILURE']);
     for (let number = 1; number <= 3; number++) {
       s = ae(s, { type: 'CONSUME', bottleId: `time-worm-potion-${number}`, confirmed: true });
       expect(s.progression.sequence).toBe(2);
-      if (number < 3) { rejectTimeWorm(s, { type: 'REQUEST_SUPPLY' }); s = prepareBottle(s, `time-worm-potion-${number + 1}`); }
+      if (number < 3) {
+        rejectTimeWorm(s, { type: 'REQUEST_SUPPLY' });
+        rejectTimeWorm(s, { type: 'REQUEST_RECOVERY_V1', bottleId: `time-worm-potion-${number}` });
+        s = prepareBottle(s, `time-worm-potion-${number + 1}`);
+      }
     }
     expect(s.timeWorm.bottles.map(b => b.outcome)).toEqual(['FAILURE', 'GREAT_FAILURE', 'FAILURE']);
-    s = ready(s, { ap: 2, cash: 100 });
-    s = ae(s, { type: 'REQUEST_SUPPLY' }); const request = journal(s).at(-1)!;
-    expect(request.before.cash - request.after.cash).toBe(100); expect(request.before.actions - request.after.actions).toBe(1);
-    rejectTimeWorm(s, { type: 'RECEIVE_SUPPLY' }); expect(s.timeWorm.bottles).toHaveLength(3);
-    s = ready(s, { afterWeek: request.week }); s = ae(s, { type: 'RECEIVE_SUPPLY' });
-    const delivery = journal(s).at(-1)!; expect(delivery.week).toBeGreaterThan(request.week); expect(delivery.before).toEqual(delivery.after);
-    expect(s.timeWorm.bottles).toHaveLength(6);
-    expect(s.timeWorm.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
+    const originals = structuredClone(s.timeWorm.bottles), bottleId = 'time-worm-potion-3';
+    const failedReceipt = journal(s).find(e => e.command.type === 'CONSUME' && e.command.bottleId === bottleId)!;
+    s = ready(s, { ap: 2, cash: 120 });
+    rejectTimeWorm(s, { type: 'REQUEST_SUPPLY' }); rejectTimeWorm(s, { type: 'RECEIVE_SUPPLY' });
+    s = ae(s, { type: 'REQUEST_RECOVERY_V1', bottleId }); const request = journal(s).at(-1)!;
+    expect(request.after).toEqual({ ...request.before, cash: request.before.cash - 120, actions: request.before.actions - 1 });
+    expect(request.recoverySite).toMatchObject({ sourceBottleId: bottleId, originalBottleId: bottleId, characteristicId: 'ER0-TW-CHAR-3', sourceReceiptRevision: failedReceipt.revision });
+    rejectTimeWorm(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId }); expect(s.timeWorm.bottles).toEqual(originals);
+    s = ready(s, { cash: 30, afterWeek: request.week }); s = ae(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId });
+    const delivery = journal(s).at(-1)!; expect(delivery.week).toBeGreaterThan(request.week);
+    expect(delivery.after).toEqual({ ...delivery.before, cash: delivery.before.cash - 30, actions: delivery.before.actions - 1 });
+    expect(s.timeWorm.bottles).toHaveLength(4); expect(s.timeWorm.bottles.slice(0, 3)).toEqual(originals);
+    expect(s.timeWorm.bottles[3]).toMatchObject({ id: 'time-worm-recovery-1', status: 'SUPPLIER', labourSteps: 0, acquiredWeek: null,
+      recovery: { sourceBottleId: bottleId, originalBottleId: bottleId, characteristicId: 'ER0-TW-CHAR-3', sourceReceiptRevision: failedReceipt.revision, requestedWeek: request.week, recoveredWeek: delivery.week } });
+    const lineage = resolveTimeWormOriginals(s)!;
+    expect(lineage.characteristics).toHaveLength(3); expect(lineage.characteristics.map(c => c.originalBottleId)).toEqual(originals.map(b => b.id));
+    expect(lineage.characteristics[2]).toMatchObject({ originalBottleId: bottleId, latestBottleId: 'time-worm-recovery-1', holder: 'SUPPLIER' });
+    s = prepareBottle(s, 'time-worm-recovery-1');
+    const jobs = journal(s).filter(e => e.command.type === 'POTION_WORK' && e.command.bottleId === 'time-worm-recovery-1');
+    const purchase = journal(s).find(e => e.command.type === 'BUY_POTION' && e.command.bottleId === 'time-worm-recovery-1')!, preparation = journal(s).at(-1)!;
+    expect(jobs).toHaveLength(5); expect(jobs.every(e => e.before.actions - e.after.actions === 1)).toBe(true);
+    expect(purchase.after).toEqual({ ...purchase.before, cash: purchase.before.cash - 90 });
+    expect(preparation.command.type).toBe('PREPARE_PROMOTION');
+    expect(preparation.after).toEqual({ ...preparation.before, cash: preparation.before.cash - 150, actions: preparation.before.actions - 1 });
+    expect(s.timeWorm.bottles[3]).toMatchObject({ id: 'time-worm-recovery-1', status: 'PLAYER', labourSteps: 5 });
+    expect(s.timeWorm.bottles.slice(0, 3)).toEqual(originals);
     expect(originalErrorRoots(s)).toEqual(originalErrorRoots(originalFateTrojan())); assertValidSliceState(s);
   }, 60_000);
   it('ordinary S1 rest keeps the real120 spirituality ceiling and does not refill site energy', () => {
@@ -198,15 +221,14 @@ describe('Time Worm per-bottle acquisition and actual weekly economy', () => {
     expect(rested.progression.sequence).toBe(1); expect(rested.fateTrojan.life.site).toEqual(s.fateTrojan.life.site);
     expect(originalErrorRoots(rested)).toEqual(originalErrorRoots(s)); assertValidSliceState(rested);
   }, 60_000);
-  it('does not issue premature or free replacement originals', () => {
+  it('does not issue premature recovery carriers or add original characteristics', () => {
     const s = taught(); rejectTimeWorm(s, { type: 'REQUEST_SUPPLY' }); rejectTimeWorm(s, { type: 'RECEIVE_SUPPLY' });
+    rejectTimeWorm(s, { type: 'REQUEST_RECOVERY_V1', bottleId: dose.bottleId });
     expect(s.timeWorm.bottles).toHaveLength(3); expect(s.timeWorm.resupply).toEqual({ requestedWeek: null, deliveries: 0 });
     const finish = promoted();
-    for (const e of journal(finish).filter(e => e.command.type === 'REQUEST_SUPPLY')) {
-      expect(e.before.cash - e.after.cash).toBe(100); expect(e.before.actions - e.after.actions).toBe(1);
-      const delivery = journal(finish).find(d => d.command.type === 'RECEIVE_SUPPLY' && d.revision > e.revision)!;
-      expect(delivery.week).toBeGreaterThan(e.week); expect(delivery.before).toEqual(delivery.after);
-    }
+    expect(journal(finish).filter(e => e.command.type === 'REQUEST_SUPPLY' || e.command.type === 'RECEIVE_SUPPLY')).toEqual([]);
+    expect(finish.timeWorm.bottles.filter(b => !b.recovery)).toHaveLength(3);
+    expect(resolveTimeWormOriginals(finish)!.characteristics).toHaveLength(3);
     expect(new Set(finish.timeWorm.bottles.map(b => b.id)).size).toBe(finish.timeWorm.bottles.length);
   }, 60_000);
 });

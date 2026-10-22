@@ -177,12 +177,25 @@ export function finishFerrymanCombatRound(s: SliceState, r: FerrymanRoundContext
 export function ferrymanRoundOutcome(r: FerrymanRoundContext): FerrymanRoundOutcome {
   if (!r.outcome) throw new Error('先实际结束当前原摆渡人回合。'); return structuredClone(r.outcome);
 }
+/** Public historical evidence is copied by field; private replay sources stay in the save. */
+const publicFerrymanInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicFerrymanAction = (a: ActionEvidence) => ({ label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure, order: a.order, paidCost: a.paidCost, physicalFactor: a.physicalFactor, rolls: [...a.rolls] });
+export const projectFerrymanPlayerAction = (a: FerrymanPlayerAction) => ({ ...publicFerrymanAction(a), id: a.id, resisted: a.resisted, fallback: a.fallback });
+export const projectFerrymanEnemyAction = (a: FerrymanEnemyAction) => ({ ...publicFerrymanAction(a), planned: a.planned, actual: a.actual, focusGranted: a.focusGranted });
+export function projectFerrymanRoundOutcome(o: FerrymanRoundOutcome) { return {
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing, enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus, enemyRiskAfter: o.enemyRiskAfter, playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter, playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, enemySpiritualityBefore: o.enemySpiritualityBefore, focusReadyAfter: o.focusReadyAfter, elapsedSeconds: o.elapsedSeconds,
+  enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicFerrymanInjury),
+  powerUses: Object.fromEntries(FERRYMAN_POWER_IDS.map(id => [id, o.powerUses[id]])) as Record<FerrymanPowerId, number>,
+  playerActions: o.playerActions.map(projectFerrymanPlayerAction), enemyActions: o.enemyActions.map(projectFerrymanEnemyAction),
+}; }
+export type FerrymanPublicRoundOutcome = ReturnType<typeof projectFerrymanRoundOutcome>;
+
 export function projectFerrymanCombat(s: SliceState) {
   const e = s.ferryman.encounter, visible = isFerryman(s);
   return { enemyName: visible ? '罗温·谢尔（51岁，原创有限G3非凡者）' : '', targetId: visible ? e.targetId : null,
     enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
     powerUses: visible ? { ...e.powerUses } : null, scene: visible ? { ...e.scene } : null,
-    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, automaticSpiritAlly: false, source: visible ? currentFerrymanCombatSource(s) : null,
+    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, automaticSpiritAlly: false,
     summary: visible ? '摆渡人序列3有限G战斗。双方1–6次权重10/15/25/25/15/10；继承实际不死者4核心35/25/25/15、1250/底125、S120，仅继续轮恢复12G。玩家六槽25/20/20/15/15/5，敌五类35/25/20/15/5。新有限摆渡6S/意志18减36，离程屏护6S/知识18减32，均不直接致伤。旧死者之语6S/意志16优势38×原掌握；旧冥界借力封印6S/知识16减20×原掌握，系数0.65+0.35×掌握/500。灵性不足仅普通0S回退，失败照耗。定神仅抵下一成功摆渡或旧封印，不挡护持、攻击与伤势盘。独立罗温及原棍属于本次真实渠道时代，旧欧文、原灰羽和当地原芦羽均不替代成战斗助手；无自动复活、控制灵魂或活人传送。' : '' };
 }
 /** Replays actual ordered paid actions and one-round resistance; never awards free spell effects. */

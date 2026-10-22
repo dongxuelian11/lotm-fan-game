@@ -1,3 +1,24 @@
+import { createMotherState } from '../mother/index.js';
+import { createJusticiarState } from '../justiciar/index.js';
+import { createBlackEmperorState } from '../black-emperor/index.js';
+import { createWheelOfFortuneState } from '../wheel-of-fortune/index.js';
+import { createChainedState } from '../chained/index.js';
+import { createAbyssState } from '../abyss/index.js';
+import { createHangedManState } from '../hanged-man/index.js';
+import { createHermitState } from '../hermit/index.js';
+import { createDemonessState } from '../demoness/index.js';
+import { createTwilightGiantState } from '../twilight-giant/index.js';
+import { createErrorAscentState } from '../error-ascent/index.js';
+import { createDoorState } from '../door/index.js';
+import { createDeathState } from '../death/index.js';
+import { createSunState } from '../sun/index.js';
+import { createTyrantState } from '../tyrant/index.js';
+import { createWhiteTowerState } from '../white-tower/index.js';
+import { createDarknessState } from '../darkness/index.js';
+import { createMoonState } from '../moon/index.js';
+import { createPerfecterState } from '../perfecter/index.js';
+import { createVisionaryState } from '../visionary/index.js';
+import { createRedPriestState } from '../red-priest/index.js';
 import { createFoolState } from '../fool/index.js';
 import { createNatureWalkerState } from '../nature-walker/index.js';
 import { createHandOfOrderState } from '../hand-of-order/index.js';
@@ -206,7 +227,7 @@ import {createClownState} from '../clown/index.js';
 import type {SliceState} from './types.js';
 function withSupply(value:unknown){if(!value||typeof value!=='object'||Array.isArray(value)||'resupply'in value)throw new TypeError('Invalid historical potion state');return {...structuredClone(value),resupply:{requestedWeek:null,deliveries:0}};}
 function combatWithEncounter(value:unknown){return value&&typeof value==='object'?{...structuredClone(value),encounterId:'FIRST_CASE'}:value;}
-type NatureWalkerSliceState = Omit<SliceState, 'fool' | 'schemaVersion' | 'contentVersion'> & {
+type NatureWalkerSliceState = Omit<SliceState, 'mother' | 'justiciar' | 'blackEmperor' | 'wheelOfFortune' | 'chained' | 'abyss' | 'hangedMan' | 'hermit' | 'demoness' | 'twilightGiant' | 'errorAscent' | 'door' | 'death' | 'sun' | 'tyrant' | 'whiteTower' | 'darkness' | 'moon' | 'perfecter' | 'visionary' | 'redPriest' | 'fool' | 'schemaVersion' | 'contentVersion'> & {
  schemaVersion:204; contentVersion:'nature-walker-v204';
 };
 /** Validate old migrations through the current schema without changing their
@@ -214,16 +235,281 @@ type NatureWalkerSliceState = Omit<SliceState, 'fool' | 'schemaVersion' | 'conte
 function assertValidSliceState(input:unknown):asserts input is NatureWalkerSliceState {
  if(!input||typeof input!=='object'||Array.isArray(input))throw new TypeError('Invalid legacy slice state');
  const old=input as Record<string,unknown>;
- if(old.schemaVersion!==204||old.contentVersion!=='nature-walker-v204'||'fool'in old)throw new TypeError('Invalid NatureWalker save');
- assertValidCurrentSliceState({...old,schemaVersion:205,contentVersion:'fool-v205',fool:createFoolState()});
+ if(old.schemaVersion!==204||old.contentVersion!=='nature-walker-v204'||'fool'in old||'redPriest'in old||'visionary'in old||'perfecter'in old||'moon'in old||'darkness'in old||'whiteTower'in old||'tyrant'in old||'sun'in old||'death'in old||'door'in old||'errorAscent'in old||'twilightGiant'in old||'demoness'in old||'hermit'in old||'hangedMan'in old||'abyss'in old||'chained'in old||'wheelOfFortune'in old||'blackEmperor'in old||'justiciar'in old||'mother'in old)throw new TypeError('Invalid NatureWalker save');
+ assertValidCurrentSliceState({...old,schemaVersion:226,contentVersion:'mother-v226',mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),fool:createFoolState(),redPriest:createRedPriestState()});
+}
+/** Recovery evidence was introduced in schema214; migration cannot backdate it. */
+function assertLegacyPaleEmperorRecoveryAbsent(input:unknown):void {
+ const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
+ const own=(value:unknown,key:string)=>record(value)&&Object.prototype.hasOwnProperty.call(value,key);
+ if(!record(input)||!record(input.paleEmperor))return;
+ const pale=input.paleEmperor;
+ if(own(pale,'recoveryScene')||own(pale.resupply,'recovery')
+  ||Array.isArray(pale.bottles)&&pale.bottles.some(bottle=>own(bottle,'recovery'))
+  ||[pale.acquisitionJournal,pale.eraJournal].some(journal=>Array.isArray(journal)&&journal.some(event=>
+   own(event,'recoverySite')||record(event)&&record(event.command)
+    &&(event.command.type==='REQUEST_RECOVERY_V1'||event.command.type==='RECOVER_CHARACTERISTIC_V1'))))
+  throw new TypeError('Unexpected PaleEmperor recovery state in a legacy save');
+}
+/** StarKey recovery evidence first exists in schema215. Older snapshots must
+ * retain their original finite bottles; migration cannot invent its history. */
+function assertLegacyStarKeyRecoveryAbsent(input:unknown):void {
+ const record=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==='object'&&!Array.isArray(value);
+ const own=(value:unknown,key:string)=>record(value)&&Object.prototype.hasOwnProperty.call(value,key);
+ if(!record(input)||!record(input.starKey))return;
+ const star=input.starKey;
+ if(own(star.resupply,'recovery')
+  ||Array.isArray(star.bottles)&&star.bottles.some(bottle=>own(bottle,'recovery'))
+  ||Array.isArray(star.acquisitionJournal)&&star.acquisitionJournal.some(event=>
+   own(event,'recoverySite')||record(event)&&record(event.command)
+    &&(event.command.type==='REQUEST_RECOVERY_V1'||event.command.type==='RECOVER_CHARACTERISTIC_V1')))
+  throw new TypeError('Unexpected StarKey recovery state in a legacy save');
+}
+/** TimeWorm same-original recovery first exists in schema216. */
+function assertLegacyTimeWormRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const own=(v:unknown,k:string)=>record(v)&&Object.prototype.hasOwnProperty.call(v,k);
+ if(!record(input)||!record(input.timeWorm))return;
+ const root=input.timeWorm;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1'].includes(String(e.command.type))))throw new TypeError('Unexpected TimeWorm recovery in legacy save');
+}
+/** Schema218 owns same-original recovery and paid support; migration cannot backdate either. */
+function assertLegacyApocalypseDemonessRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const own=(v:unknown,k:string)=>record(v)&&Object.prototype.hasOwnProperty.call(v,k);
+ if(!record(input)||!record(input.apocalypseDemoness))return;
+ const root=input.apocalypseDemoness;
+ if(own(root,'promotionStability')||own(root.resupply,'recovery')
+  ||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1','STABILIZE_PROMOTION'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected ApocalypseDemoness recovery or support in legacy save');
+}
+/** Schema219 first owns KnowledgeEmperor same-original recovery evidence. */
+function assertLegacyKnowledgeEmperorRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const own=(v:unknown,k:string)=>record(v)&&Object.prototype.hasOwnProperty.call(v,k);
+ if(!record(input)||!record(input.knowledgeEmperor))return;
+ const root=input.knowledgeEmperor;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')
+   ||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected KnowledgeEmperor recovery in legacy save');
+}
+function assertLegacyDarkAngelRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const own=(v:unknown,k:string)=>record(v)&&Object.prototype.hasOwnProperty.call(v,k);
+ if(!record(input)||!record(input.darkAngel))return;
+ const root=input.darkAngel;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')
+   ||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1','STABILIZE_PROMOTION'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected DarkAngel recovery in legacy save');
+}
+function assertLegacyUncleanMonarchRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const own=(v:unknown,k:string)=>record(v)&&Object.prototype.hasOwnProperty.call(v,k);
+ if(!record(input)||!record(input.uncleanMonarch))return;
+ const root=input.uncleanMonarch;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')
+   ||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1','STABILIZE_PROMOTION'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected UncleanMonarch recovery in legacy save');
+}
+function assertLegacyAbominationRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const own=(v:unknown,k:string)=>record(v)&&Object.prototype.hasOwnProperty.call(v,k);
+ if(!record(input)||!record(input.abomination))return;
+ const root=input.abomination;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')
+   ||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected Abomination recovery in legacy save');
+}
+function assertLegacyMercurySnakeRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const own=(v:unknown,k:string)=>record(v)&&Object.prototype.hasOwnProperty.call(v,k);
+ if(!record(input)||!record(input.mercurySnake))return;
+ const root=input.mercurySnake;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')
+   ||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected MercurySnake recovery in legacy save');
+}
+function assertLegacyPrinceOfAbolitionRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ const own=(v:unknown,k:string)=>record(v)&&Object.prototype.hasOwnProperty.call(v,k);
+ if(!record(input)||!record(input.princeOfAbolition))return;
+ const root=input.princeOfAbolition;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')
+   ||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected PrinceOfAbolition recovery in legacy save');
+}
+function assertLegacyHandOfOrderRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ if(!record(input)||!record(input.handOfOrder))return;
+ const own=(value:unknown,key:string)=>record(value)&&Object.hasOwn(value,key);
+ const root=input.handOfOrder;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')
+   ||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1','STABILIZE_PROMOTION'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected HandOfOrder recovery in legacy save');
+}
+function assertLegacyNatureWalkerRecoveryAbsent(input:unknown):void {
+ const record=(v:unknown):v is Record<string,unknown>=>!!v&&typeof v==='object'&&!Array.isArray(v);
+ if(!record(input)||!record(input.natureWalker))return;
+ const own=(value:unknown,key:string)=>record(value)&&Object.hasOwn(value,key);
+ const root=input.natureWalker;
+ if(own(root.resupply,'recovery')||Array.isArray(root.bottles)&&root.bottles.some(b=>own(b,'recovery'))
+  ||Array.isArray(root.acquisitionJournal)&&root.acquisitionJournal.some(e=>own(e,'recoverySite')
+   ||record(e)&&record(e.command)&&['REQUEST_RECOVERY_V1','RECOVER_CHARACTERISTIC_V1'].includes(String(e.command.type))))
+  throw new TypeError('Unexpected NatureWalker recovery in legacy save');
 }
 export function migrateSliceState(input:unknown):SliceState {
- if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===205){
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===226){
   assertValidCurrentSliceState(input);return structuredClone(input);
+ }
+ if(input&&typeof input==='object'&&'mother'in input)throw new TypeError('Unexpected Mother state in legacy save');
+ assertLegacyNatureWalkerRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===225){
+  if(!('contentVersion'in input)||input.contentVersion!=='justiciar-v225')throw new TypeError('Invalid Justiciar save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'justiciar'in input)throw new TypeError('Unexpected Justiciar state in legacy save');
+ assertLegacyHandOfOrderRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===224){
+  if(!('contentVersion'in input)||input.contentVersion!=='black-emperor-v224')throw new TypeError('Invalid BlackEmperor save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'blackEmperor'in input)throw new TypeError('Unexpected BlackEmperor state in legacy save');
+ assertLegacyPrinceOfAbolitionRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===223){
+  if(!('contentVersion'in input)||input.contentVersion!=='wheel-of-fortune-v223')throw new TypeError('Invalid WheelOfFortune save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ assertLegacyMercurySnakeRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'wheelOfFortune'in input)throw new TypeError('Unexpected WheelOfFortune state in legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===222){
+  if(!('contentVersion'in input)||input.contentVersion!=='chained-v222')throw new TypeError('Invalid Chained save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ assertLegacyAbominationRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'chained'in input)throw new TypeError('Unexpected Chained state in legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===221){
+  if(!('contentVersion'in input)||input.contentVersion!=='abyss-v221')throw new TypeError('Invalid Abyss save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ assertLegacyUncleanMonarchRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'abyss'in input)throw new TypeError('Unexpected Abyss state in legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===220){
+  if(!('contentVersion'in input)||input.contentVersion!=='hanged-man-v220')throw new TypeError('Invalid HangedMan save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ assertLegacyDarkAngelRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'hangedMan'in input)throw new TypeError('Unexpected HangedMan state in legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===219){
+  if(!('contentVersion'in input)||input.contentVersion!=='hermit-v219')throw new TypeError('Invalid Hermit save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'hermit'in input)throw new TypeError('Unexpected Hermit state in legacy save');
+ assertLegacyKnowledgeEmperorRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===218){
+  if(!('contentVersion'in input)||input.contentVersion!=='demoness-v218')throw new TypeError('Invalid Demoness save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'demoness'in input)throw new TypeError('Unexpected Demoness state in legacy save');
+ assertLegacyApocalypseDemonessRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===217){
+  if(!('contentVersion'in input)||input.contentVersion!=='twilight-giant-v217')throw new TypeError('Invalid TwilightGiant save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'twilightGiant'in input)throw new TypeError('Unexpected TwilightGiant state in legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===216){
+  if(!('contentVersion'in input)||input.contentVersion!=='error-ascent-v216')throw new TypeError('Invalid Error save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ assertLegacyTimeWormRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'errorAscent'in input)throw new TypeError('Unexpected Error state in legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===215){
+  if(!('contentVersion'in input)||input.contentVersion!=='door-v215')throw new TypeError('Invalid Door save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ assertLegacyStarKeyRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'door'in input)throw new TypeError('Unexpected Door state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===214){
+  if(!('contentVersion'in input)||input.contentVersion!=='death-v214')throw new TypeError('Invalid Death save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ assertLegacyPaleEmperorRecoveryAbsent(input);
+ if(input&&typeof input==='object'&&'death'in input)throw new TypeError('Unexpected Death state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===213){
+  if(!('contentVersion'in input)||input.contentVersion!=='sun-v213')throw new TypeError('Invalid Sun save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'sun'in input)throw new TypeError('Unexpected Sun state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===212){
+  if(!('contentVersion'in input)||input.contentVersion!=='tyrant-v212')throw new TypeError('Invalid Tyrant save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'tyrant'in input)throw new TypeError('Unexpected Tyrant state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===211){
+  if(!('contentVersion'in input)||input.contentVersion!=='white-tower-v211')throw new TypeError('Invalid WhiteTower save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'whiteTower'in input)throw new TypeError('Unexpected WhiteTower state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===210){
+  if(!('contentVersion'in input)||input.contentVersion!=='darkness-v210')throw new TypeError('Invalid Darkness save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'darkness'in input)throw new TypeError('Unexpected Darkness state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===209){
+  if(!('contentVersion'in input)||input.contentVersion!=='moon-v209')throw new TypeError('Invalid Moon save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'moon'in input)throw new TypeError('Unexpected Moon state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===208){
+  if(!('contentVersion'in input)||input.contentVersion!=='perfecter-v208')throw new TypeError('Invalid Perfecter save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'perfecter'in input)throw new TypeError('Unexpected Perfecter state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===207){
+  if(!('contentVersion'in input)||input.contentVersion!=='visionary-v207')throw new TypeError('Invalid Visionary save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'visionary'in input)throw new TypeError('Unexpected Visionary state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===206){
+  if(!('contentVersion'in input)||input.contentVersion!=='red-priest-v206')throw new TypeError('Invalid RedPriest save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState()};
+  assertValidCurrentSliceState(next);return next;
+ }
+ if(input&&typeof input==='object'&&'redPriest'in input)throw new TypeError('Unexpected RedPriest state in a legacy save');
+ if(input&&typeof input==='object'&&'schemaVersion'in input&&input.schemaVersion===205){
+  if(!('contentVersion'in input)||input.contentVersion!=='fool-v205')throw new TypeError('Invalid Fool save');
+  const next={...structuredClone(input),schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),redPriest:createRedPriestState()};
+  assertValidCurrentSliceState(next);return next;
  }
  if(input&&typeof input==='object'&&'fool'in input)throw new TypeError('Unexpected Fool state in a legacy save');
  const old=migratePreFoolSliceState(input);
- const next={...old,schemaVersion:205 as const,contentVersion:'fool-v205' as const,fool:createFoolState()};
+ const next={...old,schemaVersion:226 as const,contentVersion:'mother-v226' as const,mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),fool:createFoolState(),redPriest:createRedPriestState()};
  assertValidCurrentSliceState(next);return next;
 }
 function migratePreFoolSliceState(input:unknown):NatureWalkerSliceState {

@@ -10,6 +10,7 @@ import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import { PRINCE_OF_ABOLITION_SOURCE_KEYS } from '../../src/domain/prince-of-abolition/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentPrinceOfAbolitionReplayExpectation } from '../helpers/prince-of-abolition-current-replay.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { PRINCE_OF_ABOLITION_CAPTURE_EVIDENCE as evidence } from './prince-of-abolition-capture-evidence.js';
 import { PRINCE_OF_ABOLITION_PREFIX_COUNT, PRINCE_OF_ABOLITION_SOURCE, PRINCE_OF_ABOLITION_PRIOR,
@@ -62,7 +63,9 @@ describe.skipIf(evidence.observed === null)('Prince of Abolition actual represen
       assertPublicCaptureControl(save.before, save.intent); assertCapturedResources(save.before, save.intent, save.final);
     }
     assertObservedBoundary(name, save.final);
-    exerciseSqlite(save.before, save.intent, save.final, `prince-of-abolition205:${save.count}`);
+    // Only newly committed guidance uses current text; loaded historical rows stay exact.
+    const expected = name === GUIDANCE ? currentPrinceOfAbolitionReplayExpectation(save.final) : save.final;
+    exerciseSqlite(save.before, save.intent, expected, `prince-of-abolition205:${save.count}`);
     expect(await captureFileHash(save.path)).toBe(beforeHash);
   }, 180_000);
 

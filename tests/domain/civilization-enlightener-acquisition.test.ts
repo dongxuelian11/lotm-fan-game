@@ -10,10 +10,12 @@ import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import {
   CIVILIZATION_ENLIGHTENER_INHERITED_ABILITY_IDS, createCivilizationEnlightenerState, hasCivilizationEnlightenerLock,
   projectCivilizationEnlightener, civilizationEnlightenerInheritedView, validateCivilizationEnlightenerAcquisitionJournal,
-  validateCivilizationEnlightenerCommand, validateCivilizationEnlightenerSource, validateCivilizationEnlightenerState,
+  validateCivilizationEnlightenerCommand, validateCivilizationEnlightenerSource, validateCivilizationEnlightenerState, resolveCivilizationEnlightenerOriginalCharacteristics,
 } from '../../src/domain/civilization-enlightener/index.js';
-import { CIVILIZATION_ENLIGHTENER_ABILITY_IDS, CIVILIZATION_ENLIGHTENER_PREPARATION_IDS } from '../../src/domain/civilization-enlightener/types.js';
+import { CIVILIZATION_ENLIGHTENER_ABILITY_IDS, CIVILIZATION_ENLIGHTENER_PREPARATION_IDS, type CivilizationEnlightenerAcquisitionBudget, type CivilizationEnlightenerAcquisitionEvent } from '../../src/domain/civilization-enlightener/types.js';
 import { ce, directedInitial2, directedInitialCursor, dose, originalParagonRoots, originalKnowledgeMentor, prepared, promoted, recoverResources, rejectEnlightener, rejectIntent, step, taught, knowledgeMentorNaturalPath, paragonLegacyKeys } from './civilization-enlightener-directed-helper.js';
+
+import { CIVILIZATION_ENLIGHTENER_GUIDE } from '../../src/domain/civilization-enlightener/content.js';
 
 const journal = (s: SliceState) => s.civilizationEnlightener.acquisitionJournal;
 describe('Civilization Enlightener: actual691-command source and declared future inputs', () => {
@@ -133,24 +135,63 @@ describe('Civilization Enlightener acquisition: real costs, failures and finite 
     } else { expect(s.progression.acting).toBe(100); expect(s.character.coreStats).toEqual(before.character.coreStats); }
     rejectEnlightener(s, dose);
   });
-  it('pays for independent resupply only after all three failures and a genuine later week', () => {
+  it('recovers one paid original after three failures while reading old independent-supply history unchanged', () => {
     let s = taught('THREE_FAILURES'); for (const taskId of CIVILIZATION_ENLIGHTENER_PREPARATION_IDS) s = ce(s, { type: 'PREPARE_TASK', taskId });
     const original = structuredClone(originalParagonRoots(s));
     for (const bottleId of ['civilization-enlightener-potion-1', 'civilization-enlightener-potion-2', 'civilization-enlightener-potion-3']) {
       s = recoverResources(s); s = ce(s, { type: 'BUY_POTION', bottleId }); s = ce(s, { type: 'PREPARE_PROMOTION' }); s = ce(s, { type: 'CONSUME', bottleId, confirmed: true });
     }
     expect(s.civilizationEnlightener.bottles.every(b => b.status === 'CONSUMED' && b.outcome === 'FAILURE')).toBe(true);
-    expect(s.cash).toBe(100000 - 500 - 60 - 3 * (6600 + 150)); const failures = structuredClone(s.civilizationEnlightener.bottles), cash = s.cash, ap = s.actionsRemaining;
-    s = ce(s, { type: 'REQUEST_SUPPLY' }); expect([s.cash, s.actionsRemaining]).toEqual([cash - 100, ap - 1]); rejectEnlightener(s, { type: 'RECEIVE_SUPPLY' });
+    expect(s.cash).toBe(100000 - 500 - 60 - 3 * (6600 + 150));
+    const failures = structuredClone(s.civilizationEnlightener.bottles), archived = structuredClone(s), cash = s.cash, ap = s.actionsRemaining;
+    rejectEnlightener(s, { type: 'REQUEST_SUPPLY' }); rejectEnlightener(s, { type: 'RECEIVE_SUPPLY' });
+    s = ce(s, { type: 'REQUEST_RECOVERY_V1', bottleId: 'civilization-enlightener-potion-1' });
+    expect([s.cash, s.actionsRemaining]).toEqual([cash - 120, ap - 1]);
+    rejectEnlightener(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: 'civilization-enlightener-potion-1' });
+    rejectEnlightener(s, { type: 'REQUEST_RECOVERY_V1', bottleId: 'civilization-enlightener-potion-2' });
     const requestWeek = s.week, requestDate = structuredClone(s.date), remaining = s.actionsRemaining;
     for (let n = 0; n < remaining; n++) s = step(s, { type: 'ACTION', action: 'REST' });
     expect(s.week).toBe(requestWeek + 1); expect(s.date).toEqual(addGameDays(requestDate, 7));
-    const before = structuredClone(s), delivered = ce(s, { type: 'RECEIVE_SUPPLY' });
+    const before = structuredClone(s), delivered = ce(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: 'civilization-enlightener-potion-1' });
     expect(delivered.civilizationEnlightener.bottles.slice(0, 3)).toEqual(failures);
-    expect(delivered.civilizationEnlightener.bottles.slice(3).map(b => b.id)).toEqual(['civilization-enlightener-potion-4', 'civilization-enlightener-potion-5', 'civilization-enlightener-potion-6']);
-    expect(delivered.civilizationEnlightener.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.stockedWeek === requestWeek + 1 && b.acquiredWeek === null && b.labourSteps === 0)).toBe(true);
-    expect([delivered.cash, delivered.actionsRemaining]).toEqual([before.cash, before.actionsRemaining]); expect(originalParagonRoots(delivered)).toEqual(original);
-    expect(validateCivilizationEnlightenerAcquisitionJournal(delivered)).toBe(true); rejectEnlightener(delivered, { type: 'RECEIVE_SUPPLY' });
+    expect(delivered.civilizationEnlightener.bottles).toHaveLength(4);
+    expect(delivered.civilizationEnlightener.bottles[3]).toMatchObject({ id: 'civilization-enlightener-potion-4', status: 'SUPPLIER',
+      labourSteps: 0, acquiredWeek: null, stockedWeek: requestWeek + 1,
+      recovery: { version: 1, sourceBottleId: 'civilization-enlightener-potion-1', originalBottleId: 'civilization-enlightener-potion-1',
+        characteristicId: 'civilization-enlightener-potion-1:characteristic', requestedWeek: requestWeek, recoveredWeek: requestWeek + 1 } });
+    expect([delivered.cash, delivered.actionsRemaining]).toEqual([before.cash, before.actionsRemaining - 1]);
+    expect(originalParagonRoots(delivered)).toEqual(original); expect(validateCivilizationEnlightenerAcquisitionJournal(delivered)).toBe(true);
+    const originals = resolveCivilizationEnlightenerOriginalCharacteristics(delivered)!;
+    expect(originals.characteristics).toHaveLength(3); expect(originals.characteristics[0]).toMatchObject({ originalBottleId: 'civilization-enlightener-potion-1', latestBottleId: 'civilization-enlightener-potion-4', holder: 'SUPPLIER' });
+    rejectEnlightener(delivered, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: 'civilization-enlightener-potion-1' });
+
+    // Declared archived legacy receipts only. Never offered as future commands,
+    // never migrated into a newly invented ancestry and never written to fixtures.
+    const budget = (): CivilizationEnlightenerAcquisitionBudget => ({ actions: archived.actionsRemaining, health: archived.health, mind: archived.mind,
+      spirituality: archived.spirituality, cash: archived.cash, pollution: archived.seer.pollution, gender: archived.character.gender,
+      sequence: 2, acting: archived.progression.acting, coreStats: { ...archived.character.coreStats }, mastery: { ...archived.progression.mastery },
+      completedSources: [...archived.seer.completedSources], injuries: structuredClone(archived.injuries), injuryRisk: archived.injuryRisk });
+    const appendLegacy = (type: 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY', mutation: () => void) => {
+      const before = budget(), actor = { ...journal(archived).at(-1)!.actor, sourceHistoryDigest: null };
+      mutation();
+      const receipt: CivilizationEnlightenerAcquisitionEvent = { week: archived.week, date: structuredClone(archived.date), revision: archived.revision,
+        command: { type }, actor, before, after: budget(), cursorBefore: archived.random.cursor, cursorAfter: archived.random.cursor,
+        randomBefore: null, randomAfter: null, check: null };
+      journal(archived).push(receipt); archived.revision++;
+    };
+    appendLegacy('REQUEST_SUPPLY', () => { archived.actionsRemaining--; archived.cash -= 100; archived.civilizationEnlightener.resupply.requestedWeek = archived.week; });
+    // Historical elapsed-time input with an explicit ordinary-play revision gap.
+    archived.week++; archived.date = addGameDays(archived.date, 7); archived.revision += 2;
+    appendLegacy('RECEIVE_SUPPLY', () => {
+      for (let n = 4; n <= 6; n++) archived.civilizationEnlightener.bottles.push({ id: `civilization-enlightener-potion-${n}`,
+        source: `${CIVILIZATION_ENLIGHTENER_GUIDE}第2批、第${archived.week}周实际到货的序列1文明启蒙者成品，独立封存编号civilization-enlightener-potion-${n}。本瓶须另行取得并独立耗用。`,
+        stockedWeek: archived.week, labourSteps: 0, acquiredWeek: null, consumedWeek: null, preparationWeek: null, status: 'SUPPLIER', outcome: null });
+      archived.civilizationEnlightener.resupply.deliveries++; archived.civilizationEnlightener.resupply.requestedWeek = null;
+    });
+    const legacyBytes = JSON.stringify(archived);
+    expect(validateCivilizationEnlightenerAcquisitionJournal(archived)).toBe(true); expect(validateCivilizationEnlightenerState(archived)).toBe(true);
+    expect(resolveCivilizationEnlightenerOriginalCharacteristics(archived)).toBeNull(); expect(JSON.stringify(archived)).toBe(legacyBytes);
+    expect(archived.civilizationEnlightener.bottles.slice(0, 3)).toEqual(failures);
   }, 90_000);
   it('preserves the wound until ordinary paid care and later actual rest', () => {
     const before = promoted(), commands: SliceIntent[] = [], after = recoverResources(before, commands);

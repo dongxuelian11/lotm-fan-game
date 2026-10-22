@@ -16,7 +16,8 @@ import { actualStarKeyEvidence } from './star-key-capture-evidence.js';
 import { STAR_KEY_ROOT, STAR_KEY_SOURCE, STAR_KEY_PEACEFUL_SOURCE, STAR_KEY_WANDERER_DEATH_SOURCE,
   STAR_KEY_PREFIX_COUNT, captureFileHash, captureValueHash, insertionOrderHash, sourceEntry,
   peacefulEntry, naturalEntry, summaryEntry, captureCommands, boundaryIndex, boundarySteps, snapshotIndex,
-  capturedState, capturedSnapshot, replayCaptureBoundary, assertPublicCaptureControl, assertOriginalContinuity,
+  capturedState, capturedSnapshot, namedBoundary, replayCaptureBoundary, assertPublicCaptureControl, assertOriginalContinuity,
+  STAR_KEY_GUIDANCE_REPLAY_DIFF, currentStarKeyGuidanceBoundaryExpected, currentStarKeyFullReplayExpected, expectedStarKeyBoundaryReplay,
   captureBody, captureJsonLines, sameCaptureValue as same } from './star-key-capture-helper.js';
 
 const expected = actualStarKeyEvidence();
@@ -73,6 +74,48 @@ describe('Star Key exact701-command living boundary and actual public continuati
       restoredCommandCount: 812, fullStateUnchanged: true, commandLedgerExactThrough813: true, newRandomChanges: false });
     for (const [file, hash] of Object.entries(expected.preservedFailureFiles)) expect(await captureFileHash(`${STAR_KEY_ROOT}/${file}`), file).toBe(hash);
   }, 60_000);
+
+  it('adapts only exact command702 guidance for current replay while preserving strict historical migration', () => {
+    const diff = STAR_KEY_GUIDANCE_REPLAY_DIFF, save = namedBoundary('actual500p-guidance-and-frozen-eight-root-source');
+    const historical = capturedState('final'), boundaryHash = captureValueHash(save.final), finalHash = captureValueHash(historical);
+    const boundaryExpected = expectedStarKeyBoundaryReplay(save), fullExpected = currentStarKeyFullReplayExpected(historical);
+    same(boundaryExpected.chronicle[diff.index], { id: diff.id, week: diff.week, title: diff.title, text: diff.currentText });
+    same(boundaryExpected.lastResult, boundaryExpected.chronicle[diff.index]);
+    same(fullExpected.chronicle[diff.index], boundaryExpected.chronicle[diff.index]);
+    same(fullExpected.lastResult, historical.lastResult);
+    // Restore only this record and its boundary mirror, then compare every field.
+    const restoredBoundary = structuredClone(boundaryExpected), restoredFinal = structuredClone(fullExpected);
+    restoredBoundary.chronicle[diff.index] = structuredClone(save.final.chronicle[diff.index]!);
+    restoredBoundary.lastResult = structuredClone(save.final.lastResult);
+    restoredFinal.chronicle[diff.index] = structuredClone(historical.chronicle[diff.index]!);
+    same(restoredBoundary, save.final); same(restoredFinal, historical);
+    same(captureBody(boundaryExpected), captureBody(save.final)); same(captureBody(fullExpected), captureBody(historical));
+    expect(captureValueHash(save.final)).toBe(boundaryHash); expect(captureValueHash(historical)).toBe(finalHash);
+    same(migrateSliceState(save.final), save.final); same(migrateSliceState(historical), historical);
+    same(historical.chronicle, naturalEntry<SliceState>('final').chronicle);
+    expect(historical.chronicle[diff.index]!.text).toBe(diff.historicalText);
+    for (const change of [
+      (s: SliceState) => { s.chronicle[diff.index]!.text = `wrong prefix${s.chronicle[diff.index]!.text}`; },
+      (s: SliceState) => { s.chronicle[diff.index]!.id = 'wrong-id'; },
+      (s: SliceState) => { s.chronicle[diff.index]!.title += 'wrong title'; },
+      (s: SliceState) => { s.chronicle[diff.index]!.week++; },
+      (s: SliceState) => { s.revision++; },
+      (s: SliceState) => { s.starKey.acquisitionJournal[0]!.revision++; },
+      (s: SliceState) => { s.chronicle[diff.index - 1] = structuredClone(s.chronicle[diff.index]!); },
+    ]) {
+      const boundary = structuredClone(save.final), final = structuredClone(historical); change(boundary); change(final);
+      expect(() => currentStarKeyGuidanceBoundaryExpected(boundary), change.toString()).toThrow();
+      expect(() => currentStarKeyFullReplayExpected(final), change.toString()).toThrow();
+    }
+    const badMirror = structuredClone(save.final); badMirror.lastResult!.text += 'wrong text';
+    expect(() => currentStarKeyGuidanceBoundaryExpected(badMirror)).toThrow();
+    expect(() => currentStarKeyGuidanceBoundaryExpected(boundaryExpected)).toThrow();
+    expect(() => currentStarKeyFullReplayExpected(fullExpected)).toThrow();
+    expect(() => expectedStarKeyBoundaryReplay({ ...save, count: save.count + 1 })).toThrow();
+    expect(() => expectedStarKeyBoundaryReplay({ ...save, before: { ...save.before, revision: save.before.revision + 1 } })).toThrow();
+    expect(expectedStarKeyBoundaryReplay({ before: capturedState('beforeLast'), intent: captureCommands.at(-1)!,
+      final: historical, count: expected.commandCount })).toBe(historical);
+  }, 120_000);
 
   it('preserves original707-command and separate209-command deaths without reviving either', async () => {
     expect(await captureFileHash(STAR_KEY_WANDERER_DEATH_SOURCE)).toBe(expected.wandererDeathSha256);
@@ -131,7 +174,7 @@ describe('Star Key exact701-command living boundary and actual public continuati
         }
       }
     }
-    same(state, capturedState('final')); assertValidSliceState(state); same(migrateSliceState(state), state);
+    same(state, currentStarKeyFullReplayExpected(capturedState('final'))); assertValidSliceState(state); same(migrateSliceState(state), state);
     same(captureBody(state), expected.final); expect(state.revision).toBe(capturedState('initial').revision + expected.commandCount);
     expect(naturalEntry('stage')).toBe(expected.stage); expect(naturalEntry('error')).toBe(expected.error);
     expect(naturalEntry('pendingIntent')).toBeNull(); expect(naturalEntry('failurePhase')).toBe('IDLE');

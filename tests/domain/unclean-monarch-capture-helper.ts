@@ -12,6 +12,7 @@ import { UNCLEAN_MONARCH_SOURCE_KEYS, UNCLEAN_MONARCH_ABILITY_IDS } from '../../
 import { UNCLEAN_MONARCH_CASE_IDS, getUncleanMonarchCurrentSite, uncleanMonarchLifeMasteryGains } from '../../src/domain/unclean-monarch/life.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentUncleanMonarchReplayExpectation } from '../helpers/unclean-monarch-current-replay.js';
 import { UNCLEAN_MONARCH_CAPTURE_EVIDENCE, type UncleanMonarchObservedCapture } from './unclean-monarch-capture-evidence.js';
 
 export const UNCLEAN_MONARCH_ROOT = 'tests/fixtures/unclean-monarch-v02020';
@@ -99,7 +100,11 @@ export function assertPublicCaptureControl(state: SliceState, intent: SliceInten
 export function replayCaptureBoundary(name: string) {
   const save = namedBoundary(name);
   if (save.count > UNCLEAN_MONARCH_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-  sameCaptureValue(applySliceIntent(save.before, save.intent), save.final); return save;
+  // Preserve historical guidance on restored boundaries; only LEARN_GUIDANCE
+  // itself produces the exact current prose during a one-step replay.
+  const expected = save.intent.type === 'UNCLEAN_MONARCH' && save.intent.command.type === 'LEARN_GUIDANCE'
+    ? currentUncleanMonarchReplayExpectation(save.final) : save.final;
+  sameCaptureValue(applySliceIntent(save.before, save.intent), expected); return save;
 }
 export const captureBody = (s: SliceState) => ({ status: s.status, revision: s.revision, week: s.week, date: s.date,
   H: s.health, M: s.mind, S: s.spirituality, cash: s.cash, AP: s.actionsRemaining, pollution: s.seer.pollution,

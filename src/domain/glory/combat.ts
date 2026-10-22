@@ -1,6 +1,7 @@
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
+import { projectGloryPublicSite } from './index.js';
 import { PYROMANIAC_COUNT_WHEEL, pyromaniacActionCount } from '../pyromaniac/combat.js';
 import type { SliceCombatRound, SliceInjury, SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
 import { WARRIOR_ABILITY_IDS } from '../warrior/types.js';
@@ -303,16 +304,29 @@ export function finishGloryCombatRound(s: SliceState, r: GloryRoundContext, cont
   return structuredClone(outcome);
 }
 export function gloryRoundOutcome(r: GloryRoundContext): GloryRoundOutcome { if (!r.outcome) throw new Error('回合尚未结束。'); return structuredClone(r.outcome); }
+const publicGloryActionFacts = (a: GloryPlayerAction | GloryEnemyAction) => ({
+    label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure,
+    order: a.order, atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, paidCost: a.paidCost, healthPaid: a.healthPaid, physicalFactor: a.physicalFactor, rolls: [...a.rolls],
+    playerHealthAfter: a.playerHealthAfter, playerSpiritualityAfter: a.playerSpiritualityAfter, enemySpiritualityAfter: a.enemySpiritualityAfter,
+    chargeGranted: a.chargeGranted, chargeConsumedByOrder: a.chargeConsumedByOrder, chargeCancelledByOrder: a.chargeCancelledByOrder, appliedAmount: a.appliedAmount,
+    consumedArmorOrder: a.consumedArmorOrder, consumedGuardOrder: a.consumedGuardOrder, armorWear: a.armorWear, armorIntegrityAfter: a.armorIntegrityAfter,
+  });
+export function projectGloryPlayerAction(a: GloryPlayerAction) {
+  return { ...publicGloryActionFacts(a), id: a.id, attempted: a.attempted, succeeded: a.succeeded, applied: a.applied, resisted: a.resisted, fallback: a.fallback };
+}
+export function projectGloryEnemyAction(a: GloryEnemyAction) {
+  return { ...publicGloryActionFacts(a), planned: a.planned, actual: a.actual, attackKind: a.attackKind };
+}
 export function projectGloryCombat(s: SliceState) {
   const e = s.glory.encounter, visible = isGlory(s), site = s.glory.life.site;
   const last = s.combat?.encounterId === 'GLORY_DISPUTE' ? s.combat.lastRound?.gloryOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.gloryOutcome : null;
   return { enemyName: visible ? '马丁（45岁）' : '', targetId: visible ? e.targetId : null,
     playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
     enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
-    powerUses: visible ? { ...e.powerUses } : null, site: visible ? structuredClone(site) : null,
+    powerUses: visible ? { FORCE_STRIKE: e.powerUses.FORCE_STRIKE, GUARD: e.powerUses.GUARD, DISCERN: e.powerUses.DISCERN } : null, site: visible ? projectGloryPublicSite(site) : null,
     armor: visible && site.armor ? { id: site.armor.id, currentIntegrity: site.armor.integrity, historicalIntegrity: site.armorSource?.snapshot.integrity ?? null } : null,
-    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0, source: visible ? currentGloryCombatSource(s) : null,
-    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...structuredClone(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...structuredClone(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
+    originalExit: true, pursuit: false, distanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0,
+    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...projectGloryPlayerAction(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...projectGloryEnemyAction(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
     countWheel: GLORY_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: GLORY_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: GLORY_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
     summary: visible ? '银甲淬护每轮最多尝试一次，花费6灵性并通过知识20检验后，只削弱随后一次实际身体攻击45，同一副银甲磨损5；没有可用银甲时只能普通避让。近身护持每轮最多尝试一次，花费6灵性并通过意志20检验后，亲自付出5健康换取30防守优势，健康须高于5。本场没有同伴。细剑突刺沿用原掌握，花费6灵性并通过知识18检验，马丁准备的屏护能抵挡它。全力防守整轮放弃普通打击和细剑突刺，没有额外开轮费用。每次动作5秒、每回合60秒；马丁不恢复灵性，你继续交战时恢复12灵性。伤势和死亡保留，战斗不增长掌握。' : '' };
 }

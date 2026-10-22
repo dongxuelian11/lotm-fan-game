@@ -97,10 +97,62 @@ export function assertPublicCaptureControl(state: SliceState, intent: SliceInten
     expect(view.combat?.stances.some(stance => stance.id === intent.stance)).toBe(true);
   } else throw new Error(`Unexpected continuation command: ${JSON.stringify(intent)}`);
 }
+/** One reviewed wording change in the otherwise unchanged 195 command trace.
+ * These are independent full-value expectations, not product-derived text or a
+ * general normalization. Original snapshots, hashes and migrations stay exact. */
+export const PALE_EMPEROR_GUIDANCE_REPLAY_DIFF = {
+  index: 1126, id: 'record-866-1126', week: 3300,
+  title: '听取苍白皇帝独立成品与专业准备指导',
+  inputRevision: 865, outputRevision: 866,
+  historicalText: "花1行动、120便士。汉娜·斯托克（FR3-HANNA）介绍的当代独立苍白皇帝成品渠道说明当前渠道记录。苍白皇帝的当前渠道交付独立封存成品，不提供可自行调配的完整配方。先核对八阶实际经历和当前供应人的凭据，复核有限残响的处理边界，走查停止与普通返程。三项专业准备完成后，还须检查本周服药场地，再独立确认饮用所选原瓶。死亡执政官消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。三项专业准备各1行动，再实付1行动与20便士检查本周服药场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与准备均耗尽，专业支持只将本次排异后的健康精神保底到1。成功四属性各+1，17项原掌握不变，两项新掌握从0开始；灵性上限120，当前不补满。姓名、性别、身体与旧伤保留。全批失败耗尽后，实付1行动与20便士申请独立三瓶，至少跨一真实周领取；每瓶另做劳动并付款。",
+  currentText: "花1行动、120便士。汉娜·斯托克（FR3-HANNA）介绍的当代独立苍白皇帝成品渠道说明当前渠道记录。苍白皇帝的当前渠道交付独立封存成品，不提供可自行调配的完整配方。先核对八阶实际经历和当前供应人的凭据，复核有限残响的处理边界，走查停止与普通返程。三项专业准备完成后，还须检查本周服药场地，再独立确认饮用所选原瓶。死亡执政官消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。三项专业准备各1行动，再实付1行动与20便士检查本周服药场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与准备均耗尽，专业支持只将本次排异后的健康精神保底到1。成功四属性各+1，17项原掌握不变，两项新掌握从0开始；灵性上限120，当前不补满。姓名、性别、身体与旧伤保留。三份原特性全部真实失败后，只能调查最后失败留下的同一份原物：1行动与20便士，至少七天后的真实下一周再花1行动原处交接；本次普通新药另付120便士，或五次新劳务后12便士。旧费用不退，旧劳动不抵新药；新容器不增加第四份特性。",
+} as const;
+function checkedPaleEmperorGuidanceReplayCopy(recorded: SliceState, revision: 866 | 1039, chronicleLength: 1127 | 1301): SliceState {
+  const diff = PALE_EMPEROR_GUIDANCE_REPLAY_DIFF;
+  expect(recorded.revision).toBe(revision);
+  expect(recorded.chronicle).toHaveLength(chronicleLength);
+  expect(recorded.chronicle.filter(e => e.id === diff.id)).toHaveLength(1);
+  sameCaptureValue(recorded.chronicle[diff.index], { id: diff.id, week: diff.week, title: diff.title, text: diff.historicalText });
+  const guidance = recorded.paleEmperor.acquisitionJournal[0];
+  expect(guidance?.revision).toBe(diff.inputRevision); expect(guidance?.week).toBe(diff.week);
+  sameCaptureValue(guidance?.command, { type: 'LEARN_GUIDANCE' });
+  expect(recorded.paleEmperor.sourceScene?.revision).toBe(diff.inputRevision);
+  return structuredClone(recorded);
+}
+/** Only the current execution of the one actual 120p guidance boundary. */
+export function currentPaleEmperorGuidanceBoundaryExpected(recorded: SliceState): SliceState {
+  const diff = PALE_EMPEROR_GUIDANCE_REPLAY_DIFF;
+  const expected = checkedPaleEmperorGuidanceReplayCopy(recorded, 866, 1127);
+  sameCaptureValue(recorded.lastResult, recorded.chronicle[diff.index]);
+  expected.chronicle[diff.index]!.text = diff.currentText;
+  expected.lastResult = structuredClone(expected.chronicle[diff.index]!);
+  return expected;
+}
+/** Only the end of executing all 1038 unchanged capture commands today. */
+export function currentPaleEmperorFullReplayExpected(recorded: SliceState): SliceState {
+  const diff = PALE_EMPEROR_GUIDANCE_REPLAY_DIFF;
+  const expected = checkedPaleEmperorGuidanceReplayCopy(recorded, 1039, 1301);
+  expect(recorded.lastResult?.id).not.toBe(diff.id);
+  sameCaptureValue(recorded.lastResult, recorded.chronicle.at(-1));
+  expected.chronicle[diff.index]!.text = diff.currentText;
+  return expected;
+}
+/** Other single-step boundaries start from their own original before-state;
+ * their existing old guidance entry is never rewritten by current execution. */
+export function expectedPaleEmperorBoundaryReplay(save: ReturnType<typeof boundaryFile>): SliceState {
+  if (save.intent.type !== 'PALE_EMPEROR' || save.intent.command.type !== 'LEARN_GUIDANCE') return save.final;
+  const diff = PALE_EMPEROR_GUIDANCE_REPLAY_DIFF;
+  expect(save.count).toBe(diff.inputRevision); expect(save.before.revision).toBe(diff.inputRevision);
+  expect(save.before.chronicle).toHaveLength(diff.index);
+  expect(save.before.paleEmperor.guidanceKnown).toBe(false);
+  sameCaptureValue(save.intent, { type: 'PALE_EMPEROR', command: { type: 'LEARN_GUIDANCE' } });
+  return currentPaleEmperorGuidanceBoundaryExpected(save.final);
+}
+
 export function replayCaptureBoundary(name: string) {
   const save = namedBoundary(name);
   if (save.count > PALE_EMPEROR_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-  sameCaptureValue(applySliceIntent(save.before, save.intent), save.final);
+  sameCaptureValue(applySliceIntent(save.before, save.intent), expectedPaleEmperorBoundaryReplay(save));
   return save;
 }
 export const captureBody = (s: SliceState) => ({ status: s.status, revision: s.revision, week: s.week, date: s.date,

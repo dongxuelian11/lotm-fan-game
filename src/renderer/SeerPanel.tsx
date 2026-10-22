@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { SeerAction, SeerCommand, SeerProjection } from "../domain/seer/types";
+import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 
 export interface SeerResources {
@@ -113,6 +114,10 @@ export function SeerPanel({
     ?? (seer.promoted && seer.practice?.reflection.enabled ? seer.practice.reflection : undefined)
     ?? seer.actions[0];
 
+  const nextStepLabel = nextAction?.command.type === "PRACTICE" && nextAction.command.approachId.startsWith("report-")
+    ? "回应书签主人的追问，决定怎样解释观察所得"
+    : nextAction?.label;
+
   useEffect(() => {
     if (selectedBottleId && (!selectedBottle || seer.promoted)) setSelectedBottleId(null);
   }, [selectedBottleId, selectedBottle, seer.promoted]);
@@ -130,9 +135,9 @@ export function SeerPanel({
       <section className="seer-panel seer-confirmation" aria-label="这瓶魔药的服用确认" key={selectedBottle.id}>
         <div className="slice-eyebrow">服用前，请再确认一次</div>
         <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-        <p className="seer-bottle-source">来源：{selectedBottle.source}</p>
+        <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
         <dl className="seer-facts">
-          <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
+          <div><dt>这一瓶</dt><dd>{selectedBottle.title}</dd></div>
           <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
           <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
           <div><dt>本次消耗</dt><dd>{selectedAction.cost}</dd></div>
@@ -176,7 +181,7 @@ export function SeerPanel({
         <span className="seer-seal">{seer.promoted ? "序列 9" : "成长卷宗"}</span>
         <h3>{seer.title}</h3>
         {nextAction ? (
-          <p className="seer-next"><strong>下一步：</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</p>
+          <p className="seer-next"><strong>下一步：</strong>{nextStepLabel}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</p>
         ) : (
           <p className="seer-next">{seer.promoted ? "运用已掌握的能力，继续生活与调查。" : "暂时没有可执行的成长行动。"}</p>
         )}
@@ -202,6 +207,8 @@ export function SeerPanel({
         </div>
       )}
 
+      {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} busy={busy} blocked={blocked} onCommand={onCommand} />}
+
       {seer.discovered && seer.bottles.length > 0 && (
         <section className="seer-bottles" aria-label="已调配的魔药">
           <h3>已调配的魔药</h3>
@@ -211,7 +218,7 @@ export function SeerPanel({
               <article className="seer-bottle" key={bottle.id}>
                 <div>
                   <h4>{bottle.title}</h4>
-                  <p>来源：{bottle.source}</p>
+                  <p>来源：{seerReadableText(bottle.source)}</p>
                   <small>{bottle.status}</small>
                 </div>
                 {action && (
@@ -240,8 +247,6 @@ export function SeerPanel({
           <p className="slice-muted">以上是配方用量。材料是否备齐，以可执行的调配行动为准。</p>
         </details>
       )}
-
-      {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} busy={busy} blocked={blocked} onCommand={onCommand} />}
 
       {seer.promoted && (
         <section className="seer-abilities" aria-label="占卜家能力与消化">

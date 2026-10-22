@@ -207,10 +207,31 @@ describe('Calamity Demoness strict direct scheduler and public continuity', () =
   });
   it('projects independent Iris45/S3, exact actual wheels, no allies and detached current plate/scene', () => {
     const s = publicRound(), frozen = structuredClone(s), p = projectCalamityDemonessCombat(s), start = projectSliceState(combatStart());
+    const site = s.calamityDemoness.encounter.currentSite!, life = projectCalamityDemonessLife(s);
+    const fields = <T, K extends keyof T>(value: T, keys: readonly K[]) => Object.fromEntries(keys.map(key => [key, value[key]]));
+    const adult = (value: typeof site.vera) => value ? fields(value, ['id', 'name', 'age', 'alive', 'willing', 'location', 'energy', 'travelMetres', 'mirrorConsent', 'boxConsent']) : null;
+    const mirror = (value: typeof site.mirrorA) => value ? fields(value, ['id', 'owner', 'quantity', 'location', 'intact']) : null;
+    const expectedSite = {
+      ...fields(site, ['siteId', 'introducedWeek', 'clockSeconds', 'playerLocation', 'playerTravelMetres', 'playerEnergy']),
+      introducedDate: site.introducedDate ? fields(site.introducedDate, ['epoch', 'year', 'month', 'day']) : null,
+      vera: adult(site.vera), marcus: adult(site.marcus), mirrorA: mirror(site.mirrorA), mirrorB: mirror(site.mirrorB),
+      load: fields(site.load, ['id', 'location', 'enclosed', 'initialForce', 'remainingLoads', 'appliedLoads', 'finalForce', 'bufferedForce']),
+      box: fields(site.box, ['id', 'ownerId', 'location', 'state', 'scorched', 'pulses', 'pulseSeconds', 'handovers']),
+      residue: site.residue ? fields(site.residue, ['id', 'ownerId', 'quantity', 'fictional', 'biological', 'origin', 'acquiredWithPlateId', 'sealed', 'status', 'location', 'acquiredWeek']) : null,
+      screen: fields(site.screen, ['active', 'mirrorId', 'expiresAt', 'plateId']),
+      plates: site.plates.map(plate => fields(plate, ['id', 'caseId', 'ownerId', 'quantity', 'status', 'location', 'charges', 'wear', 'scorched', 'paidPennies', 'preparedWeek'])),
+      actorMoves: site.actorMoves.map(move => fields(move, ['from', 'to', 'mode', 'metres', 'seconds', 'actorId'])),
+    };
     expect(start.combat!.enemyCountWheel).toEqual(CALAMITY_DEMONESS_ENEMY_COUNT_WHEEL); expect(start.combat!.enemyAbilityWheel).toEqual(CALAMITY_DEMONESS_ENEMY_ABILITY_WHEEL);
     expect(combatStart().calamityDemoness.encounter.startSource).toMatchObject({ targetId: 'CD2-IRIS', targetAge: 45, targetSequence: 3, enemyWeapon: 'CD2-IRIS-ROD', actualBody: true, independentMind: true, thirdPartiesInArea: 0, automaticAllyImmunity: false });
-    expect(p.alliesPresent).toBe(0); expect(p.plate!.id).toBe('CD2-COMBAT-PLATE'); expect(projectCalamityDemonessLife(s).site).toEqual(s.calamityDemoness.encounter.currentSite);
-    p.site!.playerEnergy--; p.powerUses!.GUARD++; p.plate!.charges++; p.lastActionSequence[0]!.paidCost++; expect(s).toEqual(frozen);
+    expect(p.alliesPresent).toBe(0); expect(p.plate!.id).toBe('CD2-COMBAT-PLATE');
+    expect(p.plate).toStrictEqual(fields(s.calamityDemoness.encounter.plate!, ['id', 'ownerId', 'quantity', 'location', 'initialCharges', 'charges', 'paidPennies']));
+    expect(p.site).toStrictEqual(expectedSite); expect(life.site).toStrictEqual(expectedSite);
+    expect(site.source).not.toBeNull(); expect(p).not.toHaveProperty('source'); expect(p.site).not.toHaveProperty('source'); expect(life.site).not.toHaveProperty('source');
+    expect(s).toEqual(frozen); expect(s.random).toEqual(frozen.random);
+    p.site!.playerEnergy--; p.powerUses!.GUARD++; p.plate!.charges++; p.lastActionSequence[0]!.paidCost++;
+    life.site.vera!.energy--; life.site.plates[0]!.wear++; life.site.actorMoves[0]!.metres++;
+    expect(s).toEqual(frozen); expect(s.random).toEqual(frozen.random);
   });
 });
 

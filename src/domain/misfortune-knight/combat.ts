@@ -228,4 +228,92 @@ export function misfortuneKnightCombatConsequence(round: SliceCombatRound): stri
   return text + ' 本轮实际60秒；未使用窗口到时结束，已经花费的灵性与精神不退。同一原件资源保留，艾琳、米洛与旧遭遇人物均不在场；同一原卷叶本轮派出后照常归回原牙齿，原账保留。';
 }
 
-export function projectMisfortuneKnightCombat(s:SliceState){const e=s.misfortuneKnight.encounter,last=s.combat?.encounterId==='MISFORTUNE_KNIGHT_DISPUTE'?s.combat.lastRound?.misfortuneKnightOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.misfortuneKnightOutcome:null;return{enemyName:'奥尔登·沃德（46岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,materials:structuredClone(e.materials),companion:structuredClone(s.spiritWarlock.companion),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],constants:MISFORTUNE_KNIGHT_COMBAT_CONSTANTS,countWheel:MISFORTUNE_KNIGHT_COUNT_WHEEL,enemyCountWheel:MISFORTUNE_KNIGHT_ENEMY_COUNT_WHEEL,abilityWheel:misfortuneKnightAbilityWheel(s,null),enemyAbilityWheel:MISFORTUNE_KNIGHT_ENEMY_ABILITY_WHEEL,facts:['体35%、感25%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。','两项新能力只影响同一项已观察、尚未执行的身体冲击；精神压力单独结算。','每轮各一次，失败照付；空窗口不涨掌握，原木板磨损不恢复。','原卷叶先付2灵性派出，后槽另付2灵性协助；当轮召回同一原牙齿，计数照实增加。','身体攻击走共同伤势盘；精神耗尽活着停战，身体死亡终结本周目。']};}
+/** Public Darkness records contain settled facts, never replay sources or stream positions. */
+function publicMisfortuneKnightCheck(c: PublicCheckResult | null): PublicCheckResult | null {
+  return c === null ? null : { ability: c.ability, baseAbility: c.baseAbility,
+    modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+    effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier };
+}
+function publicMisfortuneKnightCompanion(c: SpiritWarlockCompanion): SpiritWarlockCompanion {
+  return { source: c.source, status: c.status, acquiredWeek: c.acquiredWeek, invitedWeek: c.invitedWeek,
+    releases: c.releases, deployments: c.deployments, recalls: c.recalls };
+}
+function publicMisfortuneKnightInjury(i: SliceInjury): SliceInjury {
+  return { id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision };
+}
+function publicMisfortuneKnightMaterials(m: MisfortuneKnightMaterials): MisfortuneKnightMaterials {
+  const w = m.weapon, p = m.plate;
+  return { weapon: { id: w.id, sourceId: w.sourceId, owner: w.owner, massKg: w.massKg, location: w.location,
+    condition: w.condition, charge: w.charge, capacity: w.capacity, visible: w.visible },
+    plate: p === null ? null : { id: p.id, sourceId: p.sourceId, owner: p.owner, paidPennies: p.paidPennies,
+      purchasedWeek: p.purchasedWeek, location: p.location, integrity: p.integrity,
+      initialIntegrity: p.initialIntegrity, wearPerAttempt: p.wearPerAttempt } };
+}
+function publicMisfortuneKnightWindow(w: MisfortuneKnightWindow): MisfortuneKnightWindow {
+  return { id: w.id, kind: w.kind, createdAt: w.createdAt, expiresAt: w.expiresAt,
+    targetActionId: w.targetActionId, magnitude: w.magnitude, plateId: w.plateId };
+}
+function publicMisfortuneKnightWindows(w: MisfortuneKnightWindows): MisfortuneKnightWindows {
+  return { nightGuard: w.nightGuard === null ? null : publicMisfortuneKnightWindow(w.nightGuard),
+    guidedMishap: w.guidedMishap === null ? null : publicMisfortuneKnightWindow(w.guidedMishap),
+    attention: w.attention === null ? null : publicMisfortuneKnightWindow(w.attention) };
+}
+function publicMisfortuneKnightPending(p: MisfortuneKnightPendingAction | null): MisfortuneKnightPendingAction | null {
+  return p === null ? null : { id: p.id, planned: p.planned, actual: p.actual, declaredAt: p.declaredAt,
+    observedAt: p.observedAt, observationSeconds: p.observationSeconds, visibleIntent: p.visibleIntent, bodyImpact: p.bodyImpact };
+}
+function publicMisfortuneKnightPowerUses(p: MisfortuneKnightCombatBody['powerUses']): MisfortuneKnightCombatBody['powerUses'] {
+  return { DARK_BOLT: p.DARK_BOLT, MIND_PRESSURE: p.MIND_PRESSURE, WARD: p.WARD,
+    ATTENTION: p.ATTENTION, BLOCK_LINE: p.BLOCK_LINE };
+}
+function publicMisfortuneKnightScene(r: MisfortuneKnightScene): MisfortuneKnightScene {
+  return { siteId: r.siteId, playerLocation: r.playerLocation, playerCoordinate: r.playerCoordinate,
+    enemyCoordinate: r.enemyCoordinate, ordinaryExit: r.ordinaryExit, visibleBodyLine: r.visibleBodyLine,
+    floorLineClear: r.floorLineClear, thirdPartiesInArea: r.thirdPartiesInArea, presentMemberIds: [...r.presentMemberIds],
+    observedSourceId: r.observedSourceId, observationWeek: r.observationWeek, clockSeconds: r.clockSeconds,
+    externalSeconds: r.externalSeconds, playerTravelMetres: r.playerTravelMetres,
+    knownPlayerName: r.knownPlayerName, knownEnemyName: r.knownEnemyName };
+}
+/** One allow-list is shared by all round exits and the active panel action sequence. */
+export function projectMisfortuneKnightAction(a: MisfortuneKnightActionEvidence) {
+  return { order: a.order, actor: a.actor, id: a.id, planned: a.planned, selectedAbility: a.selectedAbility,
+    fallbackReason: a.fallbackReason, label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction,
+    threatens: a.threatens, mentalPressure: a.mentalPressure, attackKind: a.attackKind,
+    rawContribution: a.rawContribution, rawReduction: a.rawReduction, paidCost: a.paidCost, mindCost: a.mindCost,
+    physicalFactor: a.physicalFactor, check: publicMisfortuneKnightCheck(a.check),
+    resistanceRoll: a.resistanceRoll, resistanceChance: a.resistanceChance, succeeded: a.succeeded, finiteResult: a.finiteResult,
+    windowsBefore: publicMisfortuneKnightWindows(a.windowsBefore), windowsAfter: publicMisfortuneKnightWindows(a.windowsAfter),
+    pendingBefore: publicMisfortuneKnightPending(a.pendingBefore), pendingAfter: publicMisfortuneKnightPending(a.pendingAfter),
+    masteryApplied: [...a.masteryApplied], countered: [...a.countered], spiritOperation: a.spiritOperation,
+    companionBefore: publicMisfortuneKnightCompanion(a.companionBefore), companionAfter: publicMisfortuneKnightCompanion(a.companionAfter),
+    plateWear: a.plateWear, plateId: a.plateId, rodChargeSpent: a.rodChargeSpent,
+    materialsBefore: publicMisfortuneKnightMaterials(a.materialsBefore), materialsAfter: publicMisfortuneKnightMaterials(a.materialsAfter),
+    atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, travelMetres: a.travelMetres, travelPath: [...a.travelPath],
+    playerMindAfter: a.playerMindAfter, playerSpiritualityAfter: a.playerSpiritualityAfter,
+    enemyMindAfter: a.enemyMindAfter, enemySpiritualityAfter: a.enemySpiritualityAfter };
+}
+export type PublicMisfortuneKnightAction = ReturnType<typeof projectMisfortuneKnightAction>;
+export function projectMisfortuneKnightRoundOutcome(o: MisfortuneKnightRoundOutcome) {
+  const recall = o.spiritRecall;
+  return { enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality,
+    enemyStatus: o.enemyStatus, enemyInjuries: o.enemyInjuries.map(publicMisfortuneKnightInjury), enemyRisk: o.enemyRisk,
+    weaponLocation: o.weaponLocation, powerUses: publicMisfortuneKnightPowerUses(o.powerUses),
+    spiritDeployments: o.spiritDeployments, spiritAssists: o.spiritAssists, spiritRecalls: o.spiritRecalls,
+    totalOwnerMindSpent: o.totalOwnerMindSpent, guidedMishapAttempts: o.guidedMishapAttempts,
+    guidedMishapSuccesses: o.guidedMishapSuccesses, nightGuardAttempts: o.nightGuardAttempts, nightGuardSuccesses: o.nightGuardSuccesses,
+    spiritRecall: recall === null ? null : { sourceId: recall.sourceId, atSeconds: recall.atSeconds, elapsedSeconds: recall.elapsedSeconds,
+      before: publicMisfortuneKnightCompanion(recall.before), after: publicMisfortuneKnightCompanion(recall.after) },
+    targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+    playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, playerSpiritualityAfter: o.playerSpiritualityAfter,
+    playerInjuriesAfter: o.playerInjuriesAfter.map(publicMisfortuneKnightInjury), playerRiskAfter: o.playerRiskAfter,
+    materialsAfter: publicMisfortuneKnightMaterials(o.materialsAfter), companion: publicMisfortuneKnightCompanion(o.companion),
+    masteryAfter: Object.fromEntries([...MISFORTUNE_KNIGHT_INHERITED_SKILL_IDS, ...MISFORTUNE_KNIGHT_NEW_ABILITY_IDS]
+      .filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+    rootAfter: publicMisfortuneKnightScene(o.rootAfter), elapsedSeconds: o.elapsedSeconds,
+    playerActions: o.playerActions.map(projectMisfortuneKnightAction), enemyActions: o.enemyActions.map(projectMisfortuneKnightAction),
+    expiredWindows: o.expiredWindows.map(publicMisfortuneKnightWindow), windowsAfter: publicMisfortuneKnightWindows(o.windowsAfter),
+    pendingEnemyActionAfter: null };
+}
+export type PublicMisfortuneKnightRoundOutcome = ReturnType<typeof projectMisfortuneKnightRoundOutcome>;
+
+export function projectMisfortuneKnightCombat(s:SliceState){const e=s.misfortuneKnight.encounter,last=s.combat?.encounterId==='MISFORTUNE_KNIGHT_DISPUTE'?s.combat.lastRound?.misfortuneKnightOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.misfortuneKnightOutcome:null;return{enemyName:'奥尔登·沃德（46岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:publicMisfortuneKnightPowerUses(e.powerUses),policy:e.policy,materials:publicMisfortuneKnightMaterials(e.materials),companion:publicMisfortuneKnightCompanion(s.spiritWarlock.companion),lastActionSequence:last?[...last.playerActions,...last.enemyActions].map(projectMisfortuneKnightAction).sort((a,b)=>a.order-b.order):[],constants:MISFORTUNE_KNIGHT_COMBAT_CONSTANTS,countWheel:MISFORTUNE_KNIGHT_COUNT_WHEEL,enemyCountWheel:MISFORTUNE_KNIGHT_ENEMY_COUNT_WHEEL,abilityWheel:misfortuneKnightAbilityWheel(s,null),enemyAbilityWheel:MISFORTUNE_KNIGHT_ENEMY_ABILITY_WHEEL,facts:['体35%、感25%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。','两项新能力只影响同一项已观察、尚未执行的身体冲击；精神压力单独结算。','每轮各一次，失败照付；空窗口不涨掌握，原木板磨损不恢复。','原卷叶先付2灵性派出，后槽另付2灵性协助；当轮召回同一原牙齿，计数照实增加。','身体攻击走共同伤势盘；精神耗尽活着停战，身体死亡终结本周目。']};}

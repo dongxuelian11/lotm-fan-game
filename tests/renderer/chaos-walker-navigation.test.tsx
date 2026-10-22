@@ -9,6 +9,7 @@ import { migrateSliceState } from '../../src/domain/slice/migration';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types';
 import type { ChaosWalkerCommand } from '../../src/domain/chaos-walker/types';
 import type { SliceBridge } from '../../src/shared/slice-contracts';
+import { readObjectEntry } from '../helpers/read-object-entry';
 
 interface Capture { prefixCount: number; commands: SliceIntent[]; promoted: SliceState; practiced: SliceState; final: SliceState }
 interface Boundary { beforeLast: SliceState; lastIntent: SliceIntent; final: SliceState }
@@ -17,7 +18,7 @@ const continued = () => JSON.parse(readFileSync('tests/fixtures/chaos-walker-v01
 const roots = ['monster', 'machine', 'lucky', 'calamityPriest', 'misfortuneMage'] as const;
 function savedGame(state: unknown, failFirst = false) {
   let current = migrateSliceState(state), attempts = 0;
-  const submit: SliceBridge['submitIntent'] = vi.fn(async envelope => {
+  const submit = vi.fn<SliceBridge['submitIntent']>().mockImplementation(async envelope => {
     if (envelope.payload.type === 'CREATE') throw new Error('The actual original run already exists.');
     if (failFirst && attempts++ === 0) return { ok: false as const, error: { code: 'SAVE_FAILED', message: '本次原操作尚未保存', retryable: true } };
     current = applySliceIntent(current, envelope.payload);
@@ -26,10 +27,11 @@ function savedGame(state: unknown, failFirst = false) {
   return { get state() { return current; }, submit };
 }
 type SavedGame = ReturnType<typeof savedGame>;
-function boundary(type: ChaosWalkerCommand['type'], promotedOnly = false) {
-  const all = Object.values(JSON.parse(readFileSync('tests/fixtures/chaos-walker-v01580/boundaries.json', 'utf8')) as Record<string, Boundary>);
-  const result = all.find(b => b.lastIntent.type === 'CHAOS_WALKER' && b.lastIntent.command.type === type && (!promotedOnly || b.beforeLast.progression.sequence === 4 && b.final.progression.sequence === 3));
-  if (!result) throw new Error(`Missing actual saved ${type} boundary; do not invent natural results.`); return result;
+// Read the producer's exact boundary key without materializing all 40 saved
+// before/after pairs (the original JSON is over 50 MiB). Keep the same checks.
+function boundary(key: string, type: ChaosWalkerCommand['type'], promotedOnly = false) {
+  const result = readObjectEntry<Boundary>('tests/fixtures/chaos-walker-v01580/boundaries.json', key);
+  if (!(result.lastIntent.type === 'CHAOS_WALKER' && result.lastIntent.command.type === type && (!promotedOnly || result.beforeLast.progression.sequence === 4 && result.final.progression.sequence === 3))) throw new Error(`Missing actual saved ${type} boundary; do not invent natural results.`); return result;
 }
 function expectOriginals(s: SliceState, before: SliceState) {
   for (const root of roots) expect(s[root]).toEqual(before[root]);
@@ -38,7 +40,7 @@ function expectOriginals(s: SliceState, before: SliceState) {
 }
 async function mount(game: SavedGame, openPanel = true) {
   const state = projectSliceState(game.state);
-  window.sliceGame = { getBootstrap: vi.fn<SliceBridge["getBootstrap"]>(async () => ({ ok: true, value: { mode: 'browser', activeState: state, runs: [{ runId: state.runId, name: state.character.name, portraitId: state.character.portraitId, week: state.week, date: state.date, status: state.status, revision: state.revision, updatedAt: '2026-10-13T13:59:00Z' }] } })), loadRun: vi.fn<SliceBridge["loadRun"]>(async () => ({ ok: true, value: projectSliceState(game.state) })), submitIntent: game.submit };
+  window.sliceGame = { getBootstrap: vi.fn<SliceBridge["getBootstrap"]>().mockImplementation(async () => ({ ok: true, value: { mode: 'browser', activeState: state, runs: [{ runId: state.runId, name: state.character.name, portraitId: state.character.portraitId, week: state.week, date: state.date, status: state.status, revision: state.revision, updatedAt: '2026-10-13T13:59:00Z' }] } })), loadRun: vi.fn<SliceBridge["loadRun"]>().mockImplementation(async () => ({ ok: true, value: projectSliceState(game.state) })), submitIntent: game.submit };
   render(<SliceApp />); await userEvent.click(await screen.findByRole('button', { name: state.status === 'DEAD' ? /查看封存/ : /继续游戏/ })); await userEvent.click(screen.getByRole('button', { name: name => name.includes(state.character.name) }));
   await waitFor(() => expect(screen.queryByRole('heading', { name: '人物卷宗' }) ?? screen.queryByRole('region', { name: '混乱行者' }) ?? screen.queryByRole('dialog', { name: '战斗回合结果' }) ?? (state.combat ? screen.queryByRole('dialog', { name: state.combat.title ?? "普通人追击" }) : null) ?? (state.ending ? screen.queryByRole('heading', { name: state.ending.title }) : null)).toBeTruthy());
   const reveal = screen.queryByRole('dialog', { name: '战斗回合结果' }); if (reveal) await userEvent.click(within(reveal).getByRole('button', { name: /^(返回生活|进入下一回合|查看收尾卷宗)$/ }));
@@ -59,7 +61,9 @@ async function action(game: SavedGame, command: ChaosWalkerCommand) {
 }
 async function expectSaved(game: SavedGame, expected: unknown) { await waitFor(() => expect(game.state).toEqual(migrateSliceState(expected))); }
 beforeEach(() => { vi.spyOn(window, 'scrollTo').mockImplementation(() => {}); });
-afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
+// Reset registered vi.fn implementations and returned projections as well as
+// spies; constructor implementations would otherwise retain each saved game.
+afterEach(() => { cleanup(); delete window.sliceGame; vi.resetAllMocks(); vi.restoreAllMocks(); });
 
 describe('ChaosWalker navigation with actual saved command boundaries', () => {
   it('opens at the exact living333-command prefix and closes without moving or healing any original', async () => {
@@ -74,14 +78,14 @@ describe('ChaosWalker navigation with actual saved command boundaries', () => {
     expect(screen.getByRole('heading', { name: '人物卷宗' })).toBeTruthy(); expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled(); expectOriginals(game.state, before);
   }, 20_000);
   it('retries the exact original guidance envelope after a failed save without charging twice', async () => {
-    const b = boundary('LEARN_GUIDANCE'), game = savedGame(b.beforeLast, true), before = structuredClone(game.state); await mount(game);
+    const b = boundary('guidance', 'LEARN_GUIDANCE'), game = savedGame(b.beforeLast, true), before = structuredClone(game.state); await mount(game);
     await userEvent.click(await action(game, { type: 'LEARN_GUIDANCE' })); await screen.findByRole('alert'); expect(game.state).toEqual(before); expect(game.submit).toHaveBeenCalledOnce();
     expect((screen.getByRole('button', { name: '关闭混乱行者页面' }) as HTMLButtonElement).disabled).toBe(true);
     await userEvent.click(screen.getByRole('button', { name: '重试这次操作' })); await expectSaved(game, b.final);
     const calls = vi.mocked(game.submit).mock.calls; expect(calls).toHaveLength(2); expect(calls[1]![0]).toEqual(calls[0]![0]); expectOriginals(game.state, before);
   }, 20_000);
   it('saves the actual current-week140 preparation and allows zero-action exit without refund or redose', async () => {
-    const b = boundary('PREPARE_PROMOTION'), game = savedGame(b.beforeLast), before = structuredClone(game.state); await mount(game);
+    const b = boundary('prepare-current-week', 'PREPARE_PROMOTION'), game = savedGame(b.beforeLast), before = structuredClone(game.state); await mount(game);
     await userEvent.click(await action(game, { type: 'PREPARE_PROMOTION' })); await expectSaved(game, b.final);
     await waitFor(() => expect(screen.getByRole('region', { name: '混乱行者' }).getAttribute('aria-busy')).toBe('false'));
     const prepared = structuredClone(game.state), expected = applySliceIntent(prepared, { type: 'CHAOS_WALKER', command: { type: 'LEAVE_PREPARATION' } });
@@ -90,7 +94,7 @@ describe('ChaosWalker navigation with actual saved command boundaries', () => {
     expect(game.state.cash).toBe(prepared.cash); expect(game.state.chaosWalker.bottles).toEqual(prepared.chaosWalker.bottles); expectOriginals(game.state, before);
   }, 20_000);
   it('requires an independent selected-bottle confirmation and cancellation does not mutate the real save', async () => {
-    const b = boundary('CONSUME', true), game = savedGame(b.beforeLast), before = structuredClone(game.state); await mount(game);
+    const b = boundary('promotion', 'CONSUME', true), game = savedGame(b.beforeLast), before = structuredClone(game.state); await mount(game);
     if (b.lastIntent.type !== 'CHAOS_WALKER') throw new Error('Expected real original dose.'); const command = b.lastIntent.command;
     await userEvent.click(await action(game, command)); const confirm = screen.getByRole('region', { name: '混乱行者原瓶服用确认' });
     expect(confirm.textContent).toContain('意志难度30'); expect(confirm.textContent).toContain('140便士'); expect(confirm.textContent).toContain('完整配方'); expect(confirm.textContent).toContain('未知');
@@ -115,8 +119,8 @@ describe('ChaosWalker navigation with actual saved command boundaries', () => {
     expect(game.state.misfortuneMage).toEqual(original().final.misfortuneMage);
   }, 20_000);
   it.each(['HOLD', 'SPEND_FIRST'] as const)('defaults to HOLD and sends explicit%s without pre-spending the only original luck', async policy => {
-    const all = Object.values(JSON.parse(readFileSync('tests/fixtures/chaos-walker-v01580/boundaries.json', 'utf8')) as Record<string, Boundary>);
-    const b = all.find(v => v.lastIntent.type === 'COMBAT_ROUND')!;
+    const b = readObjectEntry<Boundary>('tests/fixtures/chaos-walker-v01580/boundaries.json', 'combat-first');
+    if (b.lastIntent.type !== 'COMBAT_ROUND') throw new Error('Expected the actual first combat-round boundary.');
     const game = savedGame(b.beforeLast), before = structuredClone(game.state); await mount(game, false);
     const reserve = screen.getByRole('group', { name: `本回合幸运储备 · 当前 ${before.winner.luck.stored} / 3` });
     expect(reserve.textContent).toContain('5灵性');

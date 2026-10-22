@@ -274,7 +274,19 @@ describe('Devil common settlement and persistent original action history', () =>
     withStrain.demon.strain = 0; expect(validateDevilEncounter(withStrain)).toBe(false);
   });
   it('exposes current original resources and G source limits without inferring unknown abilities', () => {
-    const s = fixture(), p = projectDevilCombat(s); expect(p).toMatchObject({ targetId: 'DV4-ORRICK-FANE', enemySpirituality: 40, emotion: 'STRONG', strain: 0, pursuit: false });
-    expect(p.summary).toContain('完整原著4级技能仍未知'); expect(p.source!.enemyWeapon).toBe('DV4-ORRICK-CLUB');
+    const s = fixture(), frozen = structuredClone(s), p = projectDevilCombat(s), e = s.devil.encounter;
+    expect(p).toStrictEqual({
+      enemyName: '奥里克·费恩（DV4-ORRICK-FANE，原创成年序列5对手，G）', targetId: 'DV4-ORRICK-FANE',
+      enemySpirituality: e.enemySpirituality, powerUses: { ARC_BOLT: e.powerUses.ARC_BOLT, WARD: e.powerUses.WARD },
+      emotion: e.emotion, seedPlanted: e.seedPlanted, lastSeedRound: e.lastSeedRound, staggerReady: e.staggerReady,
+      seedAttempts: e.seedAttempts, catalysisAttempts: e.catalysisAttempts, composeUses: e.composeUses, strain: s.demon.strain,
+      originalExit: true, pursuit: false, distanceMetres: 4, summary: expect.any(String),
+      enemyCountWheel: DEVIL_ENEMY_COUNT_WHEEL, enemyAbilityWheel: DEVIL_ENEMY_ABILITY_WHEEL,
+    });
+    expect(p).toMatchObject({ enemySpirituality: 40, emotion: 'STRONG', strain: 0 });
+    expect(p.summary).toContain('完整原著4级技能仍未知'); expect(p).not.toHaveProperty('source');
+    expect(currentDevilCombatSource(s)!.enemyWeapon).toBe('DV4-ORRICK-CLUB');
+    expect(s).toEqual(frozen); expect(s.random).toEqual(frozen.random);
+    p.powerUses.ARC_BOLT++; expect(s).toEqual(frozen); expect(s.random).toEqual(frozen.random);
   });
 });

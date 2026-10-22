@@ -1,3 +1,5 @@
+import { publicPryerFields, publicPryerInjury } from '../sage/life.js';
+import { publicDarkAngelSpirit } from '../dark-angel/life.js';
 import type { ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -300,3 +302,25 @@ export function validateThreeHeadedTemplarRoundOutcome(value: unknown): value is
     return q.playerS === o.playerSpiritualityAfter && q.enemyS === o.enemySpirituality && same(q.powers, o.powerUses) && same(q.reserve, o.reserveAfter) && same(q.spirits, o.spiritsAfter) && same(scene, o.sceneAfter) && q.recallSeconds === o.recallSeconds;
   } catch { return false; }
 }
+
+
+export function publicThreeHeadedTemplarReserve(r: RoseBishopReserve): RoseBishopReserve { return {
+  ...publicPryerFields(r, ['points', 'max', 'packetsBought', 'lastPurchaseWeek']),
+  packets: r.packets.map(p => publicPryerFields(p, ['id', 'acquiredWeek', 'status', 'consumedWeek'])),
+}; }
+function publicThreeHeadedTemplarAction(a: ThreeHeadedTemplarPlayerAction | ThreeHeadedTemplarEnemyAction) { return {
+  ...publicPryerFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'order', 'paidCost', 'physicalFactor', 'mode']), rolls: [...a.rolls],
+}; }
+export function projectThreeHeadedTemplarRoundOutcome(o: ThreeHeadedTemplarRoundOutcome) { return {
+  ...publicPryerFields(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'enemyRiskAfter', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'shadowReadyAfter', 'elapsedSeconds', 'recallSeconds', 'lifeClockSecondsAfter']),
+  enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicPryerInjury), powerUses: publicPryerFields(o.powerUses, ['ARC_BOLT', 'WARD', 'LIGHT_BREAK']),
+  sceneAfter: publicPryerFields(o.sceneAfter, ['courtId', 'ordinaryExit', 'thirdPartiesInArea', 'clearanceConfirmed', 'playerPosition', 'distanceMetres', 'exitMetres', 'ordinaryWalkedMetres']),
+  reserveAfter: publicThreeHeadedTemplarReserve(o.reserveAfter),
+  spiritsAfter: { 'THT3-HELENA': publicDarkAngelSpirit(o.spiritsAfter['THT3-HELENA']), 'THT3-ROLAND': publicDarkAngelSpirit(o.spiritsAfter['THT3-ROLAND']) },
+  playerActions: o.playerActions.map(a => ({ ...publicThreeHeadedTemplarAction(a),
+    ...publicPryerFields(a, ['id', 'reserveCost', 'healthRestored', 'shadowPrepared', 'borrowedSpiritId', 'borrowedMethod', 'abilitySelfGain', 'abilityEnemyReduction']),
+    supportActions: a.supportActions.map(e => publicPryerFields(e, ['spiritId', 'method', 'casketId', 'deathRecordId', 'paidCost', 'spiritCost', 'spiritualityBefore', 'spiritualityAfter', 'integrity', 'selfGain', 'enemyReduction', 'label'])),
+  })),
+  enemyActions: o.enemyActions.map(a => ({ ...publicThreeHeadedTemplarAction(a), ...publicPryerFields(a, ['planned', 'actual', 'shadowConsumed', 'interruptedSpiritId', 'integrityBefore', 'integrityAfter', 'recallSeconds']) })),
+}; }
+export type ThreeHeadedTemplarPublicRoundOutcome = ReturnType<typeof projectThreeHeadedTemplarRoundOutcome>;

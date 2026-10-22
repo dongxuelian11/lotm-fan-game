@@ -139,19 +139,27 @@ describe('Dark Angel independent bottles and authenticated original court', () =
     expect(commands.some(c => c.type === 'EVENT_CHOICE' && c.choiceId === 'PAY')).toBe(true);
     expect(oldHangedManRoots(s)).toEqual(oldHangedManRoots(source)); expect(source.cash).toBe(818); expect(source.health).toBe(60); assertValidSliceState(s);
   }, 240_000);
-  it('requires all three real failed bottles and a real following week for independent resupply', () => {
+  it('requires three real failures, paid same-original investigation and a real next-week handover', () => {
     const initial = directedInitial2('THREE_FAILURES'); initial.actionsRemaining = initial.weeklyBudget = 3; // Explicit pre-journal UNIT budget.
     let s = da(initial, { type: 'LEARN_GUIDANCE' }); rejectDarkAngel(s, { type: 'REQUEST_SUPPLY' });
     for (let number = 1; number <= 3; number++) {
       const bottleId = `dark-angel-potion-${number}`; s = prepareBottle(s, bottleId); s = da(s, { type: 'CONSUME', bottleId, confirmed: true });
       expect(s.progression.sequence).toBe(2);
     }
-    s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 });
-    const before = s.cash; s = da(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100);
-    const requested = s.darkAngel.resupply.requestedWeek!; rejectDarkAngel(s, { type: 'RECEIVE_SUPPLY' });
-    s = ready(s, { afterWeek: requested }); s = da(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.darkAngel.bottles).toHaveLength(6); expect(s.darkAngel.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.darkAngel.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
+    s = ready(s, { ap: 2, cash: 150, health: 100, mind: 100 });
+    rejectDarkAngel(s, { type: 'REQUEST_SUPPLY' }); rejectDarkAngel(s, { type: 'RECEIVE_SUPPLY' });
+    const originals = structuredClone(s.darkAngel.bottles), history = structuredClone(s.darkAngel.acquisitionJournal);
+    const before = s.cash; s = da(s, { type: 'REQUEST_RECOVERY_V1', bottleId: dose.bottleId }); expect(s.cash).toBe(before - 120);
+    const requested = s.darkAngel.resupply.requestedWeek!;
+    rejectDarkAngel(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: dose.bottleId });
+    s = ready(s, { ap: 1, cash: 30, afterWeek: requested });
+    s = da(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: dose.bottleId });
+    const receipt = s.darkAngel.acquisitionJournal.at(-1)!;
+    expect(receipt.before.cash - receipt.after.cash).toBe(30); expect(receipt.before.actions - receipt.after.actions).toBe(1);
+    expect(s.darkAngel.bottles).toHaveLength(4); expect(s.darkAngel.bottles.slice(0, 3)).toEqual(originals);
+    expect(s.darkAngel.acquisitionJournal.slice(0, history.length)).toEqual(history);
+    expect(s.darkAngel.bottles[3]).toMatchObject({ id: 'dark-angel-recovery-1', status: 'SUPPLIER', labourSteps: 0, acquiredWeek: null,
+      recovery: { sourceBottleId: dose.bottleId, originalBottleId: dose.bottleId, characteristicId: 'DA223-CHAR-1' } });
     expect(validateDarkAngelState(s)).toBe(true);
   }, 240_000);
   it('closes old actions and rejectsS0, wrong path and invented promotion state', () => {

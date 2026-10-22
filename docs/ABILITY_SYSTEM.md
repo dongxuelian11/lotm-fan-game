@@ -109,7 +109,7 @@
 | 黄昏巨人 | 战士 → 角斗士 → 武器大师 → 黎明骑士 → 守护 → 猎魔 → 银骑士 → 巨人权能 → 神之手 → 黄昏巨人 |
 | 红祭司 | 猎人 → 挑衅 → 纵火 → 阴谋 → 收割 → 铁血 → 战争 → 天气 → 征服 → 红祭司 |
 | 魔女 | 刺客 → 教唆 → 女巫 → 纵欲 → 痛苦 → 绝望 → 不老 → 灾难 → 天灾 → 魔女 |
-| 隐者 | 窥秘 → 巫师 → 星象 → 卷轴 → 神秘学 → 预言 → 贤者 → 知识皇帝 → 星界权能 → 隐者 |
+| 隐者 | 当前0.222：同一原档短廊移交；有限本人信息通行、当前许可下读取并转录实购封签。完整方仪未核，范围见阶段记录。 |
 | 完美者 | 通识 → 考古 → 鉴定 → 工匠 → 天文学 → 炼金 → 奥术 → 知识导师 → 文明奇迹 → 完美者 |
 | 命运之轮 | 怪物 → 机器人 → 幸运儿 → 灾祸祭司 → 胜利者 → 厄运法师 → 混沌行者 → 概率占卜 → 水银之蛇 → 命运之轮 |
 | 母亲 | 耕种 → 收割 → 生物学 → 德鲁伊 → 古代炼金 → 苍白灾难 → 荒芜主母 → 美神 → 自然行者 → 母亲 |
@@ -126,6 +126,8 @@
 门途径当前状态为`DOOR_MECHANISM_PACKAGE_COMPLETE_CANDIDATE_V1 / D-DOOR-MECH1..45_USER_CONFIRMED / STABLE_ABILITY_AND_MASTERY_RECORDS_READY_V1 / TEN_SEQUENCE_ANCHOR_CARDS_COMPLETE_V1 / COMBAT_V3_RATIO_SCREEN_PASS / COMBAT_SPIRITUALITY_COST_PENDING / NOT_IMPLEMENTED`。序列9—0的速度、核心权重、A/E、六槽预算、成长配速、45项机制、22条稳定能力记录和逐能力掌握度节点已经形成候选；统一高序列胜负换算已形成V3比例候选并通过五途径低/中/高序列固定种子筛查。正式事件文案变体、精确材料/配方、部分仪式卡和全途径战斗灵性消耗仍待补齐。旧战斗灵性成本候选不再有效，不能从“开门穿墙→门”的旧能力锚点自动生成成本或能力。
 
 ### 门途径稳定能力记录V1
+
+本表旧候选保留历史颗粒度。218当前S0仅实现下列两项有限现场技巧，原17项实际掌握逐值继承；其它候选条目不等于当前可用技能。详见[门阶段记录](stages/0218-door.md)。
 
 同一能力晋升后的强化写入原记录，不重复建立掌握度；只有首次获得的新能力从0开始。记录/复制取得的外来能力是一次性战斗记录，不为每个外来能力创建永久掌握度条，它们统一读取`door.recording`。
 
@@ -152,7 +154,8 @@
 | `door.dimension-sight` | 2 | 高序列提高观察范围，不进入战斗、不成为全知 | 日常事件揭示与隐藏选项 |
 | `door.position-authority` | 1 | 定位、隐藏自身位置、扰乱目标位置三选一 | 高位信息/控制能力 |
 | `door.gravity-space` | 1 | 序列0提高AOE上限，继续使用数量盘和目标盘 | 重力与空间破碎AOE |
-| `door.door-authority` | 0 | 开启、关闭、连接、重定向四类有限操作 | 终局权柄、一次对抗破封与手工世界连接 |
+| `door.s0.bounded-conceptual-escape` | 0 | 同一本人对已声明未落定的合格冲击，付1行动/8便士/14灵性/8精神尝试3秒脱身 | 独立现场真实避过冲击后才增掌握；无复制、复伤或永久免疫 |
+| `door.s0.single-exit-seal` | 0 | 单个亲见出口，付1行动/6便士/12灵性/6精神尝试20秒短封 | 机构可抵抗、破坏或超时；实际拦下合格冲击才增掌握，普通撤路保持 |
 
 这些ID只确定能力记录颗粒度和继承关系，不表示逐能力数值、事件卡或实现已经完成。
 
@@ -309,9 +312,11 @@
 
 ### 白塔途径稳定能力记录V3
 
-状态：`WHITE_TOWER_STABLE_ABILITY_RECORDS_USER_CONFIRMED_V3 / 17_RECORDS / EVENT_AND_COMBAT_IDENTITIES_SEPARATED / KNOWLEDGE_ATTRIBUTE_PRIMARY / PRIMARY_TEXT_PENDING / NOT_IMPLEMENTED`
+V3设计底稿状态：`WHITE_TOWER_STABLE_ABILITY_RECORDS_USER_CONFIRMED_V3 / 17_RECORDS / EVENT_AND_COMBAT_IDENTITIES_SEPARATED / KNOWLEDGE_ATTRIBUTE_PRIMARY / PRIMARY_TEXT_PENDING / NOT_IMPLEMENTED`
 
-白塔采用17条稳定能力记录。每条记录可以分别声明事件身份与战斗身份，但两套结算不共享事件谜题、世界事实或长期理论状态。阅读内容、推理题目、敌方技能、秘术定义和预言候选不是新的能力经验条；它们引用下列稳定能力及自己的来源/内容ID。
+当前序列0实现口径（0.214 静态候选）：仅以 [白塔有限阶段](WHITE_TOWER_PLAYABLE_STAGE.md) 和 `src/domain/white-tower/` 为准；已有局部受控与SQLite检查通过记录，完整natural续跑证据尚未形成，不宣称本阶验收完成。以下序列9—1及历史稿保留原设计口径，本次只对齐当前 S0。 当前运行存档逐项继承21条既有`reader.*`掌握（含六个零值），实际晋升时只新增下表两条S0技巧，均从0开始；V3的17条名录不是该存档的掌握条目计数。旧纸、滑块及有限窗口保持各自已核对象边界，不泛化成施工权能；不解锁100%重演、全知结果盘或世界知识库。
+
+V3底稿原列17条稳定能力记录；下表仅将序列0两行对齐214，序列9—1设计名录不据此改写。每条记录可以分别声明事件身份与战斗身份，但两套结算不共享事件谜题、世界事实或长期理论状态。阅读内容、推理题目、敌方技能、秘术定义和预言候选不是新的能力经验条；它们引用下列稳定能力及自己的来源/内容ID。
 
 | 稳定能力ID | 首次序列 | 晋升强化边界 | 战斗/事件身份 |
 |---|---:|---|---|
@@ -330,12 +335,14 @@
 | `white-tower.wisdom-authority` | 2 | 从合法候选中预见局势变化并选择时机；不替玩家提交决定 | 战斗：每回合首次能力盘抽二选一；事件：决策和天使级博弈 |
 | `white-tower.mythical-tower` | 2 | 显露后有限抵御低位信息/精神过载，同时向所有见证者提交疯狂、毁灭和灾难风险 | 自保/意外；天使显形与知识污染事件 |
 | `white-tower.omniscient-eye` | 1 | 事件中监测过去/现在/未来信息；战斗中只预读已提交的两个结果 | 战斗：二结果预读并削弱其一；事件：人物、组织、历史和终局信息 |
-| `white-tower.knowledge-authority` | 0 | 操作知识、理解和传播，但不能把伪造来源变真 | 战斗：全知全能结果盘；事件：文明知识与世界秘密 |
-| `white-tower.white-tower-authority` | 0 | 事件中建立完整理论；战斗中不要求理论前置 | 战斗：拆解/重演/统合；事件：完整理论、知识灾难和周目终局 |
+| `reader.s0.structural-insight` | 0 | 付1行动、12灵性、8精神；观察同一可见非生命结构后尝试开启30秒窗口，仅帮助下一次独立核验 | 当前有限现场：本场只尝试一次，遮挡或版本变化失效；实际帮助核验才+8掌握，不读取未来或赠予知识 |
+| `reader.s0.bounded-weak-point` | 0 | 付1行动、16灵性、10精神；仅在同一已独立核实的非生命结构上尝试制造一处10秒弱处 | 当前有限现场：本场只尝试一次，对手可重构抵抗；用原杠杆实际利用才+8掌握，不保证破防或作用于活人 |
 
 事件用途、掌握度与十张位格锚卡见[日常技能效果](PATHWAY_DAILY_EFFECTS.md#白塔途径日常效果完整设计已确认v3)；战斗数值与知识机制见[量化与配速](PATHWAY_QUANTITATIVE_DESIGN.md#白塔途径combat-v3事件战斗分层接线已确认v3)。
 
 ### 倒吊人途径稳定能力记录V1
+
+本节旧稳定记录属于历史设计讨论。当前0.223.0序列0候选仅接入[短压廊](stages/0223-hanged-man.md)的有限承压与单灵贴封；完整原文方仪、通用复活及其他0级能力细则尚未核实，不能把历史草稿当成已实现能力。
 
 状态：`HANGED_MAN_STABLE_ABILITY_RECORDS_USER_CONFIRMED_V1 / 27_RECORDS / EVENT_AND_COMBAT_IDENTITIES_SEPARATED / GRAZING_CAPACITY_3_4_5_6_7_USER_CONFIRMED / TRINITY_THREE_FULL_INDEPENDENT_WHEELS_USER_CONFIRMED / PRIMARY_TEXT_PENDING / NOT_IMPLEMENTED`
 
@@ -367,9 +374,8 @@
 | `hanged-man.degeneration-authority` | 1 | 令身体、物品、投影和能力背叛其主人 | 战斗：能力背叛；事件：组织、誓言和世界堕落 |
 | `hanged-man.dark-ocean` | 1 | 形成吞噬攻击、干扰认知与腐化对象的黑暗海洋 | 战斗：多人首击削弱；事件：地区灾难与封锁 |
 | `hanged-man.depraved-dependents` | 1 | 将牧放灵魂堕落为服从的临时眷属群 | 战斗：聚合群体行动；事件：灵魂关系与教派后果 |
-| `hanged-man.sin-bearing` | 0 | 承担本应属于他者的伤害、死亡、罪责或惩罚 | 战斗：转移一次盟友败者后果；事件：代罪与社会/神秘裁决 |
-| `hanged-man.sacrifice` | 0 | 以自身真实毁灭换取一个预先声明的有限希望 | 战斗：死亡后保证一个目标结果；事件：世界终局与周目评价 |
-| `hanged-man.mutation-filth` | 0 | 污秽和变异既有身体、状态、物品或能力 | 战斗：次攻/控制；事件：创造怪物、污染地点和权柄冲突 |
+| `hanged-man.s0.finite-pressure-bearing` | 0 | 本人原位20秒短窗，实耗行动、灵性、精神，下一次局部测试实际承担3健康 | 当前有限候选：眼前已查验隔离装置；离位、到期、撤回失效，不转移死亡 |
+| `hanged-man.s0.single-spirit-seal` | 0 | 一位实际已牧内收原灵、已选能力与同一实购封条，20秒内真实贴封才应用 | 当前有限候选：本人及原灵付真实成本；无扩容、复制、额外途径或原灵复原 |
 
 事件用途、掌握度与十张位格锚卡见[日常技能效果](PATHWAY_DAILY_EFFECTS.md#倒吊人途径日常效果完整设计已确认v1)；战斗数值与特殊机制见[量化与配速](PATHWAY_QUANTITATIVE_DESIGN.md#倒吊人途径combat-v3完整数值与机制接线已确认v1)和[战斗机制](PATHWAY_MECHANISMS.md#倒吊人途径呓语血肉牧羊堕落机制已确认v1)。
 

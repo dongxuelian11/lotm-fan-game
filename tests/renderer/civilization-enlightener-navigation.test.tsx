@@ -65,7 +65,8 @@ async function acknowledgeRound() {
   if (reveal) await userEvent.click(within(reveal).getByRole('button', { name: /^(返回生活|进入下一回合|查看收尾卷宗)$/ }));
 }
 async function openGrowth() {
-  await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+  await userEvent.click(screen.queryByRole('button', { name: '文明启蒙者与原工坊' })
+    ?? screen.getByRole('button', { name: /非凡成长/ }));
   return screen.findByRole('region', { name: PANEL });
 }
 function assertResources(state: SliceState) {
@@ -238,7 +239,14 @@ describe('Civilization Enlightener actual saved campaign navigation and reopenin
     expect(await screen.findByRole('heading', { name: '人物卷宗' })).toBeTruthy();
     expect((screen.getByRole('button', { name: /^工作，1行动/ }) as HTMLButtonElement).disabled).toBe(false);
     expect((screen.getByRole('button', { name: /^休养，1行动/ }) as HTMLButtonElement).disabled).toBe(false);
-    expect(projectSliceState(game.state).knowledgeMentor.actions).toEqual([]);
+    const inheritedActions = projectSliceState(game.state).knowledgeMentor.actions;
+    expect(inheritedActions.map(action => action.command)).toEqual([
+      { type: 'RECHARGE', objectId: 'AL4-BOX-1' }, { type: 'RECHARGE', objectId: 'AL4-FRAME-1' },
+      { type: 'PREPARE_COMBAT_PLATE' }, { type: 'ENCOUNTER_TALK' }, { type: 'ENCOUNTER_FIGHT' }, { type: 'LEAVE_ENCOUNTER' },
+    ]);
+    for (const action of inheritedActions) {
+      expect(action.enabled, action.id).toBe(false); expect(action.reason, action.id).toBeTruthy();
+    }
     await openGrowth(); expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
   });
 

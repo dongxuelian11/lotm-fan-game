@@ -6,11 +6,11 @@ import { SagePanel } from '../../src/renderer/SagePanel';
 import type { SageAction, SageCommand, SageProjection } from '../../src/domain/sage/types';
 import type { SliceProjection, SliceState } from '../../src/domain/slice/types';
 import type { SliceBridge } from '../../src/shared/slice-contracts';
-import type { SageAttempt, SageSiteState } from '../../src/domain/sage/life';
+import type { SagePublicAttempt, SagePublicSite } from '../../src/domain/sage/life';
 
 // Small public renderer fixtures, not claimed domain saves or natural campaign evidence.
-function site(): SageSiteState {
-  return { siteId: 'SG2-ARCHIVE', introducedWeek: 130, introducedDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 1, day: 1 }, source: null,
+function site(): SagePublicSite {
+  return { siteId: 'SG2-ARCHIVE', introducedWeek: 130, introducedDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 1, day: 1 },
     clockSeconds: 16, playerLocation: 'A', playerTravelMetres: 6, playerEnergy: 92, formEnergySpent: 2, assimilationExposure: 1,
     body: 'INFORMATION', form: { active: true, expiresAt: 32, anchorId: 'SG2-KIT-1' },
     iris: { id: 'PM3-IRIS', name: '艾瑞丝·沃德', age: 49, alive: true, willing: true, location: 'ENTRY', energy: 100, travelMetres: 0, consent: 'GRANTED' },
@@ -19,7 +19,7 @@ function site(): SageSiteState {
     archive: { id: 'SG2-ARCHIVE-LEAF', owner: 'PM3-IRIS', quantity: 1, location: 'B', readings: 0, verifications: 0 },
     materials: [{ id: 'SG2-KIT-1', caseId: 'information-route', ownerId: 'PLAYER', quantity: 1, status: 'INSTALLED', location: 'A', wear: 2, paidPennies: 20, preparedWeek: 130 }], actorMoves: [] };
 }
-function attempt(p: SageSiteState): SageAttempt {
+function attempt(p: SagePublicSite): SagePublicAttempt {
   return { week: 130, method: 'ABILITY', closed: false, result: 'NONE', stopped: false, inspected: false, permissionWithdrawn: false, consent: 'GRANTED',
     elapsedSeconds: 12, playerTravelMetres: 6, energySpent: 8, spiritualitySpent: 8, mindSpent: 2, penniesSpent: 20, materialId: 'SG2-KIT-1', itemsReturned: false, anchorInstalled: true,
     formTier: 'SUCCESS', siftTier: null, traversed: false, reassembled: false, expired: false, waits: 0, ownerAccompanied: false, ownerReturned: false,
@@ -39,7 +39,7 @@ function view(promoted = false): SageProjection {
     ritual: { title: '玻璃名录', story: '原高层次信息洪流已经伤及两名成年馆员。', status: '真实灾害仍在扩散', location: '原门厅', source: '旧移交卷与当前裂纹相互核实。', threat: '原核心活跃，未断回路仍在传播。', damage: '原记录4/12份损毁、原板1/4块损毁。', people: ['玛伦，46岁，原门厅，健康88。旧伤保留。', '埃德里克，39岁，原门厅，健康91。'], routes: ['刻印板连接仍在传播。', '索引回路仍在传播。'], materials: '封缄材料现有3份、已耗0份。', stoppedRecord: null, review: null, actions: [], inside: false, nextStep: '先亲自研究原来源。' },
     life: { title: '有限信息实践', story: '同一本体、原成人与原记录页。', environment: '门口至锚位6米，锚位至档架4米；每米1秒1精力。', activeCase: null, inside: false, insideCase: false, reflected: false, site: p, clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: null,
       cases: [{ id: 'information-route', title: '同一本体经过四米导管', story: '先准备，再真实通行并重组。', observations: [], status: 'OBSERVED', method: null, result: null, contactOpen: false, returned: false, closes: 0, attempts: [] }], actions: [] },
-    encounter: { title: '档案馆后院争议', story: '交谈和真实交战分别选择。', status: 'AVAILABLE', inside: false, site: null, startSite: null, preparation: null, enemy: null, actions: [], facts: [] }, insideCase: false, environment: '原仓库与独立后院，普通道路可返回。' };
+    encounter: { title: '档案馆后院争议', story: '交谈和真实交战分别选择。', status: 'AVAILABLE', inside: false, site: null, startSite: null, preparationSummary: null, enemy: null, actions: [], facts: [] }, insideCase: false, environment: '原仓库与独立后院，普通道路可返回。' };
 }
 const showModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal');
 const close = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'close');

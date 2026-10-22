@@ -66,6 +66,15 @@ async function acknowledgeRound() {
 }
 async function openGrowth() {
   await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+  // Completed S1 practice now opens the real S0 preparation page. The old
+  // reports remain available through their explicit, ordinary-life entry.
+  const moon = screen.queryByRole('region', { name: '序列0 月亮' });
+  if (moon) {
+    expect(within(moon).getByRole('heading', { name: '当前主目标' })).toBeTruthy();
+    await userEvent.click(within(moon).getByRole('button', { name: '返回普通生活' }));
+    expect(await screen.findByRole('heading', { name: '人物卷宗' })).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: ENTRY }));
+  }
   return screen.findByRole('region', { name: PANEL });
 }
 function assertResources(state: SliceState) {

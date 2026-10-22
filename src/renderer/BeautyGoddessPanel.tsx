@@ -3,7 +3,7 @@ import { playerText } from '../shared/player-text.js';
 import type { BeautyGoddessAction, BeautyGoddessCommand, BeautyGoddessProjection } from '../domain/beauty-goddess/types.js';
 import './seer-styles.css';
 
-const ACQUISITION = new Set(['LEARN_GUIDANCE', 'REQUEST_SUPPLY', 'RECEIVE_SUPPLY', 'PREPARE_TASK', 'POTION_WORK', 'BUY_POTION', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION', 'CONSUME', 'CONFIRM_TRANSFORMATION', 'DECLINE_TRANSFORMATION']);
+const ACQUISITION = new Set(['LEARN_GUIDANCE', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1', 'PREPARE_TASK', 'POTION_WORK', 'BUY_POTION', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION', 'CONSUME', 'CONFIRM_TRANSFORMATION', 'DECLINE_TRANSFORMATION']);
 const ENCOUNTER = new Set(['ENCOUNTER_TALK', 'ENCOUNTER_POLICY', 'ENCOUNTER_FIGHT', 'LEAVE_ENCOUNTER', 'BUY_BATTLE_LAMP', 'PREPARE_BATTLE_PIECE']);
 const COMMON = new Set(['ABORT', 'RETURN_HOME', 'REVOKE_CONSENT', 'DECLINE_CONSENT', 'LEAVE_PREPARATION', 'LEAVE_ENCOUNTER', 'DECLINE_TRANSFORMATION', 'RETURN_GUEST', 'RETURN_WEIGHT', 'RETURN_PIECES', 'RETURN_LAMP', 'LOWER_SHUTTER', 'EXTINGUISH_LAMP']);
 const STATUS: Record<string, string> = { AVAILABLE: '尚未开始', OBSERVED: '已观察', PREPARED: '已准备', PAUSED: '已安全中止，待普通续办', ACTIVE: '尚未收束', EXAMINED: '待报告', READY: '已到场', FIGHTING: '正在交战', RESOLVED: '已收束', RETREATED: '已撤退', LOST: '已结束' };
@@ -177,7 +177,7 @@ export function BeautyGoddessPanel({ value, busy, blocked = false, error = null,
       <p>{live && copy(live.cost)}</p>
       {confirmedBottle && <><p>{copy(confirmedBottle.title)} · {copy(confirmedBottle.status)}</p><p>{copy(confirmedBottle.source)}</p><p>当前成功率{confirmedBottle.chance}%</p>
         <p>{copy(value.risk)}</p><p>确认饮用所选原瓶。成功与失败均实际耗尽这一瓶及本次准备，失败保留已付代价。也可取消并继续停留创生者。</p></>}
-      {(live?.command.type === 'CONFIRM_TRANSFORMATION' || live?.command.type === 'CONSUME') && <section aria-label="本次身体变化确认"><h4>晋升成功后的身体变化</h4><p>{value.currentGender === 'MALE' ? '当前身体为男性。成功晋升美神后，身体会成为女性。' : value.currentGender === 'FEMALE' ? '当前身体已经为女性。成功晋升美神后仍为女性。' : '成功晋升美神后，身体会成为女性。'}</p><p>只有成功服药后才发生这一结果；服药失败不改变原有身体性别。姓名、年龄、性格与性取向不因这次晋升而改变。</p><p>{live.command.type === 'CONFIRM_TRANSFORMATION' ? '这次仅确认你已了解并接受身体变化，不会服药，也不会立即改变身体。服用哪一瓶仍须另行确认。' : '已保存的身体变化确认不代替本次服药选择。'}也可以取消或拒绝，并继续停留序列2创生者。</p></section>}
+      {(live?.command.type === 'CONFIRM_TRANSFORMATION' || live?.command.type === 'CONSUME') && <section aria-label={live.command.type === 'CONSUME' && value.transformation.decision === 'ACCEPTED' ? '已确认的身体变化' : '本次身体变化确认'}><h4>{live.command.type === 'CONSUME' && value.transformation.decision === 'ACCEPTED' ? '已确认的身体变化' : '晋升成功后的身体变化'}</h4><p>{value.currentGender === 'MALE' ? '当前身体为男性。成功晋升美神后，身体会成为女性。' : value.currentGender === 'FEMALE' ? '当前身体已经为女性。成功晋升美神后仍为女性。' : '成功晋升美神后，身体会成为女性。'}</p><p>只有成功服药后才发生这一结果；服药失败不改变原有身体性别。姓名、年龄、性格与性取向不因这次晋升而改变。</p><p>{live.command.type === 'CONFIRM_TRANSFORMATION' ? '这次仅确认你已了解并接受身体变化，不会服药，也不会立即改变身体。服用哪一瓶仍须另行确认。' : '已保存的身体变化确认不代替本次服药选择；这项已确认的身体变化选择继续有效，无须再次确认。'}{live.command.type === 'CONFIRM_TRANSFORMATION' ? '也可以取消或拒绝，并继续停留序列2创生者。' : '也可以取消本次服药，并继续停留序列2创生者。'}</p></section>}
       {live?.command.type === 'DECLINE_TRANSFORMATION' && <p>拒绝后继续停留序列2创生者，不服药、不改变身体。若已经支付当周准备，停止准备不会退款。</p>}
       {live?.command.type === 'ENCOUNTER_POLICY' && <p>本次明确选择：{POLICIES[live.command.policy]}。只保存本场策略，不会施法、购买材料或开始战斗。</p>}
       {live?.command.type === 'ENCOUNTER_FIGHT' && <><p>这是与{encounter.enemy.name}的真实交战。双方独立受伤、投降、撤退与死亡都将保存，普通死亡终结本周目。生活练习不代替交战结果。</p><p>本场策略：{POLICIES[encounter.policy]}。开战后不能更换；能力是否真正可用仍按实际资源与抵抗结算。</p><p>{copy(encounter.story)}</p></>}

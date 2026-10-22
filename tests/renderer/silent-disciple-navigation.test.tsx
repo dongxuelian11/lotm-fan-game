@@ -17,7 +17,7 @@ const continued = () => JSON.parse(readFileSync('tests/fixtures/silent-disciple-
 const roots = ['prisoner', 'madman', 'werewolf', 'zombie', 'wraith', 'puppet'] as const;
 function savedGame(state: unknown, failFirst = false) {
   let current = migrateSliceState(state), attempts = 0;
-  const submit: SliceBridge['submitIntent'] = vi.fn(async envelope => {
+  const submit: SliceBridge['submitIntent'] = vi.fn<SliceBridge['submitIntent']>().mockImplementation(async envelope => {
     if (envelope.payload.type === 'CREATE') throw new Error('The actual original run already exists.');
     if (failFirst && attempts++ === 0) return { ok: false as const, error: { code: 'SAVE_FAILED', message: '本次原操作尚未保存', retryable: true } };
     current = applySliceIntent(current, envelope.payload);
@@ -36,7 +36,7 @@ function expectOriginals(s: SliceState, before: SliceState) {
 }
 async function mount(game: SavedGame, openPanel = true) {
   const state = projectSliceState(game.state);
-  window.sliceGame = { getBootstrap: vi.fn<SliceBridge["getBootstrap"]>(async () => ({ ok: true, value: { mode: 'browser', activeState: state, runs: [{ runId: state.runId, name: state.character.name, portraitId: state.character.portraitId, week: state.week, date: state.date, status: state.status, revision: state.revision, updatedAt: '2026-10-13T13:59:00Z' }] } })), loadRun: vi.fn<SliceBridge["loadRun"]>(async () => ({ ok: true, value: projectSliceState(game.state) })), submitIntent: game.submit };
+  window.sliceGame = { getBootstrap: vi.fn<SliceBridge["getBootstrap"]>().mockImplementation(async () => ({ ok: true, value: { mode: 'browser', activeState: state, runs: [{ runId: state.runId, name: state.character.name, portraitId: state.character.portraitId, week: state.week, date: state.date, status: state.status, revision: state.revision, updatedAt: '2026-10-13T13:59:00Z' }] } })), loadRun: vi.fn<SliceBridge["loadRun"]>().mockImplementation(async () => ({ ok: true, value: projectSliceState(game.state) })), submitIntent: game.submit };
   render(<SliceApp />); await userEvent.click(await screen.findByRole('button', { name: state.status === 'DEAD' ? /查看封存/ : /继续游戏/ })); await userEvent.click(screen.getByRole('button', { name: name => name.includes(state.character.name) }));
   await waitFor(() => expect(screen.queryByRole('heading', { name: '人物卷宗' }) ?? screen.queryByRole('region', { name: '沉默门徒' }) ?? screen.queryByRole('dialog', { name: '战斗回合结果' }) ?? (state.combat ? screen.queryByRole('dialog', { name: state.combat.title ?? "普通人追击" }) : null) ?? (state.ending ? screen.queryByRole('heading', { name: state.ending.title }) : null)).toBeTruthy());
   const reveal = screen.queryByRole('dialog', { name: '战斗回合结果' }); if (reveal) await userEvent.click(within(reveal).getByRole('button', { name: /^(返回生活|进入下一回合|查看收尾卷宗)$/ }));
@@ -57,7 +57,8 @@ async function action(game: SavedGame, command: SilentDiscipleCommand) {
 }
 async function expectSaved(game: SavedGame, expected: unknown) { await waitFor(() => expect(game.state).toEqual(migrateSliceState(expected))); }
 beforeEach(() => { vi.spyOn(window, 'scrollTo').mockImplementation(() => {}); });
-afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
+// Release saved-state closures and resolved projections between cases, not only spies.
+afterEach(() => { cleanup(); delete window.sliceGame; vi.resetAllMocks(); vi.restoreAllMocks(); });
 
 describe('SilentDisciple navigation with actual saved command boundaries', () => {
   it('opens at the exact living407-command prefix and closes without moving or healing any original', async () => {

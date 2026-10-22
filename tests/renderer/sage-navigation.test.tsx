@@ -268,7 +268,7 @@ describe('Sage unchanged natural saved navigation', () => {
     const resources = within(stage).getByRole('region', { name: '贤者本回合实际资源' });
     expect(resources.textContent).toContain('本人健康 100 / 100'); expect(resources.textContent).toContain('独立灵性 120 / 120');
     expect(resources.textContent).toContain('本场没有同伴参战');
-    expect(battle.sage?.source?.workshop).toEqual(before.scrollProfessor.workshop);
+    expect(battle.sage?.historicalScene?.workshop).toEqual(before.scrollProfessor.workshop);
     expect(resources.textContent).toContain('没有尚未使用的已授权原卷');
     await userEvent.click(within(stage).getByText('查看公开轮盘与风险', { selector: 'summary' }));
     for (const wheel of battle.enemyAbilityWheel) expect(stage.textContent).toContain(`${wheel.label} ${wheel.weight}%`);

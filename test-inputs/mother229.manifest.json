@@ -1,0 +1,123 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.229.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.229.0_mother_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 8946506,
+      "sha256": "48fdf02042fbedde580766b8fab812fcba0c41115c65ecc31478d1352ef4ac72",
+      "members": [
+        "tests/fixtures/mother-v02290/checkpoint.json.gz",
+        "tests/fixtures/mother-v02290/commands.jsonl",
+        "tests/fixtures/mother-v02290/key-1003-periodic.json.gz",
+        "tests/fixtures/mother-v02290/key-1019-periodic.json.gz",
+        "tests/fixtures/mother-v02290/key-1035-periodic.json.gz",
+        "tests/fixtures/mother-v02290/key-1049-before-consume.json.gz",
+        "tests/fixtures/mother-v02290/key-1050-after-consume.json.gz",
+        "tests/fixtures/mother-v02290/key-1051-periodic.json.gz",
+        "tests/fixtures/mother-v02290/key-1067-periodic.json.gz",
+        "tests/fixtures/mother-v02290/key-1074-terminal.json.gz",
+        "tests/fixtures/mother-v02290/key-955-initial.json.gz",
+        "tests/fixtures/mother-v02290/key-971-periodic.json.gz",
+        "tests/fixtures/mother-v02290/key-987-periodic.json.gz",
+        "tests/fixtures/mother-v02290/producer-tests.mjs",
+        "tests/fixtures/mother-v02290/producer.mjs",
+        "tests/fixtures/mother-v02290/runtime-freeze.json",
+        "tests/fixtures/mother-v02290/source-natural.json.gz",
+        "tests/fixtures/mother-v02290/summary.json"
+      ]
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/mother-v02290/checkpoint.json.gz",
+      "bytes": 401396,
+      "sha256": "024b9f0b01c5d07b134b1835cb39930f6bb2a5efb743101c415043564305229f"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/commands.jsonl",
+      "bytes": 594680,
+      "sha256": "c7469896a6a469121b0dbe937ea28c007737a59ab9af8f46fff880556a55f539"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-1003-periodic.json.gz",
+      "bytes": 668525,
+      "sha256": "15d186a7ef6ac28be4b66ce2041ddee9b3f12c5b89bfac7471aa63889923071e"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-1019-periodic.json.gz",
+      "bytes": 672193,
+      "sha256": "0a6fca609ffcb3efe6c50928d97f46dd02e84f384523b5c7249f742e4fac588b"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-1035-periodic.json.gz",
+      "bytes": 678860,
+      "sha256": "691799e4b52fad09d526554dc9e872f9338ac0644c7b585140fae1767cd0671f"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-1049-before-consume.json.gz",
+      "bytes": 683764,
+      "sha256": "2139346e76303d3fc7cb4d42703a5648c23f64d837e2b4446524d7787209ae13"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-1050-after-consume.json.gz",
+      "bytes": 684482,
+      "sha256": "5a5f131231dcfc4814b71583008895b5151fec0d8e505cab40d1a9370fbbe90d"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-1051-periodic.json.gz",
+      "bytes": 684683,
+      "sha256": "97f8004dffaf0ee16e813ff01e8ea8d1613ee5221074aee8dc9b00d0ee3b20ac"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-1067-periodic.json.gz",
+      "bytes": 689106,
+      "sha256": "bb813defef18ef328c5112b174ae8c3729d8e58353bc8cbf214eee91257ee310"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-1074-terminal.json.gz",
+      "bytes": 690655,
+      "sha256": "7bf6f1c87cd4758502f79bd5113119687f522422b21a116d000f06a9e85e1f50"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-955-initial.json.gz",
+      "bytes": 641352,
+      "sha256": "e38a27acebbb516f02fe0d52d5bd256ac762bf01ff1e70d4f303e5d3b0f8e724"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-971-periodic.json.gz",
+      "bytes": 661846,
+      "sha256": "3929dea58924770f54f9649ed0ebd207f269d44bd2f2fa12246727151560fe94"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/key-987-periodic.json.gz",
+      "bytes": 665626,
+      "sha256": "f706a9b86741f2b5741195966799dff2b22dcb69c547d8fa12f2444ae105727d"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/producer-tests.mjs",
+      "bytes": 11865,
+      "sha256": "ad4b48ced8c0575b23530e72c768c37484c172b1bd444dbd240d04cf114b862a"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/producer.mjs",
+      "bytes": 40530,
+      "sha256": "b44ad2e638b2a2e1b28953f7fbf67ce36a879e7c450f9faa6de12b0d5c9c162d"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/runtime-freeze.json",
+      "bytes": 686612,
+      "sha256": "28adb70f1518e22554e053c80e31b7b36acd7401d32d7ff7a86f8929b274f350"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/source-natural.json.gz",
+      "bytes": 989791,
+      "sha256": "31c145ab49795f6352be9dacb46b66416237608a663b9670120280cdf5acd2a2"
+    },
+    {
+      "path": "tests/fixtures/mother-v02290/summary.json",
+      "bytes": 6395,
+      "sha256": "9ca00715ddd322078b37cf7e1f324c6b00b663cad2c48bcd49cfb65b736d9319"
+    }
+  ]
+}

@@ -122,7 +122,7 @@ describe('Writer finite reading-room life', () => {
     expect(s.writer.life.practice.book).toMatchObject({ holder: 'SHELF', node: 'FAR' }); expect(s.writer.life.practice.bell.rings).toBe(1); expect(s.writer.life.practice.participants[1]!.node).toBe('FAR');
     rejectWriter(s, { type: 'WAIT_ARRANGEMENT' }); rejectWriter(s, { type: 'CANCEL_ARRANGEMENT' }); rejectWriter(s, { type: 'ARRANGE_RETURN' });
     s = finish(s, 'scheduled-return'); expect(s.progression.mastery[IDS[1]]).toBe(8); expect(s.writer.life.practice.abilityUses[IDS[1]]).toEqual({ attempts: 1, successes: 1, applied: 1 });
-  });
+  }, 10_000); // Windows run39399973495 measured6.548s for this complete return route.
 
   it.each(['door', 'permission', 'cancel'] as const)('keeps paid successful casting but awards nothing when the pending event is invalidated by %s', mode => {
     let s = completeMutual(lifeState(true, true), true); s = giveThomasBook(begin(s, 'scheduled-return'));

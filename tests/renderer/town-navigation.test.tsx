@@ -3,7 +3,7 @@ import { act, cleanup, fireEvent, render, screen, within } from "@testing-librar
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { sliceDefaultCreationSelection } from "../../src/content/slice-creation";
-import { createSliceRun, projectSliceState } from "../../src/domain/slice";
+import { applySliceIntent, createSliceRun, projectSliceState } from "../../src/domain/slice";
 import type { SliceProjection } from "../../src/domain/slice/types";
 import type { TownAction, TownCommand, TownProjection } from "../../src/domain/town/types";
 import { SliceApp } from "../../src/renderer/SliceApp";
@@ -190,7 +190,66 @@ describe("Compact dashboard navigation", () => {
   });
 });
 
+describe("Rest action feedback", () => {
+  it("shows actual recovery and week settlement without changing persisted historical prose", async () => {
+    let raw = createSliceRun("rest-feedback", sliceDefaultCreationSelection, "rest-feedback");
+    raw.activeEvent = null; raw.character.name = "艾琳";
+    raw.health = 91; raw.mind = 94; raw.spirituality = 12; raw.seer.pollution = 7;
+    raw.cash = 1000; raw.actionsRemaining = 1;
+    const value = bridge(projectSliceState(raw));
+    let committed: SliceProjection | undefined;
+    vi.mocked(value.submitIntent).mockImplementation(async envelope => {
+      if (envelope.payload.type === "CREATE") throw new Error("This test continues an existing run.");
+      raw = applySliceIntent(raw, envelope.payload);
+      committed = projectSliceState(raw);
+      return receipt(committed, envelope);
+    });
+    await enter(value);
+    await userEvent.click(screen.getByRole("button", { name: /^休养，/ }));
+    expect(screen.getByRole("heading", { name: "完成休养", level: 1 })).toBeTruthy();
+    expect(screen.getByText("休养及本次结算后：健康91→100；精神94→100；灵性12→14.25；魔药排异7→0。")).toBeTruthy();
+    expect(screen.getByRole("region", { name: "本次行动与周结算" }).textContent).toContain("新的一周");
+    expect(raw.week).toBe(2);
+    expect(raw.chronicle.find(record => record.title === "完成休养")?.text).toBe("健康91→100；精神100，灵性14.25。");
+    expect(committed?.chronicle.find(record => record.title === "完成休养")?.text).toBe("健康91→100；精神100，灵性14.25。");
+  });
+});
+
 describe("Town items and trade drawer", () => {
+  it("keeps real consecutive purchases and equipment changes in place, with action and week outcomes together", async () => {
+    let raw = createSliceRun("continuous-shop", sliceDefaultCreationSelection, "continuous-shop");
+    raw.activeEvent = null; raw.town.shopKnown = true; raw.character.name = "艾琳";
+    raw.health = 80; raw.cash = 1000; raw.actionsRemaining = 1;
+    const value = bridge(projectSliceState(raw));
+    vi.mocked(value.submitIntent).mockImplementation(async envelope => {
+      if (envelope.payload.type === "CREATE") throw new Error("This test continues an existing run.");
+      raw = applySliceIntent(raw, envelope.payload);
+      return receipt(projectSliceState(raw), envelope);
+    });
+    await enter(value);
+    await userEvent.click(screen.getByRole("button", { name: /随身物品与商店/ }));
+    const dialog = screen.getByRole("dialog", { name: "随身物品与商店" });
+    dialog.scrollTop = 480;
+    const focus = vi.spyOn(within(dialog).getByRole("heading", { name: "随身物品与商店" }), "focus");
+    for (const name of [/^购买短棍/, /^持用短棍/, /^购买一份绷带/]) {
+      await userEvent.click(within(dialog).getByRole("button", { name }));
+      expect(screen.getByRole("dialog", { name: "随身物品与商店" })).toBe(dialog);
+      expect(dialog.scrollTop).toBe(480);
+    }
+    expect(focus).not.toHaveBeenCalled();
+    expect(raw.town.clubLocation).toBe("HAND");
+    expect(raw.town.bandagesHeld).toBe(1);
+    await userEvent.click(within(dialog).getByRole("button", { name: /^使用一份绷带/ }));
+    const feedback = within(dialog).getByRole("status", { name: "本次行动结果" });
+    expect(feedback.textContent).toContain("使用随身绷带");
+    expect(feedback.textContent).toContain("新的一周");
+    expect(raw.week).toBe(2);
+    await userEvent.click(within(dialog).getByRole("button", { name: "关闭随身物品与商店" }));
+    expect(screen.getByRole("heading", { name: "使用随身绷带", level: 1 })).toBeTruthy();
+    expect(screen.getByRole("region", { name: "本次行动与周结算" }).textContent).toContain("新的一周");
+    expect(value.submitIntent).toHaveBeenCalledTimes(4);
+  });
+
   it("renders the real items, exact costs and every projection-supplied command", async () => {
     const commands: TownCommand[] = ["VISIT_SHOP", "BUY_CLUB", "SELL_CLUB", "EQUIP_CLUB", "UNEQUIP_CLUB", "BUY_BANDAGE", "USE_BANDAGE"].map((type) => ({ type }) as TownCommand);
     const onCommand = vi.fn();
@@ -270,6 +329,8 @@ describe("Town items and trade drawer", () => {
     await userEvent.click(screen.getByRole("button", { name: /重试/ }));
     expect(value.submitIntent).toHaveBeenCalledTimes(2);
     expect(vi.mocked(value.submitIntent).mock.calls[1]![0]).toEqual(envelope);
+    expect(screen.getByRole("dialog", { name: "随身物品与商店" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭随身物品与商店" }));
     expect(screen.queryByRole("dialog", { name: "随身物品与商店" })).toBeNull();
   });
 });

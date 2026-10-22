@@ -1,3 +1,5 @@
+import { publicPryerDate, publicPryerFields as publicFields } from '../sage/life.js';
+import { publicAbominationBudget, publicAbominationFinance, publicAbominationOriginals, publicAbominationPiece, publicAbominationPlate, publicAbominationForceReceipt, publicAbominationWindow, publicAncientEvilOperation, publicChainedOriginalSite } from './public.js';
 import { SLICE_LIFE } from '../../content/slice-events.js';
 import type { PublicGameDate } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
@@ -212,16 +214,22 @@ export function abominationEncounterActions(s: SliceState) {
   ];
   return commands.map(({ command, label, cost }) => { const reason = blockAbominationEncounter(s, command); return { id: `abomination-${command.type}${command.type === 'SET_COMBAT_POLICY' ? `-${command.policy}` : ''}`, label, cost, command, enabled: reason === null, reason }; });
 }
+export function projectAbominationPreparation(p: AbominationPreparation) { return {
+  ...publicFields(p, ['week', 'revision', 'pricePaid', 'actionsPaid', 'lifeJournalLength', 'lifeClockSeconds']), date: publicPryerDate(p.date),
+  before: publicAbominationBudget(p.before), after: publicAbominationBudget(p.after), finance: publicAbominationFinance(p.finance),
+  site: publicChainedOriginalSite(p.site), operation: publicAncientEvilOperation(p.operation), originals: publicAbominationOriginals(p.originals),
+}; }
+export type AbominationPublicPreparation = ReturnType<typeof projectAbominationPreparation>;
 export function projectAbominationEncounter(s: SliceState) {
   const e = s.abomination.encounter, visible = isAbominationEncounterStage(s), p = e.currentSite ?? s.abomination.life.site;
   return { title: visible ? '相邻院落的独立争议' : '尚未开放的相邻院落', story: visible ? '45岁的罗德里克·霍尔在静室相邻院落提出独立通行争议。先让埃尔莎自愿穿原衣带原包真实离场，再沿普通路交谈；你可以决定是否交战，也能普通离开。' : '',
     status: e.status, inside: hasAbominationEncounterLock(s), policy: e.policy, enemyAbilityWheel: ABOMINATION_ENEMY_ABILITY_WHEEL.map(row => ({ ...row })),
-    site: visible ? structuredClone(p) : null, startSite: visible ? structuredClone(e.startSite) : null,
-    preparation: visible ? structuredClone(e.preparation) : null, piece: visible ? structuredClone(e.piece) : null, plates: visible ? structuredClone(e.plates) : [],
-    emotion: e.emotion, conditionVersion: e.conditionVersion, barrier: structuredClone(e.barrier), cry: structuredClone(e.cry), hesitationSeconds: e.hesitationSeconds,
-    operation: visible ? structuredClone(s.abomination.life.operation) : null, lastForceReceipt: visible ? structuredClone(e.lastForceReceipt) : null,
+    site: visible ? publicChainedOriginalSite(p) : null, startSite: visible && e.startSite ? publicChainedOriginalSite(e.startSite) : null,
+    preparation: visible && e.preparation ? projectAbominationPreparation(e.preparation) : null, piece: visible && e.piece ? publicAbominationPiece(e.piece) : null, plates: visible ? e.plates.map(publicAbominationPlate) : [],
+    emotion: e.emotion, conditionVersion: e.conditionVersion, barrier: e.barrier ? publicAbominationWindow(e.barrier) : null, cry: e.cry ? publicAbominationWindow(e.cry) : null, hesitationSeconds: e.hesitationSeconds,
+    operation: visible ? publicAncientEvilOperation(s.abomination.life.operation) : null, lastForceReceipt: visible && e.lastForceReceipt ? publicAbominationForceReceipt(e.lastForceReceipt) : null,
     enemy: visible ? { id: e.targetId, name: '罗德里克·霍尔', age: 45, sequence: 1, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus,
-      weaponId: 'AB1-RODERICK-ROD', weaponLocation: e.weaponLocation, position: e.enemyPosition, distanceMetres: 2, powerUses: { ...e.powerUses }, form: e.enemyForm, formRemainingSeconds: Math.max(0, (e.enemyFormUntilSeconds ?? 0) - p.clockSeconds) } : null,
+      weaponId: 'AB1-RODERICK-ROD', weaponLocation: e.weaponLocation, position: e.enemyPosition, distanceMetres: 2, powerUses: publicFields(e.powerUses, ['MIND_SPIKE', 'WARD', 'CALM']), form: e.enemyForm, formRemainingSeconds: Math.max(0, (e.enemyFormUntilSeconds ?? 0) - p.clockSeconds) } : null,
     actions: abominationEncounterActions(s), facts: visible ? [
       '旧六槽30/15/20/20/10/5和19项掌握原样保留。已耗尽的旧三木块不能回填；无可用原块时普通身体回退。',
       '灵性束障：8灵性2精神、意志18，20秒内下一次可见精神冲击至多减30；身体攻击不受影响。',
