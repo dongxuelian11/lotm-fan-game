@@ -1,0 +1,73 @@
+.combat-stage {
+  position: relative;
+  overflow: hidden;
+  margin: 14px 0;
+  border: 1px solid #897657;
+  background: #26312f;
+  color: #f4ecda;
+  box-shadow: inset 0 0 0 4px #d4be8833;
+}
+.combat-stage-boiler::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,#192320e6,#25302ab8,#192320e6),url('/assets/scenes/boiler-room.webp') center 56% / cover;
+  opacity: .85;
+}
+.combat-duel { position: relative; display: grid; grid-template-columns: 1fr 42px 1fr; gap: 12px; padding: 8px 20px; }
+.combat-fighter { display: flex; gap: 18px; align-items: center; min-width: 0; }
+.combat-fighter-info { flex: 1; min-width: 0; }
+.combat-stage .combat-fighter h3 { color: #f4ecda; margin: 2px 0 4px; font-size: 18px; }
+.combat-stage .combat-fighter p { margin: 2px 0 0; font-size: 12px; color: #d6d4c7; line-height: 1.3; }
+.combat-side { color: #c7b783; font-size: 12px; letter-spacing: .12em; }
+.combat-portrait { width: 96px; height: 128px; flex-shrink: 0; object-fit: cover; border: 3px double #d5c196; box-shadow: 0 4px 16px #0008; }
+.combat-versus { align-self: center; justify-self: center; text-align: center; color: #d3bd87; font-size: 15px; line-height: 1.6; border-top: 1px solid #9d8a5a; border-bottom: 1px solid #9d8a5a; padding: 8px 6px; }
+.combat-enemy-mark { width: 60px; height: 88px; fill: #121917; stroke: #aa9873; stroke-width: 1; flex-shrink: 0; filter: drop-shadow(0 4px 5px #0007); }
+.combat-mark-line { fill: none; stroke: #bbaa88; stroke-width: 3; }
+.combat-health-label { display: flex; justify-content: space-between; font-size: 14px; line-height: 1.35; margin-bottom: 2px; }
+.combat-health-track { height: 9px; border: 1px solid #ac9b75; padding: 1px; background: #0f1716; }
+.combat-health-track > span { display: block; height: 100%; background: linear-gradient(90deg,#5b7561,#a1b98d); }
+.combat-enemy .combat-health-track > span { background: linear-gradient(90deg,#763d39,#ba7766); }
+.combat-round-outcome { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 24px; border-top: 1px solid #ad98724d; background: #111b17a6; padding: 6px 18px; text-align: center; }
+.combat-round-outcome strong { font-size: 16px; color: #ead9ac; }
+.combat-round-outcome span { font-size: 14px; align-self: center; color: #d6d4c7; }
+.combat-stage-reveal .combat-round-outcome { animation: combat-result-appear 480ms ease-out both; }
+.combat-stage-reveal .combat-advantage .combat-fighter-info { animation: combat-exchange 520ms ease-out both; }
+.combat-stage-reveal .combat-advantage .combat-health-label { animation: combat-result-appear 600ms ease-out both; }
+@keyframes combat-result-appear { from { opacity: .25; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes combat-exchange { 0%,100% { transform: translateX(0); } 35% { transform: translateX(6px); } }
+.slice-battle .slice-dialog-content { padding: 16px 28px; }
+.slice-battle .slice-dialog-header { margin-bottom: 10px; }
+.slice-battle .slice-battle-warning { margin-bottom: 12px; padding: 8px 12px; font-size: 14px; }
+.combat-risk-summary { margin: 10px 0 14px; font-size: 14px; border: 1px solid #b8a58b; padding: 9px 12px; background: #eee3d4; }
+.slice-battle .combat-risk-summary p { margin: 0 0 5px; font-size: 14px; }
+.combat-risk-summary summary { cursor: pointer; color: #70423b; font-size: 14px; }
+.combat-risk-summary .slice-recovery-notice { margin: 12px 0 0; }
+.combat-consequence { padding: 14px 18px; border-left: 3px solid #8e5449; background: #efe2d2; margin: 14px 0; }
+.slice-battle .combat-consequence p { margin: 4px 0 0; font-size: 18px; }
+.combat-round-ledger { margin: 16px 0; }
+.combat-round-ledger > summary { cursor: pointer; padding: 12px 0; color: #625947; }
+.combat-roulette { margin: 10px 0; }
+.combat-roulette .slice-wheel-row { gap: 36px; margin: 16px 0 8px; }
+.combat-roulette .slice-wheel { width: 120px; height: 120px; }
+.combat-roulette .slice-wheel::before { background: repeating-conic-gradient(#a4a88e 0deg 5deg, #d6ceae 5deg 15deg); }
+.combat-roulette .slice-wheel-center { width: 84px; height: 84px; padding: 6px; }
+.combat-roulette .slice-wheel-center small { font-size: 14px; }
+.combat-roulette .slice-wheel-center strong { font-size: 20px; }
+.combat-roulette .combat-wheel-note { margin: 0; font-size: 13px; text-align: center; color: #625947; }
+.slice-battle .slice-battle-postures { margin-bottom: 12px; }
+.slice-battle .slice-battle-postures .slice-choice { padding: 10px 12px; }
+.slice-battle .slice-battle-postures .slice-choice small { font-size: 15px; line-height: 1.4; }
+@media (max-width: 760px) {
+  .combat-duel { padding: 16px; gap: 8px; grid-template-columns: 1fr; }
+  .combat-versus { display: none; }
+  .combat-fighter { gap: 12px; }
+  .combat-enemy { border-top: 1px solid #ac9b7544; padding-top: 12px; }
+  .combat-portrait { width: 60px; height: 80px; }
+  .combat-enemy-mark { width: 60px; height: 80px; order: -1; }
+  .combat-roulette .slice-wheel-row { gap: 20px; }
+  .slice-battle .slice-dialog-content { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .combat-stage-reveal *, .slice-wheel.spinning { animation: none !important; }
+}

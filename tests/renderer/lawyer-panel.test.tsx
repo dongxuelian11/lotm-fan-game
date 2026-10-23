@@ -475,7 +475,9 @@ describe("Lawyer sequence-nine public finite-argument dossier", () => {
     expect(screen.getByText(ordinaryMove, { exact: false })).toBeTruthy(); expect(screen.getByText(abilityMove, { exact: false })).toBeTruthy();
     expect(screen.getByText(round.consequence)).toBeTruthy();
     await userEvent.click(screen.getByRole("button", { name: "进入下一回合" }));
-    expect(screen.getByText("健康 90 / 100")).toBeTruthy();
+    const health = screen.getByRole("progressbar", { name: "你的健康" });
+    expect(health.getAttribute("aria-valuenow")).toBe("90");
+    expect(health.getAttribute("aria-valuemax")).toBe("100");
     expect(api.submitIntent).toHaveBeenCalledTimes(1);
   });
 

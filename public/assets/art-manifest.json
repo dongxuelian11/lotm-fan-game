@@ -169,6 +169,18 @@
       "source": "built-in imagegen generated or edited, 2026-10-09",
       "cosmeticOnly": false,
       "visualQa": "inspected at contact-sheet scale; no text or UI; integration validation separate"
+    },
+    {
+      "id": "bell-bearer",
+      "file": "npcs/bell-bearer.png",
+      "url": "/assets/npcs/bell-bearer.png",
+      "width": 1086,
+      "height": 1448,
+      "bytes": 3816138,
+      "sha256": "be2064e8eb570d14e2be340db61b62c76184f8f531b9eb04694e288fbd073515",
+      "source": "Original built-in imagegen, 2026-10-23; fictional Victorian worker with a short wooden cudgel and brass handbell; no external art or existing character likeness used",
+      "cosmeticOnly": true,
+      "visualQa": "Inspected at full resolution: original sepia etched portrait, clear bell/cudgel, no text or UI. Native combat integration verified separately."
     }
   ]
 }

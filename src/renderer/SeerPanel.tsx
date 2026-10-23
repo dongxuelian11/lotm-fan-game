@@ -20,18 +20,25 @@ interface SeerPanelProps {
   busy: boolean;
   blocked: boolean;
   onCommand: (command: SeerCommand) => void;
+  dailyLife?: { wagePaid: boolean; onReturn: () => void };
 }
 
 function PracticePanel({
   practice,
+  resources,
+  dailyLife,
   busy,
   blocked,
   onCommand,
-}: Pick<SeerPanelProps, "busy" | "blocked" | "onCommand"> & { practice: SeerProjection["practice"] }) {
-  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+}: Pick<SeerPanelProps, "resources" | "dailyLife" | "busy" | "blocked" | "onCommand"> & { practice: SeerProjection["practice"] }) {
+  const actionableCase = practice.cases.find((entry) => entry.choices.some((choice) => choice.enabled));
+  const defaultCase = actionableCase ?? practice.cases.find((entry) => entry.choices.length > 0) ?? practice.cases[0];
+  // Keep the chosen case visible after its receipt, so its result is not replaced by the next commission.
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(() => defaultCase?.id ?? null);
+  const caseHeading = useRef<HTMLHeadingElement>(null);
   const selectedCase = practice.cases.find((entry) => entry.id === selectedCaseId)
-    ?? practice.cases.find((entry) => entry.choices.length > 0)
-    ?? practice.cases[0];
+    ?? defaultCase;
+  const nextCase = selectedCase && !selectedCase.choices.some((choice) => choice.enabled) ? actionableCase : undefined;
   const reflection = practice.reflection;
 
   return (
@@ -51,9 +58,15 @@ function PracticePanel({
             </label>
           )}
           <section className="seer-current-case" aria-label="当前委托">
-            <h3>{selectedCase.title}</h3>
+            <h3 ref={caseHeading} tabIndex={-1}>{selectedCase.title}</h3>
             <span className="slice-muted">{selectedCase.status}</span>
             <p>{selectedCase.body}</p>
+            {dailyLife && selectedCase.choices.length > 0 && (
+              <div className="seer-case-budget" role="group" aria-label="当前委托行动预算">
+                <p className="slice-muted">本周剩余 {resources.actionsRemaining} 行动 · 灵性 {resources.spirituality} / {resources.maxSpirituality} · {dailyLife.wagePaid ? "本周工资已领" : "本周工资尚未领取"}</p>
+                <button className="slice-button quiet" disabled={busy || blocked} onClick={dailyLife.onReturn}>返回日常行动（不消耗行动）</button>
+              </div>
+            )}
             {selectedCase.choices.length > 0 && (
               <div className="seer-actions" role="group" aria-label="委托处理方式">
                 {selectedCase.choices.map((choice) => (
@@ -71,6 +84,16 @@ function PracticePanel({
                   </div>
                 ))}
               </div>
+            )}
+            {nextCase && (
+              <button
+                className="slice-button quiet"
+                disabled={busy || blocked}
+                onClick={() => {
+                  setSelectedCaseId(nextCase.id);
+                  caseHeading.current?.focus();
+                }}
+              >查看可处理委托：{nextCase.title}</button>
             )}
           </section>
         </>
@@ -95,6 +118,7 @@ function PracticePanel({
 export function SeerPanel({
   seer,
   resources,
+  dailyLife,
   busy,
   blocked,
   onCommand,
@@ -207,7 +231,7 @@ export function SeerPanel({
         </div>
       )}
 
-      {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} busy={busy} blocked={blocked} onCommand={onCommand} />}
+      {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} resources={resources} {...(dailyLife ? { dailyLife } : {})} busy={busy} blocked={blocked} onCommand={onCommand} />}
 
       {seer.discovered && seer.bottles.length > 0 && (
         <section className="seer-bottles" aria-label="已调配的魔药">

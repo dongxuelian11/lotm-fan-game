@@ -1,3 +1,4 @@
+import { CombatStage } from "./CombatStage";
 import { MotherPanel } from "./MotherPanel";
 import { JusticiarPanel } from "./JusticiarPanel";
 import { BlackEmperorPanel } from "./BlackEmperorPanel";
@@ -1227,6 +1228,25 @@ function dashboardGuide(state: SliceProjection): DashboardGuide {
       goal: "了解渠道，再决定是否踏入非凡",
       detail: "四周普通生活已经完成。查看已知渠道的准备与风险，也可以继续普通生活。",
       label: "查看非凡渠道", destination: "GROWTH",
+    };
+  }
+  if (state.progression.pathwayId === "diviner" && state.progression.sequence === 9 && state.progression.acting < 100) {
+    const practice = state.seer?.practice;
+    const nextCase = practice?.cases.find((entry) => entry.choices.some((choice) => choice.enabled));
+    if (practice && nextCase) {
+      const awaitingReply = nextCase.choices.some((choice) => choice.enabled && choice.command.type === "PRACTICE" && choice.command.approachId.startsWith("report-"));
+      return {
+        goal: awaitingReply ? "回应书签主人的追问" : `继续委托：${nextCase.title}`,
+        detail: awaitingReply
+          ? `观察已经完成。决定怎样解释观察所得，不再消耗行动或灵性。已交付 ${practice.completed}/${practice.total} 份委托。`
+          : `已交付 ${practice.completed}/${practice.total} 份委托 · 扮演 ${state.progression.acting}/100。查看这份委托，选择能力或普通方法核实线索。`,
+        label: "查看当前成长", destination: "GROWTH",
+      };
+    }
+    if (practice?.reflection.enabled) return {
+      goal: "整理委托经历，写下扮演原则",
+      detail: `已交付 ${practice.completed}/${practice.total} 份委托。回顾亲自核实过的线索与解释的边界。`,
+      label: "查看当前成长", destination: "GROWTH",
     };
   }
   if (state.progression.acting < 100) return {
@@ -3014,13 +3034,18 @@ function SageActionSequence({ actions }: { actions: SageCombatProjection["lastAc
   </li>)}</ol>;
 }
 
+function combatConsequence(round: SliceCombatRound, characterName?: string): string {
+  return round.natureWalkerOutcome ? natureWalkerProse(round.consequence, characterName) : round.handOfOrderOutcome ? handOfOrderProse(round.consequence, characterName) : round.princeOfAbolitionOutcome ? princeOfAbolitionProse(round.consequence, characterName) : round.mercurySnakeOutcome ? mercurySnakeProse(round.consequence, characterName) : round.consequence;
+}
 function RoundRecord({
   round,
   expanded = false,
+  showConsequence = true,
   characterName,
 }: {
   round: SliceCombatRound;
   expanded?: boolean;
+  showConsequence?: boolean;
   characterName?: string;
 }) {
   const body = (
@@ -3055,7 +3080,7 @@ function RoundRecord({
               : "对手赢得本回合"}
         </strong>
       </p>
-      <p>{round.natureWalkerOutcome ? natureWalkerProse(round.consequence, characterName) : round.handOfOrderOutcome ? handOfOrderProse(round.consequence, characterName) : round.princeOfAbolitionOutcome ? princeOfAbolitionProse(round.consequence, characterName) : round.mercurySnakeOutcome ? mercurySnakeProse(round.consequence, characterName) : round.consequence}</p>
+      {showConsequence && <p>{combatConsequence(round, characterName)}</p>}
       {round.natureWalkerOutcome && <NatureWalkerRoundFacts outcome={round.natureWalkerOutcome} consequenceDomain={round.consequenceDomain} {...(characterName ? { characterName } : {})}/>}
       {round.handOfOrderOutcome && <HandOfOrderRoundFacts outcome={round.handOfOrderOutcome} consequenceDomain={round.consequenceDomain} {...(characterName ? { characterName } : {})}/>}
       {round.princeOfAbolitionOutcome && <PrinceOfAbolitionRoundFacts outcome={round.princeOfAbolitionOutcome} consequenceDomain={round.consequenceDomain} {...(characterName ? { characterName } : {})}/>}
@@ -3207,7 +3232,22 @@ function Combat({
               : `第 ${battle?.round ?? 1} 回合`
           }
         />
-        <div className="slice-battle-warning">
+        <CombatStage state={state} round={reveal} fast={fast} />
+        <section className="combat-roulette" aria-label="本回合转盘" key={`${state.runId}:${reveal?.round ?? 'ready'}`}>
+          <div className="slice-wheel-row">
+            <div className={`slice-wheel ${reveal && !fast ? "spinning" : ""}`}>
+              <div className="slice-wheel-center"><small>你的次数</small><strong>{reveal ? reveal.playerCount : "待结算"}</strong></div>
+            </div>
+            <div className={`slice-wheel ${reveal && !fast ? "spinning" : ""}`}>
+              <div className="slice-wheel-center"><small>对手次数</small><strong>{reveal ? reveal.enemyCount : "待结算"}</strong></div>
+            </div>
+            <div className={`slice-wheel ${reveal && reveal.retreat !== "SUCCESS" && !fast ? "spinning" : ""}`}>
+              <div className="slice-wheel-center"><small>回合胜负</small><strong>{!reveal ? "待结算" : reveal.retreat === "SUCCESS" ? "未进入胜负盘" : reveal.winner === null ? "平局" : reveal.winner === "PLAYER" ? "你胜" : "对手胜"}</strong></div>
+            </div>
+          </div>
+          <p className="combat-wheel-note">{reveal ? "动画只呈现已保存的结果。快速显示和回看不会重新掷骰。" : "次数盘 → 能力结算 → 胜负盘 · 确认姿态后结算"}</p>
+        </section>
+        {battle && <div className="slice-battle-warning">
           这是一场多回合战斗。受伤不会自动结束遭遇，可能发生最终死亡。
           {state.injuries.length > 0 && (
             <strong>
@@ -3215,40 +3255,14 @@ function Combat({
               当前处于受伤模式，累计风险层数 {state.injuryRisk}。
             </strong>
           )}
-        </div>
-        {!reveal && <RecoveryNotice value={state.recovery} showClearRisk/>}
+        </div>}
+        {!reveal && state.recovery && <div className="combat-risk-summary">
+          <p>若下次败北进入伤势后果盘：轻伤 {state.recovery.nextLoss.weights.light}% · 重伤 {state.recovery.nextLoss.weights.heavy}% · 死亡 {state.recovery.nextLoss.weights.death}%。这不是每回合或整场死亡概率。</p>
+          <details><summary>查看伤势与风险详情</summary><RecoveryNotice value={state.recovery} showClearRisk/></details>
+        </div>}
         {reveal ? (
           <>
-            <div className="slice-wheel-row" aria-hidden="true">
-              <div className={`slice-wheel ${fast ? "" : "spinning"}`}>
-                <div className="slice-wheel-center">
-                  <small>你的次数</small>
-                  <strong>{reveal.playerCount}</strong>
-                </div>
-              </div>
-              <div className={`slice-wheel ${fast ? "" : "spinning"}`}>
-                <div className="slice-wheel-center">
-                  <small>对手次数</small>
-                  <strong>{reveal.enemyCount}</strong>
-                </div>
-              </div>
-              <div className={`slice-wheel ${fast ? "" : "spinning"}`}>
-                <div className="slice-wheel-center">
-                  <small>回合胜负</small>
-                  <strong>
-                    {reveal.winner === null
-                      ? "平局"
-                      : reveal.winner === "PLAYER"
-                        ? "你胜"
-                        : "对手胜"}
-                  </strong>
-                </div>
-              </div>
-            </div>
-            <RoundRecord round={reveal} expanded characterName={state.character.name}/>
-            <p className="slice-muted">
-              动画只呈现已保存的结果。快速显示和回看不会重新掷骰。
-            </p>
+            <div className="combat-consequence" aria-label="本回合实际后果"><strong>实际后果</strong><p>{combatConsequence(reveal, state.character.name)}</p></div>
             <div className="slice-settings">
               <label>
                 <input
@@ -3266,46 +3280,18 @@ function Combat({
                   ? "进入下一回合"
                   : "返回生活"}
             </button>
+            <details className="combat-round-ledger"><summary>查看完整回合记录</summary>
+            <RoundRecord round={reveal} expanded showConsequence={false} characterName={state.character.name}/>
+            </details>
           </>
         ) : (
           <>
             {battle && (
               <>
-                <div className="slice-combatants">
-                  <section className="slice-combatant">
-                    <h3>{state.character.name}</h3>
-                    <p>
-                      健康 {state.health} / {state.maxHealth}
-                    </p>
-                    <p>普通伤势 {state.injuries.length}处</p>
-                    {state.clown?.promoted && (
-                      <p>灵性 {state.spirituality} / {state.maxSpirituality} · 纸张 {state.clown.paperSheets} 张</p>
-                    )}
-                    {state.magician?.promoted && (
-                      <p>纸人 {state.magician.supplies.figurinesHeld} 个 · 提灯{state.magician.supplies.lanternPrepared ? "已准备" : "未准备"}</p>
-                    )}
-                    {state.hunter?.promoted && (
-                      <p>陷阱原件：随身 {state.hunter.trapHeld} 套 · 现场 {state.hunter.trapDeployed} 套 · 已损耗 {state.hunter.trapSpent} 套</p>
-                    )}
-                  </section>
-                  <section className="slice-combatant">
-                    <h3>{battle.enemyName}</h3>
-                    <p>健康 {battle.enemyHealth} / 100</p>
-                    {battle.water && <p className="navigator-water-status" aria-label="对手当前水系状态">
-                      湿润：{battle.water.soakedRemaining > 0 ? `剩余 ${battle.water.soakedRemaining} 次能力结算` : "无"} · 水缚：{battle.water.bound ? "有" : "无"} · 下次能力失效：{battle.water.skipNext ? "是" : "否"}
-                    </p>}
-                    {battle.enemyMind !== undefined && <p>精神 {battle.enemyMind}{playerText(" / 100")}</p>}
-                    <p>
-                      {(
-                        {
-                          RESISTING: "仍在抵抗",
-                          SURRENDERED: "已投降",
-                          DEAD: "已死亡",
-                        } as Record<string, string>
-                      )[battle.enemyStatus] ?? battle.enemyStatus}
-                    </p>
-                  </section>
-                </div>
+                {state.clown?.promoted && <p className="slice-muted">纸张 {state.clown.paperSheets} 张</p>}
+                {state.magician?.promoted && <p className="slice-muted">纸人 {state.magician.supplies.figurinesHeld} 个 · 提灯{state.magician.supplies.lanternPrepared ? "已准备" : "未准备"}</p>}
+                {state.hunter?.promoted && <p className="slice-muted">陷阱原件：随身 {state.hunter.trapHeld} 套 · 现场 {state.hunter.trapDeployed} 套 · 已损耗 {state.hunter.trapSpent} 套</p>}
+                {battle.water && <p className="navigator-water-status" aria-label="对手当前水系状态">湿润：{battle.water.soakedRemaining > 0 ? `剩余 ${battle.water.soakedRemaining} 次能力结算` : "无"} · 水缚：{battle.water.bound ? "有" : "无"} · 下次能力失效：{battle.water.skipNext ? "是" : "否"}</p>}
                 <h3>本回合姿态</h3>
                 <div className="slice-battle-postures">
                   {battle.stances.map((s) => (
@@ -3548,6 +3534,16 @@ function Combat({
                     {state.progression.sequence === 7 && <p className="slice-muted">水系攻击不积怒势。实际持棍物理攻击满足条件时，仍按本回合策略释放。</p>}
                   </fieldset>
                 )}
+            {error && (
+              <ErrorNotice error={error} onRetry={onRetry} busy={busy} />
+            )}
+            <button
+              className="slice-button primary"
+              disabled={busy || error !== null}
+              onClick={() => onCommand(hasWarBishopPolicy ? {type:"COMBAT_ROUND",stance,warBishopPolicy} : hasPuppetPolicy ? {type:"COMBAT_ROUND",stance,puppetCurse,madmanPolicy} : hasIronBloodPolicy ? {type:"COMBAT_ROUND",stance,ironBloodPolicy} : hasWinnerPolicy ? {type:"COMBAT_ROUND",stance,winnerPolicy} : hasShepherdPolicy ? {type:"COMBAT_ROUND",stance,shepherdSpiritId} : hasRecorderPolicy ? {type:"COMBAT_ROUND",stance,recordingId} : hasMadmanPolicy ? { type: "COMBAT_ROUND", stance, madmanPolicy } : isRager ? { type: "COMBAT_ROUND", stance, ragePolicy } : { type: "COMBAT_ROUND", stance })}
+            >
+              {busy ? "正在结算并保存…" : "确认姿态，结算完整回合"}
+            </button>
                 <details className="slice-round-record">
                   <summary>查看公开轮盘与风险</summary>
                   <div className="slice-round-detail">
@@ -3596,16 +3592,7 @@ function Combat({
                 {battle.lastRound && <RoundRecord round={battle.lastRound} characterName={state.character.name}/>}
               </>
             )}
-            {error && (
-              <ErrorNotice error={error} onRetry={onRetry} busy={busy} />
-            )}
-            <button
-              className="slice-button primary"
-              disabled={busy || error !== null}
-              onClick={() => onCommand(hasWarBishopPolicy ? {type:"COMBAT_ROUND",stance,warBishopPolicy} : hasPuppetPolicy ? {type:"COMBAT_ROUND",stance,puppetCurse,madmanPolicy} : hasIronBloodPolicy ? {type:"COMBAT_ROUND",stance,ironBloodPolicy} : hasWinnerPolicy ? {type:"COMBAT_ROUND",stance,winnerPolicy} : hasShepherdPolicy ? {type:"COMBAT_ROUND",stance,shepherdSpiritId} : hasRecorderPolicy ? {type:"COMBAT_ROUND",stance,recordingId} : hasMadmanPolicy ? { type: "COMBAT_ROUND", stance, madmanPolicy } : isRager ? { type: "COMBAT_ROUND", stance, ragePolicy } : { type: "COMBAT_ROUND", stance })}
-            >
-              {busy ? "正在结算并保存…" : "确认姿态，结算完整回合"}
-            </button>
+
           </>
         )}
       </div>
@@ -7352,6 +7339,7 @@ export function SliceApp() {
                   <div
                     className="slice-actions"
                     ref={lifeActions}
+                    tabIndex={-1}
                     role="group"
                     aria-label="四个主要行动"
                   >
@@ -9153,6 +9141,13 @@ export function SliceApp() {
                   cash: sliceMoney(state.cash),
                   actionsRemaining: state.actionsRemaining,
                 }}
+                {...(state.progression.pathwayId === "diviner" && state.progression.sequence === 9 ? { dailyLife: {
+                  wagePaid: state.wagePaid,
+                  onReturn: () => {
+                    setDrawer(null);
+                    setTimeout(() => lifeActions.current?.focus(), 0);
+                  },
+                } } : {})}
                 busy={busy}
                 blocked={error !== null}
                 onCommand={(seerCommand) => command({ type: "SEER", command: seerCommand })}

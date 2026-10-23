@@ -14,7 +14,7 @@ const resources: SeerResources = {
 };
 afterEach(cleanup);
 
-function observed() {
+function observed(roll = 20) {
   const s = createSliceRun('seer-choice-ui', sliceDefaultCreationSelection, 'seer-choice-ui');
   s.activeEvent = null;
   s.arc.stage = 'ENDED';
@@ -25,7 +25,7 @@ function observed() {
   s.progression = { pathwayId: 'diviner', sequence: 9, promotionWeek: 5, acting: 0,
     mastery: Object.fromEntries(SEER_ABILITY_IDS.map(id => [id, 0])) };
   const c: SeerContext = {
-    check: (ability, difficulty) => resolveNormalCheck({ ability, baseAbility: 15, difficulty, modifiers: [], roll: 20 }),
+    check: (ability, difficulty) => resolveNormalCheck({ ability, baseAbility: 15, difficulty, modifiers: [], roll }),
     roll: min => min,
     note: () => {},
   };
@@ -68,5 +68,64 @@ describe('saved first-commission interpretation', () => {
       fireEvent.click(button);
     }
     expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it.each(['FAILED', 'DISPUTED'] as const)('reopens on an actionable commission after the first becomes %s this week', status => {
+    const { s, c } = observed(status === 'FAILED' ? 99 : 20);
+    if (status === 'DISPUTED') applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'report-cause' }, c);
+    s.actionsRemaining = 2;
+    const onCommand = vi.fn();
+    render(<SeerPanel seer={projectSeer(s)} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    const story = screen.getByRole('region', { name: '当前委托' });
+    expect(within(story).getByRole('heading', { name: '装箱单上少掉的一行' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: '成长下一步' }).textContent).toContain('围绕两只已见纸箱占卜');
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it.each(['report-bounded', 'report-cause'] as const)('retains the saved %s reply, then navigates to another commission without spending', approachId => {
+    const { s, c } = observed();
+    s.actionsRemaining = 2;
+    const onCommand = vi.fn();
+    const props = { resources, busy: false, blocked: false, onCommand };
+    const view = render(<SeerPanel seer={projectSeer(s)} {...props} />);
+    fireEvent.click(screen.getByRole('button', { name: approachId === 'report-bounded' ? /只说明观察所得/ : /断言先前的演示/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'PRACTICE', caseId: 'folded-bookmark', approachId });
+    applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId }, c);
+    const seer = projectSeer(s), snapshot = JSON.stringify(seer);
+    view.rerender(<SeerPanel seer={seer} {...props} />);
+    const story = screen.getByRole('region', { name: '当前委托' });
+    expect(within(story).getByRole('heading', { name: '书签折痕里的冷意' })).toBeTruthy();
+    expect(story.textContent).toContain(approachId === 'report-bounded' ? '已交付' : '答复受到质疑');
+    const next = within(story).getByRole('button', { name: '查看可处理委托：装箱单上少掉的一行' });
+    fireEvent.click(next);
+    const heading = within(story).getByRole('heading', { name: '装箱单上少掉的一行' });
+    expect(document.activeElement).toBe(heading);
+    expect(onCommand).toHaveBeenCalledTimes(1);
+    expect(JSON.stringify(seer)).toBe(snapshot);
+  });
+
+  it('keeps manually selected history readable and locks its next-case navigation while busy or blocked', () => {
+    const { s, c } = observed();
+    s.actionsRemaining = 2;
+    applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'report-bounded' }, c);
+    const seer = projectSeer(s), onCommand = vi.fn();
+    const view = render(<SeerPanel seer={seer} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    fireEvent.change(screen.getByLabelText('查看委托'), { target: { value: 'folded-bookmark' } });
+    for (const lock of [{ busy: true, blocked: false }, { busy: false, blocked: true }]) {
+      view.rerender(<SeerPanel seer={seer} resources={resources} {...lock} onCommand={onCommand} />);
+      const next = screen.getByRole('button', { name: '查看可处理委托：装箱单上少掉的一行' }) as HTMLButtonElement;
+      expect(next.disabled).toBe(true);
+      fireEvent.click(next);
+      expect(within(screen.getByRole('region', { name: '当前委托' })).getByRole('heading', { name: '书签折痕里的冷意' })).toBeTruthy();
+    }
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it('does not advertise an executable next case when no choices are enabled', () => {
+    const { s, c } = observed();
+    applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'report-cause' }, c);
+    render(<SeerPanel seer={projectSeer(s)} resources={resources} busy={false} blocked={false} onCommand={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: /查看可处理委托/ })).toBeNull();
+    expect(screen.getByRole('region', { name: '当前委托' }).textContent).toContain('答复受到质疑');
   });
 });

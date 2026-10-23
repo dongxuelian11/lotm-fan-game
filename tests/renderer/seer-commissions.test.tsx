@@ -104,8 +104,11 @@ describe("Seer commissions and continuing life", () => {
     await userEvent.click(screen.getByRole("button", { name: /按投影核实清单/ }));
     expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: "PRACTICE", caseId: "list", approachId: "divine" });
     await userEvent.selectOptions(screen.getByRole("combobox", { name: "查看委托" }), "delivered");
-    expect(within(story).queryAllByRole("button")).toHaveLength(0);
+    expect(within(story).queryByRole("group", { name: "委托处理方式" })).toBeNull();
+    expect(within(story).getAllByRole("button")).toHaveLength(1);
     expect(within(story).getByText("已经公开的旧案说明。")).toBeTruthy();
+    await userEvent.click(within(story).getByRole("button", { name: "查看可处理委托：书签测试案" }));
+    expect(within(story).getByRole("heading", { name: "书签测试案" })).toBeTruthy();
     expect(onCommand).toHaveBeenCalledTimes(1);
   });
 

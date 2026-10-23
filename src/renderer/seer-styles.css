@@ -61,6 +61,8 @@
 .seer-case-selector select:focus-visible { outline: 3px solid var(--slice-red); outline-offset: 3px; }
 .seer-current-case { padding: 18px; border: 1px solid var(--slice-line); background: var(--slice-paper-light); }
 .seer-current-case h3 { margin-bottom: 8px; }
+.seer-case-budget { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 12px 0; }
+.seer-case-budget p { margin: 0; font-size: 17px; }
 .seer-reflection { margin-top: 20px; }
 .seer-formula { list-style: none; padding: 0; margin: 10px 0 20px; }
 .seer-formula li { display: flex; justify-content: space-between; gap: 20px; padding: 8px 0; border-bottom: 1px dashed var(--slice-line); }
