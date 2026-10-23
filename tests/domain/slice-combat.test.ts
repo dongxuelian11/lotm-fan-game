@@ -177,7 +177,7 @@ import {emptyProgression,createSeerState} from '../../src/domain/seer/index.js';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { consequenceWeights, ORDINARY_COUNT_WHEEL, ordinaryAbilityWheel, resolveSliceCombatRound } from '../../src/domain/slice/combat.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
-import { applySliceIntent, createSliceRun } from '../../src/domain/slice/index.js';
+import { applySliceIntent, createSliceRun, projectSliceState } from '../../src/domain/slice/index.js';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 
@@ -282,8 +282,8 @@ describe('ordinary duel round resolution', () => {
     expect([round.playerCount, round.enemyCount]).toEqual([3, 2]);
     expect(round.moves.map(({ actor }) => actor)).toEqual(['PLAYER', 'ENEMY', 'PLAYER', 'ENEMY', 'PLAYER']);
     expect(round.playerAdvantage).toBe(151);
-    expect(round.enemyAdvantage).toBe(146);
-    expect(round.winChance).toBeCloseTo(151 / 297 * 100);
+    expect(round.enemyAdvantage).toBe(157); // first-case carrier base109 + two actual club contributions24
+    expect(round.winChance).toBeCloseTo(151 / 308 * 100);
     expect(outcome).toBe('CONTINUE');
     expect(state.combat?.enemyHealth).toBe(90);
     expect(state.combat?.enemyRisk).toBe(0);
@@ -302,7 +302,18 @@ describe('ordinary duel round resolution', () => {
     scriptRolls(45, 45, 1, 1, 1, 1);
     const { round } = resolveSliceCombatRound(state, 'ATTACK');
     expect(round.first).toBe('ENEMY');
-    expect(round.moves.map(({ actor, selfGain }) => [actor, selfGain])).toEqual([['ENEMY', 16], ['PLAYER', 12]]);
+    expect(round.moves.map(({ actor, selfGain }) => [actor, selfGain])).toEqual([['ENEMY', 24], ['PLAYER', 12]]);
+  });
+
+  it('rewards an actually held club equally for both ordinary first-case actors', () => {
+    const state = fixture(); state.town.clubLocation = 'HAND';
+    scriptRolls(1, 1, 1, 1, 1, 1);
+    const { round } = resolveSliceCombatRound(state, 'ATTACK');
+    expect(round.moves.map(move => move.selfGain)).toEqual([24, 24]);
+    expect(round.playerAdvantage).toBe(139);
+    expect(round.enemyAdvantage).toBe(133);
+    expect(state.health).toBe(100);
+    expect(state.combat!.enemyHealth).toBe(90); // injury roll only, not24HP per strike
   });
 
   it('accumulates effects only for the current round without applying strike health damage twice', () => {
@@ -310,8 +321,8 @@ describe('ordinary duel round resolution', () => {
     // 3 actions each: player strike/block/opening, enemy block/distance/miss.
     scriptRolls(86, 86, 1, 161, 201, 321, 281, 400, 1, 1);
     const { round } = resolveSliceCombatRound(state, 'ATTACK');
-    expect(round.playerAdvantage).toBe(117); // 115 + 12 + 8 - 10 - 8
-    expect(round.enemyAdvantage).toBe(104); // 114 - 10
+    expect(round.playerAdvantage).toBe(113); // 115 + 12 + 8 - 14 - 8
+    expect(round.enemyAdvantage).toBe(95); // first-case carrier109 - block14
     expect(state.health).toBe(100);
     expect(state.combat!.enemyHealth).toBe(90);
     expect(state.combat!.enemyInjuries).toHaveLength(1);
@@ -320,7 +331,7 @@ describe('ordinary duel round resolution', () => {
     scriptRolls(1, 1, 400, 440, 1);
     const next = resolveSliceCombatRound(state, 'ATTACK');
     expect(next.round.playerAdvantage).toBe(115);
-    expect(next.round.enemyAdvantage).toBe(114);
+    expect(next.round.enemyAdvantage).toBe(109);
     expect(next.round.consequenceWeights).toBeNull();
     expect(state.combat!.enemyHealth).toBe(90);
   });
@@ -407,7 +418,7 @@ describe('ordinary duel round resolution', () => {
     scriptRolls(1, 1, 440, 400, 1);
     const { round } = resolveSliceCombatRound(state, 'ATTACK');
     expect(round.playerAdvantage).toBe(72); // (100 + cap 20) × (1 - cap 40%)
-    expect(round.enemyAdvantage).toBe(114);
+    expect(round.enemyAdvantage).toBe(109);
     expect(state.spirituality).toBe(4.5); // one complete continuing round
   });
 
@@ -419,6 +430,27 @@ describe('ordinary duel round resolution', () => {
     expect(state).toEqual(duplicate);
     expect(state.random.cursor).toBeGreaterThan(5);
     expect(forbidden).not.toHaveBeenCalled();
+  });
+
+  it('preserves previously recorded budgets on load and applies tuning only to a newly resolved round', () => {
+    const state = fixture();
+    scriptRolls(1, 1, 1, 1, 1, 1);
+    const previous = resolveSliceCombatRound(state, 'ATTACK').round;
+    // A stored pre-tuning first round: unarmed12, carrier club16, carrier base114.
+    previous.moves.find(move => move.actor === 'ENEMY')!.selfGain = 16;
+    previous.enemyAdvantage = 130;
+    previous.winChance = 127 / 257 * 100;
+    state.combatHistory = [previous];
+    const restored: SliceState = JSON.parse(JSON.stringify(state));
+    const recorded = JSON.stringify(restored.combatHistory[0]);
+    projectSliceState(restored);
+    expect(JSON.stringify(restored.combatHistory[0])).toBe(recorded);
+    expect(restored.combat!.lastRound!.moves[1]!.selfGain).toBe(16);
+    vi.restoreAllMocks();
+    scriptRolls(1, 1, 1, 1, 1, 1);
+    const next = resolveSliceCombatRound(restored, 'ATTACK').round;
+    expect(next.moves.find(move => move.actor === 'ENEMY')!.selfGain).toBe(24);
+    expect(JSON.stringify(restored.combatHistory[0])).toBe(recorded);
   });
 
   it('rejects an ended encounter without consuming randomness or changing state', () => {

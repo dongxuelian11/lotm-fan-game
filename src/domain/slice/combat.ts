@@ -620,6 +620,9 @@ const ABILITIES: readonly {
   { id: 'MISS', label: '动作落空', weight: 5, selfGain: 0, enemyReduction: 0 },
 ];
 
+// Ordinary first-case tuning only; other encounters and pathway profiles retain their budgets.
+const FIRST_CASE_ORDINARY_TUNING = { armedGain: 24, blockReduction: 14, enemyTier: 95 } as const;
+
 // Only the documented ordinary attack and explicit block are classified. The
 // ordinary template does not specify control/preparation categories, so those
 // stances cannot silently turn OPENING or DISTANCE into new kinds of abilities.
@@ -884,6 +887,7 @@ export function resolveSliceCombatRound(
       state.health <= 0 || combat.enemyHealth <= 0) {
     throw new Error('当前没有可以继续的战斗');
   }
+  const ordinaryFirstCase = combat.encounterId === 'FIRST_CASE' && state.progression.pathwayId === null;
   if ((combat.encounterId === 'DEMON_HUNTER_DISPUTE' || isDemonHunter(state)) && !currentDemonHunterCombatSource(state)) {
     throw new Error('猎魔者缺少当前原身体、原哨卫或首案来源；先结束真实生活接触。');
   }
@@ -1468,7 +1472,8 @@ export function resolveSliceCombatRound(
   const playerBase = baseAdvantage(core, state.health, state.mind, state.spirituality, demonHunter || parasite || secretsSorcerer || undying || unshadowed || cataclysmPriest || prophet || nightwatcher || witchKing || bizarro || ironBlood || manipulator || alchemist ? 1250 : druid || punishmentKnight || mentorDisorder || winner || wraith || desireApostle || shepherd || starMystic || pain || guardian || dreamStealer || traveler || gatekeeper || priestOfLight || oceanSinger || mysticismMagister || spiritWarlock || crimsonScholar || astronomer || dreamwalker || reaper || marionettist ? 900 : biologist || judge || corruptionBaron || calamityPriest || zombie || demon || roseBishop || scrollProfessor || pleasure || dawnPaladin ? 650 : fireThief || harvestpriest || interrogator || lucky || briber || werewolf || serialKiller || shadowAscetic || wizard || witch || weaponmaster || cryptologist || astrologer || spiritmedium || sunpriest || navigator || detective || nightmare || vampire || psychologist || magician || pyromaniac || appraiser || artisan ? 450 : physician || sheriff || machine || barbarian || madman || unwinged || listener || combatScholar || instigator || gladiator || swindler || trickmaster || gravedigger || lightprayer || rager || reasoner || midnight || clown || provoker || mindreader || archaeologist || tamer ? 300 : seer || hunter || audience || savant || apothecary || sleepless || reader || sailor || bard || corpsecollector || apprentice || marauder || warrior || assassin || pryer || secretSupplicant || criminal || prisoner || monster || lawyer || arbiter || cultivator ? 200 : 100, maxSpirituality);
   const enemyBase = demonHunterEnemy ? baseAdvantage(20, combat.enemyHealth, combat.enemyMind, state.demonHunter.encounter.enemySpirituality, 850, 36) : parasiteEnemy ? baseAdvantage(18, combat.enemyHealth, combat.enemyMind, state.parasite.encounter.enemySpirituality, 650, 32) : secretsSorcererEnemy ? baseAdvantage(20, combat.enemyHealth, combat.enemyMind, state.secretsSorcerer.ritual.enemySpirituality, 1250, 40) : bizarroEnemy ? baseAdvantage(20, combat.enemyHealth, combat.enemyMind, state.bizarroSorcerer.ritual.enemySpirituality, 1250, 40) : fireThief
     ? baseAdvantage(14, combat.enemyHealth, combat.enemyMind, state.fireThief.encounter.enemySpirituality, 200, 30)
-    : baseAdvantage(14, combat.enemyHealth, combat.enemyMind, 15);
+    : baseAdvantage(14, combat.enemyHealth, combat.enemyMind, 15,
+      ordinaryFirstCase ? FIRST_CASE_ORDINARY_TUNING.enemyTier : 100);
   const round: SliceCombatRound = {
     round: combat.round, stance, first,
     playerCount: demonHunter ? demonHunterActionCount(playerCountRoll) : parasite ? parasiteActionCount(playerCountRoll) : secretsSorcererEnemy ? secretsSorcererActionCount(playerCountRoll) : undying ? undyingActionCount(playerCountRoll) : unshadowed ? unshadowedActionCount(playerCountRoll) : cataclysmPriest ? cataclysmPriestActionCount(playerCountRoll) : prophet ? prophetActionCount(playerCountRoll) : nightwatcher ? nightwatcherActionCount(playerCountRoll) : witchKing ? witchKingActionCount(playerCountRoll) : alchemist ? alchemistActionCount(playerCountRoll) : manipulator ? manipulatorActionCount(playerCountRoll) : ironBlood ? ironBloodActionCount(playerCountRoll) : bizarro ? bizarroSorcererActionCount(playerCountRoll) : winner ? winnerActionCount(playerCountRoll)
@@ -3013,7 +3018,8 @@ export function resolveSliceCombatRound(
       // Read the original item's current custody for every move, including
       // enemy moves that follow a successful theft in this same round.
       const armed = actor === 'ENEMY' ? undying || unshadowed || cataclysmPriest || prophet || nightwatcher || witchKing || alchemist || manipulator || druid || punishmentKnight || mentorDisorder || winner || wraith || desireApostle || shepherd || starMystic || pain || guardian ? true : marauderEnemyArmed(state) : state.town.clubLocation === 'HAND';
-      const originalGain = ability.id === 'STRIKE' && armed ? 16 : ability.selfGain;
+      const originalGain = ability.id === 'STRIKE' && armed
+        ? (ordinaryFirstCase ? FIRST_CASE_ORDINARY_TUNING.armedGain : 16) : ability.selfGain;
       const navigatorResponse = actor === 'ENEMY' && navigator
         ? consumeNavigatorWater(state, ability.id, originalGain, ability.enemyReduction) : null;
       const swindlerResponse = actor === 'ENEMY' && (swindler || cryptologist) ? consumeSwindlerMisdirection(state) : null;
@@ -3065,7 +3071,9 @@ export function resolveSliceCombatRound(
       const mentorDisorderStrike = actor === 'ENEMY' && mentorDisorderRound
         ? consumeMentorDisorderStrike(state, mentorDisorderRound, ability.id, beforeDisorderGain, suppressed) : null;
       const unweakenedGain = beforeDisorderGain * (mentorDisorderStrike?.physicalMultiplier ?? 1);
-      const unweakenedReduction = suppressed ? 0 : ability.enemyReduction * (navigatorResponse?.contributionMultiplier ?? 1);
+      const originalReduction = ordinaryFirstCase && ability.id === 'BLOCK'
+        ? FIRST_CASE_ORDINARY_TUNING.blockReduction : ability.enemyReduction;
+      const unweakenedReduction = suppressed ? 0 : originalReduction * (navigatorResponse?.contributionMultiplier ?? 1);
       // This is an actual enemy slot targeting the player. Resolve first, then
       // weaken only these contributions; never alter earlier moves or add one.
       const briberResponse = actor === 'ENEMY' && mentorDisorderRound && !suppressed
