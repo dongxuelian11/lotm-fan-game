@@ -1,4 +1,4 @@
-import { CombatStage } from "./CombatStage";
+import { CombatStage, firstCaseInjuryTarget } from "./CombatStage";
 import { MotherPanel } from "./MotherPanel";
 import { JusticiarPanel } from "./JusticiarPanel";
 import { BlackEmperorPanel } from "./BlackEmperorPanel";
@@ -3179,6 +3179,13 @@ function Combat({
   const [stance, setStance] = useState<SliceStance>(
     battle?.stances[0]?.id ?? "ATTACK",
   );
+  const shownStance = reveal?.stance ?? stance;
+  const stanceChoice = battle?.stances.find((choice) => choice.id === shownStance);
+  const ordinaryFirstCase = battle?.title === "首案 · 追击携铃者" && state.progression.pathwayId === null;
+  const stanceAbilityId = shownStance === "ATTACK" ? "STRIKE" : shownStance === "DEFEND" ? "BLOCK" : null;
+  const neutralAbility = battle?.playerAbilityWheel.find((ability) => ability.id === stanceAbilityId);
+  const selectedAbility = battle?.playerAbilityWheels?.[shownStance]?.find((ability) => ability.id === stanceAbilityId);
+  const injuryTarget = firstCaseInjuryTarget(state, reveal);
   const isRager = state.progression.pathwayId === "tyrant" && (state.progression.sequence === 8 || state.progression.sequence === 7 || state.progression.sequence === 6);
   const hasMadmanPolicy = state.progression.pathwayId === "chained" && (state.progression.sequence === 8 || state.progression.sequence === 7 || state.progression.sequence === 6 || state.progression.sequence === 5 || state.progression.sequence === 4 || (state.progression.sequence === 3 && !!battle?.silentDisciple) || (state.progression.sequence === 2 && !!battle?.ancientEvil) || (state.progression.sequence === 1 && !!battle?.abomination));
   const hasPuppetPolicy = state.progression.pathwayId === "chained" && ((state.progression.sequence === 4 && !!battle?.puppet) || (state.progression.sequence === 3 && !!battle?.silentDisciple) || (state.progression.sequence === 2 && !!battle?.ancientEvil) || (state.progression.sequence === 1 && !!battle?.abomination));
@@ -3245,7 +3252,14 @@ function Combat({
               <div className="slice-wheel-center"><small>回合胜负</small><strong>{!reveal ? "待结算" : reveal.retreat === "SUCCESS" ? "未进入胜负盘" : reveal.winner === null ? "平局" : reveal.winner === "PLAYER" ? "你胜" : "对手胜"}</strong></div>
             </div>
           </div>
-          <p className="combat-wheel-note">{reveal ? "动画只呈现已保存的结果。快速显示和回看不会重新掷骰。" : "次数盘 → 能力结算 → 胜负盘 · 确认姿态后结算"}</p>
+          <p className="combat-stance-note" role="status" aria-label="当前姿态">
+            <strong>{reveal ? "本回合采用：" : "已选"}{stanceChoice?.label ?? POSTURES[shownStance]}</strong>
+            {!reveal && <span>{ordinaryFirstCase && neutralAbility && selectedAbility
+              ? `${selectedAbility.label}抽中率 ${Number(neutralAbility.weight.toFixed(2))}% → ${Number(selectedAbility.weight.toFixed(2))}%。${shownStance === "ATTACK" ? "这是动作抽取，不是命中率或伤害加成。" : "更容易抽到格挡，不保证格挡或免伤。"}`
+              : ordinaryFirstCase && shownStance === "RETREAT" ? "本回合全部行动用于撤离，不主动攻击；失败仍可能受伤。"
+              : stanceChoice?.description}</span>}
+          </p>
+          {reveal && <p className="combat-wheel-note">动画只呈现已保存的结果。快速显示和回看不会重新掷骰。</p>}
         </section>
         {battle && <div className="slice-battle-warning">
           这是一场多回合战斗。受伤不会自动结束遭遇，可能发生最终死亡。
@@ -3262,7 +3276,7 @@ function Combat({
         </div>}
         {reveal ? (
           <>
-            <div className="combat-consequence" aria-label="本回合实际后果"><strong>实际后果</strong><p>{combatConsequence(reveal, state.character.name)}</p></div>
+            <div className={`combat-consequence ${injuryTarget === 'NONE' ? 'combat-no-injury' : ''}`} aria-label="本回合实际后果"><strong>{injuryTarget === 'PLAYER' ? '你受到伤势' : injuryTarget === 'ENEMY' ? '对手受到伤势' : injuryTarget === 'NONE' ? '本回合未新增伤势' : '实际后果'}</strong><p>{combatConsequence(reveal, state.character.name)}</p></div>
             <div className="slice-settings">
               <label>
                 <input
@@ -3292,7 +3306,7 @@ function Combat({
                 {state.magician?.promoted && <p className="slice-muted">纸人 {state.magician.supplies.figurinesHeld} 个 · 提灯{state.magician.supplies.lanternPrepared ? "已准备" : "未准备"}</p>}
                 {state.hunter?.promoted && <p className="slice-muted">陷阱原件：随身 {state.hunter.trapHeld} 套 · 现场 {state.hunter.trapDeployed} 套 · 已损耗 {state.hunter.trapSpent} 套</p>}
                 {battle.water && <p className="navigator-water-status" aria-label="对手当前水系状态">湿润：{battle.water.soakedRemaining > 0 ? `剩余 ${battle.water.soakedRemaining} 次能力结算` : "无"} · 水缚：{battle.water.bound ? "有" : "无"} · 下次能力失效：{battle.water.skipNext ? "是" : "否"}</p>}
-                <h3>本回合姿态</h3>
+                <h3 className="slice-sr-only">本回合姿态</h3>
                 <div className="slice-battle-postures">
                   {battle.stances.map((s) => (
                     <button

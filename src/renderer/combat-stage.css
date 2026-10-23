@@ -34,6 +34,8 @@
 .combat-stage-reveal .combat-round-outcome { animation: combat-result-appear 480ms ease-out both; }
 .combat-stage-reveal .combat-advantage .combat-fighter-info { animation: combat-exchange 520ms ease-out both; }
 .combat-stage-reveal .combat-advantage .combat-health-label { animation: combat-result-appear 600ms ease-out both; }
+.combat-stage-reveal .combat-impact .combat-portrait { animation: combat-injury-pulse 580ms ease-out both; }
+@keyframes combat-injury-pulse { 0%,100% { transform: translateX(0); } 35% { transform: translateX(3px); border-color: #e7a18b; box-shadow: 0 0 16px #b94b3a99; } 65% { transform: translateX(-2px); } }
 @keyframes combat-result-appear { from { opacity: .25; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes combat-exchange { 0%,100% { transform: translateX(0); } 35% { transform: translateX(6px); } }
 .slice-battle .slice-dialog-content { padding: 16px 28px; }
@@ -45,6 +47,7 @@
 .combat-risk-summary .slice-recovery-notice { margin: 12px 0 0; }
 .combat-consequence { padding: 14px 18px; border-left: 3px solid #8e5449; background: #efe2d2; margin: 14px 0; }
 .slice-battle .combat-consequence p { margin: 4px 0 0; font-size: 18px; }
+.combat-consequence.combat-no-injury { border-left-color: #647663; background: #e4e6d7; }
 .combat-round-ledger { margin: 16px 0; }
 .combat-round-ledger > summary { cursor: pointer; padding: 12px 0; color: #625947; }
 .combat-roulette { margin: 10px 0; }
@@ -55,6 +58,8 @@
 .combat-roulette .slice-wheel-center small { font-size: 14px; }
 .combat-roulette .slice-wheel-center strong { font-size: 20px; }
 .combat-roulette .combat-wheel-note { margin: 0; font-size: 13px; text-align: center; color: #625947; }
+.slice-battle .combat-stance-note { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 4px; color: #625947; font-size: 14px; line-height: 1.4; text-align: center; }
+.combat-stance-note strong { color: #763d39; white-space: nowrap; }
 .slice-battle .slice-battle-postures { margin-bottom: 12px; }
 .slice-battle .slice-battle-postures .slice-choice { padding: 10px 12px; }
 .slice-battle .slice-battle-postures .slice-choice small { font-size: 15px; line-height: 1.4; }

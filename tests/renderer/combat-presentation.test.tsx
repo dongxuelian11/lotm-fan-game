@@ -8,8 +8,8 @@ import {
   createSliceRun,
   projectSliceState,
 } from '../../src/domain/slice/index.js';
-import type { SliceStance, SliceState } from '../../src/domain/slice/types.js';
-import { CombatStage } from '../../src/renderer/CombatStage.js';
+import type { SliceProjection, SliceStance, SliceState } from '../../src/domain/slice/types.js';
+import { CombatStage, firstCaseInjuryTarget } from '../../src/renderer/CombatStage.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 import type { SliceBridge } from '../../src/shared/slice-contracts.js';
@@ -331,9 +331,157 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     expect(wheelValues(wheels)).toEqual(['待结算', '待结算', '待结算']);
     expect(wheels.querySelector('.spinning')).toBeNull();
     expect(within(wheels).queryByText(/^(你胜|对手胜|平局)$/)).toBeNull();
-    expect(within(dialog).queryByRole('status')).toBeNull();
+    expect(within(within(dialog).getByRole('region', { name: '当前战场' }))
+      .queryByRole('status')).toBeNull();
     expect(bridge.submitIntent).not.toHaveBeenCalled();
     expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it('updates selected stance odds from the public wheels without resolving a round', async () => {
+    const state = projectSliceState(firstCase());
+    const battle = state.combat!;
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const wheels = visibleWheels(dialog);
+    const feedback = within(wheels).getByRole('status', { name: '当前姿态' });
+    expect(feedback.closest('details')).toBeNull();
+
+    for (const [stance, abilityId, label] of [
+      ['ATTACK', 'STRIKE', '进攻'],
+      ['DEFEND', 'BLOCK', '防守'],
+    ] as const) {
+      const button = within(dialog).getByRole('button', { name: new RegExp(`^${label}`) });
+      fireEvent.click(button);
+      const neutral = battle.playerAbilityWheel.find((entry) => entry.id === abilityId);
+      const selected = battle.playerAbilityWheels?.[stance]?.find((entry) => entry.id === abilityId);
+      if (!neutral || !selected) throw new Error(`Missing public ${stance} ability weights`);
+      expect(button.getAttribute('aria-pressed')).toBe('true');
+      expect(feedback.textContent).toContain(`已选${label}`);
+      expect(feedback.textContent).toContain(
+        `${neutral.label}抽中率 ${Number(neutral.weight.toFixed(2))}% → ${Number(selected.weight.toFixed(2))}%`,
+      );
+      expect(feedback.textContent).toMatch(stance === 'ATTACK'
+        ? /不是.*命中率.*伤害/ : /不保证.*格挡.*免伤/);
+      expect(wheelValues(wheels)).toEqual(['待结算', '待结算', '待结算']);
+    }
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^尝试撤退/ }));
+    expect(feedback.textContent).toContain('已选尝试撤退');
+    expect(feedback.textContent).toMatch(/全部行动.*撤离|整回合.*撤/);
+    expect(feedback.textContent).toMatch(/不.*攻击|不.*进攻/);
+    expect(feedback.textContent).not.toMatch(/%|抽中率/);
+    expect(wheelValues(wheels)).toEqual(['待结算', '待结算', '待结算']);
+    expect(wheels.querySelector('.spinning')).toBeNull();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it('shows the committed DEFEND stance after JSON restoration rather than local ATTACK', async () => {
+    const saved = resolvedRound((candidate) => candidate.combat !== null, 'DEFEND');
+    const state = projectSliceState(JSON.parse(JSON.stringify(saved)) as SliceState);
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const feedback = within(visibleWheels(dialog)).getByRole('status', { name: '当前姿态' });
+
+    expect(state.lastCombatRound!.stance).toBe('DEFEND');
+    expect(feedback.textContent).toContain('本回合采用：防守');
+    expect(feedback.textContent).not.toMatch(/已选进攻|本回合采用：进攻/);
+    fireEvent.click(within(dialog).getByLabelText('快速显示本回合结果'));
+    expect(feedback.textContent).toContain('本回合采用：防守');
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it.each(['higher sequence', 'different title'] as const)(
+    'uses public stance descriptions without ordinary odds for %s planning', async (variant) => {
+      const state = projectSliceState(firstCase());
+      // Probe the presentation boundary, without changing any authoritative round or fixture.
+      if (variant === 'higher sequence') {
+        state.progression = { ...state.progression, pathwayId: 'diviner', sequence: 8 };
+      } else {
+        state.combat = { ...state.combat!, title: '普通人追击' };
+      }
+      const before = JSON.stringify(state);
+      const { bridge, dialog } = await openCombat(state);
+      const feedback = within(visibleWheels(dialog)).getByRole('status', { name: '当前姿态' });
+      expect(feedback.textContent).toContain(state.combat!.stances[0]!.description);
+      expect(feedback.textContent).not.toMatch(/抽中率|\d+(?:\.\d+)?%\s*→/);
+      expect(bridge.submitIntent).not.toHaveBeenCalled();
+      expect(JSON.stringify(state)).toBe(before);
+    },
+  );
+
+  it.each([
+    ['PLAYER', true, 'ENEMY', '对手受到伤势'],
+    ['ENEMY', true, 'PLAYER', '你受到伤势'],
+    ['PLAYER', false, 'NONE', '本回合未新增伤势'],
+    ['ENEMY', false, 'NONE', '本回合未新增伤势'],
+  ] as const)('separates %s victory from actual injury (%s)', async (winner, injured, target, heading) => {
+    const state = projectSliceState(resolvedRound((candidate) => {
+      const round = candidate.lastCombatRound;
+      return candidate.combat !== null && round !== null && round.winner === winner
+        && (round.consequenceWeights !== null) === injured;
+    }));
+    const round = state.lastCombatRound!;
+    const before = JSON.stringify(state);
+    expect(firstCaseInjuryTarget(state, round)).toBe(target);
+    const { bridge, dialog } = await openCombat(state);
+    const stage = within(dialog).getByRole('region', { name: '当前战场' });
+    const player = within(stage).getByRole('region', { name: '你的战斗状态' });
+    const enemy = within(stage).getByRole('region', { name: '对手战斗状态' });
+    expect(player.classList.contains('combat-impact')).toBe(target === 'PLAYER');
+    expect(enemy.classList.contains('combat-impact')).toBe(target === 'ENEMY');
+    expect(stage.querySelectorAll('.combat-impact')).toHaveLength(injured ? 1 : 0);
+    const consequence = within(dialog).getByLabelText('本回合实际后果');
+    expect(within(consequence).getByText(heading, { selector: 'strong' })).toBeTruthy();
+    expect(within(dialog).getAllByText(round.consequence)).toHaveLength(1);
+
+    fireEvent.click(within(dialog).getByLabelText('快速显示本回合结果'));
+    expect(stage.getAttribute('data-animated')).toBe('false');
+    expect(stage.classList.contains('combat-stage-reveal')).toBe(false);
+    expect(within(dialog).getAllByText(round.consequence)).toHaveLength(1);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it.each(['higher sequence', 'different title', 'no current combat'] as const)(
+    'does not infer injury feedback for %s', async (variant) => {
+      const state: SliceProjection = projectSliceState(resolvedRound((candidate) => {
+        const round = candidate.lastCombatRound;
+        return candidate.combat !== null && round !== null && round.winner === 'PLAYER'
+          && round.consequenceWeights !== null;
+      }));
+      // Keep the saved result unchanged while probing each exclusion independently.
+      if (variant === 'higher sequence') {
+        state.progression = { ...state.progression, pathwayId: 'diviner', sequence: 8 };
+      } else if (variant === 'different title') {
+        state.combat = { ...state.combat!, title: '首案 · 追击携铃者（其他遭遇）' };
+      } else {
+        state.combat = null;
+      }
+      const round = state.lastCombatRound!;
+      const before = JSON.stringify(state);
+      expect(firstCaseInjuryTarget(state, round)).toBeNull();
+      const { bridge, dialog } = await openCombat(state);
+      expect(dialog.querySelector('.combat-impact')).toBeNull();
+      const consequence = within(dialog).getByLabelText('本回合实际后果');
+      expect(within(consequence).getByText('实际后果', { selector: 'strong' })).toBeTruthy();
+      expect(within(consequence).queryByText(/^(你受到伤势|对手受到伤势|本回合未新增伤势)$/))
+        .toBeNull();
+      expect(within(dialog).getAllByText(round.consequence)).toHaveLength(1);
+      expect(bridge.submitIntent).not.toHaveBeenCalled();
+      expect(JSON.stringify(state)).toBe(before);
+    },
+  );
+
+  it('does not classify a missing round, unknown winner, or successful retreat as injury', () => {
+    const state = projectSliceState(firstCase());
+    const retreat = projectSliceState(resolvedRound(
+      (candidate) => candidate.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT',
+    )).lastCombatRound!;
+    expect(firstCaseInjuryTarget(state, null)).toBeNull();
+    expect(firstCaseInjuryTarget(state, retreat)).toBeNull();
+    expect(firstCaseInjuryTarget(state, { ...retreat, retreat: 'NONE', winner: null })).toBeNull();
   });
 
   it.each([

@@ -1,6 +1,13 @@
 import type { SlicePublicCombatRound as SliceCombatRound, SliceProjection } from '../domain/slice/types';
 import './combat-stage.css';
 
+// Only the ordinary first case uses this simple injury draw without replacements
+// or mental consequences. Other encounters retain their own saved prose.
+export function firstCaseInjuryTarget(state: SliceProjection, round: SliceCombatRound | null): 'PLAYER' | 'ENEMY' | 'NONE' | null {
+  if (state.combat?.title !== '首案 · 追击携铃者' || state.progression.pathwayId !== null || !round?.winner || round.retreat === 'SUCCESS') return null;
+  return round.consequenceWeights === null ? 'NONE' : round.winner === 'PLAYER' ? 'ENEMY' : 'PLAYER';
+}
+
 /** A view of the saved round, never a second combat simulation. */
 export function CombatStage({ state, round, fast }: {
   state: SliceProjection;
@@ -12,9 +19,10 @@ export function CombatStage({ state, round, fast }: {
   const portrait = `${import.meta.env.BASE_URL}assets/portraits/portrait_${state.character.portraitId.replace('portrait-', '').padStart(2, '0')}.webp`;
   const outcome = !round ? '选择姿态，再结算这一回合' : round.retreat === 'SUCCESS' ? '成功脱离战斗' : round.retreat === 'FAILURE' ? '撤退失败' : round.winner === 'PLAYER' ? '你赢得本回合' : round.winner === 'ENEMY' ? '对手赢得本回合' : '本回合未分胜负';
   const animate = !!round && !fast;
+  const injuryTarget = firstCaseInjuryTarget(state, round);
   return <section className={`combat-stage ${firstCase ? 'combat-stage-boiler' : ''} ${animate ? 'combat-stage-reveal' : ''}`} aria-label="当前战场" data-animated={animate} key={`${state.runId}:${round?.round ?? 'ready'}`}>
     <div className="combat-duel">
-      <section className={`combat-fighter combat-player ${round?.winner === 'PLAYER' ? 'combat-advantage' : ''}`} aria-label="你的战斗状态">
+      <section className={`combat-fighter combat-player ${round?.winner === 'PLAYER' ? 'combat-advantage' : ''} ${injuryTarget === 'PLAYER' ? 'combat-impact' : ''}`} aria-label="你的战斗状态">
         <img className="combat-portrait" src={portrait} alt="" />
         <div className="combat-fighter-info">
           <span className="combat-side">你的角色</span>
@@ -25,7 +33,7 @@ export function CombatStage({ state, round, fast }: {
         </div>
       </section>
       <span className="combat-versus" aria-hidden="true">交<br/>锋</span>
-      <section className={`combat-fighter combat-enemy ${round?.winner === 'ENEMY' ? 'combat-advantage' : ''}`} aria-label="对手战斗状态">
+      <section className={`combat-fighter combat-enemy ${round?.winner === 'ENEMY' ? 'combat-advantage' : ''} ${injuryTarget === 'ENEMY' ? 'combat-impact' : ''}`} aria-label="对手战斗状态">
         <div className="combat-fighter-info">
           <span className="combat-side">{battle ? '眼前的对手' : '遭遇已结束'}</span>
           <h3>{battle?.enemyName ?? '对手'}</h3>
