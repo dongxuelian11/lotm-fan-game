@@ -131,6 +131,30 @@ function wheelValues(region: HTMLElement) {
     .map((value) => value.textContent);
 }
 
+function expectSavedMoveSummary(dialog: HTMLElement, state: SliceProjection) {
+  const summary = within(dialog).getByLabelText('本回合动作与胜势');
+  expect(summary.closest('details')).toBeNull();
+  const round = state.lastCombatRound!;
+  for (const [actor, own, opposing, label] of [
+    ['PLAYER', '你的', '对手', '你的本回合动作'],
+    ['ENEMY', '对手', '你的', '对手本回合动作'],
+  ] as const) {
+    const row = within(summary).getByLabelText(label);
+    const moves = round.moves.filter((move) => move.actor === actor);
+    const text = row.textContent!.replace(/\s+/g, '');
+    expect(text).toContain(moves.length ? moves.map((move) => move.label).join('→') : '未执行动作');
+    if (moves.length) {
+      expect(text).toContain(`${own}胜势+${moves.reduce((sum, move) => sum + move.selfGain, 0)}`);
+      expect(text).toContain(`${opposing}胜势−${moves.reduce((sum, move) => sum + move.enemyReduction, 0)}`);
+    } else {
+      expect(text).not.toMatch(/胜势[+−-]\d/);
+    }
+  }
+  expect(summary.querySelectorAll('p[aria-label]')).toHaveLength(2);
+  expect(summary.textContent).not.toMatch(/伤害\s*[:：]?\s*[+−-]?\d|健康\s*[+−-]\d/);
+  return summary;
+}
+
 function expectGenericEnemyMark(enemy: HTMLElement) {
   expect(enemy.querySelector('img')).toBeNull();
   const mark = enemy.querySelector('svg.combat-enemy-mark');
@@ -391,6 +415,102 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     expect(bridge.submitIntent).not.toHaveBeenCalled();
     expect(JSON.stringify(state)).toBe(before);
   });
+
+  it('summarizes the saved moves in side order with their actual advantage contributions', async () => {
+    const saved = resolvedRound((candidate) => {
+      const round = candidate.lastCombatRound;
+      return candidate.combat !== null && round !== null && round.moves.length > 2
+        && round.moves.some((move) => move.actor === 'ENEMY' && move.selfGain > 0)
+        && round.moves.some((move) => move.enemyReduction > 0);
+    });
+    const state = projectSliceState(saved);
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const summary = expectSavedMoveSummary(dialog, state);
+    const wheels = visibleWheels(dialog);
+    expect(within(wheels).getByRole('status', { name: '当前姿态' }).textContent)
+      .toContain('下列数字是胜势，不是健康伤害');
+    const ledger = within(dialog).getByText('查看完整回合记录', { selector: 'summary' })
+      .closest('details')!;
+    expect(ledger.open).toBe(false);
+    expect(ledger.contains(summary)).toBe(false);
+    expect(ledger.querySelectorAll('.slice-simple-list > li')).toHaveLength(state.lastCombatRound!.moves.length);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it('keeps a recorded zero-contribution miss instead of inventing a successful action', async () => {
+    const saved = resolvedRound((candidate) => candidate.combat !== null
+      && Boolean(candidate.lastCombatRound?.moves.some((move) => move.label === '动作落空'
+        && move.selfGain === 0 && move.enemyReduction === 0)));
+    const state = projectSliceState(saved);
+    const { bridge, dialog } = await openCombat(state);
+    const summary = expectSavedMoveSummary(dialog, state);
+    expect(summary.textContent).toContain('动作落空');
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+  });
+
+  it('shows no invented player move when the saved failed retreat spent all player actions', async () => {
+    const saved = resolvedRound((candidate) => candidate.combat !== null
+      && candidate.lastCombatRound?.retreat === 'FAILURE', 'RETREAT');
+    const state = projectSliceState(saved);
+    expect(state.lastCombatRound!.moves.some((move) => move.actor === 'PLAYER')).toBe(false);
+    expect(state.lastCombatRound!.moves.some((move) => move.actor === 'ENEMY')).toBe(true);
+    const { bridge, dialog } = await openCombat(state);
+    const summary = expectSavedMoveSummary(dialog, state);
+    const player = within(summary).getByLabelText('你的本回合动作');
+    expect(player.textContent).toContain('未执行动作');
+    expect(player.textContent).not.toMatch(/普通打击|短棍打击|格挡护身|寻找空当|拉开距离/);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+  });
+
+  it('restores the same summary without RNG or intents and removes it for next-round planning', async () => {
+    const saved = resolvedRound((candidate) => candidate.combat !== null, 'DEFEND');
+    const savedJson = JSON.stringify(saved);
+    const state = projectSliceState(saved);
+    const stateJson = JSON.stringify(state);
+    const random = vi.spyOn(DeterministicActionRandomStream.prototype, 'nextInt');
+    const initial = await openCombat(state);
+    const expectedSummary = expectSavedMoveSummary(initial.dialog, state).textContent;
+    const expectedWheels = wheelValues(visibleWheels(initial.dialog));
+    expect(initial.bridge.submitIntent).not.toHaveBeenCalled();
+    cleanup();
+
+    const restored = projectSliceState(JSON.parse(savedJson) as SliceState);
+    const { bridge, dialog } = await openCombat(restored);
+    expect(expectSavedMoveSummary(dialog, restored).textContent).toBe(expectedSummary);
+    fireEvent.click(within(dialog).getByLabelText('快速显示本回合结果'));
+    expect(expectSavedMoveSummary(dialog, restored).textContent).toBe(expectedSummary);
+    expect(wheelValues(visibleWheels(dialog))).toEqual(expectedWheels);
+    fireEvent.click(within(dialog).getByRole('button', { name: '进入下一回合' }));
+    const planning = await screen.findByRole('dialog', { name: restored.combat!.title ?? '普通人追击' });
+    expect(within(planning).queryByLabelText('本回合动作与胜势')).toBeNull();
+    expect(wheelValues(visibleWheels(planning))).toEqual(['待结算', '待结算', '待结算']);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(random).not.toHaveBeenCalled();
+    expect(JSON.stringify(saved)).toBe(savedJson);
+    expect(JSON.stringify(state)).toBe(stateJson);
+    expect(JSON.stringify(restored)).toBe(stateJson);
+  });
+
+  it.each(['higher sequence', 'different title', 'no current combat'] as const)(
+    'does not add the ordinary move summary to %s', async (variant) => {
+      const state = projectSliceState(resolvedRound((candidate) => candidate.combat !== null));
+      if (variant === 'higher sequence') {
+        state.progression = { ...state.progression, pathwayId: 'diviner', sequence: 8 };
+      } else if (variant === 'different title') {
+        state.combat = { ...state.combat!, title: '首案 · 追击携铃者（其他遭遇）' };
+      } else {
+        state.combat = null;
+      }
+      const before = JSON.stringify(state);
+      const { bridge, dialog } = await openCombat(state);
+      expect(within(dialog).queryByLabelText('本回合动作与胜势')).toBeNull();
+      visibleWheels(dialog);
+      expect(bridge.submitIntent).not.toHaveBeenCalled();
+      expect(JSON.stringify(state)).toBe(before);
+    },
+  );
 
   it.each(['higher sequence', 'different title'] as const)(
     'uses public stance descriptions without ordinary odds for %s planning', async (variant) => {

@@ -3254,12 +3254,25 @@ function Combat({
           </div>
           <p className="combat-stance-note" role="status" aria-label="当前姿态">
             <strong>{reveal ? "本回合采用：" : "已选"}{stanceChoice?.label ?? POSTURES[shownStance]}</strong>
+            {reveal && <span>已保存，回看和快速显示不重掷。{ordinaryFirstCase && "下列数字是胜势，不是健康伤害。"}</span>}
             {!reveal && <span>{ordinaryFirstCase && neutralAbility && selectedAbility
               ? `${selectedAbility.label}抽中率 ${Number(neutralAbility.weight.toFixed(2))}% → ${Number(selectedAbility.weight.toFixed(2))}%。${shownStance === "ATTACK" ? "这是动作抽取，不是命中率或伤害加成。" : "更容易抽到格挡，不保证格挡或免伤。"}`
               : ordinaryFirstCase && shownStance === "RETREAT" ? "本回合全部行动用于撤离，不主动攻击；失败仍可能受伤。"
               : stanceChoice?.description}</span>}
           </p>
-          {reveal && <p className="combat-wheel-note">动画只呈现已保存的结果。快速显示和回看不会重新掷骰。</p>}
+          {ordinaryFirstCase && reveal && <div className="combat-action-summary" role="group" aria-label="本回合动作与胜势">
+            {(["PLAYER", "ENEMY"] as const).map((actor) => {
+              const moves = reveal.moves.filter((move) => move.actor === actor);
+              const selfGain = moves.reduce((total, move) => total + move.selfGain, 0);
+              const enemyReduction = moves.reduce((total, move) => total + move.enemyReduction, 0);
+              const side = actor === "PLAYER" ? "你的" : "对手";
+              const other = actor === "PLAYER" ? "对手" : "你的";
+              return <p key={actor} aria-label={`${side}本回合动作`}>
+                <strong>{actor === "PLAYER" ? "你" : "对手"}：</strong>
+                {moves.length > 0 ? <>{moves.map((move) => move.label).join(" → ")}<span> · {side}胜势 +{displayNumber(selfGain)}，{other}胜势 −{displayNumber(enemyReduction)}</span></> : "未执行动作"}
+              </p>;
+            })}
+          </div>}
         </section>
         {battle && <div className="slice-battle-warning">
           这是一场多回合战斗。受伤不会自动结束遭遇，可能发生最终死亡。

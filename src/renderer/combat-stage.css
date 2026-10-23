@@ -60,6 +60,10 @@
 .combat-roulette .combat-wheel-note { margin: 0; font-size: 13px; text-align: center; color: #625947; }
 .slice-battle .combat-stance-note { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 4px; color: #625947; font-size: 14px; line-height: 1.4; text-align: center; }
 .combat-stance-note strong { color: #763d39; white-space: nowrap; }
+.combat-action-summary { margin: 6px 0 0; }
+.slice-battle .combat-action-summary p { margin: 3px 0; font-size: 14px; line-height: 1.4; }
+.combat-action-summary span { color: #625947; }
+.slice-battle .slice-settings { padding: 12px 0; }
 .slice-battle .slice-battle-postures { margin-bottom: 12px; }
 .slice-battle .slice-battle-postures .slice-choice { padding: 10px 12px; }
 .slice-battle .slice-battle-postures .slice-choice small { font-size: 15px; line-height: 1.4; }
