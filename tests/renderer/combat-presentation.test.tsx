@@ -393,6 +393,10 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     expect(feedback.textContent).toContain('已选尝试撤退');
     expect(feedback.textContent).toMatch(/全部行动.*撤离|整回合.*撤/);
     expect(feedback.textContent).toMatch(/不.*攻击|不.*进攻/);
+    expect(feedback.textContent).toContain('成功会结束此次追击');
+    expect(feedback.textContent).toContain('可能放走携铃者及危险物');
+    expect(feedback.textContent).toContain('已有救援与证据保留');
+    expect(feedback.textContent).toContain('继续生活处理伤势');
     expect(feedback.textContent).not.toMatch(/%|抽中率/);
     expect(wheelValues(wheels)).toEqual(['待结算', '待结算', '待结算']);
     expect(wheels.querySelector('.spinning')).toBeNull();
@@ -526,6 +530,8 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
       const feedback = within(visibleWheels(dialog)).getByRole('status', { name: '当前姿态' });
       expect(feedback.textContent).toContain(state.combat!.stances[0]!.description);
       expect(feedback.textContent).not.toMatch(/抽中率|\d+(?:\.\d+)?%\s*→/);
+      fireEvent.click(within(dialog).getByRole('button', { name: /^尝试撤退/ }));
+      expect(feedback.textContent).not.toMatch(/结束此次追击|携铃者及危险物|已有救援与证据保留/);
       expect(bridge.submitIntent).not.toHaveBeenCalled();
       expect(JSON.stringify(state)).toBe(before);
     },

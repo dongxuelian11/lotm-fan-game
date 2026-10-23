@@ -3257,7 +3257,7 @@ function Combat({
             {reveal && <span>已保存，回看和快速显示不重掷。{ordinaryFirstCase && "下列数字是胜势，不是健康伤害。"}</span>}
             {!reveal && <span>{ordinaryFirstCase && neutralAbility && selectedAbility
               ? `${selectedAbility.label}抽中率 ${Number(neutralAbility.weight.toFixed(2))}% → ${Number(selectedAbility.weight.toFixed(2))}%。${shownStance === "ATTACK" ? "这是动作抽取，不是命中率或伤害加成。" : "更容易抽到格挡，不保证格挡或免伤。"}`
-              : ordinaryFirstCase && shownStance === "RETREAT" ? "本回合全部行动用于撤离，不主动攻击；失败仍可能受伤。"
+              : ordinaryFirstCase && shownStance === "RETREAT" ? "本回合全部行动用于撤离，不主动攻击；失败仍可能受伤。成功会结束此次追击，可能放走携铃者及危险物；已有救援与证据保留，之后可继续生活处理伤势。"
               : stanceChoice?.description}</span>}
           </p>
           {ordinaryFirstCase && reveal && <div className="combat-action-summary" role="group" aria-label="本回合动作与胜势">
