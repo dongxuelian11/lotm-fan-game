@@ -79,7 +79,7 @@ function resolvedRound(
   throw new Error(`Could not find a deterministic ${stance} round matching the case`);
 }
 
-async function openCombat(state: ReturnType<typeof projectSliceState>) {
+async function openSave(state: ReturnType<typeof projectSliceState>) {
   vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
   const bridge: SliceBridge = {
     getBootstrap: vi.fn(async () => ({
@@ -109,6 +109,12 @@ async function openCombat(state: ReturnType<typeof projectSliceState>) {
   render(<SliceApp />);
   fireEvent.click(await screen.findByRole('button', { name: /继续游戏/ }));
   fireEvent.click(await screen.findByRole('button', { name: new RegExp(state.character.name) }));
+  await screen.findByRole('heading', { name: '人物卷宗' });
+  return bridge;
+}
+
+async function openCombat(state: ReturnType<typeof projectSliceState>) {
+  const bridge = await openSave(state);
   const dialog = await screen.findByRole('dialog', {
       name: state.lastCombatRound ? '战斗回合结果' : (state.combat?.title ?? '普通人追击'),
   });
@@ -676,5 +682,30 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     expect(wheels.querySelector('.spinning')).toBeNull();
     expect(within(consequence).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
     expect(bridge.submitIntent).not.toHaveBeenCalled();
+  });
+});
+
+
+describe('resuming life after the first case', () => {
+  it.each([false, true])('does not reopen an archived ordinary battle after continuing life (later rest: %s)', async (restAfterwards) => {
+    const finished = resolvedRound((state) => state.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    let continued = applySliceIntent(finished, { type: 'CONTINUE_LIFE' });
+    if (restAfterwards) continued = applySliceIntent(continued, { type: 'ACTION', action: 'REST' });
+    const state = projectSliceState(JSON.parse(JSON.stringify(continued)) as SliceState);
+    expect(state.status).toBe('ACTIVE');
+    expect(state.caseArchive).toHaveLength(1);
+    expect(state.lastCombatRound).toEqual(projectSliceState(finished).lastCombatRound);
+    const before = JSON.stringify(state);
+    const bridge = await openSave(state);
+
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    expect(screen.getByRole('group', { name: '四个主要行动' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /完整纪事/ }));
+    const chronicle = await screen.findByRole('dialog', { name: '完整纪事' });
+    const history = within(chronicle).getByRole('heading', { name: '战斗完整回放' }).closest('section');
+    expect(history).not.toBeNull();
+    expect(within(history!).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
   });
 });
