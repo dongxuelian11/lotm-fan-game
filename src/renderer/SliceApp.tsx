@@ -1250,6 +1250,14 @@ function dashboardGuide(state: SliceProjection): DashboardGuide {
       detail: `已交付 ${practice.completed}/${practice.total} 份委托。回顾亲自核实过的线索与解释的边界。`,
       label: "查看当前成长", destination: "GROWTH",
     };
+    const remainingCases = practice?.cases.filter((entry) => entry.choices.length > 0);
+    if (practice && practice.completed < practice.total && remainingCases && remainingCases.length === practice.total - practice.completed
+      && remainingCases.every((entry) => entry.choices.every((choice) => !choice.enabled
+        && choice.reason === "本周已经尝试过，请等下周再来复核。"))) return {
+      goal: "剩余委托下周再复核",
+      detail: `已交付 ${practice.completed}/${practice.total} 份委托 · 扮演 ${state.progression.acting}/100。剩余委托本周已尝试，可以先安排工作、学习或休养，下周再回俱乐部。`,
+      label: "安排日常行动", destination: "LIFE",
+    };
   }
   if (state.progression.acting < 100) return {
     goal: "实践当前能力，消化魔药",

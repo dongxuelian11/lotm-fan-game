@@ -296,6 +296,30 @@ describe("Compact dashboard navigation", () => {
     expect(JSON.stringify({ raw, state })).toBe(snapshot);
   });
 
+  it("routes seven deliveries with the last commission locked this week to daily life", async () => {
+    const { raw, context } = readySeerPractice(10);
+    const cases = projectSliceState(raw).seer.practice.cases;
+    for (const entry of cases.slice(0, 7)) {
+      applySeerCommand(raw, entry.choices[1]!.command, context);
+      if (entry.id === "folded-bookmark") applySeerCommand(raw, { type: "PRACTICE", caseId: entry.id, approachId: "report-bounded" }, context);
+    }
+    const failedContext = { ...context, check: (ability: Parameters<SeerContext["check"]>[0], difficulty: number) => resolveNormalCheck({ ability, baseAbility: raw.character.coreStats[ability], difficulty, modifiers: [], roll: 100 }) };
+    applySeerCommand(raw, cases[7]!.choices[1]!.command, failedContext);
+    const state = projectSliceState(raw), snapshot = JSON.stringify(state);
+    expect(state.seer.practice.completed).toBe(7);
+    const value = bridge(state);
+    await enter(value);
+    const guide = screen.getByRole("region", { name: "接下来" });
+    expect(within(guide).getByRole("heading", { name: "剩余委托下周再复核" })).toBeTruthy();
+    expect(guide.textContent).toContain("已交付 7/8 份委托");
+    expect(guide.textContent).toContain("扮演 84/100");
+    await userEvent.click(within(guide).getByRole("button", { name: "安排日常行动" }));
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: /^工作，/ }));
+    expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
+    expect(value.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(snapshot);
+  });
+
   it("offers reflection after eight real deliveries without spending the reflection action", async () => {
     const { raw, context } = readySeerPractice(9);
     for (const entry of projectSliceState(raw).seer.practice.cases) {
@@ -313,15 +337,16 @@ describe("Compact dashboard navigation", () => {
     await userEvent.click(within(guide).getByRole("button", { name: "查看当前成长" }));
     expect(screen.getByRole("button", { name: "占卜家经历" }).getAttribute("aria-pressed")).toBe("true");
     expect((screen.getByRole("button", { name: /整理八份委托的共同原则/ }) as HTMLButtonElement).disabled).toBe(false);
-    expect(screen.queryByRole("group", { name: "当前委托行动预算" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "返回日常行动（不消耗行动）" })).toBeNull();
+    expectSeerBudget(state);
+    expect(screen.getByRole("button", { name: "返回日常行动（不消耗行动）" })).toBeTruthy();
     expect(value.submitIntent).not.toHaveBeenCalled();
   });
 
-  it.each(["blocked", "legacy"] as const)("keeps generic growth navigation for %s Seer practice", async kind => {
+  it.each(["blocked", "legacy", "empty-choices"] as const)("keeps generic growth navigation for %s Seer practice", async kind => {
     const { raw } = readySeerPractice(0);
     const state = projectSliceState(raw);
     if (kind === "legacy") delete (state.seer as Partial<SliceProjection["seer"]>).practice;
+    if (kind === "empty-choices") state.seer.practice.cases.forEach(entry => { entry.choices = []; });
     const value = bridge(state);
     await enter(value);
     const guide = screen.getByRole("region", { name: "接下来" });
