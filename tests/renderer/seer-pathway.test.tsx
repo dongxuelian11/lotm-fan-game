@@ -97,6 +97,23 @@ describe("Seer progression dossier", () => {
     expect(onCommand).not.toHaveBeenCalled();
   });
 
+  it("folds only consumed promoted bottles into accessible records and keeps prepared bottles prominent", async () => {
+    const value = bottled();
+    const spent = { ...value, promoted: true, actions: [], bottles: [{ ...value.bottles[0]!, status: "已耗尽 · 成功晋升" }] };
+    const { onCommand, rerender } = panel(spent);
+    const fold = screen.getByText("查看已耗尽魔药记录 · 1 瓶").closest("details")!;
+    expect(fold.open).toBe(false);
+    await userEvent.click(screen.getByText("查看已耗尽魔药记录 · 1 瓶"));
+    expect(fold.open).toBe(true);
+    expect(screen.getByRole("region", { name: "已调配的魔药" }).textContent).toContain("劳务所得材料 · 第一批");
+    expect(screen.getByText("已耗尽 · 成功晋升")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /服用/ })).toBeNull();
+    rerender(<SeerPanel seer={{ ...value, promoted: true }} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.queryByText(/查看已耗尽魔药记录/)).toBeNull();
+    expect(screen.getByRole("button", { name: /查看并准备服用「第一瓶魔药」/ })).toBeTruthy();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
   it("shows a committed failed bottle as empty without a second consumption control", async () => {
     const value = bottled();
     const onCommand = vi.fn();

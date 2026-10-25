@@ -460,3 +460,25 @@
   .seer-bookmark-heading { gap: 12px; padding: 8px; }
   .seer-bookmark { width: 50px; height: 64px; }
 }
+
+/* Current evidence takes the desk; unopened milestones remain secondary. */
+.seer-commission-result {
+  margin: 20px 0;
+  padding: 18px 22px;
+  border-block: 1px solid #9c8c6c;
+  border-left: 4px solid #796344;
+  background: #e9e1cf;
+}
+.seer-result-date { color: #655740; font-size: 16px; letter-spacing: .06em; }
+.seer-panel .seer-commission-result h4 { margin: 8px 0 12px; font-size: 23px; }
+.seer-panel .seer-commission-result p { margin: 0; font-size: 19px; line-height: 1.8; }
+.seer-commission-result h4:focus { outline: none; }
+.seer-reflection-pending { padding-top: 14px; border-top: 1px dashed var(--slice-line); }
+.seer-reflection-pending .slice-choice { min-height: 0; padding: 10px 14px; background: transparent; }
+.seer-panel .seer-reflection-pending .seer-action-reason { color: var(--slice-muted); font-size: 16px; }
+.seer-bottle-history .seer-bottles > h3 { display: none; }
+@media (max-width: 600px) {
+  .seer-commission-result { padding: 14px; }
+}
+.seer-reflection-pending .slice-choice { display: flex; align-items: center; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; }
+.seer-reflection-pending .slice-modifiers { margin: 0; }

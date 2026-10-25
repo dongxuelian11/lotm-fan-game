@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { SeerAction, SeerCommand, SeerProjection } from "../domain/seer/types";
+import type { SliceRecord } from "../domain/slice/types";
 import { seerReadableText } from "./seer-feedback";
 import { SeerBookmark } from "./SeerBookmark";
 import { SeerPotionVial } from "./SeerPotionMoment";
@@ -22,17 +23,24 @@ interface SeerPanelProps {
   busy: boolean;
   blocked: boolean;
   onCommand: (command: SeerCommand) => void;
+  recentResult?: SliceRecord | null;
   dailyLife?: { wagePaid: boolean; onReturn: () => void };
+}
+
+/** Match only a public commission title; no outcome or reward is reconstructed. */
+export function isSeerCommissionResult(record: Pick<SliceRecord, "title">, cases: SeerProjection["practice"]["cases"]) {
+  return cases.some((entry) => record.title.startsWith(`${entry.title} · `));
 }
 
 function PracticePanel({
   practice,
+  recentResult,
   resources,
   dailyLife,
   busy,
   blocked,
   onCommand,
-}: Pick<SeerPanelProps, "resources" | "dailyLife" | "busy" | "blocked" | "onCommand"> & { practice: SeerProjection["practice"] }) {
+}: Pick<SeerPanelProps, "recentResult" | "resources" | "dailyLife" | "busy" | "blocked" | "onCommand"> & { practice: SeerProjection["practice"] }) {
   const actionableCase = practice.cases.find((entry) => entry.choices.some((choice) => choice.enabled));
   const defaultCase = actionableCase ?? practice.cases.find((entry) => entry.choices.length > 0) ?? practice.cases[0];
   // Keep the chosen case visible after its receipt, so its result is not replaced by the next commission.
@@ -42,6 +50,9 @@ function PracticePanel({
     ?? defaultCase;
   const nextCase = selectedCase && !selectedCase.choices.some((choice) => choice.enabled) ? actionableCase : undefined;
   const reflection = practice.reflection;
+  const result = recentResult && selectedCase && isSeerCommissionResult(recentResult, [selectedCase]) ? recentResult : null;
+  const resultHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { if (result) resultHeading.current?.focus(); }, [result?.id, selectedCase?.id]);
 
   return (
     <details className="seer-fold seer-practice" open>
@@ -68,6 +79,13 @@ function PracticePanel({
               </div>
             </header>
             <p>{selectedCase.body}</p>
+            {result && (
+              <section className="seer-commission-result" aria-label="这份委托的最近记录">
+                <span className="seer-result-date">第 {result.week} 周 · 委托记录</span>
+                <h4 ref={resultHeading} tabIndex={-1}>{result.title}</h4>
+                <p>{seerReadableText(result.text)}</p>
+              </section>
+            )}
             {dailyLife && selectedCase.choices.length > 0 && (
               <div className="seer-case-budget" role="group" aria-label="当前委托行动预算">
                 <p className="slice-muted">本周剩余 {resources.actionsRemaining} 行动 · 灵性 {resources.spirituality} / {resources.maxSpirituality} · {dailyLife.wagePaid ? "本周工资已领" : "本周工资尚未领取"}</p>
@@ -108,7 +126,7 @@ function PracticePanel({
           </section>
         </>
       )}
-      <div className="seer-reflection seer-action">
+      <div className={`seer-reflection seer-action${reflection.enabled ? "" : " seer-reflection-pending"}`}>
         <button
           className="slice-choice"
           disabled={busy || blocked || !reflection.enabled}
@@ -129,6 +147,7 @@ export function SeerPanel({
   seer,
   resources,
   dailyLife,
+  recentResult,
   busy,
   blocked,
   onCommand,
@@ -164,6 +183,8 @@ export function SeerPanel({
     setSelectedBottleId(action.command.bottleId);
   }
 
+  const archiveBottles = seer.promoted && seer.bottles.length > 0
+    && seer.bottles.every((bottle) => bottle.status.startsWith("已耗尽"));
   const bottles = seer.discovered && seer.bottles.length > 0 && (
         <section className="seer-bottles" aria-label="已调配的魔药">
           <h3>已调配的魔药</h3>
@@ -276,11 +297,16 @@ export function SeerPanel({
         </div>
       )}
 
-      {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} resources={resources} {...(dailyLife ? { dailyLife } : {})} busy={busy} blocked={blocked} onCommand={onCommand} />}
+      {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} {...(recentResult ? { recentResult } : {})} resources={resources} {...(dailyLife ? { dailyLife } : {})} busy={busy} blocked={blocked} onCommand={onCommand} />}
 
 
 
-      {seer.promoted && bottles}
+      {seer.promoted && (archiveBottles ? (
+        <details className="seer-fold seer-bottle-history">
+          <summary>查看已耗尽魔药记录 · {seer.bottles.length} 瓶</summary>
+          {bottles}
+        </details>
+      ) : bottles)}
 
       {seer.discovered && seer.formulaKnown && seer.formula.length > 0 && (
         <details className="seer-fold">
