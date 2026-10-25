@@ -86,7 +86,7 @@ function PracticePanel({
                 <p>{seerReadableText(result.text)}</p>
               </section>
             )}
-            {dailyLife && selectedCase.choices.length > 0 && (
+            {dailyLife && (
               <div className="seer-case-budget" role="group" aria-label="当前委托行动预算">
                 <p className="slice-muted">本周剩余 {resources.actionsRemaining} 行动 · 灵性 {resources.spirituality} / {resources.maxSpirituality} · {dailyLife.wagePaid ? "本周工资已领" : "本周工资尚未领取"}</p>
                 <button className="slice-button quiet" disabled={busy || blocked} onClick={dailyLife.onReturn}>返回日常行动（不消耗行动）</button>

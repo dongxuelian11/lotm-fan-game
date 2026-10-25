@@ -129,6 +129,29 @@ describe("Seer commissions and continuing life", () => {
     expect(b.submitIntent).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps the current budget and free life return after delivery, including save locks", async () => {
+    const value = seer();
+    const onReturn = vi.fn();
+    const onCommand = vi.fn();
+    const props = { seer: value, resources: { ...resources, actionsRemaining: 1 }, dailyLife: { wagePaid: false, onReturn }, onCommand };
+    const view = render(<SeerPanel {...props} busy={false} blocked={false} />);
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: "查看委托" }), "delivered");
+    const budget = screen.getByRole("group", { name: "当前委托行动预算" });
+    expect(budget.textContent).toContain("本周剩余 1 行动");
+    expect(budget.textContent).toContain("本周工资尚未领取");
+    const back = within(budget).getByRole("button", { name: "返回日常行动（不消耗行动）" });
+    await userEvent.click(back);
+    expect(onReturn).toHaveBeenCalledTimes(1);
+    expect(onCommand).not.toHaveBeenCalled();
+    for (const lock of [{ busy: true, blocked: false }, { busy: false, blocked: true }]) {
+      view.rerender(<SeerPanel {...props} {...lock} />);
+      expect((back as HTMLButtonElement).disabled).toBe(true);
+      fireEvent.click(back);
+    }
+    expect(onReturn).toHaveBeenCalledTimes(1);
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
   it("explains existing random mastery allocation before a choice, but does not repeat it on completed history", async () => {
     const { onCommand } = panel(seer());
     const note = "成功交付的掌握成长会随机分配给一项已知能力，不一定是本次使用的能力。";
