@@ -628,11 +628,14 @@ body {
   border-color: var(--slice-red);
   background: #f6eee1;
 }
-.slice-action svg {
-  width: 39px;
+.slice-action .life-action-vignette {
+  width: 64px;
   height: 39px;
-  stroke-width: 1.25;
+  flex: none;
+  stroke-width: 1.6;
 }
+.life-vignette-wash { fill: currentColor; fill-opacity: .08; stroke: none; }
+.life-vignette-etch { stroke-width: 1; opacity: .7; }
 .slice-action strong {
   font-family: "Noto Serif CJK SC", "SimSun", serif;
   font-size: 27px;

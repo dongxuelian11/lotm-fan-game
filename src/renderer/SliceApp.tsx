@@ -201,6 +201,7 @@ import type {
   SlicePublicCombatRound as SliceCombatRound,
   SliceStance,
 } from "../domain/slice/types";
+import { LifeActionVignette } from "./LifeActionVignette";
 import { SeerActionFeedback } from "./SeerPotionMoment";
 import { isSeerCommissionResult, SeerPanel } from "./SeerPanel";
 import { seerFeedbackText, seerReadableText } from "./seer-feedback";
@@ -1523,41 +1524,6 @@ function modifierText(stats: PublicCoreStats): string {
     STATS.filter((s) => stats[s.key] !== 0)
       .map((s) => `${s.label} ${signed(stats[s.key])}`)
       .join(" · ") || "四项能力不变"
-  );
-}
-function Icon({ kind }: { kind: string }) {
-  const paths: Record<string, ReactNode> = {
-    WORK: (
-      <>
-        <path d="M7 16h34v23H7zM13 16V9h22v7M7 24h34M20 24v6h8v-6" />
-      </>
-    ),
-    LEARN: (
-      <>
-        <path d="M7 10c8-2 13 0 17 3 4-3 9-5 17-3v27c-8-2-13 0-17 3-4-3-9-5-17-3zM24 13v27M12 18h7M12 24h7M29 18h7M29 24h7" />
-      </>
-    ),
-    INVESTIGATE: (
-      <>
-        <circle cx="21" cy="20" r="12" />
-        <path d="m30 29 12 12M15 20a6 6 0 0 1 6-6" />
-      </>
-    ),
-    REST: (
-      <>
-        <path d="M10 15h26v17a9 9 0 0 1-9 9h-8a9 9 0 0 1-9-9zM36 18h3a6 6 0 0 1 0 12h-3M8 43h31M17 4v6M25 4v6" />
-      </>
-    ),
-  };
-  return (
-    <svg
-      viewBox="0 0 48 48"
-      fill="none"
-      stroke="currentColor"
-      aria-hidden="true"
-    >
-      {paths[kind]}
-    </svg>
   );
 }
 function Meter({
@@ -7414,7 +7380,7 @@ export function SliceApp() {
                         }}
                         aria-label={`${action.label}，1行动，${action.note}`}
                       >
-                        <Icon kind={action.kind} />
+                        <LifeActionVignette kind={action.kind} />
                         <strong>{action.label}</strong>
                         <small>1 行动</small>
                         <small>{action.note}</small>
