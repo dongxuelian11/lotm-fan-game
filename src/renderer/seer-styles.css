@@ -443,3 +443,20 @@
 .warrior-result { margin-top: 20px; padding-top: 18px; border-top: 2px solid var(--slice-line); }
 .warrior-history-bottle { padding: 16px 0; border-bottom: 1px solid var(--slice-line); }
 .warrior-panel .seer-action, .warrior-panel .slice-choice, .warrior-panel .seer-facts dd { min-width: 0; overflow-wrap: anywhere; }
+
+/* A material study, not a supernatural clue: the same cloth in every saved state. */
+.seer-bookmark-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #81949c;
+  background: linear-gradient(100deg, #d7dfe0, #e7e8df 65%, transparent);
+}
+.seer-bookmark-heading > div { min-width: 0; }
+.seer-bookmark { width: 72px; height: 84px; flex: none; }
+.seer-bookmark-heading .slice-muted { color: #40565d; }
+@media (max-width: 600px) {
+  .seer-bookmark-heading { gap: 12px; padding: 8px; }
+  .seer-bookmark { width: 50px; height: 64px; }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SeerAction, SeerCommand, SeerProjection } from "../domain/seer/types";
 import { seerReadableText } from "./seer-feedback";
+import { SeerBookmark } from "./SeerBookmark";
 import { SeerPotionVial } from "./SeerPotionMoment";
 import "./seer-styles.css";
 
@@ -59,8 +60,13 @@ function PracticePanel({
             </label>
           )}
           <section className="seer-current-case" aria-label="当前委托">
-            <h3 ref={caseHeading} tabIndex={-1}>{selectedCase.title}</h3>
-            <span className="slice-muted">{selectedCase.status}</span>
+            <header className={selectedCase.id === "folded-bookmark" ? "seer-bookmark-heading" : undefined}>
+              {selectedCase.id === "folded-bookmark" && <SeerBookmark />}
+              <div>
+                <h3 ref={caseHeading} tabIndex={-1}>{selectedCase.title}</h3>
+                <span className="slice-muted">{selectedCase.status}</span>
+              </div>
+            </header>
             <p>{selectedCase.body}</p>
             {dailyLife && selectedCase.choices.length > 0 && (
               <div className="seer-case-budget" role="group" aria-label="当前委托行动预算">

@@ -34,6 +34,23 @@ function observed(roll = 20) {
 }
 
 describe('saved first-commission interpretation', () => {
+  it('keeps the bookmark illustration decorative and identical across observed and delivered states', () => {
+    const { s, c } = observed();
+    const onCommand = vi.fn();
+    const view = render(<SeerPanel seer={projectSeer(s)} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    const illustration = view.container.querySelector('.seer-bookmark')!;
+    expect(illustration.getAttribute('aria-hidden')).toBe('true');
+    expect(illustration.getAttribute('focusable')).toBe('false');
+    const drawing = illustration.innerHTML;
+    applySeerCommand(s, { type: 'PRACTICE', caseId: 'folded-bookmark', approachId: 'report-bounded' }, c);
+    view.rerender(<SeerPanel seer={projectSeer(s)} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(view.container.querySelector('.seer-bookmark')!.innerHTML).toBe(drawing);
+    expect(screen.getByRole('region', { name: '当前委托' }).textContent).toContain('原物已归还');
+    fireEvent.change(screen.getByLabelText('查看委托'), { target: { value: 'packing-list' } });
+    expect(view.container.querySelector('.seer-bookmark')).toBeNull();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
   it('shows the observed evidence and exact two report commands after reopening, even with no actions left', () => {
     const { s } = observed();
     const restored = JSON.parse(JSON.stringify(s)) as typeof s;
