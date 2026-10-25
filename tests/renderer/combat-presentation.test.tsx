@@ -687,10 +687,31 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
 
 
 describe('resuming life after the first case', () => {
-  it.each([false, true])('does not reopen an archived ordinary battle after continuing life (later rest: %s)', async (restAfterwards) => {
+  it.each([false, true])('still opens a current saved battle round (promoted Seer: %s)', async (promoted) => {
+    const saved = resolvedRound(candidate => Boolean(candidate.combat && candidate.lastCombatRound));
+    if (promoted) saved.progression = { ...saved.progression, pathwayId: 'diviner', sequence: 9, promotionWeek: saved.week };
+    const state = projectSliceState(saved);
+    const before = JSON.stringify(state);
+    const bridge = await openSave(state);
+    expect(await screen.findByRole('dialog', { name: '战斗回合结果' })).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it('still opens a just-finished Seer battle before continuing life', async () => {
+    const saved = resolvedRound(candidate => candidate.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    saved.progression = { ...saved.progression, pathwayId: 'diviner', sequence: 9, promotionWeek: saved.week };
+    const state = projectSliceState(saved);
+    const bridge = await openSave(state);
+    expect(await screen.findByRole('dialog', { name: '战斗回合结果' })).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+  });
+
+  it.each([[false, false], [true, false], [false, true], [true, true]])('does not reopen an archived first case (later rest: %s, promoted Seer: %s)', async (restAfterwards, promoted) => {
     const finished = resolvedRound((state) => state.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
     let continued = applySliceIntent(finished, { type: 'CONTINUE_LIFE' });
     if (restAfterwards) continued = applySliceIntent(continued, { type: 'ACTION', action: 'REST' });
+    if (promoted) continued.progression = { ...continued.progression, pathwayId: 'diviner', sequence: 9, promotionWeek: continued.week };
     const state = projectSliceState(JSON.parse(JSON.stringify(continued)) as SliceState);
     expect(state.status).toBe('ACTIVE');
     expect(state.caseArchive).toHaveLength(1);
