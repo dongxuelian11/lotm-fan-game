@@ -82,6 +82,35 @@ beforeEach(() => { vi.spyOn(window, "scrollTo").mockImplementation(() => {}); })
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 
 describe("Seer progression dossier", () => {
+  it("places the prepared bottle before spare materials without submitting or losing its projected facts", async () => {
+    const value = bottled();
+    value.actions.push({ id: "spare", label: "下一批备料", cost: "领域备料成本", enabled: true, reason: null, command: { type: "MATERIAL_WORK", batchId: "spare" } });
+    const { onCommand } = panel(value);
+    const bottles = screen.getByRole("region", { name: "已调配的魔药" });
+    const actions = screen.getByRole("group", { name: "成长行动" });
+    expect(bottles.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(bottles.querySelectorAll('svg[aria-hidden="true"]')).toHaveLength(2);
+    await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第一瓶魔药」/ }));
+    expect(document.activeElement).toBe(screen.getByRole("heading", { name: "第一瓶魔药" }));
+    expect(screen.getByText("71%")).toBeTruthy();
+    expect(screen.getByText("1 行动 · 消耗这瓶魔药")).toBeTruthy();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("shows a committed failed bottle as empty without a second consumption control", async () => {
+    const value = bottled();
+    const onCommand = vi.fn();
+    const view = panel(value, onCommand);
+    await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第一瓶魔药」/ }));
+    const spent = { ...value, actions: [], bottles: [{ ...value.bottles[0]!, status: "已耗尽 · 排异，未晋升" }] };
+    view.rerender(<SeerPanel seer={spent} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.queryByRole("region", { name: "这瓶魔药的服用确认" })).toBeNull();
+    expect(screen.getByText("已耗尽 · 排异，未晋升")).toBeTruthy();
+    expect(screen.getByRole("region", { name: "已调配的魔药" }).querySelector(".seer-vial-liquid.is-empty")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /服用/ })).toBeNull();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
   it("offers discovery and the four-full-week guidance without revealing an unknown formula or abilities", async () => {
     const { onCommand } = panel(seer({
       formula: [{ name: "未见配方测试材料", quantity: 1, unit: "份" }],

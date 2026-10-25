@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { SeerAction, SeerCommand, SeerProjection } from "../domain/seer/types";
 import { seerReadableText } from "./seer-feedback";
+import { SeerPotionVial } from "./SeerPotionMoment";
 import "./seer-styles.css";
 
 export interface SeerResources {
@@ -154,12 +155,45 @@ export function SeerPanel({
     setSelectedBottleId(action.command.bottleId);
   }
 
+  const bottles = seer.discovered && seer.bottles.length > 0 && (
+        <section className="seer-bottles" aria-label="已调配的魔药">
+          <h3>已调配的魔药</h3>
+          {seer.bottles.map((bottle) => {
+            const action = seer.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id);
+            return (
+              <article className={`seer-bottle${action ? " seer-bottle-ready" : " seer-bottle-spent"}`} key={bottle.id}>
+                <SeerPotionVial empty={!action} />
+                <div>
+                  <h4>{bottle.title}</h4>
+                  <p>来源：{seerReadableText(bottle.source)}</p>
+                  <small>{bottle.status}</small>
+                </div>
+                {action && (
+                  <div>
+                    <button className="slice-button" disabled={busy || blocked || !action.enabled} onClick={() => openBottle(action)}>
+                      查看并准备服用「{bottle.title}」
+                    </button>
+                    <p className="seer-small-note">{action.cost}</p>
+                    {action.reason && <p className="seer-action-reason">{action.reason}</p>}
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </section>
+  );
+
   if (selectedBottle && selectedAction?.command.type === "CONSUME") {
     return (
       <section className="seer-panel seer-confirmation" aria-label="这瓶魔药的服用确认" key={selectedBottle.id}>
-        <div className="slice-eyebrow">服用前，请再确认一次</div>
-        <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-        <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
+        <header className="seer-potion-heading">
+          <SeerPotionVial />
+          <div>
+            <div className="slice-eyebrow">服用前，请再确认一次</div>
+            <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
+            <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
+          </div>
+        </header>
         <dl className="seer-facts">
           <div><dt>这一瓶</dt><dd>{selectedBottle.title}</dd></div>
           <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
@@ -212,6 +246,8 @@ export function SeerPanel({
         {!seer.promoted && <p className="slice-muted">首次晋升需先完成四整周生活。准备期间仍可工作、调查或休养。</p>}
       </section>
 
+      {!seer.promoted && bottles}
+
       {actions.length > 0 && (
         <div className="seer-actions" role="group" aria-label="成长行动">
           {actions.map((action) => (
@@ -233,32 +269,9 @@ export function SeerPanel({
 
       {seer.promoted && seer.practice && <PracticePanel practice={seer.practice} resources={resources} {...(dailyLife ? { dailyLife } : {})} busy={busy} blocked={blocked} onCommand={onCommand} />}
 
-      {seer.discovered && seer.bottles.length > 0 && (
-        <section className="seer-bottles" aria-label="已调配的魔药">
-          <h3>已调配的魔药</h3>
-          {seer.bottles.map((bottle) => {
-            const action = seer.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id);
-            return (
-              <article className="seer-bottle" key={bottle.id}>
-                <div>
-                  <h4>{bottle.title}</h4>
-                  <p>来源：{seerReadableText(bottle.source)}</p>
-                  <small>{bottle.status}</small>
-                </div>
-                {action && (
-                  <div>
-                    <button className="slice-button" disabled={busy || blocked || !action.enabled} onClick={() => openBottle(action)}>
-                      查看并准备服用「{bottle.title}」
-                    </button>
-                    <p className="seer-small-note">{action.cost}</p>
-                    {action.reason && <p className="seer-action-reason">{action.reason}</p>}
-                  </div>
-                )}
-              </article>
-            );
-          })}
-        </section>
-      )}
+
+
+      {seer.promoted && bottles}
 
       {seer.discovered && seer.formulaKnown && seer.formula.length > 0 && (
         <details className="seer-fold">

@@ -40,6 +40,45 @@
 }
 .seer-panel .seer-bottle p { margin: 0 0 8px; }
 .seer-bottle .slice-button { width: 100%; white-space: normal; }
+.seer-potion-vial { width: 110px; height: 132px; flex: none; color: #c1ad78; }
+.seer-vial-halo, .seer-vial-etch, .seer-vial-glass, .seer-vial-eye, .seer-vial-glint { fill: none; stroke: currentColor; }
+.seer-vial-halo { opacity: .4; stroke-dasharray: 2 5; }
+.seer-vial-glass { stroke-width: 2; fill: #c9d5cb0c; }
+.seer-vial-cork { fill: #85724b; stroke: currentColor; }
+.seer-vial-liquid { fill: #6b9189; opacity: .75; transform-origin: 75px 145px; }
+.seer-vial-liquid.is-empty { opacity: .15; transform: translateY(43px); }
+.seer-vial-glint { stroke: #e9efdf; opacity: .5; stroke-width: 2; }
+.seer-vial-eye { stroke-width: 1.5; }
+.seer-bottle-ready, .seer-potion-heading {
+  color: #eee6d2;
+  background: radial-gradient(ellipse at 0 70%, #374b46, transparent 60%), #242f2d;
+  border: 1px solid #8b7b57;
+}
+.seer-bottle-ready { grid-template-columns: 110px minmax(0, 1fr) minmax(240px, .85fr); align-items: center; }
+.seer-bottle-spent { grid-template-columns: 76px minmax(0, 1fr); align-items: center; }
+.seer-bottle-spent .seer-potion-vial { width: 76px; height: 94px; color: #766543; }
+.seer-bottle-ready small { color: #d5c498; }
+.seer-bottle-ready .slice-button { color: #252b28; background: #ddd0ab; border-color: #c0aa75; }
+.seer-panel .seer-bottle-ready .seer-action-reason { color: #edbdb1; }
+.seer-potion-heading { display: flex; align-items: center; gap: 24px; padding: 20px 24px; }
+.seer-potion-heading .slice-eyebrow { color: #d5c498; }
+.seer-potion-heading h3 { margin: 8px 0 12px; }
+.seer-panel .seer-potion-heading .seer-bottle-source { margin: 0; font-size: 17px; }
+.seer-potion-moment { display: flex; align-items: center; gap: 20px; padding: 8px 0; }
+.seer-potion-moment .seer-potion-vial { color: #766543; }
+.seer-potion-moment h3 { margin: 4px 0 8px; }
+.seer-potion-caption { color: #48635c; font-size: 16px; letter-spacing: .08em; }
+.seer-potion-moment.failure .seer-potion-caption { color: var(--slice-red); }
+.seer-potion-moment.failure .seer-vial-eye { stroke: var(--slice-red); }
+.seer-potion-moment.animate .seer-vial-liquid:not(.is-empty) { animation: seer-liquid-settle 850ms ease-out; }
+.seer-potion-moment.animate.success .seer-vial-halo { animation: seer-halo-settle 900ms ease-out; }
+.seer-potion-moment.animate.failure .seer-vial-eye { animation: seer-ink-settle 650ms ease-out; }
+@keyframes seer-liquid-settle { from { transform: translateY(18px) rotate(-7deg); opacity: .3; } to { transform: none; opacity: .75; } }
+@keyframes seer-halo-settle { from { opacity: 1; stroke-width: 3; } to { opacity: .4; stroke-width: 1; } }
+@keyframes seer-ink-settle { from { opacity: .2; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .seer-potion-moment.animate .seer-potion-vial * { animation: none; }
+}
 .seer-panel .seer-small-note { margin: 10px 0 0; font-size: 17px; }
 .seer-fold { border-top: 1px solid var(--slice-line); padding-top: 16px; }
 .seer-fold summary { cursor: pointer; min-height: 44px; }
@@ -80,6 +119,11 @@
   .seer-actions, .seer-bottle, .seer-facts { grid-template-columns: minmax(0, 1fr); }
   .seer-confirm-buttons button { width: 100%; }
   .seer-bottle { padding: 16px; }
+  .seer-bottle-ready { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; }
+  .seer-bottle-ready > div:last-child { grid-column: 1 / -1; }
+  .seer-bottle-ready .seer-potion-vial, .seer-potion-heading .seer-potion-vial, .seer-potion-moment .seer-potion-vial { width: 76px; height: 94px; }
+  .seer-potion-heading { gap: 14px; padding: 16px; }
+  .seer-potion-moment { align-items: flex-start; gap: 12px; }
 }
 
 .magician-action-list { display: grid; gap: 12px; margin-top: 16px; }

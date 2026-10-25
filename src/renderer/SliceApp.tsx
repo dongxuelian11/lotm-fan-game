@@ -201,6 +201,7 @@ import type {
   SlicePublicCombatRound as SliceCombatRound,
   SliceStance,
 } from "../domain/slice/types";
+import { SeerActionFeedback } from "./SeerPotionMoment";
 import { SeerPanel } from "./SeerPanel";
 import { seerFeedbackText, seerReadableText } from "./seer-feedback";
 import { TownPanel } from "./TownPanel";
@@ -7584,7 +7585,7 @@ export function SliceApp() {
               if (routes) { routes.open = true; routes.scrollIntoView({ block: "start" }); }
             }}>{ordinary ? "查看其他途径" : "查看成长卷宗与经历"}</a>}
             {(drawer === "SEER" || drawer === "TOWN") && actionResults.length > 0 && <section className="slice-action-feedback" role="status" aria-label="本次行动结果">
-              {actionResults.map(record => <p key={record.id}><strong>{record.title}</strong> {seerFeedbackText(record, state.caseArchive.length > 0)}</p>)}
+              {actionResults.map(record => <SeerActionFeedback key={record.id} record={record} firstCaseResolved={state.caseArchive.length > 0} milestones={drawer === "SEER" && (ordinary || (state.progression.pathwayId === "diviner" && state.progression.sequence === 9))} fast={fast} />)}
             </section>}
             {drawer === "SEER" && showingDetective && (state.progression.sequence===6||state.progression.sequence===5||state.progression.sequence===4) && state.detective && <PolymathDetectiveHistory detective={state.detective}/> }
             {drawer === "SEER" && showingDetective && state.progression.sequence!==6 && state.progression.sequence!==5 && state.progression.sequence!==4 && state.detective && (
