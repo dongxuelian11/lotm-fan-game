@@ -1693,3 +1693,14 @@ body {
 .slice-growth-routes[open] > summary { margin-bottom: 12px; }
 .slice-action-feedback { position: sticky; top: 0; z-index: 2; padding: 10px 16px; margin: 0 0 18px; background: #f5f0e4; border-left: 3px solid #63795e; box-shadow: 0 2px 8px #0001; font-size: 16px; }
 .slice-action-feedback p { margin: 4px 0; }
+
+.slice-growth-jump {
+  color: var(--slice-red);
+  text-decoration: underline;
+  text-underline-offset: .18em;
+}
+.slice-growth-jump:hover { color: var(--slice-ink); }
+.slice-growth-jump:focus-visible {
+  outline: 3px solid var(--slice-red);
+  outline-offset: 4px;
+}

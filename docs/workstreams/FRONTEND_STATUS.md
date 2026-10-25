@@ -144,3 +144,4 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 小丑定向17项测试、renderer类型检查与构建通过；该测试文件旧战斗断言同步为现存分开的灵性/纸张文本，战斗实现未改。
 - 原生1360、1280与1280大字模式均可同时读到行动成本和现金/行动；键盘焦点与关闭返回正常。未点击购买或服药，revision54状态/回执前后完全相同，窗口1360与常规字号已恢复。
 - 证据：`output/clown-preparation-20261025/QA-summary.json`。main/full-suite、CI、安装包和玩家验收未运行。
+- 同轮视觉复核追加：仅为既有 `.slice-growth-jump` 链接设置酒红/墨色、保留下划线并补明确键盘焦点，不修改全局链接或导航。最终renderer构建通过，1360原生链接颜色/焦点复核通过；窗口/字号恢复，rev54仍完全不变。
