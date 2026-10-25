@@ -78,6 +78,17 @@ beforeEach(() => { vi.spyOn(window, "scrollTo").mockImplementation(() => {}); })
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 
 describe("Seer commissions and continuing life", () => {
+  it("explains existing random mastery allocation before a choice, but does not repeat it on completed history", async () => {
+    const { onCommand } = panel(seer());
+    const note = "成功交付的掌握成长会随机分配给一项已知能力，不一定是本次使用的能力。";
+    const story = screen.getByRole("region", { name: "当前委托" });
+    expect(within(story).getByText(note)).toBeTruthy();
+    expect(within(story).getByRole("button", { name: /按投影开启灵视/ }).textContent).toContain("领域成本：1行动 · 2灵性");
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: "查看委托" }), "delivered");
+    expect(within(story).queryByText(note)).toBeNull();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
   it("recommends an enabled prepared original bottle ahead of further material work", () => {
     panel(seer({ promoted: false, actions: [
       { id: "work", label: "继续第二批劳务", cost: "1行动", enabled: true, reason: null, command: { type: "MATERIAL_WORK", batchId: "second" } },

@@ -75,6 +75,9 @@ function PracticePanel({
               </div>
             )}
             {selectedCase.choices.length > 0 && (
+              <p className="slice-muted seer-small-note">成功交付的掌握成长会随机分配给一项已知能力，不一定是本次使用的能力。</p>
+            )}
+            {selectedCase.choices.length > 0 && (
               <div className="seer-actions" role="group" aria-label="委托处理方式">
                 {selectedCase.choices.map((choice) => (
                   <div className="seer-action" key={choice.id}>
