@@ -102,6 +102,26 @@ beforeEach(() => { vi.spyOn(window, "scrollTo").mockImplementation(() => {}); })
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 
 describe("Clown progression dossier", () => {
+  it("pairs preparation costs with exact current resources without executing on focus", async () => {
+    const value = clown(), snapshot = JSON.stringify(value);
+    const { onCommand } = panel(value);
+    expect(screen.getByLabelText("晋升准备当前资源").textContent).toContain(resources.cash);
+    expect(screen.getByLabelText("晋升准备当前资源").textContent).toContain(`剩余行动${resources.actionsRemaining}`);
+    const action = screen.getByRole("button", { name: /请指导者讲解小丑配方/ });
+    expect(within(action).getByText(learn.cost)).toBeTruthy();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(action);
+    expect(onCommand).not.toHaveBeenCalled();
+    await userEvent.click(action);
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(learn.command);
+    expect(JSON.stringify(value)).toBe(snapshot);
+  });
+
+  it("does not add preparation budgeting to promoted practice", () => {
+    panel(clown({ promoted: true }));
+    expect(screen.queryByLabelText("晋升准备当前资源")).toBeNull();
+  });
+
   it("shows the public prerequisite without revealing an unknown formula or future abilities", () => {
     const value = clown({
       formula: [{ name: "未公开测试材料", quantity: 7, unit: "份" }],
@@ -274,7 +294,8 @@ describe("Clown progression dossier", () => {
     expect(submit).toHaveBeenCalledTimes(1);
     expect(submit.mock.calls[0]![0].payload).toEqual({ type: "CLOWN", command: { type: "RESCUE_FIGHT" } });
     const battle = await screen.findByRole("dialog", { name: "码头巷口 · 护送冲突" });
-    expect(within(battle).getByText(/灵性 15 \/ 45 · 纸张 7 张/)).toBeTruthy();
+    expect(within(battle).getByText(/灵性 15 \/ 45/)).toBeTruthy();
+    expect(within(battle).getByText("纸张 7 张")).toBeTruthy();
     expect(within(battle).getByRole("heading", { name: "公开的短棍持有者" })).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });

@@ -124,21 +124,27 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
       {clown.story && <section className="clown-story" aria-label="当前小丑情境"><h3>当前情境</h3><p>{clown.story}</p></section>}
 
       {actions.length > 0 && (
-        <div className="seer-actions" role="group" aria-label="小丑成长行动">
-          {actions.map((action) => (
-            <div className="seer-action" key={action.id}>
-              <button
-                className="slice-choice"
-                disabled={busy || blocked || !action.enabled}
-                onClick={() => onCommand(action.command)}
-                aria-describedby={action.reason ? `clown-reason-${action.id}` : undefined}
-              >
-                <strong>{action.label}</strong>
-                <span className="slice-modifiers">{action.cost}</span>
-              </button>
-              {action.reason && <p className="seer-action-reason" id={`clown-reason-${action.id}`}>{action.reason}</p>}
-            </div>
-          ))}
+        <div className={!clown.promoted ? "clown-preparation" : undefined}>
+          <div className={`seer-actions${actions.length === 1 && !clown.promoted ? " clown-single-action" : ""}`} role="group" aria-label="小丑成长行动">
+            {actions.map((action) => (
+              <div className="seer-action" key={action.id}>
+                <button
+                  className="slice-choice"
+                  disabled={busy || blocked || !action.enabled}
+                  onClick={() => onCommand(action.command)}
+                  aria-describedby={action.reason ? `clown-reason-${action.id}` : undefined}
+                >
+                  <strong>{action.label}</strong>
+                  <span className="slice-modifiers">{action.cost}</span>
+                </button>
+                {action.reason && <p className="seer-action-reason" id={`clown-reason-${action.id}`}>{action.reason}</p>}
+              </div>
+            ))}
+          </div>
+          {!clown.promoted && <dl className="clown-preparation-budget" aria-label="晋升准备当前资源">
+            <div><dt>剩余行动</dt><dd>{resources.actionsRemaining}</dd></div>
+            <div><dt>现有现金</dt><dd>{resources.cash}</dd></div>
+          </dl>}
         </div>
       )}
 
