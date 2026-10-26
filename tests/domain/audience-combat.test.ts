@@ -128,10 +128,10 @@ describe('audience S9 combat profile', () => {
     const { round } = resolveSliceCombatRound(state, 'ATTACK');
     expect(round.moves).toEqual([
       { actor: 'PLAYER', label: '普通打击', selfGain: 12, enemyReduction: 0 },
-      { actor: 'ENEMY', label: '短棍打击', selfGain: 16, enemyReduction: 0 },
+      { actor: 'ENEMY', label: '短棍打击', selfGain: 24, enemyReduction: 0 },
     ]);
     expect(round.playerAdvantage).toBe(127);
-    expect(round.enemyAdvantage).toBe(130);
+    expect(round.enemyAdvantage).toBe(133); // ordinary FIRST_CASE base109 + actual held-club24
     expect(state.combat!.enemyHealth).toBe(90);
   });
 
