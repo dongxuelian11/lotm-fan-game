@@ -1,4 +1,5 @@
 /* @vitest-environment jsdom */
+import { assertCombatRiskDisclosure, assertCombatHealth } from './combat-risk-assertions';
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
@@ -85,10 +86,9 @@ describe('Concealment Servant original Oswin, true resources and ordered bounded
       '继承黑暗毁灭（6S/知识18，65×原掌握）', '继承睡恐短时压力（5S/意志18，减32）',
       '继承有限厄运（4S/意志16，减22）', '同一原卷叶（先2S派出0贡献；后槽2S协助减22）',
     ]);
-    expect(stage.textContent?.replace(/\s+/g, ' ')).toContain(`健康 ${before.health} / 100`);
-    expect(stage.textContent?.replace(/\s+/g, ' ')).toContain(`健康 ${battle.enemyHealth} / 100`);
+    assertCombatHealth(stage, before.health, battle.enemyHealth);
     expect(within(stage).getByRole('heading', { name: battle.enemyName })).toBeTruthy();
-    const risk = within(stage).getByRole('region', { name: '伤势与恢复路线' }); expect(risk.closest('details')).toBeNull();
+    const risk = await assertCombatRiskDisclosure(stage, battle.consequenceWeights);
     for (const text of [`轻伤 ${battle.consequenceWeights.light}%`, `重伤 ${battle.consequenceWeights.heavy}%`, `死亡 ${battle.consequenceWeights.death}%`]) expect(risk.textContent).toContain(text);
     await userEvent.click(within(stage).getByText('查看公开轮盘与风险', { selector: 'summary' }));
     for (const entry of battle.enemyCountWheel) expect(within(stage).getByText(/^对手次数盘：/).textContent).toContain(`${entry.label} ${entry.weight}%`);

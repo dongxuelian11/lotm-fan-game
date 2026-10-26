@@ -1,4 +1,5 @@
 /* @vitest-environment jsdom */
+import { assertCombatHealth, assertCombatRiskDisclosure } from './combat-risk-assertions';
 import { readFileSync } from 'node:fs';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -206,6 +207,18 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     expect(healthBars.map((bar) => Number(bar.getAttribute('aria-valuenow'))))
       .toEqual([state.health, state.combat!.enemyHealth]);
     expect(container.textContent).not.toMatch(/伤害\s*[:：]?\s*\+?\d|伤害值|伤害\s*=\s*优势/);
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it('keeps exact health and lethal risk visible while recovery details open without a command', async () => {
+    const state = projectSliceState(firstCase()), before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    assertCombatHealth(dialog, state.health, state.combat!.enemyHealth, state.maxHealth);
+    const risk = await assertCombatRiskDisclosure(dialog, state.combat!.consequenceWeights);
+    for (const [label, weight] of [['轻伤', state.combat!.consequenceWeights.light], ['重伤', state.combat!.consequenceWeights.heavy], ['死亡', state.combat!.consequenceWeights.death]] as const) {
+      expect(risk.textContent).toContain(`${label} ${weight}%`);
+    }
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
     expect(JSON.stringify(state)).toBe(before);
   });
 
