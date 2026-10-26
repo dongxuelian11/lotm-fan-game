@@ -123,31 +123,6 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
 
       {clown.story && <section className="clown-story" aria-label="当前小丑情境"><h3>当前情境</h3><p>{clown.story}</p></section>}
 
-      {actions.length > 0 && (
-        <div className={!clown.promoted ? "clown-preparation" : undefined}>
-          <div className={`seer-actions${actions.length === 1 && !clown.promoted ? " clown-single-action" : ""}`} role="group" aria-label="小丑成长行动">
-            {actions.map((action) => (
-              <div className="seer-action" key={action.id}>
-                <button
-                  className="slice-choice"
-                  disabled={busy || blocked || !action.enabled}
-                  onClick={() => onCommand(action.command)}
-                  aria-describedby={action.reason ? `clown-reason-${action.id}` : undefined}
-                >
-                  <strong>{action.label}</strong>
-                  <span className="slice-modifiers">{action.cost}</span>
-                </button>
-                {action.reason && <p className="seer-action-reason" id={`clown-reason-${action.id}`}>{action.reason}</p>}
-              </div>
-            ))}
-          </div>
-          {!clown.promoted && <dl className="clown-preparation-budget" aria-label="晋升准备当前资源">
-            <div><dt>剩余行动</dt><dd>{resources.actionsRemaining}</dd></div>
-            <div><dt>现有现金</dt><dd>{resources.cash}</dd></div>
-          </dl>}
-        </div>
-      )}
-
       {clown.discovered && !clown.promoted && clown.bottles.length > 0 && (
         <section className="seer-bottles" aria-label="已调配的小丑魔药">
           <h3>已调配的小丑魔药</h3>
@@ -173,6 +148,31 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
             );
           })}
         </section>
+      )}
+
+      {actions.length > 0 && (
+        <div className={!clown.promoted ? `clown-preparation${actions.length > 1 ? " clown-preparation-multiple" : ""}` : undefined}>
+          <div className={`seer-actions${actions.length === 1 && !clown.promoted ? " clown-single-action" : ""}`} role="group" aria-label="小丑成长行动">
+            {actions.map((action) => (
+              <div className="seer-action" key={action.id}>
+                <button
+                  className="slice-choice"
+                  disabled={busy || blocked || !action.enabled}
+                  onClick={() => onCommand(action.command)}
+                  aria-describedby={action.reason ? `clown-reason-${action.id}` : undefined}
+                >
+                  <strong>{action.label}</strong>
+                  <span className="slice-modifiers">{action.cost}</span>
+                </button>
+                {action.reason && <p className="seer-action-reason" id={`clown-reason-${action.id}`}>{action.reason}</p>}
+              </div>
+            ))}
+          </div>
+          {!clown.promoted && <dl className="clown-preparation-budget" aria-label="晋升准备当前资源">
+            <div><dt>剩余行动</dt><dd>{resources.actionsRemaining}</dd></div>
+            <div><dt>现有现金</dt><dd>{resources.cash}</dd></div>
+          </dl>}
+        </div>
       )}
 
       {clown.discovered && !clown.promoted && <details className="seer-fold"><summary>查看服用风险与四档结果</summary><p>{clown.risk}</p></details>}

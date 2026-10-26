@@ -104,7 +104,9 @@ afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 describe("Clown progression dossier", () => {
   it("pairs preparation costs with exact current resources without executing on focus", async () => {
     const value = clown(), snapshot = JSON.stringify(value);
-    const { onCommand } = panel(value);
+    const { onCommand, container } = panel(value);
+    expect(container.querySelector(".clown-single-action")).toBeTruthy();
+    expect(container.querySelector(".clown-preparation-multiple")).toBeNull();
     expect(screen.getByLabelText("晋升准备当前资源").textContent).toContain(resources.cash);
     expect(screen.getByLabelText("晋升准备当前资源").textContent).toContain(`剩余行动${resources.actionsRemaining}`);
     const action = screen.getByRole("button", { name: /请指导者讲解小丑配方/ });
@@ -115,6 +117,32 @@ describe("Clown progression dossier", () => {
     await userEvent.click(action);
     expect(onCommand).toHaveBeenCalledExactlyOnceWith(learn.command);
     expect(JSON.stringify(value)).toBe(snapshot);
+  });
+
+  it("puts prepared bottles before spare preparations in reading and keyboard order", async () => {
+    const value = bottled();
+    value.actions.push(learn);
+    const { onCommand } = panel(value);
+    const bottles = screen.getByRole("region", { name: "已调配的小丑魔药" });
+    const preparations = screen.getByRole("group", { name: "小丑成长行动" });
+    expect(bottles.compareDocumentPosition(preparations) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(within(bottles).getAllByRole("button")[0]);
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("uses full-width multiple preparations without changing projected costs or locks", async () => {
+    const locked = { ...learn, id: "locked", label: "备用批次", enabled: false, reason: "现有资源不足", cost: "领域原费用" };
+    const { onCommand, container } = panel(clown({ actions: [learn, locked] }));
+    expect(container.querySelector(".clown-preparation-multiple")).toBeTruthy();
+    expect(screen.getByText(locked.cost)).toBeTruthy();
+    expect(screen.getByText(locked.reason)).toBeTruthy();
+    const disabled = screen.getByRole("button", { name: /备用批次/ }) as HTMLButtonElement;
+    expect(disabled.disabled).toBe(true);
+    fireEvent.click(disabled);
+    expect(onCommand).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: /请指导者/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(learn.command);
   });
 
   it("does not add preparation budgeting to promoted practice", () => {
