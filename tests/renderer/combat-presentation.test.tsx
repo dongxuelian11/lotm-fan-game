@@ -222,6 +222,25 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     expect(JSON.stringify(state)).toBe(before);
   });
 
+  it('keeps projected bell facts distinct from current stance status without submitting', async () => {
+    // Directed presentation-only projection; not a captured S4 campaign or domain transition.
+    const state = projectSliceState(firstCase());
+    state.combat!.bizarro = { enemyName: state.combat!.enemyName, enemySpirituality: 40,
+      veil: false, witnessesPresent: 0, invalidReason: null, originalBellId: 'display-only:original-bell', mode: 'CHALLENGE' };
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const toggle = within(dialog).getByText('查看公开轮盘与风险', { selector: 'summary' });
+    fireEvent.click(toggle);
+    const details = toggle.closest('details')!;
+    expect(details.open).toBe(true);
+    const stance = within(dialog).getByRole('status', { name: '当前姿态' });
+    const facts = within(details).getByRole('status');
+    expect(facts).not.toBe(stance);
+    expect(facts.textContent).toBe('原钟：display-only:original-bell；对手灵性40；幻壳无；实际见证0人。本次是非晋升挑战。');
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
   it('uses the selected player portrait and the named first-case enemy portrait', () => {
     const state = projectSliceState(firstCase());
     render(<CombatStage state={state} round={null} fast={false} />);
