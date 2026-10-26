@@ -1,4 +1,5 @@
 /* @vitest-environment jsdom */
+import { assertCombatRiskDisclosure } from './combat-risk-assertions';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -202,8 +203,9 @@ describe('medical recovery navigation through the actual SliceBridge', () => {
     expect(view.recovery.nextLoss.weights).toEqual(view.combat!.consequenceWeights);
     await mount(game);
     const battle = screen.getByRole('dialog', { name: view.combat!.title ?? "普通人追击" });
-    const banner = notice(battle);
-    expect(within(banner).getByText(/轻伤 35% · 重伤 30% · 死亡 35%/).closest('details')).toBeNull();
+    const banner = await assertCombatRiskDisclosure(battle, view.combat!.consequenceWeights);
+    expect(banner).toBe(notice(battle));
+    expect(within(banner).getByText(/轻伤 35% · 重伤 30% · 死亡 35%/)).toBeTruthy();
     expect(banner.textContent).toMatch(/不是每回合死亡概率|并非每回合死亡概率/);
     expectNoNavigationOrExit(game, before);
     expect(screen.getByRole('button', { name: '确认姿态，结算完整回合' })).toBeTruthy();
