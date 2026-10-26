@@ -316,6 +316,34 @@ describe('ordinary duel round resolution', () => {
     expect(state.combat!.enemyHealth).toBe(90); // injury roll only, not24HP per strike
   });
 
+  it.each([['mother', 1], ['mother', 0], ['justiciar', null]] as const)(
+    'keeps unsupported %s sequence %s on the exact ordinary first-case budget', (pathwayId, sequence) => {
+      const ordinary = fixture(); ordinary.town.clubLocation = 'HAND';
+      const unsupported = structuredClone(ordinary);
+      unsupported.progression.pathwayId = pathwayId; unsupported.progression.sequence = sequence;
+      scriptRolls(1, 1, 1, 1, 1, 1);
+      const expected = resolveSliceCombatRound(ordinary, 'ATTACK');
+      vi.restoreAllMocks();
+      scriptRolls(1, 1, 1, 1, 1, 1);
+      expect(resolveSliceCombatRound(unsupported, 'ATTACK')).toEqual(expected);
+      expect(expected.round.moves.map(move => move.selfGain)).toEqual([24, 24]);
+      expect(unsupported.combat).toEqual(ordinary.combat);
+      expect(unsupported.random).toEqual(ordinary.random);
+      expect(unsupported.health).toBe(ordinary.health);
+      expect(unsupported.spirituality).toBe(ordinary.spirituality);
+    },
+  );
+
+  it('keeps a recognized Cultivator profile outside ordinary first-case tuning', () => {
+    const state = fixture();
+    state.progression.pathwayId = 'mother'; state.progression.sequence = 9;
+    state.spirituality = 30;
+    scriptRolls(1, 1, 1, 1, 1, 1);
+    const { round } = resolveSliceCombatRound(state, 'ATTACK');
+    expect(round.moves.find(move => move.actor === 'ENEMY')!.selfGain).toBe(16);
+    expect(round.enemyAdvantage).toBe(130); // unchanged carrier base114 plus original club16
+  });
+
   it('accumulates effects only for the current round without applying strike health damage twice', () => {
     const state = fixture();
     // 3 actions each: player strike/block/opening, enemy block/distance/miss.
