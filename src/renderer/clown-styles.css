@@ -73,3 +73,26 @@
   gap: 6px 16px;
 }
 .clown-preparation-multiple .clown-preparation-budget dd { margin: 0; }
+
+.clown-panel .clown-paper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 42%);
+  gap: 16px 24px;
+  align-items: center;
+}
+.clown-supplies .slice-choice { min-height: 0; padding: 12px 16px; }
+.clown-supplies .seer-action { min-height: 0; }
+.clown-panel .clown-practices > h3, .clown-panel .clown-escort > h3 { margin: 0 0 18px; }
+.clown-panel .clown-practices .slice-modifiers { color: var(--slice-ink); line-height: 1.65; }
+.clown-escort {
+  border: 1px solid var(--slice-line);
+  border-top: 3px double var(--slice-red);
+  padding: 22px;
+  background: var(--slice-paper-light);
+}
+.clown-escort > p { margin: 0 0 22px; line-height: 1.7; }
+.clown-risk-action .slice-choice { border-left: 3px solid var(--slice-red); }
+@media (max-width: 900px) {
+  .clown-panel .clown-paper { grid-template-columns: minmax(0, 1fr); }
+  .clown-escort { padding: 16px; }
+}
