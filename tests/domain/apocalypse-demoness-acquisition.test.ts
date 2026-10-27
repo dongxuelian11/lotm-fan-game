@@ -7,7 +7,7 @@ import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.
 import { assertValidSliceState, createSliceRun, projectSliceState } from '../../src/domain/slice/index.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import {
-  APOCALYPSE_DEMONESS_INHERITED_ABILITY_IDS, createApocalypseDemonessState, hasApocalypseDemonessLock, projectApocalypseDemoness,
+  APOCALYPSE_DEMONESS_INHERITED_ABILITY_IDS, createApocalypseDemonessState, hasApocalypseDemonessLock, projectApocalypseDemoness, resolveApocalypseDemonessOriginals,
   validateApocalypseDemonessAcquisitionJournal, validateApocalypseDemonessCommand, validateApocalypseDemonessSource, validateApocalypseDemonessState,
   apocalypseDemonessAcquisitionBlock, apocalypseDemonessCompletedAcquisitionBudgetMatches, apocalypseDemonessFinanceSnapshot,
 } from '../../src/domain/apocalypse-demoness/index.js';
@@ -62,7 +62,7 @@ describe('Apocalypse Demoness genuine Demoness source and strict commands', () =
       { ...dose, bottleId: 'apocalypse-demoness-potion-0' }, { ...dose, transformGender: true }, { type: 'FREE_REMOTE_RETURN' }, { type: 'REFILL_OLD_LOAD' },
     ]) expect(validateApocalypseDemonessCommand(command)).toBe(false);
     expect(validateApocalypseDemonessCommand(dose)).toBe(true);
-    expect(APOCALYPSE_DEMONESS_PRICES).toEqual({ guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100 });
+    expect(APOCALYPSE_DEMONESS_PRICES).toEqual({ guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100, recovery: 120, recoveryDrug: 900, recoveryLabourBalance: 90 });
   });
 });
 
@@ -180,22 +180,35 @@ describe('Apocalypse Demoness per-bottle acquisition and actual weekly economy',
     for (const id of APOCALYPSE_DEMONESS_INHERITED_ABILITY_IDS) expect(e.after.mastery[id]).toBe(e.before.mastery[id]);
     expect(validateApocalypseDemonessAcquisitionJournal(s)).toBe(true); assertValidSliceState(s);
   }, 60_000);
-  it('requires three real failed bottles, paid replacement and the next real week in an isolated directed branch', () => {
+  it('requires three real failed bottles, paid same-original recovery and the next real week in an isolated directed branch', () => {
     let s = directedPrepared(['FAILURE', 'GREAT_FAILURE', 'FAILURE']);
     for (let number = 1; number <= 3; number++) {
       s = ae(s, { type: 'CONSUME', bottleId: `apocalypse-demoness-potion-${number}`, confirmed: true });
       expect(s.progression.sequence).toBe(2);
-      if (number < 3) { rejectApocalypseDemoness(s, { type: 'REQUEST_SUPPLY' }); s = prepareBottle(s, `apocalypse-demoness-potion-${number + 1}`); }
+      if (number < 3) {
+        rejectApocalypseDemoness(s, { type: 'REQUEST_SUPPLY' });
+        rejectApocalypseDemoness(s, { type: 'REQUEST_RECOVERY_V1', bottleId: `apocalypse-demoness-potion-${number}` });
+        s = prepareBottle(s, `apocalypse-demoness-potion-${number + 1}`);
+      }
     }
     expect(s.apocalypseDemoness.bottles.map(b => b.outcome)).toEqual(['FAILURE', 'GREAT_FAILURE', 'FAILURE']);
-    s = ready(s, { ap: 2, cash: 100 });
-    s = ae(s, { type: 'REQUEST_SUPPLY' }); const request = journal(s).at(-1)!;
-    expect(request.before.cash - request.after.cash).toBe(100); expect(request.before.actions - request.after.actions).toBe(1);
-    rejectApocalypseDemoness(s, { type: 'RECEIVE_SUPPLY' }); expect(s.apocalypseDemoness.bottles).toHaveLength(3);
-    s = ready(s, { afterWeek: request.week }); s = ae(s, { type: 'RECEIVE_SUPPLY' });
-    const delivery = journal(s).at(-1)!; expect(delivery.week).toBeGreaterThan(request.week); expect(delivery.before).toEqual(delivery.after);
-    expect(s.apocalypseDemoness.bottles).toHaveLength(6);
-    expect(s.apocalypseDemoness.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
+    const originals = structuredClone(s.apocalypseDemoness.bottles), bottleId = 'apocalypse-demoness-potion-3';
+    const failedReceipt = journal(s).find(e => e.command.type === 'CONSUME' && e.command.bottleId === bottleId)!;
+    s = ready(s, { ap: 2, cash: 120 });
+    rejectApocalypseDemoness(s, { type: 'REQUEST_SUPPLY' }); rejectApocalypseDemoness(s, { type: 'RECEIVE_SUPPLY' });
+    s = ae(s, { type: 'REQUEST_RECOVERY_V1', bottleId }); const request = journal(s).at(-1)!;
+    expect(request.after).toEqual({ ...request.before, cash: request.before.cash - 120, actions: request.before.actions - 1 });
+    expect(request.recoverySite).toMatchObject({ sourceBottleId: bottleId, originalBottleId: bottleId, characteristicId: `${bottleId}:characteristic`, sourceReceiptRevision: failedReceipt.revision });
+    rejectApocalypseDemoness(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId }); expect(s.apocalypseDemoness.bottles).toEqual(originals);
+    s = ready(s, { afterWeek: request.week }); s = ae(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId });
+    const delivery = journal(s).at(-1)!; expect(delivery.week).toBeGreaterThan(request.week);
+    expect(delivery.after).toEqual({ ...delivery.before, actions: delivery.before.actions - 1 });
+    expect(s.apocalypseDemoness.bottles).toHaveLength(4); expect(s.apocalypseDemoness.bottles.slice(0, 3)).toEqual(originals);
+    expect(s.apocalypseDemoness.bottles[3]).toMatchObject({ id: 'apocalypse-demoness-potion-4', status: 'SUPPLIER', labourSteps: 0, acquiredWeek: null,
+      recovery: { sourceBottleId: bottleId, originalBottleId: bottleId, characteristicId: `${bottleId}:characteristic`, sourceReceiptRevision: failedReceipt.revision, requestedWeek: request.week, recoveredWeek: delivery.week } });
+    const lineage = resolveApocalypseDemonessOriginals(s)!;
+    expect(lineage.characteristics).toHaveLength(3); expect(lineage.characteristics.map(c => c.originalBottleId)).toEqual(originals.map(b => b.id));
+    expect(lineage.characteristics[2]).toMatchObject({ originalBottleId: bottleId, latestBottleId: 'apocalypse-demoness-potion-4', holder: 'SUPPLIER' });
     expect(originalDemonessRoots(s)).toEqual(originalDemonessRoots(originalCalamity())); assertValidSliceState(s);
   }, 60_000);
   it('ordinary S1 rest keeps the real120 spirituality ceiling and does not refill site energy', () => {
@@ -218,15 +231,29 @@ describe('Apocalypse Demoness per-bottle acquisition and actual weekly economy',
     }
     expect(view.inheritedTools).toContain('CD2-COMBAT-PLATE'); expect(view.inheritedTools).toContain('余3次');
   }, 60_000);
-  it('does not issue premature or free replacement originals', () => {
+  it('does not issue premature or free recovery carriers or add original characteristics', () => {
     const s = taught(); rejectApocalypseDemoness(s, { type: 'REQUEST_SUPPLY' }); rejectApocalypseDemoness(s, { type: 'RECEIVE_SUPPLY' });
+    rejectApocalypseDemoness(s, { type: 'REQUEST_RECOVERY_V1', bottleId: dose.bottleId });
     expect(s.apocalypseDemoness.bottles).toHaveLength(3); expect(s.apocalypseDemoness.resupply).toEqual({ requestedWeek: null, deliveries: 0 });
     const finish = promoted();
-    for (const e of journal(finish).filter(e => e.command.type === 'REQUEST_SUPPLY')) {
-      expect(e.before.cash - e.after.cash).toBe(100); expect(e.before.actions - e.after.actions).toBe(1);
-      const delivery = journal(finish).find(d => d.command.type === 'RECEIVE_SUPPLY' && d.revision > e.revision)!;
-      expect(delivery.week).toBeGreaterThan(e.week); expect(delivery.before).toEqual(delivery.after);
+    const requests = journal(finish).filter(e => e.command.type === 'REQUEST_RECOVERY_V1');
+    expect(requests.length).toBeGreaterThan(0);
+    expect(journal(finish).filter(e => e.command.type === 'REQUEST_SUPPLY' || e.command.type === 'RECEIVE_SUPPLY')).toEqual([]);
+    for (const e of requests) {
+      const sourceBottleId = e.recoverySite!.sourceBottleId;
+      expect(e.command).toEqual({ type: 'REQUEST_RECOVERY_V1', bottleId: sourceBottleId });
+      expect(e.after).toEqual({ ...e.before, cash: e.before.cash - 120, actions: e.before.actions - 1 });
+      const source = journal(finish).find(d => d.command.type === 'CONSUME' && d.command.bottleId === sourceBottleId)!;
+      expect(['FAILURE', 'GREAT_FAILURE']).toContain(source.check!.tier); expect(source.after.sequence).toBe(2); expect(source.revision).toBeLessThan(e.revision);
+      const delivery = journal(finish).find(d => d.command.type === 'RECOVER_CHARACTERISTIC_V1' && d.command.bottleId === sourceBottleId && d.revision > e.revision)!;
+      expect(delivery.week).toBeGreaterThan(e.week); expect(delivery.after).toEqual({ ...delivery.before, actions: delivery.before.actions - 1 });
+      const carrier = finish.apocalypseDemoness.bottles.find(b => b.recovery?.sourceBottleId === sourceBottleId)!;
+      expect(carrier.recovery).toMatchObject({ sourceBottleId, originalBottleId: e.recoverySite!.originalBottleId, characteristicId: e.recoverySite!.characteristicId,
+        sourceReceiptRevision: source.revision, requestedWeek: e.week, recoveredWeek: delivery.week });
     }
+    expect(finish.apocalypseDemoness.bottles.slice(0, 3).every(b => b.status === 'CONSUMED' && ['FAILURE', 'GREAT_FAILURE'].includes(b.outcome!))).toBe(true);
+    expect(finish.apocalypseDemoness.bottles.filter(b => !b.recovery)).toHaveLength(3);
+    expect(resolveApocalypseDemonessOriginals(finish)!.characteristics).toHaveLength(3);
     expect(new Set(finish.apocalypseDemoness.bottles.map(b => b.id)).size).toBe(finish.apocalypseDemoness.bottles.length);
   }, 60_000);
 });

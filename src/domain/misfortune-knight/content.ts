@@ -5,7 +5,10 @@ import type { MisfortuneKnightAbilityId, MisfortuneKnightPreparationId } from '.
  * a direct numbered sentence. Formula, ritual and ordinary S1 abilities remain
  * unknown. The finite room activities below are original game mechanics. */
 export const MISFORTUNE_KNIGHT_GUIDE = CONCEALMENT_SERVANT_GUIDE;
-export const MISFORTUNE_KNIGHT_PRICES = { guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100 } as const;
+export const MISFORTUNE_KNIGHT_PRICES = { guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100, recovery: 120, recoveryDrug: 900, recoveryLabourBalance: 90 } as const;
+/** Stage213 is planned on schema210; the central marker is owned by integration. */
+export const MISFORTUNE_KNIGHT_RECOVERY_SCHEMA_VERSION = 210;
+export const MISFORTUNE_KNIGHT_RECOVERY_SITE_ID = 'BACKLUND_ORIGINAL_ROOM_HANDOVER' as const;
 export const MISFORTUNE_KNIGHT_MIN_CONCEALMENT_SERVANT_WEEKS = 12;
 export const MISFORTUNE_KNIGHT_LABOUR_STEPS = 5;
 export const MISFORTUNE_KNIGHT_BOTTLE_IDS = ['misfortune-knight-potion-1', 'misfortune-knight-potion-2', 'misfortune-knight-potion-3'] as const;
@@ -32,4 +35,4 @@ export const MISFORTUNE_KNIGHT_INHERITED_ABILITIES = [
   ['darkness.s3.dark-dissolution', '黑暗消融', '只有原规则支持的实际目标可受影响。'], ['darkness.s3.sleep-fear', '睡眠与恐惧', '作用于真实精神，受抵抗和资源条件限制。'],
   ['darkness.s2.bounded-concealment', '有限隐秘', '暂时遮蔽有限原场，不删除身体、所有权或历史。'], ['darkness.s2.trace-veil', '有限遮踪', '只延迟实际存在的弱检索，不凭空创造灵体。'],
 ].map(([id, label, description]) => ({ id: id!, label: label!, description: description! }));
-export const MISFORTUNE_KNIGHT_CONSUMPTION_RISK = '隐秘之仆消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原18项掌握和隐秘之仆消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通休养。原人、卷叶和旧材料不补充。全部原瓶失败后须付1行动与100便士申请下一批，至少跨一真实周才有新瓶到货。';
+export const MISFORTUNE_KNIGHT_CONSUMPTION_RISK = '隐秘之仆消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原18项掌握和隐秘之仆消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通休养。原人、卷叶和旧材料不补充。最初三份原特性固定，全部原瓶失败后可付1行动、120便士调查指定最新失败载体，在赛琳指引下当面核对原失败回执与原交接处实际留存及保管；至少隔一真实周再付1行动原地核验封存同一份特性。未核实、原地受阻时不能领取。每次新普通药物与调配服务另付900便士，或本次五项新劳动后90便士；当周准备仍需150便士和1行动。新载体不产生第四份特性，旧费用、劳务、随机结果、原瓶与失败记录全部保留。可离开继续工作筹资及普通休养，不必支付才能退出。';

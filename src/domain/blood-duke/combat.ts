@@ -1,3 +1,5 @@
+import { publicPryerFields as publicFields, publicPryerInjury } from '../sage/life.js';
+import { publicAbyssOriginalSite } from './public.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
@@ -394,6 +396,23 @@ export function bloodDukeCombatConsequence(round: SliceCombatRound): string {
   const whisper = o.playerActions.filter(a => a.id === INTERFERENCE).reduce((n, a) => n + a.appliedAmount, 0), chorus = o.playerActions.filter(a => a.id === RESTRAINT).reduce((n, a) => n + a.appliedAmount, 0);
   return roundOpening(o.source) + text + ` 本轮情绪干扰实际减势${whisper}，自我约束实际作用${chorus}；未触发准备不冒充实际生效。费用、原恶魔负荷、原伤及原对手结局保留，未用窗口随回合结束失效。`;
 }
+function publicBloodDukeAction(a: BloodDukePlayerAction | BloodDukeEnemyAction) { return {
+  ...publicFields(a, ['label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'order', 'travelMetres', 'atSeconds', 'elapsedSeconds', 'paidCost', 'mindCost', 'physicalFactor', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'enemySpiritualityAfter', 'chargeGranted', 'chargeConsumedByOrder', 'chargeCancelledByOrder', 'applied', 'appliedAmount']),
+  rolls: [...a.rolls], consumedEffectOrders: [...a.consumedEffectOrders],
+}; }
+export function projectBloodDukePlayerAction(a: BloodDukePlayerAction) { return {
+  ...publicBloodDukeAction(a), ...publicFields(a, ['id', 'attempted', 'succeeded', 'resisted', 'mode', 'prepared', 'strainCost']),
+}; }
+export function projectBloodDukeEnemyAction(a: BloodDukeEnemyAction) { return {
+  ...publicBloodDukeAction(a), ...publicFields(a, ['planned', 'actual', 'attackKind', 'succeeded', 'emotionBefore', 'emotionAfter']),
+}; }
+export function projectBloodDukeRoundOutcome(o: BloodDukeRoundOutcome) { return {
+  ...publicFields(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerHealthAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'playerRiskAfter', 'enemyRiskAfter', 'restraintAttempted', 'interferenceAttempted', 'guardAttempted', 'playerStrainAfter', 'emotionAfter', 'breathUses', 'clockSecondsAfter', 'elapsedSeconds']),
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicPryerInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicPryerInjury),
+  powerUses: publicFields(o.powerUses, ['SILVER_THRUST', 'SILVER_ARMOR']), expiredEffectOrders: [...o.expiredEffectOrders], rootAfter: publicAbyssOriginalSite(o.rootAfter),
+  playerActions: o.playerActions.map(projectBloodDukePlayerAction), enemyActions: o.enemyActions.map(projectBloodDukeEnemyAction),
+}; }
+export type BloodDukePublicRoundOutcome = ReturnType<typeof projectBloodDukeRoundOutcome>;
 export function projectBloodDukeCombat(s: SliceState) {
   const e = s.bloodDuke.encounter, visible = isBloodDuke(s);
   const last = s.combat?.encounterId === 'BLOOD_DUKE_DISPUTE' ? s.combat.lastRound?.bloodDukeOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.bloodDukeOutcome : null;
@@ -402,7 +421,7 @@ export function projectBloodDukeCombat(s: SliceState) {
     enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null,
     powerUses: visible ? { ...e.powerUses } : null, originalExit: true, pursuit: false, distanceMetres: s.blatherer.life.playerLocation === 'START' ? 6 : 2, automaticAllyImmunity: false,
     alliesPresent: visible ? Number(s.blatherer.life.volunteer.location !== 'OUTSIDE') + Number(s.blatherer.life.guide.location !== 'OUTSIDE') : 0,
-    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...structuredClone(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...structuredClone(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
+    lastActionSequence: visible && last ? [...last.playerActions.map(a => ({ ...projectBloodDukePlayerAction(a), actor: 'PLAYER' as const })), ...last.enemyActions.map(a => ({ ...projectBloodDukeEnemyAction(a), actor: 'ENEMY' as const }))].sort((a, b) => a.order - b.order) : [],
     countWheel: BLOOD_DUKE_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: BLOOD_DUKE_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: BLOOD_DUKE_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
     summary: visible ? '双方每轮1至6动作，每动作5秒，每轮60秒。沿用原有六槽相对权重；防守姿态用自我约束替换硬皮槽，控制姿态用情绪干扰替换低语槽。两项新能力各付6灵性、2精神，意志18，每轮各最多尝试一次；情绪干扰还可被抵抗。加雷斯能亲自平复情绪并清除未生效的干扰。未触发窗口在回合末结束，费用保留。只有继续交战时本人恢复12灵性，对手不恢复；身体伤势、死亡与原恶魔负荷均保留。' : '' };
 }

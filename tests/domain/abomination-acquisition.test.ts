@@ -158,19 +158,20 @@ describe('Abomination independent bottles and authenticated original room', () =
     expect(commands.some(c => c.type === 'EVENT_CHOICE' && (c.choiceId === 'PAY' || c.choiceId === 'CREDIT'))).toBe(false);
     expect(oldChainedRoots(s)).toEqual(oldChainedRoots(source)); expect(source.cash).toBe(730); expect(source.health).toBe(100); assertValidSliceState(s);
   }, 240_000);
-  it('requires all three real failed bottles and a real following week for independent resupply', () => {
+  it('requires all three real failures and a real following week to recover the same original', () => {
     const initial = directedInitial2('THREE_FAILURES'); initial.actionsRemaining = initial.weeklyBudget = 3; // Explicit pre-journal UNIT budget.
     let s = ab(initial, { type: 'LEARN_GUIDANCE' }); rejectAbomination(s, { type: 'REQUEST_SUPPLY' });
     for (let number = 1; number <= 3; number++) {
       const bottleId = `abomination-potion-${number}`; s = prepareBottle(s, bottleId); s = ab(s, { type: 'CONSUME', bottleId, confirmed: true });
       expect(s.progression.sequence).toBe(2);
     }
-    s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 });
-    const before = s.cash; s = ab(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100);
-    const requested = s.abomination.resupply.requestedWeek!; rejectAbomination(s, { type: 'RECEIVE_SUPPLY' });
-    s = ready(s, { afterWeek: requested }); s = ab(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.abomination.bottles).toHaveLength(6); expect(s.abomination.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.abomination.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
+    s = ready(s, { ap: 2, cash: 150, health: 100, mind: 100 });
+    const before = s.cash; s = ab(s, { type: 'REQUEST_RECOVERY_V1', bottleId: 'abomination-potion-1' }); expect(s.cash).toBe(before - 120);
+    const requested = s.abomination.resupply.requestedWeek!; rejectAbomination(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: 'abomination-potion-1' });
+    s = ready(s, { ap: 2, cash: 30, afterWeek: requested }); s = ab(s, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: 'abomination-potion-1' });
+    expect(s.abomination.bottles).toHaveLength(4); expect(s.abomination.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
+    expect(s.abomination.bottles[3]).toMatchObject({ id: 'abomination-recovery-1', status: 'SUPPLIER', labourSteps: 0, acquiredWeek: null,
+      recovery: { sourceBottleId: 'abomination-potion-1', originalBottleId: 'abomination-potion-1', characteristicId: 'AB225-CHAR-1' } });
     expect(validateAbominationState(s)).toBe(true);
   }, 240_000);
   it('closes old actions and rejectsS0, wrong path and invented promotion state', () => {

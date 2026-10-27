@@ -5,9 +5,11 @@ import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { stableStringify } from '../../src/domain/canonical.js';
-import { assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
+import { applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
+import { validateApocalypseDemonessAcquisitionJournal } from '../../src/domain/apocalypse-demoness/index.js';
+import { apocalypseDemonessOriginalSnapshot, validateApocalypseDemonessLifeState } from '../../src/domain/apocalypse-demoness/life.js';
 import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
@@ -152,6 +154,9 @@ const expected = {
     }
   ]
 };
+const archivedRepresentatives = new Set([
+  'consume-apocalypse-demoness-potion-6', 'pulse-containment-apply_pulse', 'mirror-buffer-apply_load',
+]);
 interface CaptureIntegrity {
   naturalSha256: string; producerSha256: string; commandsSha256: string; publicSha256: string;
   boundaryIndexSha256: string; boundaryStepsSha256: string; transitionsSha256: string;
@@ -194,10 +199,10 @@ function publicControl(state: SliceState, intent: SliceIntent): void {
   else throw new Error(`Unexpected representative command: ${JSON.stringify(intent)}`);
 }
 
-// The specialized apocalypse-demoness-save.mjs run verifies every named alias
-// and unique SQLite transition. Vitest independently pins every immutable file
-// and exercises only nine literal observed representatives, without duplicating
-// the exhaustive hundreds-of-transactions external verification job.
+// The historical apocalypse-demoness-save.mjs capture verifier covers every
+// named alias and unique transition. Current Vitest pins all immutable files,
+// replays six still-legal representatives, and strictly imports/reopens the
+// three archived fourth-plus-stock stage transitions without enabling them.
 describe('Apocalypse Demoness all-member immutable capture integrity and representative SQLite recovery', () => {
   it('pins every member, exact585 source, natural487 ancestry, frozen producer and complete unique/alias index', async () => {
     expect(await captureFileHash(SOURCE)).toBe(SOURCE_SHA); expect(await captureFileHash(PRIOR)).toBe(PRIOR_SHA);
@@ -253,7 +258,9 @@ describe('Apocalypse Demoness all-member immutable capture integrity and represe
     expect(new Set(representativeSteps).size).toBe(expected.representatives.length); expect(representativeSteps.length).toBeLessThan(transitions.length);
   }, 240_000);
 
-  it.each(expected.representatives)('$name survives actual rollback, reopen, commit, idempotent retry and stale rejection', async observed => {
+  it.each(expected.representatives.map(observed => ({ ...observed, verification: archivedRepresentatives.has(observed.name)
+    ? 'retains its historical receipt and strict SQLite reopen while live resubmission stays closed'
+    : 'survives actual rollback, reopen, commit, idempotent retry and stale rejection' })))('$name $verification', async observed => {
     const filename = boundaries[observed.name]!;
     const path = capturePath(filename), originalHash = await captureFileHash(path); expect(originalHash).toBe(integrity.files[filename]);
     const rawBefore = readObjectEntry<SliceState>(path, 'beforeLast'), rawFinal = readObjectEntry<SliceState>(path, 'final');
@@ -261,11 +268,89 @@ describe('Apocalypse Demoness all-member immutable capture integrity and represe
     const save = boundaryFile(filename); expect(save.count).toBe(observed.step); same(save.intent, commands[save.count - 1]); same(save.intent, observed.intent);
     expect(captureValueHash(rawBefore)).toBe(observed.beforeSha256); expect(captureValueHash(rawFinal)).toBe(observed.finalSha256);
     expect(save.final.status).toBe(observed.status); expect(save.final.revision).toBe(save.before.revision + 1);
-    if (save.count > PREFIX_COUNT) publicControl(save.before, save.intent); else same(save.final, current(source('final')));
-    exerciseSqlite(save.before, save.intent, save.final, `apocalypse-demoness199:${save.count}`);
+    if (archivedRepresentatives.has(observed.name)) {
+      assertArchivedTransition(save.before, save.intent, save.final);
+      exerciseArchivedSqlite(save.before, save.intent, save.final, `apocalypse-demoness199:${save.count}`);
+    } else {
+      if (save.count > PREFIX_COUNT) publicControl(save.before, save.intent); else same(save.final, current(source('final')));
+      exerciseSqlite(save.before, save.intent, save.final, `apocalypse-demoness199:${save.count}`);
+    }
     expect(await captureFileHash(path)).toBe(originalHash);
   }, 80_000);
 });
+
+/** Strict journal compatibility admits original fourth-plus captures as history,
+ * never as new public actions or as three-original recovery carriers. */
+function assertArchivedTransition(before: SliceState, intent: SliceIntent, final: SliceState): void {
+  if (intent.type !== 'APOCALYPSE_DEMONESS') throw new Error('Only the three named archived stage actions use this path.');
+  expect(validateSlicePayload(intent)).toBe(true);
+  for (const state of [before, final]) {
+    assertValidSliceState(state); expect(validateApocalypseDemonessAcquisitionJournal(state)).toBe(true);
+    expect(validateApocalypseDemonessLifeState(state)).toBe(true);
+    expect(state.apocalypseDemoness.bottles).toHaveLength(6);
+    expect(state.apocalypseDemoness.bottles.slice(3).every(b => b.recovery === undefined)).toBe(true);
+    expect(projectSliceState(state).apocalypseDemoness.actions).toEqual([]);
+    const hash = captureValueHash(state);
+    expect(() => applySliceIntent(state, intent)).toThrow(); expect(captureValueHash(state)).toBe(hash);
+  }
+  same(final.apocalypseDemoness.sourceHistory, before.apocalypseDemoness.sourceHistory);
+  same(final.apocalypseDemoness.sourceScene, before.apocalypseDemoness.sourceScene);
+  if (intent.command.type === 'CONSUME') {
+    expect(intent.command.bottleId).toBe('apocalypse-demoness-potion-6');
+    const receipt = final.apocalypseDemoness.acquisitionJournal.at(-1)!;
+    expect(receipt.revision).toBe(before.revision); expect(receipt.week).toBe(before.week); same(receipt.date, before.date);
+    same({ type: 'APOCALYPSE_DEMONESS', command: receipt.command }, intent);
+    same(final.apocalypseDemoness.acquisitionJournal.slice(0, -1), before.apocalypseDemoness.acquisitionJournal);
+    expect([receipt.cursorBefore, receipt.cursorAfter]).toEqual([before.random.cursor, final.random.cursor]);
+  } else {
+    expect(['APPLY_PULSE', 'APPLY_LOAD']).toContain(intent.command.type);
+    const receipt = final.apocalypseDemoness.life.journal.at(-1)!;
+    expect(receipt.revision).toBe(before.revision); expect(receipt.week).toBe(before.week); same(receipt.date, before.date);
+    same({ type: 'APOCALYPSE_DEMONESS', command: receipt.command }, intent);
+    same(final.apocalypseDemoness.life.journal.slice(0, -1), before.apocalypseDemoness.life.journal);
+    same(final.apocalypseDemoness.acquisitionJournal, before.apocalypseDemoness.acquisitionJournal);
+    expect([receipt.randomCursor, receipt.randomAfter ?? receipt.randomCursor]).toEqual([before.random.cursor, final.random.cursor]);
+    same(receipt.originalsBefore, apocalypseDemonessOriginalSnapshot(before)); same(receipt.originalsAfter, apocalypseDemonessOriginalSnapshot(final));
+  }
+}
+
+/** Import each immutable endpoint as a snapshot. This does not execute the
+ * forbidden historical command or manufacture a successful intent receipt. */
+function exerciseArchivedSqlite(before: SliceState, intent: SliceIntent, final: SliceState, intentId: string): void {
+  for (const [endpoint, state] of [['before', before], ['final', final]] as const) {
+    const hash = captureValueHash(state), expectedPublic = projectSliceState(state);
+    const directory = mkdtempSync(join(tmpdir(), 'lotm-apocalypse-demoness-archived-save-')), database = join(directory, 'boundary.sqlite');
+    const envelope = { intentId: `${intentId}:${endpoint}`, runId: state.runId, expectedRevision: state.revision, payload: intent };
+    let app: SqliteSliceStore | undefined;
+    try {
+      app = new SqliteSliceStore(database);
+      app.repository.transaction(() => {
+        app!.repository.put({ state, updatedAt: '2026-10-15T00:00:00.000Z' });
+        app!.repository.selectRun(state.runId);
+      });
+      const originalRows = storedRows(database);
+      for (let attempt = 0; attempt < 2; attempt++) {
+        app.close(); app = undefined; app = new SqliteSliceStore(database);
+        sameStoredRows(database, originalRows); same(app.repository.get(state.runId)!.state, state);
+        const bootstrap = app.getBootstrap(); expect(bootstrap.ok).toBe(true);
+        if (!bootstrap.ok) throw new Error(JSON.stringify(bootstrap.error));
+        same(bootstrap.value.activeState, expectedPublic); expect(app.repository.activeRun()).toBe(state.runId);
+        const rejected = app.submitIntent(envelope);
+        expect(rejected.ok).toBe(false); if (rejected.ok) throw new Error('An archived stage action unexpectedly committed');
+        expect(rejected.error.code).toBe('ACTION_UNAVAILABLE'); expect(app.repository.receipt(envelope.intentId)).toBeNull();
+        same(app.repository.get(state.runId)!.state, state); sameStoredRows(database, originalRows);
+      }
+      const staleId = `${envelope.intentId}:stale`;
+      const stale = app.submitIntent({ ...envelope, intentId: staleId, expectedRevision: state.revision - 1 });
+      expect(stale.ok).toBe(false); if (stale.ok) throw new Error('A stale archived action unexpectedly committed');
+      expect(stale.error.code).toBe('REVISION_CONFLICT'); expect(app.repository.receipt(staleId)).toBeNull();
+      app.close(); app = undefined; app = new SqliteSliceStore(database);
+      same(app.repository.get(state.runId)!.state, state); sameStoredRows(database, originalRows);
+      expect(app.repository.receipt(envelope.intentId)).toBeNull(); expect(app.repository.receipt(staleId)).toBeNull();
+      expect(existsSync(`${database}.sealed`)).toBe(false); expect(captureValueHash(state)).toBe(hash);
+    } finally { app?.close(); rmSync(directory, { recursive: true, force: true }); }
+  }
+}
 
 // These bytes include current and rolling-backup snapshots, timestamps,
 // receipts and active-run metadata. State equality alone cannot prove rollback.

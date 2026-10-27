@@ -1,7 +1,7 @@
 import { stableStringify } from '../canonical.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceInjury, SliceState } from '../slice/types.js';
-import { calamityDemonessLifeClosed, validateCalamityDemonessSiteState, type CalamityDemonessSiteState } from './life.js';
+import { projectDemonessPublicFields, projectCalamityDemonessPublicSite, type CalamityDemonessPublicSite, calamityDemonessLifeClosed, validateCalamityDemonessSiteState, type CalamityDemonessSiteState } from './life.js';
 import { currentCalamityDemonessCombatSource, validateCalamityDemonessRoundOutcome, validateCalamityDemonessCombatRound, type CalamityDemonessCombatSource, type CalamityDemonessRoundOutcome } from './combat.js';
 
 export const CALAMITY_DEMONESS_TARGET_ID = 'CD2-IRIS' as const;
@@ -44,9 +44,19 @@ export interface CalamityDemonessEncounterState {
 }
 export type CalamityDemonessEncounterCommand = { type: 'PREPARE_ENCOUNTER' | 'ENCOUNTER_TALK' | 'ENCOUNTER_FIGHT' | 'LEAVE_ENCOUNTER' };
 export interface CalamityDemonessEncounterAction { id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: CalamityDemonessEncounterCommand }
+export type CalamityDemonessPublicPreparation = Omit<CalamityDemonessPreparation, 'runId' | 'randomSeed' | 'randomCursor'>;
+export function projectCalamityDemonessPreparation(p: CalamityDemonessPreparation): CalamityDemonessPublicPreparation {
+  const budget = (b: PreparationBudget) => projectDemonessPublicFields(b, ['cash', 'actions', 'health', 'mind', 'spirituality']);
+  return { ...projectDemonessPublicFields(p, ['week', 'revision', 'plateId', 'paidPennies', 'initialCharges', 'ownerId', 'lifeJournalLength', 'lifeClockSeconds']),
+    before: budget(p.before), after: budget(p.after) };
+}
+export const projectCalamityDemonessCombatPlate = (p: CalamityDemonessCombatPlate): CalamityDemonessCombatPlate =>
+  projectDemonessPublicFields(p, ['id', 'ownerId', 'quantity', 'location', 'initialCharges', 'charges', 'paidPennies']);
+export const projectCalamityDemonessPowerUses = (p: Record<CalamityDemonessPowerId, number>) =>
+  ({ FORCE_STRIKE: p.FORCE_STRIKE, GUARD: p.GUARD, DISRUPT: p.DISRUPT });
 export interface CalamityDemonessEncounterProjection {
-  title: string; story: string; status: CalamityDemonessEncounterState['status']; inside: boolean; site: CalamityDemonessSiteState | null; startSite: CalamityDemonessSiteState | null;
-  preparation: CalamityDemonessPreparation | null; plate: CalamityDemonessCombatPlate | null;
+  title: string; story: string; status: CalamityDemonessEncounterState['status']; inside: boolean; site: CalamityDemonessPublicSite | null; startSite: CalamityDemonessPublicSite | null;
+  preparation: CalamityDemonessPublicPreparation | null; plate: CalamityDemonessCombatPlate | null;
   enemy: null | { id: typeof CALAMITY_DEMONESS_TARGET_ID; name: '伊瑞丝'; age: 45; sequence: 3; health: number; mind: number; spirituality: number;
     status: CalamityDemonessEncounterState['enemyStatus']; weaponId: 'CD2-IRIS-ROD'; weaponLocation: 'HAND' | 'YARD'; powerUses: Record<CalamityDemonessPowerId, number> };
   actions: CalamityDemonessEncounterAction[]; facts: string[];
@@ -202,9 +212,9 @@ export function calamityDemonessEncounterActions(s: SliceState): CalamityDemones
 export function projectCalamityDemonessEncounter(s: SliceState): CalamityDemonessEncounterProjection {
   const e = s.calamityDemoness.encounter;
   if (!stage(s)) return { title: '尚未开放的庭院遭遇', story: '', status: e.status, inside: false, site: null, startSite: null, preparation: null, plate: null, enemy: null, actions: [], facts: [] };
-  return { title: '庭院里的伊瑞丝', story: CALAMITY_DEMONESS_ENCOUNTER_STORY, status: e.status, inside: hasCalamityDemonessEncounterLock(s), site: structuredClone(e.currentSite ?? s.calamityDemoness.life.site), startSite: structuredClone(e.startSite),
-    preparation: structuredClone(e.preparation), plate: structuredClone(e.plate), enemy: { id: CALAMITY_DEMONESS_TARGET_ID, name: '伊瑞丝', age: 45, sequence: 3,
-      health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus, weaponId: 'CD2-IRIS-ROD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses } },
+  return { title: '庭院里的伊瑞丝', story: CALAMITY_DEMONESS_ENCOUNTER_STORY, status: e.status, inside: hasCalamityDemonessEncounterLock(s), site: projectCalamityDemonessPublicSite(e.currentSite ?? s.calamityDemoness.life.site), startSite: e.startSite ? projectCalamityDemonessPublicSite(e.startSite) : null,
+    preparation: e.preparation ? projectCalamityDemonessPreparation(e.preparation) : null, plate: e.plate ? projectCalamityDemonessCombatPlate(e.plate) : null, enemy: { id: CALAMITY_DEMONESS_TARGET_ID, name: '伊瑞丝', age: 45, sequence: 3,
+      health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus, weaponId: 'CD2-IRIS-ROD', weaponLocation: e.weaponLocation, powerUses: projectCalamityDemonessPowerUses(e.powerUses) },
     actions: calamityDemonessEncounterActions(s), facts: ['维瑞娜与马库斯是原馆舍的同两位成人，按此次同意各走2米离开；既有到场路程与精力不重置。',
       '两面原镜、原封闭容器和归还的三片生活护片留在馆内；旧素描、包裹与登记没有复制或重写。',
       '另付20便士的战斗镜片只有3次耐用次数。镜幕成功准备即耗一次，只缓冲随后一次身体攻击45；扰断、过期均不返还。',

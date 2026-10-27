@@ -7,6 +7,7 @@ import type { SummoningMasterPartner } from '../summoning-master/life.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceState } from '../slice/types.js';
 import type { BeautyGoddessAction } from './types.js';
+import { projectBeautyGoddessLifeReceipt, type BeautyGoddessPublicLifeReceipt } from './public-life.js';
 
 /** Bounded original design, not a claim about a canonical formula or ritual.
  * The sole mutable guest remains summoningMaster.life.partner. sourcePartner is
@@ -66,8 +67,8 @@ export interface BeautyGoddessLifeProjection {
   currentConsents: { id: 'SM3-LUMEN' | 'BG1-DARIA42' | 'PLAYER'; consented: boolean }[];
   cases: { id: BeautyGoddessCaseId; title: string; story: string; observations: string[]; status: string;
     permission: BeautyGoddessLifeCase['permission']; contactOpen: boolean; preparation: string | null; result: string | null; returned: boolean;
-    attempts: { invitedWeek: number; method: Method; outcome: PublicResolutionTier | null; operationOutcome: PublicResolutionTier | null; receipts: BeautyGoddessLifeReceipt[] }[] }[];
-  ledger: BeautyGoddessLifeReceipt[];
+    attempts: { invitedWeek: number; method: Method; outcome: PublicResolutionTier | null; operationOutcome: PublicResolutionTier | null; receipts: BeautyGoddessPublicLifeReceipt[] }[] }[];
+  ledger: BeautyGoddessPublicLifeReceipt[];
 }
 export interface BeautyGoddessOriginalEvent { revision: number; week: number; source: string; before: SummoningMasterPartner; after: SummoningMasterPartner }
 const POISE = 'moon.s1.self-poise', MOONFORM = 'moon.s1.bounded-moonform';
@@ -466,7 +467,7 @@ function projectAttempts(l: BeautyGoddessLifeState, id: BeautyGoddessCaseId): Be
   for (const entry of l.journal) {
     if (entry.command.type === 'INVITE' && entry.command.caseId === id) { current = { invitedWeek: entry.week, method: entry.command.method, outcome: null, operationOutcome: null, receipts: [] }; result.push(current); }
     if (!current) continue;
-    current.receipts.push(structuredClone(entry));
+    current.receipts.push(projectBeautyGoddessLifeReceipt(entry));
     if (entry.command.type === 'SELF_POISE' || entry.command.type === 'BOUNDED_MOONFORM') current.outcome = entry.outcome;
     if (entry.command.type === 'PRECISION_PLACE' || entry.command.type === 'GUEST_CARRY') current.operationOutcome = entry.outcome;
     if (entry.command.type === 'RETURN_HOME' || entry.command.type === 'ABORT') current = null;
@@ -481,5 +482,5 @@ export function projectBeautyGoddessLife(s: SliceState): BeautyGoddessLifeProjec
     cases: CASES.map(item => { const c = l.cases[item.id]; return { id: item.id, title: item.title, story: item.story, observations: c.status === 'AVAILABLE' ? [] : [...item.facts], status: c.status, permission: structuredClone(c.permission), contactOpen: c.contactOpen,
       preparation: c.status === 'OBSERVED' ? '等候本案重新邀请与各项当前许可。' : c.status === 'PAUSED' ? '原失败与已付成本保留；下一真实周可付费普通续办，最多三次。' : null,
       result: c.result !== 'NONE' ? `${c.result === 'ABILITY' ? '有限帮助确实应用于成功的真实动作。' : '已按普通方法完成真实取放。'}${c.returned ? '原人原物已在原位，本人已实际返程。' : '仍须实还原物、原来客返程并步行离开。'}` : c.poiseEnd === 'PENDING' || c.moonformEnd === 'PENDING' ? '有限窗口仍待真正的普通操作；尚未完成，也没有掌握奖励。' : c.poiseAttempted || c.moonformAttempted ? '原施术结果和代价已留存，可继续普通收束。' : null,
-      returned: c.returned, attempts: projectAttempts(l, item.id) }; }), ledger: structuredClone(l.journal) };
+      returned: c.returned, attempts: projectAttempts(l, item.id) }; }), ledger: l.journal.map(projectBeautyGoddessLifeReceipt) };
 }

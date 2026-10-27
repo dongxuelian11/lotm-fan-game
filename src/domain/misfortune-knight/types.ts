@@ -10,13 +10,28 @@ export type MisfortuneKnightPreparationId = typeof MISFORTUNE_KNIGHT_PREPARATION
 export type MisfortuneKnightAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: MisfortuneKnightPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type MisfortuneKnightCommand = MisfortuneKnightAcquisitionCommand | MisfortuneKnightActivityCommand | MisfortuneKnightEncounterCommand;
+/** A later drug vessel carries the same finite original; its attempt ID is not a new characteristic. */
+export interface MisfortuneKnightRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_ROOM_HANDOVER'; custodian: string;
+}
+export interface MisfortuneKnightRecovery extends MisfortuneKnightRecoveryRequest { recoveredWeek: number }
+export interface MisfortuneKnightOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMAINS' | 'EMBODIED';
+}
+export interface MisfortuneKnightOriginalCharacteristics {
+  characteristics: MisfortuneKnightOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface MisfortuneKnightBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: MisfortuneKnightRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface MisfortuneKnightAcquisitionBudget {
@@ -41,7 +56,7 @@ export interface MisfortuneKnightSourceScene {
 }
 export interface MisfortuneKnightState {
   guidanceKnown: boolean; bottles: MisfortuneKnightBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: MisfortuneKnightRecoveryRequest };
   promotionWeek: number | null; concealmentServantActingAtPromotion: number | null;
   preparations: { taskId: MisfortuneKnightPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: MisfortuneKnightAcquisitionEvent[];

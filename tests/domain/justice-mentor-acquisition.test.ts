@@ -86,7 +86,7 @@ describe('Justice Mentor S3 original bottles and explicitly G professional prepa
       expect(() => applyJusticeMentorCommand(s, command, c)).toThrow(); expect(s).toEqual(before);
       expect(c.check).not.toHaveBeenCalled(); expect(c.roll).not.toHaveBeenCalled();
     }
-  });
+  }, 20_000); // Windows run39524961865 measured10.894s for genuine S1 read-only history checks.
   it('charges500 and one action while separating verifiedS3 from unknown full recipe and rite', () => {
     const s = unshadowed(), old = structuredClone([s.bard, s.lightprayer, s.sunpriest, s.notary, s.priestOfLight, s.unshadowed]);
     apply(s, { type: 'LEARN_GUIDANCE' }); expect([s.cash, s.actionsRemaining]).toEqual([99500, 99]);

@@ -8,8 +8,8 @@ import { resolveSliceWeeklyFinance } from '../slice/weekly-finance.js';
 import type { ApocalypseDemonessFinanceSnapshot } from './types.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceState } from '../slice/types.js';
-import { validateCalamityDemonessSiteState, type CalamityDemonessSiteState, type CalamityDemonessLocation } from '../calamity-demoness/life.js';
-import type { CalamityDemonessCombatPlate } from '../calamity-demoness/encounter.js';
+import { projectDemonessPublicFields, projectDemonessPublicCheck, projectDemonessPublicDate, projectCalamityDemonessPublicSite, type CalamityDemonessPublicSite, validateCalamityDemonessSiteState, type CalamityDemonessSiteState, type CalamityDemonessLocation } from '../calamity-demoness/life.js';
+import { projectCalamityDemonessCombatPlate, type CalamityDemonessCombatPlate } from '../calamity-demoness/encounter.js';
 import { apocalypseDemonessEncounterOriginalEvents } from './encounter.js';
 
 export const APOCALYPSE_DEMONESS_CASE_IDS = ['pulse-containment', 'mirror-buffer', 'withdrawn-window'] as const;
@@ -79,9 +79,9 @@ export interface ApocalypseDemonessLifeAction { id: string; label: string; cost:
 export interface ApocalypseDemonessLifeProjection {
   title: string; story: string; source: string; environment: string; activeCase: ApocalypseDemonessCaseId | null; inside: boolean; insideCase: boolean; reflected: boolean; preferredActionId: string | null;
   clockSeconds: number; elapsedSeconds: number; playerLocation: CalamityDemonessLocation; playerTravelMetres: number; veraTravelMetres: number; marcusTravelMetres: number;
-  site: CalamityDemonessSiteState | null; residue: ApocalypseDemonessResidue | null; load: ApocalypseDemonessLoad | null; pending: ApocalypseDemonessLifeState['pending']; pendingUsable: boolean; pendingRemainingSeconds: number; currentAttempt: ApocalypseDemonessAttempt | null;
-  cases: { id: ApocalypseDemonessCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: ApocalypseDemonessAttempt[] }[];
-  ledger: ApocalypseDemonessLifeReceipt[]; actions: ApocalypseDemonessLifeAction[];
+  site: CalamityDemonessPublicSite | null; residue: ApocalypseDemonessResidue | null; load: ApocalypseDemonessLoad | null; pending: ApocalypseDemonessLifeState['pending']; pendingUsable: boolean; pendingRemainingSeconds: number; currentAttempt: ApocalypseDemonessPublicAttempt | null;
+  cases: { id: ApocalypseDemonessCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: ApocalypseDemonessPublicAttempt[] }[];
+  ledger: ApocalypseDemonessPublicLifeReceipt[]; actions: ApocalypseDemonessLifeAction[];
 }
 const CONTAINMENT = 'assassin.s1.pulse-containment', BUFFER = 'assassin.s1.mirror-buffer';
 const POSITION: Record<CalamityDemonessLocation, number> = { OUTSIDE: -2, ENTRY: 0, A: 4, BOX: 8, B: 12, YARD: -4 };
@@ -627,6 +627,35 @@ export function apocalypseDemonessLifeActions(s: SliceState): ApocalypseDemoness
   step('ABORT', false, true); return select();
 }
 export const apocalypseDemonessActivityActions = apocalypseDemonessLifeActions;
+export type ApocalypseDemonessPublicOriginals = Omit<ApocalypseDemonessOriginals, 'site'> & { site: CalamityDemonessPublicSite };
+export type ApocalypseDemonessPublicAttempt = Omit<ApocalypseDemonessAttempt, 'siteAtStart'> & { siteAtStart: CalamityDemonessPublicSite };
+export type ApocalypseDemonessPublicLifeReceipt = Omit<ApocalypseDemonessLifeReceipt, 'source' | 'randomCursor' | 'randomBefore' | 'randomAfter' | 'originalsBefore' | 'originalsAfter'> &
+  { originalsBefore: ApocalypseDemonessPublicOriginals; originalsAfter: ApocalypseDemonessPublicOriginals };
+export function projectApocalypseDemonessOriginals(o: ApocalypseDemonessOriginals): ApocalypseDemonessPublicOriginals {
+  return { site: projectCalamityDemonessPublicSite(o.site), combatPlate: o.combatPlate ? projectCalamityDemonessCombatPlate(o.combatPlate) : null };
+}
+export function projectApocalypseDemonessLifeReceipt(r: ApocalypseDemonessLifeReceipt): ApocalypseDemonessPublicLifeReceipt {
+  const budget = (b: ApocalypseDemonessLifeBudget) => projectDemonessPublicFields(b, ['health', 'mind', 'spirituality', 'cash', 'actions']);
+  const c = r.command, command: ApocalypseDemonessActivityCommand = 'method' in c ? { type: c.type, caseId: c.caseId, method: c.method }
+    : 'permission' in c ? { type: c.type, permission: c.permission } : 'caseId' in c ? { type: c.type, caseId: c.caseId }
+    : 'to' in c ? { type: c.type, to: c.to } : { type: c.type };
+  return { ...projectDemonessPublicFields(r, ['week', 'revision', 'checkBase', 'outcome', 'elapsedSeconds', 'playerWalkedMetres', 'veraWalkedMetres', 'marcusWalkedMetres',
+    'playerEnergySpent', 'veraEnergySpent', 'marcusEnergySpent', 'playerEnergyRecovered']), date: projectDemonessPublicDate(r.date), command,
+    check: projectDemonessPublicCheck(r.check), before: budget(r.before), after: budget(r.after),
+    finance: { ...projectDemonessPublicFields(r.finance, ['weeklyBudget', 'lifeTier', 'nextLifeTier', 'missedWeeks', 'credit']),
+      debts: r.finance.debts.map(d => projectDemonessPublicFields(d, ['id', 'source', 'remaining', 'weeklyPayment', 'createdWeek'])) },
+    moves: r.moves.map(m => projectDemonessPublicFields(m, ['actor', 'from', 'to', 'mode', 'metres', 'seconds', 'originalBody'])),
+    originalsBefore: projectApocalypseDemonessOriginals(r.originalsBefore), originalsAfter: projectApocalypseDemonessOriginals(r.originalsAfter) };
+}
+export function projectApocalypseDemonessPublicAttempt(a: ApocalypseDemonessAttempt): ApocalypseDemonessPublicAttempt {
+  const use = (u: ApocalypseDemonessAbilityUse) => projectDemonessPublicFields(u, ['attempts', 'successes', 'effects', 'tier', 'state']);
+  return { ...projectDemonessPublicFields(a, ['week', 'method', 'closed', 'result', 'elapsedSeconds', 'playerTravelMetres', 'veraTravelMetres', 'marcusTravelMetres',
+    'playerEnergySpent', 'penniesSpent', 'spiritualitySpent', 'mindSpent', 'healthSpent', 'permissionVersion', 'approached', 'stopped', 'exited', 'visibleLine', 'occluded',
+    'inspectionAt', 'pulseApplied', 'pulseSuppressed', 'ordinarySealed', 'boxScorchRecorded', 'loadApplied', 'impactDamage', 'impactReduction']),
+    permission: projectDemonessPublicFields(a.permission, ['owner', 'operator', 'participant', 'ability']), siteAtStart: projectCalamityDemonessPublicSite(a.siteAtStart),
+    plate: projectDemonessPublicFields(a.plate, ['id', 'caseId', 'ownerId', 'quantity', 'paidPennies', 'boughtWeek', 'status', 'location', 'charges', 'wear', 'scorched', 'installedAt', 'removedAt', 'returnedAt']),
+    containment: use(a.containment), buffer: use(a.buffer) };
+}
 export function projectApocalypseDemonessLife(s: SliceState): ApocalypseDemonessLifeProjection {
   const l = s.apocalypseDemoness.life, p = l.site ?? s.calamityDemoness.encounter.currentSite, actions = apocalypseDemonessLifeActions(s), a = current(l);
   const originals = p ? apocalypseDemonessOriginalSnapshot(s) : null, model = originals ? { life: l, originals } : null;
@@ -635,8 +664,8 @@ export function projectApocalypseDemonessLife(s: SliceState): ApocalypseDemoness
     environment: '室外负2米、入口0米、原镜A4米、原箱8米、原镜B12米。两位成人只在室外与入口之间各走2米；本人按实际位置往返，始终保留普通清理及退出精力。',
     activeCase: l.activeCase, inside: locked(l), insideCase: locked(l), reflected: l.reflected, preferredActionId: actions.find(x => x.preferredAction)?.id ?? null,
     clockSeconds: p?.clockSeconds ?? 0, elapsedSeconds: l.elapsedSeconds, playerLocation: p?.playerLocation ?? 'OUTSIDE', playerTravelMetres: l.playerTravelMetres, veraTravelMetres: l.veraTravelMetres, marcusTravelMetres: l.marcusTravelMetres,
-    site: structuredClone(p), residue: structuredClone(l.residue), load: structuredClone(l.load), pending: structuredClone(l.pending), pendingUsable: !!model && !!l.pending && validPending(model, l.pending.kind), pendingRemainingSeconds: l.pending && p ? Math.max(0, l.pending.expiresAt - p.clockSeconds) : 0,
-    currentAttempt: structuredClone(a), cases: CASES.map(def => { const r = l.cases[def.id]; return { id: def.id, title: def.title, story: def.story, observations: r.observedWeek === null ? [] : [def.story, '原人普通往返，旧残留、旧负载和旧护片不补回；未实际应用的能力没有掌握奖励。'],
-      status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限效果已实际应用；真实成本、损耗和普通离场记录均保留。' : '如实完成普通处理、失败、拒绝或撤回；没有未应用的能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }),
-    ledger: structuredClone(l.journal), actions };
+    site: p ? projectCalamityDemonessPublicSite(p) : null, residue: l.residue ? projectDemonessPublicFields(l.residue, ['id', 'ownerId', 'quantity', 'fictional', 'biological', 'origin', 'paidPennies', 'boughtWeek', 'location', 'sealed', 'receivedAt', 'remaining', 'consumed', 'pendingAt', 'appliedAt', 'suppressed', 'ordinarySealed']) : null, load: l.load ? projectDemonessPublicFields(l.load, ['id', 'ownerId', 'paidPennies', 'boughtWeek', 'location', 'arrivedAt', 'preparedAt', 'remaining', 'consumed', 'appliedAt', 'safetyStop']) : null, pending: l.pending ? projectDemonessPublicFields(l.pending, ['kind', 'caseId', 'createdAt', 'expiresAt', 'permissionVersion', 'resourceId', 'plateId', 'location']) : null, pendingUsable: !!model && !!l.pending && validPending(model, l.pending.kind), pendingRemainingSeconds: l.pending && p ? Math.max(0, l.pending.expiresAt - p.clockSeconds) : 0,
+    currentAttempt: a ? projectApocalypseDemonessPublicAttempt(a) : null, cases: CASES.map(def => { const r = l.cases[def.id]; return { id: def.id, title: def.title, story: def.story, observations: r.observedWeek === null ? [] : [def.story, '原人普通往返，旧残留、旧负载和旧护片不补回；未实际应用的能力没有掌握奖励。'],
+      status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限效果已实际应用；真实成本、损耗和普通离场记录均保留。' : '如实完成普通处理、失败、拒绝或撤回；没有未应用的能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(projectApocalypseDemonessPublicAttempt) }; }),
+    ledger: l.journal.map(projectApocalypseDemonessLifeReceipt), actions };
 }

@@ -448,7 +448,7 @@ describe('deterministic replay and unchanged older profiles', () => {
     const before = structuredClone(state.nightmare);
     scriptRolls(1, 1, 440, 400, 1);
     const { round } = resolveSliceCombatRound(state, 'ATTACK');
-    expect(round.playerAdvantage).toBe(115); expect(round.enemyAdvantage).toBe(114);
+    expect(round.playerAdvantage).toBe(115); expect(round.enemyAdvantage).toBe(109); // tuned ordinary FIRST_CASE only
     expect(round.moves.map(move => move.label)).toEqual(['动作落空', '动作落空']);
     expect(state.nightmare).toEqual(before); expect(state.random.cursor).toBe(5);
   });

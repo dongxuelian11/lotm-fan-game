@@ -32,3 +32,44 @@
   .clown-growth-tabs .slice-button { flex-basis: 100%; }
   .clown-panel .clown-paper { padding: 16px; }
 }
+
+.clown-preparation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(210px, 26%);
+  gap: 24px;
+  align-items: start;
+  padding: 20px;
+  border: 1px solid var(--slice-line);
+  background: var(--slice-paper-light);
+}
+.clown-preparation .clown-single-action { grid-template-columns: minmax(0, 1fr); }
+.clown-preparation-budget {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 4px 0 4px 24px;
+  border-left: 1px solid var(--slice-line);
+}
+.clown-preparation-budget dt { font-size: .88em; color: var(--slice-muted); }
+.clown-preparation-budget dd { margin: 3px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+@media (max-width: 900px) {
+  .clown-preparation { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 16px; }
+  .clown-preparation-budget { grid-template-columns: repeat(2, minmax(0, 1fr)); border-left: 0; border-top: 1px solid var(--slice-line); padding: 14px 0 0; }
+}
+
+/* Several preparation choices need the full dossier width, not a tall empty rail. */
+.clown-preparation-multiple { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.clown-preparation-multiple .clown-preparation-budget {
+  order: -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 0;
+  border-bottom: 1px solid var(--slice-line);
+  padding: 0 0 14px;
+}
+.clown-preparation-multiple .clown-preparation-budget > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+}
+.clown-preparation-multiple .clown-preparation-budget dd { margin: 0; }

@@ -7,8 +7,9 @@ import {
   type StoredSlice,
   type StoredSliceReceipt,
 } from "../application/slice-application.js";
-import { SliceOwnedRuntime, assertSliceSaveTimestamp, type FoolRepositoryDraft, type FoolRepositoryHead } from "../application/slice-owned-runtime.js";
+import { SliceOwnedRuntime, assertSliceSaveTimestamp, type FoolRepositoryDraft, type FoolRepositoryHead, type OwnedRepositoryDraft, type OwnedRepositoryHead } from "../application/slice-owned-runtime.js";
 import { assertValidSliceState } from "../domain/slice/index.js";
+import { migrateSliceState } from "../domain/slice/migration.js";
 import { stableStringify } from "../domain/canonical.js";
 import type { SliceIntent, SliceProjection, SliceState } from "../domain/slice/types.js";
 import type { SliceBridge } from "../shared/slice-contracts.js";
@@ -19,6 +20,10 @@ function readEnvelope(raw: string): StoredSlice {
   return value;
 }
 function hydrateState(input: unknown): SliceState {
+  // A genuine original Fool save may cross the 205/206/207 -> 208 strict migration.
+  // Other browser inputs retain their original current-format-only gate.
+  if (input && typeof input === "object" && "schemaVersion" in input && (input.schemaVersion === 205 || input.schemaVersion === 206 || input.schemaVersion === 207))
+    return migrateSliceState(input);
   assertValidSliceState(input);
   return input;
 }
@@ -92,6 +97,9 @@ export class MemorySliceRepository implements SliceRepository {
     this.#runtime.stageRaw(detached.state.runId, raw);
   }
   foolHead(runId: string): FoolRepositoryHead | null {
+    return this.ownedHead(runId);
+  }
+  ownedHead(runId: string): OwnedRepositoryHead | null {
     return this.#runtime.inspect(runId, this.#values.get(runId) ?? null, decode);
   }
   projectFoolRun(runId: string): SliceProjection | null {
@@ -102,12 +110,21 @@ export class MemorySliceRepository implements SliceRepository {
     return this.#runtime.load(runId, this.#values.get(runId) ?? null, readEnvelope, hydrateState, false)?.state ?? null;
   }
   prepareFool(runId: string, intent: SliceIntent, expectedRevision: number): FoolRepositoryDraft {
+    return this.prepareOwned(runId, intent, expectedRevision);
+  }
+  prepareOwned(runId: string, intent: SliceIntent, expectedRevision: number): OwnedRepositoryDraft {
     return this.#runtime.prepare(runId, this.#values.get(runId) ?? null, decode, intent, expectedRevision);
   }
   projectFoolDraft(draft: FoolRepositoryDraft): SliceProjection {
+    return this.projectOwnedDraft(draft);
+  }
+  projectOwnedDraft(draft: OwnedRepositoryDraft): SliceProjection {
     return this.#runtime.projectDraft(draft);
   }
   putFoolDraft(draft: FoolRepositoryDraft, updatedAt: string): void {
+    this.putOwnedDraft(draft, updatedAt);
+  }
+  putOwnedDraft(draft: OwnedRepositoryDraft, updatedAt: string): void {
     if (!this.#inTransaction) throw new SlicePersistenceError("Write outside transaction");
     assertSliceSaveTimestamp(updatedAt);
     const state = this.#runtime.snapshotDraft(draft, this.#values.get(draft.runId) ?? null);

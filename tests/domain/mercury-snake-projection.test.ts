@@ -3,12 +3,32 @@ import { assertValidSliceState, projectSliceState } from '../../src/domain/slice
 import type { SliceState } from '../../src/domain/slice/types.js';
 import { getMercurySnakeCurrentSite, projectMercurySnakeLife } from '../../src/domain/mercury-snake/life.js';
 import { MERCURY_SNAKE_ABILITY_IDS } from '../../src/domain/mercury-snake/types.js';
+import type { MercurySnakeEncounterBudget } from '../../src/domain/mercury-snake/encounter.js';
+import type { FateProphetOperationState } from '../../src/domain/fate-prophet/life.js';
 import { projectPlayerText } from '../../src/shared/player-text.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { fp, promoted } from './fate-prophet-directed-helper.js';
 import { capturedSnapshot, captureValueHash, namedBoundary, sameCaptureValue } from './mercury-snake-capture-helper.js';
 
 const PRIVATE_PREPARATION_KEYS = ['preparationRoll', 'originalBias', 'mechanicalState', 'inheritedScene'] as const;
+// Independent public receipt whitelist. In particular, operation.preparationRoll
+// is private, while normal-check modifiers.source and debt source remain public.
+const publicOperationExpectation = (operation: FateProphetOperationState) => ({
+  door: operation.door,
+  mechanical: operation.mechanical ? { objectId: operation.mechanical.objectId, caseId: operation.mechanical.caseId,
+    preparedAt: operation.mechanical.preparedAt, bias: operation.mechanical.bias, version: operation.mechanical.version } : null,
+  forecast: operation.forecast ? { objectId: operation.forecast.objectId, version: operation.forecast.version, bias: operation.forecast.bias,
+    castAt: operation.forecast.castAt, expiresAt: operation.forecast.expiresAt, valid: operation.forecast.valid } : null,
+  correction: operation.correction ? { objectId: operation.correction.objectId, version: operation.correction.version,
+    castAt: operation.correction.castAt, expiresAt: operation.correction.expiresAt, percentagePoints: operation.correction.percentagePoints } : null,
+});
+const publicBudgetExpectation = (budget: MercurySnakeEncounterBudget) => ({
+  cash: budget.cash, actions: budget.actions, health: budget.health, mind: budget.mind, spirituality: budget.spirituality,
+  pollution: budget.pollution, gender: budget.gender, sequence: budget.sequence, acting: budget.acting, injuryRisk: budget.injuryRisk,
+  coreStats: { physique: budget.coreStats.physique, perception: budget.coreStats.perception, will: budget.coreStats.will, knowledge: budget.coreStats.knowledge },
+  mastery: budget.mastery, completedSources: budget.completedSources, injuries: budget.injuries,
+  luck: { stored: budget.luck.stored, lastAccumulateWeek: budget.luck.lastAccumulateWeek, accumulated: budget.luck.accumulated, spent: budget.luck.spent },
+});
 function noPrivateFields(value: unknown, keys: readonly string[]): void {
   const text = JSON.stringify(value);
   for (const key of keys) expect(text).not.toContain(`"${key}":`);
@@ -78,8 +98,18 @@ describe('Mercury Snake public projection boundaries', () => {
     const preparation = state.mercurySnake.encounter.preparation;
     if (preparation) {
       expect(preparation.randomSeed).toBe(state.random.seed);
+      const { finance, originals } = preparation;
       expect(projected.encounter.preparation).toEqual(projectPlayerText({ week: preparation.week, date: preparation.date, revision: preparation.revision,
-        pricePaid: preparation.pricePaid, actionsPaid: preparation.actionsPaid, lifeClockSeconds: preparation.lifeClockSeconds, site: preparation.site }, state.character.name));
+        pricePaid: preparation.pricePaid, actionsPaid: preparation.actionsPaid, lifeJournalLength: preparation.lifeJournalLength,
+        lifeClockSeconds: preparation.lifeClockSeconds, before: publicBudgetExpectation(preparation.before), after: publicBudgetExpectation(preparation.after),
+        finance: { weeklyBudget: finance.weeklyBudget, lifeTier: finance.lifeTier, nextLifeTier: finance.nextLifeTier, missedWeeks: finance.missedWeeks,
+          credit: finance.credit, debts: finance.debts.map(debt => ({ id: debt.id, source: debt.source, remaining: debt.remaining,
+            weeklyPayment: debt.weeklyPayment, createdWeek: debt.createdWeek })) },
+        site: preparation.site, operation: publicOperationExpectation(preparation.operation),
+        originals: { site: originals.site, operation: publicOperationExpectation(originals.operation),
+          luck: { stored: originals.luck.stored, lastAccumulateWeek: originals.luck.lastAccumulateWeek,
+            accumulated: originals.luck.accumulated, spent: originals.luck.spent } } }, state.character.name));
+      noPrivateFields(projected.encounter.preparation, [...PRIVATE_PREPARATION_KEYS, 'runId', 'randomSeed', 'randomCursor']);
       expect(projected.encounter.operation).toEqual({ door: state.mercurySnake.life.operation.door });
       sameCaptureValue(projected.encounter.site, displaySite);
       expect(projected.encounter.enemy).toMatchObject({ status: 'SURRENDERED', health: 70, mind: 100, spirituality: 95 });

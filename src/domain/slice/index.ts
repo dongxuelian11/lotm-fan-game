@@ -1,3 +1,127 @@
+import type { MotherOwnedEngine } from '../mother/engine.js';
+import type { MotherProjection } from '../mother/types.js';
+import type { MotherRuntimeDraft, MotherRuntimeIdentity, MotherRuntimeSession } from '../mother/owned-session.js';
+import { openValidatedMotherSlice, assertValidOwnedMotherTransition } from './validation.js';
+import { createMotherState, applyMotherCommand, motherCommandBlock, projectMother, hasMotherLock, hasMotherHistory, getMotherSourceView, applyOwnedMotherCommand, ownedMotherCommandBlock, projectOwnedMother, assertOwnedMotherCurrent } from '../mother/index.js';
+import type { JusticiarOwnedEngine } from '../justiciar/engine.js';
+import type { JusticiarProjection } from '../justiciar/types.js';
+import type { JusticiarRuntimeDraft, JusticiarRuntimeIdentity, JusticiarRuntimeSession } from '../justiciar/owned-session.js';
+import { openValidatedJusticiarSlice, assertValidOwnedJusticiarTransition } from './validation.js';
+import { createJusticiarState, applyJusticiarCommand, justiciarCommandBlock, projectJusticiar, hasJusticiarLock, hasJusticiarHistory, getJusticiarSourceView, applyOwnedJusticiarCommand, ownedJusticiarCommandBlock, projectOwnedJusticiar, assertOwnedJusticiarCurrent } from '../justiciar/index.js';
+import type { BlackEmperorOwnedEngine } from '../black-emperor/engine.js';
+import type { BlackEmperorProjection } from '../black-emperor/types.js';
+import type { BlackEmperorRuntimeDraft, BlackEmperorRuntimeIdentity, BlackEmperorRuntimeSession } from '../black-emperor/owned-session.js';
+import { openValidatedBlackEmperorSlice, assertValidOwnedBlackEmperorTransition } from './validation.js';
+import { createBlackEmperorState, applyBlackEmperorCommand, blackEmperorCommandBlock, projectBlackEmperor, hasBlackEmperorLock, hasBlackEmperorHistory, blackEmperorSourceView, applyOwnedBlackEmperorCommand, ownedBlackEmperorCommandBlock, projectOwnedBlackEmperor, assertOwnedBlackEmperorCurrent } from '../black-emperor/index.js';
+import { projectMercurySnakeCombatRound, projectMercurySnakeLastCheck } from '../mercury-snake/public.js';
+import type { WheelOfFortuneOwnedEngine } from '../wheel-of-fortune/engine.js';
+import type { WheelOfFortuneProjection } from '../wheel-of-fortune/types.js';
+import type { WheelOfFortuneRuntimeDraft, WheelOfFortuneRuntimeIdentity, WheelOfFortuneRuntimeSession } from '../wheel-of-fortune/owned-session.js';
+import { openValidatedWheelOfFortuneSlice, assertValidOwnedWheelOfFortuneTransition } from './validation.js';
+import { createWheelOfFortuneState, applyWheelOfFortuneCommand, wheelOfFortuneCommandBlock, projectWheelOfFortune, hasWheelOfFortuneLock, hasWheelOfFortuneHistory, wheelOfFortuneSourceView, applyOwnedWheelOfFortuneCommand, ownedWheelOfFortuneCommandBlock, projectOwnedWheelOfFortune, assertOwnedWheelOfFortuneCurrent } from '../wheel-of-fortune/index.js';
+import { projectPuppetRoundOutcome, projectSilentDiscipleRoundOutcome } from '../ancient-evil/public.js';
+import type { ChainedOwnedEngine } from '../chained/engine.js';
+import type { ChainedProjection } from '../chained/types.js';
+import type { ChainedRuntimeDraft, ChainedRuntimeIdentity, ChainedRuntimeSession } from '../chained/owned-session.js';
+import { openValidatedChainedSlice, assertValidOwnedChainedTransition } from './validation.js';
+import { createChainedState, applyChainedCommand, chainedCommandBlock, projectChained, hasChainedLock, hasChainedHistory, chainedSourceView, applyOwnedChainedCommand, ownedChainedCommandBlock, projectOwnedChained, assertOwnedChainedCurrent } from '../chained/index.js';
+import { projectUncleanMonarchRoundOutcome } from '../unclean-monarch/combat.js';
+import { projectBloodDukeRoundOutcome } from '../blood-duke/combat.js';
+import { projectDevilRoundOutcome } from '../devil/combat.js';
+import type { AbyssOwnedEngine } from '../abyss/engine.js';
+import type { AbyssProjection } from '../abyss/types.js';
+import type { AbyssRuntimeDraft, AbyssRuntimeIdentity, AbyssRuntimeSession } from '../abyss/owned-session.js';
+import { openValidatedAbyssSlice, assertValidOwnedAbyssTransition } from './validation.js';
+import { createAbyssState, applyAbyssCommand, abyssCommandBlock, projectAbyss, hasAbyssLock, hasAbyssHistory, abyssSourceView, applyOwnedAbyssCommand, ownedAbyssCommandBlock, projectOwnedAbyss, assertOwnedAbyssCurrent } from '../abyss/index.js';
+import { projectElderRoundOutcome } from '../elder/combat.js';
+import { projectBlackKnightRoundOutcome } from '../black-knight/combat.js';
+import { projectThreeHeadedTemplarRoundOutcome } from '../three-headed-templar/combat.js';
+import type { HangedManOwnedEngine } from '../hanged-man/engine.js';
+import type { HangedManProjection } from '../hanged-man/types.js';
+import type { HangedManRuntimeDraft, HangedManRuntimeIdentity, HangedManRuntimeSession } from '../hanged-man/owned-session.js';
+import { openValidatedHangedManSlice, assertValidOwnedHangedManTransition } from './validation.js';
+import { createHangedManState, applyHangedManCommand, hangedManCommandBlock, projectHangedMan, hasHangedManLock, hasHangedManHistory, hangedManSourceView, applyOwnedHangedManCommand, ownedHangedManCommandBlock, projectOwnedHangedMan, assertOwnedHangedManCurrent } from '../hanged-man/index.js';
+import { publicMysticRound } from '../mystic/combat.js';
+import { publicProphecyMasterRound } from '../prophecy-master/combat.js';
+import { publicSageRound } from '../sage/combat.js';
+import { publicKnowledgeEmperorRound } from '../knowledge-emperor/combat.js';
+import type { HermitOwnedEngine } from '../hermit/engine.js';
+import type { HermitProjection } from '../hermit/types.js';
+import type { HermitRuntimeDraft, HermitRuntimeIdentity, HermitRuntimeSession } from '../hermit/owned-session.js';
+import { openValidatedHermitSlice, assertValidOwnedHermitTransition } from './validation.js';
+import { createHermitState, applyHermitCommand, hermitCommandBlock, projectHermit, hasHermitLock, hasHermitHistory, hermitSourceView, applyOwnedHermitCommand, ownedHermitCommandBlock, projectOwnedHermit, assertOwnedHermitCurrent } from '../hermit/index.js';
+import { projectDespairRoundOutcome } from '../despair/combat.js';
+import { projectUnagingDemonessRoundOutcome } from '../unaging-demoness/combat.js';
+import { projectCalamityDemonessRoundOutcome } from '../calamity-demoness/combat.js';
+import { projectApocalypseDemonessRoundOutcome } from '../apocalypse-demoness/combat.js';
+import type { DemonessOwnedEngine } from '../demoness/engine.js';
+import type { DemonessProjection } from '../demoness/types.js';
+import type { DemonessRuntimeDraft, DemonessRuntimeIdentity, DemonessRuntimeSession } from '../demoness/owned-session.js';
+import { openValidatedDemonessSlice, assertValidOwnedDemonessTransition } from './validation.js';
+import { createDemonessState, applyDemonessCommand, demonessCommandBlock, projectDemoness, hasDemonessLock, hasDemonessHistory, demonessSourceView, applyOwnedDemonessCommand, ownedDemonessCommandBlock, projectOwnedDemoness, assertOwnedDemonessCurrent } from '../demoness/index.js';
+import type { TwilightGiantOwnedEngine } from '../twilight-giant/engine.js';
+import type { TwilightGiantProjection } from '../twilight-giant/types.js';
+import type { TwilightGiantRuntimeDraft, TwilightGiantRuntimeIdentity, TwilightGiantRuntimeSession } from '../twilight-giant/owned-session.js';
+import { openValidatedTwilightGiantSlice, assertValidOwnedTwilightGiantTransition } from './validation.js';
+import { createTwilightGiantState, applyTwilightGiantCommand, twilightGiantCommandBlock, projectTwilightGiant, hasTwilightGiantLock, hasTwilightGiantHistory, twilightGiantSourceView, applyOwnedTwilightGiantCommand, ownedTwilightGiantCommandBlock, projectOwnedTwilightGiant, assertOwnedTwilightGiantCurrent } from '../twilight-giant/index.js';
+import type { ErrorAscentOwnedEngine } from '../error-ascent/engine.js';
+import type { ErrorAscentProjection } from '../error-ascent/types.js';
+import type { ErrorAscentRuntimeDraft, ErrorAscentRuntimeIdentity, ErrorAscentRuntimeSession } from '../error-ascent/owned-session.js';
+import { openValidatedErrorAscentSlice, assertValidOwnedErrorAscentTransition } from './validation.js';
+import { createErrorAscentState, applyErrorAscentCommand, errorAscentCommandBlock, projectErrorAscent, hasErrorAscentLock, hasErrorAscentHistory, errorAscentSourceView, applyOwnedErrorAscentCommand, ownedErrorAscentCommandBlock, projectOwnedErrorAscent, assertOwnedErrorAscentCurrent } from '../error-ascent/index.js';
+import type { DoorOwnedEngine } from '../door/engine.js';
+import type { DoorProjection } from '../door/types.js';
+import type { DoorRuntimeDraft, DoorRuntimeIdentity, DoorRuntimeSession } from '../door/owned-session.js';
+import { openValidatedDoorSlice, assertValidOwnedDoorTransition } from './validation.js';
+import { createDoorState, applyDoorCommand, doorCommandBlock, projectDoor, hasDoorLock, hasDoorHistory, doorSourceView, applyOwnedDoorCommand, ownedDoorCommandBlock, projectOwnedDoor, assertOwnedDoorCurrent } from '../door/index.js';
+import type { DeathOwnedEngine } from '../death/engine.js';
+import type { DeathProjection } from '../death/types.js';
+import type { DeathRuntimeDraft, DeathRuntimeIdentity, DeathRuntimeSession } from '../death/owned-session.js';
+import { openValidatedDeathSlice, assertValidOwnedDeathTransition } from './validation.js';
+import { createDeathState, applyDeathCommand, deathCommandBlock, projectDeath, hasDeathLock, hasDeathHistory, deathSourceView, applyOwnedDeathCommand, ownedDeathCommandBlock, projectOwnedDeath, assertOwnedDeathCurrent } from '../death/index.js';
+import { projectPureWhiteAngelRoundOutcome } from "../pure-white-angel/combat.js";
+import { projectLightSeekerRoundOutcome } from "../light-seeker/combat.js";
+import type { SunOwnedEngine } from '../sun/engine.js';
+import type { SunProjection } from '../sun/types.js';
+import type { SunRuntimeDraft, SunRuntimeIdentity, SunRuntimeSession } from '../sun/owned-session.js';
+import { openValidatedSunSlice, assertValidOwnedSunTransition } from './validation.js';
+import { createSunState, applySunCommand, sunCommandBlock, projectSun, hasSunLock, hasSunHistory, sunSourceView, applyOwnedSunCommand, ownedSunCommandBlock, projectOwnedSun, assertOwnedSunCurrent } from '../sun/index.js';
+import type { TyrantOwnedEngine } from '../tyrant/engine.js';
+import type { TyrantProjection } from '../tyrant/types.js';
+import type { TyrantRuntimeDraft, TyrantRuntimeIdentity, TyrantRuntimeSession } from '../tyrant/owned-session.js';
+import { openValidatedTyrantSlice, assertValidOwnedTyrantTransition } from './validation.js';
+import { createTyrantState, applyTyrantCommand, tyrantCommandBlock, projectTyrant, hasTyrantLock, hasTyrantHistory, tyrantSourceView, applyOwnedTyrantCommand, ownedTyrantCommandBlock, projectOwnedTyrant, assertOwnedTyrantCurrent } from '../tyrant/index.js';
+import type { WhiteTowerOwnedEngine } from '../white-tower/engine.js';
+import type { WhiteTowerProjection } from '../white-tower/types.js';
+import type { WhiteTowerRuntimeDraft, WhiteTowerRuntimeIdentity, WhiteTowerRuntimeSession } from '../white-tower/owned-session.js';
+import { openValidatedWhiteTowerSlice, assertValidOwnedWhiteTowerTransition } from './validation.js';
+import { createWhiteTowerState, applyWhiteTowerCommand, whiteTowerCommandBlock, projectWhiteTower, hasWhiteTowerLock, hasWhiteTowerHistory, whiteTowerSourceView, applyOwnedWhiteTowerCommand, ownedWhiteTowerCommandBlock, projectOwnedWhiteTower, assertOwnedWhiteTowerCurrent } from '../white-tower/index.js';
+import type { DarknessOwnedEngine } from '../darkness/engine.js';
+import type { DarknessProjection } from '../darkness/types.js';
+import type { DarknessRuntimeDraft, DarknessRuntimeIdentity, DarknessRuntimeSession } from '../darkness/owned-session.js';
+import { openValidatedDarknessSlice, assertValidOwnedDarknessTransition } from './validation.js';
+import { createDarknessState, applyDarknessCommand, darknessCommandBlock, projectDarkness, hasDarknessLock, hasDarknessHistory, darknessSourceView, applyOwnedDarknessCommand, ownedDarknessCommandBlock, projectOwnedDarkness, assertOwnedDarknessCurrent } from '../darkness/index.js';
+import { projectBeautyGoddessRoundOutcome, projectBeautyGoddessPublicCombat } from '../beauty-goddess/public.js';
+import type { MoonOwnedEngine } from '../moon/engine.js';
+import type { MoonProjection } from '../moon/types.js';
+import type { MoonRuntimeDraft, MoonRuntimeIdentity, MoonRuntimeSession } from '../moon/owned-session.js';
+import { openValidatedMoonSlice, assertValidOwnedMoonTransition } from './validation.js';
+import { createMoonState, applyMoonCommand, moonCommandBlock, projectMoon, hasMoonLock, hasMoonHistory, moonSourceView, applyOwnedMoonCommand, ownedMoonCommandBlock, projectOwnedMoon, assertOwnedMoonCurrent } from '../moon/index.js';
+import type { PerfecterOwnedEngine } from '../perfecter/engine.js';
+import type { PerfecterProjection } from '../perfecter/types.js';
+import type { PerfecterRuntimeDraft, PerfecterRuntimeIdentity, PerfecterRuntimeSession } from '../perfecter/owned-session.js';
+import { openValidatedPerfecterSlice, assertValidOwnedPerfecterTransition } from './validation.js';
+import { createPerfecterState, applyPerfecterCommand, perfecterCommandBlock, projectPerfecter, hasPerfecterLock, hasPerfecterHistory, perfecterSourceView, applyOwnedPerfecterCommand, ownedPerfecterCommandBlock, projectOwnedPerfecter, assertOwnedPerfecterCurrent } from '../perfecter/index.js';
+import type { VisionaryOwnedEngine } from '../visionary/engine.js';
+import type { VisionaryProjection } from '../visionary/types.js';
+import type { VisionaryRuntimeDraft, VisionaryRuntimeIdentity, VisionaryRuntimeSession } from '../visionary/owned-session.js';
+import { openValidatedVisionarySlice, assertValidOwnedVisionaryTransition } from './validation.js';
+import { createVisionaryState, applyVisionaryCommand, visionaryCommandBlock, projectVisionary, hasVisionaryLock, hasVisionaryHistory, visionarySourceView, applyOwnedVisionaryCommand, ownedVisionaryCommandBlock, projectOwnedVisionary, assertOwnedVisionaryCurrent } from '../visionary/index.js';
+import type { RedPriestOwnedEngine } from '../red-priest/engine.js';
+import type { RedPriestProjection } from '../red-priest/types.js';
+import type { RedPriestRuntimeDraft, RedPriestRuntimeIdentity, RedPriestRuntimeSession } from '../red-priest/owned-session.js';
+import { openValidatedRedPriestSlice, assertValidOwnedRedPriestTransition } from './validation.js';
+import { createRedPriestState, applyRedPriestCommand, redPriestCommandBlock, projectRedPriest, hasRedPriestLock, hasRedPriestHistory, redPriestSourceView, applyOwnedRedPriestCommand, ownedRedPriestCommandBlock, projectOwnedRedPriest, assertOwnedRedPriestCurrent } from '../red-priest/index.js';
 import type { FoolOwnedEngine } from '../fool/engine.js';
 import type { FoolProjection } from '../fool/types.js';
 import type { FoolRuntimeDraft, FoolRuntimeIdentity, FoolRuntimeSession } from '../fool/owned-session.js';
@@ -6,7 +130,7 @@ import { createFoolState, applyFoolCommand, foolCommandBlock, projectFool, hasFo
 import { createNatureWalkerState, applyNatureWalkerCommand, projectNatureWalker, hasNatureWalkerLock, natureWalkerInheritedView } from '../nature-walker/index.js';
 import { settleNatureWalkerEncounter } from '../nature-walker/encounter.js';
 import { projectNatureWalkerCombat, projectNatureWalkerRoundOutcome, NATURE_WALKER_ENEMY_COUNT_WHEEL, NATURE_WALKER_ENEMY_ABILITY_WHEEL } from '../nature-walker/combat.js';
-import { createHandOfOrderState, applyHandOfOrderCommand, projectHandOfOrder, hasHandOfOrderLock, handOfOrderInheritedView } from '../hand-of-order/index.js';
+import { createHandOfOrderState, applyHandOfOrderCommand, projectHandOfOrder, hasHandOfOrderLock, handOfOrderInheritedView, projectHandOfOrderLastCheck } from '../hand-of-order/index.js';
 import { settleHandOfOrderEncounter } from '../hand-of-order/encounter.js';
 import { projectHandOfOrderCombat, projectHandOfOrderRoundOutcome, HAND_OF_ORDER_ENEMY_COUNT_WHEEL, HAND_OF_ORDER_ENEMY_ABILITY_WHEEL } from '../hand-of-order/combat.js';
 import type { SlicePublicCombatRound } from './types.js';
@@ -19,21 +143,21 @@ import { projectMercurySnakeCombat, MERCURY_SNAKE_ENEMY_COUNT_WHEEL, MERCURY_SNA
 import { validateFerrymanEraCommand } from '../ferryman/era.js';
 import { createPaleEmperorState, applyPaleEmperorCommand, projectPaleEmperor, hasPaleEmperorLock, recordPaleEmperorEraCommand } from '../pale-emperor/index.js';
 import { settlePaleEmperorEncounter } from '../pale-emperor/encounter.js';
-import { projectPaleEmperorCombat, PALE_EMPEROR_ENEMY_COUNT_WHEEL, PALE_EMPEROR_ENEMY_ABILITY_WHEEL } from '../pale-emperor/combat.js';
+import { projectPaleEmperorCombat,projectPaleEmperorRoundOutcome, PALE_EMPEROR_ENEMY_COUNT_WHEEL, PALE_EMPEROR_ENEMY_ABILITY_WHEEL } from '../pale-emperor/combat.js';
 import { createPureWhiteAngelState, applyPureWhiteAngelCommand, projectPureWhiteAngel, hasPureWhiteAngelLock } from '../pure-white-angel/index.js';
 import { settlePureWhiteAngelEncounter } from '../pure-white-angel/encounter.js';
 import { projectPureWhiteAngelCombat, PURE_WHITE_ANGEL_ENEMY_COUNT_WHEEL, PURE_WHITE_ANGEL_ENEMY_ABILITY_WHEEL } from '../pure-white-angel/combat.js';
-import { createThunderGodState, applyThunderGodCommand, projectThunderGod, hasThunderGodLock } from '../thunder-god/index.js';
+import { createThunderGodState, applyThunderGodCommand, projectThunderGod, projectThunderGodLastCheck, hasThunderGodLock } from '../thunder-god/index.js';
 import { settleThunderGodEncounter } from '../thunder-god/encounter.js';
-import { projectThunderGodCombat, THUNDER_GOD_ENEMY_COUNT_WHEEL, THUNDER_GOD_ENEMY_ABILITY_WHEEL } from '../thunder-god/combat.js';
+import { projectThunderGodRoundOutcome, projectThunderGodCombat, THUNDER_GOD_ENEMY_COUNT_WHEEL, THUNDER_GOD_ENEMY_ABILITY_WHEEL } from '../thunder-god/combat.js';
 import { createAbominationState, applyAbominationCommand, projectAbomination, hasAbominationLock, abominationInheritedView } from '../abomination/index.js';
-import { createUncleanMonarchState, applyUncleanMonarchCommand, projectUncleanMonarch, hasUncleanMonarchLock } from '../unclean-monarch/index.js';
-import { createDarkAngelState, applyDarkAngelCommand, projectDarkAngel, hasDarkAngelLock } from '../dark-angel/index.js';
-import { createKnowledgeEmperorState, applyKnowledgeEmperorCommand, projectKnowledgeEmperor, hasKnowledgeEmperorLock } from '../knowledge-emperor/index.js';
-import { createApocalypseDemonessState, applyApocalypseDemonessCommand, projectApocalypseDemoness, hasApocalypseDemonessLock } from '../apocalypse-demoness/index.js';
-import { createDivineHandState, applyDivineHandCommand, projectDivineHand, hasDivineHandLock } from '../divine-hand/index.js';
-import { createTimeWormState, applyTimeWormCommand, projectTimeWorm, hasTimeWormLock } from '../time-worm/index.js';
-import { createStarKeyState, applyStarKeyCommand, projectStarKey, hasStarKeyLock } from '../star-key/index.js';
+import { createUncleanMonarchState, applyUncleanMonarchCommand, projectUncleanMonarch, hasUncleanMonarchLock, uncleanMonarchInheritedView, projectUncleanMonarchLastCheck } from '../unclean-monarch/index.js';
+import { createDarkAngelState, applyDarkAngelCommand, projectDarkAngel, projectDarkAngelLastCheck, hasDarkAngelLock, darkAngelInheritedView } from '../dark-angel/index.js';
+import { createKnowledgeEmperorState, applyKnowledgeEmperorCommand, projectKnowledgeEmperor, hasKnowledgeEmperorLock, knowledgeEmperorInheritedView } from '../knowledge-emperor/index.js';
+import { createApocalypseDemonessState, applyApocalypseDemonessCommand, projectApocalypseDemoness, hasApocalypseDemonessLock, apocalypseDemonessInheritedView, projectApocalypseDemonessLastCheck } from '../apocalypse-demoness/index.js';
+import { createDivineHandState, applyDivineHandCommand, projectDivineHand, hasDivineHandLock, divineHandInheritedView } from '../divine-hand/index.js';
+import { createTimeWormState, applyTimeWormCommand, projectTimeWorm, hasTimeWormLock, timeWormInheritedView } from '../time-worm/index.js';
+import { createStarKeyState, applyStarKeyCommand, projectStarKey, hasStarKeyLock, starKeyInheritedView } from '../star-key/index.js';
 import { createAllKnowingEyeState, applyAllKnowingEyeCommand, projectAllKnowingEye, hasAllKnowingEyeLock } from '../all-knowing-eye/index.js';
 import { settleAbominationEncounter } from '../abomination/encounter.js';
 import { settleUncleanMonarchEncounter } from '../unclean-monarch/encounter.js';
@@ -44,30 +168,32 @@ import { settleDivineHandEncounter } from '../divine-hand/encounter.js';
 import { settleTimeWormEncounter } from '../time-worm/encounter.js';
 import { settleStarKeyEncounter } from '../star-key/encounter.js';
 import { settleAllKnowingEyeEncounter } from '../all-knowing-eye/encounter.js';
-import { projectAbominationCombat, ABOMINATION_ENEMY_COUNT_WHEEL, ABOMINATION_ENEMY_ABILITY_WHEEL } from '../abomination/combat.js';
+import { projectAbominationRoundOutcome, projectAbominationCombat, ABOMINATION_ENEMY_COUNT_WHEEL, ABOMINATION_ENEMY_ABILITY_WHEEL } from '../abomination/combat.js';
 import { projectUncleanMonarchCombat, UNCLEAN_MONARCH_ENEMY_COUNT_WHEEL, UNCLEAN_MONARCH_ENEMY_ABILITY_WHEEL } from '../unclean-monarch/combat.js';
 import { projectDarkAngelCombat, DARK_ANGEL_ENEMY_COUNT_WHEEL, DARK_ANGEL_ENEMY_ABILITY_WHEEL } from '../dark-angel/combat.js';
 import { projectKnowledgeEmperorCombat, KNOWLEDGE_EMPEROR_ENEMY_COUNT_WHEEL, KNOWLEDGE_EMPEROR_ENEMY_ABILITY_WHEEL } from '../knowledge-emperor/combat.js';
 import { projectApocalypseDemonessCombat, APOCALYPSE_DEMONESS_ENEMY_COUNT_WHEEL, APOCALYPSE_DEMONESS_ENEMY_ABILITY_WHEEL } from '../apocalypse-demoness/combat.js';
 import { projectDivineHandCombat, DIVINE_HAND_ENEMY_COUNT_WHEEL, DIVINE_HAND_ENEMY_ABILITY_WHEEL } from '../divine-hand/combat.js';
+import { projectTimeWormRoundOutcome } from '../time-worm/public.js';
+import { projectFateTrojanRoundOutcome } from '../fate-trojan/public.js';
 import { projectTimeWormCombat, TIME_WORM_ENEMY_COUNT_WHEEL, TIME_WORM_ENEMY_ABILITY_WHEEL } from '../time-worm/combat.js';
-import { projectStarKeyCombat, STAR_KEY_ENEMY_COUNT_WHEEL, STAR_KEY_ENEMY_ABILITY_WHEEL } from '../star-key/combat.js';
-import { projectAllKnowingEyeCombat, ALL_KNOWING_EYE_ENEMY_COUNT_WHEEL, ALL_KNOWING_EYE_ENEMY_ABILITY_WHEEL } from '../all-knowing-eye/combat.js';
+import { projectStarKeyRoundOutcome, projectStarKeyCombat, STAR_KEY_ENEMY_COUNT_WHEEL, STAR_KEY_ENEMY_ABILITY_WHEEL } from '../star-key/combat.js';
+import { projectAllKnowingEyeRoundOutcome, projectAllKnowingEyeCombat, ALL_KNOWING_EYE_ENEMY_COUNT_WHEEL, ALL_KNOWING_EYE_ENEMY_ABILITY_WHEEL } from '../all-knowing-eye/combat.js';
 import { createMisfortuneKnightState, applyMisfortuneKnightCommand, projectMisfortuneKnight, hasMisfortuneKnightLock } from '../misfortune-knight/index.js';
 import { settleMisfortuneKnightEncounter } from '../misfortune-knight/encounter.js';
-import { projectMisfortuneKnightCombat, MISFORTUNE_KNIGHT_ENEMY_COUNT_WHEEL, MISFORTUNE_KNIGHT_ENEMY_ABILITY_WHEEL } from '../misfortune-knight/combat.js';
+import { projectMisfortuneKnightCombat, projectMisfortuneKnightRoundOutcome, MISFORTUNE_KNIGHT_ENEMY_COUNT_WHEEL, MISFORTUNE_KNIGHT_ENEMY_ABILITY_WHEEL } from '../misfortune-knight/combat.js';
 import { createBeautyGoddessState, applyBeautyGoddessCommand, projectBeautyGoddess, hasBeautyGoddessLock } from '../beauty-goddess/index.js';
 import { settleBeautyGoddessEncounter } from '../beauty-goddess/encounter.js';
-import { projectBeautyGoddessCombat, BEAUTY_GODDESS_ENEMY_COUNT_WHEEL, BEAUTY_GODDESS_ENEMY_ABILITY_WHEEL } from '../beauty-goddess/combat.js';
-import { createCivilizationEnlightenerState, applyCivilizationEnlightenerCommand, projectCivilizationEnlightener, hasCivilizationEnlightenerLock } from '../civilization-enlightener/index.js';
+import { BEAUTY_GODDESS_ENEMY_COUNT_WHEEL, BEAUTY_GODDESS_ENEMY_ABILITY_WHEEL } from '../beauty-goddess/combat.js';
+import { createCivilizationEnlightenerState, applyCivilizationEnlightenerCommand, projectCivilizationEnlightener, hasCivilizationEnlightenerLock, civilizationEnlightenerInheritedView } from '../civilization-enlightener/index.js';
 import { settleCivilizationEnlightenerEncounter } from '../civilization-enlightener/encounter.js';
-import { projectCivilizationEnlightenerCombat, CIVILIZATION_ENLIGHTENER_ENEMY_COUNT_WHEEL, CIVILIZATION_ENLIGHTENER_ENEMY_ABILITY_WHEEL } from '../civilization-enlightener/combat.js';
+import { projectCivilizationEnlightenerCombat, projectCivilizationEnlightenerRoundOutcome, CIVILIZATION_ENLIGHTENER_ENEMY_COUNT_WHEEL, CIVILIZATION_ENLIGHTENER_ENEMY_ABILITY_WHEEL } from '../civilization-enlightener/combat.js';
 import { createWriterState, applyWriterCommand, projectWriter, hasWriterLock } from '../writer/index.js';
 import { settleWriterEncounter } from '../writer/encounter.js';
-import { projectWriterCombat, WRITER_ENEMY_COUNT_WHEEL, WRITER_ENEMY_ABILITY_WHEEL } from '../writer/combat.js';
+import { projectWriterCombat, projectWriterRoundOutcome, WRITER_ENEMY_COUNT_WHEEL, WRITER_ENEMY_ABILITY_WHEEL } from '../writer/combat.js';
 import { createConquerorState, applyConquerorCommand, projectConqueror, hasConquerorLock } from '../conqueror/index.js';
 import { settleConquerorEncounter } from '../conqueror/encounter.js';
-import { projectConquerorCombat, CONQUEROR_ENEMY_COUNT_WHEEL, CONQUEROR_ENEMY_ABILITY_WHEEL } from '../conqueror/combat.js';
+import { projectConquerorCombat, projectConquerorRoundOutcome, CONQUEROR_ENEMY_COUNT_WHEEL, CONQUEROR_ENEMY_ABILITY_WHEEL } from '../conqueror/combat.js';
 import { createAttendantMysteriesState, applyAttendantMysteriesCommand, projectAttendantMysteries, hasAttendantMysteriesLock } from '../attendant-mysteries/index.js';
 import { hasAttendantMysteriesTownLock } from '../attendant-mysteries/ritual.js';
 import { hasAttendantMysteriesLifeLock } from '../attendant-mysteries/life.js';
@@ -87,7 +213,7 @@ import { resolveSliceWeeklyFinance } from './weekly-finance.js';
 import { projectFateProphetCombat, FATE_PROPHET_ENEMY_COUNT_WHEEL, FATE_PROPHET_ENEMY_ABILITY_WHEEL } from '../fate-prophet/combat.js';
 import { createFateProphetState, applyFateProphetCommand, projectFateProphet, hasFateProphetLock } from '../fate-prophet/index.js';
 import { settleAncientEvilEncounter } from '../ancient-evil/encounter.js';
-import { projectAncientEvilCombat, ANCIENT_EVIL_ENEMY_COUNT_WHEEL, ANCIENT_EVIL_ENEMY_ABILITY_WHEEL } from '../ancient-evil/combat.js';
+import { projectAncientEvilRoundOutcome, projectAncientEvilCombat, ANCIENT_EVIL_ENEMY_COUNT_WHEEL, ANCIENT_EVIL_ENEMY_ABILITY_WHEEL } from '../ancient-evil/combat.js';
 import { createAncientEvilState, applyAncientEvilCommand, projectAncientEvil, hasAncientEvilLock } from '../ancient-evil/index.js';
 import { settleBloodDukeEncounter } from '../blood-duke/encounter.js';
 import { projectBloodDukeCombat, BLOOD_DUKE_ENEMY_COUNT_WHEEL, BLOOD_DUKE_ENEMY_ABILITY_WHEEL } from '../blood-duke/combat.js';
@@ -110,16 +236,16 @@ import {settleLifeGiverEncounter} from '../life-giver/encounter.js';
 import {settleKnowledgeMentorEncounter} from '../knowledge-mentor/encounter.js';
 import { projectSageCombat, SAGE_ENEMY_COUNT_WHEEL, SAGE_ENEMY_ABILITY_WHEEL } from '../sage/combat.js';
 import { projectCalamityDemonessCombat, CALAMITY_DEMONESS_ENEMY_COUNT_WHEEL, CALAMITY_DEMONESS_ENEMY_ABILITY_WHEEL } from '../calamity-demoness/combat.js';
-import { projectGloryCombat, GLORY_ENEMY_COUNT_WHEEL, GLORY_ENEMY_ABILITY_WHEEL } from '../glory/combat.js';
+import { projectGloryCombat, projectGloryPlayerAction, projectGloryEnemyAction, GLORY_ENEMY_COUNT_WHEEL, GLORY_ENEMY_ABILITY_WHEEL } from '../glory/combat.js';
 import {projectFateTrojanCombat,FATE_TROJAN_ENEMY_COUNT_WHEEL,FATE_TROJAN_ENEMY_ABILITY_WHEEL} from '../fate-trojan/combat.js';
-import {projectPlaneswalkerCombat,PLANESWALKER_ENEMY_COUNT_WHEEL,PLANESWALKER_ENEMY_ABILITY_WHEEL} from '../planeswalker/combat.js';
-import {projectDeathConsulCombat,DEATH_CONSUL_ENEMY_COUNT_WHEEL,DEATH_CONSUL_ENEMY_ABILITY_WHEEL} from '../death-consul/combat.js';
+import {projectPlaneswalkerRoundOutcome,projectPlaneswalkerCombat,PLANESWALKER_ENEMY_COUNT_WHEEL,PLANESWALKER_ENEMY_ABILITY_WHEEL} from '../planeswalker/combat.js';
+import {projectDeathConsulCombat,projectDeathConsulRoundOutcome,DEATH_CONSUL_ENEMY_COUNT_WHEEL,DEATH_CONSUL_ENEMY_ABILITY_WHEEL} from '../death-consul/combat.js';
 import {projectLightSeekerCombat,LIGHT_SEEKER_ENEMY_COUNT_WHEEL,LIGHT_SEEKER_ENEMY_ABILITY_WHEEL} from '../light-seeker/combat.js';
 import {projectCatastropheCombat,CATASTROPHE_ENEMY_COUNT_WHEEL,CATASTROPHE_ENEMY_ABILITY_WHEEL} from '../catastrophe/combat.js';
-import {projectWisdomAngelCombat,WISDOM_ANGEL_ENEMY_COUNT_WHEEL,WISDOM_ANGEL_ENEMY_ABILITY_WHEEL} from '../wisdom-angel/combat.js';
-import {projectConcealmentServantCombat,CONCEALMENT_SERVANT_ENEMY_COUNT_WHEEL,CONCEALMENT_SERVANT_ENEMY_ABILITY_WHEEL} from '../concealment-servant/combat.js';
-import {projectLifeGiverCombat,LIFE_GIVER_ENEMY_COUNT_WHEEL,LIFE_GIVER_ENEMY_ABILITY_WHEEL} from '../life-giver/combat.js';
-import {projectKnowledgeMentorCombat,KNOWLEDGE_MENTOR_ENEMY_COUNT_WHEEL,KNOWLEDGE_MENTOR_ENEMY_ABILITY_WHEEL} from '../knowledge-mentor/combat.js';
+import {projectWisdomAngelRoundOutcome,projectWisdomAngelCombat,WISDOM_ANGEL_ENEMY_COUNT_WHEEL,WISDOM_ANGEL_ENEMY_ABILITY_WHEEL} from '../wisdom-angel/combat.js';
+import {projectConcealmentServantCombat,projectConcealmentServantRoundOutcome,CONCEALMENT_SERVANT_ENEMY_COUNT_WHEEL,CONCEALMENT_SERVANT_ENEMY_ABILITY_WHEEL} from '../concealment-servant/combat.js';
+import {projectLifeGiverCombat,LIFE_GIVER_ENEMY_COUNT_WHEEL,LIFE_GIVER_ENEMY_ABILITY_WHEEL,type LifeGiverRoundOutcome} from '../life-giver/combat.js';
+import {projectKnowledgeMentorCombat,projectKnowledgeMentorRoundOutcome,KNOWLEDGE_MENTOR_ENEMY_COUNT_WHEEL,KNOWLEDGE_MENTOR_ENEMY_ABILITY_WHEEL} from '../knowledge-mentor/combat.js';
 import {ARCANE_SCHOLAR_ENEMY_COUNT_WHEEL,ARCANE_SCHOLAR_ENEMY_ABILITY_WHEEL} from '../arcane-scholar/combat.js';
 import { createSageState, applySageCommand, projectSage, hasSageLock } from '../sage/index.js';
 import { createCalamityDemonessState, applyCalamityDemonessCommand, projectCalamityDemoness, hasCalamityDemonessLock } from '../calamity-demoness/index.js';
@@ -184,19 +310,19 @@ import {settleWandererEncounter} from '../wanderer/encounter.js';
 import {projectWandererCombat,WANDERER_ENEMY_COUNT_WHEEL,WANDERER_ENEMY_ABILITY_WHEEL} from '../wanderer/combat.js';
 import {createWandererState,applyWandererCommand,projectWanderer,hasWandererLock} from '../wanderer/index.js';
 import {settleFerrymanEncounter} from '../ferryman/encounter.js';
-import {projectFerrymanCombat} from '../ferryman/combat.js';
+import {projectFerrymanCombat,projectFerrymanRoundOutcome} from '../ferryman/combat.js';
 import {createFerrymanState,applyFerrymanCommand,projectFerryman,hasFerrymanLock} from '../ferryman/index.js';
 import {settleJusticeMentorEncounter} from '../justice-mentor/encounter.js';
 import {projectJusticeMentorCombat} from '../justice-mentor/combat.js';
 import {createJusticeMentorState,applyJusticeMentorCommand,projectJusticeMentor,hasJusticeMentorLock} from '../justice-mentor/index.js';
 import {settleSeaKingEncounter} from '../sea-king/encounter.js';
-import {projectSeaKingCombat,SEA_KING_ENEMY_COUNT_WHEEL,SEA_KING_ENEMY_ABILITY_WHEEL} from '../sea-king/combat.js';
+import {projectSeaKingRoundOutcome,projectSeaKingCombat,SEA_KING_ENEMY_COUNT_WHEEL,SEA_KING_ENEMY_ABILITY_WHEEL} from '../sea-king/combat.js';
 import {createSeaKingState,applySeaKingCommand,projectSeaKing,hasSeaKingLock} from '../sea-king/index.js';
 import {settleInsightScholarEncounter} from '../insight-scholar/encounter.js';
 import {projectInsightScholarCombat,INSIGHT_SCHOLAR_ENEMY_COUNT_WHEEL,INSIGHT_SCHOLAR_ENEMY_ABILITY_WHEEL} from '../insight-scholar/combat.js';
 import {createInsightScholarState,applyInsightScholarCommand,projectInsightScholar,hasInsightScholarLock} from '../insight-scholar/index.js';
 import {settleFearBishopEncounter} from '../fear-bishop/encounter.js';
-import {projectFearBishopCombat,FEAR_BISHOP_ENEMY_COUNT_WHEEL,FEAR_BISHOP_ENEMY_ABILITY_WHEEL} from '../fear-bishop/combat.js';
+import {projectFearBishopCombat,projectFearBishopRoundOutcome,FEAR_BISHOP_ENEMY_COUNT_WHEEL,FEAR_BISHOP_ENEMY_ABILITY_WHEEL} from '../fear-bishop/combat.js';
 import {createFearBishopState,applyFearBishopCommand,projectFearBishop,hasFearBishopLock} from '../fear-bishop/index.js';
 import {settleSummoningMasterEncounter} from '../summoning-master/encounter.js';
 import {projectSummoningMasterCombat,SUMMONING_MASTER_ENEMY_COUNT_WHEEL,SUMMONING_MASTER_ENEMY_ABILITY_WHEEL} from '../summoning-master/combat.js';
@@ -597,10 +723,354 @@ export { assertValidSliceState, validateSlicePayload } from './validation.js';
 export class SliceRuleError extends Error { constructor(message:string){super(message);this.name='SliceRuleError';} }
 const requireRule=(ok:unknown,message:string):void=>{if(!ok)throw new SliceRuleError(message);};
 const clone=<T>(v:T):T=>JSON.parse(JSON.stringify(v)) as T;
+const publicLifeGiverPartner = (p: LifeGiverRoundOutcome['partnerAfter']): LifeGiverRoundOutcome['partnerAfter'] => ({
+  id: p.id, name: p.name, source: p.source, adult: p.adult, independentMind: p.independentMind,
+  bodyId: p.bodyId, homeId: p.homeId, location: p.location, health: p.health, mind: p.mind,
+  stamina: p.stamina, status: p.status, willing: p.willing, metWeek: p.metWeek,
+  ordinaryDistanceM: p.ordinaryDistanceM, gateCrossings: p.gateCrossings,
+  chime: { id: p.chime.id, owner: p.chime.owner },
+  restHistory: p.restHistory.map(r => ({
+    week: r.week, paidPennies: r.paidPennies, staminaBefore: r.staminaBefore, staminaAfter: r.staminaAfter,
+    mindBefore: r.mindBefore, mindAfter: r.mindAfter, healthUnchanged: r.healthUnchanged,
+  })),
+});
+const publicLifeGiverBead = (b: LifeGiverRoundOutcome['combatBeads'][number]): LifeGiverRoundOutcome['combatBeads'][number] => ({
+  id: b.id, source: b.source, paidPennies: b.paidPennies, preparedWeek: b.preparedWeek, purpose: b.purpose,
+  caseId: b.caseId, status: b.status, location: b.location, spentWeek: b.spentWeek, combatRound: b.combatRound, abilityId: b.abilityId,
+});
+function publicLifeGiverCombat(s: SliceState): Omit<ReturnType<typeof projectLifeGiverCombat>, 'source'> {
+  const panel = projectLifeGiverCombat(s), c = panel.constants, permit = panel.guestPermit;
+  const wheel = (w: typeof panel.abilityWheel[number]) => ({ id: w.id, label: w.label, weight: w.weight });
+  return {
+    enemyName: panel.enemyName, targetId: panel.targetId, enemyMind: panel.enemyMind, enemySpirituality: panel.enemySpirituality,
+    powerUses: { DARK_BOLT: panel.powerUses.DARK_BOLT, WARD: panel.powerUses.WARD, JAM: panel.powerUses.JAM },
+    guestPolicy: panel.guestPolicy,
+    guestPermit: permit ? {
+      partnerId: permit.partnerId, encounterId: permit.encounterId, approachWeek: permit.approachWeek, paidWeek: permit.paidWeek,
+      paidPence: permit.paidPence, negotiationTravelMetres: permit.negotiationTravelMetres, negotiationSeconds: permit.negotiationSeconds, visitNumber: permit.visitNumber,
+    } : null,
+    partner: publicLifeGiverPartner(panel.partner), combatBeads: panel.combatBeads.map(publicLifeGiverBead),
+    vitalityUses: panel.vitalityUses, vitalitySuccesses: panel.vitalitySuccesses, staminaRestored: panel.staminaRestored,
+    shelterUses: panel.shelterUses, shelterSuccesses: panel.shelterSuccesses, shelterEffects: panel.shelterEffects,
+    shelterBroken: panel.shelterBroken, totalPlayerHealthSpent: panel.totalPlayerHealthSpent,
+    gateOpen: panel.gateOpen, shelterOpen: panel.shelterOpen,
+    constants: {
+      weights: { physique: c.weights.physique, perception: c.weights.perception, will: c.weights.will, knowledge: c.weights.knowledge },
+      tier: c.tier, floor: c.floor, maxSpirituality: c.maxSpirituality, continuingRecovery: c.continuingRecovery,
+      enemyPhysique: c.enemyPhysique, vitalityCost: c.vitalityCost, vitalityRestore: c.vitalityRestore, shelterCost: c.shelterCost,
+      shelterPlayerHealthCost: c.shelterPlayerHealthCost, shelterGuestStaminaCost: c.shelterGuestStaminaCost,
+      shelterBonusReduction: c.shelterBonusReduction, newSkillDifficulty: c.newSkillDifficulty,
+    },
+    countWheel: panel.countWheel.map(wheel), enemyCountWheel: panel.enemyCountWheel.map(wheel),
+    abilityWheel: panel.abilityWheel.map(wheel), enemyAbilityWheel: panel.enemyAbilityWheel.map(wheel),
+    originalExit: panel.originalExit, pursuit: panel.pursuit, distanceMetres: panel.distanceMetres,
+    exitTravelMetres: panel.exitTravelMetres, exitSeconds: panel.exitSeconds, summary: panel.summary,
+  };
+}
+/** Resolved Life Giver facts only; the replay source and cursor remain private. */
+function publicLifeGiverRoundOutcome(o: LifeGiverRoundOutcome): NonNullable<SlicePublicCombatRound['lifeGiverOutcome']> {
+  const injury = (i: LifeGiverRoundOutcome['playerInjuriesAfter'][number]) => ({
+    id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision,
+  });
+  return {
+    targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+    enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+    playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter,
+    playerHealthAfter: o.playerHealthAfter, playerHealthBeforeInjury: o.playerHealthBeforeInjury,
+    playerMindAfter: o.playerMindAfter, enemySpiritualityBefore: o.enemySpiritualityBefore,
+    powerUses: { DARK_BOLT: o.powerUses.DARK_BOLT, WARD: o.powerUses.WARD, JAM: o.powerUses.JAM },
+    partnerAfter: publicLifeGiverPartner(o.partnerAfter),
+    papersAfter: o.papersAfter.map(paper => ({
+      id: paper.id, batch: paper.batch, source: paper.source, purchasedWeek: paper.purchasedWeek, status: paper.status,
+      preparedWeek: paper.preparedWeek, consumedWeek: paper.consumedWeek, consumedBy: paper.consumedBy, combatRound: paper.combatRound,
+    })),
+    papersConsumed: [...o.papersConsumed],
+    combatBeads: o.combatBeads.map(publicLifeGiverBead),
+    playerInjuriesAfter: o.playerInjuriesAfter.map(injury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(injury),
+    playerRiskAfter: o.playerRiskAfter, enemyRiskAfter: o.enemyRiskAfter,
+    gateOpenAfter: o.gateOpenAfter, shelterOpenAfter: o.shelterOpenAfter, shelterExpired: o.shelterExpired,
+    ordinaryReturnMetres: o.ordinaryReturnMetres, elapsedSeconds: o.elapsedSeconds,
+    playerActions: o.playerActions.map(a => ({
+      label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure,
+      order: a.order, paidCost: a.paidCost, physicalFactor: a.physicalFactor, rolls: [...a.rolls],
+      id: a.id, paperId: a.paperId, beadId: a.beadId, guestStaminaSpent: a.guestStaminaSpent,
+      guestStaminaRestored: a.guestStaminaRestored, playerHealthSpent: a.playerHealthSpent,
+      summoned: a.summoned, cooperated: a.cooperated, vitalityResult: a.vitalityResult, shelterResult: a.shelterResult, shelterApplied: a.shelterApplied,
+    })),
+    enemyActions: o.enemyActions.map(a => ({
+      label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure,
+      order: a.order, paidCost: a.paidCost, physicalFactor: a.physicalFactor, rolls: [...a.rolls],
+      planned: a.planned, actual: a.actual, gateDestroyed: a.gateDestroyed, shelterDestroyed: a.shelterDestroyed,
+      guestMindDamage: a.guestMindDamage, guestHealthDamage: a.guestHealthDamage, guestStaminaSpent: a.guestStaminaSpent,
+    })),
+    vitalityUses: o.vitalityUses, vitalitySuccesses: o.vitalitySuccesses, staminaRestored: o.staminaRestored,
+    shelterUses: o.shelterUses, shelterSuccesses: o.shelterSuccesses, shelterEffects: o.shelterEffects,
+    shelterBroken: o.shelterBroken, totalPlayerHealthSpent: o.totalPlayerHealthSpent,
+  };
+}
+/** Inherited warrior rounds retain resolved facts, never private replay sources or stream positions. */
+const publicWarriorInjury = (i: SliceState['injuries'][number]) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+function publicDemonHunterRoundOutcome(o: import('../demon-hunter/combat.js').DemonHunterRoundOutcome): NonNullable<SlicePublicCombatRound['demonHunterOutcome']> {
+  return {
+    targetId: o.targetId, round: o.round, enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+    playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter, enemySpiritualityBefore: o.enemySpiritualityBefore,
+    powerUses: { CORRUPTION_PULSE: o.powerUses.CORRUPTION_PULSE, CINDER_GUARD: o.powerUses.CINDER_GUARD, CINDER_LUNGE: o.powerUses.CINDER_LUNGE },
+    warningUses: o.warningUses, coatings: o.coatings.map(c => ({ id: c.id, targetId: c.targetId, status: c.status, usedRound: c.usedRound })),
+    weaknessObservedRound: o.weaknessObservedRound, swordReady: o.swordReady, swordExpiresRound: o.swordExpiresRound, defending: o.defending, paidGuard: o.paidGuard,
+  };
+}
+function publicSilverKnightRoundOutcome(o: import('../silver-knight/combat.js').SilverKnightRoundOutcome): NonNullable<SlicePublicCombatRound['silverKnightOutcome']> {
+  const r = o.resourcesAfter;
+  const action = (a: import('../silver-knight/combat.js').SilverKnightPlayerAction | import('../silver-knight/combat.js').SilverKnightEnemyAction) => ({
+    label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure,
+    order: a.order, paidCost: a.paidCost, physicalFactor: a.physicalFactor, rolls: [...a.rolls], mindDamage: a.mindDamage,
+  });
+  return {
+    targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+    enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemyStatus: o.enemyStatus, enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicWarriorInjury), enemyRiskAfter: o.enemyRiskAfter,
+    resourcesAfter: { enemySpirituality: r.enemySpirituality, powerUses: { PRIMARY: r.powerUses.PRIMARY, DEFENSE: r.powerUses.DEFENSE, TRAIT: r.powerUses.TRAIT, BODY_STRIKE: r.powerUses.BODY_STRIKE, ACCIDENT: r.powerUses.ACCIDENT },
+      spentSpirituality: r.spentSpirituality, stoneArmorCharges: r.stoneArmorCharges, mistCharges: r.mistCharges, fireStreak: r.fireStreak, frostWardAvailable: r.frostWardAvailable,
+      coatings: r.coatings.map(c => ({ id: c.id, targetId: c.targetId, status: c.status, usedHistoryIndex: c.usedHistoryIndex })), preparationWeek: r.preparationWeek, preparationCostPence: r.preparationCostPence,
+      weaknessObserved: r.weaknessObserved, swordReady: r.swordReady, swordExpiresHistoryIndex: r.swordExpiresHistoryIndex },
+    playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter, playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter,
+    enemySpiritualityBefore: o.enemySpiritualityBefore, enemySpirituality: o.enemySpirituality, paidGuard: o.paidGuard, armorIntegritySpent: o.armorIntegritySpent,
+    elapsedSeconds: o.elapsedSeconds, lifeClockSecondsAfter: o.lifeClockSecondsAfter, lampSecondsAfter: o.lampSecondsAfter, playerPositionAfter: o.playerPositionAfter, enemyDistanceAfter: o.enemyDistanceAfter,
+    playerActions: o.playerActions.map(a => ({ ...action(a), id: a.id, actual: a.actual, resisted: a.resisted })),
+    enemyActions: o.enemyActions.map(a => ({ ...action(a), planned: a.planned, actual: a.actual })),
+    retreatActions: o.retreatActions.map(a => ({ order: a.order, paidCost: a.paidCost, roll: a.roll, success: a.success, boundBefore: a.boundBefore })), temporaryEffectsEnded: o.temporaryEffectsEnded,
+  };
+}
+function publicGloryRoundOutcome(o: import('../glory/combat.js').GloryRoundOutcome): NonNullable<SlicePublicCombatRound['gloryOutcome']> {
+  return {
+    targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+    enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+    playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter, playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, enemySpiritualityBefore: o.enemySpiritualityBefore,
+    playerInjuriesAfter: o.playerInjuriesAfter.map(publicWarriorInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicWarriorInjury), playerRiskAfter: o.playerRiskAfter, enemyRiskAfter: o.enemyRiskAfter,
+    powerUses: { FORCE_STRIKE: o.powerUses.FORCE_STRIKE, GUARD: o.powerUses.GUARD, DISCERN: o.powerUses.DISCERN }, armorAttempted: o.armorAttempted, bearingAttempted: o.bearingAttempted, guardAttempted: o.guardAttempted,
+    expiredArmorOrder: o.expiredArmorOrder, expiredGuardOrder: o.expiredGuardOrder, pendingArmorAfter: o.pendingArmorAfter, pendingGuardAfter: o.pendingGuardAfter,
+    healthPaid: o.healthPaid, armorIntegrityAfter: o.armorIntegrityAfter, armorWear: o.armorWear, clockSecondsAfter: o.clockSecondsAfter, elapsedSeconds: o.elapsedSeconds,
+    playerActions: o.playerActions.map(projectGloryPlayerAction), enemyActions: o.enemyActions.map(projectGloryEnemyAction),
+  };
+}
+/** Old Black Emperor rounds expose resolved facts, never their replay source or stream positions. */
+function publicFallenEarlRoundOutcome(o: import('../fallen-earl/combat.js').FallenEarlRoundOutcome): NonNullable<SlicePublicCombatRound['fallenEarlOutcome']> {
+  return {
+    targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+    enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+    playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter,
+    playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, enemySpiritualityBefore: o.enemySpiritualityBefore,
+    powerUses: { ARC_BOLT: o.powerUses.ARC_BOLT, WARD: o.powerUses.WARD, COMPOSE: o.powerUses.COMPOSE },
+    giftsAfter: o.giftsAfter.map(g => ({ id: g.id, location: g.location, destination: g.destination, givenWeek: g.givenWeek })),
+    bestowAttempts: o.bestowAttempts, magnifyUses: o.magnifyUses, exploitUses: o.exploitUses,
+    bestowReady: o.bestowReady, composureReady: o.composureReady, pendingWeakening: o.pendingWeakening,
+    playerActions: o.playerActions.map(a => ({
+      label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens,
+      order: a.order, id: a.id, paidCost: a.paidCost, physicalFactor: a.physicalFactor, giftId: a.giftId, magnified: a.magnified,
+      checkChance: a.checkChance, checkRoll: a.checkRoll, resistedByComposure: a.resistedByComposure, succeeded: a.succeeded,
+    })),
+    enemyActions: o.enemyActions.map(a => ({
+      label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens,
+      order: a.order, planned: a.planned, actual: a.actual, paidCost: a.paidCost, physicalFactor: a.physicalFactor,
+      target: a.target, bestowApplied: a.bestowApplied, weakeningGiftId: a.weakeningGiftId, weakeningFactor: a.weakeningFactor,
+    })),
+  };
+}
+function publicEntropyDukeRoundOutcome(o: import('../entropy-duke/combat.js').EntropyDukeRoundOutcome): NonNullable<SlicePublicCombatRound['entropyDukeOutcome']> {
+  const pending = (p: import('../entropy-duke/combat.js').EntropyDukePendingEffect) => ({
+    id: p.id, owner: p.owner, kind: p.kind, createdAt: p.createdAt, originalExpiresAt: p.originalExpiresAt, expiresAt: p.expiresAt,
+    extended: p.extended, extensionApplied: p.extensionApplied, remaining: p.remaining, exploited: p.exploited, factor: p.factor, giftId: p.giftId,
+  });
+  const action = (a: import('../entropy-duke/combat.js').EntropyDukeActionEvidence): NonNullable<SlicePublicCombatRound['entropyDukeOutcome']>['playerActions'][number] => ({
+    order: a.order, actor: a.actor, id: a.id, planned: a.planned, selectedAbility: a.selectedAbility, fallbackReason: a.fallbackReason,
+    mode: a.mode, label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure,
+    attackKind: a.attackKind, rawContribution: a.rawContribution, rawReduction: a.rawReduction,
+    paidCost: a.paidCost, mindCost: a.mindCost, physicalFactor: a.physicalFactor,
+    check: a.check ? {
+      ability: a.check.ability, baseAbility: a.check.baseAbility,
+      modifiers: a.check.modifiers.map(m => ({ source: m.source, value: m.value })),
+      effectiveAbility: a.check.effectiveAbility, difficulty: a.check.difficulty, chance: a.check.chance, roll: a.check.roll, tier: a.check.tier,
+    } : null,
+    succeeded: a.succeeded, resisted: a.resisted, giftId: a.giftId,
+    pendingBefore: a.pendingBefore.map(pending), pendingAfter: a.pendingAfter.map(pending), pendingApplied: [...a.pendingApplied], masteryApplied: [...a.masteryApplied],
+    atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, travelMetres: a.travelMetres,
+    playerMindAfter: a.playerMindAfter, playerSpiritualityAfter: a.playerSpiritualityAfter, enemySpiritualityAfter: a.enemySpiritualityAfter,
+  });
+  return {
+    targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+    enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+    enemyInjuries: o.enemyInjuries.map(publicWarriorInjury), enemyRisk: o.enemyRisk, weaponLocation: o.weaponLocation,
+    powerUses: { ARC_BOLT: o.powerUses.ARC_BOLT, WARD: o.powerUses.WARD, COMPOSE: o.powerUses.COMPOSE, MENTAL_PRESSURE: o.powerUses.MENTAL_PRESSURE },
+    pendingKind: o.pendingKind, composureReady: o.composureReady,
+    deviationAttempts: o.deviationAttempts, magnifyUses: o.magnifyUses, exploitUses: o.exploitUses,
+    amplificationAttempts: o.amplificationAttempts, prolongationAttempts: o.prolongationAttempts,
+    playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, playerSpiritualityAfter: o.playerSpiritualityAfter,
+    playerInjuriesAfter: o.playerInjuriesAfter.map(publicWarriorInjury), playerRiskAfter: o.playerRiskAfter,
+    giftsAfter: o.giftsAfter.map(g => ({ id: g.id, location: g.location, destination: g.destination, givenWeek: g.givenWeek })),
+    masteryAfter: { ...o.masteryAfter }, rootAfter: clone(o.rootAfter), elapsedSeconds: o.elapsedSeconds,
+    playerActions: o.playerActions.map(action), enemyActions: o.enemyActions.map(action), expiredPending: o.expiredPending.map(pending),
+  };
+}
+/** Resolved inherited Mother facts are public; replay authority and random positions stay private. */
+function publicAncientAlchemistRoundOutcome(o: import('../ancient-alchemist/combat.js').AncientAlchemistRoundOutcome): NonNullable<SlicePublicCombatRound['ancientAlchemistOutcome']> {
+  const action=(a: import('../ancient-alchemist/combat.js').AncientAlchemistPlayerAction | import('../ancient-alchemist/combat.js').AncientAlchemistEnemyAction)=>({
+    label:a.label,selfGain:a.selfGain,enemyReduction:a.enemyReduction,threatens:a.threatens,order:a.order,paidCost:a.paidCost,physicalFactor:a.physicalFactor,rolls:[...a.rolls],
+    checkChance:a.checkChance,checkRoll:a.checkRoll,succeeded:a.succeeded,guard:a.guard?{guardId:a.guard.guardId,segmentId:a.guard.segmentId}:null,
+  });
+  return {targetId:o.targetId,round:o.round,stance:o.stance,continuing:o.continuing,enemyHealth:o.enemyHealth,enemyMind:o.enemyMind,enemySpirituality:o.enemySpirituality,enemyStatus:o.enemyStatus,
+    playerSpiritualityBefore:o.playerSpiritualityBefore,playerSpiritualityAfter:o.playerSpiritualityAfter,playerHealthAfter:o.playerHealthAfter,playerMindAfter:o.playerMindAfter,playerHealthBeforeConsequence:o.playerHealthBeforeConsequence,enemySpiritualityBefore:o.enemySpiritualityBefore,
+    powerUses:{ARC_BOLT:o.powerUses.ARC_BOLT,WARD:o.powerUses.WARD,COMPOSE:o.powerUses.COMPOSE},guardAttempts:o.guardAttempts,guardReady:o.guardReady,guardExpired:o.guardExpired,elapsedSeconds:o.elapsedSeconds,
+    remainingGuardSegments:o.remainingGuardSegments.map(g=>({guardId:g.guardId,segmentId:g.segmentId})),
+    playerActions:o.playerActions.map(a=>({...action(a),id:a.id,recoveredHealth:a.recoveredHealth,activeSeconds:a.activeSeconds})),
+    enemyActions:o.enemyActions.map(a=>({...action(a),planned:a.planned,actual:a.actual,guardApplied:a.guardApplied})),
+  };
+}
+const publicCoffinBearerGuard=(g: import('../coffin-bearer/combat.js').CoffinBearerCombatGuard)=>({id:g.id,sourceId:g.sourceId,prepared:g.prepared,owner:g.owner,location:g.location,preparedWeek:g.preparedWeek,actionsSpent:g.actionsSpent,costPence:g.costPence,spiritualitySpent:g.spiritualitySpent,segments:g.segments.map(s=>({id:s.id,status:s.status}))});
+function publicCoffinBearerRoundOutcome(o: import('../coffin-bearer/combat.js').CoffinBearerRoundOutcome): NonNullable<SlicePublicCombatRound['coffinBearerOutcome']> {
+  const action=(a: import('../coffin-bearer/combat.js').CoffinBearerPlayerAction | import('../coffin-bearer/combat.js').CoffinBearerEnemyAction)=>({
+    label:a.label,selfGain:a.selfGain,enemyReduction:a.enemyReduction,threatens:a.threatens,order:a.order,paidCost:a.paidCost,physicalFactor:a.physicalFactor,rolls:[...a.rolls],
+    spiritualityBefore:a.spiritualityBefore,spiritualityAfter:a.spiritualityAfter,guardModeBefore:a.guardModeBefore,guardModeAfter:a.guardModeAfter,guardChargesBefore:a.guardChargesBefore,guardChargesAfter:a.guardChargesAfter,
+    checkTier:a.checkTier,checkChance:a.checkChance,checkRoll:a.checkRoll,succeeded:a.succeeded,guard:a.guard?{guardId:a.guard.guardId,segmentId:a.guard.segmentId}:null,
+  });
+  return {targetId:o.targetId,round:o.round,stance:o.stance,continuing:o.continuing,enemyHealth:o.enemyHealth,enemyMind:o.enemyMind,enemySpirituality:o.enemySpirituality,enemyStatus:o.enemyStatus,
+    enemyInjuriesAfter:o.enemyInjuriesAfter.map(publicWarriorInjury),enemyRiskAfter:o.enemyRiskAfter,
+    playerSpiritualityBefore:o.playerSpiritualityBefore,playerSpiritualityAfter:o.playerSpiritualityAfter,playerHealthBeforeConsequence:o.playerHealthBeforeConsequence,playerHealthAfter:o.playerHealthAfter,playerMindAfter:o.playerMindAfter,
+    playerInjuriesAfter:o.playerInjuriesAfter.map(publicWarriorInjury),playerRiskAfter:o.playerRiskAfter,enemySpiritualityBefore:o.enemySpiritualityBefore,
+    powerUses:{ARC_BOLT:o.powerUses.ARC_BOLT,WARD:o.powerUses.WARD,COMPOSE:o.powerUses.COMPOSE},guardAttempts:o.guardAttempts,preservationAttempts:o.preservationAttempts,
+    guardMode:o.guardMode,guardCharges:o.guardCharges,guardAfter:publicCoffinBearerGuard(o.guardAfter),
+    playerActions:o.playerActions.map(a=>({...action(a),id:a.id,recoveredHealth:a.recoveredHealth,activeSeconds:a.activeSeconds,healthBefore:a.healthBefore,healthAfter:a.healthAfter})),
+    enemyActions:o.enemyActions.map(a=>({...action(a),planned:a.planned,actual:a.actual,guardApplied:a.guardApplied})),
+    elapsedSeconds:o.elapsedSeconds,lifeClockSecondsBefore:o.lifeClockSecondsBefore,lifeClockSecondsAfter:o.lifeClockSecondsAfter,exitSeconds:o.exitSeconds,weaponLocation:o.weaponLocation,
+    sceneAfter:{courtId:o.sceneAfter.courtId,ordinaryExit:o.sceneAfter.ordinaryExit,thirdPartiesInArea:o.sceneAfter.thirdPartiesInArea,clearanceConfirmed:o.sceneAfter.clearanceConfirmed,playerPosition:o.sceneAfter.playerPosition,distanceMetres:o.sceneAfter.distanceMetres,exitMetres:o.sceneAfter.exitMetres,ordinaryWalkedMetres:o.sceneAfter.ordinaryWalkedMetres},
+  };
+}
+const publicBarrenMatriarchPad=(p: import('../barren-matriarch/life.js').BarrenMatriarchRootPad)=>({id:p.id,sourceId:p.sourceId,material:p.material,quantity:p.quantity,owner:p.owner,holder:p.holder,location:p.location,integrity:p.integrity,acquiredWeek:p.acquiredWeek});
+const publicBarrenMatriarchPending=(p: import('../barren-matriarch/combat.js').BarrenMatriarchPendingEffect)=>({id:p.id,owner:p.owner,kind:p.kind,createdAt:p.createdAt,expiresAt:p.expiresAt,remaining:p.remaining,guardSegmentId:p.guardSegmentId});
+function publicBarrenMatriarchAction(a: import('../barren-matriarch/combat.js').BarrenMatriarchActionEvidence): NonNullable<SlicePublicCombatRound['barrenMatriarchOutcome']>['playerActions'][number] {
+  return {order:a.order,actor:a.actor,id:a.id,planned:a.planned,selectedAbility:a.selectedAbility,fallbackReason:a.fallbackReason,mode:a.mode,label:a.label,
+    selfGain:a.selfGain,enemyReduction:a.enemyReduction,threatens:a.threatens,mentalPressure:a.mentalPressure,attackKind:a.attackKind,rawContribution:a.rawContribution,rawReduction:a.rawReduction,
+    paidCost:a.paidCost,mindCost:a.mindCost,physicalFactor:a.physicalFactor,
+    check:a.check?{ability:a.check.ability,baseAbility:a.check.baseAbility,modifiers:a.check.modifiers.map(m=>({source:m.source,value:m.value})),effectiveAbility:a.check.effectiveAbility,difficulty:a.check.difficulty,chance:a.check.chance,roll:a.check.roll,tier:a.check.tier}:null,
+    succeeded:a.succeeded,pendingBefore:a.pendingBefore.map(publicBarrenMatriarchPending),pendingAfter:a.pendingAfter.map(publicBarrenMatriarchPending),pendingApplied:[...a.pendingApplied],masteryApplied:[...a.masteryApplied],
+    rootPadBefore:publicBarrenMatriarchPad(a.rootPadBefore),rootPadAfter:publicBarrenMatriarchPad(a.rootPadAfter),padWear:a.padWear,guardSegmentId:a.guardSegmentId,
+    atSeconds:a.atSeconds,elapsedSeconds:a.elapsedSeconds,travelMetres:a.travelMetres,playerHealthBefore:a.playerHealthBefore,playerHealthAfter:a.playerHealthAfter,recoveredHealth:a.recoveredHealth,playerMindAfter:a.playerMindAfter,playerSpiritualityAfter:a.playerSpiritualityAfter,enemySpiritualityAfter:a.enemySpiritualityAfter,
+  };
+}
+function publicBarrenMatriarchRoundOutcome(o: import('../barren-matriarch/combat.js').BarrenMatriarchRoundOutcome): NonNullable<SlicePublicCombatRound['barrenMatriarchOutcome']> {
+  return {targetId:o.targetId,round:o.round,stance:o.stance,continuing:o.continuing,enemyHealth:o.enemyHealth,enemyMind:o.enemyMind,enemySpirituality:o.enemySpirituality,enemyStatus:o.enemyStatus,
+    enemyInjuries:o.enemyInjuries.map(publicWarriorInjury),enemyRisk:o.enemyRisk,weaponLocation:o.weaponLocation,powerUses:{ARC_BOLT:o.powerUses.ARC_BOLT,WARD:o.powerUses.WARD,COMPOSE:o.powerUses.COMPOSE,MENTAL_PRESSURE:o.powerUses.MENTAL_PRESSURE},
+    pendingKind:o.pendingKind,composureReady:o.composureReady,rootBufferAttempts:o.rootBufferAttempts,guardAttempts:o.guardAttempts,preservationAttempts:o.preservationAttempts,
+    playerHealthAfter:o.playerHealthAfter,playerMindAfter:o.playerMindAfter,playerSpiritualityAfter:o.playerSpiritualityAfter,playerInjuriesAfter:o.playerInjuriesAfter.map(publicWarriorInjury),playerRiskAfter:o.playerRiskAfter,
+    rootPadAfter:publicBarrenMatriarchPad(o.rootPadAfter),masteryAfter:{...o.masteryAfter},rootAfter:clone(o.rootAfter),elapsedSeconds:o.elapsedSeconds,
+    playerActions:o.playerActions.map(publicBarrenMatriarchAction),enemyActions:o.enemyActions.map(publicBarrenMatriarchAction),expiredPending:o.expiredPending.map(publicBarrenMatriarchPending),
+  };
+}
+function publicAncientAlchemistCombat(s:SliceState): NonNullable<NonNullable<SliceProjection['combat']>['ancientAlchemist']> {
+  const p=projectAncientAlchemistCombat(s);
+  return {enemyName:p.enemyName,targetId:p.targetId,enemySpirituality:p.enemySpirituality,powerUses:{ARC_BOLT:p.powerUses.ARC_BOLT,WARD:p.powerUses.WARD,COMPOSE:p.powerUses.COMPOSE},
+    guardReady:p.guardReady?{guardId:p.guardReady.guardId,segmentId:p.guardReady.segmentId}:null,guardAttempts:p.guardAttempts,availableGuardSegments:p.availableGuardSegments.map(g=>({guardId:g.guardId,segmentId:g.segmentId})),
+    originalExit:p.originalExit,pursuit:p.pursuit,distanceMetres:p.distanceMetres,summary:p.summary};
+}
+function publicCoffinBearerCombat(s:SliceState): NonNullable<NonNullable<SliceProjection['combat']>['coffinBearer']> {
+  const p=projectCoffinBearerCombat(s);
+  return {enemyName:p.enemyName,targetId:p.targetId,enemySpirituality:p.enemySpirituality,powerUses:{ARC_BOLT:p.powerUses.ARC_BOLT,WARD:p.powerUses.WARD,COMPOSE:p.powerUses.COMPOSE},
+    guardMode:p.guardMode,guardCharges:p.guardCharges,guardAttempts:p.guardAttempts,preservationAttempts:p.preservationAttempts,guard:publicCoffinBearerGuard(p.guard),
+    originalExit:p.originalExit,pursuit:p.pursuit,distanceMetres:p.distanceMetres,summary:p.summary,
+    enemyCountWheel:p.enemyCountWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),enemyAbilityWheel:p.enemyAbilityWheel.map(x=>({id:x.id,label:x.label,weight:x.weight}))};
+}
+function publicBarrenMatriarchCombat(s:SliceState): NonNullable<NonNullable<SliceProjection['combat']>['barrenMatriarch']> {
+  const p=projectBarrenMatriarchCombat(s);
+  return {enemyName:p.enemyName,targetId:p.targetId,enemyHealth:p.enemyHealth,enemyMind:p.enemyMind,enemySpirituality:p.enemySpirituality,weaponLocation:p.weaponLocation,pendingKind:p.pendingKind,composureReady:p.composureReady,
+    powerUses:{ARC_BOLT:p.powerUses.ARC_BOLT,WARD:p.powerUses.WARD,COMPOSE:p.powerUses.COMPOSE,MENTAL_PRESSURE:p.powerUses.MENTAL_PRESSURE},lastActionSequence:p.lastActionSequence.map(publicBarrenMatriarchAction),
+    countWheel:p.countWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),enemyCountWheel:p.enemyCountWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),enemyAbilityWheel:p.enemyAbilityWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),
+    rootPad:publicBarrenMatriarchPad(p.rootPad),remainingGuardSegments:p.remainingGuardSegments,summary:p.summary};
+}
+/** Resolved inherited Justiciar facts are public; replay sources and stream positions are not. */
+function publicImperativeMageRoundOutcome(o: import('../imperative-mage/combat.js').ImperativeMageRoundOutcome): NonNullable<SlicePublicCombatRound['imperativeMageOutcome']> {
+  const action = (a: import('../imperative-mage/combat.js').ImperativeMagePlayerAction | import('../imperative-mage/combat.js').ImperativeMageEnemyAction) => ({
+    label:a.label,selfGain:a.selfGain,enemyReduction:a.enemyReduction,threatens:a.threatens,order:a.order,paidCost:a.paidCost,physicalFactor:a.physicalFactor,rolls:[...a.rolls],
+    checkChance:a.checkChance,checkRoll:a.checkRoll,succeeded:a.succeeded,resistedByComposure:a.resistedByComposure,
+    prohibitionRoll:a.prohibitionRoll,prohibitionThreshold:a.prohibitionThreshold,prohibitionBlocked:a.prohibitionBlocked,prohibitionResisted:a.prohibitionResisted,
+  });
+  return {targetId:o.targetId,round:o.round,stance:o.stance,continuing:o.continuing,enemyHealth:o.enemyHealth,enemyMind:o.enemyMind,enemySpirituality:o.enemySpirituality,enemyStatus:o.enemyStatus,
+    playerSpiritualityBefore:o.playerSpiritualityBefore,playerSpiritualityAfter:o.playerSpiritualityAfter,playerHealthAfter:o.playerHealthAfter,playerMindAfter:o.playerMindAfter,enemySpiritualityBefore:o.enemySpiritualityBefore,
+    powerUses:{ARC_BOLT:o.powerUses.ARC_BOLT,WARD:o.powerUses.WARD,COMPOSE:o.powerUses.COMPOSE},intimidationAttempts:o.intimidationAttempts,deprivationAttempts:o.deprivationAttempts,punishmentUses:o.punishmentUses,
+    intimidationReady:o.intimidationReady,deprivationReady:o.deprivationReady,composureReady:o.composureReady,prohibitionPending:o.prohibitionPending,breachReady:o.breachReady,
+    playerActions:o.playerActions.map(a=>({...action(a),id:a.id,punishmentApplied:a.punishmentApplied})),
+    enemyActions:o.enemyActions.map(a=>({...action(a),planned:a.planned,actual:a.actual,deprivationApplied:a.deprivationApplied,intimidationApplied:a.intimidationApplied})),
+  };
+}
+function publicChaosHunterRoundOutcome(o: import('../chaos-hunter/combat.js').ChaosHunterRoundOutcome): NonNullable<SlicePublicCombatRound['chaosHunterOutcome']> {
+  const action = (a: import('../chaos-hunter/combat.js').ChaosHunterPlayerAction | import('../chaos-hunter/combat.js').ChaosHunterEnemyAction) => ({
+    label:a.label,selfGain:a.selfGain,enemyReduction:a.enemyReduction,threatens:a.threatens,order:a.order,paidCost:a.paidCost,physicalFactor:a.physicalFactor,rolls:[...a.rolls],
+    spiritualityBefore:a.spiritualityBefore,spiritualityAfter:a.spiritualityAfter,bodyPendingBefore:{PLAYER:a.bodyPendingBefore.PLAYER,ENEMY:a.bodyPendingBefore.ENEMY},bodyPendingAfter:{PLAYER:a.bodyPendingAfter.PLAYER,ENEMY:a.bodyPendingAfter.ENEMY},breachReadyBefore:a.breachReadyBefore,breachReadyAfter:a.breachReadyAfter,
+    checkTier:a.checkTier,checkChance:a.checkChance,checkRoll:a.checkRoll,succeeded:a.succeeded,resistedByComposure:a.resistedByComposure,
+    prohibitionRoll:a.prohibitionRoll,prohibitionThreshold:a.prohibitionThreshold,prohibitionBlocked:a.prohibitionBlocked,prohibitionResisted:a.prohibitionResisted,
+  });
+  return {targetId:o.targetId,round:o.round,stance:o.stance,continuing:o.continuing,enemyHealth:o.enemyHealth,enemyMind:o.enemyMind,enemySpirituality:o.enemySpirituality,enemyStatus:o.enemyStatus,
+    enemyInjuriesAfter:o.enemyInjuriesAfter.map(publicWarriorInjury),enemyRiskAfter:o.enemyRiskAfter,
+    playerSpiritualityBefore:o.playerSpiritualityBefore,playerSpiritualityAfter:o.playerSpiritualityAfter,playerHealthAfter:o.playerHealthAfter,playerMindAfter:o.playerMindAfter,
+    playerInjuriesAfter:o.playerInjuriesAfter.map(publicWarriorInjury),playerRiskAfter:o.playerRiskAfter,enemySpiritualityBefore:o.enemySpiritualityBefore,
+    powerUses:{ARC_BOLT:o.powerUses.ARC_BOLT,WARD:o.powerUses.WARD,COMPOSE:o.powerUses.COMPOSE},intimidationAttempts:o.intimidationAttempts,deprivationAttempts:o.deprivationAttempts,punishmentUses:o.punishmentUses,boundedOrderAttempts:o.boundedOrderAttempts,
+    intimidationReady:o.intimidationReady,deprivationReady:o.deprivationReady,composureReady:o.composureReady,playerBodyPending:o.playerBodyPending,enemyBodyPending:o.enemyBodyPending,breachReady:o.breachReady,
+    playerActions:o.playerActions.map(a=>({...action(a),id:a.id,punishmentApplied:a.punishmentApplied})),
+    enemyActions:o.enemyActions.map(a=>({...action(a),planned:a.planned,actual:a.actual,deprivationApplied:a.deprivationApplied,intimidationApplied:a.intimidationApplied})),
+    elapsedSeconds:o.elapsedSeconds,lifeClockSecondsBefore:o.lifeClockSecondsBefore,lifeClockSecondsAfter:o.lifeClockSecondsAfter,exitSeconds:o.exitSeconds,weaponLocation:o.weaponLocation,
+    sceneAfter:{courtId:o.sceneAfter.courtId,ordinaryExit:o.sceneAfter.ordinaryExit,thirdPartiesInArea:o.sceneAfter.thirdPartiesInArea,clearanceConfirmed:o.sceneAfter.clearanceConfirmed,
+      playerPosition:o.sceneAfter.playerPosition,distanceMetres:o.sceneAfter.distanceMetres,exitMetres:o.sceneAfter.exitMetres,ordinaryWalkedMetres:o.sceneAfter.ordinaryWalkedMetres},
+  };
+}
+const publicBalancerPlate = (p: import('../balancer/life.js').BalancerGuardPlate) => ({id:p.id,owner:p.owner,holder:p.holder,location:p.location,integrity:p.integrity,acquiredWeek:p.acquiredWeek});
+const publicBalancerPending = (p: import('../balancer/combat.js').BalancerPendingEffect) => ({id:p.id,owner:p.owner,kind:p.kind,createdAt:p.createdAt,expiresAt:p.expiresAt,remaining:p.remaining,openingId:p.openingId});
+const publicBalancerOpening = (o: import('../balancer/combat.js').BalancerVisibleOpening | null) => o ? ({id:o.id,targetId:o.targetId,sourceOrder:o.sourceOrder,createdAt:o.createdAt,expiresAt:o.expiresAt,kind:o.kind,visible:o.visible}) : null;
+function publicBalancerAction(a: import('../balancer/combat.js').BalancerActionEvidence): NonNullable<SlicePublicCombatRound['balancerOutcome']>['playerActions'][number] {
+  return {order:a.order,actor:a.actor,id:a.id,planned:a.planned,selectedAbility:a.selectedAbility,fallbackReason:a.fallbackReason,mode:a.mode,label:a.label,
+    selfGain:a.selfGain,enemyReduction:a.enemyReduction,threatens:a.threatens,mentalPressure:a.mentalPressure,attackKind:a.attackKind,rawContribution:a.rawContribution,rawReduction:a.rawReduction,
+    paidCost:a.paidCost,mindCost:a.mindCost,physicalFactor:a.physicalFactor,
+    check:a.check?{ability:a.check.ability,baseAbility:a.check.baseAbility,modifiers:a.check.modifiers.map(m=>({source:m.source,value:m.value})),effectiveAbility:a.check.effectiveAbility,difficulty:a.check.difficulty,chance:a.check.chance,roll:a.check.roll,tier:a.check.tier}:null,
+    succeeded:a.succeeded,resisted:a.resisted,pendingBefore:a.pendingBefore.map(publicBalancerPending),pendingAfter:a.pendingAfter.map(publicBalancerPending),pendingApplied:[...a.pendingApplied],masteryApplied:[...a.masteryApplied],
+    openingBefore:publicBalancerOpening(a.openingBefore),openingAfter:publicBalancerOpening(a.openingAfter),guardPlateBefore:publicBalancerPlate(a.guardPlateBefore),guardPlateAfter:publicBalancerPlate(a.guardPlateAfter),plateWear:a.plateWear,
+    atSeconds:a.atSeconds,elapsedSeconds:a.elapsedSeconds,travelMetres:a.travelMetres,playerMindAfter:a.playerMindAfter,playerSpiritualityAfter:a.playerSpiritualityAfter,enemySpiritualityAfter:a.enemySpiritualityAfter,
+  };
+}
+function publicBalancerRoundOutcome(o: import('../balancer/combat.js').BalancerRoundOutcome): NonNullable<SlicePublicCombatRound['balancerOutcome']> {
+  return {targetId:o.targetId,round:o.round,stance:o.stance,continuing:o.continuing,enemyHealth:o.enemyHealth,enemyMind:o.enemyMind,enemySpirituality:o.enemySpirituality,enemyStatus:o.enemyStatus,
+    enemyInjuries:o.enemyInjuries.map(publicWarriorInjury),enemyRisk:o.enemyRisk,weaponLocation:o.weaponLocation,powerUses:{ARC_BOLT:o.powerUses.ARC_BOLT,WARD:o.powerUses.WARD,COMPOSE:o.powerUses.COMPOSE,MENTAL_PRESSURE:o.powerUses.MENTAL_PRESSURE},
+    pendingKind:o.pendingKind,composureReady:o.composureReady,imbalanceAttempts:o.imbalanceAttempts,resistanceAttempts:o.resistanceAttempts,intimidationAttempts:o.intimidationAttempts,deprivationAttempts:o.deprivationAttempts,
+    playerHealthAfter:o.playerHealthAfter,playerMindAfter:o.playerMindAfter,playerSpiritualityAfter:o.playerSpiritualityAfter,playerInjuriesAfter:o.playerInjuriesAfter.map(publicWarriorInjury),playerRiskAfter:o.playerRiskAfter,
+    guardPlateAfter:publicBalancerPlate(o.guardPlateAfter),masteryAfter:{...o.masteryAfter},rootAfter:clone(o.rootAfter),elapsedSeconds:o.elapsedSeconds,
+    playerActions:o.playerActions.map(publicBalancerAction),enemyActions:o.enemyActions.map(publicBalancerAction),expiredPending:o.expiredPending.map(publicBalancerPending),
+  };
+}
+function publicImperativeMageCombat(s:SliceState): NonNullable<NonNullable<SliceProjection['combat']>['imperativeMage']> {
+  const p=projectImperativeMageCombat(s);
+  return {enemyName:p.enemyName,targetId:p.targetId,enemySpirituality:p.enemySpirituality,
+    powerUses:{ARC_BOLT:p.powerUses.ARC_BOLT,WARD:p.powerUses.WARD,COMPOSE:p.powerUses.COMPOSE},
+    intimidationReady:p.intimidationReady,deprivationReady:p.deprivationReady,composureReady:p.composureReady,
+    intimidationAttempts:p.intimidationAttempts,deprivationAttempts:p.deprivationAttempts,punishmentUses:p.punishmentUses,
+    originalExit:p.originalExit,pursuit:p.pursuit,distanceMetres:p.distanceMetres,summary:p.summary,
+    enemyCountWheel:p.enemyCountWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),enemyAbilityWheel:p.enemyAbilityWheel.map(x=>({id:x.id,label:x.label,weight:x.weight}))};
+}
+function publicChaosHunterCombat(s:SliceState): NonNullable<NonNullable<SliceProjection['combat']>['chaosHunter']> {
+  const p=projectChaosHunterCombat(s);
+  return {enemyName:p.enemyName,targetId:p.targetId,enemySpirituality:p.enemySpirituality,
+    powerUses:{ARC_BOLT:p.powerUses.ARC_BOLT,WARD:p.powerUses.WARD,COMPOSE:p.powerUses.COMPOSE},
+    intimidationReady:p.intimidationReady,deprivationReady:p.deprivationReady,composureReady:p.composureReady,
+    playerBodyPending:p.playerBodyPending,enemyBodyPending:p.enemyBodyPending,breachReady:p.breachReady,
+    intimidationAttempts:p.intimidationAttempts,deprivationAttempts:p.deprivationAttempts,punishmentUses:p.punishmentUses,boundedOrderAttempts:p.boundedOrderAttempts,
+    originalExit:p.originalExit,pursuit:p.pursuit,distanceMetres:p.distanceMetres,summary:p.summary,
+    enemyCountWheel:p.enemyCountWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),enemyAbilityWheel:p.enemyAbilityWheel.map(x=>({id:x.id,label:x.label,weight:x.weight}))};
+}
+function publicBalancerCombat(s:SliceState): NonNullable<SliceProjection['combat']>['balancer'] {
+  const p=projectBalancerCombat(s);
+  return {enemyName:p.enemyName,targetId:p.targetId,enemyHealth:p.enemyHealth,enemyMind:p.enemyMind,enemySpirituality:p.enemySpirituality,weaponLocation:p.weaponLocation,pendingKind:p.pendingKind,composureReady:p.composureReady,
+    powerUses:{ARC_BOLT:p.powerUses.ARC_BOLT,WARD:p.powerUses.WARD,COMPOSE:p.powerUses.COMPOSE,MENTAL_PRESSURE:p.powerUses.MENTAL_PRESSURE},lastActionSequence:p.lastActionSequence.map(publicBalancerAction),
+    countWheel:p.countWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),enemyCountWheel:p.enemyCountWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),enemyAbilityWheel:p.enemyAbilityWheel.map(x=>({id:x.id,label:x.label,weight:x.weight})),
+    guardPlate:publicBalancerPlate(p.guardPlate),summary:p.summary};
+}
 function publicCombatRound(round: SliceState['lastCombatRound']): SlicePublicCombatRound | null {
   if(!round)return null;
-  const {natureWalkerOutcome,handOfOrderOutcome,princeOfAbolitionOutcome,attendantMysteriesOutcome,...facts}=clone(round);
-  return {...facts,...(natureWalkerOutcome?{natureWalkerOutcome:projectNatureWalkerRoundOutcome(natureWalkerOutcome)}:{}),...(princeOfAbolitionOutcome?{princeOfAbolitionOutcome:projectPrinceOfAbolitionRoundOutcome(princeOfAbolitionOutcome)}:{}),...(handOfOrderOutcome?{handOfOrderOutcome:projectHandOfOrderRoundOutcome(handOfOrderOutcome)}:{}),...(attendantMysteriesOutcome?{attendantMysteriesOutcome:projectAttendantMysteriesRoundOutcome(attendantMysteriesOutcome)}:{})};
+  const {ancientAlchemistOutcome,coffinBearerOutcome,barrenMatriarchOutcome,imperativeMageOutcome,chaosHunterOutcome,balancerOutcome,fallenEarlOutcome,entropyDukeOutcome,abominationOutcome,ancientEvilOutcome,puppetOutcome,silentDiscipleOutcome,uncleanMonarchOutcome,bloodDukeOutcome,devilOutcome,mysticOutcome,prophecyMasterOutcome,sageOutcome,knowledgeEmperorOutcome,despairOutcome,unagingDemonessOutcome,calamityDemonessOutcome,apocalypseDemonessOutcome,demonHunterOutcome,silverKnightOutcome,gloryOutcome,timeWormOutcome,fateTrojanOutcome,starKeyOutcome,planeswalkerOutcome,ferrymanOutcome,deathConsulOutcome,paleEmperorOutcome,pureWhiteAngelOutcome,lightSeekerOutcome,seaKingOutcome,thunderGodOutcome,allKnowingEyeOutcome,wisdomAngelOutcome,natureWalkerOutcome,handOfOrderOutcome,princeOfAbolitionOutcome,attendantMysteriesOutcome,conquerorOutcome,writerOutcome,civilizationEnlightenerOutcome,knowledgeMentorOutcome,beautyGoddessOutcome,lifeGiverOutcome,misfortuneKnightOutcome,concealmentServantOutcome,fearBishopOutcome,elderOutcome,blackKnightOutcome,threeHeadedTemplarOutcome,...facts}=clone(projectMercurySnakeCombatRound(round));
+  return {...facts,...(ancientAlchemistOutcome?{ancientAlchemistOutcome:publicAncientAlchemistRoundOutcome(ancientAlchemistOutcome)}:{}),...(coffinBearerOutcome?{coffinBearerOutcome:publicCoffinBearerRoundOutcome(coffinBearerOutcome)}:{}),...(barrenMatriarchOutcome?{barrenMatriarchOutcome:publicBarrenMatriarchRoundOutcome(barrenMatriarchOutcome)}:{}),...(imperativeMageOutcome?{imperativeMageOutcome:publicImperativeMageRoundOutcome(imperativeMageOutcome)}:{}),...(chaosHunterOutcome?{chaosHunterOutcome:publicChaosHunterRoundOutcome(chaosHunterOutcome)}:{}),...(balancerOutcome?{balancerOutcome:publicBalancerRoundOutcome(balancerOutcome)}:{}),...(fallenEarlOutcome?{fallenEarlOutcome:publicFallenEarlRoundOutcome(fallenEarlOutcome)}:{}),...(entropyDukeOutcome?{entropyDukeOutcome:publicEntropyDukeRoundOutcome(entropyDukeOutcome)}:{}),...(abominationOutcome?{abominationOutcome:projectAbominationRoundOutcome(abominationOutcome)}:{}),...(ancientEvilOutcome?{ancientEvilOutcome:projectAncientEvilRoundOutcome(ancientEvilOutcome)}:{}),...(puppetOutcome?{puppetOutcome:projectPuppetRoundOutcome(puppetOutcome)}:{}),...(silentDiscipleOutcome?{silentDiscipleOutcome:projectSilentDiscipleRoundOutcome(silentDiscipleOutcome)}:{}),...(uncleanMonarchOutcome?{uncleanMonarchOutcome:projectUncleanMonarchRoundOutcome(uncleanMonarchOutcome)}:{}),...(bloodDukeOutcome?{bloodDukeOutcome:projectBloodDukeRoundOutcome(bloodDukeOutcome)}:{}),...(devilOutcome?{devilOutcome:projectDevilRoundOutcome(devilOutcome)}:{}),...(elderOutcome?{elderOutcome:projectElderRoundOutcome(elderOutcome)}:{}),...(blackKnightOutcome?{blackKnightOutcome:projectBlackKnightRoundOutcome(blackKnightOutcome)}:{}),...(threeHeadedTemplarOutcome?{threeHeadedTemplarOutcome:projectThreeHeadedTemplarRoundOutcome(threeHeadedTemplarOutcome)}:{}),...(mysticOutcome?{mysticOutcome:publicMysticRound(mysticOutcome)}:{}),...(prophecyMasterOutcome?{prophecyMasterOutcome:publicProphecyMasterRound(prophecyMasterOutcome)}:{}),...(sageOutcome?{sageOutcome:publicSageRound(sageOutcome)}:{}),...(knowledgeEmperorOutcome?{knowledgeEmperorOutcome:publicKnowledgeEmperorRound(knowledgeEmperorOutcome)}:{}),...(despairOutcome?{despairOutcome:projectDespairRoundOutcome(despairOutcome)}:{}),...(unagingDemonessOutcome?{unagingDemonessOutcome:projectUnagingDemonessRoundOutcome(unagingDemonessOutcome)}:{}),...(calamityDemonessOutcome?{calamityDemonessOutcome:projectCalamityDemonessRoundOutcome(calamityDemonessOutcome)}:{}),...(apocalypseDemonessOutcome?{apocalypseDemonessOutcome:projectApocalypseDemonessRoundOutcome(apocalypseDemonessOutcome)}:{}),...(demonHunterOutcome?{demonHunterOutcome:publicDemonHunterRoundOutcome(demonHunterOutcome)}:{}),...(silverKnightOutcome?{silverKnightOutcome:publicSilverKnightRoundOutcome(silverKnightOutcome)}:{}),...(gloryOutcome?{gloryOutcome:publicGloryRoundOutcome(gloryOutcome)}:{}),...(timeWormOutcome?{timeWormOutcome:projectTimeWormRoundOutcome(timeWormOutcome)}:{}),...(fateTrojanOutcome?{fateTrojanOutcome:projectFateTrojanRoundOutcome(fateTrojanOutcome)}:{}),...(starKeyOutcome?{starKeyOutcome:projectStarKeyRoundOutcome(starKeyOutcome)}:{}),...(planeswalkerOutcome?{planeswalkerOutcome:projectPlaneswalkerRoundOutcome(planeswalkerOutcome)}:{}),...(ferrymanOutcome?{ferrymanOutcome:projectFerrymanRoundOutcome(ferrymanOutcome)}:{}),...(deathConsulOutcome?{deathConsulOutcome:projectDeathConsulRoundOutcome(deathConsulOutcome)}:{}),...(paleEmperorOutcome?{paleEmperorOutcome:projectPaleEmperorRoundOutcome(paleEmperorOutcome)}:{}),...(pureWhiteAngelOutcome?{pureWhiteAngelOutcome:projectPureWhiteAngelRoundOutcome(pureWhiteAngelOutcome)}:{}),...(lightSeekerOutcome?{lightSeekerOutcome:projectLightSeekerRoundOutcome(lightSeekerOutcome)}:{}),...(seaKingOutcome?{seaKingOutcome:projectSeaKingRoundOutcome(seaKingOutcome)}:{}),...(thunderGodOutcome?{thunderGodOutcome:projectThunderGodRoundOutcome(thunderGodOutcome)}:{}),...(allKnowingEyeOutcome?{allKnowingEyeOutcome:projectAllKnowingEyeRoundOutcome(allKnowingEyeOutcome)}:{}),...(wisdomAngelOutcome?{wisdomAngelOutcome:projectWisdomAngelRoundOutcome(wisdomAngelOutcome)}:{}),...(misfortuneKnightOutcome?{misfortuneKnightOutcome:projectMisfortuneKnightRoundOutcome(misfortuneKnightOutcome)}:{}),...(concealmentServantOutcome?{concealmentServantOutcome:projectConcealmentServantRoundOutcome(concealmentServantOutcome)}:{}),...(fearBishopOutcome?{fearBishopOutcome:projectFearBishopRoundOutcome(fearBishopOutcome)}:{}),...(lifeGiverOutcome?{lifeGiverOutcome:publicLifeGiverRoundOutcome(lifeGiverOutcome)}:{}),...(beautyGoddessOutcome?{beautyGoddessOutcome:projectBeautyGoddessRoundOutcome(beautyGoddessOutcome)}:{}),...(knowledgeMentorOutcome?{knowledgeMentorOutcome:projectKnowledgeMentorRoundOutcome(knowledgeMentorOutcome)}:{}),...(civilizationEnlightenerOutcome?{civilizationEnlightenerOutcome:projectCivilizationEnlightenerRoundOutcome(civilizationEnlightenerOutcome)}:{}),...(writerOutcome?{writerOutcome:projectWriterRoundOutcome(writerOutcome)}:{}),...(conquerorOutcome?{conquerorOutcome:projectConquerorRoundOutcome(conquerorOutcome)}:{}),...(natureWalkerOutcome?{natureWalkerOutcome:projectNatureWalkerRoundOutcome(natureWalkerOutcome)}:{}),...(princeOfAbolitionOutcome?{princeOfAbolitionOutcome:projectPrinceOfAbolitionRoundOutcome(princeOfAbolitionOutcome)}:{}),...(handOfOrderOutcome?{handOfOrderOutcome:projectHandOfOrderRoundOutcome(handOfOrderOutcome)}:{}),...(attendantMysteriesOutcome?{attendantMysteriesOutcome:projectAttendantMysteriesRoundOutcome(attendantMysteriesOutcome)}:{})};
 }
 
 const success=(tier:string)=>tier==='SUCCESS'||tier==='GREAT_SUCCESS';
@@ -622,7 +1092,7 @@ export function createSliceRun(runId:string,selection:SliceCreationSelection,see
   requireRule(typeof runId==='string'&&runId.length>0&&runId.length<=200,'周目编号无效。');
   new DeterministicActionRandomStream(seed);
   const v=computeSliceCreation(selection), p=v.character;
-  const s:SliceState={schemaVersion:205,contentVersion:'fool-v205',fool:createFoolState(),natureWalker:createNatureWalkerState(),handOfOrder:createHandOfOrderState(),princeOfAbolition:createPrinceOfAbolitionState(),mercurySnake:createMercurySnakeState(),abomination:createAbominationState(),uncleanMonarch:createUncleanMonarchState(),darkAngel:createDarkAngelState(),knowledgeEmperor:createKnowledgeEmperorState(),apocalypseDemoness:createApocalypseDemonessState(),divineHand:createDivineHandState(),timeWorm:createTimeWormState(),starKey:createStarKeyState(),paleEmperor:createPaleEmperorState(),pureWhiteAngel:createPureWhiteAngelState(),thunderGod:createThunderGodState(),allKnowingEye:createAllKnowingEyeState(),misfortuneKnight:createMisfortuneKnightState(),beautyGoddess:createBeautyGoddessState(),civilizationEnlightener:createCivilizationEnlightenerState(),writer:createWriterState(),conqueror:createConquerorState(),attendantMysteries:createAttendantMysteriesState(),barrenMatriarch:createBarrenMatriarchState(),balancer:createBalancerState(),entropyDuke:createEntropyDukeState(),fateProphet:createFateProphetState(),ancientEvil:createAncientEvilState(),bloodDuke:createBloodDukeState(),elder:createElderState(),sage:createSageState(),calamityDemoness:createCalamityDemonessState(),glory:createGloryState(),fateTrojan:createFateTrojanState(),planeswalker:createPlaneswalkerState(),deathConsul:createDeathConsulState(),lightSeeker:createLightSeekerState(),catastrophe:createCatastropheState(),wisdomAngel:createWisdomAngelState(),concealmentServant:createConcealmentServantState(),lifeGiver:createLifeGiverState(),knowledgeMentor:createKnowledgeMentorState(),discerner:createDiscernerState(),weatherWarlock:createWeatherWarlockState(),miracleWorker:createMiracleWorkerState(),coffinBearer:createCoffinBearerState(),chaosHunter:createChaosHunterState(),frenzyMage:createFrenzyMageState(),chaosWalker:createChaosWalkerState(),silentDisciple:createSilentDiscipleState(),blatherer:createBlathererState(),threeHeadedTemplar:createThreeHeadedTemplarState(),prophecyMaster:createProphecyMasterState(),unagingDemoness:createUnagingDemonessState(),silverKnight:createSilverKnightState(),deceitMentor:createDeceitMentorState(),wanderer:createWandererState(),ferryman:createFerrymanState(),justiceMentor:createJusticeMentorState(),seaKing:createSeaKingState(),insightScholar:createInsightScholarState(),fearBishop:createFearBishopState(),summoningMaster:createSummoningMasterState(),arcaneScholar:createArcaneScholarState(),dreamWeaver:createDreamWeaverState(),warBishop:createWarBishopState(),ancientScholar:createAncientScholarState(),longChapter:createLongChapterState(),ancientAlchemist:createAncientAlchemistState(),imperativeMage:createImperativeMageState(),fallenEarl:createFallenEarlState(),misfortuneMage:createMisfortuneMageState(),puppet:createPuppetState(),devil:createDevilState(),blackKnight:createBlackKnightState(),mystic:createMysticState(),despair:createDespairState(),demonHunter:createDemonHunterState(),parasite:createParasiteState(),secretsSorcerer:createSecretsSorcererState(),undying:createUndyingState(),unshadowed:createUnshadowedState(),cataclysmPriest:createCataclysmPriestState(),prophet:createProphetState(),nightwatcher:createNightwatcherState(),witchKing:createWitchKingState(),alchemist:createAlchemistState(),manipulator:createManipulatorState(),ironBloodKnight:createIronBloodKnightState(),bizarroSorcerer:createBizarroSorcererState(),druid:createDruidState(),punishmentKnight:createPunishmentKnightState(),mentorDisorder:createMentorDisorderState(),winner:createWinnerState(),wraith:createWraithState(),desireApostle:createDesireApostleState(),shepherd:createShepherdState(),starMystic:createStarMysticState(),pain:createPainState(),guardian:createGuardianState(),dreamStealer:createDreamStealerState(),traveler:createTravelerState(),gatekeeper:createGatekeeperState(),priestOfLight:createPriestOfLightState(),oceanSinger:createOceanSingerState(),mysticismMagister:createMysticismMagisterState(),spiritWarlock:createSpiritWarlockState(),crimsonScholar:createCrimsonScholarState(),astronomer:createAstronomerState(),dreamwalker:createDreamwalkerState(),reaper:createReaperState(),marionettist:createMarionettistState(),biologist:createBiologistState(),judge:createJudgeState(),corruptionBaron:createCorruptionBaronState(),calamityPriest:createCalamityPriestState(),zombie:createZombieState(),demon:createDemonState(),roseBishop:createRoseBishopState(),scrollProfessor:createScrollProfessorState(),pleasure:createPleasureState(),dawnPaladin:createDawnPaladinState(),fireThief:createFireThiefState(),recorder:createRecorderState(),spiritGuide:createSpiritGuideState(),notary:createNotaryState(),windBlessed:createWindBlessedState(),polymath:createPolymathState(),soother:createSootherState(),potionProfessor:createPotionProfessorState(),artisan:createArtisanState(),hypnotist:createHypnotistState(),conspirator:createConspiratorState(),faceless:createFacelessState(),harvestpriest:createHarvestpriestState(),physician:createPhysicianState(),cultivator:createCultivatorState(),interrogator:createInterrogatorState(),sheriff:createSheriffState(),arbiter:createArbiterState(),briber:createBriberState(),barbarian:createBarbarianState(),lawyer:createLawyerState(),lucky:createLuckyState(),machine:createMachineState(),monster:createMonsterState(),werewolf:createWerewolfState(),madman:createMadmanState(),prisoner:createPrisonerState(),serialKiller:createSerialKillerState(),unwinged:createUnwingedState(),criminal:createCriminalState(),shadowAscetic:createShadowAsceticState(),listener:createListenerState(),secretSupplicant:createSecretSupplicantState(),wizard:createWizardState(),combatScholar:createCombatScholarState(),pryer:createPryerState(),witch:createWitchState(),instigator:createInstigatorState(),assassin:createAssassinState(),weaponmaster:createWeaponmasterState(),gladiator:createGladiatorState(),warrior:createWarriorState(),cryptologist:createCryptologistState(),swindler:createSwindlerState(),marauder:createMarauderState(),astrologer:createAstrologerState(),trickmaster:createTrickmasterState(),apprentice:createApprenticeState(),spiritmedium:createSpiritmediumState(),gravedigger:createGravediggerState(),corpsecollector:createCorpsecollectorState(),sunpriest:createSunpriestState(),lightprayer:createLightprayerState(),bard:createBardState(),navigator:createNavigatorState(),rager:createRagerState(),sailor:createSailorState(),detective:createDetectiveState(),reasoner:createReasonerState(),reader:createReaderState(),nightmare:createNightmareState(),midnight:createMidnightState(),sleepless:createSleeplessState(),vampire:createVampireState(),appraiser:createAppraiserState(),psychologist:createPsychologistState(),pyromaniac:createPyromaniacState(),magician:createMagicianState(),tamer:createTamerState(),apothecary:createApothecaryState(),archaeologist:createArchaeologistState(),savant:createSavantState(),town:createTownState(),mindreader:createMindreaderState(),audience:createAudienceState(),provoker:createProvokerState(),hunter:createHunterState(),caseArchive:[],clown:createClownState(),runId,revision:1,status:'ACTIVE',
+  const s:SliceState={schemaVersion:226,contentVersion:'mother-v226',mother:createMotherState(),justiciar:createJusticiarState(),blackEmperor:createBlackEmperorState(),wheelOfFortune:createWheelOfFortuneState(),chained:createChainedState(),abyss:createAbyssState(),hangedMan:createHangedManState(),hermit:createHermitState(),demoness:createDemonessState(),twilightGiant:createTwilightGiantState(),errorAscent:createErrorAscentState(),door:createDoorState(),death:createDeathState(),sun:createSunState(),tyrant:createTyrantState(),whiteTower:createWhiteTowerState(),darkness:createDarknessState(),moon:createMoonState(),perfecter:createPerfecterState(),visionary:createVisionaryState(),redPriest:createRedPriestState(),fool:createFoolState(),natureWalker:createNatureWalkerState(),handOfOrder:createHandOfOrderState(),princeOfAbolition:createPrinceOfAbolitionState(),mercurySnake:createMercurySnakeState(),abomination:createAbominationState(),uncleanMonarch:createUncleanMonarchState(),darkAngel:createDarkAngelState(),knowledgeEmperor:createKnowledgeEmperorState(),apocalypseDemoness:createApocalypseDemonessState(),divineHand:createDivineHandState(),timeWorm:createTimeWormState(),starKey:createStarKeyState(),paleEmperor:createPaleEmperorState(),pureWhiteAngel:createPureWhiteAngelState(),thunderGod:createThunderGodState(),allKnowingEye:createAllKnowingEyeState(),misfortuneKnight:createMisfortuneKnightState(),beautyGoddess:createBeautyGoddessState(),civilizationEnlightener:createCivilizationEnlightenerState(),writer:createWriterState(),conqueror:createConquerorState(),attendantMysteries:createAttendantMysteriesState(),barrenMatriarch:createBarrenMatriarchState(),balancer:createBalancerState(),entropyDuke:createEntropyDukeState(),fateProphet:createFateProphetState(),ancientEvil:createAncientEvilState(),bloodDuke:createBloodDukeState(),elder:createElderState(),sage:createSageState(),calamityDemoness:createCalamityDemonessState(),glory:createGloryState(),fateTrojan:createFateTrojanState(),planeswalker:createPlaneswalkerState(),deathConsul:createDeathConsulState(),lightSeeker:createLightSeekerState(),catastrophe:createCatastropheState(),wisdomAngel:createWisdomAngelState(),concealmentServant:createConcealmentServantState(),lifeGiver:createLifeGiverState(),knowledgeMentor:createKnowledgeMentorState(),discerner:createDiscernerState(),weatherWarlock:createWeatherWarlockState(),miracleWorker:createMiracleWorkerState(),coffinBearer:createCoffinBearerState(),chaosHunter:createChaosHunterState(),frenzyMage:createFrenzyMageState(),chaosWalker:createChaosWalkerState(),silentDisciple:createSilentDiscipleState(),blatherer:createBlathererState(),threeHeadedTemplar:createThreeHeadedTemplarState(),prophecyMaster:createProphecyMasterState(),unagingDemoness:createUnagingDemonessState(),silverKnight:createSilverKnightState(),deceitMentor:createDeceitMentorState(),wanderer:createWandererState(),ferryman:createFerrymanState(),justiceMentor:createJusticeMentorState(),seaKing:createSeaKingState(),insightScholar:createInsightScholarState(),fearBishop:createFearBishopState(),summoningMaster:createSummoningMasterState(),arcaneScholar:createArcaneScholarState(),dreamWeaver:createDreamWeaverState(),warBishop:createWarBishopState(),ancientScholar:createAncientScholarState(),longChapter:createLongChapterState(),ancientAlchemist:createAncientAlchemistState(),imperativeMage:createImperativeMageState(),fallenEarl:createFallenEarlState(),misfortuneMage:createMisfortuneMageState(),puppet:createPuppetState(),devil:createDevilState(),blackKnight:createBlackKnightState(),mystic:createMysticState(),despair:createDespairState(),demonHunter:createDemonHunterState(),parasite:createParasiteState(),secretsSorcerer:createSecretsSorcererState(),undying:createUndyingState(),unshadowed:createUnshadowedState(),cataclysmPriest:createCataclysmPriestState(),prophet:createProphetState(),nightwatcher:createNightwatcherState(),witchKing:createWitchKingState(),alchemist:createAlchemistState(),manipulator:createManipulatorState(),ironBloodKnight:createIronBloodKnightState(),bizarroSorcerer:createBizarroSorcererState(),druid:createDruidState(),punishmentKnight:createPunishmentKnightState(),mentorDisorder:createMentorDisorderState(),winner:createWinnerState(),wraith:createWraithState(),desireApostle:createDesireApostleState(),shepherd:createShepherdState(),starMystic:createStarMysticState(),pain:createPainState(),guardian:createGuardianState(),dreamStealer:createDreamStealerState(),traveler:createTravelerState(),gatekeeper:createGatekeeperState(),priestOfLight:createPriestOfLightState(),oceanSinger:createOceanSingerState(),mysticismMagister:createMysticismMagisterState(),spiritWarlock:createSpiritWarlockState(),crimsonScholar:createCrimsonScholarState(),astronomer:createAstronomerState(),dreamwalker:createDreamwalkerState(),reaper:createReaperState(),marionettist:createMarionettistState(),biologist:createBiologistState(),judge:createJudgeState(),corruptionBaron:createCorruptionBaronState(),calamityPriest:createCalamityPriestState(),zombie:createZombieState(),demon:createDemonState(),roseBishop:createRoseBishopState(),scrollProfessor:createScrollProfessorState(),pleasure:createPleasureState(),dawnPaladin:createDawnPaladinState(),fireThief:createFireThiefState(),recorder:createRecorderState(),spiritGuide:createSpiritGuideState(),notary:createNotaryState(),windBlessed:createWindBlessedState(),polymath:createPolymathState(),soother:createSootherState(),potionProfessor:createPotionProfessorState(),artisan:createArtisanState(),hypnotist:createHypnotistState(),conspirator:createConspiratorState(),faceless:createFacelessState(),harvestpriest:createHarvestpriestState(),physician:createPhysicianState(),cultivator:createCultivatorState(),interrogator:createInterrogatorState(),sheriff:createSheriffState(),arbiter:createArbiterState(),briber:createBriberState(),barbarian:createBarbarianState(),lawyer:createLawyerState(),lucky:createLuckyState(),machine:createMachineState(),monster:createMonsterState(),werewolf:createWerewolfState(),madman:createMadmanState(),prisoner:createPrisonerState(),serialKiller:createSerialKillerState(),unwinged:createUnwingedState(),criminal:createCriminalState(),shadowAscetic:createShadowAsceticState(),listener:createListenerState(),secretSupplicant:createSecretSupplicantState(),wizard:createWizardState(),combatScholar:createCombatScholarState(),pryer:createPryerState(),witch:createWitchState(),instigator:createInstigatorState(),assassin:createAssassinState(),weaponmaster:createWeaponmasterState(),gladiator:createGladiatorState(),warrior:createWarriorState(),cryptologist:createCryptologistState(),swindler:createSwindlerState(),marauder:createMarauderState(),astrologer:createAstrologerState(),trickmaster:createTrickmasterState(),apprentice:createApprenticeState(),spiritmedium:createSpiritmediumState(),gravedigger:createGravediggerState(),corpsecollector:createCorpsecollectorState(),sunpriest:createSunpriestState(),lightprayer:createLightprayerState(),bard:createBardState(),navigator:createNavigatorState(),rager:createRagerState(),sailor:createSailorState(),detective:createDetectiveState(),reasoner:createReasonerState(),reader:createReaderState(),nightmare:createNightmareState(),midnight:createMidnightState(),sleepless:createSleeplessState(),vampire:createVampireState(),appraiser:createAppraiserState(),psychologist:createPsychologistState(),pyromaniac:createPyromaniacState(),magician:createMagicianState(),tamer:createTamerState(),apothecary:createApothecaryState(),archaeologist:createArchaeologistState(),savant:createSavantState(),town:createTownState(),mindreader:createMindreaderState(),audience:createAudienceState(),provoker:createProvokerState(),hunter:createHunterState(),caseArchive:[],clown:createClownState(),runId,revision:1,status:'ACTIVE',
     character:{name:p.displayName,portraitId:selection.portraitId,age:p.age,gender:p.sex,originId:p.origin.id,originName:p.origin.label,professionId:p.profession.id,professionName:p.profession.label,education:v.educationLevel,learningBonus:v.learningKnowledgeBonus,weeklyWage:v.weeklyWorkPayPence,coreStats:{...p.coreStats},birthplace:{id:p.birthplace.id,label:p.birthplace.label},appearanceDescription:p.appearanceDescription,traits:p.traits.map(t=>({id:t.id,label:t.label})),flaw:{id:p.flaw.id,label:p.flaw.label},acceptedConditionIds:[...v.selection.acceptedConditionIds],creationCosts:{professionInitialPence:v.cashBreakdown.professionInitialPence,familyTransferPence:v.cashBreakdown.familyTransferPence,conditionCostPence:v.cashBreakdown.conditionCostPence,educationCostPence:v.cashBreakdown.educationCostPence}},
     week:1,date:{epoch:'FIFTH_EPOCH',year:1349,month:6,day:28},actionsRemaining:3,weeklyBudget:3,wagePaidWeek:null,
     cash:v.cashPence,lifeTier:v.livingStandardId,nextLifeTier:v.livingStandardId,health:100,mind:100,spirituality:15,injuries:[],injuryRisk:0,
@@ -733,7 +1203,7 @@ function schedule(s:SliceState){
   }
 }
 function processPulse(s:SliceState){
-  if(hasFoolLock(s)||hasNatureWalkerLock(s)||hasHandOfOrderLock(s)||hasPrinceOfAbolitionLock(s)||hasMercurySnakeLock(s)||hasAbominationLock(s)||hasUncleanMonarchLock(s)||hasDarkAngelLock(s)||hasKnowledgeEmperorLock(s)||hasApocalypseDemonessLock(s)||hasDivineHandLock(s)||hasTimeWormLock(s)||hasStarKeyLock(s)||hasPaleEmperorLock(s)||hasPureWhiteAngelLock(s)||hasThunderGodLock(s)||hasAllKnowingEyeLock(s)||hasMisfortuneKnightLock(s)||hasBeautyGoddessLock(s)||hasCivilizationEnlightenerLock(s)||hasWriterLock(s)||hasConquerorLock(s)||s.attendantMysteries.preparation!==null||hasAttendantMysteriesTownLock(s)||hasAttendantMysteriesLifeLock(s)||hasBarrenMatriarchLock(natureWalkerInheritedView(s))||hasBalancerLock(handOfOrderInheritedView(s))||hasEntropyDukeLock(s)||hasFateProphetLock(s)||hasAncientEvilLock(s)||hasBloodDukeLock(s)||hasElderLock(s)||hasSageLock(s)||hasCalamityDemonessLock(s)||hasGloryLock(s)||hasFateTrojanLock(s)||hasPlaneswalkerLock(s)||hasDeathConsulLock(s)||hasLightSeekerLock(s)||hasCatastropheLock(s)||hasWisdomAngelLock(s)||hasConcealmentServantLock(s)||hasLifeGiverLock(s)||hasKnowledgeMentorLock(s)||hasDiscernerLock(s)||hasWeatherWarlockLock(s)||hasCoffinBearerLock(natureWalkerInheritedView(s))||hasChaosHunterLock(handOfOrderInheritedView(s))||hasFrenzyMageLock(s)||hasChaosWalkerLock(s)||hasSilentDiscipleLock(s)||hasBlathererLock(s)||hasThreeHeadedTemplarLock(s)||hasProphecyMasterLock(s)||hasUnagingDemonessLock(s)||hasSilverKnightLock(s)||hasDeceitMentorLock(s)||hasWandererLock(s)||hasFerrymanLock(s)||hasJusticeMentorLock(s)||hasSeaKingLock(s)||hasInsightScholarLock(s)||hasFearBishopLock(s)||hasSummoningMasterLock(s)||hasArcaneScholarLock(s)||hasDreamWeaverLock(s)||hasWarBishopLock(s)||hasAncientScholarLock(s)||hasAncientScholarEraClosure(s)||hasLongChapterLock(s)||isLongChapterEraClosed(s))return;
+  if(hasMotherLock(s)||hasJusticiarLock(s)||hasBlackEmperorLock(s)||hasWheelOfFortuneLock(s)||hasChainedLock(s)||hasAbyssLock(s)||hasHangedManLock(s)||hasHermitLock(s)||hasDemonessLock(s)||hasTwilightGiantLock(s)||hasErrorAscentLock(s)||hasDoorLock(s)||hasDeathLock(s)||hasSunLock(s)||hasTyrantLock(s)||hasWhiteTowerLock(s)||hasDarknessLock(s)||hasMoonLock(s)||hasPerfecterLock(s)||hasVisionaryLock(s)||hasRedPriestLock(s)||hasFoolLock(s)||hasNatureWalkerLock(s)||hasHandOfOrderLock(s)||hasPrinceOfAbolitionLock(s)||hasMercurySnakeLock(s)||hasAbominationLock(s)||hasUncleanMonarchLock(s)||hasDarkAngelLock(s)||hasKnowledgeEmperorLock(s)||hasApocalypseDemonessLock(s)||hasDivineHandLock(s)||hasTimeWormLock(s)||hasStarKeyLock(s)||hasPaleEmperorLock(s)||hasPureWhiteAngelLock(s)||hasThunderGodLock(s)||hasAllKnowingEyeLock(s)||hasMisfortuneKnightLock(s)||hasBeautyGoddessLock(s)||hasCivilizationEnlightenerLock(s)||hasWriterLock(s)||hasConquerorLock(s)||s.attendantMysteries.preparation!==null||hasAttendantMysteriesTownLock(s)||hasAttendantMysteriesLifeLock(s)||hasBarrenMatriarchLock(natureWalkerInheritedView(s))||hasBalancerLock(handOfOrderInheritedView(s))||hasEntropyDukeLock(s)||hasFateProphetLock(s)||hasAncientEvilLock(s)||hasBloodDukeLock(s)||hasElderLock(s)||hasSageLock(s)||hasCalamityDemonessLock(s)||hasGloryLock(s)||hasFateTrojanLock(s)||hasPlaneswalkerLock(s)||hasDeathConsulLock(s)||hasLightSeekerLock(s)||hasCatastropheLock(s)||hasWisdomAngelLock(s)||hasConcealmentServantLock(s)||hasLifeGiverLock(s)||hasKnowledgeMentorLock(s)||hasDiscernerLock(s)||hasWeatherWarlockLock(s)||hasCoffinBearerLock(natureWalkerInheritedView(s))||hasChaosHunterLock(handOfOrderInheritedView(s))||hasFrenzyMageLock(s)||hasChaosWalkerLock(s)||hasSilentDiscipleLock(s)||hasBlathererLock(s)||hasThreeHeadedTemplarLock(s)||hasProphecyMasterLock(s)||hasUnagingDemonessLock(s)||hasSilverKnightLock(s)||hasDeceitMentorLock(s)||hasWandererLock(s)||hasFerrymanLock(s)||hasJusticeMentorLock(s)||hasSeaKingLock(s)||hasInsightScholarLock(s)||hasFearBishopLock(s)||hasSummoningMasterLock(s)||hasArcaneScholarLock(s)||hasDreamWeaverLock(s)||hasWarBishopLock(s)||hasAncientScholarLock(s)||hasAncientScholarEraClosure(s)||hasLongChapterLock(s)||isLongChapterEraClosed(s))return;
   if(s.status!=='ACTIVE'||s.activeEvent||s.combat)return;
   if(s.eventQueue.length){open(s,s.eventQueue.shift()!);return;}
   if(s.actionsRemaining>0&&s.pulse==='NONE')return;
@@ -822,7 +1292,328 @@ function applyFoolSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type
   catch{throw new SliceRuleError((head?ownedFoolCommandBlock(state,payload.command,head):foolCommandBlock(state,payload.command))??'当前不能进行愚者行动。');}
   next.revision=state.revision+1;return {state:next,head:nextHead};
 }
+/** Both strict raw intents and private owned drafts use this exact publisher. */
+function applyRedPriestSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'RED_PRIEST'}>,head?:RedPriestOwnedEngine):{state:SliceState;head:RedPriestOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  const next=clone(state);next.lastCheck=null;
+  let nextHead:RedPriestOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedRedPriestCommand(next,payload.command,seerContext(next),head);
+    else applyRedPriestCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedRedPriestCommandBlock(state,payload.command,head):redPriestCommandBlock(state,payload.command))??'当前不能进行红祭司行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyVisionarySliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'VISIONARY'}>,head?:VisionaryOwnedEngine):{state:SliceState;head:VisionaryOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  const next=clone(state);next.lastCheck=null;
+  let nextHead:VisionaryOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedVisionaryCommand(next,payload.command,seerContext(next),head);
+    else applyVisionaryCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedVisionaryCommandBlock(state,payload.command,head):visionaryCommandBlock(state,payload.command))??'当前不能进行空想家行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyPerfecterSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'PERFECTER'}>,head?:PerfecterOwnedEngine):{state:SliceState;head:PerfecterOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  const next=clone(state);next.lastCheck=null;
+  let nextHead:PerfecterOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedPerfecterCommand(next,payload.command,seerContext(next),head);
+    else applyPerfecterCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedPerfecterCommandBlock(state,payload.command,head):perfecterCommandBlock(state,payload.command))??'当前不能进行完美者行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyMoonSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'MOON'}>,head?:MoonOwnedEngine):{state:SliceState;head:MoonOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  const next=clone(state);next.lastCheck=null;
+  let nextHead:MoonOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedMoonCommand(next,payload.command,seerContext(next),head);
+    else applyMoonCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedMoonCommandBlock(state,payload.command,head):moonCommandBlock(state,payload.command))??'当前不能进行月亮行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyMotherSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'MOTHER'}>,head?:MotherOwnedEngine):{state:SliceState;head:MotherOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; Mother.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:MotherOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedMotherCommand(next,payload.command,seerContext(next),head);
+    else applyMotherCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedMotherCommandBlock(state,payload.command,head):motherCommandBlock(state,payload.command))??'当前不能进行母亲行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyJusticiarSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'JUSTICIAR'}>,head?:JusticiarOwnedEngine):{state:SliceState;head:JusticiarOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; Justiciar.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:JusticiarOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedJusticiarCommand(next,payload.command,seerContext(next),head);
+    else applyJusticiarCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedJusticiarCommandBlock(state,payload.command,head):justiciarCommandBlock(state,payload.command))??'当前不能进行审判者行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyBlackEmperorSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'BLACK_EMPEROR'}>,head?:BlackEmperorOwnedEngine):{state:SliceState;head:BlackEmperorOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; BlackEmperor.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:BlackEmperorOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedBlackEmperorCommand(next,payload.command,seerContext(next),head);
+    else applyBlackEmperorCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedBlackEmperorCommandBlock(state,payload.command,head):blackEmperorCommandBlock(state,payload.command))??'当前不能进行黑皇帝行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyWheelOfFortuneSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'WHEEL_OF_FORTUNE'}>,head?:WheelOfFortuneOwnedEngine):{state:SliceState;head:WheelOfFortuneOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; WheelOfFortune.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:WheelOfFortuneOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedWheelOfFortuneCommand(next,payload.command,seerContext(next),head);
+    else applyWheelOfFortuneCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedWheelOfFortuneCommandBlock(state,payload.command,head):wheelOfFortuneCommandBlock(state,payload.command))??'当前不能进行命运之轮行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyChainedSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'CHAINED'}>,head?:ChainedOwnedEngine):{state:SliceState;head:ChainedOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; Chained.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:ChainedOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedChainedCommand(next,payload.command,seerContext(next),head);
+    else applyChainedCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedChainedCommandBlock(state,payload.command,head):chainedCommandBlock(state,payload.command))??'当前不能进行被缚者行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyAbyssSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'ABYSS'}>,head?:AbyssOwnedEngine):{state:SliceState;head:AbyssOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; Abyss.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:AbyssOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedAbyssCommand(next,payload.command,seerContext(next),head);
+    else applyAbyssCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedAbyssCommandBlock(state,payload.command,head):abyssCommandBlock(state,payload.command))??'当前不能进行深渊行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyHangedManSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'HANGED_MAN'}>,head?:HangedManOwnedEngine):{state:SliceState;head:HangedManOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; HangedMan.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:HangedManOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedHangedManCommand(next,payload.command,seerContext(next),head);
+    else applyHangedManCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedHangedManCommandBlock(state,payload.command,head):hangedManCommandBlock(state,payload.command))??'当前不能进行倒吊人行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyHermitSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'HERMIT'}>,head?:HermitOwnedEngine):{state:SliceState;head:HermitOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; Hermit.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:HermitOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedHermitCommand(next,payload.command,seerContext(next),head);
+    else applyHermitCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedHermitCommandBlock(state,payload.command,head):hermitCommandBlock(state,payload.command))??'当前不能进行隐者行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyDemonessSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'DEMONESS'}>,head?:DemonessOwnedEngine):{state:SliceState;head:DemonessOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; Demoness.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:DemonessOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedDemonessCommand(next,payload.command,seerContext(next),head);
+    else applyDemonessCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedDemonessCommandBlock(state,payload.command,head):demonessCommandBlock(state,payload.command))??'当前不能进行魔女行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyTwilightGiantSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'TWILIGHT_GIANT'}>,head?:TwilightGiantOwnedEngine):{state:SliceState;head:TwilightGiantOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; TwilightGiant.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:TwilightGiantOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedTwilightGiantCommand(next,payload.command,seerContext(next),head);
+    else applyTwilightGiantCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedTwilightGiantCommandBlock(state,payload.command,head):twilightGiantCommandBlock(state,payload.command))??'当前不能进行黄昏巨人行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyErrorAscentSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'ERROR_ASCENT'}>,head?:ErrorAscentOwnedEngine):{state:SliceState;head:ErrorAscentOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; ErrorAscent.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:ErrorAscentOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedErrorAscentCommand(next,payload.command,seerContext(next),head);
+    else applyErrorAscentCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedErrorAscentCommandBlock(state,payload.command,head):errorAscentCommandBlock(state,payload.command))??'当前不能进行错误行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyDoorSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'DOOR'}>,head?:DoorOwnedEngine):{state:SliceState;head:DoorOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; Door.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:DoorOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedDoorCommand(next,payload.command,seerContext(next),head);
+    else applyDoorCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedDoorCommandBlock(state,payload.command,head):doorCommandBlock(state,payload.command))??'当前不能进行门行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyDeathSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'DEATH'}>,head?:DeathOwnedEngine):{state:SliceState;head:DeathOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  // Validate the untouched prior receipt first; Death.publish replaces it
+  // with this action's actual check (or null) after a successful draft.
+  const next=clone(state);
+  let nextHead:DeathOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedDeathCommand(next,payload.command,seerContext(next),head);
+    else applyDeathCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedDeathCommandBlock(state,payload.command,head):deathCommandBlock(state,payload.command))??'当前不能进行死神行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applySunSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'SUN'}>,head?:SunOwnedEngine):{state:SliceState;head:SunOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  const next=clone(state);next.lastCheck=null;
+  let nextHead:SunOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedSunCommand(next,payload.command,seerContext(next),head);
+    else applySunCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedSunCommandBlock(state,payload.command,head):sunCommandBlock(state,payload.command))??'当前不能进行太阳行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyTyrantSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'TYRANT'}>,head?:TyrantOwnedEngine):{state:SliceState;head:TyrantOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  const next=clone(state);next.lastCheck=null;
+  let nextHead:TyrantOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedTyrantCommand(next,payload.command,seerContext(next),head);
+    else applyTyrantCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedTyrantCommandBlock(state,payload.command,head):tyrantCommandBlock(state,payload.command))??'当前不能进行暴君行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyWhiteTowerSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'WHITE_TOWER'}>,head?:WhiteTowerOwnedEngine):{state:SliceState;head:WhiteTowerOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  const next=clone(state);next.lastCheck=null;
+  let nextHead:WhiteTowerOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedWhiteTowerCommand(next,payload.command,seerContext(next),head);
+    else applyWhiteTowerCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedWhiteTowerCommandBlock(state,payload.command,head):whiteTowerCommandBlock(state,payload.command))??'当前不能进行白塔行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
+function applyDarknessSliceIntent(state:SliceState,payload:Extract<SliceIntent,{type:'DARKNESS'}>,head?:DarknessOwnedEngine):{state:SliceState;head:DarknessOwnedEngine|undefined}{
+  requireRule(state.status==='ACTIVE','已经死亡或结束的角色不能继续行动。');
+  const next=clone(state);next.lastCheck=null;
+  let nextHead:DarknessOwnedEngine|undefined;
+  try{
+    if(head)nextHead=applyOwnedDarknessCommand(next,payload.command,seerContext(next),head);
+    else applyDarknessCommand(next,payload.command,seerContext(next));
+    if(next.health<=0)finish(next,'DEATH');
+  }
+  catch{throw new SliceRuleError((head?ownedDarknessCommandBlock(state,payload.command,head):darknessCommandBlock(state,payload.command))??'当前不能进行黑暗行动。');}
+  next.revision=state.revision+1;return {state:next,head:nextHead};
+}
 export function applySliceIntent(state:SliceState,payload:SliceIntent):SliceState{
+  if(payload.type==='MOTHER')return applyMotherSliceIntent(state,payload).state;
+  requireRule(!hasMotherHistory(state),'原有经历已经封存，请在当前母亲筹备处与温室现场继续行动。');
+  if(payload.type==='JUSTICIAR')return applyJusticiarSliceIntent(state,payload).state;
+  requireRule(!hasJusticiarHistory(state),'原有经历已经封存，请在当前审判者筹备处与码头现场继续行动。');
+  if(payload.type==='BLACK_EMPEROR')return applyBlackEmperorSliceIntent(state,payload).state;
+  requireRule(!hasBlackEmperorHistory(state),'原有经历已经封存，请在当前黑皇帝筹备处与有限国度继续行动。');
+  if(payload.type==='WHEEL_OF_FORTUNE')return applyWheelOfFortuneSliceIntent(state,payload).state;
+  requireRule(!hasWheelOfFortuneHistory(state),'原有经历已经封存，请在当前命运之轮筹备处与岔路交接站继续行动。');
+  if(payload.type==='CHAINED')return applyChainedSliceIntent(state,payload).state;
+  requireRule(!hasChainedHistory(state),'原有经历已经封存，请在当前被缚者筹备处与短闸廊现场继续行动。');
+  if(payload.type==='ABYSS')return applyAbyssSliceIntent(state,payload).state;
+  requireRule(!hasAbyssHistory(state),'原有经历已经封存，请在当前深渊筹备处与短仓现场继续行动。');
+  if(payload.type==='HANGED_MAN')return applyHangedManSliceIntent(state,payload).state;
+  requireRule(!hasHangedManHistory(state),'原有经历已经封存，请在当前倒吊人筹备处与现场继续行动。');
+  if(payload.type==='HERMIT')return applyHermitSliceIntent(state,payload).state;
+  requireRule(!hasHermitHistory(state),'原有经历已经封存，请在当前隐者筹备处与现场继续行动。');
+  if(payload.type==='DEMONESS')return applyDemonessSliceIntent(state,payload).state;
+  requireRule(!hasDemonessHistory(state),'原有经历已经封存，请在当前魔女筹备处与修复现场继续行动。');
+  if(payload.type==='TWILIGHT_GIANT')return applyTwilightGiantSliceIntent(state,payload).state;
+  requireRule(!hasTwilightGiantHistory(state),'原有经历已经封存，请在当前黄昏巨人筹备处与工程现场继续行动。');
+  if(payload.type==='ERROR_ASCENT')return applyErrorAscentSliceIntent(state,payload).state;
+  requireRule(!hasErrorAscentHistory(state),'原有经历已经封存，请在当前错误晋升筹备与仪式现场继续行动。');
+  if(payload.type==='DOOR')return applyDoorSliceIntent(state,payload).state;
+  requireRule(!hasDoorHistory(state),'原有经历已经封存，请在当前门途径筹备处与居民服务现场继续行动。');
+  if(payload.type==='DEATH')return applyDeathSliceIntent(state,payload).state;
+  requireRule(!hasDeathHistory(state),'原有经历已经封存，请在当前接待处与死神筹备现场继续行动。');
+  if(payload.type==='SUN')return applySunSliceIntent(state,payload).state;
+  requireRule(!hasSunHistory(state),'原有经历已经封存，请在当前街区与筹备处继续行动。');
+  if(payload.type==='TYRANT')return applyTyrantSliceIntent(state,payload).state;
+  requireRule(!hasTyrantHistory(state),'原有经历已经封存，请在当前海岸与筹备处继续行动。');
+  if(payload.type==='WHITE_TOWER')return applyWhiteTowerSliceIntent(state,payload).state;
+  requireRule(!hasWhiteTowerHistory(state),'原有经历已经封存，请在当前城市通路与筹备处继续行动。');
+  if(payload.type==='DARKNESS')return applyDarknessSliceIntent(state,payload).state;
+  requireRule(!hasDarknessHistory(state),'原有经历已经封存，请在当前长夜撤离与筹备处继续行动。');
+  if(payload.type==='MOON')return applyMoonSliceIntent(state,payload).state;
+  requireRule(!hasMoonHistory(state),'原有经历已经封存，请在当前夜航与筹备处继续行动。');
+  if(payload.type==='PERFECTER')return applyPerfecterSliceIntent(state,payload).state;
+  requireRule(!hasPerfecterHistory(state),'原有经历已经封存，请在当前工坊与大陆事务中继续行动。');
+  if(payload.type==='VISIONARY')return applyVisionarySliceIntent(state,payload).state;
+  requireRule(!hasVisionaryHistory(state),'原有经历已经封存，请在当前时代筹备与现场继续行动。');
+  if(payload.type==='RED_PRIEST')return applyRedPriestSliceIntent(state,payload).state;
+  requireRule(!hasRedPriestHistory(state),'原有经历已经封存，请在当前战役与筹备处继续行动。');
   if(payload.type==='FOOL')return applyFoolSliceIntent(state,payload).state;
   requireRule(!hasFoolHistory(state),'原有经历已经封存，请在当前筹备处与现场继续行动。');
   if(state.status==='REVIVAL_PENDING')requireRule(payload.type==='MIRACLE_WORKER'&&validateMiracleWorkerRevivalCommand(payload.command),'本人已真实死亡，当前只可作有限复起、等待或放弃选择。');
@@ -1453,14 +2244,51 @@ export function applySliceIntent(state:SliceState,payload:SliceIntent):SliceStat
   syncWerewolfMoon(s,seerContext(s));syncZombieMoon(s,seerContext(s));syncWraithMoon(s,seerContext(s));syncPuppetMoon(s,seerContext(s));if(!gladiatorInside(s)&&!assassinInside(s)&&!instigatorInside(s)&&!pryerInside(s)&&!combatScholarInside(s)&&!wizardInside(s)&&!secretSupplicantInside(s)&&!listenerInside(s)&&!shadowAsceticInside(s)&&!criminalInside(s)&&!unwingedInside(s)&&!serialKillerInside(s)&&!prisonerInside(s)&&!madmanInside(s)&&!werewolfInside(s)&&!monsterInside(s)&&!machineInside(s)&&!luckyInside(s)&&!lawyerInside(s)&&!barbarianInside(s)&&!briberInside(s)&&!arbiterInside(s)&&!sheriffInside(s)&&!interrogatorInside(s)&&!cultivatorInside(natureWalkerInheritedView(s))&&!physicianInside(natureWalkerInheritedView(s))&&!harvestpriestInside(natureWalkerInheritedView(s))&&!facelessInside(s)&&!conspiratorInside(s)&&!hypnotistInside(s)&&!artisanInside(s)&&!potionProfessorInside(s)&&!sootherInside(s)&&!polymathInside(s)&&!windBlessedInside(s)&&!notaryInside(s)&&!spiritGuideInside(s)&&!recorderInside(s)&&!fireThiefInside(s)&&!dawnPaladinInside(s)&&!pleasureInside(s)&&!scrollProfessorInside(s)&&!roseBishopInside(s)&&!demonInside(s)&&!zombieInside(s)&&!calamityPriestInside(s)&&!corruptionBaronInside(s)&&!judgeInside(s)&&!biologistInside(natureWalkerInheritedView(s))&&!marionettistInside(s)&&!reaperInside(s)&&!dreamwalkerInside(s)&&!astronomerInside(s)&&!crimsonScholarInside(s)&&!spiritWarlockInside(s)&&!mysticismMagisterInside(s)&&!oceanSingerInside(s)&&!priestOfLightInside(s)&&!gatekeeperInside(s)&&!travelerInside(s)&&!dreamStealerInside(s)&&!guardianInside(s)&&!painInside(s)&&!starMysticInside(s)&&!shepherdInside(s)&&!desireApostleInside(s)&&!wraithInside(s)&&!winnerInside(s)&&!mentorDisorderInside(s)&&!punishmentKnightInside(s)&&!druidInside(natureWalkerInheritedView(s))&&!bizarroInside(s)&&!hasBizarroRitualLock(s)&&!ironBloodInside(s)&&!hasIronBloodRitualLock(s)&&!isInsideIronBloodEncounter(s)&&!manipulatorInside(s)&&!hasManipulatorRitualLock(s)&&!isInsideManipulatorEncounter(s)&&!alchemistInside(s)&&!hasAlchemistRitualLock(s)&&!isInsideAlchemistEncounter(s)&&!witchKingInside(s)&&!hasWitchKingRitualLock(s)&&!isInsideWitchKingEncounter(s)&&!nightwatcherInside(s)&&!hasNightwatcherRitualLock(s)&&!isInsideNightwatcherEncounter(s)&&!prophetInside(s)&&!hasProphetRitualLock(s)&&!isInsideProphetEncounter(s)&&!cataclysmPriestInside(s)&&!hasCataclysmPriestRitualLock(s)&&!isInsideCataclysmPriestEncounter(s)&&!unshadowedInside(s)&&!hasUnshadowedRitualLock(s)&&!isInsideUnshadowedEncounter(s)&&!undyingInside(s)&&!hasUndyingRitualLock(s)&&!isInsideUndyingEncounter(s)&&!hasSecretsSorcererLifeLock(s)&&!hasSecretsSorcererRitualLock(s)&&!hasParasiteLifeLock(s)&&!hasParasiteEncounterLock(s)&&!hasDemonHunterLifeLock(s)&&!hasDemonHunterEncounterLock(s)&&!hasDespairLifeLock(s)&&!hasDespairEncounterLock(s)&&!hasMysticRitualLock(s)&&!hasMysticLifeLock(s)&&!hasMysticEncounterLock(s)&&!hasBlackKnightLifeLock(s)&&!hasBlackKnightEncounterLock(s)&&!hasDevilLifeLock(s)&&!hasDevilEncounterLock(s)&&!hasPuppetLifeLock(s)&&!hasPuppetEncounterLock(s)&&!hasMisfortuneMageLifeLock(s)&&!hasMisfortuneMageEncounterLock(s)&&!hasFallenEarlLifeLock(s)&&!hasFallenEarlEncounterLock(s)&&!hasImperativeMageLifeLock(s)&&!hasImperativeMageEncounterLock(s)&&!hasAncientAlchemistLifeLock(natureWalkerInheritedView(s))&&!hasAncientAlchemistEncounterLock(natureWalkerInheritedView(s)))processPulse(s);syncWerewolfMoon(s,seerContext(s));syncZombieMoon(s,seerContext(s));syncWraithMoon(s,seerContext(s));syncPuppetMoon(s,seerContext(s));if(s.week!==state.week&&s.magician.lantern.prepared){s.magician.lantern.prepared=false;note(s,'周末收妥油灯','原油灯随本次事务结束熄灭，已耗灯油不会恢复。');}s.revision=state.revision+1;return s;
 }
 export function projectSliceState(s:SliceState):SliceProjection{
-  return projectSliceStateCurrent(s,projectFool(s),hasFoolHistory(s));
+  return projectSliceStateCurrent(s,projectFool(s),hasFoolHistory(s),projectRedPriest(s),hasRedPriestHistory(s),projectVisionary(s),hasVisionaryHistory(s),projectPerfecter(s),hasPerfecterHistory(s),projectMoon(s),hasMoonHistory(s),projectDarkness(s),hasDarknessHistory(s),projectWhiteTower(s),hasWhiteTowerHistory(s));
 }
-function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoolHistory:boolean):SliceProjection{
+type MotherHistoricalProjections=Pick<SliceProjection,'cultivator'|'physician'|'harvestpriest'|'biologist'|'druid'|'ancientAlchemist'|'coffinBearer'|'barrenMatriarch'|'natureWalker'>;
+type JusticiarHistoricalProjections=Pick<SliceProjection,'arbiter'|'sheriff'|'interrogator'|'judge'|'punishmentKnight'|'imperativeMage'|'chaosHunter'|'balancer'|'handOfOrder'>;
+type BlackEmperorHistoricalProjections=Pick<SliceProjection,'lawyer'|'barbarian'|'briber'|'corruptionBaron'|'mentorDisorder'|'fallenEarl'|'frenzyMage'|'entropyDuke'|'princeOfAbolition'>;
+type WheelOfFortuneHistoricalProjections=Pick<SliceProjection,'monster'|'machine'|'lucky'|'calamityPriest'|'winner'|'misfortuneMage'|'chaosWalker'|'fateProphet'|'mercurySnake'>;
+type ChainedHistoricalProjections=Pick<SliceProjection,'prisoner'|'madman'|'werewolf'|'zombie'|'wraith'|'puppet'|'silentDisciple'|'ancientEvil'|'abomination'>;
+type AbyssHistoricalProjections=Pick<SliceProjection,'criminal'|'unwinged'|'serialKiller'|'demon'|'desireApostle'|'devil'|'blatherer'|'bloodDuke'|'uncleanMonarch'>;
+type HangedManHistoricalProjections=Pick<SliceProjection,'secretSupplicant'|'listener'|'shadowAscetic'|'roseBishop'|'shepherd'|'blackKnight'|'threeHeadedTemplar'|'elder'|'darkAngel'>;
+type HermitHistoricalProjections=Pick<SliceProjection,'pryer'|'combatScholar'|'wizard'|'scrollProfessor'|'starMystic'|'mystic'|'prophecyMaster'|'sage'|'knowledgeEmperor'>;
+function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoolHistory:boolean,redPriest:RedPriestProjection,hasCurrentRedPriestHistory:boolean,visionary:VisionaryProjection,hasCurrentVisionaryHistory:boolean,perfecter:PerfecterProjection,hasCurrentPerfecterHistory:boolean,moon:MoonProjection,hasCurrentMoonHistory:boolean,darkness:DarknessProjection,hasCurrentDarknessHistory:boolean,whiteTower:WhiteTowerProjection,hasCurrentWhiteTowerHistory:boolean,tyrant:TyrantProjection=projectTyrant(s),hasCurrentTyrantHistory:boolean=hasTyrantHistory(s),sun:SunProjection=projectSun(s),hasCurrentSunHistory:boolean=hasSunHistory(s),death:DeathProjection=projectDeath(s),hasCurrentDeathHistory:boolean=hasDeathHistory(s),door:DoorProjection=projectDoor(s),hasCurrentDoorHistory:boolean=hasDoorHistory(s),errorAscent:ErrorAscentProjection=projectErrorAscent(s),hasCurrentErrorAscentHistory:boolean=hasErrorAscentHistory(s),twilightGiant:TwilightGiantProjection=projectTwilightGiant(s),hasCurrentTwilightGiantHistory:boolean=hasTwilightGiantHistory(s),demoness:DemonessProjection=projectDemoness(s),hasCurrentDemonessHistory:boolean=hasDemonessHistory(s),hermit:HermitProjection=projectHermit(s),hasCurrentHermitHistory:boolean=hasHermitHistory(s),hermitHistories?:HermitHistoricalProjections,hangedMan:HangedManProjection=projectHangedMan(s),hasCurrentHangedManHistory:boolean=hasHangedManHistory(s),hangedManHistories?:HangedManHistoricalProjections,abyss:AbyssProjection=projectAbyss(s),hasCurrentAbyssHistory:boolean=hasAbyssHistory(s),abyssHistories?:AbyssHistoricalProjections,chained:ChainedProjection=projectChained(s),hasCurrentChainedHistory:boolean=hasChainedHistory(s),chainedHistories?:ChainedHistoricalProjections,wheelOfFortune:WheelOfFortuneProjection=projectWheelOfFortune(s),hasCurrentWheelOfFortuneHistory:boolean=hasWheelOfFortuneHistory(s),wheelOfFortuneHistories?:WheelOfFortuneHistoricalProjections,blackEmperor:BlackEmperorProjection=projectBlackEmperor(s),hasCurrentBlackEmperorHistory:boolean=hasBlackEmperorHistory(s),blackEmperorHistories?:BlackEmperorHistoricalProjections,justiciar:JusticiarProjection=projectJusticiar(s),hasCurrentJusticiarHistory:boolean=hasJusticiarHistory(s),justiciarHistories?:JusticiarHistoricalProjections,mother:MotherProjection=projectMother(s),hasCurrentMotherHistory:boolean=hasMotherHistory(s),motherHistories?:MotherHistoricalProjections):SliceProjection{
+  const motherS1ProjectionView=hasCurrentMotherHistory&&!motherHistories&&s.mother.source?getMotherSourceView(s,s.mother.source):s;
+  const justiciarS1ProjectionView=hasCurrentJusticiarHistory&&!justiciarHistories&&s.justiciar.source?getJusticiarSourceView(s,s.justiciar.source):s;
+  const emperorS1ProjectionView=hasCurrentBlackEmperorHistory&&!blackEmperorHistories&&s.blackEmperor.source?blackEmperorSourceView(s,s.blackEmperor.source):s;
+  const wheelS1ProjectionView=hasCurrentWheelOfFortuneHistory&&!wheelOfFortuneHistories&&s.wheelOfFortune.source?wheelOfFortuneSourceView(s,s.wheelOfFortune.source):s;
+  const chainedS1ProjectionView=hasCurrentChainedHistory&&!chainedHistories&&s.chained.source?chainedSourceView(s,s.chained.source):s;
+  const abyssS1ProjectionView=hasCurrentAbyssHistory&&!abyssHistories&&s.abyss.source?abyssSourceView(s,s.abyss.source):s;
+  const abyssProjectionView=hasCurrentAbyssHistory&&!abyssHistories?uncleanMonarchInheritedView(abyssS1ProjectionView):s;
+  const hangedManS1ProjectionView=hasCurrentHangedManHistory&&!hangedManHistories&&s.hangedMan.source?hangedManSourceView(s,s.hangedMan.source):s;
+  const hangedManProjectionView=hasCurrentHangedManHistory&&!hangedManHistories?darkAngelInheritedView(hangedManS1ProjectionView):s;
+  const hermitS1ProjectionView=hasCurrentHermitHistory&&s.hermit.source?hermitSourceView(s,s.hermit.source):s;
+  const hermitProjectionView=hasCurrentHermitHistory&&!hermitHistories?knowledgeEmperorInheritedView(hermitS1ProjectionView):s;
+  const demonessS1ProjectionView=hasCurrentDemonessHistory&&s.demoness.source?demonessSourceView(s,s.demoness.source):s;
+  const demonessProjectionView=hasCurrentDemonessHistory?apocalypseDemonessInheritedView(demonessS1ProjectionView):s;
+  const warriorS1ProjectionView=s.twilightGiant.source?twilightGiantSourceView(s,s.twilightGiant.source):s;
+  const warriorProjectionView=s.twilightGiant.source?divineHandInheritedView(warriorS1ProjectionView):s;
+  const errorS1ProjectionView=s.errorAscent.source?errorAscentSourceView(s,s.errorAscent.source):s;
+  const errorProjectionView=s.errorAscent.source?timeWormInheritedView(errorS1ProjectionView):s;
+  const doorS1ProjectionView=s.door.source?doorSourceView(s,s.door.source):s;
+  const doorProjectionView=s.door.source?starKeyInheritedView(doorS1ProjectionView):s;
+  const deathS1ProjectionView=s.death.source?deathSourceView(s,s.death.source):s;
+  const sunS1ProjectionView=s.sun.source?sunSourceView(s,s.sun.source):s;
+  const tyrantS1ProjectionView=s.tyrant.source?tyrantSourceView(s,s.tyrant.source):s;
+  const whiteTowerS1ProjectionView=s.whiteTower.source?whiteTowerSourceView(s,s.whiteTower.source):s;
+  const darknessS1ProjectionView=s.darkness.source?darknessSourceView(s,s.darkness.source):s;
+  const moonS1ProjectionView=s.moon.source?moonSourceView(s,s.moon.source):s;
+  const paragonS1ProjectionView=s.perfecter.source?perfecterSourceView(s,s.perfecter.source):s;
+  const paragonProjectionView=civilizationEnlightenerInheritedView(paragonS1ProjectionView);
+  const audienceProjectionView=s.visionary.source?visionarySourceView(s,s.visionary.source):s;
+  const hunterProjectionView=s.redPriest.source?redPriestSourceView(s,s.redPriest.source):s;
   const divinerProjectionView=s.fool.source?foolSourceView(s,s.fool.source):s;
   const combat=s.combat?{...(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===7||s.progression.sequence===6)?{water:clone(s.combat.navigatorWater??{soakedRemaining:0,bound:false,skipNext:false})}:{}),...(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===8||s.progression.sequence===7||s.progression.sequence===6)?{rage:{charge:s.combat.wrathCharge??0}}:{}),title:s.combat.encounterId==='DRUID_DISPUTE'?'原外院 · 马伦的阻拦':s.combat.encounterId==='PUNISHMENT_KNIGHT_DISPUTE'?'原外院 · 迪恩的阻拦':s.combat.encounterId==='MENTOR_DISORDER_DISPUTE'?'原外院 · 里斯的阻拦':s.combat.encounterId==='WINNER_DISPUTE'?'原外院 · 奥德里的阻拦':s.combat.encounterId==='WRAITH_DISPUTE'?'原外院 · 贝文的阻拦':s.combat.encounterId==='DESIRE_APOSTLE_DISPUTE'?'原外院 · 费兰的阻拦':s.combat.encounterId==='SHEPHERD_DISPUTE'?'原外院 · 埃尔顿的阻拦':s.combat.encounterId==='STAR_MYSTIC_DISPUTE'?'原外院 · 布莱斯的阻拦':s.combat.encounterId==='PAIN_DISPUTE'?'原外院 · 奥伦的阻拦':s.combat.encounterId==='GUARDIAN_DISPUTE'?'原外院 · 埃德温的阻拦':s.combat.encounterId==='DREAM_STEALER_DISPUTE'?'原纸箱房 · 马洛的阻拦':s.combat.encounterId==='TRAVELER_DISPUTE'?'原货房 · 贝兰的阻拦':s.combat.encounterId==='GATEKEEPER_DISPUTE'?'原纪念院 · 洛克的阻拦':s.combat.encounterId==='PRIEST_OF_LIGHT_DISPUTE'?'原小院 · 凯恩的阻拦':s.combat.encounterId==='OCEAN_SINGER_DISPUTE'?'原码头工院 · 布伦的阻拦':s.combat.encounterId==='MYSTICISM_MAGISTER_DISPUTE'?'原工院 · 罗文的阻拦':s.combat.encounterId==='SPIRIT_WARLOCK_DISPUTE'?'原树院 · 奥林的阻拦':s.combat.encounterId==='CRIMSON_SCHOLAR_DISPUTE'?'原月光院 · 西德的阻拦':s.combat.encounterId==='ASTRONOMER_DISPUTE'?'原观测院 · 霍伯的阻拦':s.combat.encounterId==='DREAMWALKER_DISPUTE'?'原后院 · 马斯的阻拦':s.combat.encounterId==='REAPER_DISPUTE'?'原石院 · 维克的阻拦':s.combat.encounterId==='MARIONETTIST_DISPUTE'?'原前院 · 多恩的阻拦':s.combat.encounterId==='BIOLOGIST_DISPUTE'?'练习场外院 · 洛恩的阻拦':s.combat.encounterId==='JUDGE_DISPUTE'?'练习场外院 · 埃文的阻拦':s.combat.encounterId==='CORRUPTION_BARON_DISPUTE'?'练习场外院 · 沃恩的阻拦':s.combat.encounterId==='CALAMITY_PRIEST_DISPUTE'?'练习场外院 · 杜兰的阻拦':s.combat.encounterId==='ZOMBIE_DISPUTE'?'练习场外院 · 里德的阻拦':s.combat.encounterId==='DEMON_DISPUTE'?'练习场外院 · 莫顿的阻拦':s.combat.encounterId==='ROSE_BISHOP_DISPUTE'?'练习场外院 · 维恩的阻拦':s.combat.encounterId==='SCROLL_PROFESSOR_DISPUTE'?'练习间外院 · 卡尔的阻拦':s.combat.encounterId==='PLEASURE_DISPUTE'?'练习间外院 · 马伦的阻拦':s.combat.encounterId==='DAWN_PALADIN_DISPUTE'?'练习场外院 · 罗尔德的阻拦':s.combat.encounterId==='FIRE_THIEF_DISPUTE'?'教学室外院 · 贝林的阻拦':s.combat.encounterId==='RECORDER_DISPUTE'?'教学室外院 · 弥尔的阻拦':s.combat.encounterId==='SPIRIT_GUIDE_DISPUTE'?'纪念室外院 · 迪恩的阻拦':s.combat.encounterId==='NOTARY_DISPUTE'?'教堂工房外院 · 布伦的阻拦':s.combat.encounterId==='WIND_BLESSED_DISPUTE'?'维修院外场 · 鲁恩的阻拦':s.combat.encounterId==='POLYMATH_DISPUTE'?'教学室外院 · 伊恩的阻拦':s.combat.encounterId==='SOOTHER_DISPUTE'?'值班室外院 · 阿兰的阻拦':s.combat.encounterId==='POTION_PROFESSOR_DISPUTE'?'药房外院 · 艾文的阻拦':s.combat.encounterId==='ARTISAN_DISPUTE'?'工房外院 · 德文的阻拦':s.combat.encounterId==='HYPNOTIST_DISPUTE'?'会所后门 · 罗温的阻拦':s.combat.encounterId==='CONSPIRATOR_DISPUTE'?'货栈后门 · 奥伦的阻拦':s.combat.encounterId==='FACELESS_DISPUTE'?'排练后门 · 达恩的阻拦':s.combat.encounterId==='MARAUDER_DISPUTE'?'维修院 · 原短棍争端':s.combat.encounterId==='NIGHTMARE_DISPUTE'?'夜间后院 · 凯尔的阻拦':s.combat.encounterId==='MIDNIGHT_DISPUTE'?'夜间小院 · 贺恩的阻拦':s.combat.encounterId==='SLEEPLESS_WATCH'?'夜班外院 · 拉夫的阻拦':s.combat.encounterId==='VAMPIRE_DISPUTE'?'灯下通道 · 布鲁克的阻拦':s.combat.encounterId==='PSYCHOLOGIST_DISPUTE'?'会所门厅 · 布莱斯的威胁':s.combat.encounterId==='PYROMANIAC_DISPUTE'?'仓房砖院 · 哈恩的阻拦':s.combat.encounterId==='MAGICIAN_DISPUTE'?'剧场后巷 · 莫里的阻拦':s.combat.encounterId==='PROVOKER_DISPUTE'?'货栈入口 · 威斯的阻拦':s.combat.encounterId==='HUNTER_CARGO'?'仓库货道 · 取回通行权':s.combat.encounterId==='CLOWN_RESCUE'?'码头巷口 · 护送冲突':'首案 · 追击携铃者',round:s.combat.round,enemyName:s.combat.encounterId==='DRUID_DISPUTE'?'持普通短棍的马伦':s.combat.encounterId==='PUNISHMENT_KNIGHT_DISPUTE'?'持普通短棍的迪恩':s.combat.encounterId==='MENTOR_DISORDER_DISPUTE'?'持普通短棍的里斯':s.combat.encounterId==='WINNER_DISPUTE'?'持普通短棍的奥德里':s.combat.encounterId==='WRAITH_DISPUTE'?'持普通短棍的贝文':s.combat.encounterId==='DESIRE_APOSTLE_DISPUTE'?'持普通短棍的费兰':s.combat.encounterId==='SHEPHERD_DISPUTE'?'持普通短棍的埃尔顿':s.combat.encounterId==='STAR_MYSTIC_DISPUTE'?'持普通短棍的布莱斯':s.combat.encounterId==='PAIN_DISPUTE'?'持普通短棍的奥伦':s.combat.encounterId==='GUARDIAN_DISPUTE'?'持普通短棍的埃德温':s.combat.encounterId==='DREAM_STEALER_DISPUTE'?'持普通短棍的马洛':s.combat.encounterId==='TRAVELER_DISPUTE'?'持普通短棍的贝兰':s.combat.encounterId==='GATEKEEPER_DISPUTE'?'持普通短棍的洛克':s.combat.encounterId==='PRIEST_OF_LIGHT_DISPUTE'?'持普通短棍的凯恩':s.combat.encounterId==='OCEAN_SINGER_DISPUTE'?'持普通短棍的布伦':s.combat.encounterId==='MYSTICISM_MAGISTER_DISPUTE'?'持普通短棍的罗文':s.combat.encounterId==='SPIRIT_WARLOCK_DISPUTE'?'持普通短棍的奥林':s.combat.encounterId==='CRIMSON_SCHOLAR_DISPUTE'?'持普通短棍的西德':s.combat.encounterId==='ASTRONOMER_DISPUTE'?'持普通短棍的霍伯':s.combat.encounterId==='DREAMWALKER_DISPUTE'?'清醒持棍的马斯':s.combat.encounterId==='REAPER_DISPUTE'?'持普通短棍的维克':s.combat.encounterId==='MARIONETTIST_DISPUTE'?'持自己原短棍的多恩':s.combat.encounterId==='BIOLOGIST_DISPUTE'?'持普通短棍的洛恩':s.combat.encounterId==='JUDGE_DISPUTE'?'持普通短棍的埃文':s.combat.encounterId==='CORRUPTION_BARON_DISPUTE'?'持普通短棍的沃恩':s.combat.encounterId==='CALAMITY_PRIEST_DISPUTE'?'持普通短棍的杜兰':s.combat.encounterId==='ZOMBIE_DISPUTE'?'持普通短棍的里德':s.combat.encounterId==='DEMON_DISPUTE'?'持普通短棍的莫顿':s.combat.encounterId==='ROSE_BISHOP_DISPUTE'?'持普通短棍的维恩':s.combat.encounterId==='SCROLL_PROFESSOR_DISPUTE'?'持普通短棍的卡尔':s.combat.encounterId==='PLEASURE_DISPUTE'?'持普通短棍的马伦':s.combat.encounterId==='DAWN_PALADIN_DISPUTE'?'持普通短棍的罗尔德':s.combat.encounterId==='FIRE_THIEF_DISPUTE'?'持原短棍的歌颂者贝林':s.combat.encounterId==='RECORDER_DISPUTE'?'持普通短棍的弥尔':s.combat.encounterId==='SPIRIT_GUIDE_DISPUTE'?'持普通短棍的迪恩':s.combat.encounterId==='NOTARY_DISPUTE'?'持普通短棍的布伦':s.combat.encounterId==='WIND_BLESSED_DISPUTE'?'持普通短棍的鲁恩':s.combat.encounterId==='POLYMATH_DISPUTE'?'持普通短棍的伊恩':s.combat.encounterId==='SOOTHER_DISPUTE'?'持普通短棍的阿兰':s.combat.encounterId==='POTION_PROFESSOR_DISPUTE'?'持普通短棍的艾文':s.combat.encounterId==='ARTISAN_DISPUTE'?'持普通短棍的德文':s.combat.encounterId==='HYPNOTIST_DISPUTE'?'持普通短棍的罗温':s.combat.encounterId==='CONSPIRATOR_DISPUTE'?'持普通短棍的奥伦':s.combat.encounterId==='FACELESS_DISPUTE'?'持普通短棍的达恩':s.combat.encounterId==='MARAUDER_DISPUTE'?(marauderEnemyArmed(s)?'持原短棍的塞蒙':'徒手塞蒙'):s.combat.encounterId==='NIGHTMARE_DISPUTE'?'持短棍的凯尔':s.combat.encounterId==='MIDNIGHT_DISPUTE'?'持短棍的贺恩':s.combat.encounterId==='SLEEPLESS_WATCH'?'持短棍的拉夫':s.combat.encounterId==='VAMPIRE_DISPUTE'?'持短棍的布鲁克':s.combat.encounterId==='PSYCHOLOGIST_DISPUTE'?'持短棍的布莱斯':s.combat.encounterId==='PYROMANIAC_DISPUTE'?'持短棍的哈恩':s.combat.encounterId==='MAGICIAN_DISPUTE'?'堵住剧场后巷的莫里':s.combat.encounterId==='PROVOKER_DISPUTE'?'持短棍的搬运头领威斯':s.combat.encounterId==='HUNTER_CARGO'?'持短棍的拦路者':s.combat.encounterId==='CLOWN_RESCUE'?'拦路的短棍勒索者':'持短棍的携铃者',enemyHealth:s.combat.enemyHealth,...(s.progression.pathwayId==='audience'&&(s.progression.sequence===7||s.progression.sequence===6)?{enemyMind:s.combat.enemyMind}:{}),enemyStatus:s.combat.enemyStatus,playerCountWheel:playerCountWheel(s),enemyCountWheel:(s.combat.encounterId==='FIRE_THIEF_DISPUTE'?BARD_COUNT_WHEEL:ORDINARY_COUNT_WHEEL).map(x=>({...x})),playerAbilityWheel:playerAbilityWheel(s,null),playerAbilityWheels:{ATTACK:playerAbilityWheel(s,'ATTACK'),DEFEND:playerAbilityWheel(s,'DEFEND'),CONTROL:playerAbilityWheel(s,'CONTROL'),PREPARE:playerAbilityWheel(s,'PREPARE'),RETREAT:[]},enemyAbilityWheel:s.combat.encounterId==='FIRE_THIEF_DISPUTE'?bardAbilityWheel(null):ordinaryAbilityWheel(marauderEnemyArmed(s),null),consequenceWeights:nextLosingInjuryWeights(s),stances:[{id:'ATTACK' as const,label:'进攻',description:'普通打击权重×1.25，再归一化'},{id:'DEFEND' as const,label:'防守',description:'格挡护身权重×1.25，再归一化'},...(s.progression.pathwayId!==null?[{id:'CONTROL' as const,label:'辨识',description:s.progression.pathwayId==='mother'?'土壤、时令与实际照护需要核实和等待，收获有限，不凭空造粮或改变天气。':s.progression.pathwayId==='justiciar'?'权威与精神影响可能被抵抗，线索与供述仍须核实，不自动获得公职或确定真相。':s.progression.pathwayId==='black-emperor'?'读懂规则与论据，协商仍保留本人选择，不能改写事实或强迫同意。':s.progression.pathwayId==='wheel'?'偶发片段与当前事实分开，不能任意读取未来，也不能控制好运。':s.progression.pathwayId==='chained'?'身体与知觉服务于眼前事实；随手物品必须实际持有，不免伤、不狂化、不狼变。':s.progression.pathwayId==='abyss'?'只依眼前动作作有限警觉与实际身体应对，不预知未来致命危险、不免毒或生成恶魔法术。':s.progression.pathwayId==='hanged-man'?'本场原对手为普通人，没有已知隐秘存在或仪式现场；感知回退普通防御，准备0贡献，不造血肉或神谕。':s.progression.pathwayId==='hermit'?(s.progression.sequence===7?'实际学过的G教学术才可施用；不足灵性回退身体/工具，本场不凭空生成卷轴或高阶再现。':'眼前有限灵视与普通身体、工具；本场没有预先备好的仪式来源，准备不凭空召来力量。'):s.progression.pathwayId==='demoness'?(s.progression.sequence===6?'丝线须先实际预备再接触对抗，只限制下一次符合条件的身体动作；黑焰、冰霜与原镜片各有真实成本，魅惑不改变本人同意。':'本场没有已登记暗影掩护，用普通脚步应对；爆发占实际一次行动，非必杀。'):s.progression.pathwayId==='warrior'?(s.progression.sequence===6?'晨曦剑、光甲与风暴须实际凝成并支付成本；本场普通人没有太阳易伤或幻象，不凭空提供破幻目标，不替同伴承担伤害。':`使用本人实际身体、原武器与普通脚步；准备不赠攻击，不生成光甲或免疫恐惧。${s.progression.sequence===7?'弱点两段需要真实持械与本场已见动作；当前'+(s.combat.weaponmasterWeakPoint?.prepared?'已标记，后续再抽中才尝试高优势':'尚未标记')+'，不直接判死。':''}`):s.progression.pathwayId==='error'?(s.progression.sequence===6?'只对当前实际已见能力尝试暂时窃取；己方可用与原主失能是两个有限窗口，不会永久学会或偷取想法。':([8,7].includes(s.progression.sequence!)?`${s.progression.sequence===7?'解读本轮已见的真实动作，不预读未来或复制能力。':''}依据本场已见动作误导普通敌人。两次准备完成后转用其剩余一次机会，并使下一次实际动作失效；每次效果有条件和成本，不增加总机会。当前：${s.combat.swindlerDeceit?.prepared?'已准备':'未准备'}，${s.combat.swindlerDeceit?.skipNext?'等待敌方下一实际动作':'暂无待生效误导'}。` :s.combat.encounterId==='MARAUDER_DISPUTE'?'控制槽尝试取走眼前原短棍：成功0即时贡献，之后双方使用当前实物；失败可能留下本回合一次反击窗口':'以当前身体敏捷与持握原工具应对；本场无登记可窃取原件，普通牵制不偷取抽象能力或资源')):s.progression.pathwayId==='door'?(s.progression.sequence===6?'亲见记录的原份额须明确选择，首次抽中释放槽才使用，随后原记录耗尽；未抽中或保留不消耗。没有已记录来源不生成能力或旅行。':(s.progression.sequence===8||s.progression.sequence===7)?'低威力戏法作用于实际对象，耗费灵性，不保证控制；没有合格原门障时不凭空穿门取消攻击':'当前首案没有可穿行的原门障，开门不凭空取消敌方攻击；用实际身体、原工具与普通退路行动'):s.progression.pathwayId==='death'?(s.progression.sequence===6?'亡者之语有限作用于当前普通敌人的灵体，可被抵抗；不带信使作战、不凭空召军或下放冥界门。':'尸体特质不免疫普通武器，死亡之眼仅对适用的不死/灵界生物识别弱点；当前普通人以真实身体、工具和现场牵制应对'):s.progression.pathwayId==='sun'?(s.progression.sequence===6?'公证只有限增强实际施用的既有能力，准备本身0贡献；不把未签名的对手自动绑定，不将普通人标作太阳易伤。':(s.progression.sequence===8||s.progression.sequence===7)?'有限日光与金焰只对当前实际对象结算，普通敌人没有太阳易伤，不扫描秘密或消除全部污染':'出声歌颂鼓舞自己并稳定士气，不强迫敌人服从、不治疗伤势或凭空获得光焰'):s.progression.pathwayId==='tyrant'?(s.progression.sequence===6?'有限风刃与控风需要当前目标和灵性，继承水缚可抵抗；短距飞行不自动替代战斗撤退。':s.progression.sequence===7?'对本场需要呼吸的原敌有限用水；水缚可被消耗或抵抗，不改变整片场景或额外增加行动':'沿本人实际体魄、平衡与持用工具应对；陆地不凭空变水域，幻鳞不等于刀枪不入'):s.progression.pathwayId==='white-tower'?'只整理当前已见的普通动作，不复制能力或读取未来；缺仪式准备按普通规则应对':s.progression.pathwayId==='darkness'?(s.progression.sequence===7?'先逐步影响当前清醒目标，控梦期间本体不能移动且可能暴露':s.progression.sequence===8?'在旁人已离开的真实声场有限吟唱，可能被抵抗或打断，不入梦':'在已确认的夜间观察当前危险，不窥梦、不以诗歌控制他人'):s.progression.pathwayId==='moon'?(s.progression.sequence===7?'仅对本场已亲见的影子和空间运用短缚、翼步；不删除敌人行动或保证控制':'依靠当前身体与普通装备；药剂需要独立准备，不能在此凭空治疗或下毒'):s.progression.pathwayId==='paragon'?(s.progression.sequence===7?'本场没有可供鉴定的超凡原物，依靠普通身体与实际装备，不复制敌方技能':'依靠普通身体和实际装备，没有读心、灵视或非凡鉴定效果'):s.progression.pathwayId==='audience'?(s.progression.sequence===7?'依当前真实对象运用精神影响；不保证控制或消除污染':s.progression.sequence===8?'读取当前浅层想法，不强迫行动或搜索记忆':'观察眼前动作并谨慎推断，不读取内心或控制对方'):s.progression.pathwayId==='hunter'&&s.progression.sequence===5?'弱点观察实际耗2灵性并保留短暂窗口；精确打击只消费当前窗口一次，不必杀、不无视所有防御。':s.progression.pathwayId==='hunter'&&s.progression.sequence===8?'依据实际人物情报挑衅，可能招致更积极的进攻':s.progression.pathwayId==='hunter'?'倾向当前威胁下的猎杀直觉；不控制他人心智':'倾向灵视与直觉；没有合格来源时不产生额外效果'},{id:'PREPARE' as const,label:'观察',description:'调整注意；不附送攻击或未知事实'}]:[]),{id:'RETREAT' as const,label:'尝试撤退',description:'本回合全部行动用于撤离，失败仍可能受伤或死亡'}],lastRound:publicCombatRound(s.combat.lastRound)}:null;
   if(combat&&s.combat?.encounterId==='BIZARRO_RITUAL'){const detail=projectBizarroCombat(s);if(detail){combat.title='原钟舞台 · 帷幕兽';combat.enemyName=detail.enemyName;combat.enemyCountWheel=BIZARRO_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=BIZARRO_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{bizarro:detail});}}
   if(combat&&s.combat?.encounterId==='IRON_BLOOD_DISPUTE'){const detail=projectIronBloodCombat(s);combat.title='铁血骑士 · 原石院冲突';combat.enemyName=detail.enemyName;Object.assign(combat,{ironBlood:detail});}
-  if(combat&&s.combat?.encounterId==='MANIPULATOR_DISPUTE'){const d=projectManipulatorCombat(s);combat.title='操纵师 · 原仓院冲突';combat.enemyName=d.enemyName;Object.assign(combat,{manipulator:{mentalPlague:d.mentalPlague,mentalDefence:d.mentalDefence,summary:d.summary}});}
+  if(combat&&s.combat?.encounterId==='MANIPULATOR_DISPUTE'){const d=projectManipulatorCombat(audienceProjectionView);combat.title='操纵师 · 原仓院冲突';combat.enemyName=d.enemyName;Object.assign(combat,{manipulator:{mentalPlague:d.mentalPlague,mentalDefence:d.mentalDefence,summary:d.summary}});}
   if(combat&&s.combat?.encounterId==='ALCHEMIST_DISPUTE'){const f=s.alchemist.life.creations.find(x=>x.id==='AL4-FRAME-1'&&x.location==='YARD');combat.title='炼金术士 · 原工房院落';combat.enemyName='奥斯里克';Object.assign(combat,{alchemist:{creationId:f?.id??null,charge:f?.charge??0,durability:f?.durability??0,active:f?.active??false,summary:f?'同一本人自制原护架；战中消耗持续保留，不能自动充能或修复。':'当前没有实际在场原护架，相关能力只能普通回退。'}});}
   if(combat&&s.combat?.encounterId==='PROPHET_DISPUTE'){combat.title='预言家 · 原档案院';combat.enemyName='哈罗德·布伦特';Object.assign(combat,{prophet:projectProphetCombat(s)});}
   if(combat&&s.combat?.encounterId==='NIGHTWATCHER_DISPUTE'){combat.title='守夜人 · 原练习小院';combat.enemyName='布拉姆·洛';Object.assign(combat,{nightwatcher:projectNightwatcherCombat(s)});}
@@ -1480,11 +2308,11 @@ function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoo
   if(combat&&s.combat?.encounterId==='PUPPET_DISPUTE'){combat.title='木偶 · 原院交战';combat.enemyName=projectPuppetCombat(s).enemyName;Object.assign(combat,{puppet:projectPuppetCombat(s)});}
   if(combat&&s.combat?.encounterId==='MISFORTUNE_MAGE_DISPUTE'){combat.title='厄运法师 · 原院交战';combat.enemyName=projectMisfortuneMageCombat(s).enemyName;Object.assign(combat,{misfortuneMage:projectMisfortuneMageCombat(s)});}
   if(combat&&s.combat?.encounterId==='FALLEN_EARL_DISPUTE'){combat.title='堕落伯爵 · 原院交战';combat.enemyName=projectFallenEarlCombat(s).enemyName;Object.assign(combat,{fallenEarl:projectFallenEarlCombat(s)});}
-  if(combat&&s.combat?.encounterId==='IMPERATIVE_MAGE_DISPUTE'){combat.title='律令法师 · 原院交战';combat.enemyName=projectImperativeMageCombat(s).enemyName;Object.assign(combat,{imperativeMage:projectImperativeMageCombat(s)});}
-  if(combat&&s.combat?.encounterId==='ANCIENT_ALCHEMIST_DISPUTE'){combat.title='古代炼金师 · 原院交战';combat.enemyName=projectAncientAlchemistCombat(s).enemyName;Object.assign(combat,{ancientAlchemist:projectAncientAlchemistCombat(s)});}
+  if(combat&&s.combat?.encounterId==='IMPERATIVE_MAGE_DISPUTE'){combat.title='律令法师 · 原院交战';combat.enemyName=projectImperativeMageCombat(s).enemyName;Object.assign(combat,{imperativeMage:publicImperativeMageCombat(s)});}
+  if(combat&&s.combat?.encounterId==='ANCIENT_ALCHEMIST_DISPUTE'){combat.title='古代炼金师 · 原院交战';combat.enemyName=projectAncientAlchemistCombat(s).enemyName;Object.assign(combat,{ancientAlchemist:publicAncientAlchemistCombat(s)});}
   if(combat&&(s.combat?.encounterId==='SILVER_KNIGHT_HUNT'||s.combat?.encounterId==='SILVER_KNIGHT_DISPUTE')){combat.title=s.combat.encounterId==='SILVER_KNIGHT_HUNT'?'银骑士仪式G · 本人亲猎':'银骑士G · 原院交战';combat.enemyName=projectSilverKnightCombat(s).enemyName;combat.enemyCountWheel=SILVER_KNIGHT_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=SILVER_KNIGHT_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{silverKnight:projectSilverKnightCombat(s)});}
-  if(combat&&s.combat?.encounterId==='COFFIN_BEARER_DISPUTE'){combat.title='抬棺人G · 原庭院交战';combat.enemyName=projectCoffinBearerCombat(s).enemyName;Object.assign(combat,{coffinBearer:projectCoffinBearerCombat(s)});}
-  if(combat&&s.combat?.encounterId==='CHAOS_HUNTER_DISPUTE'){combat.title='混乱猎手G · 原庭院交战';combat.enemyName=projectChaosHunterCombat(s).enemyName;Object.assign(combat,{chaosHunter:projectChaosHunterCombat(s)});}
+  if(combat&&s.combat?.encounterId==='COFFIN_BEARER_DISPUTE'){combat.title='抬棺人G · 原庭院交战';combat.enemyName=projectCoffinBearerCombat(s).enemyName;Object.assign(combat,{coffinBearer:publicCoffinBearerCombat(s)});}
+  if(combat&&s.combat?.encounterId==='CHAOS_HUNTER_DISPUTE'){combat.title='混乱猎手G · 原庭院交战';combat.enemyName=projectChaosHunterCombat(s).enemyName;Object.assign(combat,{chaosHunter:publicChaosHunterCombat(s)});}
   if(combat&&s.combat?.encounterId==='FRENZY_MAGE_DISPUTE'){combat.title='狂乱法师G · 原庭院交战';combat.enemyName=projectFrenzyMageCombat(s).enemyName;Object.assign(combat,{frenzyMage:projectFrenzyMageCombat(s)});}
   if(combat&&s.combat?.encounterId==='CHAOS_WALKER_DISPUTE'){combat.title='候选混乱行者G · 原庭院交战';combat.enemyName=projectChaosWalkerCombat(s).enemyName;Object.assign(combat,{chaosWalker:projectChaosWalkerCombat(s)});}
   if(combat&&s.combat?.encounterId==='SILENT_DISCIPLE_DISPUTE'){combat.title='沉默门徒G · 原庭院交战';combat.enemyName=projectSilentDiscipleCombat(s).enemyName;Object.assign(combat,{silentDisciple:projectSilentDiscipleCombat(s)});}
@@ -1501,7 +2329,7 @@ function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoo
   if(combat&&s.combat?.encounterId==='FEAR_BISHOP_DISPUTE'){combat.title='恐惧主教 · 原库庭交战';combat.enemyName=projectFearBishopCombat(s).enemyName;combat.enemyCountWheel=FEAR_BISHOP_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=FEAR_BISHOP_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{fearBishop:projectFearBishopCombat(s)});}
   if(combat&&s.combat?.encounterId==='SUMMONING_MASTER_DISPUTE'){combat.title='召唤大师 · 原工坊石院交战';combat.enemyName=projectSummoningMasterCombat(s).enemyName;combat.enemyCountWheel=SUMMONING_MASTER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=SUMMONING_MASTER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{summoningMaster:projectSummoningMasterCombat(s)});}
   if(combat&&s.combat?.encounterId==='ARCANE_SCHOLAR_DISPUTE'){combat.title='奥秘学者 · 原工坊石院交战';combat.enemyName=projectArcaneScholarCombat(s).enemyName;combat.enemyCountWheel=ARCANE_SCHOLAR_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=ARCANE_SCHOLAR_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{arcaneScholar:projectArcaneScholarCombat(s)});}
-  if(combat&&s.combat?.encounterId==='DREAM_WEAVER_DISPUTE'){combat.title='织梦人 · 原阅览处外院交战';combat.enemyName=projectDreamWeaverCombat(s).enemyName;combat.enemyCountWheel=DREAM_WEAVER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=DREAM_WEAVER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{dreamWeaver:projectDreamWeaverCombat(s)});}
+  if(combat&&s.combat?.encounterId==='DREAM_WEAVER_DISPUTE'){combat.title='织梦人 · 原阅览处外院交战';combat.enemyName=projectDreamWeaverCombat(audienceProjectionView).enemyName;combat.enemyCountWheel=DREAM_WEAVER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=DREAM_WEAVER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{dreamWeaver:projectDreamWeaverCombat(audienceProjectionView)});}
   if(combat&&s.combat?.encounterId==='WAR_BISHOP_DISPUTE'){combat.title='战争主教 · 原队伍与石院交战';combat.enemyName=projectWarBishopCombat(s).enemyName;combat.enemyCountWheel=WAR_BISHOP_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=WAR_BISHOP_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{warBishop:projectWarBishopCombat(s)});}
   if(combat&&s.combat?.encounterId==='PALE_EMPEROR_DISPUTE'){combat.title='苍白皇帝 · 当代附廊外前庭';combat.enemyName=projectPaleEmperorCombat(s).enemyName;combat.enemyCountWheel=PALE_EMPEROR_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=PALE_EMPEROR_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,paleEmperor:projectPaleEmperorCombat(s)});}
   if(combat&&s.combat?.encounterId==='PURE_WHITE_ANGEL_DISPUTE'){combat.title='纯白天使 · 采光廊外前庭';combat.enemyName=projectPureWhiteAngelCombat(s).enemyName;combat.enemyCountWheel=PURE_WHITE_ANGEL_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=PURE_WHITE_ANGEL_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,pureWhiteAngel:projectPureWhiteAngelCombat(s)});}
@@ -1520,13 +2348,13 @@ function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoo
   if(combat&&s.combat?.encounterId==='STAR_KEY_DISPUTE'){combat.title='星之匙 · 通行室外前庭';combat.enemyName=projectStarKeyCombat(s).enemyName;combat.enemyCountWheel=STAR_KEY_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=STAR_KEY_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,starKey:projectStarKeyCombat(s)});}
   if(combat&&s.combat?.encounterId==='ALL_KNOWING_EYE_DISPUTE'){combat.title='全知之眼 · 阅览处外院';combat.enemyName=projectAllKnowingEyeCombat(s).enemyName;combat.enemyCountWheel=ALL_KNOWING_EYE_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=ALL_KNOWING_EYE_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,allKnowingEye:projectAllKnowingEyeCombat(s)});}
   if(combat&&s.combat?.encounterId==='MISFORTUNE_KNIGHT_DISPUTE'){combat.title='厄难骑士 · 原院外石坪';combat.enemyName=projectMisfortuneKnightCombat(s).enemyName;combat.enemyCountWheel=MISFORTUNE_KNIGHT_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=MISFORTUNE_KNIGHT_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,misfortuneKnight:projectMisfortuneKnightCombat(s)});}
-  if(combat&&s.combat?.encounterId==='BEAUTY_GODDESS_DISPUTE'){combat.title='美神 · 玻璃廊外石坪';combat.enemyName=projectBeautyGoddessCombat(s).enemyName;combat.enemyCountWheel=BEAUTY_GODDESS_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=BEAUTY_GODDESS_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,beautyGoddess:projectBeautyGoddessCombat(s)});}
+  if(combat&&s.combat?.encounterId==='BEAUTY_GODDESS_DISPUTE'){combat.title='美神 · 玻璃廊外石坪';combat.enemyName=projectBeautyGoddessPublicCombat(s).enemyName;combat.enemyCountWheel=BEAUTY_GODDESS_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=BEAUTY_GODDESS_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,beautyGoddess:projectBeautyGoddessPublicCombat(s)});}
   if(combat&&s.combat?.encounterId==='CIVILIZATION_ENLIGHTENER_DISPUTE'){combat.title='文明启蒙者 · 工坊外石院';combat.enemyName=projectCivilizationEnlightenerCombat(s).enemyName;combat.enemyCountWheel=CIVILIZATION_ENLIGHTENER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=CIVILIZATION_ENLIGHTENER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,civilizationEnlightener:projectCivilizationEnlightenerCombat(s)});}
-  if(combat&&s.combat?.encounterId==='WRITER_DISPUTE'){combat.title='作家 · 阅览处外石院';combat.enemyName=projectWriterCombat(s).enemyName;combat.enemyCountWheel=WRITER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=WRITER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,writer:projectWriterCombat(s)});}
+  if(combat&&s.combat?.encounterId==='WRITER_DISPUTE'){combat.title='作家 · 阅览处外石院';combat.enemyName=projectWriterCombat(audienceProjectionView).enemyName;combat.enemyCountWheel=WRITER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=WRITER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,writer:projectWriterCombat(audienceProjectionView)});}
   if(combat&&s.combat?.encounterId==='CONQUEROR_DISPUTE'){combat.title='征服者 · 原院外石坪';combat.enemyName=projectConquerorCombat(s).enemyName;combat.enemyCountWheel=CONQUEROR_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=CONQUEROR_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{enemyMind:s.combat.enemyMind,conqueror:projectConquerorCombat(s)});}
   if(combat&&s.combat?.encounterId==='ATTENDANT_MYSTERIES_DISPUTE'){combat.title='诡秘侍者 · 原工坊外空地';combat.enemyName=projectAttendantMysteriesCombat(s).enemyName;combat.enemyCountWheel=ATTENDANT_MYSTERIES_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=ATTENDANT_MYSTERIES_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{attendantMysteries:projectAttendantMysteriesCombat(s)});}
-  if(combat&&s.combat?.encounterId==='BARREN_MATRIARCH_DISPUTE'){combat.title='荒芜主母 · 原苗圃交接间';combat.enemyName=projectBarrenMatriarchCombat(s).enemyName;combat.enemyCountWheel=BARREN_MATRIARCH_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=BARREN_MATRIARCH_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{barrenMatriarch:projectBarrenMatriarchCombat(s)});}
-  if(combat&&s.combat?.encounterId==='BALANCER_DISPUTE'){combat.title='平衡者 · 原净空标线演练房';combat.enemyName=projectBalancerCombat(s).enemyName;combat.enemyCountWheel=BALANCER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=BALANCER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{balancer:projectBalancerCombat(s)});}
+  if(combat&&s.combat?.encounterId==='BARREN_MATRIARCH_DISPUTE'){combat.title='荒芜主母 · 原苗圃交接间';combat.enemyName=projectBarrenMatriarchCombat(s).enemyName;combat.enemyCountWheel=BARREN_MATRIARCH_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=BARREN_MATRIARCH_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{barrenMatriarch:publicBarrenMatriarchCombat(s)});}
+  if(combat&&s.combat?.encounterId==='BALANCER_DISPUTE'){combat.title='平衡者 · 原净空标线演练房';combat.enemyName=projectBalancerCombat(s).enemyName;combat.enemyCountWheel=BALANCER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=BALANCER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{balancer:publicBalancerCombat(s)});}
   if(combat&&s.combat?.encounterId==='ENTROPY_DUKE_DISPUTE'){combat.title='熵之公爵 · 原投递间';combat.enemyName=projectEntropyDukeCombat(s).enemyName;combat.enemyCountWheel=ENTROPY_DUKE_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=ENTROPY_DUKE_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{entropyDuke:projectEntropyDukeCombat(s)});}
   if(combat&&s.combat?.encounterId==='FATE_PROPHET_DISPUTE'){combat.title='先知 · 原机械工房';combat.enemyName=projectFateProphetCombat(s).enemyName;combat.enemyCountWheel=FATE_PROPHET_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=FATE_PROPHET_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{fateProphet:projectFateProphetCombat(s)});}
   if(combat&&s.combat?.encounterId==='ANCIENT_EVIL_DISPUTE'){combat.title='古代邪物 · 原安静房';combat.enemyName=projectAncientEvilCombat(s).enemyName;combat.enemyCountWheel=ANCIENT_EVIL_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=ANCIENT_EVIL_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{ancientEvil:projectAncientEvilCombat(s)});}
@@ -1542,226 +2370,226 @@ function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoo
   if(combat&&s.combat?.encounterId==='CATASTROPHE_DISPUTE'){combat.title='天灾 · 原小湾';combat.enemyName=projectCatastropheCombat(s).enemyName;combat.enemyCountWheel=CATASTROPHE_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=CATASTROPHE_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{catastrophe:projectCatastropheCombat(s)});}
   if(combat&&s.combat?.encounterId==='WISDOM_ANGEL_DISPUTE'){combat.title='智慧天使候选G · 原资料庭';combat.enemyName=projectWisdomAngelCombat(s).enemyName;combat.enemyCountWheel=WISDOM_ANGEL_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=WISDOM_ANGEL_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{wisdomAngel:projectWisdomAngelCombat(s)});}
   if(combat&&s.combat?.encounterId==='CONCEALMENT_SERVANT_DISPUTE'){combat.title='隐秘之仆候选 · 原门庭';combat.enemyName=projectConcealmentServantCombat(s).enemyName;combat.enemyCountWheel=CONCEALMENT_SERVANT_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=CONCEALMENT_SERVANT_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{concealmentServant:projectConcealmentServantCombat(s)});}
-  if(combat&&s.combat?.encounterId==='LIFE_GIVER_DISPUTE'){combat.title='创生者 · 原小院';combat.enemyName=projectLifeGiverCombat(s).enemyName;combat.enemyCountWheel=LIFE_GIVER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=LIFE_GIVER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{lifeGiver:projectLifeGiverCombat(s)});}
+  if(combat&&s.combat?.encounterId==='LIFE_GIVER_DISPUTE'){const lifeGiver=publicLifeGiverCombat(s);combat.title='创生者 · 原小院';combat.enemyName=lifeGiver.enemyName;combat.enemyCountWheel=LIFE_GIVER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=LIFE_GIVER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{lifeGiver});}
   if(combat&&s.combat?.encounterId==='KNOWLEDGE_MENTOR_DISPUTE'){combat.title='知识导师候选 · 原工院';combat.enemyName=projectKnowledgeMentorCombat(s).enemyName;combat.enemyCountWheel=KNOWLEDGE_MENTOR_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=KNOWLEDGE_MENTOR_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{knowledgeMentor:projectKnowledgeMentorCombat(s)});}
-  if(combat&&s.combat?.encounterId==='DISCERNER_DISPUTE'){combat.title='洞察者 · 原核验院';combat.enemyName=projectDiscernerCombat(s).enemyName;combat.enemyCountWheel=DISCERNER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=DISCERNER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{discerner:projectDiscernerCombat(s)});}
+  if(combat&&s.combat?.encounterId==='DISCERNER_DISPUTE'){combat.title='洞察者 · 原核验院';combat.enemyName=projectDiscernerCombat(audienceProjectionView).enemyName;combat.enemyCountWheel=DISCERNER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=DISCERNER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{discerner:projectDiscernerCombat(audienceProjectionView)});}
   if(combat&&s.combat?.encounterId==='WEATHER_WARLOCK_DISPUTE'){combat.title='天气术士 · 原蓄水院';combat.enemyName=projectWeatherWarlockCombat(s).enemyName;combat.enemyCountWheel=WEATHER_WARLOCK_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=WEATHER_WARLOCK_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{weatherWarlock:projectWeatherWarlockCombat(s)});}
   if(combat&&s.combat?.encounterId==='MIRACLE_WORKER_DISPUTE'){combat.title='奇迹师 · 原石场交战';combat.enemyName=projectMiracleWorkerCombat(s).enemyName;combat.enemyCountWheel=MIRACLE_WORKER_ENEMY_COUNT_WHEEL.map(x=>({...x}));combat.enemyAbilityWheel=MIRACLE_WORKER_ENEMY_ABILITY_WHEEL.map(x=>({...x}));Object.assign(combat,{miracleWorker:projectMiracleWorkerCombat(s)});}
   if(combat&&s.combat?.encounterId==='ANCIENT_SCHOLAR_DISPUTE'){combat.title='古代学者 · 后世原院交战';combat.enemyName=projectAncientScholarCombat(s).enemyName;Object.assign(combat,{ancientScholar:projectAncientScholarCombat(s)});}
-  const hunter=projectHunter(s);hunter.actions.push(...hunterAdventureActions(s));if(s.progression.pathwayId==='hunter')hunter.story=HUNTER_CARGO_STORY;
+  const hunter=projectHunter(hunterProjectionView);hunter.actions.push(...hunterAdventureActions(hunterProjectionView));if(s.progression.pathwayId==='hunter')hunter.story=HUNTER_CARGO_STORY;
   const clown=projectClown(divinerProjectionView),seer=projectSeer(divinerProjectionView);clown.actions.push(...clownAdventureActions(divinerProjectionView));if(s.progression.pathwayId==='diviner'&&s.progression.sequence===8){clown.abilities=[...seer.abilities,...clown.abilities];clown.story=s.clown.rescue.status==='AVAILABLE'?CLOWN_RESCUE_STORY:s.clown.rescue.status==='RESCUED'?'艾尔西已带着原包裹离开。护送结果保留，不会重新生成勒索者或奖励。':'这次护送已有记录，原包裹仍归原主人。';}
-  const provoker=projectProvoker(s);provoker.actions.push(...provokerAdventureActions(s));provoker.cases=provokerAdventureCases(s);if(s.progression.pathwayId==='hunter'&&s.progression.sequence===8){provoker.abilities=[...hunter.abilities,...provoker.abilities];provoker.story=PROVOKER_STORY;}
-  const audience=projectAudience(s);audience.actions.push(...audienceSocialActions(s));audience.scenes=audienceSocialScenes(s);
-  const mindreader=projectMindreader(s);mindreader.actions.push(...mindreaderSocialActions(s));mindreader.scenes=mindreaderScenes(s);if(s.progression.pathwayId==='audience'&&s.progression.sequence===8)mindreader.abilities=[...audience.abilities,...mindreader.abilities];
-  const savant=projectSavant(s);savant.actions.push(...savantCraftActions(s));savant.projects=savantProjects(s);
-  const archaeologist=projectArchaeologist(s);archaeologist.actions.push(...archaeologistActions(s));archaeologist.sites=archaeologistSites(s);if(s.progression.pathwayId==='paragon'&&s.progression.sequence===8)archaeologist.abilities=[...savant.abilities,...archaeologist.abilities];
-  const apothecary=projectApothecary(s);apothecary.actions.push(...apothecaryClinicActions(s));apothecary.cases=apothecaryCases(s);if(s.progression.pathwayId==='moon'&&s.progression.sequence!==9)apothecary.actions=apothecary.actions.filter(a=>['BUY_SUPPLIES','PREPARE_MEDICINE','USE_HEALING'].includes(a.command.type));
-  const tamer=projectTamer(s);tamer.actions.push(...tamerActions(s));tamer.animals=tamerAnimals(s);tamer.companionName=tamerCompanionName(s);if(s.progression.pathwayId==='moon'&&s.progression.sequence===8)tamer.abilities=[...apothecary.abilities,...tamer.abilities];
+  const provoker=projectProvoker(hunterProjectionView);provoker.actions.push(...provokerAdventureActions(hunterProjectionView));provoker.cases=provokerAdventureCases(hunterProjectionView);if(s.progression.pathwayId==='hunter'&&s.progression.sequence===8){provoker.abilities=[...hunter.abilities,...provoker.abilities];provoker.story=PROVOKER_STORY;}
+  const audience=projectAudience(audienceProjectionView);audience.actions.push(...audienceSocialActions(audienceProjectionView));audience.scenes=audienceSocialScenes(audienceProjectionView);
+  const mindreader=projectMindreader(audienceProjectionView);mindreader.actions.push(...mindreaderSocialActions(audienceProjectionView));mindreader.scenes=mindreaderScenes(audienceProjectionView);if(s.progression.pathwayId==='audience'&&s.progression.sequence===8)mindreader.abilities=[...audience.abilities,...mindreader.abilities];
+  const savant=projectSavant(paragonProjectionView);savant.actions.push(...savantCraftActions(paragonProjectionView));savant.projects=savantProjects(paragonProjectionView);
+  const archaeologist=projectArchaeologist(paragonProjectionView);archaeologist.actions.push(...archaeologistActions(paragonProjectionView));archaeologist.sites=archaeologistSites(paragonProjectionView);if(paragonProjectionView.progression.pathwayId==='paragon'&&paragonProjectionView.progression.sequence===8)archaeologist.abilities=[...savant.abilities,...archaeologist.abilities];
+  const apothecary=projectApothecary(moonS1ProjectionView);apothecary.actions.push(...apothecaryClinicActions(moonS1ProjectionView));apothecary.cases=apothecaryCases(moonS1ProjectionView);if(moonS1ProjectionView.progression.pathwayId==='moon'&&moonS1ProjectionView.progression.sequence!==9)apothecary.actions=apothecary.actions.filter(a=>['BUY_SUPPLIES','PREPARE_MEDICINE','USE_HEALING'].includes(a.command.type));
+  const tamer=projectTamer(moonS1ProjectionView);tamer.actions.push(...tamerActions(moonS1ProjectionView));tamer.animals=tamerAnimals(moonS1ProjectionView);tamer.companionName=tamerCompanionName(moonS1ProjectionView);if(moonS1ProjectionView.progression.pathwayId==='moon'&&moonS1ProjectionView.progression.sequence===8)tamer.abilities=[...apothecary.abilities,...tamer.abilities];
   const town=projectTown(s);appendPathwayItems(s,town);if(s.warrior.practiceClub.custodian==='PLAYER')for(const a of town.actions)if(a.command.type==='EQUIP_CLUB'){a.enabled=false;a.reason='先到战士成长中归还实际借用的原训练棍。';}
   const magician=projectMagician(divinerProjectionView);magician.actions.push(...magicianActions(divinerProjectionView));magician.practices=magicianPractices(divinerProjectionView);if(s.progression.pathwayId==='diviner'&&s.progression.sequence===7)magician.abilities=[...seer.abilities,...clown.abilities,...magician.abilities];
-  const pyromaniac=projectPyromaniac(s);pyromaniac.actions.push(...pyromaniacActions(s));pyromaniac.practices=pyromaniacPractices(s);pyromaniac.environment=pyromaniacEnvironment(s);if(s.progression.pathwayId==='hunter'&&s.progression.sequence===7)pyromaniac.abilities=[...hunter.abilities,...provoker.abilities,...pyromaniac.abilities];
-  const psychologist=projectPsychologist(s);psychologist.actions.push(...psychologistActions(s));psychologist.scenes=psychologistScenes(s);psychologist.environment=PSYCHOLOGIST_ENVIRONMENT;if(s.progression.pathwayId==='audience'&&s.progression.sequence===7)psychologist.abilities=[...audience.abilities,...mindreader.abilities,...psychologist.abilities];
-  const appraiser=projectAppraiser(s);appraiser.actions.push(...appraiserActions(s));appraiser.items=appraiserItems(s);appraiser.environment=APPRAISER_ENVIRONMENT;if(s.progression.pathwayId==='paragon'&&s.progression.sequence===7)appraiser.abilities=[...savant.abilities,...archaeologist.abilities,...appraiser.abilities];
-  const vampire=projectVampire(s);vampire.actions.push(...vampireActions(s));vampire.practices=vampirePractices(s);vampire.environment=VAMPIRE_ENVIRONMENT;vampire.bloodSummary=vampireBloodSummary(s);if(s.progression.pathwayId==='moon'&&s.progression.sequence===7)vampire.abilities=[...apothecary.abilities,...tamer.abilities,...vampire.abilities];
-  const sleepless=projectSleepless(s);sleepless.actions.push(...sleeplessActions(s));sleepless.watches=sleeplessWatches(s);sleepless.environment=SLEEPLESS_ENVIRONMENT;
-  const midnight=projectMidnight(s);midnight.actions.push(...midnightActions(s));midnight.cases=midnightCases(s);midnight.environment=MIDNIGHT_ENVIRONMENT;
-  const nightmare=projectNightmare(s);nightmare.actions.push(...nightmareActions(s));nightmare.cases=nightmareCases(s);nightmare.environment=NIGHTMARE_ENVIRONMENT;
-  const reader=projectReader(s);reader.actions.push(...readerActions(s));reader.cases=readerCases(s);reader.environment=READER_ENVIRONMENT;
-  const reasoner=projectReasoner(s);reasoner.actions.push(...reasonerActions(s));reasoner.cases=reasonerCases(s);reasoner.environment=REASONER_ENVIRONMENT;if(s.progression.pathwayId==='white-tower'&&s.progression.sequence===8)reasoner.abilities=[...reader.abilities,...reasoner.abilities];
-  const detective=projectDetective(s);detective.actions.push(...detectiveActions(s));detective.cases=detectiveCases(s);detective.environment=DETECTIVE_ENVIRONMENT;if(s.progression.pathwayId==='white-tower'&&s.progression.sequence===7)detective.abilities=[...reader.abilities,...reasoner.abilities,...detective.abilities];
-  const sailor=projectSailor(s);sailor.actions.push(...sailorActions(s));sailor.cases=sailorCases(s);sailor.environment=SAILOR_ENVIRONMENT;
-  const rager=projectRager(s);rager.actions.push(...ragerActions(s));rager.cases=ragerCases(s);rager.environment=RAGER_ENVIRONMENT;if(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===8||s.progression.sequence===7))rager.abilities=[...sailor.abilities,...rager.abilities];
-  const navigator=projectNavigator(s);navigator.actions.push(...navigatorActions(s));navigator.cases=navigatorCases(s);navigator.environment=NAVIGATOR_ENVIRONMENT;if(s.progression.pathwayId==='tyrant'&&s.progression.sequence===7)navigator.abilities=[...rager.abilities,...navigator.abilities];
-  const bard=projectBard(s);bard.actions.push(...bardActions(s));bard.cases=bardCases(s);bard.environment=BARD_ENVIRONMENT;
-  const lightprayer=projectLightprayer(s);lightprayer.actions.push(...lightprayerActions(s));lightprayer.cases=lightprayerCases(s);lightprayer.environment=LIGHTPRAYER_ENVIRONMENT;if(s.progression.pathwayId==='sun'&&s.progression.sequence===8)lightprayer.abilities=[...bard.abilities,...lightprayer.abilities];
-  const sunpriest=projectSunpriest(s);sunpriest.actions.push(...sunpriestActions(s));sunpriest.cases=sunpriestCases(s);sunpriest.environment=SUNPRIEST_ENVIRONMENT;if(s.progression.pathwayId==='sun'&&s.progression.sequence===7)sunpriest.abilities=[...bard.abilities,...lightprayer.abilities,...sunpriest.abilities];
-  const corpsecollector=projectCorpsecollector(s);corpsecollector.actions.push(...corpsecollectorActions(s));corpsecollector.cases=corpsecollectorCases(s);corpsecollector.environment=CORPSECOLLECTOR_ENVIRONMENT;
-  const gravedigger=projectGravedigger(s);gravedigger.actions.push(...gravediggerActions(s));gravedigger.cases=gravediggerCases(s);gravedigger.environment=GRAVEDIGGER_ENVIRONMENT;if(s.progression.pathwayId==='death'&&s.progression.sequence===8)gravedigger.abilities=[...corpsecollector.abilities,...gravedigger.abilities];
-  const spiritmedium=projectSpiritmedium(s);spiritmedium.actions.push(...spiritmediumActions(s));spiritmedium.cases=spiritmediumCases(s);spiritmedium.environment=SPIRITMEDIUM_ENVIRONMENT;if(s.progression.pathwayId==='death'&&s.progression.sequence===7)spiritmedium.abilities=[...corpsecollector.abilities,...gravedigger.abilities,...spiritmedium.abilities];
-  const apprentice=projectApprentice(s);apprentice.actions.push(...apprenticeActions(s));apprentice.cases=apprenticeCases(s);apprentice.environment=APPRENTICE_ENVIRONMENT;
-  const trickmaster=projectTrickmaster(s);trickmaster.actions.push(...trickmasterActions(s));trickmaster.cases=trickmasterCases(s);trickmaster.environment=TRICKMASTER_ENVIRONMENT;if(s.progression.pathwayId==='door'&&(s.progression.sequence===8||s.progression.sequence===7))trickmaster.abilities=[...apprentice.abilities,...trickmaster.abilities];
-  const astrologer=projectAstrologer(s);astrologer.actions.push(...astrologerActions(s));astrologer.cases=astrologerCases(s);astrologer.environment=ASTROLOGER_ENVIRONMENT;if(s.progression.pathwayId==='door'&&s.progression.sequence===7)astrologer.abilities=[...trickmaster.abilities,...astrologer.abilities];
-  const marauder=projectMarauder(s);marauder.actions.push(...marauderActions(s),...marauderDisputeActions(s));marauder.cases=marauderCases(s);marauder.originals=marauderOriginals(s);marauder.environment=MARAUDER_ENVIRONMENT;
-  const swindler=projectSwindler(s);swindler.actions.push(...swindlerActions(s));if(s.progression.pathwayId==='error'&&s.progression.sequence===8)for(const a of marauderDisputeActions(s)){if(a.command.type==='RETURN_TOOL')swindler.actions.push({...a,command:{type:'RETURN_TOOL'}});}swindler.cases=swindlerCases(s);swindler.environment=SWINDLER_ENVIRONMENT;if(s.progression.pathwayId==='error'&&s.progression.sequence===8)swindler.abilities=[...marauder.abilities,...swindler.abilities];
-  const cryptologist=projectCryptologist(s);cryptologist.actions.push(...cryptologistActions(s));cryptologist.cases=cryptologistCases(s);cryptologist.environment=CRYPTOLOGIST_ENVIRONMENT;if(s.progression.pathwayId==='error'&&s.progression.sequence===7){cryptologist.abilities=[...marauder.abilities,...swindler.abilities,...cryptologist.abilities];for(const a of marauderDisputeActions(s))if(a.command.type==='RETURN_TOOL')cryptologist.actions.push({...a,command:{type:'RETURN_TOOL'}});}
-  const warrior=projectWarrior(s);warrior.actions.push(...warriorActions(s));warrior.cases=warriorCases(s);warrior.tool=warriorTool(s);warrior.environment=WARRIOR_ENVIRONMENT;
-  const gladiator=projectGladiator(s);gladiator.actions.push(...gladiatorActions(s));gladiator.cases=gladiatorCases(s);gladiator.environment=GLADIATOR_ENVIRONMENT;gladiator.insideCase=gladiatorInside(s);if(s.progression.pathwayId==='warrior'&&s.progression.sequence===8)gladiator.abilities=[...warrior.abilities,...gladiator.abilities];
-  const weaponmaster=projectWeaponmaster(s);weaponmaster.actions.push(...weaponmasterActions(s));weaponmaster.cases=weaponmasterCases(s);weaponmaster.environment=WEAPONMASTER_ENVIRONMENT;if(s.progression.pathwayId==='warrior'&&s.progression.sequence===7)weaponmaster.abilities=[...warrior.abilities,...gladiator.abilities,...weaponmaster.abilities];
-  const assassin=projectAssassin(s);assassin.actions.push(...assassinActions(s));assassin.cases=assassinCases(s);assassin.environment=ASSASSIN_ENVIRONMENT;assassin.insideCase=assassinInside(s);assassin.draft=assassinDraft(s);
-  const instigator=projectInstigator(s);instigator.actions.push(...instigatorActions(s));instigator.cases=instigatorCases(s);instigator.environment=INSTIGATOR_ENVIRONMENT;instigator.insideCase=instigatorInside(s);if(s.progression.pathwayId==='demoness'&&s.progression.sequence===8)instigator.abilities=[...assassin.abilities,...instigator.abilities];
-  const witch=projectWitch(s);witch.actions.push(...witchActions(s));witch.cases=witchCases(s);witch.environment=WITCH_ENVIRONMENT;if(s.progression.pathwayId==='demoness'&&s.progression.sequence===7)witch.abilities=[...assassin.abilities,...instigator.abilities,...witch.abilities];
-  const pryer=projectPryer(s);pryer.actions.push(...pryerActions(s));pryer.cases=pryerCases(s);pryer.environment=PRYER_ENVIRONMENT;pryer.insideCase=pryerInside(s);
-  const combatScholar=projectCombatScholar(s);combatScholar.actions.push(...combatScholarActions(s));combatScholar.cases=combatScholarCases(s);combatScholar.environment=COMBAT_SCHOLAR_ENVIRONMENT;combatScholar.insideCase=combatScholarInside(s);
-  const wizard=projectWizard(s);wizard.actions.push(...wizardActions(s));wizard.cases=wizardCases(s);wizard.lessons=wizardLessons(s);wizard.environment=WIZARD_ENVIRONMENT;wizard.insideCase=wizardInside(s);
-  const secretSupplicant=projectSecretSupplicant(s);secretSupplicant.actions.push(...secretSupplicantActions(s));secretSupplicant.cases=secretSupplicantCases(s);secretSupplicant.environment=SECRET_SUPPLICANT_ENVIRONMENT;secretSupplicant.insideCase=secretSupplicantInside(s);
-  const listener=projectListener(s);listener.actions.push(...listenerActions(s));listener.cases=listenerCases(s);listener.environment=LISTENER_ENVIRONMENT;listener.insideCase=listenerInside(s);
-  const shadowAscetic=projectShadowAscetic(s);shadowAscetic.actions.push(...shadowAsceticActions(s));shadowAscetic.cases=shadowAsceticCases(s);shadowAscetic.environment=SHADOW_ASCETIC_ENVIRONMENT;shadowAscetic.insideCase=shadowAsceticInside(s);
-  const criminal=projectCriminal(s);criminal.actions.push(...criminalActions(s));criminal.cases=criminalCases(s);criminal.environment=CRIMINAL_ENVIRONMENT;criminal.insideCase=criminalInside(s);
-  const unwinged=projectUnwinged(s);unwinged.actions.push(...unwingedActions(s));unwinged.cases=unwingedCases(s);unwinged.environment=UNWINGED_ENVIRONMENT;unwinged.insideCase=unwingedInside(s);
-  const serialKiller=projectSerialKiller(s);serialKiller.actions.push(...serialKillerActions(s));serialKiller.cases=serialKillerCases(s);serialKiller.environment=SERIAL_KILLER_ENVIRONMENT;serialKiller.insideCase=serialKillerInside(s);
-  const motherProjectionView=natureWalkerInheritedView(s);
-  const justiciarProjectionView=handOfOrderInheritedView(s);
-  const blackEmperorProjectionView=princeOfAbolitionInheritedView(s);
-  const wheelProjectionView=mercurySnakeInheritedView(s);
-  const chainedProjectionView=abominationInheritedView(s);
-  const prisoner=projectPrisoner(chainedProjectionView);prisoner.actions.push(...prisonerActions(chainedProjectionView));prisoner.cases=prisonerCases(chainedProjectionView);prisoner.environment=PRISONER_ENVIRONMENT;prisoner.insideCase=prisonerInside(chainedProjectionView);
-  const madman=projectMadman(chainedProjectionView);madman.actions.push(...madmanActions(chainedProjectionView));madman.cases=madmanCases(chainedProjectionView);madman.environment=MADMAN_ENVIRONMENT;madman.insideCase=madmanInside(chainedProjectionView);
-  const werewolf=projectWerewolf(chainedProjectionView);werewolf.actions.push(...werewolfActions(chainedProjectionView));werewolf.cases=werewolfCases(chainedProjectionView);werewolf.environment=WEREWOLF_ENVIRONMENT;werewolf.insideCase=werewolfInside(chainedProjectionView);
-  const monster=projectMonster(wheelProjectionView);monster.actions.push(...monsterActions(wheelProjectionView));monster.cases=monsterCases(wheelProjectionView);monster.environment=MONSTER_ENVIRONMENT;monster.insideCase=monsterInside(wheelProjectionView);
-  const machine=projectMachine(wheelProjectionView);machine.actions.push(...machineActions(wheelProjectionView));machine.cases=machineCases(wheelProjectionView);machine.environment=MACHINE_ENVIRONMENT;machine.insideCase=machineInside(wheelProjectionView);
-  const lucky=projectLucky(wheelProjectionView);lucky.actions.push(...luckyActions(wheelProjectionView));lucky.cases=luckyCases(wheelProjectionView);lucky.environment=LUCKY_ENVIRONMENT;lucky.insideCase=luckyInside(wheelProjectionView);
-  const lawyer=projectLawyer(blackEmperorProjectionView);lawyer.actions.push(...lawyerActions(blackEmperorProjectionView));lawyer.cases=lawyerCases(blackEmperorProjectionView);lawyer.environment=LAWYER_ENVIRONMENT;lawyer.insideCase=lawyerInside(blackEmperorProjectionView);
-  const barbarian=projectBarbarian(blackEmperorProjectionView);barbarian.actions.push(...barbarianActions(blackEmperorProjectionView));barbarian.cases=barbarianCases(blackEmperorProjectionView);barbarian.environment=BARBARIAN_ENVIRONMENT;barbarian.insideCase=barbarianInside(blackEmperorProjectionView);if(s.progression.pathwayId==='black-emperor'&&s.progression.sequence===8)barbarian.abilities=[...lawyer.abilities,...barbarian.abilities];
-  const briber=projectBriber(blackEmperorProjectionView);briber.actions.push(...briberActions(blackEmperorProjectionView));briber.cases=briberCases(blackEmperorProjectionView);briber.environment=BRIBER_ENVIRONMENT;briber.insideCase=briberInside(blackEmperorProjectionView);briber.gifts={held:s.briber.gifts.filter(g=>g.location==='PLAYER').length,given:s.briber.gifts.filter(g=>g.location==='GIVEN').length,summary:'只有实际购买且仍随身的原木筹可再次给出。已给原物留在实际给予地点或本场地面，结束和战后均不自动返还。'};if(s.progression.pathwayId==='black-emperor'&&s.progression.sequence===7)briber.abilities=[...lawyer.abilities,...barbarian.abilities,...briber.abilities];
-  const arbiter=projectArbiter(justiciarProjectionView);arbiter.actions.push(...arbiterActions(justiciarProjectionView));arbiter.cases=arbiterCases(justiciarProjectionView);arbiter.environment=ARBITER_ENVIRONMENT;arbiter.insideCase=arbiterInside(justiciarProjectionView);
-  const sheriff=projectSheriff(justiciarProjectionView);if(s.progression.pathwayId==='justiciar'&&s.progression.sequence===8)sheriff.abilities.unshift(...ARBITER_ABILITIES.map(a=>({...a,mastery:s.progression.mastery[a.id]??0,description:a.id==='justiciar.s9.combat-training'?'保留仲裁人时期的格斗训练，持械仍使用真实当前装备。':a.description})));sheriff.actions.push(...sheriffActions(justiciarProjectionView));sheriff.cases=sheriffCases(justiciarProjectionView);sheriff.environment=SHERIFF_ENVIRONMENT;sheriff.insideCase=sheriffInside(justiciarProjectionView);
-  const interrogator=projectInterrogator(justiciarProjectionView);if(s.progression.pathwayId==='justiciar'&&s.progression.sequence===7)interrogator.abilities.unshift(...[...ARBITER_ABILITIES,...SHERIFF_ABILITIES].map(a=>({...a,mastery:s.progression.mastery[a.id]??0,description:a.id==='justiciar.s9.combat-training'?'保留仲裁人时期的格斗训练，持械仍使用真实当前装备。':a.description})));interrogator.actions.push(...interrogatorActions(justiciarProjectionView));interrogator.cases=interrogatorCases(justiciarProjectionView);interrogator.environment=INTERROGATOR_ENVIRONMENT;interrogator.insideCase=interrogatorInside(justiciarProjectionView);
-  const cultivator=projectCultivator(motherProjectionView);cultivator.actions.push(...cultivatorActions(motherProjectionView));cultivator.cases=cultivatorCases(motherProjectionView);cultivator.environment=CULTIVATOR_ENVIRONMENT;cultivator.garden=cultivatorGarden(motherProjectionView);cultivator.insideCase=cultivatorInside(natureWalkerInheritedView(s));
-  const physician=projectPhysician(motherProjectionView);if(s.progression.pathwayId==='mother'&&s.progression.sequence===8)physician.abilities.unshift(...CULTIVATOR_ABILITIES.map(a=>({...a,mastery:s.progression.mastery[a.id]??0}))); physician.actions.push(...physicianActions(motherProjectionView));physician.cases=physicianCases(motherProjectionView);physician.environment=PHYSICIAN_ENVIRONMENT;physician.clinic=physicianClinic(motherProjectionView);physician.insideCase=physicianInside(natureWalkerInheritedView(s));
-  const harvestpriest=projectHarvestpriest(motherProjectionView);if(s.progression.pathwayId==='mother'&&s.progression.sequence===7)harvestpriest.abilities.unshift(...[...CULTIVATOR_ABILITIES,...PHYSICIAN_ABILITIES].map(a=>({...a,mastery:s.progression.mastery[a.id]??0})));harvestpriest.actions.push(...harvestpriestActions(motherProjectionView));harvestpriest.cases=harvestpriestCases(motherProjectionView);harvestpriest.environment=HARVESTPRIEST_ENVIRONMENT;harvestpriest.plot=harvestpriestPlot(motherProjectionView);harvestpriest.insideCase=harvestpriestInside(natureWalkerInheritedView(s));
+  const pyromaniac=projectPyromaniac(hunterProjectionView);pyromaniac.actions.push(...pyromaniacActions(hunterProjectionView));pyromaniac.practices=pyromaniacPractices(hunterProjectionView);pyromaniac.environment=pyromaniacEnvironment(hunterProjectionView);if(s.progression.pathwayId==='hunter'&&s.progression.sequence===7)pyromaniac.abilities=[...hunter.abilities,...provoker.abilities,...pyromaniac.abilities];
+  const psychologist=projectPsychologist(audienceProjectionView);psychologist.actions.push(...psychologistActions(audienceProjectionView));psychologist.scenes=psychologistScenes(audienceProjectionView);psychologist.environment=PSYCHOLOGIST_ENVIRONMENT;if(s.progression.pathwayId==='audience'&&s.progression.sequence===7)psychologist.abilities=[...audience.abilities,...mindreader.abilities,...psychologist.abilities];
+  const appraiser=projectAppraiser(paragonProjectionView);appraiser.actions.push(...appraiserActions(paragonProjectionView));appraiser.items=appraiserItems(paragonProjectionView);appraiser.environment=APPRAISER_ENVIRONMENT;if(paragonProjectionView.progression.pathwayId==='paragon'&&paragonProjectionView.progression.sequence===7)appraiser.abilities=[...savant.abilities,...archaeologist.abilities,...appraiser.abilities];
+  const vampire=projectVampire(moonS1ProjectionView);vampire.actions.push(...vampireActions(moonS1ProjectionView));vampire.practices=vampirePractices(moonS1ProjectionView);vampire.environment=VAMPIRE_ENVIRONMENT;vampire.bloodSummary=vampireBloodSummary(moonS1ProjectionView);if(moonS1ProjectionView.progression.pathwayId==='moon'&&moonS1ProjectionView.progression.sequence===7)vampire.abilities=[...apothecary.abilities,...tamer.abilities,...vampire.abilities];
+  const sleepless=projectSleepless(darknessS1ProjectionView);sleepless.actions.push(...sleeplessActions(darknessS1ProjectionView));sleepless.watches=sleeplessWatches(darknessS1ProjectionView);sleepless.environment=SLEEPLESS_ENVIRONMENT;
+  const midnight=projectMidnight(darknessS1ProjectionView);midnight.actions.push(...midnightActions(darknessS1ProjectionView));midnight.cases=midnightCases(darknessS1ProjectionView);midnight.environment=MIDNIGHT_ENVIRONMENT;
+  const nightmare=projectNightmare(darknessS1ProjectionView);nightmare.actions.push(...nightmareActions(darknessS1ProjectionView));nightmare.cases=nightmareCases(darknessS1ProjectionView);nightmare.environment=NIGHTMARE_ENVIRONMENT;
+  const reader=projectReader(whiteTowerS1ProjectionView);reader.actions.push(...readerActions(whiteTowerS1ProjectionView));reader.cases=readerCases(whiteTowerS1ProjectionView);reader.environment=READER_ENVIRONMENT;
+  const reasoner=projectReasoner(whiteTowerS1ProjectionView);reasoner.actions.push(...reasonerActions(whiteTowerS1ProjectionView));reasoner.cases=reasonerCases(whiteTowerS1ProjectionView);reasoner.environment=REASONER_ENVIRONMENT;if(whiteTowerS1ProjectionView.progression.pathwayId==='white-tower'&&whiteTowerS1ProjectionView.progression.sequence===8)reasoner.abilities=[...reader.abilities,...reasoner.abilities];
+  const detective=projectDetective(whiteTowerS1ProjectionView);detective.actions.push(...detectiveActions(whiteTowerS1ProjectionView));detective.cases=detectiveCases(whiteTowerS1ProjectionView);detective.environment=DETECTIVE_ENVIRONMENT;if(whiteTowerS1ProjectionView.progression.pathwayId==='white-tower'&&whiteTowerS1ProjectionView.progression.sequence===7)detective.abilities=[...reader.abilities,...reasoner.abilities,...detective.abilities];
+  const sailor=projectSailor(tyrantS1ProjectionView);sailor.actions.push(...sailorActions(tyrantS1ProjectionView));sailor.cases=sailorCases(tyrantS1ProjectionView);sailor.environment=SAILOR_ENVIRONMENT;
+  const rager=projectRager(tyrantS1ProjectionView);rager.actions.push(...ragerActions(tyrantS1ProjectionView));rager.cases=ragerCases(tyrantS1ProjectionView);rager.environment=RAGER_ENVIRONMENT;if(tyrantS1ProjectionView.progression.pathwayId==='tyrant'&&(tyrantS1ProjectionView.progression.sequence===8||tyrantS1ProjectionView.progression.sequence===7))rager.abilities=[...sailor.abilities,...rager.abilities];
+  const navigator=projectNavigator(tyrantS1ProjectionView);navigator.actions.push(...navigatorActions(tyrantS1ProjectionView));navigator.cases=navigatorCases(tyrantS1ProjectionView);navigator.environment=NAVIGATOR_ENVIRONMENT;if(tyrantS1ProjectionView.progression.pathwayId==='tyrant'&&tyrantS1ProjectionView.progression.sequence===7)navigator.abilities=[...rager.abilities,...navigator.abilities];
+  const bard=projectBard(sunS1ProjectionView);bard.actions.push(...bardActions(sunS1ProjectionView));bard.cases=bardCases(sunS1ProjectionView);bard.environment=BARD_ENVIRONMENT;
+  const lightprayer=projectLightprayer(sunS1ProjectionView);lightprayer.actions.push(...lightprayerActions(sunS1ProjectionView));lightprayer.cases=lightprayerCases(sunS1ProjectionView);lightprayer.environment=LIGHTPRAYER_ENVIRONMENT;if(sunS1ProjectionView.progression.pathwayId==='sun'&&sunS1ProjectionView.progression.sequence===8)lightprayer.abilities=[...bard.abilities,...lightprayer.abilities];
+  const sunpriest=projectSunpriest(sunS1ProjectionView);sunpriest.actions.push(...sunpriestActions(sunS1ProjectionView));sunpriest.cases=sunpriestCases(sunS1ProjectionView);sunpriest.environment=SUNPRIEST_ENVIRONMENT;if(sunS1ProjectionView.progression.pathwayId==='sun'&&sunS1ProjectionView.progression.sequence===7)sunpriest.abilities=[...bard.abilities,...lightprayer.abilities,...sunpriest.abilities];
+  const corpsecollector=projectCorpsecollector(deathS1ProjectionView);corpsecollector.actions.push(...corpsecollectorActions(deathS1ProjectionView));corpsecollector.cases=corpsecollectorCases(deathS1ProjectionView);corpsecollector.environment=CORPSECOLLECTOR_ENVIRONMENT;
+  const gravedigger=projectGravedigger(deathS1ProjectionView);gravedigger.actions.push(...gravediggerActions(deathS1ProjectionView));gravedigger.cases=gravediggerCases(deathS1ProjectionView);gravedigger.environment=GRAVEDIGGER_ENVIRONMENT;if(deathS1ProjectionView.progression.pathwayId==='death'&&deathS1ProjectionView.progression.sequence===8)gravedigger.abilities=[...corpsecollector.abilities,...gravedigger.abilities];
+  const spiritmedium=projectSpiritmedium(deathS1ProjectionView);spiritmedium.actions.push(...spiritmediumActions(deathS1ProjectionView));spiritmedium.cases=spiritmediumCases(deathS1ProjectionView);spiritmedium.environment=SPIRITMEDIUM_ENVIRONMENT;if(deathS1ProjectionView.progression.pathwayId==='death'&&deathS1ProjectionView.progression.sequence===7)spiritmedium.abilities=[...corpsecollector.abilities,...gravedigger.abilities,...spiritmedium.abilities];
+  const apprentice=projectApprentice(doorProjectionView);apprentice.actions.push(...apprenticeActions(doorProjectionView));apprentice.cases=apprenticeCases(doorProjectionView);apprentice.environment=APPRENTICE_ENVIRONMENT;
+  const trickmaster=projectTrickmaster(doorProjectionView);trickmaster.actions.push(...trickmasterActions(doorProjectionView));trickmaster.cases=trickmasterCases(doorProjectionView);trickmaster.environment=TRICKMASTER_ENVIRONMENT;if(doorProjectionView.progression.pathwayId==='door'&&(doorProjectionView.progression.sequence===8||doorProjectionView.progression.sequence===7))trickmaster.abilities=[...apprentice.abilities,...trickmaster.abilities];
+  const astrologer=projectAstrologer(doorProjectionView);astrologer.actions.push(...astrologerActions(doorProjectionView));astrologer.cases=astrologerCases(doorProjectionView);astrologer.environment=ASTROLOGER_ENVIRONMENT;if(doorProjectionView.progression.pathwayId==='door'&&doorProjectionView.progression.sequence===7)astrologer.abilities=[...trickmaster.abilities,...astrologer.abilities];
+  const marauder=projectMarauder(errorProjectionView);marauder.actions.push(...marauderActions(errorProjectionView),...marauderDisputeActions(errorProjectionView));marauder.cases=marauderCases(errorProjectionView);marauder.originals=marauderOriginals(errorProjectionView);marauder.environment=MARAUDER_ENVIRONMENT;
+  const swindler=projectSwindler(errorProjectionView);swindler.actions.push(...swindlerActions(errorProjectionView));if(errorProjectionView.progression.pathwayId==='error'&&errorProjectionView.progression.sequence===8)for(const a of marauderDisputeActions(errorProjectionView)){if(a.command.type==='RETURN_TOOL')swindler.actions.push({...a,command:{type:'RETURN_TOOL'}});}swindler.cases=swindlerCases(errorProjectionView);swindler.environment=SWINDLER_ENVIRONMENT;if(errorProjectionView.progression.pathwayId==='error'&&errorProjectionView.progression.sequence===8)swindler.abilities=[...marauder.abilities,...swindler.abilities];
+  const cryptologist=projectCryptologist(errorProjectionView);cryptologist.actions.push(...cryptologistActions(errorProjectionView));cryptologist.cases=cryptologistCases(errorProjectionView);cryptologist.environment=CRYPTOLOGIST_ENVIRONMENT;if(errorProjectionView.progression.pathwayId==='error'&&errorProjectionView.progression.sequence===7){cryptologist.abilities=[...marauder.abilities,...swindler.abilities,...cryptologist.abilities];for(const a of marauderDisputeActions(errorProjectionView))if(a.command.type==='RETURN_TOOL')cryptologist.actions.push({...a,command:{type:'RETURN_TOOL'}});}
+  const warrior=projectWarrior(warriorProjectionView);warrior.actions.push(...warriorActions(warriorProjectionView));warrior.cases=warriorCases(warriorProjectionView);warrior.tool=warriorTool(warriorProjectionView);warrior.environment=WARRIOR_ENVIRONMENT;
+  const gladiator=projectGladiator(warriorProjectionView);gladiator.actions.push(...gladiatorActions(warriorProjectionView));gladiator.cases=gladiatorCases(warriorProjectionView);gladiator.environment=GLADIATOR_ENVIRONMENT;gladiator.insideCase=gladiatorInside(warriorProjectionView);if(warriorProjectionView.progression.pathwayId==='warrior'&&warriorProjectionView.progression.sequence===8)gladiator.abilities=[...warrior.abilities,...gladiator.abilities];
+  const weaponmaster=projectWeaponmaster(warriorProjectionView);weaponmaster.actions.push(...weaponmasterActions(warriorProjectionView));weaponmaster.cases=weaponmasterCases(warriorProjectionView);weaponmaster.environment=WEAPONMASTER_ENVIRONMENT;if(warriorProjectionView.progression.pathwayId==='warrior'&&warriorProjectionView.progression.sequence===7)weaponmaster.abilities=[...warrior.abilities,...gladiator.abilities,...weaponmaster.abilities];
+  const assassin=projectAssassin(demonessProjectionView);assassin.actions.push(...assassinActions(demonessProjectionView));assassin.cases=assassinCases(demonessProjectionView);assassin.environment=ASSASSIN_ENVIRONMENT;assassin.insideCase=assassinInside(demonessProjectionView);assassin.draft=assassinDraft(demonessProjectionView);
+  const instigator=projectInstigator(demonessProjectionView);instigator.actions.push(...instigatorActions(demonessProjectionView));instigator.cases=instigatorCases(demonessProjectionView);instigator.environment=INSTIGATOR_ENVIRONMENT;instigator.insideCase=instigatorInside(demonessProjectionView);if(demonessProjectionView.progression.pathwayId==='demoness'&&demonessProjectionView.progression.sequence===8)instigator.abilities=[...assassin.abilities,...instigator.abilities];
+  const witch=projectWitch(demonessProjectionView);witch.actions.push(...witchActions(demonessProjectionView));witch.cases=witchCases(demonessProjectionView);witch.environment=WITCH_ENVIRONMENT;if(demonessProjectionView.progression.pathwayId==='demoness'&&demonessProjectionView.progression.sequence===7)witch.abilities=[...assassin.abilities,...instigator.abilities,...witch.abilities];
+  const pryer=hermitHistories?clone(hermitHistories.pryer):projectPryer(hermitProjectionView);if(!hermitHistories){pryer.actions.push(...pryerActions(hermitProjectionView));pryer.cases=pryerCases(hermitProjectionView);pryer.environment=PRYER_ENVIRONMENT;pryer.insideCase=pryerInside(hermitProjectionView);}
+  const combatScholar=hermitHistories?clone(hermitHistories.combatScholar):projectCombatScholar(hermitProjectionView);if(!hermitHistories){combatScholar.actions.push(...combatScholarActions(hermitProjectionView));combatScholar.cases=combatScholarCases(hermitProjectionView);combatScholar.environment=COMBAT_SCHOLAR_ENVIRONMENT;combatScholar.insideCase=combatScholarInside(hermitProjectionView);}
+  const wizard=hermitHistories?clone(hermitHistories.wizard):projectWizard(hermitProjectionView);if(!hermitHistories){wizard.actions.push(...wizardActions(hermitProjectionView));wizard.cases=wizardCases(hermitProjectionView);wizard.lessons=wizardLessons(hermitProjectionView);wizard.environment=WIZARD_ENVIRONMENT;wizard.insideCase=wizardInside(hermitProjectionView);}
+  const secretSupplicant=hangedManHistories?clone(hangedManHistories.secretSupplicant):projectSecretSupplicant(hangedManProjectionView);if(!hangedManHistories){secretSupplicant.actions.push(...secretSupplicantActions(hangedManProjectionView));secretSupplicant.cases=secretSupplicantCases(hangedManProjectionView);secretSupplicant.environment=SECRET_SUPPLICANT_ENVIRONMENT;secretSupplicant.insideCase=secretSupplicantInside(hangedManProjectionView);}
+  const listener=hangedManHistories?clone(hangedManHistories.listener):projectListener(hangedManProjectionView);if(!hangedManHistories){listener.actions.push(...listenerActions(hangedManProjectionView));listener.cases=listenerCases(hangedManProjectionView);listener.environment=LISTENER_ENVIRONMENT;listener.insideCase=listenerInside(hangedManProjectionView);}
+  const shadowAscetic=hangedManHistories?clone(hangedManHistories.shadowAscetic):projectShadowAscetic(hangedManProjectionView);if(!hangedManHistories){shadowAscetic.actions.push(...shadowAsceticActions(hangedManProjectionView));shadowAscetic.cases=shadowAsceticCases(hangedManProjectionView);shadowAscetic.environment=SHADOW_ASCETIC_ENVIRONMENT;shadowAscetic.insideCase=shadowAsceticInside(hangedManProjectionView);}
+  const criminal=abyssHistories?clone(abyssHistories.criminal):projectCriminal(abyssProjectionView);if(!abyssHistories){criminal.actions.push(...criminalActions(abyssProjectionView));criminal.cases=criminalCases(abyssProjectionView);criminal.environment=CRIMINAL_ENVIRONMENT;criminal.insideCase=criminalInside(abyssProjectionView);}
+  const unwinged=abyssHistories?clone(abyssHistories.unwinged):projectUnwinged(abyssProjectionView);if(!abyssHistories){unwinged.actions.push(...unwingedActions(abyssProjectionView));unwinged.cases=unwingedCases(abyssProjectionView);unwinged.environment=UNWINGED_ENVIRONMENT;unwinged.insideCase=unwingedInside(abyssProjectionView);}
+  const serialKiller=abyssHistories?clone(abyssHistories.serialKiller):projectSerialKiller(abyssProjectionView);if(!abyssHistories){serialKiller.actions.push(...serialKillerActions(abyssProjectionView));serialKiller.cases=serialKillerCases(abyssProjectionView);serialKiller.environment=SERIAL_KILLER_ENVIRONMENT;serialKiller.insideCase=serialKillerInside(abyssProjectionView);}
+  const motherProjectionView=motherHistories?s:natureWalkerInheritedView(motherS1ProjectionView);
+  const justiciarProjectionView=justiciarHistories?s:handOfOrderInheritedView(justiciarS1ProjectionView);
+  const blackEmperorProjectionView=blackEmperorHistories?s:princeOfAbolitionInheritedView(emperorS1ProjectionView);
+  const wheelProjectionView=wheelOfFortuneHistories?s:mercurySnakeInheritedView(wheelS1ProjectionView);
+  const chainedProjectionView=chainedHistories?s:abominationInheritedView(chainedS1ProjectionView);
+  const prisoner=chainedHistories?clone(chainedHistories.prisoner):projectPrisoner(chainedProjectionView);if(!chainedHistories){prisoner.actions.push(...prisonerActions(chainedProjectionView));prisoner.cases=prisonerCases(chainedProjectionView);prisoner.environment=PRISONER_ENVIRONMENT;prisoner.insideCase=prisonerInside(chainedProjectionView);}
+  const madman=chainedHistories?clone(chainedHistories.madman):projectMadman(chainedProjectionView);if(!chainedHistories){madman.actions.push(...madmanActions(chainedProjectionView));madman.cases=madmanCases(chainedProjectionView);madman.environment=MADMAN_ENVIRONMENT;madman.insideCase=madmanInside(chainedProjectionView);}
+  const werewolf=chainedHistories?clone(chainedHistories.werewolf):projectWerewolf(chainedProjectionView);if(!chainedHistories){werewolf.actions.push(...werewolfActions(chainedProjectionView));werewolf.cases=werewolfCases(chainedProjectionView);werewolf.environment=WEREWOLF_ENVIRONMENT;werewolf.insideCase=werewolfInside(chainedProjectionView);}
+  const monster=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.monster):projectMonster(wheelProjectionView);if(!wheelOfFortuneHistories){monster.actions.push(...monsterActions(wheelProjectionView));monster.cases=monsterCases(wheelProjectionView);monster.environment=MONSTER_ENVIRONMENT;monster.insideCase=monsterInside(wheelProjectionView);}
+  const machine=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.machine):projectMachine(wheelProjectionView);if(!wheelOfFortuneHistories){machine.actions.push(...machineActions(wheelProjectionView));machine.cases=machineCases(wheelProjectionView);machine.environment=MACHINE_ENVIRONMENT;machine.insideCase=machineInside(wheelProjectionView);}
+  const lucky=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.lucky):projectLucky(wheelProjectionView);if(!wheelOfFortuneHistories){lucky.actions.push(...luckyActions(wheelProjectionView));lucky.cases=luckyCases(wheelProjectionView);lucky.environment=LUCKY_ENVIRONMENT;lucky.insideCase=luckyInside(wheelProjectionView);}
+  const lawyer=blackEmperorHistories?clone(blackEmperorHistories.lawyer):projectLawyer(blackEmperorProjectionView);if(!blackEmperorHistories){lawyer.actions.push(...lawyerActions(blackEmperorProjectionView));lawyer.cases=lawyerCases(blackEmperorProjectionView);lawyer.environment=LAWYER_ENVIRONMENT;lawyer.insideCase=lawyerInside(blackEmperorProjectionView);}
+  const barbarian=blackEmperorHistories?clone(blackEmperorHistories.barbarian):projectBarbarian(blackEmperorProjectionView);if(!blackEmperorHistories){barbarian.actions.push(...barbarianActions(blackEmperorProjectionView));barbarian.cases=barbarianCases(blackEmperorProjectionView);barbarian.environment=BARBARIAN_ENVIRONMENT;barbarian.insideCase=barbarianInside(blackEmperorProjectionView);if(blackEmperorProjectionView.progression.pathwayId==='black-emperor'&&blackEmperorProjectionView.progression.sequence===8)barbarian.abilities=[...lawyer.abilities,...barbarian.abilities];}
+  const briber=blackEmperorHistories?clone(blackEmperorHistories.briber):projectBriber(blackEmperorProjectionView);if(!blackEmperorHistories){briber.actions.push(...briberActions(blackEmperorProjectionView));briber.cases=briberCases(blackEmperorProjectionView);briber.environment=BRIBER_ENVIRONMENT;briber.insideCase=briberInside(blackEmperorProjectionView);briber.gifts={held:blackEmperorProjectionView.briber.gifts.filter(g=>g.location==='PLAYER').length,given:blackEmperorProjectionView.briber.gifts.filter(g=>g.location==='GIVEN').length,summary:'只有实际购买且仍随身的原木筹可再次给出。已给原物留在实际给予地点或本场地面，结束和战后均不自动返还。'};if(blackEmperorProjectionView.progression.pathwayId==='black-emperor'&&blackEmperorProjectionView.progression.sequence===7)briber.abilities=[...lawyer.abilities,...barbarian.abilities,...briber.abilities];}
+  const arbiter=justiciarHistories?clone(justiciarHistories.arbiter):projectArbiter(justiciarProjectionView);if(!justiciarHistories){arbiter.actions.push(...arbiterActions(justiciarProjectionView));arbiter.cases=arbiterCases(justiciarProjectionView);arbiter.environment=ARBITER_ENVIRONMENT;arbiter.insideCase=arbiterInside(justiciarProjectionView);}
+  const sheriff=justiciarHistories?clone(justiciarHistories.sheriff):projectSheriff(justiciarProjectionView);if(!justiciarHistories){if(justiciarProjectionView.progression.pathwayId==='justiciar'&&justiciarProjectionView.progression.sequence===8)sheriff.abilities.unshift(...ARBITER_ABILITIES.map(a=>({...a,mastery:justiciarProjectionView.progression.mastery[a.id]??0,description:a.id==='justiciar.s9.combat-training'?'保留仲裁人时期的格斗训练，持械仍使用真实当前装备。':a.description})));sheriff.actions.push(...sheriffActions(justiciarProjectionView));sheriff.cases=sheriffCases(justiciarProjectionView);sheriff.environment=SHERIFF_ENVIRONMENT;sheriff.insideCase=sheriffInside(justiciarProjectionView);}
+  const interrogator=justiciarHistories?clone(justiciarHistories.interrogator):projectInterrogator(justiciarProjectionView);if(!justiciarHistories){if(justiciarProjectionView.progression.pathwayId==='justiciar'&&justiciarProjectionView.progression.sequence===7)interrogator.abilities.unshift(...[...ARBITER_ABILITIES,...SHERIFF_ABILITIES].map(a=>({...a,mastery:justiciarProjectionView.progression.mastery[a.id]??0,description:a.id==='justiciar.s9.combat-training'?'保留仲裁人时期的格斗训练，持械仍使用真实当前装备。':a.description})));interrogator.actions.push(...interrogatorActions(justiciarProjectionView));interrogator.cases=interrogatorCases(justiciarProjectionView);interrogator.environment=INTERROGATOR_ENVIRONMENT;interrogator.insideCase=interrogatorInside(justiciarProjectionView);}
+  const cultivator=motherHistories?clone(motherHistories.cultivator):projectCultivator(motherProjectionView);if(!motherHistories){cultivator.actions.push(...cultivatorActions(motherProjectionView));cultivator.cases=cultivatorCases(motherProjectionView);cultivator.environment=CULTIVATOR_ENVIRONMENT;cultivator.garden=cultivatorGarden(motherProjectionView);cultivator.insideCase=cultivatorInside(motherProjectionView);}
+  const physician=motherHistories?clone(motherHistories.physician):projectPhysician(motherProjectionView);if(!motherHistories){if(motherProjectionView.progression.pathwayId==='mother'&&motherProjectionView.progression.sequence===8)physician.abilities.unshift(...CULTIVATOR_ABILITIES.map(a=>({...a,mastery:motherProjectionView.progression.mastery[a.id]??0}))); physician.actions.push(...physicianActions(motherProjectionView));physician.cases=physicianCases(motherProjectionView);physician.environment=PHYSICIAN_ENVIRONMENT;physician.clinic=physicianClinic(motherProjectionView);physician.insideCase=physicianInside(motherProjectionView);}
+  const harvestpriest=motherHistories?clone(motherHistories.harvestpriest):projectHarvestpriest(motherProjectionView);if(!motherHistories){if(motherProjectionView.progression.pathwayId==='mother'&&motherProjectionView.progression.sequence===7)harvestpriest.abilities.unshift(...[...CULTIVATOR_ABILITIES,...PHYSICIAN_ABILITIES].map(a=>({...a,mastery:motherProjectionView.progression.mastery[a.id]??0})));harvestpriest.actions.push(...harvestpriestActions(motherProjectionView));harvestpriest.cases=harvestpriestCases(motherProjectionView);harvestpriest.environment=HARVESTPRIEST_ENVIRONMENT;harvestpriest.plot=harvestpriestPlot(motherProjectionView);harvestpriest.insideCase=harvestpriestInside(motherProjectionView);}
   const faceless=projectFaceless(divinerProjectionView);if(s.progression.pathwayId==='diviner'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))faceless.abilities.unshift(...seer.abilities,...clown.abilities,...magician.abilities);
-  const conspirator=projectConspirator(s);conspirator.actions.push(...conspiratorActions(s));conspirator.cases=conspiratorCases(s);conspirator.insideCase=conspiratorInside(s);conspirator.environment=CONSPIRATOR_ENVIRONMENT;if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))conspirator.abilities.unshift(...hunter.abilities,...provoker.abilities,...pyromaniac.abilities);
-  const hypnotist=projectHypnotist(s);hypnotist.actions.push(...hypnotistActions(s));hypnotist.cases=hypnotistCases(s);hypnotist.insideCase=hypnotistInside(s);hypnotist.environment=HYPNOTIST_ENVIRONMENT;if(s.progression.pathwayId==='audience'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))hypnotist.abilities.unshift(...audience.abilities,...mindreader.abilities,...psychologist.abilities);
-  const artisan=projectArtisan(s);artisan.actions.push(...artisanActions(s));artisan.cases=artisanCases(s);artisan.insideCase=artisanInside(s);artisan.environment=ARTISAN_ENVIRONMENT;if(s.progression.pathwayId==='paragon'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))artisan.abilities.unshift(...savant.abilities,...archaeologist.abilities,...appraiser.abilities);
-  const potionProfessor=projectPotionProfessor(s);potionProfessor.actions.push(...potionProfessorActions(s));potionProfessor.cases=potionProfessorCases(s);potionProfessor.insideCase=potionProfessorInside(s);potionProfessor.environment=POTION_PROFESSOR_ENVIRONMENT;if(s.progression.pathwayId==='moon'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))potionProfessor.abilities.unshift(...apothecary.abilities,...tamer.abilities,...vampire.abilities);
-  const soother=projectSoother(s);soother.actions.push(...sootherActions(s));soother.cases=sootherCases(s);soother.insideCase=sootherInside(s);soother.environment=SOOTHER_ENVIRONMENT;if(s.progression.pathwayId==='darkness'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))soother.abilities.unshift(...sleepless.abilities,...midnight.abilities,...nightmare.abilities);
-  const polymath=projectPolymath(s);polymath.actions.push(...polymathActions(s));polymath.cases=polymathCases(s);polymath.insideCase=polymathInside(s);polymath.environment=POLYMATH_ENVIRONMENT;if(s.progression.pathwayId==='white-tower'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))polymath.abilities.unshift(...reader.abilities,...reasoner.abilities,...detective.abilities);
-  const windBlessed=projectWindBlessed(s);windBlessed.actions.push(...windBlessedActions(s));windBlessed.cases=windBlessedCases(s);windBlessed.insideCase=windBlessedInside(s);windBlessed.environment=WIND_BLESSED_ENVIRONMENT;if(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))windBlessed.abilities.unshift(...sailor.abilities,...rager.abilities,...navigator.abilities);
-  const notary=projectNotary(s);notary.cases=notaryCases(s);notary.insideCase=notaryInside(s);notary.environment=NOTARY_ENVIRONMENT;if(s.progression.pathwayId==='sun'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))notary.abilities.unshift(...bard.abilities,...lightprayer.abilities,...sunpriest.abilities);
-  const spiritGuide=projectSpiritGuide(s);spiritGuide.actions.push(...spiritGuideActions(s));spiritGuide.cases=spiritGuideCases(s);spiritGuide.insideCase=spiritGuideInside(s);spiritGuide.environment=SPIRIT_GUIDE_ENVIRONMENT;if(s.progression.pathwayId==='death'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))spiritGuide.abilities.unshift(...corpsecollector.abilities,...gravedigger.abilities,...spiritmedium.abilities);
-  const recorder=projectRecorder(s);recorder.actions.push(...recorderActions(s));recorder.cases=recorderCases(s);recorder.insideCase=recorderInside(s);recorder.environment=RECORDER_ENVIRONMENT;if(s.progression.pathwayId==='door'&&(s.progression.sequence===6||s.progression.sequence===5||s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))recorder.abilities.unshift(...apprentice.abilities,...trickmaster.abilities,...astrologer.abilities);
-  const fireThief=projectFireThief(s);fireThief.actions.push(...fireThiefActions(s));fireThief.cases=fireThiefCases(s);fireThief.insideCase=fireThiefInside(s);fireThief.environment=FIRE_THIEF_ENVIRONMENT;if(s.progression.pathwayId==='error'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))fireThief.abilities.unshift(...marauder.abilities,...swindler.abilities,...cryptologist.abilities);
-  const dawnPaladin=projectDawnPaladin(s);dawnPaladin.actions.push(...dawnPaladinActions(s));dawnPaladin.cases=dawnPaladinCases(s);dawnPaladin.insideCase=dawnPaladinInside(s);dawnPaladin.environment=DAWN_PALADIN_ENVIRONMENT;if(s.progression.pathwayId==='warrior'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))dawnPaladin.abilities.unshift(...warrior.abilities,...gladiator.abilities,...weaponmaster.abilities);
-  const pleasure=projectPleasure(s);pleasure.cases=pleasureCases(s);pleasure.insideCase=pleasureInside(s);pleasure.environment=PLEASURE_ENVIRONMENT;if(s.progression.pathwayId==='demoness'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))pleasure.abilities.unshift(...assassin.abilities,...instigator.abilities,...witch.abilities);
-  const scrollProfessor=projectScrollProfessor(s);scrollProfessor.actions.push(...scrollProfessorActions(s));scrollProfessor.cases=scrollProfessorCases(s);scrollProfessor.insideCase=scrollProfessorInside(s);scrollProfessor.environment=SCROLL_PROFESSOR_ENVIRONMENT;if(s.progression.pathwayId==='hermit'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))scrollProfessor.abilities.unshift(...pryer.abilities,...combatScholar.abilities,...wizard.abilities);
-  const roseBishop=projectRoseBishop(s);roseBishop.actions.push(...roseBishopActions(s));roseBishop.cases=roseBishopCases(s);roseBishop.insideCase=roseBishopInside(s);roseBishop.environment=ROSE_BISHOP_ENVIRONMENT;if(s.progression.pathwayId==='hanged-man'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))roseBishop.abilities.unshift(...secretSupplicant.abilities,...listener.abilities,...shadowAscetic.abilities);
-  const demon=projectDemon(s);demon.actions.push(...demonActions(s));demon.cases=demonCases(s);demon.insideCase=demonInside(s);demon.environment=DEMON_ENVIRONMENT;if(s.progression.pathwayId==='abyss'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))demon.abilities.unshift(...criminal.abilities,...unwinged.abilities,...serialKiller.abilities);
-  const zombie=projectZombie(chainedProjectionView);zombie.actions.push(...zombieActions(chainedProjectionView));zombie.cases=zombieCases(chainedProjectionView);zombie.insideCase=zombieInside(chainedProjectionView);zombie.environment=ZOMBIE_ENVIRONMENT;if(s.progression.pathwayId==='chained'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))zombie.abilities.unshift(...prisoner.abilities,...madman.abilities,...werewolf.abilities);
-  const calamityPriest=projectCalamityPriest(wheelProjectionView);calamityPriest.actions.push(...calamityPriestActions(wheelProjectionView));calamityPriest.cases=calamityPriestCases(wheelProjectionView);calamityPriest.insideCase=calamityPriestInside(wheelProjectionView);calamityPriest.environment=CALAMITY_PRIEST_ENVIRONMENT;if(s.progression.pathwayId==='wheel'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))calamityPriest.abilities.unshift(...monster.abilities,...machine.abilities,...lucky.abilities);
-  const corruptionBaron=projectCorruptionBaron(blackEmperorProjectionView);corruptionBaron.actions.push(...corruptionBaronActions(blackEmperorProjectionView));corruptionBaron.cases=corruptionBaronCases(blackEmperorProjectionView);corruptionBaron.insideCase=corruptionBaronInside(blackEmperorProjectionView);corruptionBaron.environment=CORRUPTION_BARON_ENVIRONMENT;if(s.progression.pathwayId==='black-emperor'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))corruptionBaron.abilities.unshift(...lawyer.abilities,...barbarian.abilities,...briber.abilities);
-  const judge=projectJudge(justiciarProjectionView);judge.actions.push(...judgeActions(justiciarProjectionView));judge.cases=judgeCases(justiciarProjectionView);judge.insideCase=judgeInside(justiciarProjectionView);judge.environment=JUDGE_ENVIRONMENT;if(s.progression.pathwayId==='justiciar'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))judge.abilities.unshift(...arbiter.abilities,...sheriff.abilities,...interrogator.abilities);
-  const biologist=projectBiologist(motherProjectionView);biologist.actions.push(...biologistActions(motherProjectionView));biologist.cases=biologistCases(motherProjectionView);biologist.insideCase=biologistInside(natureWalkerInheritedView(s));biologist.environment=BIOLOGIST_ENVIRONMENT;if(s.progression.pathwayId==='mother'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))biologist.abilities.unshift(...cultivator.abilities,...physician.abilities,...harvestpriest.abilities);
+  const conspirator=projectConspirator(hunterProjectionView);conspirator.actions.push(...conspiratorActions(hunterProjectionView));conspirator.cases=conspiratorCases(hunterProjectionView);conspirator.insideCase=conspiratorInside(hunterProjectionView);conspirator.environment=CONSPIRATOR_ENVIRONMENT;if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))conspirator.abilities.unshift(...hunter.abilities,...provoker.abilities,...pyromaniac.abilities);
+  const hypnotist=projectHypnotist(audienceProjectionView);hypnotist.actions.push(...hypnotistActions(audienceProjectionView));hypnotist.cases=hypnotistCases(audienceProjectionView);hypnotist.insideCase=hypnotistInside(audienceProjectionView);hypnotist.environment=HYPNOTIST_ENVIRONMENT;if(s.progression.pathwayId==='audience'&&(s.progression.sequence===6||s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))hypnotist.abilities.unshift(...audience.abilities,...mindreader.abilities,...psychologist.abilities);
+  const artisan=projectArtisan(paragonProjectionView);artisan.actions.push(...artisanActions(paragonProjectionView));artisan.cases=artisanCases(paragonProjectionView);artisan.insideCase=artisanInside(paragonProjectionView);artisan.environment=ARTISAN_ENVIRONMENT;if(paragonProjectionView.progression.pathwayId==='paragon'&&(paragonProjectionView.progression.sequence===6||paragonProjectionView.progression.sequence===5||(paragonProjectionView.progression.sequence===4||(paragonProjectionView.progression.sequence===3||(paragonProjectionView.progression.sequence===2||paragonProjectionView.progression.sequence===1)))))artisan.abilities.unshift(...savant.abilities,...archaeologist.abilities,...appraiser.abilities);
+  const potionProfessor=projectPotionProfessor(moonS1ProjectionView);potionProfessor.actions.push(...potionProfessorActions(moonS1ProjectionView));potionProfessor.cases=potionProfessorCases(moonS1ProjectionView);potionProfessor.insideCase=potionProfessorInside(moonS1ProjectionView);potionProfessor.environment=POTION_PROFESSOR_ENVIRONMENT;if(moonS1ProjectionView.progression.pathwayId==='moon'&&(moonS1ProjectionView.progression.sequence===6||moonS1ProjectionView.progression.sequence===5||(moonS1ProjectionView.progression.sequence===4||(moonS1ProjectionView.progression.sequence===3||(moonS1ProjectionView.progression.sequence===2||moonS1ProjectionView.progression.sequence===1)))))potionProfessor.abilities.unshift(...apothecary.abilities,...tamer.abilities,...vampire.abilities);
+  const soother=projectSoother(darknessS1ProjectionView);soother.actions.push(...sootherActions(darknessS1ProjectionView));soother.cases=sootherCases(darknessS1ProjectionView);soother.insideCase=sootherInside(darknessS1ProjectionView);soother.environment=SOOTHER_ENVIRONMENT;if(darknessS1ProjectionView.progression.pathwayId==='darkness'&&(darknessS1ProjectionView.progression.sequence===6||darknessS1ProjectionView.progression.sequence===5||(darknessS1ProjectionView.progression.sequence===4||(darknessS1ProjectionView.progression.sequence===3||(darknessS1ProjectionView.progression.sequence===2||darknessS1ProjectionView.progression.sequence===1)))))soother.abilities.unshift(...sleepless.abilities,...midnight.abilities,...nightmare.abilities);
+  const polymath=projectPolymath(whiteTowerS1ProjectionView);polymath.actions.push(...polymathActions(whiteTowerS1ProjectionView));polymath.cases=polymathCases(whiteTowerS1ProjectionView);polymath.insideCase=polymathInside(whiteTowerS1ProjectionView);polymath.environment=POLYMATH_ENVIRONMENT;if(whiteTowerS1ProjectionView.progression.pathwayId==='white-tower'&&(whiteTowerS1ProjectionView.progression.sequence===6||whiteTowerS1ProjectionView.progression.sequence===5||(whiteTowerS1ProjectionView.progression.sequence===4||(whiteTowerS1ProjectionView.progression.sequence===3||(whiteTowerS1ProjectionView.progression.sequence===2||whiteTowerS1ProjectionView.progression.sequence===1)))))polymath.abilities.unshift(...reader.abilities,...reasoner.abilities,...detective.abilities);
+  const windBlessed=projectWindBlessed(tyrantS1ProjectionView);windBlessed.actions.push(...windBlessedActions(tyrantS1ProjectionView));windBlessed.cases=windBlessedCases(tyrantS1ProjectionView);windBlessed.insideCase=windBlessedInside(tyrantS1ProjectionView);windBlessed.environment=WIND_BLESSED_ENVIRONMENT;if(tyrantS1ProjectionView.progression.pathwayId==='tyrant'&&(tyrantS1ProjectionView.progression.sequence===6||tyrantS1ProjectionView.progression.sequence===5||(tyrantS1ProjectionView.progression.sequence===4||(tyrantS1ProjectionView.progression.sequence===3||(tyrantS1ProjectionView.progression.sequence===2||tyrantS1ProjectionView.progression.sequence===1)))))windBlessed.abilities.unshift(...sailor.abilities,...rager.abilities,...navigator.abilities);
+  const notary=projectNotary(sunS1ProjectionView);notary.cases=notaryCases(sunS1ProjectionView);notary.insideCase=notaryInside(sunS1ProjectionView);notary.environment=NOTARY_ENVIRONMENT;if(sunS1ProjectionView.progression.pathwayId==='sun'&&(sunS1ProjectionView.progression.sequence===6||sunS1ProjectionView.progression.sequence===5||(sunS1ProjectionView.progression.sequence===4||(sunS1ProjectionView.progression.sequence===3||(sunS1ProjectionView.progression.sequence===2||sunS1ProjectionView.progression.sequence===1)))))notary.abilities.unshift(...bard.abilities,...lightprayer.abilities,...sunpriest.abilities);
+  const spiritGuide=projectSpiritGuide(deathS1ProjectionView);spiritGuide.actions.push(...spiritGuideActions(deathS1ProjectionView));spiritGuide.cases=spiritGuideCases(deathS1ProjectionView);spiritGuide.insideCase=spiritGuideInside(deathS1ProjectionView);spiritGuide.environment=SPIRIT_GUIDE_ENVIRONMENT;if(deathS1ProjectionView.progression.pathwayId==='death'&&(deathS1ProjectionView.progression.sequence===6||deathS1ProjectionView.progression.sequence===5||(deathS1ProjectionView.progression.sequence===4||(deathS1ProjectionView.progression.sequence===3||(deathS1ProjectionView.progression.sequence===2||deathS1ProjectionView.progression.sequence===1)))))spiritGuide.abilities.unshift(...corpsecollector.abilities,...gravedigger.abilities,...spiritmedium.abilities);
+  const recorder=projectRecorder(doorProjectionView);recorder.actions.push(...recorderActions(doorProjectionView));recorder.cases=recorderCases(doorProjectionView);recorder.insideCase=recorderInside(doorProjectionView);recorder.environment=RECORDER_ENVIRONMENT;if(doorProjectionView.progression.pathwayId==='door'&&(doorProjectionView.progression.sequence===6||doorProjectionView.progression.sequence===5||doorProjectionView.progression.sequence===4||(doorProjectionView.progression.sequence===3||doorProjectionView.progression.sequence===2)))recorder.abilities.unshift(...apprentice.abilities,...trickmaster.abilities,...astrologer.abilities);
+  const fireThief=projectFireThief(errorProjectionView);fireThief.actions.push(...fireThiefActions(errorProjectionView));fireThief.cases=fireThiefCases(errorProjectionView);fireThief.insideCase=fireThiefInside(errorProjectionView);fireThief.environment=FIRE_THIEF_ENVIRONMENT;if(errorProjectionView.progression.pathwayId==='error'&&(errorProjectionView.progression.sequence===6||errorProjectionView.progression.sequence===5||(errorProjectionView.progression.sequence===4||(errorProjectionView.progression.sequence===3||errorProjectionView.progression.sequence===2))))fireThief.abilities.unshift(...marauder.abilities,...swindler.abilities,...cryptologist.abilities);
+  const dawnPaladin=projectDawnPaladin(warriorProjectionView);dawnPaladin.actions.push(...dawnPaladinActions(warriorProjectionView));dawnPaladin.cases=dawnPaladinCases(warriorProjectionView);dawnPaladin.insideCase=dawnPaladinInside(warriorProjectionView);dawnPaladin.environment=DAWN_PALADIN_ENVIRONMENT;if(warriorProjectionView.progression.pathwayId==='warrior'&&(warriorProjectionView.progression.sequence===6||warriorProjectionView.progression.sequence===5||(warriorProjectionView.progression.sequence===4||(warriorProjectionView.progression.sequence===3||warriorProjectionView.progression.sequence===2))))dawnPaladin.abilities.unshift(...warrior.abilities,...gladiator.abilities,...weaponmaster.abilities);
+  const pleasure=projectPleasure(demonessProjectionView);pleasure.cases=pleasureCases(demonessProjectionView);pleasure.insideCase=pleasureInside(demonessProjectionView);pleasure.environment=PLEASURE_ENVIRONMENT;if(demonessProjectionView.progression.pathwayId==='demoness'&&(demonessProjectionView.progression.sequence===6||demonessProjectionView.progression.sequence===5||(demonessProjectionView.progression.sequence===4||(demonessProjectionView.progression.sequence===3||demonessProjectionView.progression.sequence===2))))pleasure.abilities.unshift(...assassin.abilities,...instigator.abilities,...witch.abilities);
+  const scrollProfessor=hermitHistories?clone(hermitHistories.scrollProfessor):projectScrollProfessor(hermitProjectionView);if(!hermitHistories){scrollProfessor.actions.push(...scrollProfessorActions(hermitProjectionView));scrollProfessor.cases=scrollProfessorCases(hermitProjectionView);scrollProfessor.insideCase=scrollProfessorInside(hermitProjectionView);scrollProfessor.environment=SCROLL_PROFESSOR_ENVIRONMENT;if(hermitProjectionView.progression.pathwayId==='hermit'&&(hermitProjectionView.progression.sequence===6||hermitProjectionView.progression.sequence===5||(hermitProjectionView.progression.sequence===4||hermitProjectionView.progression.sequence===3)))scrollProfessor.abilities.unshift(...pryer.abilities,...combatScholar.abilities,...wizard.abilities);}
+  const roseBishop=hangedManHistories?clone(hangedManHistories.roseBishop):projectRoseBishop(hangedManProjectionView);if(!hangedManHistories){roseBishop.actions.push(...roseBishopActions(hangedManProjectionView));roseBishop.cases=roseBishopCases(hangedManProjectionView);roseBishop.insideCase=roseBishopInside(hangedManProjectionView);roseBishop.environment=ROSE_BISHOP_ENVIRONMENT;if(hangedManProjectionView.progression.pathwayId==='hanged-man'&&(hangedManProjectionView.progression.sequence===6||hangedManProjectionView.progression.sequence===5||(hangedManProjectionView.progression.sequence===4||(hangedManProjectionView.progression.sequence===3||hangedManProjectionView.progression.sequence===2))))roseBishop.abilities.unshift(...secretSupplicant.abilities,...listener.abilities,...shadowAscetic.abilities);}
+  const demon=abyssHistories?clone(abyssHistories.demon):projectDemon(abyssProjectionView);if(!abyssHistories){demon.actions.push(...demonActions(abyssProjectionView));demon.cases=demonCases(abyssProjectionView);demon.insideCase=demonInside(abyssProjectionView);demon.environment=DEMON_ENVIRONMENT;if(abyssProjectionView.progression.pathwayId==='abyss'&&(abyssProjectionView.progression.sequence===6||abyssProjectionView.progression.sequence===5||(abyssProjectionView.progression.sequence===4||abyssProjectionView.progression.sequence===3)))demon.abilities.unshift(...criminal.abilities,...unwinged.abilities,...serialKiller.abilities);}
+  const zombie=chainedHistories?clone(chainedHistories.zombie):projectZombie(chainedProjectionView);if(!chainedHistories){zombie.actions.push(...zombieActions(chainedProjectionView));zombie.cases=zombieCases(chainedProjectionView);zombie.insideCase=zombieInside(chainedProjectionView);zombie.environment=ZOMBIE_ENVIRONMENT;if(chainedProjectionView.progression.pathwayId==='chained'&&(chainedProjectionView.progression.sequence===6||chainedProjectionView.progression.sequence===5||(chainedProjectionView.progression.sequence===4||chainedProjectionView.progression.sequence===3)))zombie.abilities.unshift(...prisoner.abilities,...madman.abilities,...werewolf.abilities);}
+  const calamityPriest=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.calamityPriest):projectCalamityPriest(wheelProjectionView);if(!wheelOfFortuneHistories){calamityPriest.actions.push(...calamityPriestActions(wheelProjectionView));calamityPriest.cases=calamityPriestCases(wheelProjectionView);calamityPriest.insideCase=calamityPriestInside(wheelProjectionView);calamityPriest.environment=CALAMITY_PRIEST_ENVIRONMENT;if(wheelProjectionView.progression.pathwayId==='wheel'&&(wheelProjectionView.progression.sequence===6||wheelProjectionView.progression.sequence===5||(wheelProjectionView.progression.sequence===4||wheelProjectionView.progression.sequence===3)))calamityPriest.abilities.unshift(...monster.abilities,...machine.abilities,...lucky.abilities);}
+  const corruptionBaron=blackEmperorHistories?clone(blackEmperorHistories.corruptionBaron):projectCorruptionBaron(blackEmperorProjectionView);if(!blackEmperorHistories){corruptionBaron.actions.push(...corruptionBaronActions(blackEmperorProjectionView));corruptionBaron.cases=corruptionBaronCases(blackEmperorProjectionView);corruptionBaron.insideCase=corruptionBaronInside(blackEmperorProjectionView);corruptionBaron.environment=CORRUPTION_BARON_ENVIRONMENT;if(blackEmperorProjectionView.progression.pathwayId==='black-emperor'&&(blackEmperorProjectionView.progression.sequence===6||blackEmperorProjectionView.progression.sequence===5||(blackEmperorProjectionView.progression.sequence===4||blackEmperorProjectionView.progression.sequence===3)))corruptionBaron.abilities.unshift(...lawyer.abilities,...barbarian.abilities,...briber.abilities);}
+  const judge=justiciarHistories?clone(justiciarHistories.judge):projectJudge(justiciarProjectionView);if(!justiciarHistories){judge.actions.push(...judgeActions(justiciarProjectionView));judge.cases=judgeCases(justiciarProjectionView);judge.insideCase=judgeInside(justiciarProjectionView);judge.environment=JUDGE_ENVIRONMENT;if(justiciarProjectionView.progression.pathwayId==='justiciar'&&(justiciarProjectionView.progression.sequence===6||justiciarProjectionView.progression.sequence===5||(justiciarProjectionView.progression.sequence===4||(justiciarProjectionView.progression.sequence===3||justiciarProjectionView.progression.sequence===2))))judge.abilities.unshift(...arbiter.abilities,...sheriff.abilities,...interrogator.abilities);}
+  const biologist=motherHistories?clone(motherHistories.biologist):projectBiologist(motherProjectionView);if(!motherHistories){biologist.actions.push(...biologistActions(motherProjectionView));biologist.cases=biologistCases(motherProjectionView);biologist.insideCase=biologistInside(motherProjectionView);biologist.environment=BIOLOGIST_ENVIRONMENT;if(motherProjectionView.progression.pathwayId==='mother'&&(motherProjectionView.progression.sequence===6||motherProjectionView.progression.sequence===5||(motherProjectionView.progression.sequence===4||(motherProjectionView.progression.sequence===3||motherProjectionView.progression.sequence===2))))biologist.abilities.unshift(...cultivator.abilities,...physician.abilities,...harvestpriest.abilities);}
   const marionettist=projectMarionettist(divinerProjectionView);if(s.progression.pathwayId==='diviner'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))marionettist.abilities.unshift(...faceless.abilities);
-  const reaper=projectReaper(s);reaper.actions.push(...reaperActions(s));reaper.cases=reaperCases(s);reaper.insideCase=reaperInside(s);reaper.environment=REAPER_ENVIRONMENT;if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))reaper.abilities.unshift(...conspirator.abilities);
-  const dreamwalker=projectDreamwalker(s);dreamwalker.actions.push(...dreamwalkerActions(s));dreamwalker.cases=dreamwalkerCases(s);dreamwalker.insideCase=dreamwalkerInside(s);dreamwalker.environment=DREAMWALKER_ENVIRONMENT;if(s.progression.pathwayId==='audience'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))dreamwalker.abilities.unshift(...hypnotist.abilities);
-  const astronomer=projectAstronomer(s);astronomer.actions.push(...astronomerActions(s));astronomer.cases=astronomerCases(s);astronomer.insideCase=astronomerInside(s);astronomer.environment=ASTRONOMER_ENVIRONMENT;if(s.progression.pathwayId==='paragon'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))astronomer.abilities.unshift(...artisan.abilities);
-  const crimsonScholar=projectCrimsonScholar(s);crimsonScholar.actions.push(...crimsonScholarActions(s));crimsonScholar.cases=crimsonScholarCases(s);crimsonScholar.insideCase=crimsonScholarInside(s);crimsonScholar.environment=CRIMSON_SCHOLAR_ENVIRONMENT;if(s.progression.pathwayId==='moon'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))crimsonScholar.abilities.unshift(...potionProfessor.abilities);
-  const spiritWarlock=projectSpiritWarlock(s);spiritWarlock.actions.push(...spiritWarlockActions(s));spiritWarlock.cases=spiritWarlockCases(s);spiritWarlock.companion=spiritWarlockCompanion(s);spiritWarlock.practice=spiritWarlockPractice(s);spiritWarlock.insideCase=spiritWarlockInside(s);spiritWarlock.environment=SPIRIT_WARLOCK_ENVIRONMENT;if(s.progression.pathwayId==='darkness'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))spiritWarlock.abilities.unshift(...soother.abilities);
-  const mysticismMagister=projectMysticismMagister(s);mysticismMagister.actions.push(...mysticismMagisterActions(s));mysticismMagister.cases=mysticismMagisterCases(s);mysticismMagister.practice=mysticismMagisterPractice(s);mysticismMagister.crafts=mysticismMagisterCrafts(s);mysticismMagister.insideCase=mysticismMagisterInside(s);mysticismMagister.environment=MYSTICISM_MAGISTER_ENVIRONMENT;if(s.progression.pathwayId==='white-tower'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))mysticismMagister.abilities.unshift(...polymath.abilities);
-  const oceanSinger=projectOceanSinger(s);oceanSinger.actions.push(...oceanSingerActions(s));oceanSinger.cases=oceanSingerCases(s);oceanSinger.insideCase=oceanSingerInside(s);oceanSinger.environment=OCEAN_SINGER_ENVIRONMENT;oceanSinger.practice=oceanSingerPractice(s);if(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))oceanSinger.abilities.unshift(...windBlessed.abilities);
-  const priestOfLight=projectPriestOfLight(s);priestOfLight.actions.push(...priestOfLightActions(s));priestOfLight.cases=priestOfLightCases(s);priestOfLight.insideCase=priestOfLightInside(s);priestOfLight.environment=PRIEST_OF_LIGHT_ENVIRONMENT;priestOfLight.practice=priestOfLightPractice(s);if(s.progression.pathwayId==='sun'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))priestOfLight.abilities.unshift(...notary.abilities);
-  const gatekeeper=projectGatekeeper(s);gatekeeper.actions.push(...gatekeeperActions(s));gatekeeper.cases=gatekeeperCases(s);gatekeeper.insideCase=gatekeeperInside(s);gatekeeper.environment=GATEKEEPER_ENVIRONMENT;gatekeeper.practice=gatekeeperPractice(s);gatekeeper.companion=gatekeeperCompanion(s);if(s.progression.pathwayId==='death'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))gatekeeper.abilities.unshift(...spiritGuide.abilities);
-  const traveler=projectTraveler(s);traveler.actions.push(...travelerActions(s));traveler.cases=travelerCases(s);traveler.insideCase=travelerInside(s);traveler.environment=TRAVELER_ENVIRONMENT;traveler.practice=travelerPractice(s);if(s.progression.pathwayId==='door'&&(s.progression.sequence===5||s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))traveler.abilities.unshift(...recorder.abilities);
-  const dreamStealer=projectDreamStealer(s);dreamStealer.actions.push(...dreamStealerActions(s));dreamStealer.cases=dreamStealerCases(s);dreamStealer.insideCase=dreamStealerInside(s);dreamStealer.environment=DREAM_STEALER_ENVIRONMENT;dreamStealer.practice=dreamStealerPractice(s);if(s.progression.pathwayId==='error'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))dreamStealer.abilities.unshift(...fireThief.abilities);
-  const guardian=projectGuardian(s);guardian.actions.push(...guardianActions(s));guardian.cases=guardianCases(s);guardian.insideCase=guardianInside(s);guardian.environment=GUARDIAN_ENVIRONMENT;guardian.practice=guardianPractice(s);if(s.progression.pathwayId==='warrior'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))guardian.abilities.unshift(...dawnPaladin.abilities);
-  const pain=projectPain(s);pain.actions.push(...painActions(s));pain.cases=painCases(s);pain.insideCase=painInside(s);pain.environment=PAIN_ENVIRONMENT;pain.practice=painPractice(s);if(s.progression.pathwayId==='demoness'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))pain.abilities.unshift(...pleasure.abilities);
-  const starMystic=projectStarMystic(s);starMystic.actions.push(...starMysticActions(s));starMystic.cases=starMysticCases(s);starMystic.insideCase=starMysticInside(s);starMystic.environment=STAR_MYSTIC_ENVIRONMENT;starMystic.practice=starMysticPractice(s);if(s.progression.pathwayId==='hermit'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))starMystic.abilities.unshift(...scrollProfessor.abilities);
-  const shepherd=projectShepherd(s);shepherd.actions.push(...shepherdActions(s));shepherd.cases=shepherdCases(s);shepherd.insideCase=shepherdInside(s);shepherd.environment=SHEPHERD_ENVIRONMENT;shepherd.practice=shepherdPractice(s);shepherd.grazing=shepherdGrazing(s);if(s.progression.pathwayId==='hanged-man'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))shepherd.abilities.unshift(...roseBishop.abilities);
-  const desireApostle=projectDesireApostle(s);desireApostle.actions.push(...desireApostleActions(s));desireApostle.cases=desireApostleCases(s);desireApostle.insideCase=desireApostleInside(s);desireApostle.environment=DESIRE_APOSTLE_ENVIRONMENT;desireApostle.practice=desireApostlePractice(s);if(s.progression.pathwayId==='abyss'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))desireApostle.abilities.unshift(...demon.abilities);
-  const wraith=projectWraith(chainedProjectionView);wraith.actions.push(...wraithActions(chainedProjectionView));wraith.cases=wraithCases(chainedProjectionView);wraith.insideCase=wraithInside(chainedProjectionView);wraith.environment=WRAITH_ENVIRONMENT;wraith.practice=wraithPractice(chainedProjectionView);if(s.progression.pathwayId==='chained'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))wraith.abilities.unshift(...zombie.abilities);
-  const winner=projectWinner(wheelProjectionView);winner.actions.push(...winnerActions(wheelProjectionView));winner.cases=winnerCases(wheelProjectionView);winner.insideCase=winnerInside(wheelProjectionView);winner.environment=WINNER_ENVIRONMENT;winner.practice=winnerPractice(wheelProjectionView);if(s.progression.pathwayId==='wheel'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))winner.abilities.unshift(...calamityPriest.abilities);
-  const mentorDisorder=projectMentorDisorder(blackEmperorProjectionView);mentorDisorder.actions.push(...mentorDisorderActions(blackEmperorProjectionView));mentorDisorder.cases=mentorDisorderCases(blackEmperorProjectionView);mentorDisorder.insideCase=mentorDisorderInside(blackEmperorProjectionView);mentorDisorder.environment=MENTOR_DISORDER_ENVIRONMENT;mentorDisorder.practice=mentorDisorderPractice(blackEmperorProjectionView);if(s.progression.pathwayId==='black-emperor'&&(s.progression.sequence===5||(s.progression.sequence===4||s.progression.sequence===3)))mentorDisorder.abilities.unshift(...corruptionBaron.abilities);
-  const punishmentKnight=projectPunishmentKnight(justiciarProjectionView);punishmentKnight.actions.push(...punishmentKnightActions(justiciarProjectionView));punishmentKnight.cases=punishmentKnightCases(justiciarProjectionView);punishmentKnight.insideCase=punishmentKnightInside(justiciarProjectionView);punishmentKnight.environment=PUNISHMENT_KNIGHT_ENVIRONMENT;punishmentKnight.practice=punishmentKnightPractice(justiciarProjectionView);if(s.progression.pathwayId==='justiciar'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))punishmentKnight.abilities.unshift(...judge.abilities);
-  const druid=projectDruid(motherProjectionView);druid.actions.push(...druidActions(motherProjectionView));druid.cases=druidCases(motherProjectionView);druid.insideCase=druidInside(natureWalkerInheritedView(s));druid.environment=DRUID_ENVIRONMENT;druid.practice=druidPractice(motherProjectionView);if(s.progression.pathwayId==='mother'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2))))druid.abilities.unshift(...biologist.abilities);
+  const reaper=projectReaper(hunterProjectionView);reaper.actions.push(...reaperActions(hunterProjectionView));reaper.cases=reaperCases(hunterProjectionView);reaper.insideCase=reaperInside(hunterProjectionView);reaper.environment=REAPER_ENVIRONMENT;if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))reaper.abilities.unshift(...conspirator.abilities);
+  const dreamwalker=projectDreamwalker(audienceProjectionView);dreamwalker.actions.push(...dreamwalkerActions(audienceProjectionView));dreamwalker.cases=dreamwalkerCases(audienceProjectionView);dreamwalker.insideCase=dreamwalkerInside(audienceProjectionView);dreamwalker.environment=DREAMWALKER_ENVIRONMENT;if(s.progression.pathwayId==='audience'&&(s.progression.sequence===5||(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))))dreamwalker.abilities.unshift(...hypnotist.abilities);
+  const astronomer=projectAstronomer(paragonProjectionView);astronomer.actions.push(...astronomerActions(paragonProjectionView));astronomer.cases=astronomerCases(paragonProjectionView);astronomer.insideCase=astronomerInside(paragonProjectionView);astronomer.environment=ASTRONOMER_ENVIRONMENT;if(paragonProjectionView.progression.pathwayId==='paragon'&&(paragonProjectionView.progression.sequence===5||(paragonProjectionView.progression.sequence===4||(paragonProjectionView.progression.sequence===3||(paragonProjectionView.progression.sequence===2||paragonProjectionView.progression.sequence===1)))))astronomer.abilities.unshift(...artisan.abilities);
+  const crimsonScholar=projectCrimsonScholar(moonS1ProjectionView);crimsonScholar.actions.push(...crimsonScholarActions(moonS1ProjectionView));crimsonScholar.cases=crimsonScholarCases(moonS1ProjectionView);crimsonScholar.insideCase=crimsonScholarInside(moonS1ProjectionView);crimsonScholar.environment=CRIMSON_SCHOLAR_ENVIRONMENT;if(moonS1ProjectionView.progression.pathwayId==='moon'&&(moonS1ProjectionView.progression.sequence===5||(moonS1ProjectionView.progression.sequence===4||(moonS1ProjectionView.progression.sequence===3||(moonS1ProjectionView.progression.sequence===2||moonS1ProjectionView.progression.sequence===1)))))crimsonScholar.abilities.unshift(...potionProfessor.abilities);
+  const spiritWarlock=projectSpiritWarlock(darknessS1ProjectionView);spiritWarlock.actions.push(...spiritWarlockActions(darknessS1ProjectionView));spiritWarlock.cases=spiritWarlockCases(darknessS1ProjectionView);spiritWarlock.companion=spiritWarlockCompanion(darknessS1ProjectionView);spiritWarlock.practice=spiritWarlockPractice(darknessS1ProjectionView);spiritWarlock.insideCase=spiritWarlockInside(darknessS1ProjectionView);spiritWarlock.environment=SPIRIT_WARLOCK_ENVIRONMENT;if(darknessS1ProjectionView.progression.pathwayId==='darkness'&&(darknessS1ProjectionView.progression.sequence===5||(darknessS1ProjectionView.progression.sequence===4||(darknessS1ProjectionView.progression.sequence===3||(darknessS1ProjectionView.progression.sequence===2||darknessS1ProjectionView.progression.sequence===1)))))spiritWarlock.abilities.unshift(...soother.abilities);
+  const mysticismMagister=projectMysticismMagister(whiteTowerS1ProjectionView);mysticismMagister.actions.push(...mysticismMagisterActions(whiteTowerS1ProjectionView));mysticismMagister.cases=mysticismMagisterCases(whiteTowerS1ProjectionView);mysticismMagister.practice=mysticismMagisterPractice(whiteTowerS1ProjectionView);mysticismMagister.crafts=mysticismMagisterCrafts(whiteTowerS1ProjectionView);mysticismMagister.insideCase=mysticismMagisterInside(whiteTowerS1ProjectionView);mysticismMagister.environment=MYSTICISM_MAGISTER_ENVIRONMENT;if(whiteTowerS1ProjectionView.progression.pathwayId==='white-tower'&&(whiteTowerS1ProjectionView.progression.sequence===5||(whiteTowerS1ProjectionView.progression.sequence===4||(whiteTowerS1ProjectionView.progression.sequence===3||(whiteTowerS1ProjectionView.progression.sequence===2||whiteTowerS1ProjectionView.progression.sequence===1)))))mysticismMagister.abilities.unshift(...polymath.abilities);
+  const oceanSinger=projectOceanSinger(tyrantS1ProjectionView);oceanSinger.actions.push(...oceanSingerActions(tyrantS1ProjectionView));oceanSinger.cases=oceanSingerCases(tyrantS1ProjectionView);oceanSinger.insideCase=oceanSingerInside(tyrantS1ProjectionView);oceanSinger.environment=OCEAN_SINGER_ENVIRONMENT;oceanSinger.practice=oceanSingerPractice(tyrantS1ProjectionView);if(tyrantS1ProjectionView.progression.pathwayId==='tyrant'&&(tyrantS1ProjectionView.progression.sequence===5||(tyrantS1ProjectionView.progression.sequence===4||(tyrantS1ProjectionView.progression.sequence===3||(tyrantS1ProjectionView.progression.sequence===2||tyrantS1ProjectionView.progression.sequence===1)))))oceanSinger.abilities.unshift(...windBlessed.abilities);
+  const priestOfLight=projectPriestOfLight(sunS1ProjectionView);priestOfLight.actions.push(...priestOfLightActions(sunS1ProjectionView));priestOfLight.cases=priestOfLightCases(sunS1ProjectionView);priestOfLight.insideCase=priestOfLightInside(sunS1ProjectionView);priestOfLight.environment=PRIEST_OF_LIGHT_ENVIRONMENT;priestOfLight.practice=priestOfLightPractice(sunS1ProjectionView);if(sunS1ProjectionView.progression.pathwayId==='sun'&&(sunS1ProjectionView.progression.sequence===5||(sunS1ProjectionView.progression.sequence===4||(sunS1ProjectionView.progression.sequence===3||(sunS1ProjectionView.progression.sequence===2||sunS1ProjectionView.progression.sequence===1)))))priestOfLight.abilities.unshift(...notary.abilities);
+  const gatekeeper=projectGatekeeper(deathS1ProjectionView);gatekeeper.actions.push(...gatekeeperActions(deathS1ProjectionView));gatekeeper.cases=gatekeeperCases(deathS1ProjectionView);gatekeeper.insideCase=gatekeeperInside(deathS1ProjectionView);gatekeeper.environment=GATEKEEPER_ENVIRONMENT;gatekeeper.practice=gatekeeperPractice(deathS1ProjectionView);gatekeeper.companion=gatekeeperCompanion(deathS1ProjectionView);if(deathS1ProjectionView.progression.pathwayId==='death'&&(deathS1ProjectionView.progression.sequence===5||(deathS1ProjectionView.progression.sequence===4||(deathS1ProjectionView.progression.sequence===3||(deathS1ProjectionView.progression.sequence===2||deathS1ProjectionView.progression.sequence===1)))))gatekeeper.abilities.unshift(...spiritGuide.abilities);
+  const traveler=projectTraveler(doorProjectionView);traveler.actions.push(...travelerActions(doorProjectionView));traveler.cases=travelerCases(doorProjectionView);traveler.insideCase=travelerInside(doorProjectionView);traveler.environment=TRAVELER_ENVIRONMENT;traveler.practice=travelerPractice(doorProjectionView);if(doorProjectionView.progression.pathwayId==='door'&&(doorProjectionView.progression.sequence===5||doorProjectionView.progression.sequence===4||(doorProjectionView.progression.sequence===3||doorProjectionView.progression.sequence===2)))traveler.abilities.unshift(...recorder.abilities);
+  const dreamStealer=projectDreamStealer(errorProjectionView);dreamStealer.actions.push(...dreamStealerActions(errorProjectionView));dreamStealer.cases=dreamStealerCases(errorProjectionView);dreamStealer.insideCase=dreamStealerInside(errorProjectionView);dreamStealer.environment=DREAM_STEALER_ENVIRONMENT;dreamStealer.practice=dreamStealerPractice(errorProjectionView);if(errorProjectionView.progression.pathwayId==='error'&&(errorProjectionView.progression.sequence===5||(errorProjectionView.progression.sequence===4||(errorProjectionView.progression.sequence===3||errorProjectionView.progression.sequence===2))))dreamStealer.abilities.unshift(...fireThief.abilities);
+  const guardian=projectGuardian(warriorProjectionView);guardian.actions.push(...guardianActions(warriorProjectionView));guardian.cases=guardianCases(warriorProjectionView);guardian.insideCase=guardianInside(warriorProjectionView);guardian.environment=GUARDIAN_ENVIRONMENT;guardian.practice=guardianPractice(warriorProjectionView);if(warriorProjectionView.progression.pathwayId==='warrior'&&(warriorProjectionView.progression.sequence===5||(warriorProjectionView.progression.sequence===4||(warriorProjectionView.progression.sequence===3||warriorProjectionView.progression.sequence===2))))guardian.abilities.unshift(...dawnPaladin.abilities);
+  const pain=projectPain(demonessProjectionView);pain.actions.push(...painActions(demonessProjectionView));pain.cases=painCases(demonessProjectionView);pain.insideCase=painInside(demonessProjectionView);pain.environment=PAIN_ENVIRONMENT;pain.practice=painPractice(demonessProjectionView);if(demonessProjectionView.progression.pathwayId==='demoness'&&(demonessProjectionView.progression.sequence===5||(demonessProjectionView.progression.sequence===4||(demonessProjectionView.progression.sequence===3||demonessProjectionView.progression.sequence===2))))pain.abilities.unshift(...pleasure.abilities);
+  const starMystic=hermitHistories?clone(hermitHistories.starMystic):projectStarMystic(hermitProjectionView);if(!hermitHistories){starMystic.actions.push(...starMysticActions(hermitProjectionView));starMystic.cases=starMysticCases(hermitProjectionView);starMystic.insideCase=starMysticInside(hermitProjectionView);starMystic.environment=STAR_MYSTIC_ENVIRONMENT;starMystic.practice=starMysticPractice(hermitProjectionView);if(hermitProjectionView.progression.pathwayId==='hermit'&&(hermitProjectionView.progression.sequence===5||(hermitProjectionView.progression.sequence===4||hermitProjectionView.progression.sequence===3)))starMystic.abilities.unshift(...scrollProfessor.abilities);}
+  const shepherd=hangedManHistories?clone(hangedManHistories.shepherd):projectShepherd(hangedManProjectionView);if(!hangedManHistories){shepherd.actions.push(...shepherdActions(hangedManProjectionView));shepherd.cases=shepherdCases(hangedManProjectionView);shepherd.insideCase=shepherdInside(hangedManProjectionView);shepherd.environment=SHEPHERD_ENVIRONMENT;shepherd.practice=shepherdPractice(hangedManProjectionView);shepherd.grazing=shepherdGrazing(hangedManProjectionView);if(hangedManProjectionView.progression.pathwayId==='hanged-man'&&(hangedManProjectionView.progression.sequence===5||(hangedManProjectionView.progression.sequence===4||(hangedManProjectionView.progression.sequence===3||hangedManProjectionView.progression.sequence===2))))shepherd.abilities.unshift(...roseBishop.abilities);}
+  const desireApostle=abyssHistories?clone(abyssHistories.desireApostle):projectDesireApostle(abyssProjectionView);if(!abyssHistories){desireApostle.actions.push(...desireApostleActions(abyssProjectionView));desireApostle.cases=desireApostleCases(abyssProjectionView);desireApostle.insideCase=desireApostleInside(abyssProjectionView);desireApostle.environment=DESIRE_APOSTLE_ENVIRONMENT;desireApostle.practice=desireApostlePractice(abyssProjectionView);if(abyssProjectionView.progression.pathwayId==='abyss'&&(abyssProjectionView.progression.sequence===5||(abyssProjectionView.progression.sequence===4||abyssProjectionView.progression.sequence===3)))desireApostle.abilities.unshift(...demon.abilities);}
+  const wraith=chainedHistories?clone(chainedHistories.wraith):projectWraith(chainedProjectionView);if(!chainedHistories){wraith.actions.push(...wraithActions(chainedProjectionView));wraith.cases=wraithCases(chainedProjectionView);wraith.insideCase=wraithInside(chainedProjectionView);wraith.environment=WRAITH_ENVIRONMENT;wraith.practice=wraithPractice(chainedProjectionView);if(chainedProjectionView.progression.pathwayId==='chained'&&(chainedProjectionView.progression.sequence===5||(chainedProjectionView.progression.sequence===4||chainedProjectionView.progression.sequence===3)))wraith.abilities.unshift(...zombie.abilities);}
+  const winner=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.winner):projectWinner(wheelProjectionView);if(!wheelOfFortuneHistories){winner.actions.push(...winnerActions(wheelProjectionView));winner.cases=winnerCases(wheelProjectionView);winner.insideCase=winnerInside(wheelProjectionView);winner.environment=WINNER_ENVIRONMENT;winner.practice=winnerPractice(wheelProjectionView);if(wheelProjectionView.progression.pathwayId==='wheel'&&(wheelProjectionView.progression.sequence===5||(wheelProjectionView.progression.sequence===4||wheelProjectionView.progression.sequence===3)))winner.abilities.unshift(...calamityPriest.abilities);}
+  const mentorDisorder=blackEmperorHistories?clone(blackEmperorHistories.mentorDisorder):projectMentorDisorder(blackEmperorProjectionView);if(!blackEmperorHistories){mentorDisorder.actions.push(...mentorDisorderActions(blackEmperorProjectionView));mentorDisorder.cases=mentorDisorderCases(blackEmperorProjectionView);mentorDisorder.insideCase=mentorDisorderInside(blackEmperorProjectionView);mentorDisorder.environment=MENTOR_DISORDER_ENVIRONMENT;mentorDisorder.practice=mentorDisorderPractice(blackEmperorProjectionView);if(blackEmperorProjectionView.progression.pathwayId==='black-emperor'&&(blackEmperorProjectionView.progression.sequence===5||(blackEmperorProjectionView.progression.sequence===4||blackEmperorProjectionView.progression.sequence===3)))mentorDisorder.abilities.unshift(...corruptionBaron.abilities);}
+  const punishmentKnight=justiciarHistories?clone(justiciarHistories.punishmentKnight):projectPunishmentKnight(justiciarProjectionView);if(!justiciarHistories){punishmentKnight.actions.push(...punishmentKnightActions(justiciarProjectionView));punishmentKnight.cases=punishmentKnightCases(justiciarProjectionView);punishmentKnight.insideCase=punishmentKnightInside(justiciarProjectionView);punishmentKnight.environment=PUNISHMENT_KNIGHT_ENVIRONMENT;punishmentKnight.practice=punishmentKnightPractice(justiciarProjectionView);if(justiciarProjectionView.progression.pathwayId==='justiciar'&&(justiciarProjectionView.progression.sequence===5||(justiciarProjectionView.progression.sequence===4||(justiciarProjectionView.progression.sequence===3||justiciarProjectionView.progression.sequence===2))))punishmentKnight.abilities.unshift(...judge.abilities);}
+  const druid=motherHistories?clone(motherHistories.druid):projectDruid(motherProjectionView);if(!motherHistories){druid.actions.push(...druidActions(motherProjectionView));druid.cases=druidCases(motherProjectionView);druid.insideCase=druidInside(motherProjectionView);druid.environment=DRUID_ENVIRONMENT;druid.practice=druidPractice(motherProjectionView);if(motherProjectionView.progression.pathwayId==='mother'&&(motherProjectionView.progression.sequence===5||(motherProjectionView.progression.sequence===4||(motherProjectionView.progression.sequence===3||motherProjectionView.progression.sequence===2))))druid.abilities.unshift(...biologist.abilities);}
   const bizarroSorcerer=projectBizarroSorcerer(divinerProjectionView);if(s.progression.pathwayId==='diviner'&&(s.progression.sequence===4||s.progression.sequence===3))bizarroSorcerer.abilities.unshift(...marionettist.abilities);
-  const ironBloodKnight=projectIronBloodKnight(s);if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))ironBloodKnight.abilities.unshift(...reaper.abilities);
-  const manipulator=projectManipulator(s);if(s.progression.pathwayId==='audience'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))manipulator.abilities.unshift(...dreamwalker.abilities);
-  const alchemist=projectAlchemist(s);if(s.progression.pathwayId==='paragon'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))alchemist.abilities.unshift(...astronomer.abilities);
-  const witchKing=projectWitchKing(s);if(s.progression.pathwayId==='moon'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))witchKing.abilities.unshift(...crimsonScholar.abilities);
-  const nightwatcher=projectNightwatcher(s);if(s.progression.pathwayId==='darkness'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))nightwatcher.abilities.unshift(...spiritWarlock.abilities);
-  const prophet=projectProphet(s);if(s.progression.pathwayId==='white-tower'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))prophet.abilities.unshift(...mysticismMagister.abilities);
-  const cataclysmPriest=projectCataclysmPriest(s);if(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))cataclysmPriest.abilities.unshift(...oceanSinger.abilities);
-  const unshadowed=projectUnshadowed(s);if(s.progression.pathwayId==='sun'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))unshadowed.abilities.unshift(...priestOfLight.abilities);
-  const undying=projectUndying(s);if(s.progression.pathwayId==='death'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))undying.abilities.unshift(...gatekeeper.abilities);
-  const secretsSorcerer=projectSecretsSorcerer(s);if(s.progression.pathwayId==='door'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))secretsSorcerer.abilities.unshift(...traveler.abilities);
-  const parasite=projectParasite(s);if(s.progression.pathwayId==='error'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))parasite.abilities.unshift(...dreamStealer.abilities);
-  const demonHunter=projectDemonHunter(s);if(s.progression.pathwayId==='warrior'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))demonHunter.abilities.unshift(...guardian.abilities);
-  const despair=projectDespair(s);if(s.progression.pathwayId==='demoness'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))despair.abilities.unshift(...pain.abilities);
-  const mystic=projectMystic(s);if(s.progression.pathwayId==='hermit'&&(s.progression.sequence===4||s.progression.sequence===3))mystic.abilities.unshift(...starMystic.abilities);
-  const blackKnight=projectBlackKnight(s);if(s.progression.pathwayId==='hanged-man'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))blackKnight.abilities.unshift(...shepherd.abilities);
-  const devil=projectDevil(s);if(s.progression.pathwayId==='abyss'&&(s.progression.sequence===4||s.progression.sequence===3))devil.abilities.unshift(...desireApostle.abilities);
-  const puppet=projectPuppet(chainedProjectionView);if(s.progression.pathwayId==='chained'&&(s.progression.sequence===4||s.progression.sequence===3))puppet.abilities.unshift(...wraith.abilities);
-  const misfortuneMage=projectMisfortuneMage(wheelProjectionView);if(s.progression.pathwayId==='wheel'&&(s.progression.sequence===4||s.progression.sequence===3))misfortuneMage.abilities.unshift(...winner.abilities);
-  const fallenEarl=projectFallenEarl(blackEmperorProjectionView);if(s.progression.pathwayId==='black-emperor'&&(s.progression.sequence===4||s.progression.sequence===3))fallenEarl.abilities.unshift(...mentorDisorder.abilities);
-  const imperativeMage=projectImperativeMage(justiciarProjectionView);if(s.progression.pathwayId==='justiciar'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))imperativeMage.abilities.unshift(...punishmentKnight.abilities);
-  const ancientAlchemist=projectAncientAlchemist(motherProjectionView);if(s.progression.pathwayId==='mother'&&(s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)))ancientAlchemist.abilities.unshift(...druid.abilities);
-  const paleEmperor=projectPaleEmperor(s);
-  const pureWhiteAngel=projectPureWhiteAngel(s);
-  const thunderGod=projectThunderGod(s);
-  const natureWalker=projectNatureWalker(s);
-  const handOfOrder=projectHandOfOrder(s);
-  const princeOfAbolition=projectPrinceOfAbolition(s);
-  const mercurySnake=projectMercurySnake(s);
-  const abomination=projectAbomination(s);
-  const uncleanMonarch=projectUncleanMonarch(s);
-  const darkAngel=projectDarkAngel(s);
-  const knowledgeEmperor=projectKnowledgeEmperor(s);
-  const apocalypseDemoness=projectApocalypseDemoness(s);
-  const divineHand=projectDivineHand(s);
-  const timeWorm=projectTimeWorm(s);
-  const starKey=projectStarKey(s);
-  const allKnowingEye=projectAllKnowingEye(s);
-  const misfortuneKnight=projectMisfortuneKnight(s);
-  const beautyGoddess=projectBeautyGoddess(s);
-  const civilizationEnlightener=projectCivilizationEnlightener(s);
-  const writer=projectWriter(s);
-  const conqueror=projectConqueror(s);
+  const ironBloodKnight=projectIronBloodKnight(hunterProjectionView);if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))ironBloodKnight.abilities.unshift(...reaper.abilities);
+  const manipulator=projectManipulator(audienceProjectionView);if(s.progression.pathwayId==='audience'&&(s.progression.sequence===4||(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1))))manipulator.abilities.unshift(...dreamwalker.abilities);
+  const alchemist=projectAlchemist(paragonProjectionView);if(paragonProjectionView.progression.pathwayId==='paragon'&&(paragonProjectionView.progression.sequence===4||(paragonProjectionView.progression.sequence===3||(paragonProjectionView.progression.sequence===2||paragonProjectionView.progression.sequence===1))))alchemist.abilities.unshift(...astronomer.abilities);
+  const witchKing=projectWitchKing(moonS1ProjectionView);if(moonS1ProjectionView.progression.pathwayId==='moon'&&(moonS1ProjectionView.progression.sequence===4||(moonS1ProjectionView.progression.sequence===3||(moonS1ProjectionView.progression.sequence===2||moonS1ProjectionView.progression.sequence===1))))witchKing.abilities.unshift(...crimsonScholar.abilities);
+  const nightwatcher=projectNightwatcher(darknessS1ProjectionView);if(darknessS1ProjectionView.progression.pathwayId==='darkness'&&(darknessS1ProjectionView.progression.sequence===4||(darknessS1ProjectionView.progression.sequence===3||(darknessS1ProjectionView.progression.sequence===2||darknessS1ProjectionView.progression.sequence===1))))nightwatcher.abilities.unshift(...spiritWarlock.abilities);
+  const prophet=projectProphet(whiteTowerS1ProjectionView);if(whiteTowerS1ProjectionView.progression.pathwayId==='white-tower'&&(whiteTowerS1ProjectionView.progression.sequence===4||(whiteTowerS1ProjectionView.progression.sequence===3||(whiteTowerS1ProjectionView.progression.sequence===2||whiteTowerS1ProjectionView.progression.sequence===1))))prophet.abilities.unshift(...mysticismMagister.abilities);
+  const cataclysmPriest=projectCataclysmPriest(tyrantS1ProjectionView);if(tyrantS1ProjectionView.progression.pathwayId==='tyrant'&&(tyrantS1ProjectionView.progression.sequence===4||(tyrantS1ProjectionView.progression.sequence===3||(tyrantS1ProjectionView.progression.sequence===2||tyrantS1ProjectionView.progression.sequence===1))))cataclysmPriest.abilities.unshift(...oceanSinger.abilities);
+  const unshadowed=projectUnshadowed(sunS1ProjectionView);if(sunS1ProjectionView.progression.pathwayId==='sun'&&(sunS1ProjectionView.progression.sequence===4||(sunS1ProjectionView.progression.sequence===3||(sunS1ProjectionView.progression.sequence===2||sunS1ProjectionView.progression.sequence===1))))unshadowed.abilities.unshift(...priestOfLight.abilities);
+  const undying=projectUndying(deathS1ProjectionView);if(deathS1ProjectionView.progression.pathwayId==='death'&&(deathS1ProjectionView.progression.sequence===4||(deathS1ProjectionView.progression.sequence===3||(deathS1ProjectionView.progression.sequence===2||deathS1ProjectionView.progression.sequence===1))))undying.abilities.unshift(...gatekeeper.abilities);
+  const secretsSorcerer=projectSecretsSorcerer(doorProjectionView);if(doorProjectionView.progression.pathwayId==='door'&&(doorProjectionView.progression.sequence===4||(doorProjectionView.progression.sequence===3||doorProjectionView.progression.sequence===2)))secretsSorcerer.abilities.unshift(...traveler.abilities);
+  const parasite=projectParasite(errorProjectionView);if(errorProjectionView.progression.pathwayId==='error'&&(errorProjectionView.progression.sequence===4||(errorProjectionView.progression.sequence===3||errorProjectionView.progression.sequence===2)))parasite.abilities.unshift(...dreamStealer.abilities);
+  const demonHunter=projectDemonHunter(warriorProjectionView);if(warriorProjectionView.progression.pathwayId==='warrior'&&(warriorProjectionView.progression.sequence===4||(warriorProjectionView.progression.sequence===3||warriorProjectionView.progression.sequence===2)))demonHunter.abilities.unshift(...guardian.abilities);
+  const despair=projectDespair(demonessProjectionView);if(demonessProjectionView.progression.pathwayId==='demoness'&&(demonessProjectionView.progression.sequence===4||(demonessProjectionView.progression.sequence===3||demonessProjectionView.progression.sequence===2)))despair.abilities.unshift(...pain.abilities);
+  const mystic=hermitHistories?clone(hermitHistories.mystic):projectMystic(hermitProjectionView);if(!hermitHistories){if(hermitProjectionView.progression.pathwayId==='hermit'&&(hermitProjectionView.progression.sequence===4||hermitProjectionView.progression.sequence===3))mystic.abilities.unshift(...starMystic.abilities);}
+  const blackKnight=hangedManHistories?clone(hangedManHistories.blackKnight):projectBlackKnight(hangedManProjectionView);if(!hangedManHistories){if(hangedManProjectionView.progression.pathwayId==='hanged-man'&&(hangedManProjectionView.progression.sequence===4||(hangedManProjectionView.progression.sequence===3||hangedManProjectionView.progression.sequence===2)))blackKnight.abilities.unshift(...shepherd.abilities);}
+  const devil=abyssHistories?clone(abyssHistories.devil):projectDevil(abyssProjectionView);if(!abyssHistories){if(abyssProjectionView.progression.pathwayId==='abyss'&&(abyssProjectionView.progression.sequence===4||abyssProjectionView.progression.sequence===3))devil.abilities.unshift(...desireApostle.abilities);}
+  const puppet=chainedHistories?clone(chainedHistories.puppet):projectPuppet(chainedProjectionView);if(!chainedHistories){if(chainedProjectionView.progression.pathwayId==='chained'&&(chainedProjectionView.progression.sequence===4||chainedProjectionView.progression.sequence===3))puppet.abilities.unshift(...wraith.abilities);}
+  const misfortuneMage=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.misfortuneMage):projectMisfortuneMage(wheelProjectionView);if(!wheelOfFortuneHistories){if(wheelProjectionView.progression.pathwayId==='wheel'&&(wheelProjectionView.progression.sequence===4||wheelProjectionView.progression.sequence===3))misfortuneMage.abilities.unshift(...winner.abilities);}
+  const fallenEarl=blackEmperorHistories?clone(blackEmperorHistories.fallenEarl):projectFallenEarl(blackEmperorProjectionView);if(!blackEmperorHistories){if(blackEmperorProjectionView.progression.pathwayId==='black-emperor'&&(blackEmperorProjectionView.progression.sequence===4||blackEmperorProjectionView.progression.sequence===3))fallenEarl.abilities.unshift(...mentorDisorder.abilities);}
+  const imperativeMage=justiciarHistories?clone(justiciarHistories.imperativeMage):projectImperativeMage(justiciarProjectionView);if(!justiciarHistories){if(justiciarProjectionView.progression.pathwayId==='justiciar'&&(justiciarProjectionView.progression.sequence===4||(justiciarProjectionView.progression.sequence===3||justiciarProjectionView.progression.sequence===2)))imperativeMage.abilities.unshift(...punishmentKnight.abilities);}
+  const ancientAlchemist=motherHistories?clone(motherHistories.ancientAlchemist):projectAncientAlchemist(motherProjectionView);if(!motherHistories){if(motherProjectionView.progression.pathwayId==='mother'&&(motherProjectionView.progression.sequence===4||(motherProjectionView.progression.sequence===3||motherProjectionView.progression.sequence===2)))ancientAlchemist.abilities.unshift(...druid.abilities);}
+  const paleEmperor=projectPaleEmperor(deathS1ProjectionView);
+  const pureWhiteAngel=projectPureWhiteAngel(sunS1ProjectionView);
+  const thunderGod=projectThunderGod(tyrantS1ProjectionView);
+  const natureWalker=motherHistories?clone(motherHistories.natureWalker):projectNatureWalker(motherS1ProjectionView);
+  const handOfOrder=justiciarHistories?clone(justiciarHistories.handOfOrder):projectHandOfOrder(justiciarS1ProjectionView);
+  const princeOfAbolition=blackEmperorHistories?clone(blackEmperorHistories.princeOfAbolition):projectPrinceOfAbolition(emperorS1ProjectionView);
+  const mercurySnake=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.mercurySnake):projectMercurySnake(wheelS1ProjectionView);
+  const abomination=chainedHistories?clone(chainedHistories.abomination):projectAbomination(chainedS1ProjectionView);
+  const uncleanMonarch=abyssHistories?clone(abyssHistories.uncleanMonarch):projectUncleanMonarch(abyssS1ProjectionView);
+  const darkAngel=hangedManHistories?clone(hangedManHistories.darkAngel):projectDarkAngel(hangedManS1ProjectionView);
+  const knowledgeEmperor=hermitHistories?clone(hermitHistories.knowledgeEmperor):projectKnowledgeEmperor(hermitS1ProjectionView);
+  const apocalypseDemoness=projectApocalypseDemoness(demonessS1ProjectionView);
+  const divineHand=projectDivineHand(warriorS1ProjectionView);
+  const timeWorm=projectTimeWorm(errorS1ProjectionView);
+  const starKey=projectStarKey(doorS1ProjectionView);
+  const allKnowingEye=projectAllKnowingEye(whiteTowerS1ProjectionView);
+  const misfortuneKnight=projectMisfortuneKnight(darknessS1ProjectionView);
+  const beautyGoddess=projectBeautyGoddess(moonS1ProjectionView);
+  const civilizationEnlightener=projectCivilizationEnlightener(paragonS1ProjectionView);
+  const writer=projectWriter(audienceProjectionView);
+  const conqueror=projectConqueror(hunterProjectionView);
   const attendantMysteries=projectAttendantMysteries(divinerProjectionView);
-  const barrenMatriarch=projectBarrenMatriarch(motherProjectionView);
-  const balancer=projectBalancer(justiciarProjectionView);
-  const entropyDuke=projectEntropyDuke(blackEmperorProjectionView);
-  const fateProphet=projectFateProphet(wheelProjectionView);
-  const ancientEvil=projectAncientEvil(chainedProjectionView);
-  const bloodDuke=projectBloodDuke(s);
-  const elder=projectElder(s);
-  const sage=projectSage(s);
-  const calamityDemoness=projectCalamityDemoness(s);
-  const glory=projectGlory(s);
-  const fateTrojan=projectFateTrojan(s);
-  const planeswalker=projectPlaneswalker(s);
-  const deathConsul=projectDeathConsul(s);
-  const lightSeeker=projectLightSeeker(s);
-  const catastrophe=projectCatastrophe(s);
-  const wisdomAngel=projectWisdomAngel(s);
-  const concealmentServant=projectConcealmentServant(s);
-  const lifeGiver=projectLifeGiver(s);
-  const knowledgeMentor=projectKnowledgeMentor(s);
-  const discerner=projectDiscerner(s);
-  const weatherWarlock=projectWeatherWarlock(s);
+  const barrenMatriarch=motherHistories?clone(motherHistories.barrenMatriarch):projectBarrenMatriarch(motherProjectionView);
+  const balancer=justiciarHistories?clone(justiciarHistories.balancer):projectBalancer(justiciarProjectionView);
+  const entropyDuke=blackEmperorHistories?clone(blackEmperorHistories.entropyDuke):projectEntropyDuke(blackEmperorProjectionView);
+  const fateProphet=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.fateProphet):projectFateProphet(wheelProjectionView);
+  const ancientEvil=chainedHistories?clone(chainedHistories.ancientEvil):projectAncientEvil(chainedProjectionView);
+  const bloodDuke=abyssHistories?clone(abyssHistories.bloodDuke):projectBloodDuke(abyssProjectionView);
+  const elder=hangedManHistories?clone(hangedManHistories.elder):projectElder(hangedManProjectionView);
+  const sage=hermitHistories?clone(hermitHistories.sage):projectSage(hermitProjectionView);
+  const calamityDemoness=projectCalamityDemoness(demonessProjectionView);
+  const glory=projectGlory(warriorProjectionView);
+  const fateTrojan=projectFateTrojan(errorProjectionView);
+  const planeswalker=projectPlaneswalker(doorProjectionView);
+  const deathConsul=projectDeathConsul(deathS1ProjectionView);
+  const lightSeeker=projectLightSeeker(sunS1ProjectionView);
+  const catastrophe=projectCatastrophe(tyrantS1ProjectionView);
+  const wisdomAngel=projectWisdomAngel(whiteTowerS1ProjectionView);
+  const concealmentServant=projectConcealmentServant(darknessS1ProjectionView);
+  const lifeGiver=projectLifeGiver(moonS1ProjectionView);
+  const knowledgeMentor=projectKnowledgeMentor(paragonProjectionView);
+  const discerner=projectDiscerner(audienceProjectionView);
+  const weatherWarlock=projectWeatherWarlock(hunterProjectionView);
   const miracleWorker=projectMiracleWorker(divinerProjectionView);
-  const coffinBearer=projectCoffinBearer(motherProjectionView);if(s.progression.pathwayId==='mother'&&(s.progression.sequence===3||s.progression.sequence===2))coffinBearer.abilities.unshift(...ancientAlchemist.abilities);
-  const chaosHunter=projectChaosHunter(justiciarProjectionView);if(s.progression.pathwayId==='justiciar'&&(s.progression.sequence===3||s.progression.sequence===2))chaosHunter.abilities.unshift(...imperativeMage.abilities);
-  const frenzyMage=projectFrenzyMage(blackEmperorProjectionView);if(s.progression.pathwayId==='black-emperor'&&s.progression.sequence===3)frenzyMage.abilities.unshift(...fallenEarl.abilities);
-  const chaosWalker=projectChaosWalker(wheelProjectionView);if(s.progression.pathwayId==='wheel'&&s.progression.sequence===3)chaosWalker.abilities.unshift(...misfortuneMage.abilities);
-  const silentDisciple=projectSilentDisciple(chainedProjectionView);if(s.progression.pathwayId==='chained'&&s.progression.sequence===3)silentDisciple.abilities.unshift(...puppet.abilities);
-  const blatherer=projectBlatherer(s);if(s.progression.pathwayId==='abyss'&&s.progression.sequence===3)blatherer.abilities.unshift(...devil.abilities);
-  const threeHeadedTemplar=projectThreeHeadedTemplar(s);if(s.progression.pathwayId==='hanged-man'&&(s.progression.sequence===3||s.progression.sequence===2))threeHeadedTemplar.abilities.unshift(...blackKnight.abilities);
-  const prophecyMaster=projectProphecyMaster(s);if(s.progression.pathwayId==='hermit'&&s.progression.sequence===3)prophecyMaster.abilities.unshift(...mystic.abilities);
-  const unagingDemoness=projectUnagingDemoness(s);if(s.progression.pathwayId==='demoness'&&(s.progression.sequence===3||s.progression.sequence===2))unagingDemoness.abilities.unshift(...despair.abilities);
-  const silverKnight=projectSilverKnight(s);if(s.progression.pathwayId==='warrior'&&(s.progression.sequence===3||s.progression.sequence===2))silverKnight.abilities.unshift(...demonHunter.abilities);
-  const deceitMentor=projectDeceitMentor(s);if(s.progression.pathwayId==='error'&&(s.progression.sequence===3||s.progression.sequence===2))deceitMentor.abilities.unshift(...parasite.abilities);
-  const wanderer=projectWanderer(s);if(s.progression.pathwayId==='door'&&(s.progression.sequence===3||s.progression.sequence===2))wanderer.abilities.unshift(...secretsSorcerer.abilities);
-  const ferryman=projectFerryman(s);if(s.progression.pathwayId==='death'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))ferryman.abilities.unshift(...undying.abilities);
-  const justiceMentor=projectJusticeMentor(s);if(s.progression.pathwayId==='sun'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))justiceMentor.abilities.unshift(...unshadowed.abilities);
-  const seaKing=projectSeaKing(s);if(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))seaKing.abilities.unshift(...cataclysmPriest.abilities);
-  const insightScholar=projectInsightScholar(s);if(s.progression.pathwayId==='white-tower'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))insightScholar.abilities.unshift(...prophet.abilities);
-  const fearBishop=projectFearBishop(s);if(s.progression.pathwayId==='darkness'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))fearBishop.abilities.unshift(...nightwatcher.abilities);
-  const summoningMaster=projectSummoningMaster(s);if(s.progression.pathwayId==='moon'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))summoningMaster.abilities.unshift(...witchKing.abilities);
-  const arcaneScholar=projectArcaneScholar(s);if(s.progression.pathwayId==='paragon'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))arcaneScholar.abilities.unshift(...alchemist.abilities);
-  const dreamWeaver=projectDreamWeaver(s);if(s.progression.pathwayId==='audience'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))dreamWeaver.abilities.unshift(...manipulator.abilities);
-  const warBishop=projectWarBishop(s);if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))warBishop.abilities.unshift(...ironBloodKnight.abilities);
+  const coffinBearer=motherHistories?clone(motherHistories.coffinBearer):projectCoffinBearer(motherProjectionView);if(!motherHistories){if(motherProjectionView.progression.pathwayId==='mother'&&(motherProjectionView.progression.sequence===3||motherProjectionView.progression.sequence===2))coffinBearer.abilities.unshift(...ancientAlchemist.abilities);}
+  const chaosHunter=justiciarHistories?clone(justiciarHistories.chaosHunter):projectChaosHunter(justiciarProjectionView);if(!justiciarHistories){if(justiciarProjectionView.progression.pathwayId==='justiciar'&&(justiciarProjectionView.progression.sequence===3||justiciarProjectionView.progression.sequence===2))chaosHunter.abilities.unshift(...imperativeMage.abilities);}
+  const frenzyMage=blackEmperorHistories?clone(blackEmperorHistories.frenzyMage):projectFrenzyMage(blackEmperorProjectionView);if(!blackEmperorHistories){if(blackEmperorProjectionView.progression.pathwayId==='black-emperor'&&blackEmperorProjectionView.progression.sequence===3)frenzyMage.abilities.unshift(...fallenEarl.abilities);}
+  const chaosWalker=wheelOfFortuneHistories?clone(wheelOfFortuneHistories.chaosWalker):projectChaosWalker(wheelProjectionView);if(!wheelOfFortuneHistories){if(wheelProjectionView.progression.pathwayId==='wheel'&&wheelProjectionView.progression.sequence===3)chaosWalker.abilities.unshift(...misfortuneMage.abilities);}
+  const silentDisciple=chainedHistories?clone(chainedHistories.silentDisciple):projectSilentDisciple(chainedProjectionView);if(!chainedHistories){if(chainedProjectionView.progression.pathwayId==='chained'&&chainedProjectionView.progression.sequence===3)silentDisciple.abilities.unshift(...puppet.abilities);}
+  const blatherer=abyssHistories?clone(abyssHistories.blatherer):projectBlatherer(abyssProjectionView);if(!abyssHistories){if(abyssProjectionView.progression.pathwayId==='abyss'&&abyssProjectionView.progression.sequence===3)blatherer.abilities.unshift(...devil.abilities);}
+  const threeHeadedTemplar=hangedManHistories?clone(hangedManHistories.threeHeadedTemplar):projectThreeHeadedTemplar(hangedManProjectionView);if(!hangedManHistories){if(hangedManProjectionView.progression.pathwayId==='hanged-man'&&(hangedManProjectionView.progression.sequence===3||hangedManProjectionView.progression.sequence===2))threeHeadedTemplar.abilities.unshift(...blackKnight.abilities);}
+  const prophecyMaster=hermitHistories?clone(hermitHistories.prophecyMaster):projectProphecyMaster(hermitProjectionView);if(!hermitHistories){if(hermitProjectionView.progression.pathwayId==='hermit'&&hermitProjectionView.progression.sequence===3)prophecyMaster.abilities.unshift(...mystic.abilities);}
+  const unagingDemoness=projectUnagingDemoness(demonessProjectionView);if(demonessProjectionView.progression.pathwayId==='demoness'&&(demonessProjectionView.progression.sequence===3||demonessProjectionView.progression.sequence===2))unagingDemoness.abilities.unshift(...despair.abilities);
+  const silverKnight=projectSilverKnight(warriorProjectionView);if(warriorProjectionView.progression.pathwayId==='warrior'&&(warriorProjectionView.progression.sequence===3||warriorProjectionView.progression.sequence===2))silverKnight.abilities.unshift(...demonHunter.abilities);
+  const deceitMentor=projectDeceitMentor(errorProjectionView);if(errorProjectionView.progression.pathwayId==='error'&&(errorProjectionView.progression.sequence===3||errorProjectionView.progression.sequence===2))deceitMentor.abilities.unshift(...parasite.abilities);
+  const wanderer=projectWanderer(doorProjectionView);if(doorProjectionView.progression.pathwayId==='door'&&(doorProjectionView.progression.sequence===3||doorProjectionView.progression.sequence===2))wanderer.abilities.unshift(...secretsSorcerer.abilities);
+  const ferryman=projectFerryman(deathS1ProjectionView);if(deathS1ProjectionView.progression.pathwayId==='death'&&(deathS1ProjectionView.progression.sequence===3||(deathS1ProjectionView.progression.sequence===2||deathS1ProjectionView.progression.sequence===1)))ferryman.abilities.unshift(...undying.abilities);
+  const justiceMentor=projectJusticeMentor(sunS1ProjectionView);if(sunS1ProjectionView.progression.pathwayId==='sun'&&(sunS1ProjectionView.progression.sequence===3||(sunS1ProjectionView.progression.sequence===2||sunS1ProjectionView.progression.sequence===1)))justiceMentor.abilities.unshift(...unshadowed.abilities);
+  const seaKing=projectSeaKing(tyrantS1ProjectionView);if(tyrantS1ProjectionView.progression.pathwayId==='tyrant'&&(tyrantS1ProjectionView.progression.sequence===3||(tyrantS1ProjectionView.progression.sequence===2||tyrantS1ProjectionView.progression.sequence===1)))seaKing.abilities.unshift(...cataclysmPriest.abilities);
+  const insightScholar=projectInsightScholar(whiteTowerS1ProjectionView);if(whiteTowerS1ProjectionView.progression.pathwayId==='white-tower'&&(whiteTowerS1ProjectionView.progression.sequence===3||(whiteTowerS1ProjectionView.progression.sequence===2||whiteTowerS1ProjectionView.progression.sequence===1)))insightScholar.abilities.unshift(...prophet.abilities);
+  const fearBishop=projectFearBishop(darknessS1ProjectionView);if(darknessS1ProjectionView.progression.pathwayId==='darkness'&&(darknessS1ProjectionView.progression.sequence===3||(darknessS1ProjectionView.progression.sequence===2||darknessS1ProjectionView.progression.sequence===1)))fearBishop.abilities.unshift(...nightwatcher.abilities);
+  const summoningMaster=projectSummoningMaster(moonS1ProjectionView);if(moonS1ProjectionView.progression.pathwayId==='moon'&&(moonS1ProjectionView.progression.sequence===3||(moonS1ProjectionView.progression.sequence===2||moonS1ProjectionView.progression.sequence===1)))summoningMaster.abilities.unshift(...witchKing.abilities);
+  const arcaneScholar=projectArcaneScholar(paragonProjectionView);if(paragonProjectionView.progression.pathwayId==='paragon'&&(paragonProjectionView.progression.sequence===3||(paragonProjectionView.progression.sequence===2||paragonProjectionView.progression.sequence===1)))arcaneScholar.abilities.unshift(...alchemist.abilities);
+  const dreamWeaver=projectDreamWeaver(audienceProjectionView);if(s.progression.pathwayId==='audience'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))dreamWeaver.abilities.unshift(...manipulator.abilities);
+  const warBishop=projectWarBishop(hunterProjectionView);if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===3||(s.progression.sequence===2||s.progression.sequence===1)))warBishop.abilities.unshift(...ironBloodKnight.abilities);
   const ancientScholar=projectAncientScholar(divinerProjectionView);if(s.progression.pathwayId==='diviner'&&s.progression.sequence===3)ancientScholar.abilities.unshift(...bizarroSorcerer.abilities);
-  const longChapter=projectLongChapter(divinerProjectionView);
+  const longChapter=projectLongChapter(hasCurrentDeathHistory?deathS1ProjectionView:divinerProjectionView);
   if(s.progression.pathwayId==='diviner'&&s.progression.sequence===2)miracleWorker.abilities.unshift(...ancientScholar.abilities);
   if(s.progression.pathwayId==='hunter'&&(s.progression.sequence===2||s.progression.sequence===1))weatherWarlock.abilities.unshift(...warBishop.abilities);
   if(s.progression.pathwayId==='audience'&&(s.progression.sequence===2||s.progression.sequence===1))discerner.abilities.unshift(...dreamWeaver.abilities);
   if(s.progression.pathwayId==='error'&&s.progression.sequence===2)fateTrojan.abilities.unshift(...deceitMentor.abilities);
   if(s.progression.pathwayId==='door'&&s.progression.sequence===2)planeswalker.abilities.unshift(...wanderer.abilities);
-  if(s.progression.pathwayId==='death'&&(s.progression.sequence===2||s.progression.sequence===1))deathConsul.abilities.unshift(...ferryman.abilities);
+  if(deathS1ProjectionView.progression.pathwayId==='death'&&(deathS1ProjectionView.progression.sequence===2||deathS1ProjectionView.progression.sequence===1))deathConsul.abilities.unshift(...ferryman.abilities);
   if(s.progression.pathwayId==='sun'&&(s.progression.sequence===2||s.progression.sequence===1))lightSeeker.abilities.unshift(...justiceMentor.abilities);
   if(s.progression.pathwayId==='tyrant'&&(s.progression.sequence===2||s.progression.sequence===1))catastrophe.abilities.unshift(...seaKing.abilities);
-  if(s.progression.pathwayId==='white-tower'&&(s.progression.sequence===2||s.progression.sequence===1))wisdomAngel.abilities.unshift(...insightScholar.abilities);
-  if(s.progression.pathwayId==='darkness'&&(s.progression.sequence===2||s.progression.sequence===1))concealmentServant.abilities.unshift(...fearBishop.abilities);
+  if(whiteTowerS1ProjectionView.progression.pathwayId==='white-tower'&&(whiteTowerS1ProjectionView.progression.sequence===2||whiteTowerS1ProjectionView.progression.sequence===1))wisdomAngel.abilities.unshift(...insightScholar.abilities);
+  if(darknessS1ProjectionView.progression.pathwayId==='darkness'&&(darknessS1ProjectionView.progression.sequence===2||darknessS1ProjectionView.progression.sequence===1))concealmentServant.abilities.unshift(...fearBishop.abilities);
   if(s.progression.pathwayId==='moon'&&(s.progression.sequence===2||s.progression.sequence===1))lifeGiver.abilities.unshift(...summoningMaster.abilities);
   if(s.progression.pathwayId==='paragon'&&(s.progression.sequence===2||s.progression.sequence===1))knowledgeMentor.abilities.unshift(...arcaneScholar.abilities);
   if(chainedProjectionView!==s){
@@ -1793,7 +2621,7 @@ function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoo
     };
     for(const historical of [monster,machine,lucky,calamityPriest,winner,misfortuneMage,chaosWalker,fateProphet])closeHistoricalActions(historical);
   }
-  if(blackEmperorProjectionView!==s){
+  if(!blackEmperorHistories&&blackEmperorProjectionView!==s){
     briber.gifts.summary='此处保留交接时的原木筹记录，当前可用数量与去向请查看弑序亲王库存。旧记录不再用于消费。';
     // Frozen original records remain readable; all predecessor operations close at guidance.
     const closeHistoricalActions=(value:unknown):void=>{
@@ -1808,7 +2636,7 @@ function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoo
     };
     for(const historical of [lawyer,barbarian,briber,corruptionBaron,mentorDisorder,fallenEarl,frenzyMage,entropyDuke])closeHistoricalActions(historical);
   }
-  if(justiciarProjectionView!==s){
+  if(!justiciarHistories&&justiciarProjectionView!==s){
     // Frozen original records remain readable; all predecessor operations close at guidance.
     const closeHistoricalActions=(value:unknown):void=>{
       if(!value||typeof value!=='object')return;
@@ -1836,7 +2664,238 @@ function projectSliceStateCurrent(s:SliceState,fool:FoolProjection,hasCurrentFoo
     };
     for(const history of [seer,clown,magician,faceless,marionettist,bizarroSorcerer,ancientScholar,miracleWorker,attendantMysteries,longChapter])closeHistoricalActions(history);
   }
-  const result: Omit<SliceProjection, 'recovery'> = {fool,natureWalker,handOfOrder,princeOfAbolition,mercurySnake,abomination,uncleanMonarch,darkAngel,knowledgeEmperor,apocalypseDemoness,divineHand,timeWorm,starKey,paleEmperor,pureWhiteAngel,thunderGod,allKnowingEye,misfortuneKnight,beautyGoddess,civilizationEnlightener,writer,conqueror,attendantMysteries,barrenMatriarch,balancer,entropyDuke,fateProphet,ancientEvil,bloodDuke,elder,sage,calamityDemoness,glory,fateTrojan,planeswalker,deathConsul,lightSeeker,catastrophe,wisdomAngel,concealmentServant,lifeGiver,knowledgeMentor,discerner,weatherWarlock,miracleWorker,coffinBearer,chaosHunter,frenzyMage,chaosWalker,silentDisciple,blatherer,threeHeadedTemplar,prophecyMaster,unagingDemoness,silverKnight,deceitMentor,wanderer,ferryman,justiceMentor,seaKing,insightScholar,fearBishop,summoningMaster,arcaneScholar,dreamWeaver,warBishop,ancientScholar,longChapter,ancientAlchemist,imperativeMage,fallenEarl,misfortuneMage,puppet,devil,blackKnight,mystic,despair,demonHunter,parasite,secretsSorcerer,undying,unshadowed,cataclysmPriest,prophet,nightwatcher,witchKing,alchemist,manipulator,ironBloodKnight,bizarroSorcerer,druid,punishmentKnight,mentorDisorder,winner,wraith,desireApostle,shepherd,starMystic,pain,guardian,dreamStealer,traveler,gatekeeper,priestOfLight,oceanSinger,mysticismMagister,spiritWarlock,crimsonScholar,astronomer,dreamwalker,reaper,marionettist,biologist,judge,corruptionBaron,calamityPriest,zombie,demon,roseBishop,scrollProfessor,pleasure,dawnPaladin,fireThief,recorder,spiritGuide,notary,windBlessed,polymath,soother,potionProfessor,artisan,hypnotist,conspirator,faceless,harvestpriest,physician,cultivator,interrogator,sheriff,arbiter,briber,barbarian,lawyer,lucky,machine,monster,werewolf,madman,prisoner,serialKiller,unwinged,criminal,shadowAscetic,listener,secretSupplicant,wizard,combatScholar,pryer,witch,instigator,assassin,weaponmaster,gladiator,warrior,cryptologist,swindler,marauder,astrologer,trickmaster,apprentice,spiritmedium,gravedigger,corpsecollector,sunpriest,lightprayer,bard,navigator,rager,sailor,detective,reasoner,reader,nightmare,midnight,sleepless,vampire,appraiser,psychologist,pyromaniac,magician,tamer,apothecary,archaeologist,savant,town,mindreader,audience,provoker,hunter,clown,caseArchive:clone(s.caseArchive),progression:clone(s.progression),seer,runId:s.runId,revision:s.revision,status:s.status,character:clone(s.character),week:s.week,date:{...s.date},actionsRemaining:s.actionsRemaining,weeklyBudget:s.weeklyBudget,cash:s.cash,lifeTier:s.lifeTier,nextLifeTier:s.nextLifeTier,weeklyWage:s.character.weeklyWage,wagePaid:s.wagePaidWeek===s.week,health:s.health,mind:s.mind,spirituality:s.spirituality,maxHealth:100,maxMind:100,maxSpirituality:s.progression.pathwayId==='diviner'&&s.progression.sequence===0&&hasCurrentFoolHistory?120:(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===1?120:(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===2?120:(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===3?120:(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===4?120:s.progression.sequence===5?100:s.progression.sequence===6?80:s.progression.sequence===7?60:s.progression.sequence===8?45:s.progression.pathwayId!==null?30:15,pollution:s.seer.pollution,injuries:clone(s.injuries),injuryRisk:s.injuryRisk,debtTotal:debtTotal(s),debts:clone(s.debts),missedWeeks:s.missedWeeks,credit:s.credit,learnTargets:learnTargets(s),investigateTargets:investigationTargets(s),canAct:!hasCurrentFoolHistory&&!natureWalker.insideCase&&!handOfOrder.insideCase&&!princeOfAbolition.insideCase&&!mercurySnake.insideCase&&!abomination.insideCase&&!uncleanMonarch.insideCase&&!darkAngel.insideCase&&!knowledgeEmperor.insideCase&&!apocalypseDemoness.insideCase&&!divineHand.insideCase&&!timeWorm.insideCase&&!paleEmperor.insideCase&&!pureWhiteAngel.insideCase&&!thunderGod.insideCase&&!allKnowingEye.insideCase&&!misfortuneKnight.insideCase&&!beautyGoddess.insideCase&&!civilizationEnlightener.insideCase&&!writer.insideCase&&!conqueror.insideCase&&!balancer.insideCase&&!entropyDuke.insideCase&&!fateProphet.insideCase&&!sage.insideCase&&!calamityDemoness.insideCase&&!glory.insideCase&&!fateTrojan.insideCase&&!planeswalker.insideCase&&!deathConsul.insideCase&&!lightSeeker.insideCase&&!catastrophe.insideCase&&!wisdomAngel.insideCase&&!concealmentServant.insideCase&&!lifeGiver.insideCase&&!knowledgeMentor.insideCase&&!discerner.insideCase&&!weatherWarlock.insideCase&&!coffinBearer.insideCase&&!chaosHunter.insideCase&&!frenzyMage.insideCase&&!chaosWalker.insideCase&&!silentDisciple.insideCase&&!blatherer.insideCase&&!threeHeadedTemplar.insideCase&&!prophecyMaster.insideCase&&!unagingDemoness.insideCase&&!silverKnight.insideCase&&!deceitMentor.insideCase&&!wanderer.insideCase&&!ferryman.insideCase&&!justiceMentor.insideCase&&!seaKing.insideCase&&!insightScholar.insideCase&&!fearBishop.insideCase&&!summoningMaster.insideCase&&!arcaneScholar.insideCase&&!dreamWeaver.insideCase&&!warBishop.insideCase&&!ancientScholar.locked&&!ancientScholar.eraClosed&&!longChapter.locked&&!longChapter.eraClosed&&!ancientAlchemist.insideCase&&!imperativeMage.insideCase&&!fallenEarl.insideCase&&!misfortuneMage.insideCase&&!puppet.insideCase&&!devil.insideCase&&!blackKnight.insideCase&&!mystic.insideCase&&!despair.insideCase&&!demonHunter.insideCase&&!parasite.insideCase&&!secretsSorcerer.insideCase&&!undying.insideCase&&!unshadowed.insideCase&&!cataclysmPriest.insideCase&&!prophet.insideCase&&!nightwatcher.insideCase&&!witchKing.insideCase&&!alchemist.insideCase&&!manipulator.insideCase&&!ironBloodKnight.insideCase&&!bizarroSorcerer.insideCase&&!druid.insideCase&&!punishmentKnight.insideCase&&!mentorDisorder.insideCase&&!winner.insideCase&&!wraith.insideCase&&!desireApostle.insideCase&&!shepherd.insideCase&&!starMystic.insideCase&&!pain.insideCase&&!guardian.insideCase&&!dreamStealer.insideCase&&!traveler.insideCase&&!gatekeeper.insideCase&&!priestOfLight.insideCase&&!oceanSinger.insideCase&&!mysticismMagister.insideCase&&!spiritWarlock.insideCase&&!crimsonScholar.insideCase&&!astronomer.insideCase&&!dreamwalker.insideCase&&!reaper.insideCase&&!marionettist.insideCase&&!biologist.insideCase&&!judge.insideCase&&!corruptionBaron.insideCase&&!calamityPriest.insideCase&&!zombie.insideCase&&!demon.insideCase&&!roseBishop.insideCase&&!scrollProfessor.insideCase&&!pleasure.insideCase&&!dawnPaladin.insideCase&&!fireThief.insideCase&&!recorder.insideCase&&!spiritGuide.insideCase&&!notary.insideCase&&!windBlessed.insideCase&&!polymath.insideCase&&!soother.insideCase&&!potionProfessor.insideCase&&!artisan.insideCase&&!hypnotist.insideCase&&!conspirator.insideCase&&!faceless.insideCase&&!harvestpriest.insideCase&&!physician.insideCase&&!cultivator.insideCase&&!interrogator.insideCase&&!sheriff.insideCase&&!arbiter.insideCase&&!briber.insideCase&&!barbarian.insideCase&&!lawyer.insideCase&&!lucky.insideCase&&!machine.insideCase&&!monster.insideCase&&!werewolf.insideCase&&!madman.insideCase&&!prisoner.insideCase&&!serialKiller.insideCase&&!unwinged.insideCase&&!criminal.insideCase&&!shadowAscetic.insideCase&&!listener.insideCase&&!secretSupplicant.insideCase&&!wizard.insideCase&&!combatScholar.insideCase&&!pryer.insideCase&&!instigator.insideCase&&!assassin.insideCase&&!gladiator.insideCase&&s.status==='ACTIVE'&&!s.activeEvent&&!s.combat&&s.actionsRemaining>0&&s.tamer.companionId===null,actionBlockedReason:hasCurrentFoolHistory?'请在当前筹备处与现场继续行动。':natureWalker.insideCase?'先停止当前联系并普通归还原植、原物，沿原路离场，或取消服药准备。':handOfOrder.insideCase?'先收束当前有限联系、归还原物并沿原路离开，或取消服药准备。':princeOfAbolition.insideCase?'先收束当前有限联系、归还原物并沿原路离开，或取消服药准备。':mercurySnake.insideCase?'先收束当前有限联系、归还原物并沿原路离开，或取消服药准备。':abomination.insideCase?'先收束当前灵性束障与短声窗口，归还原物并沿原路离开。':uncleanMonarch.insideCase?'先收束当前冲动收束与定向扰动窗口，归还原物并沿原路离开。':darkAngel.insideCase?'先收束当前单灵引导与护持窗口，归还原物并沿原路离开。':knowledgeEmperor.insideCase?'先收束当前知识赋力与循力求知窗口，归还原物并沿原路离开。':apocalypseDemoness.insideCase?'先收束当前残留脉冲与镜面窗口，归还原物并沿原路离开。':divineHand.insideCase?'先收束当前载荷与护甲窗口，归还原物并沿原路离开。':timeWorm.insideCase?'先收束尚未执行的查看动作与短时窗口，再沿原路离开。':paleEmperor.insideCase?'先结束残响窗口、归还原器皿并走返。':pureWhiteAngel.insideCase?'先结束当前观察窗口、归还原试片与护片并走返。':thunderGod.insideCase?'先结束当前观察窗口、归还原靶片与护片并走返。':allKnowingEye.insideCase?'先结束当前观察窗口、归还原纸与滑轨并走返。':misfortuneKnight.insideCase?'先结束当前动作窗口、归还原盒与护片并走返。':beautyGoddess.insideCase?'先结束当前月光窗口、归还原灯和月片并走返。':civilizationEnlightener.insideCase?'先停止当前负载、实际归还原工具并走返。':writer.insideCase?'先结束当前安排、实际归还原书并走返。':conqueror.insideCase?'先收束当前原院事务并让同伴实际离场。':balancer.insideCase?'先停止当前辨察或抵御、归还原物并沿门口退出。':entropyDuke.insideCase?'先收束当前施作并归还原物，沿门口退出。':fateProphet.insideCase?'先停止本次预察或调整并归还同一原物。':sage.insideCase?'先收束信息化、处理眼前封存并沿实际路线返回':calamityDemoness.insideCase?'先停止当前施作、处理插片与封存箱并沿实际路线退出镜廊附室':glory.insideCase?'先停止当前护持、交还借物并沿实际路线退出修整室':fateTrojan.insideCase?'先解除当前联系、归还原物并沿实际路线退出登记所':planeswalker.insideCase?'先沿已核返程回到本地并收束当前星途现场':deathConsul.insideCase?'先收束苍白焰与短渡并沿实际路线退出':lightSeeker.insideCase?'先停止光照、归还遮具并沿原路退出':catastrophe.insideCase?'先停止风水、排回原水并沿干路退出':wisdomAngel.insideCase?'先停止应对并沿原路归还原件':knowledgeMentor.insideCase?'先停止工序并沿原路取回原件':discerner.insideCase?'先停止接触并沿原路归还原卡':weatherWarlock.insideCase?'先停止天气并从原出口收束现场':coffinBearer.insideCase?'先收束抬棺人现场。':chaosHunter.insideCase?'先收束混乱猎手现场。':frenzyMage.insideCase?'先收束狂乱法师现场。':chaosWalker.insideCase?'先收束混乱行者现场。':silentDisciple.insideCase?'先收束沉默门徒现场。':blatherer.insideCase?'先收束呓语者现场。':threeHeadedTemplar.insideCase?'先收束三首圣堂现场。':prophecyMaster.insideCase?'先收束预言大师现场。':unagingDemoness.insideCase?'先收束原镜内道路或不老魔女现场。':silverKnight.insideCase?'先收束原猎场、祭坛或银骑士现场。':deceitMentor.insideCase?'先停止有限欺瞒并归还同一原物。':wanderer.insideCase?'先实际返回并收束原锚、护具和原封包。':ferryman.insideCase?'先实际收束摆渡人原现场与原物。':justiceMentor.insideCase?'先实际收束正义导师原现场与原物。':seaKing.insideCase?'先实际收束海王原现场与原物。':insightScholar.insideCase?'先实际收束洞悉者候选G原现场与原物。':fearBishop.insideCase?'先实际收束恐惧主教原现场与原物。':summoningMaster.insideCase?'先实际收束召唤大师原现场与来客。':arcaneScholar.insideCase?'先实际收束奥秘学者原现场与造物。':dreamWeaver.insideCase?'先实际收束织梦人原现场与身份。':warBishop.insideCase?'先实际收束战争主教原队伍与原物。':ancientScholar.eraClosed?'旧时代已结束，请使用本章当前生活与实践。':ancientScholar.locked?'请先完成本章封存或当前原物交接。':longChapter.eraClosed?'旧时代行动已经关闭，请使用新年代接待处。':longChapter.locked?'请先完成当前长期章节与原物交接。':ancientAlchemist.insideCase?'先实际退出当前古代炼金师练习现场':imperativeMage.insideCase?'先实际退出当前律令法师练习现场':fallenEarl.insideCase?'先实际退出当前堕落伯爵练习现场':misfortuneMage.insideCase?'先实际退出当前厄运法师练习现场':puppet.insideCase?'先实际退出当前木偶练习现场':devil.insideCase?'先实际退出当前魔鬼练习现场':blackKnight.insideCase?'先实际退出当前黑骑士练习现场':mystic.insideCase?'先实际退出当前神秘学家练习现场':despair.insideCase?'先实际退出当前绝望魔女练习现场':demonHunter.insideCase?'先实际结束当前猎魔者现场':parasite.insideCase?'先实际结束当前寄生者接触':secretsSorcerer.insideCase?'先实际结束秘法师当前现场':undying.insideCase?'先实际结束当前不死者现场':unshadowed.insideCase?'先实际结束当前无暗者现场':cataclysmPriest.insideCase?'先实际结束当前灾难主祭现场':prophet.insideCase?'先实际结束当前预言家现场':nightwatcher.insideCase?'先实际结束当前守夜人现场':witchKing.insideCase?'先实际结束当前巫王现场':alchemist.insideCase?'先实际结束当前炼金术士现场':manipulator.insideCase?'先实际结束当前心灵接触或集会':ironBloodKnight.insideCase?'先实际收束铁血骑士当前现场':bizarroSorcerer.insideCase?'先实际结束诡法师当前现场':druid.insideCase?'先0行动结束德鲁伊实践并退出原现场':punishmentKnight.insideCase?'先0行动结束惩戒骑士实践并退出原现场':mentorDisorder.insideCase?'先0行动结束混乱导师实践并退出原现场':winner.insideCase?'先0行动结束赢家实践并退出原现场':wraith.insideCase?(wraith.moon.pending?'先实际度过本次怨魂满月极度虚弱':'先0行动结束怨魂实践并退出原现场'):desireApostle.insideCase?'先0行动结束欲望使徒实践并退出原现场':shepherd.insideCase?'先0行动结束牧羊人实践并退出原现场':starMystic.insideCase?'先0行动结束星象师实践并退出原现场':pain.insideCase?'先0行动结束痛苦魔女实践并退出原现场':guardian.insideCase?'先0行动结束守护者实践并退出原现场':dreamStealer.insideCase?'先0行动结束窃梦家实践并退出原现场':traveler.insideCase?'先0行动结束旅行家实践并退出原现场':gatekeeper.insideCase?'先0行动结束看门人实践并退出原现场':priestOfLight.insideCase?'先0行动结束光之祭司实践并退出原现场':oceanSinger.insideCase?'先0行动结束海洋歌者实践并退出原现场':mysticismMagister.insideCase?'先0行动结束秘术导师实践并退出原现场':spiritWarlock.insideCase?'先0行动结束灵巫实践并退出原现场':crimsonScholar.insideCase?'先0行动结束深红学者实践并退出原现场':astronomer.insideCase?'先0行动结束天文学家实践并退出原现场':dreamwalker.insideCase?'先结束梦境、实际返回或结束仪式':reaper.insideCase?'先0行动结束收割者实践并退出原现场':marionettist.insideCase?'先结束仪式、释放初控或退出当前接触':biologist.insideCase?'先0行动结束生物学家实践并退出原现场':judge.insideCase?'先0行动结束法官实践并退出原现场':corruptionBaron.insideCase?'先0行动结束腐化男爵实践并退出原现场':calamityPriest.insideCase?'先0行动结束灾祸教士实践并退出原现场':zombie.insideCase?(zombie.moon.pending?'先实际度过本次活尸月圆剧痛':'先0行动结束活尸实践并退出原现场'):demon.insideCase?'先0行动结束恶魔实践并退出原现场':roseBishop.insideCase?'先0行动结束血肉调节并退出原现场':scrollProfessor.insideCase?'先0行动结束卷轴实践并退出原现场':pleasure.insideCase?'先0行动结束丝线与交流实践并退出原现场':dawnPaladin.insideCase?'先0行动结束晨曦实践并退出原现场':fireThief.insideCase?'先0行动结束暂借实践并退出原现场':recorder.insideCase?'先0行动结束记录实践并退出原现场':spiritGuide.insideCase?'先0行动结束通灵实践并退出原现场':notary.insideCase?'先0行动结束公证实践并归还原工具':windBlessed.insideCase?'先0行动结束控风练习并沿原路返回地面':polymath.insideCase?'先0行动结束样本试演现场':soother.insideCase?'先0行动结束安魂现场':potionProfessor.insideCase?'先0行动结束药剂试验现场':artisan.insideCase?'先0行动结束工房现场':hypnotist.insideCase?'先0行动停止本次影响并退出':conspirator.insideCase?'先0行动结束当前交涉':faceless.insideCase?'先0行动结束当前接触':harvestpriest.insideCase?'先0行动停止练习并退开':physician.insideCase?'先0行动停止练习并退开':cultivator.insideCase?'先0行动放回原记录并结束交谈':interrogator.insideCase?'先0行动停止练习并退开':sheriff.insideCase?'先0行动停止练习并退开':arbiter.insideCase?'先0行动放回原记录并结束交谈':briber.insideCase?'先0行动结束本次给予与练习':barbarian.insideCase?'先0行动放稳原物并结束练习':lawyer.insideCase?'先0行动放回原记录并结束交谈':lucky.insideCase?'先0行动结束事项并归还原件':machine.insideCase?'先0行动停止练习并退开':monster.insideCase?'先0行动结束注意并退开':werewolf.insideCase?'先实际度过月圆或返回原现场':madman.insideCase?'先0行动实际停止本次练习':prisoner.insideCase?'先0行动交还原木撑':serialKiller.insideCase?'先0行动实际关闭练习并退开':unwinged.insideCase?'先0行动实际停手退开，结束这次冲动':criminal.insideCase?'先0行动交还原工钱袋':shadowAscetic.insideCase?'先0行动解除本次藏匿，沿原路退出':listener.insideCase?'先0行动沿原门退到约定外间，结束本次接触':secretSupplicant.insideCase?'先0行动把原罩盖回':wizard.insideCase?'先0行动结束本次短时效果':combatScholar.insideCase?'先0行动实际停止本次演练':pryer.insideCase?'先0行动实际合上原页':instigator.insideCase?'先0行动停止挑动并退开':assassin.insideCase?'先沿原楼梯或足额轻身返回':gladiator.insideCase?'先0行动松手分开，结束实际接触':s.tamer.companionId!==null?'先完成动物协助或0行动送回原主人':s.status!=='ACTIVE'?'本次试玩已收尾':s.activeEvent?'请先处理当前事件':s.combat?'正在进行追击战斗':null,activeEvent:currentEvent(s),combat,lastCombatRound:publicCombatRound(s.lastCombatRound),combatHistory:s.combatHistory.map(round=>publicCombatRound(round)!),lastResult:clone(s.lastResult),lastCheck:clone(s.lastCheck),chronicle:clone(s.chronicle),knowledge:clone(s.knowledge),ending:clone(s.ending),nextStep:nextStep(s),aidCanCancel:s.aid==='ACCEPTED'||s.aid==='CORRECT',marketUnlocked:s.marketUnlocked};
+  if(hasCurrentRedPriestHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前战役与筹备处继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [hunter,provoker,pyromaniac,conspirator,reaper,ironBloodKnight,warBishop,weatherWarlock,conqueror])closeHistory(history);
+  }
+  if(hasCurrentVisionaryHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前时代筹备与现场继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [audience,mindreader,psychologist,hypnotist,dreamwalker,manipulator,dreamWeaver,discerner,writer])closeHistory(history);
+  }
+  if(hasCurrentPerfecterHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前工坊与大陆事务中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [savant,archaeologist,appraiser,artisan,astronomer,alchemist,arcaneScholar,knowledgeMentor,civilizationEnlightener])closeHistory(history);
+  }
+  if(hasCurrentMoonHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前夜航与筹备处中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [apothecary,tamer,vampire,potionProfessor,crimsonScholar,witchKing,summoningMaster,lifeGiver,beautyGoddess])closeHistory(history);
+  }
+  if(hasCurrentDarknessHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前长夜撤离与筹备处中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [sleepless,midnight,nightmare,soother,spiritWarlock,nightwatcher,fearBishop,concealmentServant,misfortuneKnight])closeHistory(history);
+  }
+  if(hasCurrentWhiteTowerHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前城市通路与筹备处中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [reader,reasoner,detective,polymath,mysticismMagister,prophet,insightScholar,wisdomAngel,allKnowingEye])closeHistory(history);
+  }
+  if(hasCurrentTyrantHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前海岸与筹备处中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [sailor,rager,navigator,windBlessed,oceanSinger,cataclysmPriest,seaKing,catastrophe,thunderGod])closeHistory(history);
+  }
+  if(hasCurrentSunHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前街区与筹备处中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [bard,lightprayer,sunpriest,notary,priestOfLight,unshadowed,justiceMentor,lightSeeker,pureWhiteAngel])closeHistory(history);
+  }
+  if(hasCurrentDeathHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前接待处与死神筹备现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [corpsecollector,gravedigger,spiritmedium,spiritGuide,gatekeeper,undying,ferryman,deathConsul,paleEmperor,longChapter])closeHistory(history);
+  }
+  if(hasCurrentDoorHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前门途径筹备处与居民服务现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [apprentice,trickmaster,astrologer,recorder,traveler,secretsSorcerer,wanderer,planeswalker,starKey])closeHistory(history);
+  }
+  if(hasCurrentErrorAscentHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前错误晋升筹备与仪式现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [marauder,swindler,cryptologist,fireThief,dreamStealer,parasite,deceitMentor,fateTrojan,timeWorm])closeHistory(history);
+  }
+  if(hasCurrentTwilightGiantHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前黄昏巨人筹备处与工程现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [warrior,gladiator,weaponmaster,dawnPaladin,guardian,demonHunter,silverKnight,glory,divineHand])closeHistory(history);
+  }
+  if(hasCurrentDemonessHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前魔女筹备处与修复现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [assassin,instigator,witch,pleasure,pain,despair,unagingDemoness,calamityDemoness,apocalypseDemoness])closeHistory(history);
+  }
+  if(hasCurrentHermitHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前隐者筹备处与现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [pryer,combatScholar,wizard,scrollProfessor,starMystic,mystic,prophecyMaster,sage,knowledgeEmperor])closeHistory(history);
+  }
+  if(hasCurrentHangedManHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前倒吊人筹备处与现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [secretSupplicant,listener,shadowAscetic,roseBishop,shepherd,blackKnight,threeHeadedTemplar,elder,darkAngel])closeHistory(history);
+  }
+  if(hasCurrentMotherHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前母亲筹备处与温室现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [cultivator,physician,harvestpriest,biologist,druid,ancientAlchemist,coffinBearer,barrenMatriarch,natureWalker])closeHistory(history);
+  }
+  if(hasCurrentJusticiarHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前审判者筹备处与码头现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [arbiter,sheriff,interrogator,judge,punishmentKnight,imperativeMage,chaosHunter,balancer,handOfOrder])closeHistory(history);
+  }
+  if(hasCurrentBlackEmperorHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前黑皇帝筹备处与有限国度现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [lawyer,barbarian,briber,corruptionBaron,mentorDisorder,fallenEarl,frenzyMage,entropyDuke,princeOfAbolition])closeHistory(history);
+  }
+  if(hasCurrentWheelOfFortuneHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前命运之轮筹备处与岔路交接站现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [monster,machine,lucky,calamityPriest,winner,misfortuneMage,chaosWalker,fateProphet,mercurySnake])closeHistory(history);
+  }
+  if(hasCurrentChainedHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前被缚者筹备处与短闸廊现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [prisoner,madman,werewolf,zombie,wraith,puppet,silentDisciple,ancientEvil,abomination])closeHistory(history);
+  }
+  if(hasCurrentAbyssHistory){
+    const closeHistory=(value:unknown):void=>{
+      if(!value||typeof value!=='object')return;
+      if(Array.isArray(value)){for(const child of value)closeHistory(child);return;}
+      const object=value as Record<string,unknown>;
+      if(Array.isArray(object.actions))for(const action of object.actions)if(action&&typeof action==='object')Object.assign(action,{enabled:false,reason:'原有经历已封存，请在当前深渊筹备处与现场中继续行动。',preferredAction:false});
+      if('preferredActionId'in object)object.preferredActionId=null;
+      for(const child of Object.values(object))closeHistory(child);
+    };
+    for(const history of [criminal,unwinged,serialKiller,demon,desireApostle,devil,blatherer,bloodDuke,uncleanMonarch])closeHistory(history);
+  }
+  const result: Omit<SliceProjection, 'recovery'> = {mother,justiciar,blackEmperor,wheelOfFortune,chained,abyss,hangedMan,hermit,demoness,twilightGiant,errorAscent,door,death,sun,tyrant,whiteTower,darkness,moon,perfecter,visionary,redPriest,fool,natureWalker,handOfOrder,princeOfAbolition,mercurySnake,abomination,uncleanMonarch,darkAngel,knowledgeEmperor,apocalypseDemoness,divineHand,timeWorm,starKey,paleEmperor,pureWhiteAngel,thunderGod,allKnowingEye,misfortuneKnight,beautyGoddess,civilizationEnlightener,writer,conqueror,attendantMysteries,barrenMatriarch,balancer,entropyDuke,fateProphet,ancientEvil,bloodDuke,elder,sage,calamityDemoness,glory,fateTrojan,planeswalker,deathConsul,lightSeeker,catastrophe,wisdomAngel,concealmentServant,lifeGiver,knowledgeMentor,discerner,weatherWarlock,miracleWorker,coffinBearer,chaosHunter,frenzyMage,chaosWalker,silentDisciple,blatherer,threeHeadedTemplar,prophecyMaster,unagingDemoness,silverKnight,deceitMentor,wanderer,ferryman,justiceMentor,seaKing,insightScholar,fearBishop,summoningMaster,arcaneScholar,dreamWeaver,warBishop,ancientScholar,longChapter,ancientAlchemist,imperativeMage,fallenEarl,misfortuneMage,puppet,devil,blackKnight,mystic,despair,demonHunter,parasite,secretsSorcerer,undying,unshadowed,cataclysmPriest,prophet,nightwatcher,witchKing,alchemist,manipulator,ironBloodKnight,bizarroSorcerer,druid,punishmentKnight,mentorDisorder,winner,wraith,desireApostle,shepherd,starMystic,pain,guardian,dreamStealer,traveler,gatekeeper,priestOfLight,oceanSinger,mysticismMagister,spiritWarlock,crimsonScholar,astronomer,dreamwalker,reaper,marionettist,biologist,judge,corruptionBaron,calamityPriest,zombie,demon,roseBishop,scrollProfessor,pleasure,dawnPaladin,fireThief,recorder,spiritGuide,notary,windBlessed,polymath,soother,potionProfessor,artisan,hypnotist,conspirator,faceless,harvestpriest,physician,cultivator,interrogator,sheriff,arbiter,briber,barbarian,lawyer,lucky,machine,monster,werewolf,madman,prisoner,serialKiller,unwinged,criminal,shadowAscetic,listener,secretSupplicant,wizard,combatScholar,pryer,witch,instigator,assassin,weaponmaster,gladiator,warrior,cryptologist,swindler,marauder,astrologer,trickmaster,apprentice,spiritmedium,gravedigger,corpsecollector,sunpriest,lightprayer,bard,navigator,rager,sailor,detective,reasoner,reader,nightmare,midnight,sleepless,vampire,appraiser,psychologist,pyromaniac,magician,tamer,apothecary,archaeologist,savant,town,mindreader,audience,provoker,hunter,clown,caseArchive:clone(s.caseArchive),progression:clone(s.progression),seer,runId:s.runId,revision:s.revision,status:s.status,character:clone(s.character),week:s.week,date:{...s.date},actionsRemaining:s.actionsRemaining,weeklyBudget:s.weeklyBudget,cash:s.cash,lifeTier:s.lifeTier,nextLifeTier:s.nextLifeTier,weeklyWage:s.character.weeklyWage,wagePaid:s.wagePaidWeek===s.week,health:s.health,mind:s.mind,spirituality:s.spirituality,maxHealth:100,maxMind:100,maxSpirituality:s.progression.pathwayId==='mother'&&s.progression.sequence===0&&hasCurrentMotherHistory?150:s.progression.pathwayId==='justiciar'&&s.progression.sequence===0&&hasCurrentJusticiarHistory?150:s.progression.pathwayId==='black-emperor'&&s.progression.sequence===0&&hasCurrentBlackEmperorHistory?150:s.progression.pathwayId==='wheel'&&s.progression.sequence===0&&hasCurrentWheelOfFortuneHistory?150:s.progression.pathwayId==='chained'&&s.progression.sequence===0&&hasCurrentChainedHistory?150:s.progression.pathwayId==='abyss'&&s.progression.sequence===0&&hasCurrentAbyssHistory?150:s.progression.pathwayId==='hanged-man'&&s.progression.sequence===0&&hasCurrentHangedManHistory?150:s.progression.pathwayId==='hermit'&&s.progression.sequence===0&&hasCurrentHermitHistory?150:s.progression.pathwayId==='demoness'&&s.progression.sequence===0&&hasCurrentDemonessHistory?150:s.progression.pathwayId==='warrior'&&s.progression.sequence===0&&hasCurrentTwilightGiantHistory?150:s.progression.pathwayId==='error'&&s.progression.sequence===0&&hasCurrentErrorAscentHistory?150:s.progression.pathwayId==='door'&&s.progression.sequence===0&&hasCurrentDoorHistory?150:s.progression.pathwayId==='death'&&s.progression.sequence===0&&hasCurrentDeathHistory?150:s.progression.pathwayId==='sun'&&s.progression.sequence===0&&hasCurrentSunHistory?150:s.progression.pathwayId==='tyrant'&&s.progression.sequence===0&&hasCurrentTyrantHistory?150:s.progression.pathwayId==='white-tower'&&s.progression.sequence===0&&hasCurrentWhiteTowerHistory?150:s.progression.pathwayId==='darkness'&&s.progression.sequence===0&&hasCurrentDarknessHistory?150:s.progression.pathwayId==='moon'&&s.progression.sequence===0&&hasCurrentMoonHistory?150:s.progression.pathwayId==='paragon'&&s.progression.sequence===0&&hasCurrentPerfecterHistory?150:s.progression.pathwayId==='diviner'&&s.progression.sequence===0&&hasCurrentFoolHistory?120:(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===1?120:(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===2?120:(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===3?120:(s.progression.pathwayId==='diviner'||s.progression.pathwayId==='hunter'||s.progression.pathwayId==='audience'||s.progression.pathwayId==='paragon'||s.progression.pathwayId==='moon'||s.progression.pathwayId==='darkness'||s.progression.pathwayId==='white-tower'||s.progression.pathwayId==='tyrant'||s.progression.pathwayId==='sun'||s.progression.pathwayId==='death'||s.progression.pathwayId==='door'||s.progression.pathwayId==='error'||s.progression.pathwayId==='warrior'||s.progression.pathwayId==='demoness'||s.progression.pathwayId==='hermit'||s.progression.pathwayId==='hanged-man'||s.progression.pathwayId==='abyss'||s.progression.pathwayId==='chained'||s.progression.pathwayId==='wheel'||s.progression.pathwayId==='black-emperor'||s.progression.pathwayId==='justiciar'||s.progression.pathwayId==='mother')&&s.progression.sequence===4?120:s.progression.sequence===5?100:s.progression.sequence===6?80:s.progression.sequence===7?60:s.progression.sequence===8?45:s.progression.pathwayId!==null?30:15,pollution:s.seer.pollution,injuries:clone(s.injuries),injuryRisk:s.injuryRisk,debtTotal:debtTotal(s),debts:clone(s.debts),missedWeeks:s.missedWeeks,credit:s.credit,learnTargets:learnTargets(s),investigateTargets:investigationTargets(s),canAct:!hasCurrentMotherHistory&&!hasCurrentJusticiarHistory&&!hasCurrentBlackEmperorHistory&&!hasCurrentWheelOfFortuneHistory&&!hasCurrentChainedHistory&&!hasCurrentAbyssHistory&&!hasCurrentHangedManHistory&&!hasCurrentHermitHistory&&!hasCurrentDemonessHistory&&!hasCurrentTwilightGiantHistory&&!hasCurrentErrorAscentHistory&&!hasCurrentDoorHistory&&!hasCurrentDeathHistory&&!hasCurrentSunHistory&&!hasCurrentTyrantHistory&&!hasCurrentDarknessHistory&&!hasCurrentMoonHistory&&!hasCurrentPerfecterHistory&&!hasCurrentRedPriestHistory&&!hasCurrentFoolHistory&&!natureWalker.insideCase&&!handOfOrder.insideCase&&!princeOfAbolition.insideCase&&!mercurySnake.insideCase&&!abomination.insideCase&&!uncleanMonarch.insideCase&&!darkAngel.insideCase&&!knowledgeEmperor.insideCase&&!apocalypseDemoness.insideCase&&!divineHand.insideCase&&!timeWorm.insideCase&&!paleEmperor.insideCase&&!pureWhiteAngel.insideCase&&!thunderGod.insideCase&&!allKnowingEye.insideCase&&!misfortuneKnight.insideCase&&!beautyGoddess.insideCase&&!civilizationEnlightener.insideCase&&!writer.insideCase&&!conqueror.insideCase&&!balancer.insideCase&&!entropyDuke.insideCase&&!fateProphet.insideCase&&!sage.insideCase&&!calamityDemoness.insideCase&&!glory.insideCase&&!fateTrojan.insideCase&&!planeswalker.insideCase&&!deathConsul.insideCase&&!lightSeeker.insideCase&&!catastrophe.insideCase&&!wisdomAngel.insideCase&&!concealmentServant.insideCase&&!lifeGiver.insideCase&&!knowledgeMentor.insideCase&&!discerner.insideCase&&!weatherWarlock.insideCase&&!coffinBearer.insideCase&&!chaosHunter.insideCase&&!frenzyMage.insideCase&&!chaosWalker.insideCase&&!silentDisciple.insideCase&&!blatherer.insideCase&&!threeHeadedTemplar.insideCase&&!prophecyMaster.insideCase&&!unagingDemoness.insideCase&&!silverKnight.insideCase&&!deceitMentor.insideCase&&!wanderer.insideCase&&!ferryman.insideCase&&!justiceMentor.insideCase&&!seaKing.insideCase&&!insightScholar.insideCase&&!fearBishop.insideCase&&!summoningMaster.insideCase&&!arcaneScholar.insideCase&&!dreamWeaver.insideCase&&!warBishop.insideCase&&!ancientScholar.locked&&!ancientScholar.eraClosed&&!longChapter.locked&&!longChapter.eraClosed&&!ancientAlchemist.insideCase&&!imperativeMage.insideCase&&!fallenEarl.insideCase&&!misfortuneMage.insideCase&&!puppet.insideCase&&!devil.insideCase&&!blackKnight.insideCase&&!mystic.insideCase&&!despair.insideCase&&!demonHunter.insideCase&&!parasite.insideCase&&!secretsSorcerer.insideCase&&!undying.insideCase&&!unshadowed.insideCase&&!cataclysmPriest.insideCase&&!prophet.insideCase&&!nightwatcher.insideCase&&!witchKing.insideCase&&!alchemist.insideCase&&!manipulator.insideCase&&!ironBloodKnight.insideCase&&!bizarroSorcerer.insideCase&&!druid.insideCase&&!punishmentKnight.insideCase&&!mentorDisorder.insideCase&&!winner.insideCase&&!wraith.insideCase&&!desireApostle.insideCase&&!shepherd.insideCase&&!starMystic.insideCase&&!pain.insideCase&&!guardian.insideCase&&!dreamStealer.insideCase&&!traveler.insideCase&&!gatekeeper.insideCase&&!priestOfLight.insideCase&&!oceanSinger.insideCase&&!mysticismMagister.insideCase&&!spiritWarlock.insideCase&&!crimsonScholar.insideCase&&!astronomer.insideCase&&!dreamwalker.insideCase&&!reaper.insideCase&&!marionettist.insideCase&&!biologist.insideCase&&!judge.insideCase&&!corruptionBaron.insideCase&&!calamityPriest.insideCase&&!zombie.insideCase&&!demon.insideCase&&!roseBishop.insideCase&&!scrollProfessor.insideCase&&!pleasure.insideCase&&!dawnPaladin.insideCase&&!fireThief.insideCase&&!recorder.insideCase&&!spiritGuide.insideCase&&!notary.insideCase&&!windBlessed.insideCase&&!polymath.insideCase&&!soother.insideCase&&!potionProfessor.insideCase&&!artisan.insideCase&&!hypnotist.insideCase&&!conspirator.insideCase&&!faceless.insideCase&&!harvestpriest.insideCase&&!physician.insideCase&&!cultivator.insideCase&&!interrogator.insideCase&&!sheriff.insideCase&&!arbiter.insideCase&&!briber.insideCase&&!barbarian.insideCase&&!lawyer.insideCase&&!lucky.insideCase&&!machine.insideCase&&!monster.insideCase&&!werewolf.insideCase&&!madman.insideCase&&!prisoner.insideCase&&!serialKiller.insideCase&&!unwinged.insideCase&&!criminal.insideCase&&!shadowAscetic.insideCase&&!listener.insideCase&&!secretSupplicant.insideCase&&!wizard.insideCase&&!combatScholar.insideCase&&!pryer.insideCase&&!instigator.insideCase&&!assassin.insideCase&&!gladiator.insideCase&&s.status==='ACTIVE'&&!s.activeEvent&&!s.combat&&s.actionsRemaining>0&&s.tamer.companionId===null,actionBlockedReason:hasCurrentMotherHistory?'请在当前母亲筹备处与温室现场继续行动。':hasCurrentJusticiarHistory?'请在当前审判者筹备处与码头现场继续行动。':hasCurrentBlackEmperorHistory?'请在当前黑皇帝筹备处与有限国度继续行动。':hasCurrentWheelOfFortuneHistory?'请在当前命运之轮筹备处与岔路交接站继续行动。':hasCurrentChainedHistory?'请在当前被缚者筹备处与短闸廊现场继续行动。':hasCurrentAbyssHistory?'请在当前深渊筹备处与短仓现场继续行动。':hasCurrentHangedManHistory?'请在当前倒吊人筹备处与封压现场继续行动。':hasCurrentHermitHistory?'请在当前隐者筹备处与现场继续行动。':hasCurrentDemonessHistory?'请在当前魔女筹备处与修复现场继续行动。':hasCurrentTwilightGiantHistory?'请在当前黄昏巨人筹备处与工程现场继续行动。':hasCurrentErrorAscentHistory?'请在当前错误晋升筹备与仪式现场继续行动。':hasCurrentDoorHistory?'请在当前门途径筹备处与居民服务现场继续行动。':hasCurrentDeathHistory?'请在当前接待处与死神筹备现场继续行动。':hasCurrentSunHistory?'请在当前街区与筹备处继续行动。':hasCurrentTyrantHistory?'请在当前海岸、神战现场或筹备处继续行动。':hasCurrentDarknessHistory?'请在当前长夜撤离与筹备处继续行动。':hasCurrentMoonHistory?'请在当前夜航与筹备处继续行动。':hasCurrentPerfecterHistory?'请在当前工坊与大陆事务中继续行动。':hasCurrentRedPriestHistory?'请在当前战役与筹备处继续行动。':hasCurrentFoolHistory?'请在当前筹备处与现场继续行动。':natureWalker.insideCase?'先停止当前联系并普通归还原植、原物，沿原路离场，或取消服药准备。':handOfOrder.insideCase?'先收束当前有限联系、归还原物并沿原路离开，或取消服药准备。':princeOfAbolition.insideCase?'先收束当前有限联系、归还原物并沿原路离开，或取消服药准备。':mercurySnake.insideCase?'先收束当前有限联系、归还原物并沿原路离开，或取消服药准备。':abomination.insideCase?'先收束当前灵性束障与短声窗口，归还原物并沿原路离开。':uncleanMonarch.insideCase?'先收束当前冲动收束与定向扰动窗口，归还原物并沿原路离开。':darkAngel.insideCase?'先收束当前单灵引导与护持窗口，归还原物并沿原路离开。':knowledgeEmperor.insideCase?'先收束当前知识赋力与循力求知窗口，归还原物并沿原路离开。':apocalypseDemoness.insideCase?'先收束当前残留脉冲与镜面窗口，归还原物并沿原路离开。':divineHand.insideCase?'先收束当前载荷与护甲窗口，归还原物并沿原路离开。':timeWorm.insideCase?'先收束尚未执行的查看动作与短时窗口，再沿原路离开。':paleEmperor.insideCase?'先结束残响窗口、归还原器皿并走返。':pureWhiteAngel.insideCase?'先结束当前观察窗口、归还原试片与护片并走返。':thunderGod.insideCase?'先结束当前观察窗口、归还原靶片与护片并走返。':allKnowingEye.insideCase?'先结束当前观察窗口、归还原纸与滑轨并走返。':misfortuneKnight.insideCase?'先结束当前动作窗口、归还原盒与护片并走返。':beautyGoddess.insideCase?'先结束当前月光窗口、归还原灯和月片并走返。':civilizationEnlightener.insideCase?'先停止当前负载、实际归还原工具并走返。':writer.insideCase?'先结束当前安排、实际归还原书并走返。':conqueror.insideCase?'先收束当前原院事务并让同伴实际离场。':balancer.insideCase?'先停止当前辨察或抵御、归还原物并沿门口退出。':entropyDuke.insideCase?'先收束当前施作并归还原物，沿门口退出。':fateProphet.insideCase?'先停止本次预察或调整并归还同一原物。':sage.insideCase?'先收束信息化、处理眼前封存并沿实际路线返回':calamityDemoness.insideCase?'先停止当前施作、处理插片与封存箱并沿实际路线退出镜廊附室':glory.insideCase?'先停止当前护持、交还借物并沿实际路线退出修整室':fateTrojan.insideCase?'先解除当前联系、归还原物并沿实际路线退出登记所':planeswalker.insideCase?'先沿已核返程回到本地并收束当前星途现场':deathConsul.insideCase?'先收束苍白焰与短渡并沿实际路线退出':lightSeeker.insideCase?'先停止光照、归还遮具并沿原路退出':catastrophe.insideCase?'先停止风水、排回原水并沿干路退出':wisdomAngel.insideCase?'先停止应对并沿原路归还原件':knowledgeMentor.insideCase?'先停止工序并沿原路取回原件':discerner.insideCase?'先停止接触并沿原路归还原卡':weatherWarlock.insideCase?'先停止天气并从原出口收束现场':coffinBearer.insideCase?'先收束抬棺人现场。':chaosHunter.insideCase?'先收束混乱猎手现场。':frenzyMage.insideCase?'先收束狂乱法师现场。':chaosWalker.insideCase?'先收束混乱行者现场。':silentDisciple.insideCase?'先收束沉默门徒现场。':blatherer.insideCase?'先收束呓语者现场。':threeHeadedTemplar.insideCase?'先收束三首圣堂现场。':prophecyMaster.insideCase?'先收束预言大师现场。':unagingDemoness.insideCase?'先收束原镜内道路或不老魔女现场。':silverKnight.insideCase?'先收束原猎场、祭坛或银骑士现场。':deceitMentor.insideCase?'先停止有限欺瞒并归还同一原物。':wanderer.insideCase?'先实际返回并收束原锚、护具和原封包。':ferryman.insideCase?'先实际收束摆渡人原现场与原物。':justiceMentor.insideCase?'先实际收束正义导师原现场与原物。':seaKing.insideCase?'先实际收束海王原现场与原物。':insightScholar.insideCase?'先实际收束洞悉者候选G原现场与原物。':fearBishop.insideCase?'先实际收束恐惧主教原现场与原物。':summoningMaster.insideCase?'先实际收束召唤大师原现场与来客。':arcaneScholar.insideCase?'先实际收束奥秘学者原现场与造物。':dreamWeaver.insideCase?'先实际收束织梦人原现场与身份。':warBishop.insideCase?'先实际收束战争主教原队伍与原物。':ancientScholar.eraClosed?'旧时代已结束，请使用本章当前生活与实践。':ancientScholar.locked?'请先完成本章封存或当前原物交接。':longChapter.eraClosed?'旧时代行动已经关闭，请使用新年代接待处。':longChapter.locked?'请先完成当前长期章节与原物交接。':ancientAlchemist.insideCase?'先实际退出当前古代炼金师练习现场':imperativeMage.insideCase?'先实际退出当前律令法师练习现场':fallenEarl.insideCase?'先实际退出当前堕落伯爵练习现场':misfortuneMage.insideCase?'先实际退出当前厄运法师练习现场':puppet.insideCase?'先实际退出当前木偶练习现场':devil.insideCase?'先实际退出当前魔鬼练习现场':blackKnight.insideCase?'先实际退出当前黑骑士练习现场':mystic.insideCase?'先实际退出当前神秘学家练习现场':despair.insideCase?'先实际退出当前绝望魔女练习现场':demonHunter.insideCase?'先实际结束当前猎魔者现场':parasite.insideCase?'先实际结束当前寄生者接触':secretsSorcerer.insideCase?'先实际结束秘法师当前现场':undying.insideCase?'先实际结束当前不死者现场':unshadowed.insideCase?'先实际结束当前无暗者现场':cataclysmPriest.insideCase?'先实际结束当前灾难主祭现场':prophet.insideCase?'先实际结束当前预言家现场':nightwatcher.insideCase?'先实际结束当前守夜人现场':witchKing.insideCase?'先实际结束当前巫王现场':alchemist.insideCase?'先实际结束当前炼金术士现场':manipulator.insideCase?'先实际结束当前心灵接触或集会':ironBloodKnight.insideCase?'先实际收束铁血骑士当前现场':bizarroSorcerer.insideCase?'先实际结束诡法师当前现场':druid.insideCase?'先0行动结束德鲁伊实践并退出原现场':punishmentKnight.insideCase?'先0行动结束惩戒骑士实践并退出原现场':mentorDisorder.insideCase?'先0行动结束混乱导师实践并退出原现场':winner.insideCase?'先0行动结束赢家实践并退出原现场':wraith.insideCase?(wraith.moon.pending?'先实际度过本次怨魂满月极度虚弱':'先0行动结束怨魂实践并退出原现场'):desireApostle.insideCase?'先0行动结束欲望使徒实践并退出原现场':shepherd.insideCase?'先0行动结束牧羊人实践并退出原现场':starMystic.insideCase?'先0行动结束星象师实践并退出原现场':pain.insideCase?'先0行动结束痛苦魔女实践并退出原现场':guardian.insideCase?'先0行动结束守护者实践并退出原现场':dreamStealer.insideCase?'先0行动结束窃梦家实践并退出原现场':traveler.insideCase?'先0行动结束旅行家实践并退出原现场':gatekeeper.insideCase?'先0行动结束看门人实践并退出原现场':priestOfLight.insideCase?'先0行动结束光之祭司实践并退出原现场':oceanSinger.insideCase?'先0行动结束海洋歌者实践并退出原现场':mysticismMagister.insideCase?'先0行动结束秘术导师实践并退出原现场':spiritWarlock.insideCase?'先0行动结束灵巫实践并退出原现场':crimsonScholar.insideCase?'先0行动结束深红学者实践并退出原现场':astronomer.insideCase?'先0行动结束天文学家实践并退出原现场':dreamwalker.insideCase?'先结束梦境、实际返回或结束仪式':reaper.insideCase?'先0行动结束收割者实践并退出原现场':marionettist.insideCase?'先结束仪式、释放初控或退出当前接触':biologist.insideCase?'先0行动结束生物学家实践并退出原现场':judge.insideCase?'先0行动结束法官实践并退出原现场':corruptionBaron.insideCase?'先0行动结束腐化男爵实践并退出原现场':calamityPriest.insideCase?'先0行动结束灾祸教士实践并退出原现场':zombie.insideCase?(zombie.moon.pending?'先实际度过本次活尸月圆剧痛':'先0行动结束活尸实践并退出原现场'):demon.insideCase?'先0行动结束恶魔实践并退出原现场':roseBishop.insideCase?'先0行动结束血肉调节并退出原现场':scrollProfessor.insideCase?'先0行动结束卷轴实践并退出原现场':pleasure.insideCase?'先0行动结束丝线与交流实践并退出原现场':dawnPaladin.insideCase?'先0行动结束晨曦实践并退出原现场':fireThief.insideCase?'先0行动结束暂借实践并退出原现场':recorder.insideCase?'先0行动结束记录实践并退出原现场':spiritGuide.insideCase?'先0行动结束通灵实践并退出原现场':notary.insideCase?'先0行动结束公证实践并归还原工具':windBlessed.insideCase?'先0行动结束控风练习并沿原路返回地面':polymath.insideCase?'先0行动结束样本试演现场':soother.insideCase?'先0行动结束安魂现场':potionProfessor.insideCase?'先0行动结束药剂试验现场':artisan.insideCase?'先0行动结束工房现场':hypnotist.insideCase?'先0行动停止本次影响并退出':conspirator.insideCase?'先0行动结束当前交涉':faceless.insideCase?'先0行动结束当前接触':harvestpriest.insideCase?'先0行动停止练习并退开':physician.insideCase?'先0行动停止练习并退开':cultivator.insideCase?'先0行动放回原记录并结束交谈':interrogator.insideCase?'先0行动停止练习并退开':sheriff.insideCase?'先0行动停止练习并退开':arbiter.insideCase?'先0行动放回原记录并结束交谈':briber.insideCase?'先0行动结束本次给予与练习':barbarian.insideCase?'先0行动放稳原物并结束练习':lawyer.insideCase?'先0行动放回原记录并结束交谈':lucky.insideCase?'先0行动结束事项并归还原件':machine.insideCase?'先0行动停止练习并退开':monster.insideCase?'先0行动结束注意并退开':werewolf.insideCase?'先实际度过月圆或返回原现场':madman.insideCase?'先0行动实际停止本次练习':prisoner.insideCase?'先0行动交还原木撑':serialKiller.insideCase?'先0行动实际关闭练习并退开':unwinged.insideCase?'先0行动实际停手退开，结束这次冲动':criminal.insideCase?'先0行动交还原工钱袋':shadowAscetic.insideCase?'先0行动解除本次藏匿，沿原路退出':listener.insideCase?'先0行动沿原门退到约定外间，结束本次接触':secretSupplicant.insideCase?'先0行动把原罩盖回':wizard.insideCase?'先0行动结束本次短时效果':combatScholar.insideCase?'先0行动实际停止本次演练':pryer.insideCase?'先0行动实际合上原页':instigator.insideCase?'先0行动停止挑动并退开':assassin.insideCase?'先沿原楼梯或足额轻身返回':gladiator.insideCase?'先0行动松手分开，结束实际接触':s.tamer.companionId!==null?'先完成动物协助或0行动送回原主人':s.status!=='ACTIVE'?'本次试玩已收尾':s.activeEvent?'请先处理当前事件':s.combat?'正在进行追击战斗':null,activeEvent:currentEvent(s),combat,lastCombatRound:publicCombatRound(s.lastCombatRound),combatHistory:s.combatHistory.map(round=>publicCombatRound(round)!),lastResult:clone(s.lastResult),lastCheck:s.progression.pathwayId==='justiciar'&&!hasCurrentJusticiarHistory?projectHandOfOrderLastCheck(s):s.progression.pathwayId==='wheel'&&!hasCurrentWheelOfFortuneHistory?projectMercurySnakeLastCheck(s):s.progression.pathwayId==='abyss'&&!hasCurrentAbyssHistory?projectUncleanMonarchLastCheck(s):s.progression.pathwayId==='hanged-man'&&!hasCurrentHangedManHistory?projectDarkAngelLastCheck(s):s.progression.pathwayId==='demoness'&&!hasCurrentDemonessHistory?projectApocalypseDemonessLastCheck(s):projectThunderGodLastCheck(s),chronicle:clone(s.chronicle),knowledge:clone(s.knowledge),ending:clone(s.ending),nextStep:hasCurrentMotherHistory?mother.nextStep:hasCurrentJusticiarHistory?justiciar.nextStep:hasCurrentBlackEmperorHistory?blackEmperor.nextStep:hasCurrentWheelOfFortuneHistory?wheelOfFortune.nextStep:hasCurrentChainedHistory?chained.nextStep:hasCurrentAbyssHistory?abyss.nextStep:hasCurrentHangedManHistory?hangedMan.nextStep:hasCurrentHermitHistory?hermit.nextStep:hasCurrentDemonessHistory?demoness.nextStep:hasCurrentTwilightGiantHistory?twilightGiant.nextStep:hasCurrentErrorAscentHistory?errorAscent.nextStep:hasCurrentDoorHistory?door.nextStep:hasCurrentDeathHistory?death.nextStep:hasCurrentSunHistory?sun.nextStep:hasCurrentTyrantHistory?tyrant.nextStep:hasCurrentWhiteTowerHistory?whiteTower.nextStep:hasCurrentDarknessHistory?darkness.nextStep:hasCurrentMoonHistory?moon.nextStep:hasCurrentPerfecterHistory?perfecter.nextStep:hasCurrentVisionaryHistory?visionary.nextStep:nextStep(s),aidCanCancel:s.aid==='ACCEPTED'||s.aid==='CORRECT',marketUnlocked:s.marketUnlocked};
   return projectPlayerText({ ...result, recovery: projectRecovery(s, result) }, s.character.name);
 }
 
@@ -1854,7 +2913,7 @@ export function openFoolRuntimeSession(input:unknown):FoolRuntimeSession {
     return entry!.next;
   };
   const projectFoolHead=(head:Head):FoolProjection=>projectOwnedFool(head.state,head.engine);
-  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFoolHead(head),true));
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFoolHead(head),true,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false));
   return Object.freeze({
     inspect:()=>inspect(current),
     snapshot:()=>structuredClone(current.state),
@@ -1877,5 +2936,827 @@ export function openFoolRuntimeSession(input:unknown):FoolRuntimeSession {
     projectDraftFool:(draft:FoolRuntimeDraft)=>projectFoolHead(draftHead(draft)),
     commit:(draft:FoolRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
     discard:(draft:FoolRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openRedPriestRuntimeSession(input:unknown):RedPriestRuntimeSession {
+  const opened=openValidatedRedPriestSlice(input);
+  type Head={state:SliceState;engine:RedPriestOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<RedPriestRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):RedPriestRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:RedPriestRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectRedPriestHead=(head:Head):RedPriestProjection=>projectOwnedRedPriest(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriestHead(head),true,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectRedPriest:()=>projectRedPriestHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):RedPriestRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='RED_PRIEST','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'RED_PRIEST'}>;
+      const candidate=applyRedPriestSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedRedPriestTransition(current.state,candidate.state);
+      assertOwnedRedPriestCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as RedPriestRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:RedPriestRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:RedPriestRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:RedPriestRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftRedPriest:(draft:RedPriestRuntimeDraft)=>projectRedPriestHead(draftHead(draft)),
+    commit:(draft:RedPriestRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:RedPriestRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openVisionaryRuntimeSession(input:unknown):VisionaryRuntimeSession {
+  const opened=openValidatedVisionarySlice(input);
+  type Head={state:SliceState;engine:VisionaryOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<VisionaryRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):VisionaryRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:VisionaryRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectVisionaryHead=(head:Head):VisionaryProjection=>projectOwnedVisionary(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionaryHead(head),true,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectVisionary:()=>projectVisionaryHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):VisionaryRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='VISIONARY','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'VISIONARY'}>;
+      const candidate=applyVisionarySliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedVisionaryTransition(current.state,candidate.state);
+      assertOwnedVisionaryCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as VisionaryRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:VisionaryRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:VisionaryRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:VisionaryRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftVisionary:(draft:VisionaryRuntimeDraft)=>projectVisionaryHead(draftHead(draft)),
+    commit:(draft:VisionaryRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:VisionaryRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openPerfecterRuntimeSession(input:unknown):PerfecterRuntimeSession {
+  const opened=openValidatedPerfecterSlice(input);
+  type Head={state:SliceState;engine:PerfecterOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<PerfecterRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):PerfecterRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:PerfecterRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectPerfecterHead=(head:Head):PerfecterProjection=>projectOwnedPerfecter(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecterHead(head),true,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectPerfecter:()=>projectPerfecterHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):PerfecterRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='PERFECTER','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'PERFECTER'}>;
+      const candidate=applyPerfecterSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedPerfecterTransition(current.state,candidate.state);
+      assertOwnedPerfecterCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as PerfecterRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:PerfecterRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:PerfecterRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:PerfecterRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftPerfecter:(draft:PerfecterRuntimeDraft)=>projectPerfecterHead(draftHead(draft)),
+    commit:(draft:PerfecterRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:PerfecterRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openMoonRuntimeSession(input:unknown):MoonRuntimeSession {
+  const opened=openValidatedMoonSlice(input);
+  type Head={state:SliceState;engine:MoonOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<MoonRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):MoonRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:MoonRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectMoonHead=(head:Head):MoonProjection=>projectOwnedMoon(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoonHead(head),true,projectDarkness(head.state),false,projectWhiteTower(head.state),false));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectMoon:()=>projectMoonHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):MoonRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='MOON','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'MOON'}>;
+      const candidate=applyMoonSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedMoonTransition(current.state,candidate.state);
+      assertOwnedMoonCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as MoonRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:MoonRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:MoonRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:MoonRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftMoon:(draft:MoonRuntimeDraft)=>projectMoonHead(draftHead(draft)),
+    commit:(draft:MoonRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:MoonRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openDarknessRuntimeSession(input:unknown):DarknessRuntimeSession {
+  const opened=openValidatedDarknessSlice(input);
+  type Head={state:SliceState;engine:DarknessOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<DarknessRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):DarknessRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:DarknessRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectDarknessHead=(head:Head):DarknessProjection=>projectOwnedDarkness(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarknessHead(head),true,projectWhiteTower(head.state),false));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectDarkness:()=>projectDarknessHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):DarknessRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='DARKNESS','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'DARKNESS'}>;
+      const candidate=applyDarknessSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedDarknessTransition(current.state,candidate.state);
+      assertOwnedDarknessCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as DarknessRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:DarknessRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:DarknessRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:DarknessRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftDarkness:(draft:DarknessRuntimeDraft)=>projectDarknessHead(draftHead(draft)),
+    commit:(draft:DarknessRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:DarknessRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openWhiteTowerRuntimeSession(input:unknown):WhiteTowerRuntimeSession {
+  const opened=openValidatedWhiteTowerSlice(input);
+  type Head={state:SliceState;engine:WhiteTowerOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<WhiteTowerRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):WhiteTowerRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:WhiteTowerRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectWhiteTowerHead=(head:Head):WhiteTowerProjection=>projectOwnedWhiteTower(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTowerHead(head),true));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectWhiteTower:()=>projectWhiteTowerHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):WhiteTowerRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='WHITE_TOWER','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'WHITE_TOWER'}>;
+      const candidate=applyWhiteTowerSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedWhiteTowerTransition(current.state,candidate.state);
+      assertOwnedWhiteTowerCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as WhiteTowerRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:WhiteTowerRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:WhiteTowerRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:WhiteTowerRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftWhiteTower:(draft:WhiteTowerRuntimeDraft)=>projectWhiteTowerHead(draftHead(draft)),
+    commit:(draft:WhiteTowerRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:WhiteTowerRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openTyrantRuntimeSession(input:unknown):TyrantRuntimeSession {
+  const opened=openValidatedTyrantSlice(input);
+  type Head={state:SliceState;engine:TyrantOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<TyrantRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):TyrantRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:TyrantRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectTyrantHead=(head:Head):TyrantProjection=>projectOwnedTyrant(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrantHead(head),true));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectTyrant:()=>projectTyrantHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):TyrantRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='TYRANT','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'TYRANT'}>;
+      const candidate=applyTyrantSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedTyrantTransition(current.state,candidate.state);
+      assertOwnedTyrantCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as TyrantRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:TyrantRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:TyrantRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:TyrantRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftTyrant:(draft:TyrantRuntimeDraft)=>projectTyrantHead(draftHead(draft)),
+    commit:(draft:TyrantRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:TyrantRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openSunRuntimeSession(input:unknown):SunRuntimeSession {
+  const opened=openValidatedSunSlice(input);
+  type Head={state:SliceState;engine:SunOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<SunRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):SunRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:SunRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectSunHead=(head:Head):SunProjection=>projectOwnedSun(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSunHead(head),true));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectSun:()=>projectSunHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):SunRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='SUN','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'SUN'}>;
+      const candidate=applySunSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedSunTransition(current.state,candidate.state);
+      assertOwnedSunCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as SunRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:SunRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:SunRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:SunRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftSun:(draft:SunRuntimeDraft)=>projectSunHead(draftHead(draft)),
+    commit:(draft:SunRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:SunRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openDeathRuntimeSession(input:unknown):DeathRuntimeSession {
+  const opened=openValidatedDeathSlice(input);
+  type Head={state:SliceState;engine:DeathOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<DeathRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):DeathRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:DeathRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectDeathHead=(head:Head):DeathProjection=>projectOwnedDeath(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeathHead(head),true));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectDeath:()=>projectDeathHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):DeathRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='DEATH','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'DEATH'}>;
+      const candidate=applyDeathSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedDeathTransition(current.state,candidate.state);
+      assertOwnedDeathCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as DeathRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:DeathRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:DeathRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:DeathRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftDeath:(draft:DeathRuntimeDraft)=>projectDeathHead(draftHead(draft)),
+    commit:(draft:DeathRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:DeathRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openDoorRuntimeSession(input:unknown):DoorRuntimeSession {
+  const opened=openValidatedDoorSlice(input);
+  type Head={state:SliceState;engine:DoorOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<DoorRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):DoorRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:DoorRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectDoorHead=(head:Head):DoorProjection=>projectOwnedDoor(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoorHead(head),true));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectDoor:()=>projectDoorHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):DoorRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='DOOR','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'DOOR'}>;
+      const candidate=applyDoorSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedDoorTransition(current.state,candidate.state);
+      assertOwnedDoorCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as DoorRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:DoorRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:DoorRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:DoorRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftDoor:(draft:DoorRuntimeDraft)=>projectDoorHead(draftHead(draft)),
+    commit:(draft:DoorRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:DoorRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openErrorAscentRuntimeSession(input:unknown):ErrorAscentRuntimeSession {
+  const opened=openValidatedErrorAscentSlice(input);
+  type Head={state:SliceState;engine:ErrorAscentOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<ErrorAscentRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):ErrorAscentRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:ErrorAscentRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectErrorAscentHead=(head:Head):ErrorAscentProjection=>projectOwnedErrorAscent(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscentHead(head),true));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectErrorAscent:()=>projectErrorAscentHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):ErrorAscentRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='ERROR_ASCENT','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'ERROR_ASCENT'}>;
+      const candidate=applyErrorAscentSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedErrorAscentTransition(current.state,candidate.state);
+      assertOwnedErrorAscentCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as ErrorAscentRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:ErrorAscentRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:ErrorAscentRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:ErrorAscentRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftErrorAscent:(draft:ErrorAscentRuntimeDraft)=>projectErrorAscentHead(draftHead(draft)),
+    commit:(draft:ErrorAscentRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:ErrorAscentRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openTwilightGiantRuntimeSession(input:unknown):TwilightGiantRuntimeSession {
+  const opened=openValidatedTwilightGiantSlice(input);
+  type Head={state:SliceState;engine:TwilightGiantOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<TwilightGiantRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):TwilightGiantRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:TwilightGiantRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectTwilightGiantHead=(head:Head):TwilightGiantProjection=>projectOwnedTwilightGiant(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiantHead(head),true));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectTwilightGiant:()=>projectTwilightGiantHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):TwilightGiantRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='TWILIGHT_GIANT','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'TWILIGHT_GIANT'}>;
+      const candidate=applyTwilightGiantSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedTwilightGiantTransition(current.state,candidate.state);
+      assertOwnedTwilightGiantCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as TwilightGiantRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:TwilightGiantRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:TwilightGiantRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:TwilightGiantRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftTwilightGiant:(draft:TwilightGiantRuntimeDraft)=>projectTwilightGiantHead(draftHead(draft)),
+    commit:(draft:TwilightGiantRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:TwilightGiantRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openDemonessRuntimeSession(input:unknown):DemonessRuntimeSession {
+  const opened=openValidatedDemonessSlice(input);
+  type Head={state:SliceState;engine:DemonessOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<DemonessRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):DemonessRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:DemonessRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectDemonessHead=(head:Head):DemonessProjection=>projectOwnedDemoness(head.state,head.engine);
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemonessHead(head),true));
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectDemoness:()=>projectDemonessHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):DemonessRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='DEMONESS','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'DEMONESS'}>;
+      const candidate=applyDemonessSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedDemonessTransition(current.state,candidate.state);
+      assertOwnedDemonessCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as DemonessRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:DemonessRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:DemonessRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:DemonessRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftDemoness:(draft:DemonessRuntimeDraft)=>projectDemonessHead(draftHead(draft)),
+    commit:(draft:DemonessRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:DemonessRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openHermitRuntimeSession(input:unknown):HermitRuntimeSession {
+  const opened=openValidatedHermitSlice(input);
+  type Head={state:SliceState;engine:HermitOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<HermitRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):HermitRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:HermitRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectHermitHead=(head:Head):HermitProjection=>projectOwnedHermit(head.state,head.engine);
+  let histories:HermitHistoricalProjections|undefined;
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemoness(head.state),false,projectHermitHead(head),true,histories));
+  const initialProjection=projectHead(current);
+  histories=structuredClone({pryer:initialProjection.pryer,combatScholar:initialProjection.combatScholar,wizard:initialProjection.wizard,scrollProfessor:initialProjection.scrollProfessor,starMystic:initialProjection.starMystic,mystic:initialProjection.mystic,prophecyMaster:initialProjection.prophecyMaster,sage:initialProjection.sage,knowledgeEmperor:initialProjection.knowledgeEmperor});
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectHermit:()=>projectHermitHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):HermitRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='HERMIT','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'HERMIT'}>;
+      const candidate=applyHermitSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedHermitTransition(current.state,candidate.state);
+      assertOwnedHermitCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as HermitRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:HermitRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:HermitRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:HermitRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftHermit:(draft:HermitRuntimeDraft)=>projectHermitHead(draftHead(draft)),
+    commit:(draft:HermitRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:HermitRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openHangedManRuntimeSession(input:unknown):HangedManRuntimeSession {
+  const opened=openValidatedHangedManSlice(input);
+  type Head={state:SliceState;engine:HangedManOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<HangedManRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):HangedManRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:HangedManRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectHangedManHead=(head:Head):HangedManProjection=>projectOwnedHangedMan(head.state,head.engine);
+  let histories:HangedManHistoricalProjections|undefined;
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemoness(head.state),false,projectHermit(head.state),false,undefined,projectHangedManHead(head),true,histories));
+  const initialProjection=projectHead(current);
+  histories=structuredClone({secretSupplicant:initialProjection.secretSupplicant,listener:initialProjection.listener,shadowAscetic:initialProjection.shadowAscetic,roseBishop:initialProjection.roseBishop,shepherd:initialProjection.shepherd,blackKnight:initialProjection.blackKnight,threeHeadedTemplar:initialProjection.threeHeadedTemplar,elder:initialProjection.elder,darkAngel:initialProjection.darkAngel});
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectHangedMan:()=>projectHangedManHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):HangedManRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='HANGED_MAN','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'HANGED_MAN'}>;
+      const candidate=applyHangedManSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedHangedManTransition(current.state,candidate.state);
+      assertOwnedHangedManCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as HangedManRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:HangedManRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:HangedManRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:HangedManRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftHangedMan:(draft:HangedManRuntimeDraft)=>projectHangedManHead(draftHead(draft)),
+    commit:(draft:HangedManRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:HangedManRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openAbyssRuntimeSession(input:unknown):AbyssRuntimeSession {
+  const opened=openValidatedAbyssSlice(input);
+  type Head={state:SliceState;engine:AbyssOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<AbyssRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):AbyssRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:AbyssRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectAbyssHead=(head:Head):AbyssProjection=>projectOwnedAbyss(head.state,head.engine);
+  let histories:AbyssHistoricalProjections|undefined;
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemoness(head.state),false,projectHermit(head.state),false,undefined,projectHangedMan(head.state),false,undefined,projectAbyssHead(head),true,histories));
+  const initialProjection=projectHead(current);
+  histories=structuredClone({criminal:initialProjection.criminal,unwinged:initialProjection.unwinged,serialKiller:initialProjection.serialKiller,demon:initialProjection.demon,desireApostle:initialProjection.desireApostle,devil:initialProjection.devil,blatherer:initialProjection.blatherer,bloodDuke:initialProjection.bloodDuke,uncleanMonarch:initialProjection.uncleanMonarch});
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectAbyss:()=>projectAbyssHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):AbyssRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='ABYSS','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'ABYSS'}>;
+      const candidate=applyAbyssSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedAbyssTransition(current.state,candidate.state);
+      assertOwnedAbyssCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as AbyssRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:AbyssRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:AbyssRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:AbyssRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftAbyss:(draft:AbyssRuntimeDraft)=>projectAbyssHead(draftHead(draft)),
+    commit:(draft:AbyssRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:AbyssRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openChainedRuntimeSession(input:unknown):ChainedRuntimeSession {
+  const opened=openValidatedChainedSlice(input);
+  type Head={state:SliceState;engine:ChainedOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<ChainedRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):ChainedRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:ChainedRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectChainedHead=(head:Head):ChainedProjection=>projectOwnedChained(head.state,head.engine);
+  let histories:ChainedHistoricalProjections|undefined;
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemoness(head.state),false,projectHermit(head.state),false,undefined,projectHangedMan(head.state),false,undefined,projectAbyss(head.state),false,undefined,projectChainedHead(head),true,histories));
+  const initialProjection=projectHead(current);
+  histories=structuredClone({prisoner:initialProjection.prisoner,madman:initialProjection.madman,werewolf:initialProjection.werewolf,zombie:initialProjection.zombie,wraith:initialProjection.wraith,puppet:initialProjection.puppet,silentDisciple:initialProjection.silentDisciple,ancientEvil:initialProjection.ancientEvil,abomination:initialProjection.abomination});
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectChained:()=>projectChainedHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):ChainedRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='CHAINED','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'CHAINED'}>;
+      const candidate=applyChainedSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedChainedTransition(current.state,candidate.state);
+      assertOwnedChainedCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as ChainedRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:ChainedRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:ChainedRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:ChainedRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftChained:(draft:ChainedRuntimeDraft)=>projectChainedHead(draftHead(draft)),
+    commit:(draft:ChainedRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:ChainedRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openWheelOfFortuneRuntimeSession(input:unknown):WheelOfFortuneRuntimeSession {
+  const opened=openValidatedWheelOfFortuneSlice(input);
+  type Head={state:SliceState;engine:WheelOfFortuneOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<WheelOfFortuneRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):WheelOfFortuneRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:WheelOfFortuneRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectWheelOfFortuneHead=(head:Head):WheelOfFortuneProjection=>projectOwnedWheelOfFortune(head.state,head.engine);
+  let histories:WheelOfFortuneHistoricalProjections|undefined;
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemoness(head.state),false,projectHermit(head.state),false,undefined,projectHangedMan(head.state),false,undefined,projectAbyss(head.state),false,undefined,projectChained(head.state),false,undefined,projectWheelOfFortuneHead(head),true,histories));
+  const initialProjection=projectHead(current);
+  histories=structuredClone({monster:initialProjection.monster,machine:initialProjection.machine,lucky:initialProjection.lucky,calamityPriest:initialProjection.calamityPriest,winner:initialProjection.winner,misfortuneMage:initialProjection.misfortuneMage,chaosWalker:initialProjection.chaosWalker,fateProphet:initialProjection.fateProphet,mercurySnake:initialProjection.mercurySnake});
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectWheelOfFortune:()=>projectWheelOfFortuneHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):WheelOfFortuneRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='WHEEL_OF_FORTUNE','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'WHEEL_OF_FORTUNE'}>;
+      const candidate=applyWheelOfFortuneSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedWheelOfFortuneTransition(current.state,candidate.state);
+      assertOwnedWheelOfFortuneCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as WheelOfFortuneRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:WheelOfFortuneRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:WheelOfFortuneRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:WheelOfFortuneRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftWheelOfFortune:(draft:WheelOfFortuneRuntimeDraft)=>projectWheelOfFortuneHead(draftHead(draft)),
+    commit:(draft:WheelOfFortuneRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:WheelOfFortuneRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openBlackEmperorRuntimeSession(input:unknown):BlackEmperorRuntimeSession {
+  const opened=openValidatedBlackEmperorSlice(input);
+  type Head={state:SliceState;engine:BlackEmperorOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<BlackEmperorRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):BlackEmperorRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:BlackEmperorRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectBlackEmperorHead=(head:Head):BlackEmperorProjection=>projectOwnedBlackEmperor(head.state,head.engine);
+  let histories:BlackEmperorHistoricalProjections|undefined;
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemoness(head.state),false,projectHermit(head.state),false,undefined,projectHangedMan(head.state),false,undefined,projectAbyss(head.state),false,undefined,projectChained(head.state),false,undefined,projectWheelOfFortune(head.state),false,undefined,projectBlackEmperorHead(head),true,histories));
+  const initialProjection=projectHead(current);
+  histories=structuredClone({lawyer:initialProjection.lawyer,barbarian:initialProjection.barbarian,briber:initialProjection.briber,corruptionBaron:initialProjection.corruptionBaron,mentorDisorder:initialProjection.mentorDisorder,fallenEarl:initialProjection.fallenEarl,frenzyMage:initialProjection.frenzyMage,entropyDuke:initialProjection.entropyDuke,princeOfAbolition:initialProjection.princeOfAbolition});
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectBlackEmperor:()=>projectBlackEmperorHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):BlackEmperorRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='BLACK_EMPEROR','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'BLACK_EMPEROR'}>;
+      const candidate=applyBlackEmperorSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedBlackEmperorTransition(current.state,candidate.state);
+      assertOwnedBlackEmperorCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as BlackEmperorRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:BlackEmperorRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:BlackEmperorRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:BlackEmperorRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftBlackEmperor:(draft:BlackEmperorRuntimeDraft)=>projectBlackEmperorHead(draftHead(draft)),
+    commit:(draft:BlackEmperorRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:BlackEmperorRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openJusticiarRuntimeSession(input:unknown):JusticiarRuntimeSession {
+  const opened=openValidatedJusticiarSlice(input);
+  type Head={state:SliceState;engine:JusticiarOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<JusticiarRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):JusticiarRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:JusticiarRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectJusticiarHead=(head:Head):JusticiarProjection=>projectOwnedJusticiar(head.state,head.engine);
+  let histories:JusticiarHistoricalProjections|undefined;
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemoness(head.state),false,projectHermit(head.state),false,undefined,projectHangedMan(head.state),false,undefined,projectAbyss(head.state),false,undefined,projectChained(head.state),false,undefined,projectWheelOfFortune(head.state),false,undefined,projectBlackEmperor(head.state),false,undefined,projectJusticiarHead(head),true,histories));
+  const initialProjection=projectHead(current);
+  histories=structuredClone({arbiter:initialProjection.arbiter,sheriff:initialProjection.sheriff,interrogator:initialProjection.interrogator,judge:initialProjection.judge,punishmentKnight:initialProjection.punishmentKnight,imperativeMage:initialProjection.imperativeMage,chaosHunter:initialProjection.chaosHunter,balancer:initialProjection.balancer,handOfOrder:initialProjection.handOfOrder});
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectJusticiar:()=>projectJusticiarHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):JusticiarRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='JUSTICIAR','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'JUSTICIAR'}>;
+      const candidate=applyJusticiarSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedJusticiarTransition(current.state,candidate.state);
+      assertOwnedJusticiarCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as JusticiarRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:JusticiarRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:JusticiarRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:JusticiarRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftJusticiar:(draft:JusticiarRuntimeDraft)=>projectJusticiarHead(draftHead(draft)),
+    commit:(draft:JusticiarRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:JusticiarRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
+  });
+}
+
+export function openMotherRuntimeSession(input:unknown):MotherRuntimeSession {
+  const opened=openValidatedMotherSlice(input);
+  type Head={state:SliceState;engine:MotherOwnedEngine};
+  let current:Head=opened;
+  const drafts=new WeakMap<MotherRuntimeDraft,{base:Head;next:Head}>();
+  const inspect=(head:Head):MotherRuntimeIdentity=>({runId:head.state.runId,revision:head.state.revision,status:head.state.status});
+  const draftHead=(draft:MotherRuntimeDraft):Head=>{
+    const entry=drafts.get(draft);
+    requireRule(!!entry&&entry.base===current,'草稿不是本会话的当前版本，不能继续使用。');
+    return entry!.next;
+  };
+  const projectMotherHead=(head:Head):MotherProjection=>projectOwnedMother(head.state,head.engine);
+  let histories:MotherHistoricalProjections|undefined;
+  const projectHead=(head:Head):SliceProjection=>structuredClone(projectSliceStateCurrent(structuredClone(head.state),projectFool(head.state),false,projectRedPriest(head.state),false,projectVisionary(head.state),false,projectPerfecter(head.state),false,projectMoon(head.state),false,projectDarkness(head.state),false,projectWhiteTower(head.state),false,projectTyrant(head.state),false,projectSun(head.state),false,projectDeath(head.state),false,projectDoor(head.state),false,projectErrorAscent(head.state),false,projectTwilightGiant(head.state),false,projectDemoness(head.state),false,projectHermit(head.state),false,undefined,projectHangedMan(head.state),false,undefined,projectAbyss(head.state),false,undefined,projectChained(head.state),false,undefined,projectWheelOfFortune(head.state),false,undefined,projectBlackEmperor(head.state),false,undefined,projectJusticiar(head.state),false,undefined,projectMotherHead(head),true,histories));
+  const initialProjection=projectHead(current);
+  histories=structuredClone({cultivator:initialProjection.cultivator,physician:initialProjection.physician,harvestpriest:initialProjection.harvestpriest,biologist:initialProjection.biologist,druid:initialProjection.druid,ancientAlchemist:initialProjection.ancientAlchemist,coffinBearer:initialProjection.coffinBearer,barrenMatriarch:initialProjection.barrenMatriarch,natureWalker:initialProjection.natureWalker});
+  return Object.freeze({
+    inspect:()=>inspect(current),
+    snapshot:()=>structuredClone(current.state),
+    project:()=>projectHead(current),
+    projectMother:()=>projectMotherHead(current),
+    prepare:(intent:SliceIntent,expectedRevision:number):MotherRuntimeDraft=>{
+      requireRule(Number.isSafeInteger(expectedRevision)&&expectedRevision===current.state.revision,'当前版本已变化，请刷新后再操作。');
+      requireRule(validateSlicePayload(intent)&&intent.type==='MOTHER','原有经历已经封存，请在当前筹备处与现场继续行动。');
+      const payload=structuredClone(intent) as Extract<SliceIntent,{type:'MOTHER'}>;
+      const candidate=applyMotherSliceIntent(current.state,payload,current.engine);
+      requireRule(!!candidate.head,'当前行动未产生有效领域草稿。');
+      assertValidOwnedMotherTransition(current.state,candidate.state);
+      assertOwnedMotherCurrent(candidate.state,candidate.head!);
+      const draft=Object.freeze({}) as MotherRuntimeDraft;
+      drafts.set(draft,{base:current,next:{state:candidate.state,engine:candidate.head!}});return draft;
+    },
+    inspectDraft:(draft:MotherRuntimeDraft)=>inspect(draftHead(draft)),
+    snapshotDraft:(draft:MotherRuntimeDraft)=>structuredClone(draftHead(draft).state),
+    projectDraft:(draft:MotherRuntimeDraft)=>projectHead(draftHead(draft)),
+    projectDraftMother:(draft:MotherRuntimeDraft)=>projectMotherHead(draftHead(draft)),
+    commit:(draft:MotherRuntimeDraft)=>{const next=draftHead(draft);current=next;drafts.delete(draft);},
+    discard:(draft:MotherRuntimeDraft)=>{draftHead(draft);drafts.delete(draft);},
   });
 }

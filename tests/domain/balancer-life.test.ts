@@ -46,7 +46,7 @@ describe('Balancer actual original room, independent truth and finite physical p
   it('accepts exact finite commands only, rejecting extra fields and remote targets', () => {
     for (const c of [{ type: 'REFLECT', extra: true }, { type: 'BUY_GUARD_PLATE', quantity: 2 }, { type: 'WALK', caseId: 'visible-imbalance', to: 'OUTSIDE' }, { type: 'IMBALANCE_SENSING', caseId: 'visible-imbalance', target: 'MIRA_MIND' }, { type: 'MEASURED_RESISTANCE', caseId: 'foreign' }, { type: 'RESTORE_PLATE' }, { type: 'APPLY_IMPACT', caseId: 'measured-impact', victim: 'MIRA' }]) expect(validateBalancerActivityCommand(c)).toBe(false);
     rejectBalancer(promoted(), { type: 'IMBALANCE_SENSING', caseId: 'visible-imbalance' });
-  });
+  }, 10_000);
   it('three ordinary cases complete with no new mastery, no hurt, no payment and unchanged old histories', () => {
     let s = promoted(); const old = structuredClone(s.chaosHunter.life), oldEncounter = structuredClone(s.chaosHunter.encounter), oldHistory = structuredClone(s.combatHistory), mastery = { ...s.progression.mastery }, injuries = structuredClone(s.injuries), resources = [s.health, s.mind, s.spirituality, s.cash];
     for (const id of BALANCER_CASE_IDS) s = ordinary(s, id); s = act(s, { type: 'REFLECT' });

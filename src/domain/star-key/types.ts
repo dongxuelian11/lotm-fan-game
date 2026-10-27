@@ -10,13 +10,36 @@ export type StarKeyPreparationId = typeof STAR_KEY_PREPARATION_IDS[number];
 export type StarKeyAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: StarKeyPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type StarKeyCommand = StarKeyAcquisitionCommand | StarKeyActivityCommand | StarKeyEncounterCommand;
+/** The vessel may change; the three finite original characteristics do not. */
+export interface StarKeyRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_STAR_KEY_PREPARATION'; custodian: 'DR0-HURST';
+}
+export interface StarKeyRecovery extends StarKeyRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous, named permission and physical inspection. It is never inferred from old consent. */
+export interface StarKeyRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_STAR_KEY_PREPARATION'; originals: StarKeyOriginals;
+  permission: { personId: 'DR0-HURST'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface StarKeyOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface StarKeyOriginalCharacteristics {
+  characteristics: StarKeyOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface StarKeyBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: StarKeyRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface StarKeyAcquisitionBudget {
@@ -30,6 +53,7 @@ export interface StarKeyAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'door'; planeswalkerPromotionWeek: number; apprenticePromotionWeek: number };
   before: StarKeyAcquisitionBudget; after: StarKeyAcquisitionBudget; finance: StarKeyFinanceSnapshot;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: StarKeyRecoverySite;
 }
 export const STAR_KEY_SOURCE_KEYS = ['apprentice', 'trickmaster', 'astrologer', 'recorder', 'traveler', 'secretsSorcerer', 'wanderer', 'planeswalker'] as const;
 export type StarKeySourceHistory = Pick<SliceState, typeof STAR_KEY_SOURCE_KEYS[number]>;
@@ -42,7 +66,7 @@ export interface StarKeySourceScene {
 }
 export interface StarKeyState {
   guidanceKnown: boolean; bottles: StarKeyBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: StarKeyRecoveryRequest };
   promotionWeek: number | null; planeswalkerActingAtPromotion: number | null;
   preparations: { taskId: StarKeyPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: StarKeyAcquisitionEvent[];

@@ -1,0 +1,780 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.218.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_1_2026-10-18.tar.gz",
+      "bytes": 14295636,
+      "sha256": "1f86446b0d88015c27ec730f46a44839bc7f39b7a131ebaa2f991ec54808108b",
+      "members": [
+        "tests/fixtures/door-v02180/action-824.json.gz",
+        "tests/fixtures/door-v02180/action-825.json.gz",
+        "tests/fixtures/door-v02180/action-826.json.gz",
+        "tests/fixtures/door-v02180/action-827.json.gz",
+        "tests/fixtures/door-v02180/action-828.json.gz",
+        "tests/fixtures/door-v02180/action-829.json.gz",
+        "tests/fixtures/door-v02180/action-830.json.gz",
+        "tests/fixtures/door-v02180/action-831.json.gz",
+        "tests/fixtures/door-v02180/action-832.json.gz",
+        "tests/fixtures/door-v02180/action-833.json.gz",
+        "tests/fixtures/door-v02180/action-834.json.gz",
+        "tests/fixtures/door-v02180/action-835.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_2_2026-10-18.tar.gz",
+      "bytes": 14486908,
+      "sha256": "b63d54c3b47ca961f15466ed93f50dd6ead54f20ebca696370bc59d16a2131be",
+      "members": [
+        "tests/fixtures/door-v02180/action-836.json.gz",
+        "tests/fixtures/door-v02180/action-837.json.gz",
+        "tests/fixtures/door-v02180/action-838.json.gz",
+        "tests/fixtures/door-v02180/action-839.json.gz",
+        "tests/fixtures/door-v02180/action-840.json.gz",
+        "tests/fixtures/door-v02180/action-841.json.gz",
+        "tests/fixtures/door-v02180/action-842.json.gz",
+        "tests/fixtures/door-v02180/action-843.json.gz",
+        "tests/fixtures/door-v02180/action-844.json.gz",
+        "tests/fixtures/door-v02180/action-845.json.gz",
+        "tests/fixtures/door-v02180/action-846.json.gz",
+        "tests/fixtures/door-v02180/action-847.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_3_2026-10-18.tar.gz",
+      "bytes": 14587238,
+      "sha256": "f2e17a3499aa4be88847d2b5ae0f621b278fd790a1368ddf6cd505c538111675",
+      "members": [
+        "tests/fixtures/door-v02180/action-848.json.gz",
+        "tests/fixtures/door-v02180/action-849.json.gz",
+        "tests/fixtures/door-v02180/action-850.json.gz",
+        "tests/fixtures/door-v02180/action-851.json.gz",
+        "tests/fixtures/door-v02180/action-852.json.gz",
+        "tests/fixtures/door-v02180/action-853.json.gz",
+        "tests/fixtures/door-v02180/action-854.json.gz",
+        "tests/fixtures/door-v02180/action-855.json.gz",
+        "tests/fixtures/door-v02180/action-856.json.gz",
+        "tests/fixtures/door-v02180/action-857.json.gz",
+        "tests/fixtures/door-v02180/action-858.json.gz",
+        "tests/fixtures/door-v02180/action-859.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_4_2026-10-18.tar.gz",
+      "bytes": 14650888,
+      "sha256": "63c007e84ce3fe7e5f8f18f6874b3114ed6b23128b1011c03b003fd28b2453aa",
+      "members": [
+        "tests/fixtures/door-v02180/action-860.json.gz",
+        "tests/fixtures/door-v02180/action-861.json.gz",
+        "tests/fixtures/door-v02180/action-862.json.gz",
+        "tests/fixtures/door-v02180/action-863.json.gz",
+        "tests/fixtures/door-v02180/action-864.json.gz",
+        "tests/fixtures/door-v02180/action-865.json.gz",
+        "tests/fixtures/door-v02180/action-866.json.gz",
+        "tests/fixtures/door-v02180/action-867.json.gz",
+        "tests/fixtures/door-v02180/action-868.json.gz",
+        "tests/fixtures/door-v02180/action-869.json.gz",
+        "tests/fixtures/door-v02180/action-870.json.gz",
+        "tests/fixtures/door-v02180/action-871.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_5_2026-10-18.tar.gz",
+      "bytes": 14729892,
+      "sha256": "75189be14ac5e920b37e2fb58ce592aa5c5383f89681182a258a20535fc529db",
+      "members": [
+        "tests/fixtures/door-v02180/action-872.json.gz",
+        "tests/fixtures/door-v02180/action-873.json.gz",
+        "tests/fixtures/door-v02180/action-874.json.gz",
+        "tests/fixtures/door-v02180/action-875.json.gz",
+        "tests/fixtures/door-v02180/action-876.json.gz",
+        "tests/fixtures/door-v02180/action-877.json.gz",
+        "tests/fixtures/door-v02180/action-878.json.gz",
+        "tests/fixtures/door-v02180/action-879.json.gz",
+        "tests/fixtures/door-v02180/action-880.json.gz",
+        "tests/fixtures/door-v02180/action-881.json.gz",
+        "tests/fixtures/door-v02180/action-882.json.gz",
+        "tests/fixtures/door-v02180/action-883.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_6_2026-10-18.tar.gz",
+      "bytes": 14801789,
+      "sha256": "230f98c66a9396ffe35af92e3fb3c333bd8b8493ba6a3990d2eea34d39547b9e",
+      "members": [
+        "tests/fixtures/door-v02180/action-884.json.gz",
+        "tests/fixtures/door-v02180/action-885.json.gz",
+        "tests/fixtures/door-v02180/action-886.json.gz",
+        "tests/fixtures/door-v02180/action-887.json.gz",
+        "tests/fixtures/door-v02180/action-888.json.gz",
+        "tests/fixtures/door-v02180/action-889.json.gz",
+        "tests/fixtures/door-v02180/action-890.json.gz",
+        "tests/fixtures/door-v02180/action-891.json.gz",
+        "tests/fixtures/door-v02180/action-892.json.gz",
+        "tests/fixtures/door-v02180/action-893.json.gz",
+        "tests/fixtures/door-v02180/action-894.json.gz",
+        "tests/fixtures/door-v02180/action-895.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_7_2026-10-18.tar.gz",
+      "bytes": 13608765,
+      "sha256": "dd897b686f7ebd4ee61bedf1f64cf896e5461cd083f64b7f845942f40ce225b1",
+      "members": [
+        "tests/fixtures/door-v02180/action-896.json.gz",
+        "tests/fixtures/door-v02180/action-897.json.gz",
+        "tests/fixtures/door-v02180/action-898.json.gz",
+        "tests/fixtures/door-v02180/action-899.json.gz",
+        "tests/fixtures/door-v02180/action-900.json.gz",
+        "tests/fixtures/door-v02180/action-901.json.gz",
+        "tests/fixtures/door-v02180/action-902.json.gz",
+        "tests/fixtures/door-v02180/action-903.json.gz",
+        "tests/fixtures/door-v02180/action-904.json.gz",
+        "tests/fixtures/door-v02180/action-905.json.gz",
+        "tests/fixtures/door-v02180/action-906.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_8_2026-10-18.tar.gz",
+      "bytes": 13658753,
+      "sha256": "6832186e2f0236c17228fcb15a3f55230b23e38d74c59db41c34ada7bad1280b",
+      "members": [
+        "tests/fixtures/door-v02180/action-907.json.gz",
+        "tests/fixtures/door-v02180/action-908.json.gz",
+        "tests/fixtures/door-v02180/action-909.json.gz",
+        "tests/fixtures/door-v02180/action-910.json.gz",
+        "tests/fixtures/door-v02180/action-911.json.gz",
+        "tests/fixtures/door-v02180/action-912.json.gz",
+        "tests/fixtures/door-v02180/action-913.json.gz",
+        "tests/fixtures/door-v02180/action-914.json.gz",
+        "tests/fixtures/door-v02180/action-915.json.gz",
+        "tests/fixtures/door-v02180/action-916.json.gz",
+        "tests/fixtures/door-v02180/action-917.json.gz"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_9_2026-10-18.tar.gz",
+      "bytes": 14593468,
+      "sha256": "30fa5bfd20a1de0a4ee734f18dae329dc108f4963d1c9247f829fab1be58aed5",
+      "members": [
+        "tests/fixtures/door-v02180/action-918.json.gz",
+        "tests/fixtures/door-v02180/action-919.json.gz",
+        "tests/fixtures/door-v02180/action-920.json.gz",
+        "tests/fixtures/door-v02180/action-921.json.gz",
+        "tests/fixtures/door-v02180/action-922.json.gz",
+        "tests/fixtures/door-v02180/action-923.json.gz",
+        "tests/fixtures/door-v02180/action-924.json.gz",
+        "tests/fixtures/door-v02180/action-925.json.gz",
+        "tests/fixtures/door-v02180/action-926.json.gz",
+        "tests/fixtures/door-v02180/action-927.json.gz",
+        "tests/fixtures/door-v02180/action-928.json.gz",
+        "tests/fixtures/door-v02180/archived-original196-natural.json.gz",
+        "tests/fixtures/door-v02180/boundaries.index.json"
+      ]
+    },
+    {
+      "name": "lotm_release_0.218.0_door_test_inputs_10_2026-10-18.tar.gz",
+      "bytes": 1567618,
+      "sha256": "80e591aa8460fee67c9ae3047bae8133e6b9de6eaf29fe6d4d281e3613f2fc79",
+      "members": [
+        "tests/fixtures/door-v02180/checkpoint.json.gz",
+        "tests/fixtures/door-v02180/commands.ndjson.gz",
+        "tests/fixtures/door-v02180/input-freeze.json",
+        "tests/fixtures/door-v02180/migration-initial.json.gz",
+        "tests/fixtures/door-v02180/natural.json.gz",
+        "tests/fixtures/door-v02180/producer-tests.mjs",
+        "tests/fixtures/door-v02180/producer.mjs",
+        "tests/fixtures/door-v02180/recovery-manifest.json",
+        "tests/fixtures/door-v02180/runtime-freeze.json",
+        "tests/fixtures/door-v02180/summary.json"
+      ]
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/door-v02180/action-824.json.gz",
+      "bytes": 1125953,
+      "sha256": "2952401d354c45f40c71a55e9fdc69e69ff49f74ca3b07b80c4a6118ccab0611"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-825.json.gz",
+      "bytes": 1203042,
+      "sha256": "dbfb387ad0d7570352a08f93391f9883041984d78b2a6b42444b413a788dbe0d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-826.json.gz",
+      "bytes": 1204844,
+      "sha256": "4e37746ac91f83456fe80952b5ff6e2e5644557e372575d12d8f4f117d417444"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-827.json.gz",
+      "bytes": 1205753,
+      "sha256": "b171de2af2a252b0845a8011431230796794386ad5f0d0e1186ed0a14ebe4883"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-828.json.gz",
+      "bytes": 1207285,
+      "sha256": "418cacb72f0c2bc8d7df4513d756da578d5df77d93bc48e2f06a78df346e846e"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-829.json.gz",
+      "bytes": 1208098,
+      "sha256": "3fa2d9d80864d338751f0aeb035a5bcdaf8b983b9a5ac3adc32deed4c83f1791"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-830.json.gz",
+      "bytes": 1209074,
+      "sha256": "00fb9b0275c429178b581f9abd88bb88c185fa31d84a3e0a7cbe156d9c238c78"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-831.json.gz",
+      "bytes": 1209956,
+      "sha256": "ac85184a20d1af4683339560b208c6436b6410300015284079bcf59169c0eb75"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-832.json.gz",
+      "bytes": 1210427,
+      "sha256": "147c5cef9c6d6994489411df93be1536585e8542f33cd173489f1ad5cdab324e"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-833.json.gz",
+      "bytes": 1210940,
+      "sha256": "392f234be2ee7408ef80c96878010b2fb6b26a6f3d8c9ebf6edc66772ba5052b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-834.json.gz",
+      "bytes": 1211473,
+      "sha256": "1415b4eaff0656e73d0a3c7f5b1246cb6883cd64ce59a986c16aac2a54889b15"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-835.json.gz",
+      "bytes": 1212062,
+      "sha256": "96ce9d0cc9769467541574963a44318afeb8be0059044675d2da4f733187fd19"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-836.json.gz",
+      "bytes": 1213375,
+      "sha256": "7bf55c4175653434791e069441d391fb05ed6c8d2c5b454df7cf6cd81fa2c5ce"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-837.json.gz",
+      "bytes": 1214070,
+      "sha256": "ffd3e2c5b52e25126ebfbd36cd99cec8d182e6a06491679de3372c0f226ecc86"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-838.json.gz",
+      "bytes": 1214448,
+      "sha256": "566ace9e5563de10473a98dd8164dacd4ee830d0bbe4edab3bb26532c9267078"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-839.json.gz",
+      "bytes": 1214927,
+      "sha256": "e75ae4b821c9d3f03aee4ecd498c5cfab27578e58a486a35120a1a8f3a579272"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-840.json.gz",
+      "bytes": 1215569,
+      "sha256": "e419c2d8895ab01cf8b305f334ed7396edef99eb2e904b401a8bd0393bb479ac"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-841.json.gz",
+      "bytes": 1216617,
+      "sha256": "7b083817c84c44fc279253602b6ab932966e254877943aef9e549f99f3e22263"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-842.json.gz",
+      "bytes": 1217540,
+      "sha256": "2bdcd1ae241d4d4304516491fb98487224f9c94f16998a007e238555152518c2"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-843.json.gz",
+      "bytes": 1218393,
+      "sha256": "a2325e9c17315f070aa9d80b7fa776d48ffa1944c259f0bbccaf081a3b346c01"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-844.json.gz",
+      "bytes": 1219557,
+      "sha256": "6cd0432d7fa73dff8cec140d5df9933c546dc26784ff05a29cda2f09e452ca44"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-845.json.gz",
+      "bytes": 1220723,
+      "sha256": "aaab63715b685738fc68121a6d11ec4a3e53a68099fc9ff8df26b33ca4579be6"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-846.json.gz",
+      "bytes": 1221001,
+      "sha256": "1be38344078bc100c931c77a489475652d04691e119d55adff415987e7d7d8bb"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-847.json.gz",
+      "bytes": 1222458,
+      "sha256": "865638f043a2156cb8e41a32e207d39cb397b7f656ef300e692a73abf6611b42"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-848.json.gz",
+      "bytes": 1222945,
+      "sha256": "34c7e44aa259ce6c0979caf882c9830baec138edd421b057b51f402899473064"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-849.json.gz",
+      "bytes": 1223794,
+      "sha256": "bbe9c9bc188856903a31ae00f90019b20b8c7c32ae6ee5dc7a8f9ed6e66ccb99"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-850.json.gz",
+      "bytes": 1224572,
+      "sha256": "220ed514871da18997af02ca7cd447088d305967223687792a1ac74e42349347"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-851.json.gz",
+      "bytes": 1225349,
+      "sha256": "055b159fb77821ac4ed097d02a86fdf5648e90a5245986fa53acddf340da6caa"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-852.json.gz",
+      "bytes": 1226165,
+      "sha256": "53d7d7034b58cf51a8dbe1a3569123ae1980d834c954b5035930356e37808bef"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-853.json.gz",
+      "bytes": 1227443,
+      "sha256": "15e3a90b9398d9dc46a02a77d248620c4fa713bc856a991afc609cfb1fb5b9e4"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-854.json.gz",
+      "bytes": 1228407,
+      "sha256": "a0af234278088efecb899fef7b65564dd513a75d9d1a86c2e5d735ea46298ed5"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-855.json.gz",
+      "bytes": 1228908,
+      "sha256": "dfc8e01fb6235053034059cf1d59fa8cf81288cad46ce94cdb4f4d9ae487a3a4"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-856.json.gz",
+      "bytes": 1229977,
+      "sha256": "bfef138da9c3ee3c6f5414374651aeaf18d858509d069816b38aea2f00f1db05"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-857.json.gz",
+      "bytes": 1230293,
+      "sha256": "93a3930b6d0abdeebe96989bc40b359158be04a267636296572b6f067239f2cd"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-858.json.gz",
+      "bytes": 1230535,
+      "sha256": "f6a1720beff755c0fa11806eed321648b0b7aa6f35d1d6d0e56271a632c28152"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-859.json.gz",
+      "bytes": 1230981,
+      "sha256": "a6d27f5c9225fe4e428ff52fe4c2ed1e601d058453cca1fddb03d058695379d3"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-860.json.gz",
+      "bytes": 1231481,
+      "sha256": "912d016fddd04bbbe3111c853d21ea566d395b95b98de6074f136687f14c5f36"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-861.json.gz",
+      "bytes": 1232050,
+      "sha256": "3e70c360b4a4c1aedbc729dded46a50516931a0bc5982403807ac92bc8141c5b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-862.json.gz",
+      "bytes": 1232432,
+      "sha256": "3d69835da67c51cc1c93ec3e98f703f93cbf56ab2682e33a4a35517938db4aff"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-863.json.gz",
+      "bytes": 1232965,
+      "sha256": "9617ce33cc01382c2b6a627ad74c1672a0e459d0498d971eb32743dd8c0387d1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-864.json.gz",
+      "bytes": 1233324,
+      "sha256": "cdff6f4f194ccac9fe21d1330b0135691745cbb057d2fc0dc884b25726ae4523"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-865.json.gz",
+      "bytes": 1233786,
+      "sha256": "b55ea5f442701340f3d0d9fdd5e5c6c9b6f145ac1353da16b848c36e4b58c683"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-866.json.gz",
+      "bytes": 1234165,
+      "sha256": "a277122124a2f9844eba04e807764878346878792bf44134006c7e37e8cc3df7"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-867.json.gz",
+      "bytes": 1234149,
+      "sha256": "a57826477a1a3b764134fb65eb51b0c5e88c5e97ef515465966a0d32456cb71c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-868.json.gz",
+      "bytes": 1235073,
+      "sha256": "2a3467eaee38d04d24664516cfe789100dc3bb33b6a5aaf5bea514a2b1ec9e86"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-869.json.gz",
+      "bytes": 1235212,
+      "sha256": "ca1c974a4eed2120e17943219d2e1cc9b46d66742fada07abea65493ee5986ee"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-870.json.gz",
+      "bytes": 1235800,
+      "sha256": "2a2237d4fcb2499a03646e64695c5cb1521b82f23318d8b1f57c762877c140f1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-871.json.gz",
+      "bytes": 1236549,
+      "sha256": "0c6fb3eb73b9036b7117e5e656da085ee7a97f3f940fe2880f0f91eb05dfb1ee"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-872.json.gz",
+      "bytes": 1237147,
+      "sha256": "c8c2c3c48ce1a42e63d8b38b53e31e21d924625c7cb006c578f289b821c69f69"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-873.json.gz",
+      "bytes": 1237647,
+      "sha256": "4f9132e5d3ad3112fa89b0000e5a6262c2b1ab10f0a8b6f402008c1c31666a7d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-874.json.gz",
+      "bytes": 1238144,
+      "sha256": "4c9500d5f80dca20cd5d3329705bb3692b79144f503486ff0ef6c88a919eeaa0"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-875.json.gz",
+      "bytes": 1238678,
+      "sha256": "b4adc38e676159aeaf19c658f8e6eb87b27c03bb0b5b7056af18ad4fe17dd68e"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-876.json.gz",
+      "bytes": 1239703,
+      "sha256": "61f5a9d1f424b6f3c5853c029e51596167c2764331b1e8f368be6f89240377f5"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-877.json.gz",
+      "bytes": 1240183,
+      "sha256": "64911270a4d1030a3648ddc67089c879b838faae779dbfff7ab4b7e120dbc7f8"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-878.json.gz",
+      "bytes": 1240453,
+      "sha256": "33de4441b61a56cfc0d8881502e3f64c880debb63b10273bc803c15ead45eb10"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-879.json.gz",
+      "bytes": 1240993,
+      "sha256": "18a53b4b0ec285122b80659e91cc3cf08dbfdae353af3246604805e8898d2c0a"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-880.json.gz",
+      "bytes": 1241704,
+      "sha256": "fccc5f11fefde7e8624b351e3118ca81922f7a3a9bcd3d4d0ae10ae2e9603593"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-881.json.gz",
+      "bytes": 1242655,
+      "sha256": "d621d55ec6fa7152ca089d75b5b53ca59fdf1cd7a3f2e205e884cab40c23c326"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-882.json.gz",
+      "bytes": 1243463,
+      "sha256": "f39958e2118a9c09bc18023c03e4bc7a7e9242c4ec8baefc8f10654b1f67cc1d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-883.json.gz",
+      "bytes": 1243954,
+      "sha256": "80aade6eb289f4a998e7b19737fbe63a32fc0ab6cf8cdb8874459ce8a30e923b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-884.json.gz",
+      "bytes": 1244764,
+      "sha256": "5ab8521fbe4db244f9c939ab0c32552830ab655ec811eb8c71e7ed90d61d7bb8"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-885.json.gz",
+      "bytes": 1244922,
+      "sha256": "025dd30a3a6106ee83aaf59403c2717f7f77f2221d0fe6ecdf70fb4e1243a367"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-886.json.gz",
+      "bytes": 1245429,
+      "sha256": "2b0852df7b42f946288a1740263d5c51235274e5278fee4b5c61ce8ae2fd0b9d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-887.json.gz",
+      "bytes": 1246720,
+      "sha256": "58dd365ef3588cc8dc23af252206ea81a242b5429af875b879af59d47eaf953e"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-888.json.gz",
+      "bytes": 1247456,
+      "sha256": "4420277a572d13c699611c487ce1ec8e0b5b1156300c839eed5b0364f063d19b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-889.json.gz",
+      "bytes": 1247849,
+      "sha256": "3a0fa01217d8ff05638a4eb5a830759847fc88b5de70189d10396bc15a7a5945"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-890.json.gz",
+      "bytes": 1247977,
+      "sha256": "29a61b141b44010744a322f49549519da06c438ce7b46740962fd7e524133391"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-891.json.gz",
+      "bytes": 1248514,
+      "sha256": "ae98c8ff67f303de9678e6099c16e1ab8c0b81fc564d65d811b835d6ee6d55f2"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-892.json.gz",
+      "bytes": 1249245,
+      "sha256": "985c819d7c13e87c83cda3387becda2418ec8bdc0aeba7db30fd72dab862dc3b"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-893.json.gz",
+      "bytes": 1250332,
+      "sha256": "d6ee0fc50e0f384f32123b711daa739b949babcb8fa3cd10050b11504458b00c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-894.json.gz",
+      "bytes": 1250673,
+      "sha256": "d34d494845deeced2ad6d2866adb08fa774323816eb27add788735cf8d7939b3"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-895.json.gz",
+      "bytes": 1250572,
+      "sha256": "547d4bce00899e54322d0136b11f2e45fd408f9b90ba2a1caa3537b5f8fd3eea"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-896.json.gz",
+      "bytes": 1251006,
+      "sha256": "81f9386626b07ba8072aefda1b816f3438d54246c732338893faab60287d13c1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-897.json.gz",
+      "bytes": 1251468,
+      "sha256": "6935ff7389413e556954891ac1511d383f3131cc289c0dba87f5640448cfd205"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-898.json.gz",
+      "bytes": 1251968,
+      "sha256": "59a0b7e95ae1f8e81186dc757922d1097c678293032718edd9f52dad89045f24"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-899.json.gz",
+      "bytes": 1252281,
+      "sha256": "68d773a4acdab86b20b6e30e7ad08a02d845fbea62ae0c7a70fb8936ec414c81"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-900.json.gz",
+      "bytes": 1252646,
+      "sha256": "295e573125f00bead2d06c5917c55b83cdfb435725ca89a3d3d8fc58d6a7df8c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-901.json.gz",
+      "bytes": 1252951,
+      "sha256": "1ec51f5a943763bdb7f3b7e17a4f6a4a4e9393990d3c9af7effc90748715db09"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-902.json.gz",
+      "bytes": 1253350,
+      "sha256": "db0eceb3125590c5c02d3badb8efbb546435c71a90e5a82501b784a199581685"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-903.json.gz",
+      "bytes": 1253581,
+      "sha256": "a4903ba45e851c9bd6c11b3bc81da5720a7640873b28c49a90c31ba3bdcff320"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-904.json.gz",
+      "bytes": 1253986,
+      "sha256": "9b66c0be8635993c6a55c822575d525123057782e6e303b5b0518888ce47a4a1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-905.json.gz",
+      "bytes": 1254342,
+      "sha256": "14ab9ce3c5d8087354310e890c883f4b8368a550eb02eb03a7671f509b438b42"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-906.json.gz",
+      "bytes": 1255158,
+      "sha256": "6a52f03392eeec714ba01e6890cce2a9fcd9ae9ac5a6e88afd61b3e9a70ce0fc"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-907.json.gz",
+      "bytes": 1255529,
+      "sha256": "2dd7d5f51dea4cd5ae125fd1d0d6e9736b1c79c22b9127d23b6632d71b8ec289"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-908.json.gz",
+      "bytes": 1255578,
+      "sha256": "155d1955b5ccfbaeecaccd4c36f31feb605d1acd6d19bd9d8fdf662d977b1430"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-909.json.gz",
+      "bytes": 1255572,
+      "sha256": "eaf07bf8f73b61dc0478c142bf8c1a957ef37f357eba3b43f5c2e8ff9a1b53fe"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-910.json.gz",
+      "bytes": 1255833,
+      "sha256": "9589cabfde68d8a60a14ab47494fef6e7d19ebd04d73180bfc3106f94eec86a6"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-911.json.gz",
+      "bytes": 1256277,
+      "sha256": "3632c19f19835e32464beeda9d46172c1e1df64e8dcf3b4a6c11d326b7c3c033"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-912.json.gz",
+      "bytes": 1256478,
+      "sha256": "0e151149d6ceb62b787cf03540544909e38db6e5c35e55fd8f8044696a8c9599"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-913.json.gz",
+      "bytes": 1257685,
+      "sha256": "9944b9e1d48557c03627043d9d24702f42256fecb437e70e20e05e99f887a83c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-914.json.gz",
+      "bytes": 1258367,
+      "sha256": "e045c2835784b22e74150eee173ce107bb62f2254997a4be961e48db4e202867"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-915.json.gz",
+      "bytes": 1259480,
+      "sha256": "51a8b1a89a3500fc0e2f7288cc49b539220dc3b02d0dfec29895f21f37227208"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-916.json.gz",
+      "bytes": 1261512,
+      "sha256": "0bdd00a54a5ee394fc60976838027885345241f86b1b25c033d5f6cdfb01d146"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-917.json.gz",
+      "bytes": 1261285,
+      "sha256": "364eff6b1dd94ddbc83206b30e7d5d8a385e6eb62d593afe85a7f3ac417840e8"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-918.json.gz",
+      "bytes": 1261464,
+      "sha256": "13213fb9151ecdb9ea619f3e655b534ff3efe437523ad21148187410859a68f5"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-919.json.gz",
+      "bytes": 1266806,
+      "sha256": "ab43a7c961d72503f7722a4074141037bf321a480e8e3155632d3ff11c034603"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-920.json.gz",
+      "bytes": 1269688,
+      "sha256": "07785fb2b63e2c9069f8be157dff6aa40e50600c038fff78813dc1c4e9e35bdc"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-921.json.gz",
+      "bytes": 1271131,
+      "sha256": "df9698cc0f746a8e1bfca3604126791d8defe36d81e516c9504043fda7d19370"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-922.json.gz",
+      "bytes": 1272030,
+      "sha256": "8441a439ca930823df8c20481fda7add9343edec3a1f3369c8f2eb3defd956ae"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-923.json.gz",
+      "bytes": 1274351,
+      "sha256": "22bab2c2e040a468bcd7e8e54f6d94740f0bb36bb69dc0b7926011bf549c20fd"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-924.json.gz",
+      "bytes": 1276530,
+      "sha256": "e7c2800649766ecc694fc6dcb4bf2d115c75eb8e9419a586efb8f337bbf9909c"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-925.json.gz",
+      "bytes": 1277405,
+      "sha256": "d9e8acc8e6a63d456ce11804b4bac8a6b39a76c0b81a94380a88d0eafd200cd3"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-926.json.gz",
+      "bytes": 1278512,
+      "sha256": "5cbf591d1a56b198cbad972d1cfb7baf0514115cdcc93b240812501c2a18bca1"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-927.json.gz",
+      "bytes": 1279942,
+      "sha256": "3e0523ed1eb89cd5a312f662a3cb0bfdc3d7d9f28c5dac298dc7adbbfde34b34"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/action-928.json.gz",
+      "bytes": 1281279,
+      "sha256": "c318178d735be175a62c736124f4cd2d0e2ca55f84695851a909ac21481a578d"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/archived-original196-natural.json.gz",
+      "bytes": 771453,
+      "sha256": "0c4afcac3a3762b90f885516c093c490651c0064d41c89e780939becb357ba67"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/boundaries.index.json",
+      "bytes": 11490,
+      "sha256": "10b8e85e2dc998bafd34e6ffd6a32caf4b2d393a67fbb2648c4e7a192af7bf92"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/checkpoint.json.gz",
+      "bytes": 396089,
+      "sha256": "f591c17b91c75f3eb3253a9d9908f58897e56d7a009babca8182e2e24de9ef50"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/commands.ndjson.gz",
+      "bytes": 39938,
+      "sha256": "dbb776239df8c73e72f9b9a7e9f80e65d47c54d5bcb7ca4260e8dbd1ece88aac"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/input-freeze.json",
+      "bytes": 632,
+      "sha256": "a29463086e8f359067e24df486468eeede4177af6e7308411029aa7f4047cc14"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/migration-initial.json.gz",
+      "bytes": 522673,
+      "sha256": "23cffa30ab81db34822bfc3247b51938ad7053cf549b4a18e71c45cf799e95d0"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/natural.json.gz",
+      "bytes": 357635,
+      "sha256": "9913d6c1a4d0841d92a001ff7cfda6bc70e123bdd7687bf29eaa2adbb9d370e2"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/producer-tests.mjs",
+      "bytes": 24997,
+      "sha256": "6bb789e1fa83093ad936f1ae8a849784ab338f9526dc9adbd9a33c1921b066be"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/producer.mjs",
+      "bytes": 60584,
+      "sha256": "45296d4d02f611416333fc7b6cbd3673b2a9d6f78fa3589f169aced641641da4"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/recovery-manifest.json",
+      "bytes": 14680,
+      "sha256": "f528ea18dfb18ce87b0951e4a039f6fbf23b230e4403da510b723faebc877152"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/runtime-freeze.json",
+      "bytes": 633498,
+      "sha256": "f691f6cc3dbe72c6780762fdc15d310e52cb449d3ab6ebbab433796316c990ab"
+    },
+    {
+      "path": "tests/fixtures/door-v02180/summary.json",
+      "bytes": 21683,
+      "sha256": "1637d8dcecb2ed3fb0e235a1e35cc9372d31029bf0de49f3584b02f1978bd5d2"
+    }
+  ]
+}

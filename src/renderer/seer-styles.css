@@ -40,6 +40,45 @@
 }
 .seer-panel .seer-bottle p { margin: 0 0 8px; }
 .seer-bottle .slice-button { width: 100%; white-space: normal; }
+.seer-potion-vial { width: 110px; height: 132px; flex: none; color: #c1ad78; }
+.seer-vial-halo, .seer-vial-etch, .seer-vial-glass, .seer-vial-eye, .seer-vial-glint { fill: none; stroke: currentColor; }
+.seer-vial-halo { opacity: .4; stroke-dasharray: 2 5; }
+.seer-vial-glass { stroke-width: 2; fill: #c9d5cb0c; }
+.seer-vial-cork { fill: #85724b; stroke: currentColor; }
+.seer-vial-liquid { fill: #6b9189; opacity: .75; transform-origin: 75px 145px; }
+.seer-vial-liquid.is-empty { opacity: .15; transform: translateY(43px); }
+.seer-vial-glint { stroke: #e9efdf; opacity: .5; stroke-width: 2; }
+.seer-vial-eye { stroke-width: 1.5; }
+.seer-bottle-ready, .seer-potion-heading {
+  color: #eee6d2;
+  background: radial-gradient(ellipse at 0 70%, #374b46, transparent 60%), #242f2d;
+  border: 1px solid #8b7b57;
+}
+.seer-bottle-ready { grid-template-columns: 110px minmax(0, 1fr) minmax(240px, .85fr); align-items: center; }
+.seer-bottle-spent { grid-template-columns: 76px minmax(0, 1fr); align-items: center; }
+.seer-bottle-spent .seer-potion-vial { width: 76px; height: 94px; color: #766543; }
+.seer-bottle-ready small { color: #d5c498; }
+.seer-bottle-ready .slice-button { color: #252b28; background: #ddd0ab; border-color: #c0aa75; }
+.seer-panel .seer-bottle-ready .seer-action-reason { color: #edbdb1; }
+.seer-potion-heading { display: flex; align-items: center; gap: 24px; padding: 20px 24px; }
+.seer-potion-heading .slice-eyebrow { color: #d5c498; }
+.seer-potion-heading h3 { margin: 8px 0 12px; }
+.seer-panel .seer-potion-heading .seer-bottle-source { margin: 0; font-size: 17px; }
+.seer-potion-moment { display: flex; align-items: center; gap: 20px; padding: 8px 0; }
+.seer-potion-moment .seer-potion-vial { color: #766543; }
+.seer-potion-moment h3 { margin: 4px 0 8px; }
+.seer-potion-caption { color: #48635c; font-size: 16px; letter-spacing: .08em; }
+.seer-potion-moment.failure .seer-potion-caption { color: var(--slice-red); }
+.seer-potion-moment.failure .seer-vial-eye { stroke: var(--slice-red); }
+.seer-potion-moment.animate .seer-vial-liquid:not(.is-empty) { animation: seer-liquid-settle 850ms ease-out; }
+.seer-potion-moment.animate.success .seer-vial-halo { animation: seer-halo-settle 900ms ease-out; }
+.seer-potion-moment.animate.failure .seer-vial-eye { animation: seer-ink-settle 650ms ease-out; }
+@keyframes seer-liquid-settle { from { transform: translateY(18px) rotate(-7deg); opacity: .3; } to { transform: none; opacity: .75; } }
+@keyframes seer-halo-settle { from { opacity: 1; stroke-width: 3; } to { opacity: .4; stroke-width: 1; } }
+@keyframes seer-ink-settle { from { opacity: .2; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .seer-potion-moment.animate .seer-potion-vial * { animation: none; }
+}
 .seer-panel .seer-small-note { margin: 10px 0 0; font-size: 17px; }
 .seer-fold { border-top: 1px solid var(--slice-line); padding-top: 16px; }
 .seer-fold summary { cursor: pointer; min-height: 44px; }
@@ -61,6 +100,8 @@
 .seer-case-selector select:focus-visible { outline: 3px solid var(--slice-red); outline-offset: 3px; }
 .seer-current-case { padding: 18px; border: 1px solid var(--slice-line); background: var(--slice-paper-light); }
 .seer-current-case h3 { margin-bottom: 8px; }
+.seer-case-budget { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 12px 0; }
+.seer-case-budget p { margin: 0; font-size: 17px; }
 .seer-reflection { margin-top: 20px; }
 .seer-formula { list-style: none; padding: 0; margin: 10px 0 20px; }
 .seer-formula li { display: flex; justify-content: space-between; gap: 20px; padding: 8px 0; border-bottom: 1px dashed var(--slice-line); }
@@ -78,6 +119,11 @@
   .seer-actions, .seer-bottle, .seer-facts { grid-template-columns: minmax(0, 1fr); }
   .seer-confirm-buttons button { width: 100%; }
   .seer-bottle { padding: 16px; }
+  .seer-bottle-ready { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; }
+  .seer-bottle-ready > div:last-child { grid-column: 1 / -1; }
+  .seer-bottle-ready .seer-potion-vial, .seer-potion-heading .seer-potion-vial, .seer-potion-moment .seer-potion-vial { width: 76px; height: 94px; }
+  .seer-potion-heading { gap: 14px; padding: 16px; }
+  .seer-potion-moment { align-items: flex-start; gap: 12px; }
 }
 
 .magician-action-list { display: grid; gap: 12px; margin-top: 16px; }
@@ -397,3 +443,42 @@
 .warrior-result { margin-top: 20px; padding-top: 18px; border-top: 2px solid var(--slice-line); }
 .warrior-history-bottle { padding: 16px 0; border-bottom: 1px solid var(--slice-line); }
 .warrior-panel .seer-action, .warrior-panel .slice-choice, .warrior-panel .seer-facts dd { min-width: 0; overflow-wrap: anywhere; }
+
+/* A material study, not a supernatural clue: the same cloth in every saved state. */
+.seer-bookmark-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 16px;
+  border-bottom: 1px solid #81949c;
+  background: linear-gradient(100deg, #d7dfe0, #e7e8df 65%, transparent);
+}
+.seer-bookmark-heading > div { min-width: 0; }
+.seer-bookmark { width: 72px; height: 84px; flex: none; }
+.seer-bookmark-heading .slice-muted { color: #40565d; }
+@media (max-width: 600px) {
+  .seer-bookmark-heading { gap: 12px; padding: 8px; }
+  .seer-bookmark { width: 50px; height: 64px; }
+}
+
+/* Current evidence takes the desk; unopened milestones remain secondary. */
+.seer-commission-result {
+  margin: 20px 0;
+  padding: 18px 22px;
+  border-block: 1px solid #9c8c6c;
+  border-left: 4px solid #796344;
+  background: #e9e1cf;
+}
+.seer-result-date { color: #655740; font-size: 16px; letter-spacing: .06em; }
+.seer-panel .seer-commission-result h4 { margin: 8px 0 12px; font-size: 23px; }
+.seer-panel .seer-commission-result p { margin: 0; font-size: 19px; line-height: 1.8; }
+.seer-commission-result h4:focus { outline: none; }
+.seer-reflection-pending { padding-top: 14px; border-top: 1px dashed var(--slice-line); }
+.seer-reflection-pending .slice-choice { min-height: 0; padding: 10px 14px; background: transparent; }
+.seer-panel .seer-reflection-pending .seer-action-reason { color: var(--slice-muted); font-size: 16px; }
+.seer-bottle-history .seer-bottles > h3 { display: none; }
+@media (max-width: 600px) {
+  .seer-commission-result { padding: 14px; }
+}
+.seer-reflection-pending .slice-choice { display: flex; align-items: center; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; }
+.seer-reflection-pending .slice-modifiers { margin: 0; }

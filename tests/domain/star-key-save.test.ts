@@ -12,7 +12,7 @@ import { actualStarKeyEvidence } from './star-key-capture-evidence.js';
 import { STAR_KEY_ROOT, STAR_KEY_SOURCE, STAR_KEY_SOURCE_SHA, STAR_KEY_PEACEFUL_SOURCE, STAR_KEY_PEACEFUL_SHA,
   STAR_KEY_WANDERER_DEATH_SOURCE, STAR_KEY_WANDERER_DEATH_SHA, STAR_KEY_PREFIX_COUNT,
   boundaryIndex, boundarySteps, snapshotIndex, uniqueBoundaryFiles, captureCommands, capturePath, captureFileHash,
-  captureValueHash, captureBody, boundaryFile, capturedState, currentCapture, sourceEntry,
+  captureValueHash, captureBody, boundaryFile, capturedState, currentCapture, sourceEntry, expectedStarKeyBoundaryReplay,
   assertPublicCaptureControl, sameCaptureValue as same, CAPTURE_BOUNDARY_TIMEOUT } from './star-key-capture-helper.js';
 
 const expected = actualStarKeyEvidence();
@@ -89,7 +89,7 @@ describe('Star Key immutable named captures and actual SQLite recovery', () => {
     const save = boundaryFile(filename); same(save.intent, captureCommands[save.count - 1]);
     expect(save.count).toBeGreaterThanOrEqual(STAR_KEY_PREFIX_COUNT); expect(save.count).toBeLessThanOrEqual(captureCommands.length);
     if (save.count > STAR_KEY_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-    exerciseSqlite(save.before, save.intent, save.final, `star-key196:${save.count}`);
+    exerciseSqlite(save.before, save.intent, expectedStarKeyBoundaryReplay(save), `star-key196:${save.count}`);
     expect(await captureFileHash(path)).toBe(originalHash);
   }, CAPTURE_BOUNDARY_TIMEOUT);
 

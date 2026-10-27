@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
 const defaultRepo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-export const SHARD_COUNT = 8;
+export const SHARD_COUNT = 16;
 export const BATCH_SIZE = 5;
 // Keep the single-worker batch bounded; compare large files as bytes, not object keys.
 export const DEFAULT_NODE_OPTIONS = '--max-old-space-size=768';
@@ -56,7 +56,7 @@ export function assertCoverage(discovered, shards) {
   const assigned = [...shards.flat(), ...ISOLATED_TESTS];
   for (const file of [...discovered, ...assigned]) assertTestPath(file);
   if (shards.length !== SHARD_COUNT || shards.some(shard => shard.length === 0)) {
-    throw new Error('Exactly eight nonempty test shards are required.');
+    throw new Error(`Exactly ${SHARD_COUNT} nonempty test shards are required.`);
   }
   if (new Set(discovered).size !== discovered.length || new Set(assigned).size !== assigned.length) {
     throw new Error('Duplicate test file in discovery or CI assignment.');
@@ -70,6 +70,20 @@ export function createPlan(discovered) {
   const shards = Array.from({ length: SHARD_COUNT }, () => []);
   [...discovered].sort().filter(file => !ISOLATED_TESTS.includes(file))
     .forEach((file, index) => shards[index % SHARD_COUNT].push(file));
+  // Run 39296253709 measured 43.68m / 6.92m / 10.39m for these files.
+  // Move only these members after partitioning; do not shift every later file.
+  for (const [file, target] of [
+    ['tests/domain/fool-natural-capture.test.ts', 6],
+    ['tests/domain/pale-emperor-save.test.ts', 14],
+    ['tests/domain/mercury-snake-natural-save.test.ts', 11],
+  ]) {
+    const source = shards.findIndex(shard => shard.includes(file));
+    if (source >= 0 && source !== target - 1) {
+      shards[source].splice(shards[source].indexOf(file), 1);
+      shards[target - 1].push(file);
+      shards[target - 1].sort();
+    }
+  }
   assertCoverage(discovered, shards);
   return { discovered: [...discovered].sort(), shards, isolated: [...ISOLATED_TESTS] };
 }
@@ -96,7 +110,7 @@ export function verifyBatchReport(report, expected, repo) {
 
 export function runShard({ shard, repo = defaultRepo, execute = spawnSync, log = console.log }) {
   if (!Number.isInteger(shard) || shard < 1 || shard > SHARD_COUNT) {
-    throw new Error('Shard must be an integer from 1 through 8.');
+    throw new Error(`Shard must be an integer from 1 through ${SHARD_COUNT}.`);
   }
   const plan = createPlan(discoverTestFiles(repo));
   const selected = plan.shards[shard - 1];
@@ -112,23 +126,35 @@ export function runShard({ shard, repo = defaultRepo, execute = spawnSync, log =
       const files = selected.slice(offset, offset + BATCH_SIZE);
       const batchNumber = summary.batches.length + 1;
       const reportPath = path.join(output, `batch-${String(batchNumber).padStart(3, '0')}.json`);
-      log(`Shard ${shard}/8, batch ${batchNumber}: ${files.join(', ')}`);
+      log(`Shard ${shard}/${SHARD_COUNT}, batch ${batchNumber}: ${files.join(', ')}`);
       const batch = { files, passed: false };
       summary.batches.push(batch);
       save();
-      const result = execute(process.execPath, [
-        path.join(repo, 'node_modules/vitest/vitest.mjs'), 'run', ...files,
-        '--maxWorkers=1', '--no-file-parallelism', '--reporter=default', '--reporter=json',
-        `--outputFile=${reportPath}`,
-      ], { cwd: repo, stdio: 'inherit', env: { ...process.env, NODE_OPTIONS: process.env.NODE_OPTIONS || DEFAULT_NODE_OPTIONS } });
-      if (result.error || result.status !== 0 || result.signal != null) {
-        throw new Error(`Vitest batch ${batchNumber} failed: ${result.error?.message ?? result.signal ?? `exit ${result.status}`}`);
+      let result;
+      try {
+        result = execute(process.execPath, [
+          path.join(repo, 'node_modules/vitest/vitest.mjs'), 'run', ...files,
+          '--maxWorkers=1', '--no-file-parallelism', '--reporter=default', '--reporter=json',
+          `--outputFile=${reportPath}`,
+        ], { cwd: repo, stdio: 'inherit', env: { ...process.env, NODE_OPTIONS: process.env.NODE_OPTIONS || DEFAULT_NODE_OPTIONS } });
+        if (result.error || result.status !== 0 || result.signal != null) {
+          throw new Error(`Vitest batch ${batchNumber} failed: ${result.error?.message ?? result.signal ?? `exit ${result.status}`}`);
+        }
+        verifyBatchReport(JSON.parse(fs.readFileSync(reportPath, 'utf8')), files, repo);
+        batch.passed = true;
+        summary.passed.push(...files);
+      } catch (error) {
+        batch.error = error instanceof Error ? error.message : String(error);
+        if (result) {
+          batch.result = { status: result.status, signal: result.signal };
+          if (result.error) batch.result.error = result.error.message ?? String(result.error);
+        }
+        log(`Shard ${shard}/${SHARD_COUNT}, batch ${batchNumber}: ${batch.error}`);
       }
-      verifyBatchReport(JSON.parse(fs.readFileSync(reportPath, 'utf8')), files, repo);
-      batch.passed = true;
-      summary.passed.push(...files);
       save();
     }
+    const failures = summary.batches.flatMap((batch, index) => batch.passed ? [] : [`Batch ${index + 1}: ${batch.error}`]);
+    if (failures.length > 0) throw new Error(`The shard contains failed batches:\n${failures.join('\n')}`);
     summary.success = summary.passed.length === selected.length;
     if (!summary.success) throw new Error('The shard contains unexecuted test files.');
   } catch (error) {
@@ -136,7 +162,7 @@ export function runShard({ shard, repo = defaultRepo, execute = spawnSync, log =
     throw error;
   } finally {
     save();
-    log(`Shard ${shard}/8: ${summary.passed.length}/${selected.length} files passed. Reports: ${output}`);
+    log(`Shard ${shard}/${SHARD_COUNT}: ${summary.passed.length}/${selected.length} files passed. Reports: ${output}`);
   }
   return summary;
 }
@@ -147,10 +173,11 @@ export function main(argv = process.argv.slice(2)) {
     console.log(`Inventory only (tests not run): ${plan.discovered.length} files = shards [${plan.shards.map(shard => shard.length).join(', ')}] + ${plan.isolated.length} isolated files.`);
     return;
   }
-  if (argv.length !== 2 || argv[0] !== '--shard' || argv[1].length !== 3 || !/^[1-8]\/8$/.test(argv[1])) {
-    throw new Error('Usage: node scripts/test-ci-batches.mjs --shard N/8 | --check-inventory');
+  const shard = argv.length === 2 && argv[0] === '--shard' ? Number(argv[1].split('/')[0]) : NaN;
+  if (!Number.isInteger(shard) || shard < 1 || shard > SHARD_COUNT || argv[1] !== `${shard}/${SHARD_COUNT}`) {
+    throw new Error(`Usage: node scripts/test-ci-batches.mjs --shard N/${SHARD_COUNT} | --check-inventory`);
   }
-  runShard({ shard: Number(argv[1][0]) });
+  runShard({ shard });
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

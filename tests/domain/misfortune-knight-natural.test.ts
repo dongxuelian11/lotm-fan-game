@@ -19,7 +19,12 @@ const PEACEFUL_SHA256 = '667f41064ca3aedc76365a66a05bd26ec2fb47a20d6cbf74ffa744a
 const [GUIDED, GUARD] = MISFORTUNE_KNIGHT_ABILITY_IDS;
 const entry = <T>(key: string): T => readObjectEntry<T>(`${ROOT}/natural.json`, key);
 const captured = (key: string): SliceState => migrateSliceState(entry<unknown>(key));
-const same = (actual: unknown, expected: unknown) => expect(stableStringify(actual)).toBe(stableStringify(expected));
+const same = (actual: unknown, expected: unknown) => {
+  const actualCanonical = stableStringify(actual), expectedCanonical = stableStringify(expected);
+  const equal = actualCanonical === expectedCanonical;
+  // Exact canonical-byte comparison; bounded failure diagnostics avoid dumping whole saves.
+  expect(equal, equal ? undefined : `Canonical JSON differs: actual SHA-256 ${createHash('sha256').update(actualCanonical).digest('hex')}; expected SHA-256 ${createHash('sha256').update(expectedCanonical).digest('hex')}`).toBe(true);
+};
 const index = (): Record<string, string> => JSON.parse(readFileSync(`${ROOT}/boundaries.index.json`, 'utf8'));
 const boundary = (name: string) => {
   const filename = index()[name];
@@ -81,7 +86,18 @@ describe('Misfortune Knight exact original518-command public continuation', () =
       state = applySliceIntent(state, intent);
       if (i === 517) same(state, original);
     }
-    same(state, final); assertValidSliceState(state); same(migrateSliceState(state), state);
+    // The newly executed guidance uses the three-original recovery rule. The archived
+    // state remains byte-pinned; only this exact full historical sentence changes.
+    const currentExpected = structuredClone(final);
+    const guidance = currentExpected.chronicle[816]!;
+    expect({ id: guidance.id, week: guidance.week, title: guidance.title }).toEqual({
+      id: 'record-521-816', week: 121, title: '听取厄难骑士独立成品与专业准备指导',
+    });
+    expect(currentExpected.chronicle.filter(record => record.id === guidance.id)).toHaveLength(1);
+    expect(guidance.text).toBe("花1行动、500便士。退役守夜导师赛琳·莫尔说明原渠道记录。原指导者介绍独立封存的厄难骑士成品魔药。当前渠道只交付成品，服用前须完成专业准备。本人核对不眠者至隐秘之仆八阶原瓶、三份实际报告与反思，分别了解有限能力和随时停止的边界，亲自走查普通返回路线。三项准备完成后，另付费检查当周场地，再独立确认饮用所选原瓶。隐秘之仆消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原18项掌握和隐秘之仆消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通休养。原人、卷叶和旧材料不补充。全部原瓶失败后须付1行动与100便士申请下一批，至少跨一真实周才有新瓶到货。");
+    expect(createHash('sha256').update(guidance.text).digest('hex')).toBe('701c3d5a6cb4130a26b5acb28b0466bf6a9b96adfa474fd956f6cb9571b05e86');
+    guidance.text = "花1行动、500便士。退役守夜导师赛琳·莫尔说明原渠道记录。原指导者介绍独立封存的厄难骑士成品魔药。当前渠道只交付成品，服用前须完成专业准备。本人核对不眠者至隐秘之仆八阶原瓶、三份实际报告与反思，分别了解有限能力和随时停止的边界，亲自走查普通返回路线。三项准备完成后，另付费检查当周场地，再独立确认饮用所选原瓶。隐秘之仆消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原18项掌握和隐秘之仆消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通休养。原人、卷叶和旧材料不补充。最初三份原特性固定，全部原瓶失败后可付1行动、120便士调查指定最新失败载体，在赛琳指引下当面核对原失败回执与原交接处实际留存及保管；至少隔一真实周再付1行动原地核验封存同一份特性。未核实、原地受阻时不能领取。每次新普通药物与调配服务另付900便士，或本次五项新劳动后90便士；当周准备仍需150便士和1行动。新载体不产生第四份特性，旧费用、劳务、随机结果、原瓶与失败记录全部保留。可离开继续工作筹资及普通休养，不必支付才能退出。";
+    same(state, currentExpected); assertValidSliceState(state); same(migrateSliceState(state), state);
     expect([state.schemaVersion, state.contentVersion]).toEqual([CURRENT_SCHEMA_VERSION, CURRENT_CONTENT_VERSION]);
     expect(state.revision).toBe(captured('initial').revision + commands.length);
     expect(entry('pendingIntent')).toBeNull(); expect(entry('error')).toBeNull();

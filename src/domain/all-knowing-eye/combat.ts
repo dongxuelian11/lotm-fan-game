@@ -263,9 +263,65 @@ export function allKnowingEyeCombatConsequence(round: SliceCombatRound): string 
   return text + ' 本轮实际60秒；未使用窗口到时结束，已经花费的灵性与精神不退。同一原件资源保留，玛拉、伊蕾娜与旧遭遇人物均不在场；实际原微光片的消耗保留，旧装置仍为零储能。';
 }
 
+/** Positive public allowlists preserve completed actions, never replay authority. */
+function combatFacts<T, K extends keyof T>(value: T, keys: readonly K[]): Pick<T, K> {
+  return Object.fromEntries(keys.map(key => [key, structuredClone(value[key])])) as Pick<T, K>;
+}
+function publicEyeCheck(c: PublicCheckResult | null): PublicCheckResult | null {
+  return c === null ? null : { ...combatFacts(c, ['ability', 'baseAbility', 'effectiveAbility', 'difficulty', 'chance', 'roll', 'tier']),
+    modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })) };
+}
+function publicEyeInjury(i: SliceInjury) { return combatFacts(i, ['id', 'severity', 'acquiredRevision', 'treatedRevision']); }
+function publicEyeCraft(c: MysticismMagisterCraft) { return combatFacts(c, ['id', 'sourceKitId', 'createdWeek', 'usedWeek', 'status', 'power']); }
+function publicEyeMaterials(m: AllKnowingEyeMaterials) {
+  return { weapon: combatFacts(m.weapon, ['id', 'sourceId', 'owner', 'massKg', 'location', 'condition', 'charge', 'capacity', 'visible']) };
+}
+function publicEyeScene(r: AllKnowingEyeScene) {
+  return { ...combatFacts(r, ['siteId', 'playerLocation', 'playerCoordinate', 'enemyCoordinate', 'ordinaryExit', 'visibleBodyLine',
+    'conditionVersion', 'observedConditionVersion', 'thirdPartiesInArea', 'observedSourceId', 'observationWeek', 'clockSeconds',
+    'externalSeconds', 'playerTravelMetres', 'knownPlayerName', 'knownEnemyName']), presentMemberIds: [...r.presentMemberIds] };
+}
+function publicEyeWindow(w: AllKnowingEyeWindow) {
+  return combatFacts(w, ['id', 'kind', 'createdAt', 'expiresAt', 'openedOrder', 'conditionVersion', 'targetActionId', 'targetPower', 'magnitude']);
+}
+function publicEyeWindows(w: AllKnowingEyeWindows) {
+  return { boundedInsight: w.boundedInsight === null ? null : publicEyeWindow(w.boundedInsight),
+    pendingForecast: w.pendingForecast === null ? null : publicEyeWindow(w.pendingForecast),
+    oldResponse: w.oldResponse === null ? null : publicEyeWindow(w.oldResponse) };
+}
+function publicEyePending(p: AllKnowingEyePendingAction | null) {
+  return p === null ? null : combatFacts(p, ['id', 'planned', 'actual', 'declaredAt', 'observedAt', 'observationSeconds', 'conditionVersion', 'visible', 'bodyImpact']);
+}
+function publicEyePowers(p: AllKnowingEyeCombatBody['powerUses']) { return combatFacts(p, ['FLASH', 'WARD', 'MIND_PRESSURE', 'FEINT']); }
+export function projectAllKnowingEyeAction(a: AllKnowingEyeActionEvidence) {
+  return { ...combatFacts(a, ['order', 'actor', 'id', 'planned', 'selectedAbility', 'fallbackReason', 'label', 'selfGain', 'enemyReduction',
+    'threatens', 'mentalPressure', 'attackKind', 'rawContribution', 'rawReduction', 'paidCost', 'mindCost', 'physicalFactor',
+    'resistanceRoll', 'resistanceChance', 'succeeded', 'finiteResult', 'consumedCraftId', 'rodChargeSpent', 'conditionVersionBefore',
+    'conditionVersionAfter', 'atSeconds', 'elapsedSeconds', 'travelMetres', 'playerMindAfter', 'playerSpiritualityAfter', 'enemyMindAfter', 'enemySpiritualityAfter']),
+    check: publicEyeCheck(a.check), windowsBefore: publicEyeWindows(a.windowsBefore), windowsAfter: publicEyeWindows(a.windowsAfter),
+    pendingBefore: publicEyePending(a.pendingBefore), pendingAfter: publicEyePending(a.pendingAfter), masteryApplied: [...a.masteryApplied], countered: [...a.countered],
+    craftsBefore: a.craftsBefore.map(publicEyeCraft), craftsAfter: a.craftsAfter.map(publicEyeCraft),
+    materialsBefore: publicEyeMaterials(a.materialsBefore), materialsAfter: publicEyeMaterials(a.materialsAfter),
+    travelPath: [...a.travelPath], lateralTravelPath: [...a.lateralTravelPath] };
+}
+export type PublicAllKnowingEyeAction = ReturnType<typeof projectAllKnowingEyeAction>;
+export function projectAllKnowingEyeRoundOutcome(o: AllKnowingEyeRoundOutcome) {
+  return { ...combatFacts(o, ['targetId', 'round', 'stance', 'continuing', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus',
+    'enemyRisk', 'weaponLocation', 'totalOwnerMindSpent', 'boundedInsightAttempts', 'boundedInsightChecks', 'boundedInsightSuccesses',
+    'pendingForecastAttempts', 'pendingForecastChecks', 'pendingForecastSuccesses', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'playerRiskAfter', 'elapsedSeconds']),
+    enemyInjuries: o.enemyInjuries.map(publicEyeInjury), playerInjuriesAfter: o.playerInjuriesAfter.map(publicEyeInjury), powerUses: publicEyePowers(o.powerUses),
+    observations: o.observations.map(v => combatFacts(v, ['power', 'conditionVersion', 'round', 'order', 'atSeconds', 'paidCost'])),
+    materialsAfter: publicEyeMaterials(o.materialsAfter), craftsAfter: o.craftsAfter.map(publicEyeCraft), consumedCraftIds: [...o.consumedCraftIds],
+    masteryAfter: Object.fromEntries([...ALL_KNOWING_EYE_INHERITED_SKILL_IDS, ...ALL_KNOWING_EYE_NEW_ABILITY_IDS]
+      .filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+    rootAfter: publicEyeScene(o.rootAfter), playerActions: o.playerActions.map(projectAllKnowingEyeAction), enemyActions: o.enemyActions.map(projectAllKnowingEyeAction),
+    expiredWindows: o.expiredWindows.map(publicEyeWindow), windowsAfter: publicEyeWindows(o.windowsAfter), pendingEnemyActionAfter: null };
+}
+export type PublicAllKnowingEyeRoundOutcome = ReturnType<typeof projectAllKnowingEyeRoundOutcome>;
+
 export function projectAllKnowingEyeCombat(s:SliceState){
  const e=s.allKnowingEye.encounter,last=s.combat?.encounterId==='ALL_KNOWING_EYE_DISPUTE'?s.combat.lastRound?.allKnowingEyeOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.allKnowingEyeOutcome:null;
- return{enemyName:'埃德温·罗斯（47岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,scene:structuredClone(e.scene),materials:structuredClone(e.materials),crafts:structuredClone(s.mysticismMagister.crafts),remainingCraftIds:s.mysticismMagister.crafts.filter(c=>c.status==='PLAYER').map(c=>c.id),flashSample:structuredClone(s.polymath.samples.FLASH),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],constants:ALL_KNOWING_EYE_COMBAT_CONSTANTS,countWheel:ALL_KNOWING_EYE_COUNT_WHEEL,enemyCountWheel:ALL_KNOWING_EYE_ENEMY_COUNT_WHEEL,abilityWheel:allKnowingEyeAbilityWheel(s,null),enemyAbilityWheel:ALL_KNOWING_EYE_ENEMY_ABILITY_WHEEL,facts:[
+ return{enemyName:'埃德温·罗斯（47岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:publicEyePowers(e.powerUses),policy:e.policy,scene:publicEyeScene(e.scene),materials:publicEyeMaterials(e.materials),crafts:s.mysticismMagister.crafts.map(publicEyeCraft),remainingCraftIds:s.mysticismMagister.crafts.filter(c=>c.status==='PLAYER').map(c=>c.id),flashSample:combatFacts(s.polymath.samples.FLASH, ['observedWeek', 'understoodWeek', 'learnedWeek', 'analysisAttemptWeek']),lastActionSequence:last?[...last.playerActions,...last.enemyActions].map(projectAllKnowingEyeAction).sort((a,b)=>a.order-b.order):[],constants:ALL_KNOWING_EYE_COMBAT_CONSTANTS,countWheel:ALL_KNOWING_EYE_COUNT_WHEEL,enemyCountWheel:ALL_KNOWING_EYE_ENEMY_COUNT_WHEEL,abilityWheel:allKnowingEyeAbilityWheel(s,null),enemyAbilityWheel:ALL_KNOWING_EYE_ENEMY_ABILITY_WHEEL,facts:[
  '体35%、感25%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。',
  '现场洞察只辅助下一独立实际行动10；先机预判只削弱下一可见身体冲击30，精神压力单独结算。',
  '每轮各一次，失败照付；条件改变、视线遮挡、离场或满30秒使旧窗口失效，空窗口不涨掌握。',

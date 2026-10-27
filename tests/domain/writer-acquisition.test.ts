@@ -5,7 +5,8 @@ import { applySliceIntent, assertValidSliceState, createSliceRun } from '../../s
 import { addGameDays } from '../../src/domain/game-calendar.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { WRITER_INHERITED_ABILITY_IDS, createWriterState, hasWriterLock, projectWriter, validateWriterAcquisitionJournal, validateWriterCommand, validateWriterState } from '../../src/domain/writer/index.js';
-import { WRITER_ABILITY_IDS, WRITER_PREPARATION_IDS } from '../../src/domain/writer/types.js';
+import { WRITER_ABILITY_IDS, WRITER_PREPARATION_IDS, type WriterAcquisitionBudget } from '../../src/domain/writer/types.js';
+import { WRITER_GUIDE } from '../../src/domain/writer/content.js';
 import { wr, directedInitial2, dose, originalAudienceRoots, originalDiscerner, prepared, promoted, recoverResources, rejectWriter, rejectIntent, step, taught, discernerNaturalPath } from './writer-directed-helper.js';
 
 const journal = (s: SliceState) => s.writer.acquisitionJournal;
@@ -112,7 +113,25 @@ describe('Writer finite bottles, paid labour, actual preparations and four outco
     } else { expect(s.progression.acting).toBe(100); expect(s.seer.completedSources).toEqual(before.seer.completedSources); }
     rejectWriter(s, dose);
   });
-  it('delivers paid new originals only after all three failures and one real later week', () => {
+  it('replays archived independent deliveries after all three failures while live legacy supply stays closed', () => {
+    const budget = (v: SliceState): WriterAcquisitionBudget => ({ actions: v.actionsRemaining, health: v.health, mind: v.mind, spirituality: v.spirituality, cash: v.cash, pollution: v.seer.pollution,
+      gender: v.character.gender, sequence: v.progression.sequence as 2 | 1, acting: v.progression.acting, coreStats: { ...v.character.coreStats }, mastery: { ...v.progression.mastery },
+      completedSources: [...v.seer.completedSources], injuries: structuredClone(v.injuries), injuryRisk: v.injuryRisk });
+    // Exact historical unit receipts only. Current command dispatch never exposes this old mint path.
+    const historical = (input: SliceState, type: 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY'): SliceState => {
+      const v = structuredClone(input), before = budget(v), state = v.writer;
+      if (type === 'REQUEST_SUPPLY') { v.actionsRemaining--; state.resupply.requestedWeek = v.week; }
+      else {
+        const first = state.bottles.length + 1;
+        for (let number = first; number < first + 3; number++) state.bottles.push({ id: `writer-potion-${number}`,
+          source: `${WRITER_GUIDE}第${Math.ceil(number / 3)}批、第${v.week}周实际到货的序列1作家成品，独立封存编号writer-potion-${number}。本瓶须另行取得并独立耗用。`,
+          stockedWeek: v.week, labourSteps: 0, acquiredWeek: null, consumedWeek: null, preparationWeek: null, status: 'SUPPLIER', outcome: null });
+        state.resupply.deliveries++; state.resupply.requestedWeek = null;
+      }
+      state.acquisitionJournal.push({ week: v.week, date: structuredClone(v.date), revision: v.revision, command: { type },
+        actor: { ...structuredClone(state.acquisitionJournal[0]!.actor), sourceHistoryDigest: null }, before, after: budget(v), randomBefore: null, randomAfter: null, check: null });
+      v.revision++; assertValidSliceState(v); return v;
+    };
     let s = taught('THREE_FAILURES');
     for (const taskId of WRITER_PREPARATION_IDS) s = wr(s, { type: 'PREPARE_TASK', taskId });
     const inherited = structuredClone(originalAudienceRoots(s));
@@ -123,11 +142,12 @@ describe('Writer finite bottles, paid labour, actual preparations and four outco
     expect(s.writer.bottles.every(b => b.status === 'CONSUMED' && b.outcome === 'FAILURE')).toBe(true);
     expect(s.cash).toBe(100000 - 500 - 3 * (6400 + 140));
     const originals = structuredClone(s.writer.bottles), ap = s.actionsRemaining;
-    s = wr(s, { type: 'REQUEST_SUPPLY' }); expect(s.actionsRemaining).toBe(ap - 1); rejectWriter(s, { type: 'RECEIVE_SUPPLY' });
+    rejectWriter(s, { type: 'REQUEST_SUPPLY' });
+    s = historical(s, 'REQUEST_SUPPLY'); expect(s.actionsRemaining).toBe(ap - 1); rejectWriter(s, { type: 'RECEIVE_SUPPLY' });
     const requestWeek = s.week, requestDate = structuredClone(s.date), remaining = s.actionsRemaining;
     for (let n = 0; n < remaining; n++) s = step(s, { type: 'ACTION', action: 'REST' });
     expect(s.week).toBe(requestWeek + 1); expect(s.date).toEqual(addGameDays(requestDate, 7));
-    const before = structuredClone(s), received = wr(s, { type: 'RECEIVE_SUPPLY' });
+    const before = structuredClone(s), received = historical(s, 'RECEIVE_SUPPLY');
     expect(received.writer.bottles.slice(0, 3)).toEqual(originals);
     expect(received.writer.bottles.slice(3).map(b => b.id)).toEqual(['writer-potion-4', 'writer-potion-5', 'writer-potion-6']);
     expect(received.writer.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.stockedWeek === requestWeek + 1 && b.acquiredWeek === null && b.labourSteps === 0)).toBe(true);

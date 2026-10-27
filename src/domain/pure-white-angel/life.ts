@@ -6,6 +6,8 @@ import { stableStringify } from '../canonical.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceState } from '../slice/types.js';
 import { LIGHT_SEEKER_POSITION_METRES, validateLightSeekerSiteState } from '../light-seeker/resources.js';
+import { projectLightSeekerSite } from '../light-seeker/combat.js';
+import { projectPureWhiteAngelMastery } from './combat.js';
 import { pureWhiteAngelCompletedBudgetMatches, pureWhiteAngelEncounterBudget, pureWhiteAngelFinanceSnapshot,
   type PureWhiteAngelEncounterBudget, type PureWhiteAngelFinanceSnapshot } from './encounter.js';
 
@@ -61,7 +63,7 @@ export interface PureWhiteAngelLifeProjection {
   clockSeconds: number; elapsedSeconds: number; conditionVersion: number; playerLocation: PureWhiteAngelLifeState['playerLocation']; playerTravelMetres: number;
   site: PureWhiteAngelOriginals; originals: PureWhiteAngelOriginals; maraPresent: boolean; ivan: PureWhiteAngelLifeState['ivan']; sample: PureWhiteAngelLifeState['sample']; pad: PureWhiteAngelLifeState['pad']; pending: PureWhiteAngelLifeState['pending']; currentAttempt: PureWhiteAngelAttempt | null;
   cases: { id: PureWhiteAngelCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: PureWhiteAngelAttempt[] }[];
-  ledger: PureWhiteAngelLifeReceipt[]; actions: PureWhiteAngelLifeAction[];
+  ledger: PublicPureWhiteAngelLifeReceipt[]; actions: PureWhiteAngelLifeAction[];
 }
 const FOCUSED = 'sun.s1.focused-purification', GUARD = 'sun.s1.warm-radiance-guard';
 const same = (a: unknown, b: unknown): boolean => { try { return stableStringify(a) === stableStringify(b); } catch { return false; } };
@@ -454,9 +456,58 @@ export function pureWhiteAngelLifeActions(s: SliceState): PureWhiteAngelLifeActi
   if (!out.some(x => x.command.type === 'ABORT')) step('ABORT', false, true);
   return out;
 }
+/** A public life ledger is a receipt, never the saved replay journal. */
+function lifeFacts<T, K extends keyof T>(value: T, keys: readonly K[]): Pick<T, K> {
+  return Object.fromEntries(keys.map(key => [key, structuredClone(value[key])])) as Pick<T, K>;
+}
+function publicLifeCheck(c: PublicCheckResult | null): PublicCheckResult | null {
+  return c === null ? null : { ...lifeFacts(c, ['ability', 'baseAbility', 'effectiveAbility', 'difficulty', 'chance', 'roll', 'tier']),
+    modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })) };
+}
+function publicAbilityUse(u: PureWhiteAngelAbilityUse) {
+  return lifeFacts(u, ['attempts', 'successes', 'effects', 'tier', 'state', 'remainingSeconds', 'conditionVersion']);
+}
+export function projectPureWhiteAngelAttempt(a: PureWhiteAngelAttempt) {
+  return { ...lifeFacts(a, ['week', 'method', 'closed', 'result', 'elapsedSeconds', 'playerTravelMetres', 'maraTravelMetres',
+    'ivanTravelMetres', 'ownerEnergySpent', 'spiritualitySpent', 'mindSpent', 'permissionVersion', 'sourceRead', 'spiritAsked',
+    'spiritAnswer', 'refusalAcknowledged', 'returnAgreed', 'entered', 'exited', 'samplePlaced', 'sampleRetrieved', 'cleanseAttempted',
+    'cleanseTier', 'sampleHandled', 'manualContained', 'padWorn', 'padRetrieved', 'impactDeclared', 'impactReleased', 'impactReset',
+    'healthPrevented', 'conditionChanged', 'shutterReopened', 'stopped']),
+    permission: lifeFacts(a.permission, ['owner', 'technician', 'ability']), observedSampleVersions: [...a.observedSampleVersions],
+    focused: publicAbilityUse(a.focused), guard: publicAbilityUse(a.guard) };
+}
+export type PublicPureWhiteAngelAttempt = ReturnType<typeof projectPureWhiteAngelAttempt>;
+function publicLifeCommand(c: PureWhiteAngelActivityCommand): PureWhiteAngelActivityCommand {
+  if (c.type === 'OBSERVE' || c.type === 'REPORT') return { type: c.type, caseId: c.caseId };
+  if (c.type === 'INVITE') return { type: c.type, caseId: c.caseId, method: c.method };
+  if (c.type === 'CONSENT' || c.type === 'DECLINE_CONSENT' || c.type === 'WITHDRAW_CONSENT') return { type: c.type, permission: c.permission };
+  return { type: c.type };
+}
+function publicLifeBudget(b: PureWhiteAngelLifeBudget): PureWhiteAngelLifeBudget {
+  return { ...lifeFacts(b, ['cash', 'actions', 'health', 'mind', 'spirituality', 'pollution', 'gender', 'sequence', 'acting', 'injuryRisk']),
+    coreStats: lifeFacts(b.coreStats, ['physique', 'perception', 'will', 'knowledge']), mastery: projectPureWhiteAngelMastery(b.mastery),
+    completedSources: [...b.completedSources], injuries: b.injuries.map(i => lifeFacts(i, ['id', 'severity', 'acquiredRevision', 'treatedRevision'])) };
+}
+function publicLifeFinance(f: PureWhiteAngelFinanceSnapshot): PureWhiteAngelFinanceSnapshot {
+  return { ...lifeFacts(f, ['weeklyBudget', 'lifeTier', 'nextLifeTier', 'missedWeeks', 'credit']),
+    debts: f.debts.map(d => lifeFacts(d, ['id', 'source', 'remaining', 'weeklyPayment', 'createdWeek'])) };
+}
+export function projectPureWhiteAngelLifeReceipt(r: PureWhiteAngelLifeReceipt) {
+  return { ...lifeFacts(r, ['week', 'revision', 'checkBase', 'outcome', 'elapsedSeconds', 'playerWalkedMetres', 'maraWalkedMetres',
+    'ivanWalkedMetres', 'ownerEnergySpent']), date: lifeFacts(r.date, ['epoch', 'year', 'month', 'day']),
+    command: publicLifeCommand(r.command), check: publicLifeCheck(r.check), before: publicLifeBudget(r.before), after: publicLifeBudget(r.after),
+    finance: publicLifeFinance(r.finance), originalsBefore: projectLightSeekerSite(r.originalsBefore),
+    originalsAfter: projectLightSeekerSite(r.originalsAfter), transitions: [...r.transitions] };
+}
+export type PublicPureWhiteAngelLifeReceipt = ReturnType<typeof projectPureWhiteAngelLifeReceipt>;
 export function projectPureWhiteAngelLife(s: SliceState): PureWhiteAngelLifeProjection {
-  const l = s.pureWhiteAngel.life, site = pureWhiteAngelOriginalSnapshot(s), actions = pureWhiteAngelLifeActions(s);
+  const l = s.pureWhiteAngel.life, site = projectLightSeekerSite(s.lightSeeker.life.site), actions = pureWhiteAngelLifeActions(s);
   return { title: '原采光廊、有限净光与个人护持', story: '在原采光廊练习定向净除与个人护持。先开启短暂窗口，再完成实际操作，报告时按应用结果增长掌握；芦影可自行决定是否参加。', source: '原LS2-GALLERY六米采光廊、玛拉46岁、同一芦影、旧字牌、灯、屏、遮罩和遮板全部保留；新买唯一1单位残留与原护垫。', environment: '门外通路4米，原廊入口至尽头6米，遮板在3米，安全侧路距入口9米，普通出口始终开放。43岁伊文每案实付10便士1行动邀请；玛拉每次新同意实耗2精力。灯油和旧原物不补发，芦影可明确拒绝并留侧路。', activeCase: l.activeCase, inside: locked(l), insideCase: locked(l), reflected: l.reflected, preferredActionId: actions.find(x => x.preferredAction)?.id ?? null,
-    clockSeconds: l.clockSeconds, elapsedSeconds: l.elapsedSeconds, conditionVersion: l.conditionVersion, playerLocation: l.playerLocation, playerTravelMetres: l.playerTravelMetres, site, originals: structuredClone(site), maraPresent: l.maraPresent, ivan: structuredClone(l.ivan), sample: structuredClone(l.sample), pad: structuredClone(l.pad), pending: structuredClone(l.pending), currentAttempt: structuredClone(current(l)),
-    cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '同意可随时撤回；失败照付，普通完成有效。原身体损伤须正常治疗或休养。'], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限窗口已经由后续真实动作实际应用；完成收物退出后才可报告成长。' : '普通完成，保留失败、失效和原物损耗，无未应用能力掌握。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }), ledger: structuredClone(l.journal), actions };
+    clockSeconds: l.clockSeconds, elapsedSeconds: l.elapsedSeconds, conditionVersion: l.conditionVersion, playerLocation: l.playerLocation, playerTravelMetres: l.playerTravelMetres, site, originals: projectLightSeekerSite(site), maraPresent: l.maraPresent,
+    ivan: lifeFacts(l.ivan, ['id', 'name', 'age', 'alive', 'health', 'mind', 'present', 'location', 'travelMetres']),
+    sample: lifeFacts(l.sample, ['id', 'owner', 'price', 'purchasedWeek', 'location', 'residueUnits', 'contained', 'version']),
+    pad: lifeFacts(l.pad, ['id', 'owner', 'price', 'purchasedWeek', 'location', 'durability', 'impacts', 'resets']),
+    pending: l.pending === null ? null : lifeFacts(l.pending, ['kind', 'caseId', 'createdAt', 'expiresAt', 'conditionVersion', 'permissionVersion', 'sampleVersion']),
+    currentAttempt: current(l) ? projectPureWhiteAngelAttempt(current(l)!) : null,
+    cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '同意可随时撤回；失败照付，普通完成有效。原身体损伤须正常治疗或休养。'], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限窗口已经由后续真实动作实际应用；完成收物退出后才可报告成长。' : '普通完成，保留失败、失效和原物损耗，无未应用能力掌握。', contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(projectPureWhiteAngelAttempt) }; }), ledger: l.journal.map(projectPureWhiteAngelLifeReceipt), actions };
 }

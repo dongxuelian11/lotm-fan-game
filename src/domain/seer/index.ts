@@ -484,12 +484,14 @@ export function projectSeer(s: SliceState): SeerProjection {
       status: bottle.status === 'PREPARED' ? '已调配，尚未服用' : `已耗尽 · ${bottle.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : bottle.outcome === 'SUCCESS' ? '成功晋升' : bottle.outcome === 'GREAT_FAILURE' ? '严重排异，中断晋升' : '排异，未晋升'}`,
       chance, command: { type: 'CONSUME', bottleId: bottle.id, confirmed: true },
     })) : [],
-    abilities: isPromoted ? SEER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, mastery: s.progression.mastery[ability.id]! })) : [],
+    abilities: isPromoted ? SEER_ABILITIES.filter(ability => Object.hasOwn(s.progression.mastery, ability.id)).map(ability => ({ ...ability, description: ability.id === 'diviner.s9.divination' && s.progression.sequence === 9 && s.arc.stage === 'ENDED'
+      ? '首案已结，不再为它准备预示。可在俱乐部的装箱单与行程委托中，围绕已知线索占卜，再实际核查；预示不是因果证明。'
+      : ability.description, mastery: s.progression.mastery[ability.id]! })) : [],
     acting: !isPromoted?0:s.progression.sequence!==9?(s.clown.seerActingAtPromotion??100):s.progression.acting,
     digestion: isPromoted&&s.progression.sequence!==9?'占卜家魔药已消化，原有经历与四项能力保留。':!isPromoted ? `普通生活已完成${ordinaryWeeks(s)}/4整周；第5周起可在指导者面前服药。`
       : s.progression.acting >=100 ? '占卜家魔药已消化。掌握度仍按实际练习分别记录，可查看小丑晋升条件。' : s.progression.acting === 0 ? '刚刚服药，尚未积累有效扮演经历。' : `已留下扮演经历（${s.progression.acting}/100）。消化仍在进行；掌握度与扮演分别记录。`,
     pollution: s.seer.pollution,
-    risk: s.seer.discovered ? `步骤：配方指导 → 采购或两步劳动后领取材料 → 调配 → 第5周起独立确认服药。每轮仅有3批，不自动补货；三批全已服用且失败后，可花1行动向原指导者申请下一轮，最早下一个真实周到货，材料与调配仍需原费用或劳动。供应方剩余${remaining}批，现有未服原瓶${prepared}瓶。${SEER_CONSUMPTION_RISK}${s.seer.omen && !s.seer.omen.used ? ' 当前保有一枚仅适用首案的预示。' : ''}` : '先接触可靠的指导者，了解获得配方与材料的办法。当前仍是普通人。',
+    risk: s.seer.discovered ? `步骤：配方指导 → 采购或两步劳动后领取材料 → 调配 → 第5周起独立确认服药。每轮仅有3批，不自动补货；三批全已服用且失败后，可花1行动向原指导者申请下一轮，最早下一个真实周到货，材料与调配仍需原费用或劳动。供应方剩余${remaining}批，现有未服原瓶${prepared}瓶。${SEER_CONSUMPTION_RISK}${s.arc.stage !== 'ENDED' && s.seer.omen && !s.seer.omen.used ? ' 当前保有一枚仅适用首案的预示。' : ''}` : '先接触可靠的指导者，了解获得配方与材料的办法。当前仍是普通人。',
   };
 }
 

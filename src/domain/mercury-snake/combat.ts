@@ -1,3 +1,5 @@
+import { publicPryerFields as publicFields, publicPryerCheck, publicPryerInjury } from '../sage/life.js';
+import { publicMercurySnakeBody, publicMercurySnakeLuck, publicMercurySnakeMastery, publicMercurySnakeOperation, publicMercurySnakePiece, publicMercurySnakePlate, publicMercurySnakeForceReceipt, publicMercurySnakeWindow, publicWheelOriginalSite } from './public.js';
 import { DeterministicActionRandomStream, type ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import type { PublicCheckResult } from '../../shared/contracts.js';
@@ -365,14 +367,28 @@ export function mercurySnakeCombatConsequence(round: SliceCombatRound): string {
   if (o.playerHealthAfter === 0) text += '你已真实死亡，局部重启不能复活、复原健康或走出院落。'; else if (o.enemyStatus === 'DEAD') text += '奥斯温真实死亡，原身体与原杖留院。'; else if (o.enemyStatus === 'SURRENDERED') text += '奥斯温因实际重伤或精神耗尽停止抵抗，原杖放在脚边。';
   return `${text} 本轮真实60秒，敌人原动作与全额费用保留。同一新辅助片余${o.piece!.charges}/3、磨损${o.piece!.wear}；原刻片余${o.plates.filter(p => p.status === 'HELD').length}/3。洛温原投降与旧积运已花账未改变。`;
 }
+export function projectMercurySnakeAction(a: MercurySnakeActionEvidence) { return {
+  ...publicFields(a, ['order', 'actor', 'id', 'planned', 'selectedAbility', 'fallbackReason', 'mode', 'label', 'selfGain', 'enemyReduction', 'threatens', 'mentalPressure', 'attackKind', 'rawContribution', 'paidCost', 'mindCost', 'luckCost', 'physicalFactor', 'attempted', 'succeeded', 'resisted', 'atSeconds', 'elapsedSeconds', 'travelMetres', 'playerMindAfter', 'playerSpiritualityAfter', 'enemySpiritualityAfter', 'pendingBefore', 'pendingAfter', 'pendingApplied', 'pieceChargePaid', 'pieceWearPaid', 'conditionVersion', 'playerPositionBefore', 'playerPositionAfter', 'impulseMetres', 'returnedMetres']),
+  check: publicPryerCheck(a.check), luckAfter: publicMercurySnakeLuck(a.luckAfter), windowGranted: a.windowGranted ? publicMercurySnakeWindow(a.windowGranted) : null,
+  windowsApplied: a.windowsApplied.map(w => publicFields(w, ['kind', 'round', 'order', 'amount'])), windowsCancelled: a.windowsCancelled.map(publicMercurySnakeWindow),
+  masteryApplied: [...a.masteryApplied], receipt: a.receipt ? publicMercurySnakeForceReceipt(a.receipt) : null,
+}; }
+export type MercurySnakePublicAction = ReturnType<typeof projectMercurySnakeAction>;
+export function projectMercurySnakeRoundOutcome(o: MercurySnakeRoundOutcome) { return {
+  ...publicMercurySnakeBody(o), ...publicFields(o, ['targetId', 'round', 'stance', 'winnerPolicy', 'continuing', 'playerHealthAfter', 'playerMindAfter', 'playerSpiritualityAfter', 'playerRiskAfter', 'elapsedSeconds', 'expiredPending']),
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicPryerInjury), luckAfter: publicMercurySnakeLuck(o.luckAfter), masteryAfter: publicMercurySnakeMastery(o.masteryAfter), operationAfter: publicMercurySnakeOperation(o.operationAfter),
+  siteAfter: publicWheelOriginalSite(o.siteAfter), expiredWindows: o.expiredWindows.map(publicMercurySnakeWindow), passiveLuck: o.passiveLuck ? publicFields(o.passiveLuck, ['roll', 'triggered', 'bonus']) : null,
+  playerActions: o.playerActions.map(projectMercurySnakeAction), enemyActions: o.enemyActions.map(projectMercurySnakeAction),
+}; }
+export type MercurySnakePublicRoundOutcome = ReturnType<typeof projectMercurySnakeRoundOutcome>;
 export function projectMercurySnakeCombat(s: SliceState) {
   const e = s.mercurySnake.encounter, visible = isMercurySnake(s), last = s.combat?.encounterId === 'MERCURY_SNAKE_DISPUTE' ? s.combat.lastRound?.mercurySnakeOutcome : e.terminal ? s.combatHistory[e.terminal.historyIndex]?.mercurySnakeOutcome : null;
   return { enemyName: visible ? '奥斯温·贝尔（44岁）' : '', targetId: visible ? e.targetId : null, playerHealth: s.health, playerMind: s.mind, playerSpirituality: s.spirituality, maxSpirituality: 120,
-    enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null, powerUses: visible ? { ...e.powerUses } : null,
-    site: visible ? structuredClone(e.currentSite) : null, piece: visible ? structuredClone(e.piece) : null, plates: visible ? structuredClone(e.plates) : [], policy: e.policy,
-    luck: { ...s.mercurySnake.luck, capacity: 3 as const }, weaponLocation: e.weaponLocation, playerLocalMetres: e.playerLocalMetres, restart: structuredClone(e.restart), anchor: structuredClone(e.anchor), conditionVersion: e.conditionVersion,
-    originalExit: true, pursuit: false, distanceMetres: 2 + e.playerLocalMetres, baseDistanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0, source: visible ? currentMercurySnakeCombatSource(s) : null,
-    lastActionSequence: visible && last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(a => structuredClone(a)) : [],
+    enemyHealth: visible ? e.enemyHealth : null, enemyMind: visible ? e.enemyMind : null, enemySpirituality: visible ? e.enemySpirituality : null, powerUses: visible ? publicFields(e.powerUses, ['MIND_SPIKE', 'WARD', 'CALM']) : null,
+    site: visible && e.currentSite ? publicWheelOriginalSite(e.currentSite) : null, piece: visible && e.piece ? publicMercurySnakePiece(e.piece) : null, plates: visible ? e.plates.map(publicMercurySnakePlate) : [], policy: e.policy,
+    luck: { ...publicMercurySnakeLuck(s.mercurySnake.luck), capacity: 3 as const }, weaponLocation: e.weaponLocation, playerLocalMetres: e.playerLocalMetres, restart: e.restart ? publicMercurySnakeWindow(e.restart) : null, anchor: e.anchor ? publicMercurySnakeWindow(e.anchor) : null, conditionVersion: e.conditionVersion,
+    originalExit: true, pursuit: false, distanceMetres: 2 + e.playerLocalMetres, baseDistanceMetres: 2, automaticAllyImmunity: false, alliesPresent: 0,
+    lastActionSequence: visible && last ? [...last.playerActions, ...last.enemyActions].sort((a, b) => a.order - b.order).map(projectMercurySnakeAction) : [],
     countWheel: MERCURY_SNAKE_COUNT_WHEEL.map(x => ({ ...x })), enemyCountWheel: MERCURY_SNAKE_ENEMY_COUNT_WHEEL.map(x => ({ ...x })), enemyAbilityWheel: MERCURY_SNAKE_ENEMY_ABILITY_WHEEL.map(x => ({ ...x })),
     summary: visible ? '体15%感20%意40%知25%；基础1500、核心上限300、状态最多减40%、底150。双方1至6动作10/15/25/25/15/10；旧六槽30/15/20/20/10/5，新两槽各20。每动作5秒，每轮60秒，继续战斗仅按原规则本人回12灵性。局部重启只返回活着本人被实际未结算身体冲量移动的1米，至多减30；精神压力不减。片刻维系自身不减贡献，只将同一短关系保持到原20秒上限，延后重启共耗2次。没有伤势、死亡、时间或费用回滚。' : '' };
 }

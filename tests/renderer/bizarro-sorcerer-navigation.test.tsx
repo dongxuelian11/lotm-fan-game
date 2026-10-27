@@ -133,8 +133,12 @@ it("loads the actual optional S4 combat and reveals its original bell, enemy spi
 
   const battle = within(screen.getByRole("dialog", { name: "原钟舞台 · 帷幕兽" }));
   expect(battle.getByRole("heading", { name: state.combat!.enemyName })).toBeTruthy();
-  await userEvent.click(battle.getByText("查看公开轮盘与风险"));
-  const facts = battle.getByRole("status");
+  const wheelSummary = battle.getByText("查看公开轮盘与风险", { selector: "summary" });
+  await userEvent.click(wheelSummary);
+  const wheelDetails = wheelSummary.closest("details")!;
+  expect(wheelDetails.open).toBe(true);
+  expect(battle.getByRole("status", { name: "当前姿态" })).toBeTruthy();
+  const facts = within(wheelDetails).getByRole("status");
   expect(facts.textContent).toContain("原钟：seer-rebuild-natural:B4-LEAD-3:BELL");
   expect(facts.textContent).toContain("对手灵性40；幻壳无；实际见证0人");
   expect(facts.textContent).toContain("本次是非晋升挑战。");

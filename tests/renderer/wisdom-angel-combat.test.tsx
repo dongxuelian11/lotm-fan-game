@@ -1,4 +1,5 @@
 /* @vitest-environment jsdom */
+import { assertCombatRiskDisclosure, assertCombatHealth } from './combat-risk-assertions';
 import { act, cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
@@ -83,10 +84,9 @@ describe('Wisdom Angel actual Victor combat, original items and saved ordered ev
     });
     expect(battle.playerAbilityWheel.map(a => a.label)).toEqual(WISDOM_ANGEL_PLAYER_LABELS); expect(battle.playerAbilityWheel.map(a => a.weight)).toEqual([20, 20, 15, 15, 15, 15]);
     expect(battle.enemyAbilityWheel.map(a => [a.id, a.weight])).toEqual([['FLASH', 35], ['WARD', 25], ['BODY_STRIKE', 20], ['FEINT', 15], ['ACCIDENT', 5]]);
-    expect(stage.textContent?.replace(/\s+/g, ' ')).toContain(`健康 ${before.health} / 100`);
-    expect(stage.textContent?.replace(/\s+/g, ' ')).toContain(`健康 ${battle.enemyHealth} / 100`);
+    assertCombatHealth(stage, before.health, battle.enemyHealth);
     expect(within(stage).getByRole('heading', { name: battle.enemyName })).toBeTruthy();
-    const risk = within(stage).getByRole('region', { name: '伤势与恢复路线' }); expect(risk.closest('details')).toBeNull();
+    const risk = await assertCombatRiskDisclosure(stage, battle.consequenceWeights);
     for (const text of [`轻伤 ${battle.consequenceWeights.light}%`, `重伤 ${battle.consequenceWeights.heavy}%`, `死亡 ${battle.consequenceWeights.death}%`]) expect(risk.textContent).toContain(text);
     await userEvent.click(within(stage).getByText('查看公开轮盘与风险', { selector: 'summary' }));
     for (const entry of battle.enemyCountWheel) expect(within(stage).getByText(/^对手次数盘：/).textContent).toContain(`${entry.label} ${entry.weight}%`);

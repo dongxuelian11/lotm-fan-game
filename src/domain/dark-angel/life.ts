@@ -1,3 +1,13 @@
+import { publicPryerFields, publicPryerDate, publicPryerCheck, publicPryerInjury } from '../sage/life.js';
+import { SECRET_SUPPLICANT_ABILITY_IDS } from '../secret-supplicant/types.js';
+import { LISTENER_ABILITY_IDS } from '../listener/types.js';
+import { SHADOW_ASCETIC_ABILITY_IDS } from '../shadow-ascetic/types.js';
+import { ROSE_BISHOP_ABILITY_IDS } from '../rose-bishop/types.js';
+import { SHEPHERD_ABILITY_IDS } from '../shepherd/types.js';
+import { BLACK_KNIGHT_ABILITY_IDS } from '../black-knight/types.js';
+import { THREE_HEADED_TEMPLAR_ABILITY_IDS } from '../three-headed-templar/types.js';
+import { ELDER_ABILITY_IDS } from '../elder/types.js';
+import { DARK_ANGEL_ABILITY_IDS } from './types.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { DeterministicActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
@@ -7,7 +17,7 @@ import { resolveSliceWeeklyFinance } from '../slice/weekly-finance.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
 import { createElderLifeState, type ElderOperationState } from '../elder/life.js';
-import { createThreeHeadedTemplarLifeState, THREE_HEADED_TEMPLAR_SPIRIT_IDS, type ThreeHeadedTemplarSpiritId, type ThreeHeadedTemplarSpiritMethod, type ThreeHeadedTemplarSpiritState } from '../three-headed-templar/life.js';
+import { createThreeHeadedTemplarLifeState, THREE_HEADED_TEMPLAR_CASE_IDS, THREE_HEADED_TEMPLAR_SPIRIT_IDS, type ThreeHeadedTemplarActivityCommand, type ThreeHeadedTemplarAttempt, type ThreeHeadedTemplarSpiritId, type ThreeHeadedTemplarSpiritMethod, type ThreeHeadedTemplarSpiritState } from '../three-headed-templar/life.js';
 import type { DarkAngelOriginals, DarkAngelSite } from './types.js';
 export type { DarkAngelOriginals, DarkAngelSite } from './types.js';
 import { darkAngelEncounterBudget, darkAngelFinanceSnapshot, validateDarkAngelFinanceSnapshot, type DarkAngelEncounterBudget, type DarkAngelFinanceSnapshot } from './encounter.js';
@@ -70,9 +80,9 @@ export interface DarkAngelLifeAction { id: string; label: string; cost: string; 
 export interface DarkAngelLifeProjection {
   title: string; story: string; source: string; environment: string; nextStep: string; activeCase: DarkAngelCaseId | null; inside: boolean; insideCase: boolean; reflected: boolean; preferredActionId: string | null;
   site: DarkAngelSite; operation: ElderOperationState; clockSeconds: number; playerLocation: DarkAngelSite['playerLocation']; playerTravelMetres: number; ownerTravelMetres: number;
-  spirits: ThreeHeadedTemplarSpiritState[]; strips: DarkAngelSealStrip[]; pending: DarkAngelLifeWindow | null; pendingRemainingSeconds: number; currentAttempt: DarkAngelAttempt | null;
-  cases: { id: DarkAngelCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; permission: Record<Permission, Consent>; permissionVersion: number; contactOpen: boolean; returned: boolean; attempts: DarkAngelAttempt[] }[];
-  ledger: DarkAngelLifeReceipt[]; actions: DarkAngelLifeAction[];
+  spirits: ThreeHeadedTemplarSpiritState[]; strips: DarkAngelSealStrip[]; pending: DarkAngelPublicLifeWindow | null; pendingRemainingSeconds: number; currentAttempt: DarkAngelPublicAttempt | null;
+  cases: { id: DarkAngelCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; permission: Record<Permission, Consent>; permissionVersion: number; contactOpen: boolean; returned: boolean; attempts: DarkAngelPublicAttempt[] }[];
+  ledger: DarkAngelPublicLifeReceipt[]; actions: DarkAngelLifeAction[];
 }
 const GUIDANCE: DarkAngelLifeAbilityId = 'hanged-man.s1.single-spirit-guidance', SHELTER: DarkAngelLifeAbilityId = 'hanged-man.s1.single-spirit-shelter';
 const POSITION: Record<DarkAngelSite['playerLocation'], number> = { START: 0, A: 4, B: 8, YARD: -4, OUTSIDE: -2 };
@@ -457,11 +467,86 @@ export function projectDarkAngelLife(s: SliceState): DarkAngelLifeProjection {
     environment: '入口到四米处原桌，再走四米到原封条，每米1秒；玛拉取得原物许可后从院外走2米到入口，结束后走2米回院外。成功施术本人8灵性2精神，失败总4精神；原灵均付3灵性。20秒单次窗口只在原位置应用一次。',
     nextStep: preferred?.label ?? (l.reflected ? '三案已收尾，可自行决定是否前往独立邻院。' : '当前没有可执行的原院操作。'), preferredActionId: preferred?.id ?? null,
     activeCase: l.activeCase, inside: hasDarkAngelLifeLock(s), insideCase: hasDarkAngelLifeLock(s), reflected: l.reflected,
-    site: structuredClone(site), operation: structuredClone(l.sourceWeek === null ? s.darkAngel.sourceScene?.originals.operation ?? s.elder.life.operation : l.operation), clockSeconds: site.clockSeconds, playerLocation: site.playerLocation, playerTravelMetres: site.playerTravelMetres, ownerTravelMetres: l.ownerTravelMetres,
-    spirits: THREE_HEADED_TEMPLAR_SPIRIT_IDS.map(id => structuredClone(site.spirits[id])), strips: structuredClone(l.strips), pending: structuredClone(l.pending), pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - site.clockSeconds) : 0,
-    currentAttempt: structuredClone(current(l)), cases: CASES.map(info => { const r = l.cases[info.id], a = r.attempts[0]; return { ...info,
+    site: publicDarkAngelSite(site), operation: publicDarkAngelOperation(l.sourceWeek === null ? s.darkAngel.sourceScene?.originals.operation ?? s.elder.life.operation : l.operation), clockSeconds: site.clockSeconds, playerLocation: site.playerLocation, playerTravelMetres: site.playerTravelMetres, ownerTravelMetres: l.ownerTravelMetres,
+    spirits: THREE_HEADED_TEMPLAR_SPIRIT_IDS.map(id => publicDarkAngelSpirit(site.spirits[id])), strips: l.strips.map(publicDarkAngelStrip), pending: l.pending ? publicDarkAngelWindow(l.pending) : null, pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - site.clockSeconds) : 0,
+    currentAttempt: current(l) ? publicDarkAngelAttempt(current(l)!) : null, cases: CASES.map(info => { const r = l.cases[info.id], a = r.attempts[0]; return { ...info,
       observations: a ? [`实付${a.penniesSpent}便士、本人${a.spiritualitySpent}灵性/${a.mindSpent}精神、原灵${a.spiritSpiritualitySpent}灵性；本人走${a.playerTravelMetres}米，玛拉走${a.ownerTravelMetres}米。`,
         ...(a.readingQuality ? [`同一原卡本次读取质量${a.readingQuality}。`] : []), ...(a.baselinePressure ? [`封存余压基线3，本次局部承受${a.feltPressure}；操作后余压仍为3。`] : []), ...(a.withdrawn ? ['本案许可已经真实撤回，未用窗口不恢复。'] : [])] : [],
-      status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限作用已经实际应用并记录。' : '普通完成或明确停止；没有未应用的能力奖励。', permission: structuredClone(r.permission), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }),
-    ledger: structuredClone(l.journal), actions };
+      status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限作用已经实际应用并记录。' : '普通完成或明确停止；没有未应用的能力奖励。', permission: publicPryerFields(r.permission, ['OWNER', 'ABILITY']), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(publicDarkAngelAttempt) }; }),
+    ledger: l.journal.map(publicDarkAngelLifeReceipt), actions };
 }
+
+
+/** Public evidence is selected positively; authoritative replay sources stay in the save. */
+export function publicDarkAngelSpirit(s: ThreeHeadedTemplarSpiritState): ThreeHeadedTemplarSpiritState { return {
+  ...publicPryerFields(s, ['id', 'name', 'age', 'sequence', 'deceased', 'deathRecordId', 'casketId', 'custodianId', 'status', 'spirituality', 'integrity', 'location', 'acquiredWeek', 'releasedWeek', 'preparedWeek', 'attemptWeek', 'restWeek', 'supportEnabled', 'interrupted', 'travelMetres']),
+  knownAbilities: [...s.knownAbilities], selectedAbilities: [...s.selectedAbilities], externalizedContexts: [...s.externalizedContexts],
+  history: s.history.map(e => ({ ...publicPryerFields(e, ['type', 'spiritId', 'week', 'round', 'atSecond', 'context', 'tier', 'destination', 'method', 'seconds', 'metres', 'masterCost', 'spiritCost', 'mindCost', 'cashCost']), abilityIds: [...e.abilityIds] })),
+}; }
+function publicDarkAngelInheritedCommand(c: ThreeHeadedTemplarActivityCommand): ThreeHeadedTemplarActivityCommand {
+  if (c.type === 'GRAZE') return { type: c.type, spiritId: c.spiritId, abilityIds: [...c.abilityIds], confirmed: c.confirmed };
+  if (c.type === 'RELEASE_GRAZED') return { type: c.type, spiritId: c.spiritId, confirmed: c.confirmed };
+  if (c.type === 'SEND_SPIRIT') return { type: c.type, spiritId: c.spiritId, destination: c.destination };
+  if (c.type === 'ASSIST') return { type: c.type, spiritId: c.spiritId, method: c.method };
+  if (c.type === 'PREPARE') return { type: c.type, caseId: c.caseId, method: c.method };
+  if ('spiritId' in c) return { type: c.type, spiritId: c.spiritId };
+  if ('caseId' in c) return { type: c.type, caseId: c.caseId };
+  return { type: c.type };
+}
+function publicDarkAngelInheritedAttempt(a: ThreeHeadedTemplarAttempt): ThreeHeadedTemplarAttempt { return {
+  ...publicPryerFields(a, ['week', 'method', 'startSecond', 'elapsedSeconds', 'playerTravelMetres', 'spiritualitySpent', 'mindSpent', 'maintenancePayments', 'performances', 'ownerConsent', 'cardTaken', 'cardReturned', 'cardRead', 'farSealRead', 'leftSecured', 'rightChecked', 'lightOpened', 'lightClosed', 'helenaInterrupted', 'rolandContinued', 'simultaneousCare', 'abilityUsed', 'withdrawn', 'inspected', 'closed', 'result']),
+  date: publicPryerDate(a.date), initialSpiritHistory: publicPryerFields(a.initialSpiritHistory, THREE_HEADED_TEMPLAR_SPIRIT_IDS), finalSpiritHistory: publicPryerFields(a.finalSpiritHistory, THREE_HEADED_TEMPLAR_SPIRIT_IDS),
+  steps: a.steps.map(step => ({ ...publicPryerFields(step, ['tier', 'atSecond', 'ownerWilling', 'masterSpirituality', 'masterMind']), command: publicDarkAngelInheritedCommand(step.command) })),
+  playerMoves: a.playerMoves.map(m => ({ ...publicPryerFields(m, ['from', 'to', 'metres', 'seconds']), itemIds: [...m.itemIds] })),
+  evidence: a.evidence.map(e => publicPryerFields(e, ['sourceId', 'text', 'atSecond'])),
+}; }
+export function publicDarkAngelSite(p: DarkAngelSite): DarkAngelSite { return {
+  ...publicPryerFields(p, ['siteId', 'metSpiritsWeek', 'introducedWeek', 'activeCase', 'playerLocation', 'playerTravelMetres', 'clockSeconds', 'reflected']),
+  introducedDate: p.introducedDate ? publicPryerDate(p.introducedDate) : null,
+  owner: publicPryerFields(p.owner, ['id', 'name', 'age', 'alive', 'willing', 'location']),
+  spirits: { 'THT3-HELENA': publicDarkAngelSpirit(p.spirits['THT3-HELENA']), 'THT3-ROLAND': publicDarkAngelSpirit(p.spirits['THT3-ROLAND']) },
+  card: publicPryerFields(p.card, ['id', 'owner', 'quantity', 'location', 'travelMetres']),
+  leftBox: publicPryerFields(p.leftBox, ['id', 'location', 'quantity']), rightBox: publicPryerFields(p.rightBox, ['id', 'location', 'quantity']), farSeal: publicPryerFields(p.farSeal, ['id', 'location', 'quantity']),
+  lamp: publicPryerFields(p.lamp, ['id', 'location', 'quantity', 'on']), shutter: publicPryerFields(p.shutter, ['id', 'location', 'quantity', 'state', 'controlAt', 'cordMetres']),
+  cases: Object.fromEntries(THREE_HEADED_TEMPLAR_CASE_IDS.map(id => { const r = p.cases[id]; return [id, {
+    ...publicPryerFields(r, ['status', 'observedWeek', 'method', 'result', 'contactOpen', 'returned', 'closes', 'withdrawals']), attempts: r.attempts.map(publicDarkAngelInheritedAttempt),
+  }]; })) as DarkAngelSite['cases'],
+}; }
+export function publicDarkAngelOperation(o: ElderOperationState): ElderOperationState { return {
+  ...publicPryerFields(o, ['sealId', 'residualId', 'contained', 'residualPressure', 'sealWear', 'suppressedUntil']),
+  focus: o.focus ? publicPryerFields(o.focus, ['spiritId', 'method', 'expiresAt']) : null,
+  materials: o.materials.map(m => publicPryerFields(m, ['id', 'caseId', 'ownerId', 'quantity', 'status', 'location', 'charges', 'spentCharges', 'paidPennies', 'preparedWeek'])),
+}; }
+export const publicDarkAngelStrip = (s: DarkAngelSealStrip): DarkAngelSealStrip => publicPryerFields(s,
+  ['id', 'caseId', 'ownerId', 'quantity', 'status', 'location', 'charges', 'wear', 'paidPennies', 'boughtWeek', 'travelMetres']);
+export function publicDarkAngelWindow(w: DarkAngelLifeWindow) { return {
+  ...publicPryerFields(w, ['abilityId', 'caseId', 'stripId', 'cardId', 'spiritId', 'selectedMethod', 'location', 'permissionVersion', 'createdAt', 'expiresAt']), spiritName: w.sourceSpirit.name,
+}; }
+export type DarkAngelPublicLifeWindow = ReturnType<typeof publicDarkAngelWindow>;
+export function publicDarkAngelAttempt(a: DarkAngelAttempt) { return {
+  ...publicPryerFields(a, ['week', 'method', 'closed', 'stopped', 'returned', 'withdrawn', 'elapsedSeconds', 'playerTravelMetres', 'ownerTravelMetres', 'spiritualitySpent', 'mindSpent', 'spiritSpiritualitySpent', 'spiritIntegrityLost', 'penniesSpent', 'stripId', 'cardTaken', 'cardReturned', 'inspected', 'readingQuality', 'baselinePressure', 'feltPressure', 'castTier', 'selectedSpiritId', 'selectedMethod', 'applicationDone', 'verified', 'waits', 'windowEnd', 'result']),
+  appliedAbilityIds: [...a.appliedAbilityIds], siteAtStart: publicDarkAngelSite(a.siteAtStart), siteAtClose: a.siteAtClose ? publicDarkAngelSite(a.siteAtClose) : null,
+}; }
+export type DarkAngelPublicAttempt = ReturnType<typeof publicDarkAngelAttempt>;
+function publicDarkAngelLifeCommand(c: DarkAngelActivityCommand): DarkAngelActivityCommand {
+  if (c.type === 'PREPARE') return { type: c.type, caseId: c.caseId, method: c.method };
+  if (c.type === 'CONSENT' || c.type === 'WITHDRAW_CONSENT') return { type: c.type, caseId: c.caseId, permission: c.permission };
+  if (isPower(c)) return { type: c.type, caseId: c.caseId, spiritId: c.spiritId };
+  if ('caseId' in c) return { type: c.type, caseId: c.caseId };
+  return { type: c.type };
+}
+const PUBLIC_DARK_ANGEL_MASTERY_IDS = [...SECRET_SUPPLICANT_ABILITY_IDS, ...LISTENER_ABILITY_IDS, ...SHADOW_ASCETIC_ABILITY_IDS, ...ROSE_BISHOP_ABILITY_IDS, ...SHEPHERD_ABILITY_IDS, ...BLACK_KNIGHT_ABILITY_IDS, ...THREE_HEADED_TEMPLAR_ABILITY_IDS, ...ELDER_ABILITY_IDS, ...DARK_ANGEL_ABILITY_IDS];
+function publicDarkAngelBudget(b: DarkAngelEncounterBudget): DarkAngelEncounterBudget { return {
+  ...publicPryerFields(b, ['cash', 'actions', 'health', 'mind', 'spirituality', 'pollution', 'gender', 'sequence', 'acting', 'injuryRisk']),
+  coreStats: publicPryerFields(b.coreStats, ['physique', 'perception', 'will', 'knowledge']),
+  mastery: Object.fromEntries(PUBLIC_DARK_ANGEL_MASTERY_IDS.filter(id => Object.hasOwn(b.mastery, id)).map(id => [id, b.mastery[id]!])),
+  completedSources: [...b.completedSources], injuries: b.injuries.map(publicPryerInjury),
+}; }
+export function publicDarkAngelLifeReceipt(r: DarkAngelLifeReceipt) { return {
+  ...publicPryerFields(r, ['week', 'revision', 'checkBase', 'outcome', 'elapsedSeconds']), date: publicPryerDate(r.date), command: publicDarkAngelLifeCommand(r.command), check: publicPryerCheck(r.check),
+  before: publicDarkAngelBudget(r.before), after: publicDarkAngelBudget(r.after),
+  paid: publicPryerFields(r.paid, ['actions', 'pennies', 'spirituality', 'mind', 'spiritSpirituality', 'spiritIntegrity', 'sealCharges']),
+  moves: r.moves.map(m => ({ ...publicPryerFields(m, ['actorId', 'from', 'to', 'metres', 'seconds']), itemIds: [...m.itemIds] })),
+  siteBefore: publicDarkAngelSite(r.siteBefore), siteAfter: publicDarkAngelSite(r.siteAfter), operationBefore: publicDarkAngelOperation(r.operationBefore), operationAfter: publicDarkAngelOperation(r.operationAfter),
+}; }
+export type DarkAngelPublicLifeReceipt = ReturnType<typeof publicDarkAngelLifeReceipt>;

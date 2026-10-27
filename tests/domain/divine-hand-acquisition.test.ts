@@ -175,7 +175,7 @@ describe('Divine Hand per-bottle acquisition and actual weekly economy', () => {
     for (const id of DIVINE_HAND_INHERITED_ABILITY_IDS) expect(e.after.mastery[id]).toBe(e.before.mastery[id]);
     expect(validateDivineHandAcquisitionJournal(s)).toBe(true); assertValidSliceState(s);
   }, 60_000);
-  it('requires three real failed bottles, paid replacement and the next real week in an isolated directed branch', () => {
+  it('refuses an independent fourth original even after three genuine failed bottles', () => {
     let s = directedPrepared(['FAILURE', 'GREAT_FAILURE', 'FAILURE']);
     for (let number = 1; number <= 3; number++) {
       s = ae(s, { type: 'CONSUME', bottleId: `divine-hand-potion-${number}`, confirmed: true });
@@ -183,14 +183,15 @@ describe('Divine Hand per-bottle acquisition and actual weekly economy', () => {
       if (number < 3) { rejectDivineHand(s, { type: 'REQUEST_SUPPLY' }); s = prepareBottle(s, `divine-hand-potion-${number + 1}`); }
     }
     expect(s.divineHand.bottles.map(b => b.outcome)).toEqual(['FAILURE', 'GREAT_FAILURE', 'FAILURE']);
-    s = ready(s, { ap: 2, cash: 100 });
-    s = ae(s, { type: 'REQUEST_SUPPLY' }); const request = journal(s).at(-1)!;
-    expect(request.before.cash - request.after.cash).toBe(100); expect(request.before.actions - request.after.actions).toBe(1);
-    rejectDivineHand(s, { type: 'RECEIVE_SUPPLY' }); expect(s.divineHand.bottles).toHaveLength(3);
-    s = ready(s, { afterWeek: request.week }); s = ae(s, { type: 'RECEIVE_SUPPLY' });
-    const delivery = journal(s).at(-1)!; expect(delivery.week).toBeGreaterThan(request.week); expect(delivery.before).toEqual(delivery.after);
-    expect(s.divineHand.bottles).toHaveLength(6);
-    expect(s.divineHand.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
+    s = ready(s, { ap: 2, cash: 120 });
+    const bottles = structuredClone(s.divineHand.bottles), history = structuredClone(journal(s));
+    for (const command of [{ type: 'REQUEST_SUPPLY' }, { type: 'RECEIVE_SUPPLY' },
+      { type: 'BUY_POTION', bottleId: 'divine-hand-potion-4' }]) rejectDivineHand(s, command);
+    expect(s.divineHand.bottles).toEqual(bottles); expect(journal(s)).toEqual(history);
+    expect(s.divineHand.bottles).toHaveLength(3);
+    expect(s.divineHand.resupply).toEqual({ requestedWeek: null, deliveries: 0 });
+    expect(divineHandAcquisitionBlock(s, { type: 'REQUEST_RECOVERY_V1', bottleId: 'divine-hand-potion-1' })).toBeNull();
+    expect(validateDivineHandAcquisitionJournal(s)).toBe(true);
     expect(originalWarriorRoots(s)).toEqual(originalWarriorRoots(originalGlory())); assertValidSliceState(s);
   }, 60_000);
   it('ordinary S1 rest keeps the real120 spirituality ceiling and does not refill site energy', () => {

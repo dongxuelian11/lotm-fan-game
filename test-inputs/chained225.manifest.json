@@ -1,0 +1,105 @@
+{
+  "format": "lotm-test-inputs-v1",
+  "version": "0.225.0",
+  "parts": [
+    {
+      "name": "lotm_release_0.225.0_chained_test_inputs_2026-10-19.part-001.tar.gz",
+      "bytes": 5715467,
+      "sha256": "95f72d38718e2f8470bc2e72790cd6ef9b5bc14de46876c2a8805632cb9d5bde",
+      "members": [
+        "tests/fixtures/chained-v02250/checkpoint.json.gz",
+        "tests/fixtures/chained-v02250/commands.jsonl",
+        "tests/fixtures/chained-v02250/key-778-initial.json.gz",
+        "tests/fixtures/chained-v02250/key-794-periodic.json.gz",
+        "tests/fixtures/chained-v02250/key-810-periodic.json.gz",
+        "tests/fixtures/chained-v02250/key-826-periodic.json.gz",
+        "tests/fixtures/chained-v02250/key-842-periodic.json.gz",
+        "tests/fixtures/chained-v02250/key-858-periodic.json.gz",
+        "tests/fixtures/chained-v02250/key-870-before-consume.json.gz",
+        "tests/fixtures/chained-v02250/key-871-after-consume-terminal.json.gz",
+        "tests/fixtures/chained-v02250/producer-tests.mjs",
+        "tests/fixtures/chained-v02250/producer.mjs",
+        "tests/fixtures/chained-v02250/runtime-freeze.json",
+        "tests/fixtures/chained-v02250/source-natural.json.gz",
+        "tests/fixtures/chained-v02250/summary.json"
+      ]
+    }
+  ],
+  "fileEntries": [
+    {
+      "path": "tests/fixtures/chained-v02250/checkpoint.json.gz",
+      "bytes": 276164,
+      "sha256": "24447f5c5a43fdba075df491a13612f72b5a449fbf8624d7c4afe618291e12e4"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/commands.jsonl",
+      "bytes": 459961,
+      "sha256": "6fbe4e001966fc206fcb590ddd259a0b085d1f7bd762c58b25b10a1376df6ecc"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/key-778-initial.json.gz",
+      "bytes": 549232,
+      "sha256": "b30802da9e7a110ebf91f5a54039b329e4cd626cddd626caca2531653a491188"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/key-794-periodic.json.gz",
+      "bytes": 563362,
+      "sha256": "43bd49cc4f69d8e97576c67c7d6ae295ea488dc50d1d7ad766f3e00c08be93b2"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/key-810-periodic.json.gz",
+      "bytes": 567214,
+      "sha256": "864c43d76190d164750cd54ba8623077ef90ddfb32b19ead9d7d184f84a28f3c"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/key-826-periodic.json.gz",
+      "bytes": 571131,
+      "sha256": "9e3263857fe21f35ca73c6bbb8bc0977be137d0387ed7daaaec58dcc9e6bf13f"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/key-842-periodic.json.gz",
+      "bytes": 575263,
+      "sha256": "7bf282da396b02c6468806869c6ceb3ca1f303a6832664571ed61130b9adf7f8"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/key-858-periodic.json.gz",
+      "bytes": 578521,
+      "sha256": "3621057f096f95a73b485482e20037999aaa7976a9aa0c09978e10a76389619a"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/key-870-before-consume.json.gz",
+      "bytes": 581419,
+      "sha256": "675a3f248ac50d69c50fc9ce452ba39071a5d74fa60c15533f1044f06cdce01d"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/key-871-after-consume-terminal.json.gz",
+      "bytes": 582395,
+      "sha256": "b31925339aeb5b311f1a8eb4e0e6ad18f55965624f9017fbeb6c7e41a6b62d42"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/producer-tests.mjs",
+      "bytes": 5815,
+      "sha256": "e334820b634f9aadad4b6a4365faaa958a1daf755312d3cd79c130a937fde2b6"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/producer.mjs",
+      "bytes": 35211,
+      "sha256": "507a23ccdb76e5850efe9373c408fc1c56be6515e636c5ef687cb7ff947d9acc"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/runtime-freeze.json",
+      "bytes": 672409,
+      "sha256": "5df2ebd6962f66c59c05ca003bed5918137f61b5e6fa65e83f931aef40eb7ab9"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/source-natural.json.gz",
+      "bytes": 735734,
+      "sha256": "a3fcef59df6c89bdb85671a774d7e5ae66984c7382a5f56fd632527f5710877d"
+    },
+    {
+      "path": "tests/fixtures/chained-v02250/summary.json",
+      "bytes": 4799,
+      "sha256": "b902833aa0285856b4e48d2654558a95710b0a61b579b4e13ac3dba11e092800"
+    }
+  ]
+}

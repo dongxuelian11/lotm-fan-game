@@ -372,7 +372,10 @@ describe("Lucky sequence-seven public practice dossier", () => {
     expect(screen.getByLabelText("本回合被动幸运记录").textContent).toContain("掷骰 12 · 本次得到偶然帮助 · 已结算优势 +5");
     expect(screen.getByText(helped.consequence)).toBeTruthy();
     await userEvent.click(screen.getByRole("button", { name: "进入下一回合" }));
-    expect(screen.getByText("健康 35 / 100")).toBeTruthy(); expect(screen.getAllByText("普通伤势 1处").length).toBeGreaterThan(0);
+    const health = screen.getByRole("progressbar", { name: "你的健康" });
+    expect(health.getAttribute("aria-valuenow")).toBe("35");
+    expect(health.getAttribute("aria-valuemax")).toBe("100");
+    expect(within(screen.getByRole("region", { name: "你的战斗状态" })).getByText(/普通伤势 1处/)).toBeTruthy();
     await userEvent.click(screen.getByRole("button", { name: "确认姿态，结算完整回合" }));
     expect(screen.getByLabelText("本回合被动幸运记录").textContent).toContain("掷骰 88 · 本次没有帮上忙 · 已结算优势 +0");
     expect(screen.getAllByText(noHelp.consequence).length).toBeGreaterThan(0);

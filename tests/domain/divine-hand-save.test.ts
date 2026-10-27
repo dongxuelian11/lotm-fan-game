@@ -9,6 +9,7 @@ import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentDivineHandReplayExpectation } from '../helpers/divine-hand-current-replay.js';
 import { DIVINE_HAND_CAPTURE_EVIDENCE as expected } from './divine-hand-capture-evidence.js';
 import { DIVINE_HAND_ROOT, DIVINE_HAND_SOURCE, DIVINE_HAND_PREFIX_COUNT, boundaryIndex, boundarySteps, snapshotIndex,
   uniqueBoundaryFiles, captureCommands, capturePath, captureFileHash, captureValueHash, captureBody, boundaryFile,
@@ -107,7 +108,9 @@ describe('Divine Hand immutable capture integrity and representative SQLite reco
     const save = boundaryFile(filename); expect(save.count).toBe(boundarySteps[name]); same(save.intent, captureCommands[save.count - 1]);
     if (save.count > DIVINE_HAND_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
     assertObservedRepresentative(save);
-    exerciseSqlite(save.before, save.intent, save.final, `divine-hand198:${save.count}`);
+    const currentFinal = save.intent.type === 'DIVINE_HAND' && save.intent.command.type === 'LEARN_GUIDANCE'
+      ? currentDivineHandReplayExpectation(save.final) : save.final;
+    exerciseSqlite(save.before, save.intent, currentFinal, `divine-hand198:${save.count}`);
     expect(await captureFileHash(path)).toBe(originalHash);
   }, 80_000);
 });

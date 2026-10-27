@@ -350,6 +350,8 @@ describe("Tamer pathway dossier", () => {
     await userEvent.click(screen.getByRole("button", { name: /使用已存护理剂/ }));
     expect(value.submitIntent).toHaveBeenCalledTimes(1);
     expect(vi.mocked(value.submitIntent).mock.calls[0]![0].payload).toEqual({ type: "APOTHECARY", command: { type: "USE_HEALING" } });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     await userEvent.click(screen.getByRole("button", { name: /非凡成长/ }));
     expect(screen.getByRole("region", { name: "驯兽师成长下一步" })).toBeTruthy();
     expect(screen.getByRole("button", { name: /吸血鬼晋升/ })).toBeTruthy();
@@ -404,6 +406,8 @@ describe("Tamer pathway dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "TAMER", command });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });

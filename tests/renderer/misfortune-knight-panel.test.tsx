@@ -379,7 +379,7 @@ describe('Misfortune Knight panel: same room, current consent and actual future 
   it('summarizes only actual paid receipt deltas, travel and wood wear', () => {
     const value = inside('personal-dark-guard'), current = value.life.cases[1]!, originals = structuredClone(value.life.originals);
     const base: MisfortuneKnightProjection['life']['ledger'][number] = {
-      week: 132, date: { epoch: 'FIFTH_EPOCH', year: 1351, month: 12, day: 25 }, revision: 580, randomCursor: 350, randomBefore: null, randomAfter: null,
+      week: 132, date: { epoch: 'FIFTH_EPOCH', year: 1351, month: 12, day: 25 }, revision: 580,
       checkBase: null, check: null, command: { type: 'INVITE', caseId: 'personal-dark-guard', method: 'ABILITY' }, outcome: null,
       before: { health: 98, mind: 98, spirituality: 120, cash: 100, actions: 2 }, after: { health: 98, mind: 98, spirituality: 120, cash: 80, actions: 1 },
       elapsedSeconds: 5, playerWalkedMetres: 0, boxMovedMetres: 0, plateWear: 0, releasedForce: 0, absorbedForce: 0,

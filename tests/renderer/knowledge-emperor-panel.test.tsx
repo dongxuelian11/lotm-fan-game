@@ -261,7 +261,10 @@ describe('Knowledge Emperor panel: finite original-page practice and actual retu
 
   it('uses the encounter continuation for current positions and separately paid combat note without restoring life history', () => {
     const closed = practiced(), source = perform(closed, { type: 'PREPARE_ENCOUNTER' }, { type: 'ENCOUNTER_TALK' }), value = projection(source), ui = show(value);
-    expect(value.life.site).toEqual(source.knowledgeEmperor.encounter.currentSite); expect(source.knowledgeEmperor.life.site.playerLocation).toBe('OUTSIDE');
+    // Only the private ancestry snapshot is omitted from the public current site.
+    const { source: privateSource, ...publicSite } = source.knowledgeEmperor.encounter.currentSite!;
+    expect(privateSource).toBeDefined(); expect(value.life.site).toEqual(publicSite);
+    expect(Object.hasOwn(value.life.site, 'source')).toBe(false); expect(source.knowledgeEmperor.life.site.playerLocation).toBe('OUTSIDE');
     expect(within(panel()).getByRole('region', { name: '知识皇帝原人原物当前状态' }).textContent).toContain('本人当前在独立阅览院');
     expect(within(panel()).getByRole('region', { name: '知识皇帝战斗笔记' }).textContent).toContain('KE1-COMBAT-NOTE：已实付30便士，当前由本人持有，剩余3/3次，实际磨损0');
     const enemy = within(panel()).getByRole('region', { name: '知识皇帝可选真实交战' });

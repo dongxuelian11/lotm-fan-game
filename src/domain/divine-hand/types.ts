@@ -10,13 +10,36 @@ export type DivineHandPreparationId = typeof DIVINE_HAND_PREPARATION_IDS[number]
 export type DivineHandAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: DivineHandPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type DivineHandCommand = DivineHandAcquisitionCommand | DivineHandActivityCommand | DivineHandEncounterCommand;
+/** The vessel may change; the three finite original characteristics do not. */
+export interface DivineHandRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_DIVINE_HAND_PREPARATION'; custodian: 'TG220-DIVINE-HAND-SUPPLIER';
+}
+export interface DivineHandRecovery extends DivineHandRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface DivineHandRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_DIVINE_HAND_PREPARATION'; originals: DivineHandOriginals;
+  permission: { personId: 'TG220-DIVINE-HAND-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface DivineHandOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface DivineHandOriginalCharacteristics {
+  characteristics: DivineHandOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface DivineHandBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: DivineHandRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface DivineHandAcquisitionBudget {
@@ -30,6 +53,7 @@ export interface DivineHandAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'warrior'; gloryPromotionWeek: number; warriorPromotionWeek: number };
   before: DivineHandAcquisitionBudget; after: DivineHandAcquisitionBudget; finance: DivineHandFinanceSnapshot;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: DivineHandRecoverySite;
 }
 export const DIVINE_HAND_SOURCE_KEYS = ['warrior', 'gladiator', 'weaponmaster', 'dawnPaladin', 'guardian', 'demonHunter', 'silverKnight', 'glory'] as const;
 export type DivineHandSourceHistory = Pick<SliceState, typeof DIVINE_HAND_SOURCE_KEYS[number]>;
@@ -42,7 +66,7 @@ export interface DivineHandSourceScene {
 }
 export interface DivineHandState {
   guidanceKnown: boolean; bottles: DivineHandBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: DivineHandRecoveryRequest };
   promotionWeek: number | null; gloryActingAtPromotion: number | null;
   preparations: { taskId: DivineHandPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: DivineHandAcquisitionEvent[];

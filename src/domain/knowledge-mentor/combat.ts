@@ -1,7 +1,8 @@
 import type { ActionRandomStream } from '../../resolution/deterministic-random.js';
+import type { PublicCheckResult } from '../../shared/contracts.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import { stableStringify } from '../canonical.js';
-import { PYROMANIAC_COUNT_WHEEL, pyromaniacActionCount } from '../pyromaniac/combat.js';
+import { PYROMANIAC_COUNT_WHEEL, pyromaniacActionCount } from '../pyromaniac/count-wheel.js';
 import { createAlchemistLifeState, type AlchemistCreation } from '../alchemist/life.js';
 import type { SliceInjury, SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
 import { findKnowledgeMentorOriginalCreation, validateKnowledgeMentorCombatPlate, type KnowledgeMentorCombatPlate } from './life.js';
@@ -281,13 +282,59 @@ export function finishKnowledgeMentorCombatRound(s: SliceState, r: KnowledgeMent
     protocolUses: m.protocolUses, protocolSuccesses: m.protocolSuccesses, calibrationUses: m.calibrationUses, calibrationSuccesses: m.calibrationSuccesses, calibrationEffects: m.calibrationEffects, totalOwnerMindSpent: m.totalOwnerMindSpent, calibrationActiveAfter: false, analysisActiveAfter: false, coordinationActiveAfter: false, resistanceActiveAfter: false,
     elapsedSeconds: 60, playerActions: structuredClone(r.playerActions), enemyActions: structuredClone(r.enemyActions) };
 }
+// Public evidence contains resolved facts only. Replay source and stream offsets
+// stay private; explicit nested copies also reject undeclared extension fields.
+const publicInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicCheck = (c: PublicCheckResult): PublicCheckResult => ({
+  ability: c.ability, baseAbility: c.baseAbility, modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+  effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier,
+});
+const publicPowerUses = (p: Record<KnowledgeMentorPowerId, number>) => ({ ARC_BOLT: p.ARC_BOLT, WARD: p.WARD, JAM: p.JAM });
+const publicCreation = (x: AlchemistCreation) => ({
+  id: x.id, kind: x.kind, source: x.source, componentIds: [...x.componentIds], madeBy: x.madeBy, owner: x.owner, custodian: x.custodian,
+  location: x.location, durability: x.durability, charge: x.charge, active: x.active, manufacturedWeek: x.manufacturedWeek,
+});
+const publicCombatPlate = (p: KnowledgeMentorCombatPlate) => ({
+  id: p.id, source: p.source, createdWeek: p.createdWeek, createdRevision: p.createdRevision, check: publicCheck(p.check),
+  boundObjectIds: [...p.boundObjectIds] as KnowledgeMentorCombatPlate['boundObjectIds'], status: p.status, location: p.location,
+  spentRevision: p.spentRevision, paidPennies: p.paidPennies, spiritualitySpent: p.spiritualitySpent, actionsSpent: p.actionsSpent,
+  cashBefore: p.cashBefore, spiritualityBefore: p.spiritualityBefore, actionsBefore: p.actionsBefore,
+});
+const publicActionEvidence = (a: ActionEvidence) => ({
+  label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure,
+  order: a.order, paidCost: a.paidCost, physicalFactor: a.physicalFactor, rolls: [...a.rolls],
+});
+export function projectKnowledgeMentorPlayerAction(a: KnowledgeMentorPlayerAction) { return {
+  ...publicActionEvidence(a), id: a.id, boxChargeSpent: a.boxChargeSpent, frameChargeSpent: a.frameChargeSpent,
+  coordinationResult: a.coordinationResult, analysisOpened: a.analysisOpened, analysisUsed: a.analysisUsed,
+  mentalCost: a.mentalCost, plateId: a.plateId, protocolResult: a.protocolResult, calibrationResult: a.calibrationResult,
+  calibrationUsed: a.calibrationUsed, calibrationBonus: a.calibrationBonus, actualAbilityUsed: a.actualAbilityUsed,
+}; }
+export function projectKnowledgeMentorEnemyAction(a: KnowledgeMentorEnemyAction) { return {
+  ...publicActionEvidence(a), planned: a.planned, actual: a.actual, frameDurabilityDamage: a.frameDurabilityDamage,
+}; }
+export function projectKnowledgeMentorRoundOutcome(o: KnowledgeMentorRoundOutcome) { return {
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+  enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+  playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter,
+  playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, enemySpiritualityBefore: o.enemySpiritualityBefore,
+  powerUses: publicPowerUses(o.powerUses), creations: o.creations.map(publicCreation), combatPlates: o.combatPlates.map(publicCombatPlate),
+  protocolUses: o.protocolUses, protocolSuccesses: o.protocolSuccesses, calibrationUses: o.calibrationUses,
+  calibrationSuccesses: o.calibrationSuccesses, calibrationEffects: o.calibrationEffects, totalOwnerMindSpent: o.totalOwnerMindSpent,
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicInjury),
+  playerRiskAfter: o.playerRiskAfter, enemyRiskAfter: o.enemyRiskAfter, calibrationActiveAfter: o.calibrationActiveAfter,
+  analysisActiveAfter: o.analysisActiveAfter, coordinationActiveAfter: o.coordinationActiveAfter, resistanceActiveAfter: o.resistanceActiveAfter,
+  elapsedSeconds: o.elapsedSeconds, playerActions: o.playerActions.map(projectKnowledgeMentorPlayerAction), enemyActions: o.enemyActions.map(projectKnowledgeMentorEnemyAction),
+}; }
+export type KnowledgeMentorPublicRoundOutcome = ReturnType<typeof projectKnowledgeMentorRoundOutcome>;
+
 export function projectKnowledgeMentorCombat(s: SliceState) {
   const e = s.knowledgeMentor.encounter;
   return { enemyName: '罗温·黑尔（48岁，原创有限G2等效对手）', targetId: e.targetId, enemyMind: e.enemyMind, enemySpirituality: e.enemySpirituality,
-    powerUses: { ...e.powerUses }, creations: e.carriedIds.map(id => structuredClone(findKnowledgeMentorOriginalCreation(s, id))),
-    combatPlates: e.carriedPlateIds.map(id => structuredClone(s.knowledgeMentor.life.combatPlates.find(p => p.id === id))),
+    powerUses: publicPowerUses(e.powerUses), creations: e.carriedIds.map(id => { const x = findKnowledgeMentorOriginalCreation(s, id); return x ? publicCreation(x) : null; }),
+    combatPlates: e.carriedPlateIds.map(id => { const p = s.knowledgeMentor.life.combatPlates.find(p => p.id === id); return p ? publicCombatPlate(p) : undefined; }),
     protocolUses: e.protocolUses, protocolSuccesses: e.protocolSuccesses, calibrationUses: e.calibrationUses, calibrationSuccesses: e.calibrationSuccesses, calibrationEffects: e.calibrationEffects, totalOwnerMindSpent: e.totalOwnerMindSpent,
-    originalExit: true, pursuit: false, distanceMetres: 2, exitTravelMetres: e.exitTravelMetres, exitSeconds: e.exitSeconds, source: currentKnowledgeMentorCombatSource(s),
+    originalExit: true, pursuit: false, distanceMetres: 2, exitTravelMetres: e.exitTravelMetres, exitSeconds: e.exitSeconds,
     summary: '候选知识导师2及新增能力均G，原著配方仪式未知。双方1–6次数权重10/15/25/25/15/10；继承真实体30/感30/意25/知15，1250/底125、灵性上限120，仅继续轮恢复12G。新封装每轮至多一次：实际READY原指令片+5S+两原件各1储能，知识18，成功40/减20，抵抗30%、对方实付3S干扰提高至70%。新校准每轮一次4S+1M/知识18，下一次成功原造物动作+18G，普通回退不加成。原片实物保留，原件缺能普通行动；旧赋灵、指挥、专注、解析与协同沿原ID与成本。生还亲手取回原件和片后实走4米4秒；死亡同物停止留院，无替死复活。' };
 }
 const SOURCE_KEYS = ['runId', 'randomSeed', 'randomCursor', 'revision', 'week', 'round', 'encounterId', 'targetId', 'attemptWeek', 'startHistoryIndex', 'targetAge', 'targetSequence', 'enemyPhysique', 'actualOriginalBody', 'independentMind', 'enemyWeapon', 'weaponLocation', 'distanceMetres', 'space', 'ordinaryExit', 'pursuit', 'noBystanders', 'ordinaryExitMetres', 'ordinaryExitSeconds', 'playerHealth', 'playerMind', 'playerSpirituality', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'playerCoreStats', 'playerInjuries', 'enemyInjuries', 'playerRisk', 'enemyRisk', 'clubHeld', 'knowledge', 'mastery', 'powerUses', 'carriedIds', 'creations', 'carriedPlateIds', 'combatPlates', 'protocolUses', 'protocolSuccesses', 'calibrationUses', 'calibrationSuccesses', 'calibrationEffects', 'totalOwnerMindSpent'];

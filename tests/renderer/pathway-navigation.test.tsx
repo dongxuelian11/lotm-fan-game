@@ -116,6 +116,21 @@ beforeEach(() => { vi.spyOn(window, "scrollTo").mockImplementation(() => {}); })
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 
 describe("Current SliceApp ordinary pathway navigation", () => {
+  it("shows the current objective before the collapsible route catalogue", async () => {
+    await enter(bridge(ordinaryProjection()));
+    await userEvent.click(screen.getByRole("button", { name: /非凡成长/ }));
+    const current = screen.getByRole("region", { name: "成长下一步" });
+    const routes = screen.getByRole("group", { name: "选择成长卷宗" });
+    expect(current.compareDocumentPosition(routes) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const catalogue = routes.closest("details")!;
+    expect(catalogue.open).toBe(false);
+    await userEvent.click(within(catalogue).getByText("查看其他途径（22条）"));
+    expect(catalogue.open).toBe(true);
+    await userEvent.click(within(catalogue).getByText("查看其他途径（22条）"));
+    expect(catalogue.open).toBe(false);
+    expect(current).toBeTruthy();
+  });
+
   it("contains exactly the 22 unique named S9 routes from the current public projection", async () => {
     const state = ordinaryProjection();
     const api = bridge(state);

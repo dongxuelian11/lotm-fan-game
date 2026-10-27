@@ -62,8 +62,8 @@ export interface MisfortuneKnightLifeProjection {
   currentConsents: { id: 'CS2-ERIN' | 'MK1-MILO44' | 'PLAYER'; consented: boolean }[];
   cases: { id: MisfortuneKnightCaseId; title: string; story: string; observations: string[]; status: string;
     permission: MisfortuneKnightLifeCase['permission']; contactOpen: boolean; preparation: string | null; result: string | null; returned: boolean;
-    attempts: { invitedWeek: number; method: Method; outcome: PublicResolutionTier | null; operationOutcome: PublicResolutionTier | null; receipts: MisfortuneKnightLifeReceipt[] }[] }[];
-  ledger: MisfortuneKnightLifeReceipt[];
+    attempts: { invitedWeek: number; method: Method; outcome: PublicResolutionTier | null; operationOutcome: PublicResolutionTier | null; receipts: PublicMisfortuneKnightLifeReceipt[] }[] }[];
+  ledger: PublicMisfortuneKnightLifeReceipt[];
 }
 export interface MisfortuneKnightOriginalEvent { revision: number; week: number; source: string; before: MisfortuneKnightOriginals; after: MisfortuneKnightOriginals }
 const GUIDED = 'darkness.s1.guided-mishap', GUARD = 'darkness.s1.bounded-night-guard';
@@ -438,10 +438,52 @@ export function misfortuneKnightLifeActions(s: SliceState): MisfortuneKnightActi
   } else if (!l.reflected) simple('REFLECT', '反思有限帮助与普通收束', '1行动 · 扮演25');
   return out;
 }
+function publicMisfortuneKnightLifeBudget(b: MisfortuneKnightLifeBudget): MisfortuneKnightLifeBudget {
+  return { health: b.health, mind: b.mind, spirituality: b.spirituality, cash: b.cash, actions: b.actions };
+}
+function publicMisfortuneKnightLifeCommand(c: MisfortuneKnightActivityCommand): MisfortuneKnightActivityCommand {
+  switch (c.type) {
+    case 'OBSERVE': case 'REPORT': return { type: c.type, caseId: c.caseId };
+    case 'INVITE': return { type: c.type, caseId: c.caseId, method: c.method };
+    case 'CONSENT': case 'DECLINE_CONSENT': case 'REVOKE_CONSENT': return { type: c.type, permission: c.permission };
+    case 'WALK_TO': return { type: c.type, metres: c.metres };
+    default: return { type: c.type };
+  }
+}
+function publicMisfortuneKnightLifeOriginals(o: MisfortuneKnightOriginals): MisfortuneKnightOriginals {
+  const e = o.erin, r = o.room, b = o.box, p = o.page, t = o.trace, a = o.anchorLight;
+  return { playerLocation: o.playerLocation, playerTravelMetres: o.playerTravelMetres, clockSeconds: o.clockSeconds,
+    erin: { id: e.id, name: e.name, age: e.age, alive: e.alive, health: e.health, mind: e.mind, location: e.location, travelMetres: e.travelMetres },
+    room: { id: r.id, lengthMetres: r.lengthMetres, doorId: r.doorId, doorBlocked: r.doorBlocked,
+      concealed: r.concealed, remainingSeconds: r.remainingSeconds },
+    box: { id: b.id, owner: b.owner, location: b.location, travelMetres: b.travelMetres },
+    page: { id: p.id, owner: p.owner, location: p.location, text: p.text },
+    trace: { id: t.id, source: t.source, alive: t.alive, conscious: t.conscious, exists: t.exists,
+      searches: t.searches, delayedSearches: t.delayedSearches, totalDelaySeconds: t.totalDelaySeconds },
+    anchorLight: { id: a.id, owner: a.owner, location: a.location, on: a.on } };
+}
+/** Both ledger and case attempts use this exact settled-receipt allow-list. */
+export function projectMisfortuneKnightLifeReceipt(r: MisfortuneKnightLifeReceipt) {
+  const c = r.check, leaf = r.companion;
+  return { week: r.week, date: { epoch: r.date.epoch, year: r.date.year, month: r.date.month, day: r.date.day },
+    revision: r.revision, checkBase: r.checkBase,
+    check: c === null ? null : { ability: c.ability, baseAbility: c.baseAbility,
+      modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })), effectiveAbility: c.effectiveAbility,
+      difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier },
+    command: publicMisfortuneKnightLifeCommand(r.command), outcome: r.outcome,
+    before: publicMisfortuneKnightLifeBudget(r.before), after: publicMisfortuneKnightLifeBudget(r.after),
+    elapsedSeconds: r.elapsedSeconds, playerWalkedMetres: r.playerWalkedMetres, boxMovedMetres: r.boxMovedMetres,
+    plateWear: r.plateWear, releasedForce: r.releasedForce, absorbedForce: r.absorbedForce,
+    originalsBefore: publicMisfortuneKnightLifeOriginals(r.originalsBefore), originalsAfter: publicMisfortuneKnightLifeOriginals(r.originalsAfter),
+    companion: { source: leaf.source, status: leaf.status, acquiredWeek: leaf.acquiredWeek, invitedWeek: leaf.invitedWeek,
+      releases: leaf.releases, deployments: leaf.deployments, recalls: leaf.recalls } };
+}
+export type PublicMisfortuneKnightLifeReceipt = ReturnType<typeof projectMisfortuneKnightLifeReceipt>;
+
 function projectAttempts(l: MisfortuneKnightLifeState, id: MisfortuneKnightCaseId): MisfortuneKnightLifeProjection['cases'][number]['attempts'] {
   const result: MisfortuneKnightLifeProjection['cases'][number]['attempts'] = []; let current: typeof result[number] | null = null;
   for (const entry of l.journal) { if (entry.command.type === 'INVITE' && entry.command.caseId === id) { current = { invitedWeek: entry.week, method: entry.command.method, outcome: null, operationOutcome: null, receipts: [] }; result.push(current); }
-    if (!current) continue; current.receipts.push(structuredClone(entry));
+    if (!current) continue; current.receipts.push(projectMisfortuneKnightLifeReceipt(entry));
     if (entry.command.type === 'GUIDED_MISHAP' || entry.command.type === 'BOUNDED_NIGHT_GUARD') current.outcome = entry.outcome;
     if (entry.command.type === 'CATCH_PARCEL') current.operationOutcome = entry.outcome;
     if (entry.command.type === 'RETURN_HOME' || entry.command.type === 'ABORT') current = null;
@@ -455,6 +497,6 @@ export function projectMisfortuneKnightLife(s: SliceState): MisfortuneKnightLife
     cases: CASES.map(item => { const c = l.cases[item.id]; return { id: item.id, title: item.title, story: item.story, observations: c.status === 'AVAILABLE' ? [] : [...item.facts], status: c.status, permission: structuredClone(c.permission), contactOpen: c.contactOpen,
       preparation: c.status === 'OBSERVED' ? '本案仍须付费邀请并分别取得当前许可。' : c.status === 'PAUSED' ? '原失败与成本保留，下一真实周可付费普通续办，最多三次。' : null,
       result: c.result !== 'NONE' ? `${c.result === 'ABILITY' ? '有限帮助已实际应用于原物。' : '已按普通方式真实收束。'}${c.returned ? '原物已还，本人已实际返程。' : '仍须归还原物工具并步行离开。'}` : c.guidedEnd === 'PENDING' || c.guardEnd === 'PENDING' ? '有限窗口仍待真正的下一次动作，此刻没有掌握奖励。' : c.guidedAttempted || c.guardAttempted ? '原施术结果和真实代价已保留，普通收束仍可继续。' : null,
-      returned: c.returned, attempts: projectAttempts(l, item.id) }; }), ledger: structuredClone(l.journal) };
+      returned: c.returned, attempts: projectAttempts(l, item.id) }; }), ledger: l.journal.map(projectMisfortuneKnightLifeReceipt) };
 }
 export const misfortuneKnightLifeRows = projectMisfortuneKnightLife;

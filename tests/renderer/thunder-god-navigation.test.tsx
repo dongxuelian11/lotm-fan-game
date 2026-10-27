@@ -65,8 +65,10 @@ async function acknowledgeRound() {
   const reveal = screen.queryByRole('dialog', { name: '战斗回合结果' });
   if (reveal) await userEvent.click(within(reveal).getByRole('button', { name: /^(返回生活|进入下一回合|查看收尾卷宗)$/ }));
 }
-async function openGrowth() {
-  await userEvent.click(screen.getByRole('button', { name: /非凡成长/ }));
+async function openThunderGodHistory() {
+  // Completed S1 practice routes ordinary growth to the S0 preparation page.
+  // Read the unchanged S1 reports through their explicit history entry.
+  await userEvent.click(screen.getByRole('button', { name: ENTRY }));
   return screen.findByRole('region', { name: PANEL });
 }
 async function ensurePanel() {
@@ -225,15 +227,28 @@ describe('Thunder God actual saved campaign navigation and reopening', () => {
     expect(game.state.character).toEqual(save.before.character); expect(game.state).toEqual(save.final); expect(game.submit).toHaveBeenCalledTimes(1);
   }, 60_000);
 
-  it('reopens the actual fourth-bottle promotion with three prior failures, twenty-two inherited abilities and two new zeros', async () => {
-    const save = boundary('actual-consumption-thunder-god-potion-4'), game = savedGame(save.before);
+  it('reads the archived fourth-bottle promotion without replaying legacy acquisition, preserving three failures and inherited abilities', async () => {
+    const save = boundary('actual-consumption-thunder-god-potion-4'), archivedBefore = savedGame(save.before);
     expect(save.before.thunderGod.bottles.slice(0, 3).map(bottle => bottle.outcome)).toEqual(['FAILURE', 'FAILURE', 'FAILURE']);
-    await mount(game); await ensurePanel();
-    expect((screen.getByRole('combobox', { name: '雷神目标' }) as HTMLSelectElement).value).toBe('thunder-god-potion-4');
+    await mount(archivedBefore); await ensurePanel();
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: '雷神目标' }), 'thunder-god-potion-4');
     expect(screen.getByRole('region', { name: '独立原药瓶' }).textContent).toContain('第170周实际到货');
-    await commitCaptured(game, save); cleanup(); await mount(game);
+    const consume = projectSliceState(save.before).thunderGod.actions.find(action =>
+      action.command.type === 'CONSUME' && action.command.bottleId === 'thunder-god-potion-4')!;
+    expect(consume.enabled).toBe(false);
+    expect(consume.reason).toContain('历史独立第4份');
+    await userEvent.click(screen.getByText('其他操作与普通替代', { selector: 'summary' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: '雷神其他操作' }), consume.id);
+    const blockedConsume = screen.getByRole('button', { name: name => name.startsWith(consume.label) });
+    expect((blockedConsume as HTMLButtonElement).disabled).toBe(true); fireEvent.click(blockedConsume);
+    expect(archivedBefore.state).toEqual(save.before); expect(archivedBefore.submit).not.toHaveBeenCalled();
+    cleanup();
+
+    // Preserve the already recorded historical success. This does not mint,
+    // consume or relabel its independent fourth characteristic in current play.
+    const game = savedGame(save.final); await mount(game);
     expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
-    const panel = await openGrowth(); assertResources(save.final);
+    const panel = await openThunderGodHistory(); assertResources(save.final);
     await userEvent.click(within(panel).getByText('能力、消化与继承经历', { selector: 'summary' }));
     const abilities = projectSliceState(game.state).thunderGod.abilities;
     expect(abilities).toHaveLength(24); expect(abilities.slice(0, 22).filter(ability => ability.mastery === 0)).toHaveLength(7);
@@ -243,7 +258,7 @@ describe('Thunder God actual saved campaign navigation and reopening', () => {
     expect(game.state.thunderGod.bottles.slice(0, 3)).toEqual(save.before.thunderGod.bottles.slice(0, 3));
     expect(game.state.thunderGod.bottles[3]).toMatchObject({ status: 'CONSUMED', outcome: 'SUCCESS' });
     expect({ ...game.state.character, coreStats: save.before.character.coreStats }).toEqual(save.before.character);
-    expect(game.state).toEqual(save.final); expect(game.submit).toHaveBeenCalledTimes(1);
+    expect(game.state).toEqual(save.final); expect(game.submit).not.toHaveBeenCalled();
   }, 60_000);
 
   it('keeps each actual successful life window pending until its separate saved discharge or personal impact', async () => {
@@ -304,7 +319,7 @@ describe('Thunder God actual saved campaign navigation and reopening', () => {
 
   it('reopens the three actual reports and original returns, then confirms the saved ALL policy and independent Oren fight once', async () => {
     const practiced = savedGame(snapshot('practiced')), before = structuredClone(practiced.state);
-    await mount(practiced); await openGrowth(); assertResources(before);
+    await mount(practiced); await openThunderGodHistory(); assertResources(before);
     for (const id of ['located-target', 'personal-impact', 'obscured-return']) {
       await userEvent.selectOptions(screen.getByRole('combobox', { name: '雷神目标' }), id);
       expect(screen.getByRole('region', { name: '实际位置与归还' }).textContent).toContain('本案原目标、护垫与人员的实际收尾已完成');

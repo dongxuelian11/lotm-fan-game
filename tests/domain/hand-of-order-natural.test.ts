@@ -1,19 +1,21 @@
 import { afterAll, describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync, realpathSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createSliceRun, applySliceIntent, assertValidSliceState, projectSliceState, validateSlicePayload } from '../../src/domain/slice/index.js';
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
-import { handOfOrderInheritedView, validateHandOfOrderAcquisitionJournal, validateHandOfOrderJournalContinuity } from '../../src/domain/hand-of-order/index.js';
+import { handOfOrderInheritedView, resolveHandOfOrderOriginalsSnapshot, validateHandOfOrderAcquisitionJournal, validateHandOfOrderJournalContinuity } from '../../src/domain/hand-of-order/index.js';
 import { HAND_OF_ORDER_SOURCE_KEYS, HAND_OF_ORDER_ABILITY_IDS } from '../../src/domain/hand-of-order/types.js';
-import { HAND_OF_ORDER_CASE_IDS, getHandOfOrderCurrentSite } from '../../src/domain/hand-of-order/life.js';
+import { HAND_OF_ORDER_CASE_IDS, getHandOfOrderCurrentSite, validateHandOfOrderLifeState } from '../../src/domain/hand-of-order/life.js';
+import { validateHandOfOrderEncounterState } from '../../src/domain/hand-of-order/encounter.js';
 import { currentHandOfOrderCombatSource, projectHandOfOrderRoundOutcome, replayHandOfOrderCombatRound } from '../../src/domain/hand-of-order/combat.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
 import { HAND_OF_ORDER_CAPTURE_EVIDENCE as evidence, HAND_OF_ORDER_METADATA_FILES as METADATA, HAND_OF_ORDER_CAPTURE_STAGES as STAGES } from './hand-of-order-capture-evidence.js';
 import { HAND_OF_ORDER_ROOT as ROOT, HAND_OF_ORDER_SOURCE as SOURCE, HAND_OF_ORDER_RECOVERY as RECOVERY, HAND_OF_ORDER_DEATH as DEATH,
   HAND_OF_ORDER_PREFIX_COUNT as PREFIX, HAND_OF_ORDER_INHERITED_COUNT as INHERITED, HAND_OF_ORDER_SEED as SEED,
-  captureMetadata, observedCapture, naturalEntry, sourceEntry, summaryEntry, capturePath, captureFileHash, insertionOrderHash, captureValueHash, currentCapture, captureJsonLines, capturePublicBody, publicCaptureControl,
+  captureMetadata, observedCapture, naturalEntry, sourceEntry, summaryEntry, capturePath, captureFileHash, insertionOrderHash, captureValueHash, currentCapture, captureJsonLines, capturePublicBody, publicCaptureControl, assertPublicCaptureControl,
   originalLivingPrefix, capturedState, capturedSnapshot, namedBoundary, replayCaptureBoundary, captureBody, sourceOriginals, currentOriginals, currentPlate,
   actualLifeAbilityUse, actualCombatAbilityUse, assertOriginalContinuity, sameCaptureValue as same } from './hand-of-order-capture-helper.js';
 import { expectedPublicHandOfOrderOutcome, assertNoPrivateHandOfOrderFields, decoratePrivateProbe } from './hand-of-order-public-evidence.js';
@@ -88,14 +90,16 @@ describe('Hand of Order literal same-seed natural capture', () => {
     same(capturedState('prefixFinal'), originalLivingPrefix()); same(capturedState('initial'), currentCapture(sourceEntry('initial')));
   }, 240_000);
 
-  describe.sequential('replays every original801 intent through CURRENT reducers and compares all208 private/public/RNG transitions without output files', () => {
-    // One continuous generator owns the real state and both evidence streams.
-    // Fixed blocks bound individual CI cases; none reloads a fixture checkpoint.
-    const blockEnds: readonly number[] = [200, 400, 594, 646, 698, 750, 801];
+  describe.sequential('replays the original706 current intents continuously and retains the complete801-command archive', () => {
+    // One continuous generator owns the actual CURRENT state. Fixed blocks
+    // never reload a checkpoint; after706 only the frozen evidence is read.
+    const currentEnd = 706, blockEnds: readonly number[] = [200, 400, 594, 646, 698, 702, currentEnd];
     let completedThrough = 0, replayFailed = false, activeSignal: AbortSignal | undefined;
     async function* replayCommands(): AsyncGenerator<number, number, void> {
       const e = observedCapture(), { commands, boundaries, steps, snapshots } = captureMetadata(), filesBefore = inventory();
-      expect(e.commands).toBe(blockEnds.at(-1)); expect(commands).toHaveLength(e.commands); same(commands.slice(0, PREFIX), sourceEntry('commands'));
+      expect(e.commands).toBe(801); expect(commands).toHaveLength(e.commands); same(commands.slice(0, PREFIX), sourceEntry('commands'));
+      expect(commands[currentEnd]).toEqual({ type: 'HAND_OF_ORDER', command: { type: 'REQUEST_SUPPLY' } });
+      expect(commands[708]).toEqual({ type: 'HAND_OF_ORDER', command: { type: 'RECEIVE_SUPPLY' } });
       expect(naturalEntry('seed')).toBe(SEED); expect(naturalEntry('prefixVerified')).toBe(true); expect(naturalEntry('prefixCount')).toBe(PREFIX); expect(naturalEntry('inheritedPrefixCount')).toBe(INHERITED);
       const transitions = JSON.parse(readFileSync(`${ROOT}/transitions.json`, 'utf8')) as Transition[];
       expect(transitions).toHaveLength(e.uniqueTransitions); const byStep = new Map(transitions.map(row => [row.commandIndex, row]));
@@ -105,61 +109,112 @@ describe('Hand of Order literal same-seed natural capture', () => {
       const original = originalLivingPrefix(), deathCommands = readObjectEntry<SliceIntent[]>(DEATH, 'commands'), recoveryCommands = readObjectEntry<SliceIntent[]>(RECOVERY, 'commands');
       same(commands.slice(0, INHERITED), recoveryCommands); same(commands.slice(0, 474), deathCommands.slice(0, 474)); expect(commands[474]).not.toEqual(deathCommands[474]);
       let state = createSliceRun(original.runId, sourceEntry<Parameters<typeof createSliceRun>[1]>('creation'), SEED), count = 0, oldDeathVerified = false, recoveryVerified = false, prefixVerified = false, livingContinues = 0;
-      same(state, capturedState('initial')); const publicRows = captureJsonLines<PublicRow>('public.jsonl'), stateHashes = new Map<number, string>(), treatments: unknown[] = [];
+      same(state, capturedState('initial'));
+      const publicRows = captureJsonLines<PublicRow>('public.jsonl'), rawStateHashes = new Map<number, string>(), treatments: unknown[] = [];
+      let previousBody = captureBody(state), previousRawStateHash: string | undefined, currentEndpointHash: string | undefined;
       try {
         for await (const row of captureJsonLines<Ledger>('commands.jsonl')) {
           if (replayFailed) throw new Error('A preceding replay block failed or timed out.');
           activeSignal?.throwIfAborted();
-          expect(row.step).toBe(++count); expect(row.sourcePrefix).toBe(count <= PREFIX); same(row.intent, commands[count - 1]); expect(validateSlicePayload(row.intent)).toBe(true);
-          same(captureBody(state), row.before); const before = state, transition = byStep.get(count); let proof: PublicRow | null = null;
+          expect(row.step).toBe(++count); expect(row.sourcePrefix).toBe(count <= PREFIX); same(row.intent, commands[count - 1]);
+          const replaying = count <= currentEnd, legacySupply = count === 707 || count === 709;
+          expect(validateSlicePayload(row.intent)).toBe(!legacySupply);
+          same(row.before, previousBody); expect(row.after.revision).toBe(row.before.revision + 1);
+          expect(row.before.status).toBe(row.intent.type === 'CONTINUE_LIFE' ? 'SLICE_COMPLETE' : 'ACTIVE');
+          expect(row.after.random.seed).toBe(SEED); expect(row.after.random.cursor).toBeGreaterThanOrEqual(row.before.random.cursor); previousBody = row.after;
+          const before = state, transition = byStep.get(count); let proof: PublicRow | null = null;
+          if (replaying) same(captureBody(before), row.before);
           if (count > PREFIX) {
             expect(transition).toBeDefined(); expect(row.boundaryKey).toBe(transition!.key);
-            const control = publicCaptureControl(before, row.intent), next = await publicRows.next(); if (next.done) throw new Error(`Missing actual public row ${count}`); proof = next.value;
-            expect(proof.step).toBe(count); expect(proof.revision).toBe(before.revision); same(proof.command, row.intent); same(proof.control, control);
-            same(proof.randomBefore, before.random); same(proof.before, capturePublicBody(before));
+            const next = await publicRows.next(); if (next.done) throw new Error(`Missing actual public row ${count}`); proof = next.value;
+            expect(proof.step).toBe(count); expect(proof.revision).toBe(row.before.revision); same(proof.command, row.intent);
+            same(proof.randomBefore, row.before.random); same(proof.randomAfter, row.after.random);
+            if (replaying) { same(proof.control, publicCaptureControl(before, row.intent)); same(proof.before, capturePublicBody(before)); }
+            else {
+              // The raw public ledger is hash-pinned, not a current permission
+              // grant. Removed supply and fourth-original actions stay archived.
+              const control = proof.control as { enabled?: boolean; kind?: string; stance?: string; command?: unknown };
+              if (row.intent.type === 'COMBAT_ROUND') expect(control).toMatchObject({ kind: 'COMBAT_ROUND', stance: row.intent.stance });
+              else expect(control.enabled).toBe(true);
+              if (row.intent.type === 'HAND_OF_ORDER') same(control.command, row.intent.command);
+            }
           } else expect(row.boundaryKey).toBeNull();
-          state = applySliceIntent(before, row.intent); assertValidSliceState(state);
-          expect(state.revision).toBe(before.revision + 1); expect(state.random.seed).toBe(SEED); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor); same(captureBody(state), row.after);
-          if (proof) { same(proof.after, capturePublicBody(state)); same(proof.randomAfter, state.random); }
-          if (count === 474) {
-            same(state, currentCapture(readObjectEntry(RECOVERY, 'initial'))); const preserved = captureValueHash(state); let dead = state;
-            for (const intent of deathCommands.slice(474)) { expect(dead.status).toBe('ACTIVE'); dead = applySliceIntent(dead, intent); assertValidSliceState(dead); }
-            same(dead, currentCapture(readObjectEntry(DEATH, 'final'))); expect(dead).toMatchObject({ status: 'DEAD', health: 0, revision: 478, random: { seed: SEED, cursor: 290 } });
-            expect(() => applySliceIntent(dead, { type: 'CONTINUE_LIFE' })).toThrow(); expect(captureValueHash(state)).toBe(preserved); oldDeathVerified = true;
+          if (replaying) {
+            state = applySliceIntent(before, row.intent); assertValidSliceState(state);
+            expect(state.revision).toBe(before.revision + 1); expect(state.random.seed).toBe(SEED); expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor); same(captureBody(state), row.after);
+            if (proof) { same(proof.after, capturePublicBody(state)); same(proof.randomAfter, state.random); }
+            if (count === 474) {
+              same(state, currentCapture(readObjectEntry(RECOVERY, 'initial'))); const preserved = captureValueHash(state); let dead = state;
+              for (const intent of deathCommands.slice(474)) { expect(dead.status).toBe('ACTIVE'); dead = applySliceIntent(dead, intent); assertValidSliceState(dead); }
+              same(dead, currentCapture(readObjectEntry(DEATH, 'final'))); expect(dead).toMatchObject({ status: 'DEAD', health: 0, revision: 478, random: { seed: SEED, cursor: 290 } });
+              expect(() => applySliceIntent(dead, { type: 'CONTINUE_LIFE' })).toThrow(); expect(captureValueHash(state)).toBe(preserved); oldDeathVerified = true;
+            }
+            if (count === INHERITED) { same(state, currentCapture(sourceEntry('prefixFinal'))); same(state, currentCapture(readObjectEntry(RECOVERY, 'final'))); recoveryVerified = true; }
+            if (count <= PREFIX && row.intent.type === 'CONTINUE_LIFE') { expect(before.status).toBe('SLICE_COMPLETE'); expect(state.status).toBe('ACTIVE'); livingContinues++; }
+            if (count === PREFIX) { same(state, original); prefixVerified = true; }
           }
-          if (count === INHERITED) { same(state, currentCapture(sourceEntry('prefixFinal'))); same(state, currentCapture(readObjectEntry(RECOVERY, 'final'))); recoveryVerified = true; }
-          if (count <= PREFIX && row.intent.type === 'CONTINUE_LIFE') { expect(before.status).toBe('SLICE_COMPLETE'); expect(state.status).toBe('ACTIVE'); livingContinues++; }
-          if (count === PREFIX) { same(state, original); prefixVerified = true; }
           if (transition) {
             const path = capturePath(transition.file); expect(readObjectEntry(path, 'commandCount')).toBe(count); same(readObjectEntry(path, 'lastIntent'), row.intent);
-            // Parse one raw203 root at a time; compare CURRENT migration separately from immutable raw capture pins.
-            for (const root of ['beforeLast', 'final']) {
+            // All208 original boundaries retain full raw-state adjacency and
+            // exact private/public/RNG evidence. Only the legal prefix is also
+            // migrated and compared with the actual CURRENT reducer state.
+            for (const root of ['beforeLast', 'final'] as const) {
               const raw = readObjectEntry<SliceState>(path, root); expect([raw.schemaVersion, raw.contentVersion]).toEqual([203, 'hand-of-order-v203']);
-              same(root === 'beforeLast' ? before : state, currentCapture(raw));
+              const rawHash = captureValueHash(raw), isBefore = root === 'beforeLast';
+              same(captureBody(raw), isBefore ? row.before : row.after);
+              if (proof) same(capturePublicBody(raw), isBefore ? proof.before : proof.after);
+              if (isBefore && previousRawStateHash !== undefined) expect(rawHash).toBe(previousRawStateHash);
+              if (!isBefore) { previousRawStateHash = rawHash; rawStateHashes.set(raw.revision, rawHash); }
+              if (replaying) same(isBefore ? before : state, withCurrentGuidance(currentCapture(raw)));
             }
-            stateHashes.set(state.revision, captureValueHash(state)); assertOriginalContinuity(state, original);
-            if (count > PREFIX) {
-              expect(getHandOfOrderCurrentSite(state).clockSeconds).toBeGreaterThanOrEqual(getHandOfOrderCurrentSite(before).clockSeconds);
-              expect(getHandOfOrderCurrentSite(state).playerTravelMetres).toBeGreaterThanOrEqual(getHandOfOrderCurrentSite(before).playerTravelMetres);
-              if (row.intent.type === 'EVENT_CHOICE' && before.activeEvent?.id === 'LIFE-CARE-01') treatments.push({ paidPennies: 60, before: captureBody(before), after: captureBody(state) });
+            if (replaying) {
+              assertOriginalContinuity(state, original);
+              if (count > PREFIX) {
+                expect(getHandOfOrderCurrentSite(state).clockSeconds).toBeGreaterThanOrEqual(getHandOfOrderCurrentSite(before).clockSeconds);
+                expect(getHandOfOrderCurrentSite(state).playerTravelMetres).toBeGreaterThanOrEqual(getHandOfOrderCurrentSite(before).playerTravelMetres);
+                if (row.intent.type === 'EVENT_CHOICE' && before.activeEvent?.id === 'LIFE-CARE-01') treatments.push({ paidPennies: 60, before: captureBody(before), after: captureBody(state) });
+              }
             }
           }
+          if (count === currentEnd) currentEndpointHash = captureValueHash(state);
           // Suspend only after every check for this actual reducer-produced state.
-          if (count !== e.commands && blockEnds.includes(count)) yield count;
+          if (count < currentEnd && blockEnds.includes(count)) yield count;
         }
         expect((await publicRows.next()).done).toBe(true);
       } finally { await publicRows.return(undefined); }
-      expect(count).toBe(e.commands); expect(state.revision).toBe(e.commands + 1); same(state, capturedState('final')); same(captureBody(state), e.final);
+      expect(count).toBe(e.commands); same(previousBody, e.final);
+      expect(state).toMatchObject({ status: 'ACTIVE', revision: currentEnd + 1, week: 169, health: 93, mind: 85, spirituality: 120,
+        cash: 190, actionsRemaining: 2, random: { seed: SEED, cursor: 370 }, progression: { sequence: 2, acting: 100 } });
+      expect(state.handOfOrder.bottles.map(b => [b.id, b.status, b.outcome])).toEqual([
+        ['hand-of-order-potion-1', 'CONSUMED', 'FAILURE'], ['hand-of-order-potion-2', 'CONSUMED', 'FAILURE'], ['hand-of-order-potion-3', 'CONSUMED', 'FAILURE'],
+      ]);
+      expect(captureValueHash(state)).toBe(currentEndpointHash);
+      expect(projectSliceState(state).handOfOrder.actions.some(action => ['REQUEST_SUPPLY', 'RECEIVE_SUPPLY'].includes(action.command.type))).toBe(false);
+      assertPublicCaptureControl(state, { type: 'HAND_OF_ORDER', command: { type: 'REQUEST_RECOVERY_V1', bottleId: 'hand-of-order-potion-1' } });
+      for (const intent of [commands[currentEnd]!, commands[708]!]) {
+        expect(validateSlicePayload(intent)).toBe(false); expect(() => applySliceIntent(state, intent)).toThrow(); expect(captureValueHash(state)).toBe(currentEndpointHash);
+      }
       expect(oldDeathVerified).toBe(true); expect(recoveryVerified).toBe(true); expect(prefixVerified).toBe(true); expect(livingContinues).toBeGreaterThan(0);
-      for (const filename of new Set(Object.values(snapshots))) { const saved = currentCapture(JSON.parse(readFileSync(capturePath(filename), 'utf8'))); expect(captureValueHash(saved), filename).toBe(stateHashes.get(saved.revision)); }
-      same(treatments, e.treatments); same(treatments, naturalEntry('treatments')); same(treatments, summaryEntry('treatments')); same(inventory(), filesBefore); assertOriginalContinuity(state, original);
-      return count;
+      for (const filename of new Set(Object.values(snapshots))) {
+        const saved = JSON.parse(readFileSync(capturePath(filename), 'utf8')) as SliceState;
+        expect([saved.schemaVersion, saved.contentVersion]).toEqual([203, 'hand-of-order-v203']); expect(captureValueHash(saved), filename).toBe(rawStateHashes.get(saved.revision));
+      }
+      expect(previousRawStateHash).toBe(e.finalRawStateSha256); expect(previousRawStateHash).toBe(captureValueHash(naturalEntry('final')));
+      const archived = capturedState('final');
+      expect(validateHandOfOrderAcquisitionJournal(archived)).toBe(true); expect(validateHandOfOrderJournalContinuity(archived)).toBe(true);
+      expect(validateHandOfOrderLifeState(archived)).toBe(true); expect(validateHandOfOrderEncounterState(archived)).toBe(true);
+      expect(archived.handOfOrder.bottles).toHaveLength(6); expect(archived.handOfOrder.bottles.every(b => b.recovery === undefined)).toBe(true);
+      expect(resolveHandOfOrderOriginalsSnapshot(archived.handOfOrder)).toBeNull();
+      expect(archived).toMatchObject({ status: 'DEAD', revision: e.commands + 1, progression: { sequence: 1 } }); same(captureBody(archived), e.final);
+      same(treatments, e.treatments); same(treatments, naturalEntry('treatments')); same(treatments, summaryEntry('treatments'));
+      same(inventory(), filesBefore); assertOriginalContinuity(state, original); assertOriginalContinuity(archived, original);
+      return currentEnd;
     }
     const replay = replayCommands();
     afterAll(async () => { replayFailed = true; await replay.return(completedThrough); });
     for (const [index, end] of blockEnds.entries()) {
       const start = index === 0 ? 1 : blockEnds[index - 1]! + 1;
-      it(`replays contiguous commands ${start}-${end}${index === blockEnds.length - 1 ? ' and verifies all final evidence' : ''}`, async ({ signal, onTestFailed }) => {
+      it(`replays contiguous current commands ${start}-${end}${index === blockEnds.length - 1 ? ' and validates all801 archived commands' : ''}`, async ({ signal, onTestFailed }) => {
         const markFailed = () => { replayFailed = true; };
         signal.addEventListener('abort', markFailed, { once: true }); onTestFailed(markFailed);
         try {
@@ -189,7 +244,7 @@ describe('Hand of Order literal same-seed natural capture', () => {
       expect(r.actor).toMatchObject({ pathwayId: 'justiciar', balancerPromotionWeek: 126, arbiterPromotionWeek: 9 });
     }
     for (const bottle of h.bottles.filter(b => b.status === 'CONSUMED')) {
-      const b = replayCaptureBoundary(`consume-${bottle.id}`); expect(b.before.week - original.balancer.promotionWeek!).toBeGreaterThanOrEqual(12);
+      const b = bottle.id === 'hand-of-order-potion-4' ? archivedFourthDose() : replayCaptureBoundary(`consume-${bottle.id}`); expect(b.before.week - original.balancer.promotionWeek!).toBeGreaterThanOrEqual(12);
       expect(b.before.handOfOrder.preparedWeek).toBe(b.before.week); expect(b.final.handOfOrder.preparedWeek).toBeNull(); expect(b.final.random.cursor - b.before.random.cursor).toBe(1);
       same(b.before.injuries, b.final.injuries); same(currentOriginals(b.before), currentOriginals(b.final));
       expect(h.acquisitionJournal.filter(r => r.command.type === 'POTION_WORK' && r.command.bottleId === bottle.id)).toHaveLength(5); expect(bottle.preparationWeek).toBe(bottle.consumedWeek);
@@ -341,3 +396,54 @@ describe('Hand of Order literal same-seed natural capture', () => {
     expect(currentPlate(s).integrity).toBeGreaterThanOrEqual(0);
   }, 120_000);
 });
+
+/** Only the newly emitted guidance record changes. Historical capture bytes,
+ * all other records and every gameplay/random field remain the original. */
+function withCurrentGuidance(archived: SliceState): SliceState {
+  if (!archived.handOfOrder.guidanceKnown) {
+    expect(archived.revision).toBeLessThanOrEqual(601);
+    expect(archived.chronicle.some(record => record.id === 'record-602-943')).toBe(false);
+    return archived;
+  }
+  const expected = structuredClone(archived), records = expected.chronicle.filter(record => record.id === 'record-602-943');
+  expect(records).toHaveLength(1);
+  const record = records[0]!;
+  expect({ id: record.id, week: record.week, title: record.title }).toEqual({
+    id: 'record-602-943', week: 136, title: '听取秩序之手独立成品与专业准备指导',
+  });
+  expect(createHash('sha256').update(record.text).digest('hex')).toBe('71580ffd37c86930cd2c48ca913eef9d0cec1ba009bd0306b73615b3fe67ec4b');
+  const oldGuidance = '全批失败耗尽后，实付1行动与100便士申请独立三瓶，至少跨一真实周领取；每瓶另做五次劳动并付1200便士，或直接支付7200便士。';
+  const currentGuidance = '最初三瓶全部失败耗尽后，只能在原服药准备与支持交接处以1行动和120便士调查同一原特性的归属与位置，经保管方本次许可实际核验封存；至少下一真实周以1行动和30便士当面交接。新普通药物与调配服务900便士，或五项新劳动后90便士；当周检查仍另付1行动和180便士。失败残留不会自动回收，旧瓶、原失败与旧成本不改写，不再供应第四份原特性。可另付60便士、8灵性、6精神为所选同瓶准备同场当周支持，0行动，意志临时+15；仍可能失败，换瓶、退出或跨周失效，已付成本不退。';
+  expect(record.text.endsWith(oldGuidance)).toBe(true);
+  expect(expected.chronicle.reduce((count, row) => count + row.text.split(oldGuidance).length - 1, 0)).toBe(1);
+  const latestGuidance = expected.lastResult?.id === record.id ? expected.lastResult : null;
+  if (latestGuidance) same(latestGuidance, record);
+  record.text = record.text.slice(0, -oldGuidance.length) + currentGuidance;
+  if (latestGuidance) latestGuidance.text = record.text;
+  return expected;
+}
+
+
+/** Validate the real fourth-dose receipt without permitting a new independent
+ * original or replacing the archived successful outcome with recovery data. */
+function archivedFourthDose() {
+  const b = namedBoundary('consume-hand-of-order-potion-4');
+  expect(b.count).toBe(740); expect(b.intent).toEqual({ type: 'HAND_OF_ORDER', command: { type: 'CONSUME', bottleId: 'hand-of-order-potion-4', confirmed: true } });
+  expect(validateSlicePayload(b.intent)).toBe(true);
+  for (const state of [b.before, b.final]) {
+    const hash = captureValueHash(state);
+    expect(validateHandOfOrderAcquisitionJournal(state)).toBe(true); expect(validateHandOfOrderJournalContinuity(state)).toBe(true);
+    expect(state.handOfOrder.bottles).toHaveLength(6); expect(state.handOfOrder.bottles.every(bottle => bottle.recovery === undefined)).toBe(true);
+    expect(resolveHandOfOrderOriginalsSnapshot(state.handOfOrder)).toBeNull();
+    expect(projectSliceState(state).handOfOrder.actions.some(action => action.enabled && captureValueHash(action.command) === captureValueHash(b.intent.type === 'HAND_OF_ORDER' ? b.intent.command : null))).toBe(false);
+    expect(() => applySliceIntent(state, b.intent)).toThrow(); expect(captureValueHash(state)).toBe(hash);
+  }
+  expect(b.final.revision).toBe(b.before.revision + 1); expect(b.final.runId).toBe(b.before.runId);
+  same(b.final.handOfOrder.sourceHistory, b.before.handOfOrder.sourceHistory); same(b.final.handOfOrder.sourceScene, b.before.handOfOrder.sourceScene);
+  same(b.final.handOfOrder.acquisitionJournal.slice(0, -1), b.before.handOfOrder.acquisitionJournal);
+  const receipt = b.final.handOfOrder.acquisitionJournal.at(-1)!;
+  same({ type: 'HAND_OF_ORDER', command: receipt.command }, b.intent);
+  expect(receipt).toMatchObject({ revision: b.before.revision, week: b.before.week, cursorBefore: b.before.random.cursor, cursorAfter: b.final.random.cursor,
+    after: { sequence: 1 }, check: { tier: 'SUCCESS' } }); same(receipt.date, b.before.date);
+  return b;
+}

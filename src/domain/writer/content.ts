@@ -8,7 +8,7 @@ import type { WriterAbilityId, WriterPreparationId } from './types.js';
  * range inference about 0-08, S0 era arrangements and imaginary S1 traits are
  * not granted. Developer provenance is deliberately absent from player prose. */
 export const WRITER_GUIDE = DISCERNER_GUIDE;
-export const WRITER_PRICES = { guidance: 500, potion: 6400, labourCredit: 5500, labourBalance: 900, preparation: 140 } as const;
+export const WRITER_PRICES = { guidance: 500, potion: 6400, labourCredit: 5500, labourBalance: 900, preparation: 140, recovery: 120, recoveryDrug: 900, recoveryLabourBalance: 90 } as const;
 export const WRITER_MIN_DISCERNER_WEEKS = 12;
 export const WRITER_LABOUR_STEPS = 5;
 export const WRITER_BOTTLE_IDS = ['writer-potion-1', 'writer-potion-2', 'writer-potion-3'] as const;

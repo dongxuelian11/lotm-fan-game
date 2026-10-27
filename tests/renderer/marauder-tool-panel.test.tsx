@@ -279,6 +279,8 @@ describe("Marauder optional original-tool encounter", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "MARAUDER", command: expectedCommand });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 
@@ -302,6 +304,8 @@ describe("Marauder optional original-tool encounter", () => {
     const envelope = vi.mocked(api.submitIntent).mock.calls[0]![0];
     expect(envelope.payload).toEqual({ type: "MARAUDER", command: { type: "RETURN_TOOL" } });
     await act(async () => { finish(receipt(next, envelope)); });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     await openMarauder();
     expect(field("原物编号")).toBe("marauder-simon-club");
     expect(field("原主人")).toBe("塞蒙");

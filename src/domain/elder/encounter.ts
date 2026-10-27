@@ -1,3 +1,4 @@
+import { publicPryerFields } from '../sage/life.js';
 import { stableStringify } from '../canonical.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceInjury, SliceState } from '../slice/types.js';
@@ -37,7 +38,7 @@ export interface ElderEncounterState {
 export type ElderEncounterCommand = { type: 'PREPARE_ENCOUNTER' | 'ENCOUNTER_TALK' | 'ENCOUNTER_FIGHT' | 'LEAVE_ENCOUNTER' };
 export interface ElderEncounterAction { id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: ElderEncounterCommand }
 export interface ElderEncounterProjection {
-  title: string; story: string; status: ElderEncounterState['status']; inside: boolean; preparation: ElderPreparation | null;
+  title: string; story: string; status: ElderEncounterState['status']; inside: boolean; preparation: ElderPublicPreparation | null;
   scene: null | { courtId: 'THT3-SEALED-COURT'; playerLocation: string; maraLocation: string; ordinaryExit: 'OPEN'; distanceMetres: 2; clockSeconds: number; playerTravelMetres: number };
   enemy: null | { id: typeof ELDER_TARGET_ID; name: '巴斯蒂安·沃德'; age: 46; pathway: 'warrior'; sequence: 3; health: number; mind: number; spirituality: number;
     status: ElderEncounterState['enemyStatus']; weaponId: 'EL2-BASTIAN-SWORD'; weaponLocation: 'HAND' | 'COURT'; powerUses: Record<ElderPowerId, number>; abilities: string[] };
@@ -179,7 +180,7 @@ export function elderEncounterActions(s: SliceState): ElderEncounterAction[] {
 export function projectElderEncounter(s: SliceState): ElderEncounterProjection {
   const e = s.elder.encounter, root = s.threeHeadedTemplar.life;
   if (!stage(s)) return { title: '尚未开放的原院争议', story: '', status: e.status, inside: false, scene: null, preparation: null, enemy: null, actions: [], facts: [] };
-  return { title: '原院中的独立争议', story: ELDER_ENCOUNTER_STORY, status: e.status, inside: hasElderEncounterLock(s), preparation: structuredClone(e.preparation),
+  return { title: '原院中的独立争议', story: ELDER_ENCOUNTER_STORY, status: e.status, inside: hasElderEncounterLock(s), preparation: e.preparation ? projectElderPreparation(e.preparation) : null,
     scene: { courtId: 'THT3-SEALED-COURT', playerLocation: root.playerLocation, maraLocation: root.owner.location, ordinaryExit: 'OPEN', distanceMetres: 2, clockSeconds: root.clockSeconds, playerTravelMetres: root.playerTravelMetres },
     enemy: { id: ELDER_TARGET_ID, name: '巴斯蒂安·沃德', age: 46, pathway: 'warrior', sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality, status: e.enemyStatus,
       weaponId: 'EL2-BASTIAN-SWORD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses }, abilities: ELDER_POWERS.map(p => p.abilityId) },
@@ -260,3 +261,11 @@ export function validateElderEncounter(s: SliceState): boolean {
   } catch { return false; }
 }
 export const validateElderEncounterState = validateElderEncounter;
+
+
+export function projectElderPreparation(p: ElderPreparation) { return {
+  ...publicPryerFields(p, ['week', 'revision', 'mindPaid', 'lifeClockSeconds']),
+  before: publicPryerFields(p.before, ['cash', 'actions', 'health', 'mind', 'spirituality']),
+  after: publicPryerFields(p.after, ['cash', 'actions', 'health', 'mind', 'spirituality']),
+}; }
+export type ElderPublicPreparation = ReturnType<typeof projectElderPreparation>;

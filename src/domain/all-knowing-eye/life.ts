@@ -66,9 +66,9 @@ export interface AllKnowingEyeLifeProjection {
   title: string; story: string; source: string; environment: string; activeCase: AllKnowingEyeCaseId | null; inside: boolean; insideCase: boolean; reflected: boolean; preferredActionId: string | null;
   clockSeconds: number; elapsedSeconds: number; playerLocation: AllKnowingEyeLifeState['playerLocation']; playerTravelMetres: number;
   room: AllKnowingEyeOriginals['room']; mara: AllKnowingEyeOriginals['mara'] & { present: boolean }; papers: AllKnowingEyeOriginals['papers']; device: AllKnowingEyeOriginals['device'];
-  irena: AllKnowingEyeLifeState['irena']; rig: AllKnowingEyeLifeState['rig']; pending: AllKnowingEyeLifeState['pending']; currentAttempt: AllKnowingEyeAttempt | null;
-  cases: { id: AllKnowingEyeCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: AllKnowingEyeAttempt[] }[];
-  ledger: AllKnowingEyeLifeReceipt[]; actions: AllKnowingEyeLifeAction[];
+  irena: AllKnowingEyeLifeState['irena']; rig: AllKnowingEyeLifeState['rig']; pending: AllKnowingEyeLifeState['pending']; currentAttempt: PublicAllKnowingEyeAttempt | null;
+  cases: { id: AllKnowingEyeCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: PublicAllKnowingEyeAttempt[] }[];
+  ledger: PublicAllKnowingEyeLifeReceipt[]; actions: AllKnowingEyeLifeAction[];
 }
 const INSIGHT = 'reader.s1.bounded-insight', FORECAST = 'reader.s1.pending-forecast';
 const same = (a: unknown, b: unknown): boolean => { try { return stableStringify(a) === stableStringify(b); } catch { return false; } };
@@ -460,9 +460,51 @@ export function allKnowingEyeLifeActions(s: SliceState): AllKnowingEyeLifeAction
   step('ABORT', false, true);
   return out;
 }
+/** Public life records deliberately select settled facts. Private audit sources and RNG positions stay in the journal. */
+function lifeFacts<T, K extends keyof T>(value: T, keys: readonly K[]): Pick<T, K> {
+  return Object.fromEntries(keys.map(key => [key, structuredClone(value[key])])) as Pick<T, K>;
+}
+function publicLifeCheck(c: PublicCheckResult | null): PublicCheckResult | null {
+  return c === null ? null : { ...lifeFacts(c, ['ability', 'baseAbility', 'effectiveAbility', 'difficulty', 'chance', 'roll', 'tier']),
+    modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })) };
+}
+function publicOriginals(o: AllKnowingEyeOriginals): AllKnowingEyeOriginals {
+  return { playerLocation: o.playerLocation, playerTravelMetres: o.playerTravelMetres, clockSeconds: o.clockSeconds,
+    room: lifeFacts(o.room, ['id', 'pathMetres', 'exitOpen']),
+    mara: lifeFacts(o.mara, ['id', 'name', 'age', 'alive', 'health', 'mind', 'location', 'travelMetres']),
+    papers: o.papers.map(p => lifeFacts(p, ['id', 'owner', 'location', 'text', 'firstReadWeek'])) as AllKnowingEyeOriginals['papers'],
+    device: lifeFacts(o.device, ['id', 'owner', 'location', 'charges', 'filter', 'conditionVersion', 'demonstrations', 'filterChanges']) };
+}
+function publicAbilityUse(u: AllKnowingEyeAbilityUse) {
+  return lifeFacts(u, ['attempts', 'successes', 'effects', 'tier', 'state', 'remainingSeconds', 'conditionVersion']);
+}
+export function projectAllKnowingEyeAttempt(a: AllKnowingEyeAttempt) {
+  return { ...lifeFacts(a, ['week', 'method', 'closed', 'result', 'elapsedSeconds', 'playerTravelMetres', 'maraTravelMetres',
+    'irenaTravelMetres', 'spiritualitySpent', 'mindSpent', 'permissionVersion', 'sourceRead', 'returnAgreed', 'entered', 'exited',
+    'papersTaken', 'papersReturned', 'readFirst', 'readSecond', 'handoverObserved', 'handoverObservation', 'handoverAttempted',
+    'handoverTier', 'handoverVerified', 'manualCompared', 'rigPlaced', 'rigReturned', 'sliderCocked', 'catchAttempted', 'catchTier',
+    'catchSucceeded', 'conditionChanged', 'sightlineCleared', 'handStopped', 'sliderRetrieved']),
+    permission: lifeFacts(a.permission, ['owner', 'technician', 'ability']), observedVersions: [...a.observedVersions],
+    insight: publicAbilityUse(a.insight), forecast: publicAbilityUse(a.forecast) };
+}
+export type PublicAllKnowingEyeAttempt = ReturnType<typeof projectAllKnowingEyeAttempt>;
+function publicLifeCommand(c: AllKnowingEyeActivityCommand): AllKnowingEyeActivityCommand {
+  if (c.type === 'OBSERVE' || c.type === 'REPORT') return { type: c.type, caseId: c.caseId };
+  if (c.type === 'INVITE') return { type: c.type, caseId: c.caseId, method: c.method };
+  if (c.type === 'CONSENT' || c.type === 'DECLINE_CONSENT' || c.type === 'WITHDRAW_CONSENT') return { type: c.type, permission: c.permission };
+  return { type: c.type };
+}
+export function projectAllKnowingEyeLifeReceipt(r: AllKnowingEyeLifeReceipt) {
+  return { ...lifeFacts(r, ['week', 'revision', 'checkBase', 'outcome', 'elapsedSeconds', 'playerWalkedMetres', 'maraWalkedMetres', 'irenaWalkedMetres']),
+    date: lifeFacts(r.date, ['epoch', 'year', 'month', 'day']), command: publicLifeCommand(r.command), check: publicLifeCheck(r.check),
+    before: lifeFacts(r.before, ['health', 'mind', 'spirituality', 'cash', 'actions']),
+    after: lifeFacts(r.after, ['health', 'mind', 'spirituality', 'cash', 'actions']),
+    originalsBefore: publicOriginals(r.originalsBefore), originalsAfter: publicOriginals(r.originalsAfter), sliderTransitions: [...r.sliderTransitions] };
+}
+export type PublicAllKnowingEyeLifeReceipt = ReturnType<typeof projectAllKnowingEyeLifeReceipt>;
 export function projectAllKnowingEyeLife(s: SliceState): AllKnowingEyeLifeProjection {
-  const l = s.allKnowingEye.life, originals = allKnowingEyeOriginalSnapshot(s), actions = allKnowingEyeLifeActions(s);
+  const l = s.allKnowingEye.life, originals = publicOriginals(allKnowingEyeOriginalSnapshot(s)), actions = allKnowingEyeLifeActions(s);
   return { title: '原纸、待发滑块与普通归还', story: '现场洞察与先机预判都只帮助下一次实际行动。成功施用不等于完成核验；失败、过期、条件改变和撤回都保留真实结果。三案报告各25扮演，反思25；每案对应新能力只有成功且实际应用才增加8掌握。', source: '同一玛拉、原资料室、两张实读原纸与已耗尽的原示范器；另付费购买唯一非动力滑块。', environment: '门外通路4米，原资料室入口至原桌4米，出口始终开放。原玛拉43岁，伊蕾娜·韦尔41岁且每案重新邀请。滑块与挡块30便士、1行动；每次邀请10便士、1行动，费用支付后不退。旧示范器保持0储能、琥珀滤片与原条件版本2。', activeCase: l.activeCase, inside: locked(l), insideCase: locked(l), reflected: l.reflected, preferredActionId: actions.find(x => x.preferredAction)?.id ?? null,
-    clockSeconds: l.clockSeconds, elapsedSeconds: l.elapsedSeconds, playerLocation: l.playerLocation, playerTravelMetres: l.playerTravelMetres, room: originals.room, mara: { ...originals.mara, present: l.maraPresent }, papers: originals.papers, device: originals.device, irena: structuredClone(l.irena), rig: structuredClone(l.rig), pending: structuredClone(l.pending), currentAttempt: structuredClone(current(l)),
-    cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '普通核对和必要归还有效；能力不会判断罪责、自动移动物体或恢复旧储能。'], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限帮助已通过后续独立实际行动应用；原物仍须真实归还。' : '普通完成，保留原施术与独立行动的真实失败或失效，没有能力掌握奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }), ledger: structuredClone(l.journal), actions };
+    clockSeconds: l.clockSeconds, elapsedSeconds: l.elapsedSeconds, playerLocation: l.playerLocation, playerTravelMetres: l.playerTravelMetres, room: originals.room, mara: { ...originals.mara, present: l.maraPresent }, papers: originals.papers, device: originals.device, irena: lifeFacts(l.irena, ['id', 'name', 'age', 'alive', 'health', 'mind', 'present', 'location', 'travelMetres']), rig: lifeFacts(l.rig, ['id', 'stopBlockId', 'owner', 'price', 'purchasedWeek', 'location', 'powered', 'sliderLocation', 'stopBlockLocation', 'motion', 'direction', 'sightline', 'conditionVersion', 'movements', 'catches', 'manualStops']), pending: l.pending === null ? null : lifeFacts(l.pending, ['kind', 'caseId', 'createdAt', 'expiresAt', 'conditionVersion', 'permissionVersion', 'bonus']), currentAttempt: current(l) ? projectAllKnowingEyeAttempt(current(l)!) : null,
+    cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '普通核对和必要归还有效；能力不会判断罪责、自动移动物体或恢复旧储能。'], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限帮助已通过后续独立实际行动应用；原物仍须真实归还。' : '普通完成，保留原施术与独立行动的真实失败或失效，没有能力掌握奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(projectAllKnowingEyeAttempt) }; }), ledger: l.journal.map(projectAllKnowingEyeLifeReceipt), actions };
 }

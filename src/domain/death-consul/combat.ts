@@ -228,12 +228,36 @@ export function finishDeathConsulCombatRound(s:SliceState,r:DeathConsulRoundCont
     playerActions:structuredClone(r.playerActions),enemyActions:structuredClone(r.enemyActions)};return structuredClone(r.outcome);
 }
 export function deathConsulRoundOutcome(r:DeathConsulRoundContext):DeathConsulRoundOutcome{if(!r.outcome)throw new Error('回合尚未结束。');return structuredClone(r.outcome);}
+/** These are visible site facts, distinct from the private combat source snapshot. */
+export function projectDeathConsulSite(p: DeathConsulSiteState) { return {
+  id: p.id, lengthMetres: p.lengthMetres, ordinaryRouteMetres: p.ordinaryRouteMetres, ordinaryExit: p.ordinaryExit, elapsedSeconds: p.elapsedSeconds, sourceEra: p.sourceEra, introducedWeek: p.introducedWeek, playerLocation: p.playerLocation, playerMetres: p.playerMetres, playerPassageMetres: p.playerPassageMetres, operatorId: p.operatorId, operatorName: p.operatorName, operatorAge: p.operatorAge, operatorSource: p.operatorSource, operatorLocation: p.operatorLocation, operatorMetres: p.operatorMetres, operatorPassageMetres: p.operatorPassageMetres, operatorEnergy: p.operatorEnergy, operatorConsent: p.operatorConsent, operatorConsentWeek: p.operatorConsentWeek,
+  introducedDate: p.introducedDate ? { epoch: p.introducedDate.epoch, year: p.introducedDate.year, month: p.introducedDate.month, day: p.introducedDate.day } : null,
+  door: { id: p.door.id, location: p.door.location, state: p.door.state, operations: p.door.operations }, effect: { mode: p.effect.mode, expiresAt: p.effect.expiresAt },
+  residual: { id: p.residual.id, source: p.residual.source, nature: p.residual.nature, quantity: p.residual.quantity, location: p.residual.location, ordinaryMetres: p.residual.ordinaryMetres, passageMetres: p.residual.passageMetres, strength: p.residual.strength, container: p.residual.container, seal: p.residual.seal, scorch: p.residual.scorch, heatSeconds: p.residual.heatSeconds },
+  material: { id: p.material.id, acquired: p.material.acquired, paidPennies: p.material.paidPennies, remaining: p.material.remaining },
+}; }
+const publicDeathConsulInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicDeathConsulAction = (a: ActionEvidence) => ({
+  label: a.label, selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure, order: a.order, paidCost: a.paidCost, physicalFactor: a.physicalFactor, atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, playerSpiritualityAfter: a.playerSpiritualityAfter, enemySpiritualityAfter: a.enemySpiritualityAfter, doorOperationSeconds: a.doorOperationSeconds, passageMetres: a.passageMetres, chargeGranted: a.chargeGranted, chargeConsumedByOrder: a.chargeConsumedByOrder, appliedAmount: a.appliedAmount, consumedPassageOrder: a.consumedPassageOrder, consumedSteadyOrder: a.consumedSteadyOrder, rolls: [...a.rolls],
+  siteBefore: projectDeathConsulSite(a.siteBefore), siteAfter: projectDeathConsulSite(a.siteAfter),
+});
+export const projectDeathConsulPlayerAction = (a: DeathConsulPlayerAction) => ({ ...publicDeathConsulAction(a), id: a.id, attempted: a.attempted, succeeded: a.succeeded, applied: a.applied, fallback: a.fallback });
+export const projectDeathConsulEnemyAction = (a: DeathConsulEnemyAction) => ({ ...publicDeathConsulAction(a), planned: a.planned, actual: a.actual, doorChanged: a.doorChanged });
+export function projectDeathConsulRoundOutcome(o: DeathConsulRoundOutcome) { return {
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing, enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus, playerSpiritualityBefore: o.playerSpiritualityBefore, playerSpiritualityAfter: o.playerSpiritualityAfter, playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, enemySpiritualityBefore: o.enemySpiritualityBefore, playerRiskAfter: o.playerRiskAfter, enemyRiskAfter: o.enemyRiskAfter, doorClosed: o.doorClosed, playerDoorOpened: o.playerDoorOpened, passageAttempted: o.passageAttempted, steadyAttempted: o.steadyAttempted, expiredPassageChargeOrder: o.expiredPassageChargeOrder, expiredSteadyChargeOrder: o.expiredSteadyChargeOrder, elapsedSeconds: o.elapsedSeconds, exitMetres: o.exitMetres,
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicDeathConsulInjury), enemyInjuriesAfter: o.enemyInjuriesAfter.map(publicDeathConsulInjury),
+  powerUses: Object.fromEntries(DEATH_CONSUL_POWER_IDS.map(id => [id, o.powerUses[id]])) as Record<DeathConsulPowerId, number>,
+  siteAfter: projectDeathConsulSite(o.siteAfter),
+  playerActions: o.playerActions.map(projectDeathConsulPlayerAction), enemyActions: o.enemyActions.map(projectDeathConsulEnemyAction),
+}; }
+export type DeathConsulPublicRoundOutcome = ReturnType<typeof projectDeathConsulRoundOutcome>;
+
 export function projectDeathConsulCombat(s:SliceState){
   const e=s.deathConsul.encounter,visible=isDeathConsul(s),target=e.sourceEra?DEATH_CONSUL_TARGETS[e.sourceEra]:null,last=s.combat?.encounterId==='DEATH_CONSUL_DISPUTE'?s.combat.lastRound?.deathConsulOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.deathConsulOutcome:null;
   return{enemyName:visible&&target?`${target.name}（${target.age}岁）`:'',targetId:visible?e.targetId:null,playerHealth:s.health,playerMind:s.mind,playerSpirituality:s.spirituality,maxSpirituality:120,
     enemyHealth:visible?e.enemyHealth:null,enemyMind:visible?e.enemyMind:null,enemySpirituality:visible?e.enemySpirituality:null,powerUses:visible?{...e.powerUses}:null,
-    site:visible?structuredClone(s.deathConsul.life.site):null,startSite:visible?structuredClone(e.startSite):null,originalExit:true,pursuit:false,distanceMetres:visible&&s.deathConsul.life.site.playerLocation==='OTHER'?0:2,automaticAllyImmunity:false,
-    source:visible?currentDeathConsulCombatSource(s):null,lastActionSequence:visible&&last?[...last.playerActions.map(a=>({...structuredClone(a),actor:'PLAYER' as const})),...last.enemyActions.map(a=>({...structuredClone(a),actor:'ENEMY' as const}))].sort((a,b)=>a.order-b.order):[],
+    site:visible?projectDeathConsulSite(s.deathConsul.life.site):null,startSite:visible&&e.startSite?projectDeathConsulSite(e.startSite):null,originalExit:true,pursuit:false,distanceMetres:visible&&s.deathConsul.life.site.playerLocation==='OTHER'?0:2,automaticAllyImmunity:false,
+    lastActionSequence:visible&&last?[...last.playerActions.map(a=>({...projectDeathConsulPlayerAction(a),actor:'PLAYER' as const})),...last.enemyActions.map(a=>({...projectDeathConsulEnemyAction(a),actor:'ENEMY' as const}))].sort((a,b)=>a.order-b.order):[],
     countWheel:DEATH_CONSUL_COUNT_WHEEL.map(x=>({...x})),enemyCountWheel:DEATH_CONSUL_ENEMY_COUNT_WHEEL.map(x=>({...x})),enemyAbilityWheel:DEATH_CONSUL_ENEMY_ABILITY_WHEEL.map(x=>({...x})),
     summary:visible?'苍白焰须开门清路；灵界短渡每轮最多付费尝试一次，成功时本人在门两侧实际移动2米，并仅削弱随后一次实际持棍攻击40，不抵苍白法术。对手定神只抵下一次成功旧封印，最多32。关门、开门各占一次普通动作，不附带攻击。每次动作5秒、每回合60秒，双方各付自己的灵性；对手不自动恢复，继续时你恢复12灵性。实际伤势、门和封存物痕迹保留，战斗不增长掌握。':''};
 }

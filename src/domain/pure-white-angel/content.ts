@@ -6,7 +6,9 @@ import type { PureWhiteAngelAbilityId, PureWhiteAngelPreparationId } from './typ
  * burning and the 3-0782 charm are not ordinary S1 abilities. Complete formula,
  * ritual, finite powers and all numerical rules below are original game design. */
 export const PURE_WHITE_ANGEL_GUIDE = LIGHT_SEEKER_GUIDE;
-export const PURE_WHITE_ANGEL_PRICES = { guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100 } as const;
+export const PURE_WHITE_ANGEL_PRICES = { guidance: 500, potion: 6600, labourCredit: 5500, labourBalance: 1100, preparation: 150, resupply: 100, recovery: 120, recoveryDrug: 900, recoveryLabourBalance: 90 } as const;
+export const PURE_WHITE_ANGEL_RECOVERY_SCHEMA_VERSION = 213;
+export const PURE_WHITE_ANGEL_RECOVERY_SITE_ID = 'BACKLUND_ORIGINAL_GALLERY_ENTRY' as const;
 export const PURE_WHITE_ANGEL_MIN_LIGHT_SEEKER_WEEKS = 12;
 export const PURE_WHITE_ANGEL_LABOUR_STEPS = 5;
 export const PURE_WHITE_ANGEL_BOTTLE_IDS = ['pure-white-angel-potion-1', 'pure-white-angel-potion-2', 'pure-white-angel-potion-3'] as const;
@@ -45,4 +47,4 @@ export const PURE_WHITE_ANGEL_INHERITED_ABILITIES = [
   ['sun.s2.guided-radiance', '定向辉光', '只照向已知且光路通畅的同一目标，实际成本与抵抗继续结算。'],
   ['sun.s2.limited-light', '限光', '只对有限的当前光效起作用，不能代替身体护持或精神防护。'],
 ].map(([id, label, description]) => ({ id: id!, label: label!, description: description! }));
-export const PURE_WHITE_ANGEL_CONSUMPTION_RISK = '逐光者消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原20项掌握和逐光者消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通诊疗与休养。原廊物件损耗与玛拉、芦影精力均保留，不复制、修复或补充。全部原瓶失败后须付1行动与100便士申请下一批，至少跨一真实周才有新三瓶到货。';
+export const PURE_WHITE_ANGEL_CONSUMPTION_RISK = '逐光者消化100、实际晋2后12整周、三份旧报告与反思完成、健康>20且精神>40。分别完成三项1行动专业准备，再付1行动与150便士检查当周场地；0行动独立确认饮用所选原瓶，意志30。大成功：晋1、精神−8；成功：晋1、精神−15；失败：仍2、健康−15精神−25排异+30；严重排异：仍2、健康−25精神−45排异+60。原瓶与本次准备均耗尽，专业支持只把本次排异后的健康与精神保底到1。成功四属性各+1，原20项掌握和逐光者消化100留存，两项新掌握从0开始；灵性上限120且当前不补满。性别、姓名、年龄、性格与取向不变，旧伤须普通诊疗与休养。原廊物件损耗与玛拉、芦影精力均保留，不复制、修复或补充。最初三瓶失败后，可以付1行动与120便士调查其中同一份原特性；至少跨一真实周，再在原采光廊入口向侧路的玛拉本人取得当次交接许可，以1行动封存回收。新普通药物与调配另付900便士或五项新劳动后90便士，当周检查仍另付150便士；不新增第四份原特性，不补写旧许可、不改原廊人物与物件，旧原瓶、失败和费用全部保留。';

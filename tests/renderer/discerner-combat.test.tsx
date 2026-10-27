@@ -1,4 +1,5 @@
 /* @vitest-environment jsdom */
+import { assertCombatRiskDisclosure } from './combat-risk-assertions';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
@@ -40,8 +41,7 @@ describe('Discerner actual combat wheels, consequences and ordinary exits', () =
     ]);
     expect(within(stage).getByRole('heading', { name: battle.enemyName })).toBeTruthy();
     expect(stage.textContent).toContain(battle.discerner!.summary);
-    const risk = within(stage).getByRole('region', { name: '伤势与恢复路线' });
-    expect(risk.closest('details')).toBeNull();
+    const risk = await assertCombatRiskDisclosure(stage, battle.consequenceWeights);
     for (const text of [`轻伤 ${battle.consequenceWeights.light}%`, `重伤 ${battle.consequenceWeights.heavy}%`, `死亡 ${battle.consequenceWeights.death}%`]) expect(risk.textContent).toContain(text);
     const wheelDetails = within(stage).getByText('查看公开轮盘与风险', { selector: 'summary' });
     expect(wheelDetails.closest('details')!.open).toBe(false); await userEvent.click(wheelDetails);

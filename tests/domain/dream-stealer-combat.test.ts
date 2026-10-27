@@ -343,7 +343,8 @@ describe('Production round intent planning bridge', () => {
   it('leaves ordinary and older Error round random ordering at their original draw point', () => {
     const ordinary = fixture(true); ordinary.progression = { pathwayId: null, sequence: null, mastery: {}, acting: 0, promotionWeek: null };
     const first = recordedRound(ordinary, 'PREPARE', 1, 1, 400, 1, 1);
-    expect(first.round.moves.map(m => [m.actor, m.selfGain])).toEqual([['PLAYER', 0], ['ENEMY', 16]]);
+    expect(first.round.moves.map(m => [m.actor, m.selfGain])).toEqual([['PLAYER', 0], ['ENEMY', 24]]); // tuned ordinary FIRST_CASE held club; draw order unchanged
+    expect(ordinary.random.cursor).toBe(5);
     for (const sequence of [7, 8, 9]) {
       const s = fixture(true); s.progression.sequence = sequence;
       // Existing player first STRIKE draw remains third; enemy MISS remains fourth.

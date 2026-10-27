@@ -109,15 +109,19 @@ function assertCurrentBody(s: SliceState) {
   for (const key of MERCURY_SNAKE_SOURCE_KEYS) expect(value[key].actions.every(action => !action.enabled)).toBe(true);
 }
 function assertRound(state: SliceState) {
+  const privateRoundBefore = JSON.stringify(state.lastCombatRound);
   const round = projectSliceState(state).lastCombatRound!, outcome = round.mercurySnakeOutcome;
   if (!outcome) throw new Error('Expected an actual captured Mercury Snake round.');
+  expect(Object.hasOwn(outcome, 'source')).toBe(false);
+  expect(JSON.stringify(state.lastCombatRound)).toBe(privateRoundBefore);
+  expect(outcome.siteAfter.clockSeconds - outcome.elapsedSeconds).toBe(state.lastCombatRound!.mercurySnakeOutcome!.source.site.clockSeconds);
   const reveal = screen.getByRole('dialog', { name: ROUND }), record = within(reveal).getByRole('region', { name: RECORD });
   expect(within(reveal).getByRole('heading', { name: `第 ${round.round} 回合完整记录` })).toBeTruthy();
   expect(reveal.textContent).toContain(`你的次数盘：${round.playerCount}次（掷骰 ${round.playerCountRoll}）`);
   expect(reveal.textContent).toContain(`对手次数盘：${round.enemyCount}次（掷骰 ${round.enemyCountRoll}）`);
   expect(record.textContent).toContain(`回合结束：本人健康${outcome.playerHealthAfter}、精神${outcome.playerMindAfter}、灵性${outcome.playerSpiritualityAfter}`);
   expect(record.textContent).toContain(`对手健康${outcome.enemyHealth}、精神${outcome.enemyMind}、灵性${outcome.enemySpirituality}`);
-  expect(record.textContent).toContain(`原现场时钟${outcome.source.site.clockSeconds}秒→${outcome.siteAfter.clockSeconds}秒，本回合真实经过${outcome.elapsedSeconds}秒`);
+  expect(record.textContent).toContain(`原现场时钟${outcome.siteAfter.clockSeconds - outcome.elapsedSeconds}秒→${outcome.siteAfter.clockSeconds}秒，本回合真实经过${outcome.elapsedSeconds}秒`);
   expect(record.textContent).toContain(`辅助片剩余${outcome.piece!.charges}/3，累计磨损${outcome.piece!.wear}`);
   expect(record.textContent).toContain(round.consequenceDomain === 'BODY' ? BODY : round.consequenceDomain === 'MENTAL' ? MENTAL : '本回合没有实际致伤来源，不掷身体伤势盘');
   if (round.consequenceDomain !== 'BODY') expect(record.textContent).not.toContain(BODY);

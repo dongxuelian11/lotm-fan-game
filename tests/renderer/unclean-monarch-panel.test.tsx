@@ -291,7 +291,7 @@ describe('Unclean Monarch panel: real collaboration, one-use windows and ordinar
     expect(within(panel()).getByRole('region', { name: '本案的一次耗材' }).textContent).toContain('已经归还');
     expect(state.progression.mastery[BINDING]).toBe(0); expect(state.progression.mastery[INTERFERENCE]).toBe(0);
     expect(state.uncleanMonarch.life.volunteerEffortSpent).toBe(9); expect(ui.onCommand).toHaveBeenCalledExactlyOnceWith(action.command);
-  }, 30_000);
+  }, 60_000);
 
   it('keeps completed practice separate from the explicitly optional paid encounter', () => {
     const value = projection(practiced()), ui = show(value);

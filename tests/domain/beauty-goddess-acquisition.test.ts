@@ -138,19 +138,18 @@ describe('Beauty Goddess informed body choice and finite acquisition', () => {
     expect(s.beautyGoddess.transformation).toMatchObject({ originalGender: 'MALE', decision: 'ACCEPTED', outcome: succeeds ? 'FEMALE' : null });
     assertValidSliceState(s);
   });
-  it('three consumed failures require paid request, actual next week, three new IDs and no refund', () => {
+  it('three consumed failures never authorize a fourth independent original', () => {
     let s = taught('THREE_FAILURES'); for (const taskId of BEAUTY_GODDESS_PREPARATION_IDS) s = bg(s, { type: 'PREPARE_TASK', taskId }); s = bg(s, acknowledge);
     for (let n = 1; n <= 3; n++) {
       s = recoverResources(s); const bottleId = `beauty-goddess-potion-${n}`;
       s = bg(s, { type: 'BUY_POTION', bottleId }); s = bg(s, { type: 'PREPARE_PROMOTION' }); s = bg(s, { type: 'CONSUME', bottleId, confirmed: true });
       expect(s.beautyGoddess.bottles[n - 1]!.outcome).toBe('FAILURE'); expect(s.progression.sequence).toBe(2);
     }
-    const old = structuredClone(s.beautyGoddess.bottles), cash = s.cash, ap = s.actionsRemaining;
-    s = bg(s, { type: 'REQUEST_SUPPLY' }); expect([s.cash, s.actionsRemaining]).toEqual([cash - 100, ap - 1]); rejectBeautyGoddess(s, { type: 'RECEIVE_SUPPLY' });
-    const requested = s.week, remaining = s.actionsRemaining; for (let n = 0; n < remaining; n++) s = step(s, { type: 'ACTION', action: 'REST' });
-    expect(s.week).toBeGreaterThan(requested); s = bg(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.beautyGoddess.bottles.slice(0, 3)).toEqual(old); expect(s.beautyGoddess.bottles.slice(3).map(b => b.id)).toEqual(['beauty-goddess-potion-4', 'beauty-goddess-potion-5', 'beauty-goddess-potion-6']);
-    expect(s.beautyGoddess.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0)).toBe(true); assertValidSliceState(s);
+    const before = structuredClone(s);
+    rejectBeautyGoddess(s, { type: 'REQUEST_SUPPLY' }); rejectBeautyGoddess(s, { type: 'RECEIVE_SUPPLY' });
+    expect(s).toEqual(before); expect(s.beautyGoddess.bottles).toHaveLength(3);
+    // Exact paid recovery, later-week custody and repeated failures have explicit
+    // component fixtures in beauty-goddess-original-recovery.test.ts.
   });
 });
 

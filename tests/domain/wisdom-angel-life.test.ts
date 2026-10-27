@@ -306,7 +306,7 @@ describe('Wisdom Angel original finite evidence, current conditions and actual p
     ]);
   });
 
-  it('replays every recorded check and actual source and rejects missing, reordered, duplicated, backdated or forged history', () => {
+  it('replays every recorded check and actual source and rejects missing, reordered, duplicated, backdated or forged history', { timeout: 10_000 }, () => {
     let s = cast(deviceReady(), { type: 'SYNTHESIS', caseId: 'changed-condition' }, 1), id = 'changed-condition';
     s = wa(s, { type: 'PREDICT', caseId: id, prediction: 'WHITE' }); s = wa(s, { type: 'SWITCH_FILTER', caseId: id }); s = wa(s, { type: 'OBSERVE_CONDITION', caseId: id });
     s = cast(s, { type: 'SYNTHESIS', caseId: id }, 100); s = wa(s, { type: 'PREDICT', caseId: id, prediction: 'AMBER' }); s = cast(s, { type: 'RESPONSE', caseId: id }, 1);

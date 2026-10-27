@@ -102,6 +102,54 @@ beforeEach(() => { vi.spyOn(window, "scrollTo").mockImplementation(() => {}); })
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 
 describe("Clown progression dossier", () => {
+  it("pairs preparation costs with exact current resources without executing on focus", async () => {
+    const value = clown(), snapshot = JSON.stringify(value);
+    const { onCommand, container } = panel(value);
+    expect(container.querySelector(".clown-single-action")).toBeTruthy();
+    expect(container.querySelector(".clown-preparation-multiple")).toBeNull();
+    expect(screen.getByLabelText("晋升准备当前资源").textContent).toContain(resources.cash);
+    expect(screen.getByLabelText("晋升准备当前资源").textContent).toContain(`剩余行动${resources.actionsRemaining}`);
+    const action = screen.getByRole("button", { name: /请指导者讲解小丑配方/ });
+    expect(within(action).getByText(learn.cost)).toBeTruthy();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(action);
+    expect(onCommand).not.toHaveBeenCalled();
+    await userEvent.click(action);
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(learn.command);
+    expect(JSON.stringify(value)).toBe(snapshot);
+  });
+
+  it("puts prepared bottles before spare preparations in reading and keyboard order", async () => {
+    const value = bottled();
+    value.actions.push(learn);
+    const { onCommand } = panel(value);
+    const bottles = screen.getByRole("region", { name: "已调配的小丑魔药" });
+    const preparations = screen.getByRole("group", { name: "小丑成长行动" });
+    expect(bottles.compareDocumentPosition(preparations) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(within(bottles).getAllByRole("button")[0]);
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("uses full-width multiple preparations without changing projected costs or locks", async () => {
+    const locked = { ...learn, id: "locked", label: "备用批次", enabled: false, reason: "现有资源不足", cost: "领域原费用" };
+    const { onCommand, container } = panel(clown({ actions: [learn, locked] }));
+    expect(container.querySelector(".clown-preparation-multiple")).toBeTruthy();
+    expect(screen.getByText(locked.cost)).toBeTruthy();
+    expect(screen.getByText(locked.reason)).toBeTruthy();
+    const disabled = screen.getByRole("button", { name: /备用批次/ }) as HTMLButtonElement;
+    expect(disabled.disabled).toBe(true);
+    fireEvent.click(disabled);
+    expect(onCommand).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: /请指导者/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(learn.command);
+  });
+
+  it("does not add preparation budgeting to promoted practice", () => {
+    panel(clown({ promoted: true }));
+    expect(screen.queryByLabelText("晋升准备当前资源")).toBeNull();
+  });
+
   it("shows the public prerequisite without revealing an unknown formula or future abilities", () => {
     const value = clown({
       formula: [{ name: "未公开测试材料", quantity: 7, unit: "份" }],
@@ -237,6 +285,8 @@ describe("Clown progression dossier", () => {
     expect((screen.getByRole("button", { name: "占卜家经历" }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.queryByRole("button", { name: "关闭非凡成长" })).toBeNull();
     await act(async () => { finish(receipt({ ...state, revision: state.revision + 1 }, envelope)); });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 
@@ -272,7 +322,8 @@ describe("Clown progression dossier", () => {
     expect(submit).toHaveBeenCalledTimes(1);
     expect(submit.mock.calls[0]![0].payload).toEqual({ type: "CLOWN", command: { type: "RESCUE_FIGHT" } });
     const battle = await screen.findByRole("dialog", { name: "码头巷口 · 护送冲突" });
-    expect(within(battle).getByText(/灵性 15 \/ 45 · 纸张 7 张/)).toBeTruthy();
+    expect(within(battle).getByText(/灵性 15 \/ 45/)).toBeTruthy();
+    expect(within(battle).getByText("纸张 7 张")).toBeTruthy();
     expect(within(battle).getByRole("heading", { name: "公开的短棍持有者" })).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
@@ -314,6 +365,8 @@ describe("Clown progression dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "CLOWN", command: { type: "CONSUME", bottleId: "clown-bottle-b", confirmed: true } });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });

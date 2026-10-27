@@ -168,7 +168,7 @@ describe("R2 IPC boundary", () => {
     dispose();
     store.close();
     rmSync(directory, { recursive: true, force: true });
-  });
+  }, 20_000); // Windows run39354205666 measured11.101s for the disk corruption/reopen route.
 
   it.each([
     ["an extra receipt field", (receipt: Record<string, unknown>) => { receipt.secret = "must-not-leak"; }],
@@ -196,5 +196,5 @@ describe("R2 IPC boundary", () => {
     dispose();
     store.close();
     rmSync(directory, { recursive: true, force: true });
-  });
+  }, 10_000); // Windows run39354205666 measured5.564s for receipt corruption/reopen.
 });

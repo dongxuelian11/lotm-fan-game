@@ -10,6 +10,7 @@ import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import { NATURE_WALKER_SOURCE_KEYS } from '../../src/domain/nature-walker/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentNatureWalkerReplayExpectation } from '../helpers/nature-walker-current-replay.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { NATURE_WALKER_ROOT, NATURE_WALKER_PREFIX_COUNT, NATURE_WALKER_SOURCE, NATURE_WALKER_PREDECESSOR,
   captureMetadata, captureFileHash, captureValueHash, insertionOrderHash, captureBody, namedBoundary, capturedState, capturedSnapshot,
@@ -75,7 +76,9 @@ describe('NatureWalker actual representative SQLite rollback and reopen', () => 
       assertPublicCaptureControl(save.before, save.intent); assertCapturedResources(save.before, save.intent, save.final);
     }
     assertObservedBoundary(name, save.final);
-    exerciseSqlite(save.before, save.intent, save.final, `nature-walker207:${save.count}`);
+    const currentFinal = save.intent.type === 'NATURE_WALKER' && save.intent.command.type === 'LEARN_GUIDANCE'
+      ? currentNatureWalkerReplayExpectation(save.final) : save.final;
+    exerciseSqlite(save.before, save.intent, currentFinal, `nature-walker207:${save.count}`);
     expect(await captureFileHash(save.path)).toBe(beforeHash);
   }, 180_000);
 

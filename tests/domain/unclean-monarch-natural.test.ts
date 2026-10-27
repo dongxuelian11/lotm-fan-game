@@ -12,6 +12,7 @@ import { validateUncleanMonarchEncounterState } from '../../src/domain/unclean-m
 import { currentUncleanMonarchCombatSource, replayUncleanMonarchCombatRound, uncleanMonarchActionCount, uncleanMonarchEnemyActionCount } from '../../src/domain/unclean-monarch/combat.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentUncleanMonarchReplayExpectation } from '../helpers/unclean-monarch-current-replay.js';
 import { UNCLEAN_MONARCH_CAPTURE_EVIDENCE as evidence, UNCLEAN_MONARCH_METADATA_FILES } from './unclean-monarch-capture-evidence.js';
 import { UNCLEAN_MONARCH_ROOT as ROOT, UNCLEAN_MONARCH_SOURCE as SOURCE, UNCLEAN_MONARCH_SOURCE_BOUNDARY as SOURCE_BOUNDARY,
   UNCLEAN_MONARCH_PRIOR as PRIOR, UNCLEAN_MONARCH_PREFIX_COUNT as PREFIX, UNCLEAN_MONARCH_INHERITED_COUNT as INHERITED,
@@ -165,7 +166,7 @@ describe.skipIf(evidence.observed === null)('Unclean Monarch actual original-see
         if (state.week > before.week) { expect(state.actionsRemaining).toBe(3); same(state.date, addGameWeeks(before.date, 1)); }
       }
     }
-    same(state, capturedState('final')); same(captureBody(state), expected.final);
+    same(state, currentUncleanMonarchReplayExpectation(capturedState('final'))); same(captureBody(state), expected.final);
     assertValidSliceState(state); same(migrateSliceState(state), state);
     expect(state.revision).toBe(capturedState('initial').revision + commands.length);
     expect(naturalEntry('stage')).toBe(expected.stage); expect(naturalEntry('error')).toBe(expected.error);

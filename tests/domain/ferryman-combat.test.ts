@@ -189,7 +189,7 @@ describe('Ferryman finite G combat with independent original Rowan and actual or
   });
   it('hides independent opponent facts before actual Ferryman3', () => {
     const s = fixture(); s.progression.sequence = 4; const view = projectFerrymanCombat(s);
-    expect(view.source).toBeNull(); expect(view.targetId).toBeNull(); expect(view.enemySpirituality).toBeNull(); expect(view.scene).toBeNull();
+    expect(Object.hasOwn(view, 'source')).toBe(false); expect(view.targetId).toBeNull(); expect(view.enemySpirituality).toBeNull(); expect(view.scene).toBeNull();
     expect(JSON.stringify(view)).not.toMatch(/ROWAN|罗温/);
   });
 });

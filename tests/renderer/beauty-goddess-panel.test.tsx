@@ -269,6 +269,31 @@ describe('BeautyGoddess panel: separate body acknowledgment and original identit
     expect(saved.currentGender).toBe('MALE'); expect(saved.transformation.outcome).toBeNull();
   });
 
+  it('shows accepted female recovery consent as a saved fact while independently confirming the paid risky dose', () => {
+    // Explicit renderer-only presentation of a recovered vessel, not a natural save or new original characteristic.
+    const value = fixture(); value.currentGender = value.originalGender = 'FEMALE';
+    value.transformation = { originalGender: 'FEMALE', decision: 'ACCEPTED', acknowledgedWeek: 133, outcome: null };
+    value.preparedWeek = 165; value.insideCase = true;
+    value.bottles.forEach(bottle => { bottle.status = '原瓶已耗尽 · 排异，仍为创生者'; });
+    const dose: BeautyGoddessCommand = { type: 'CONSUME', bottleId: 'beauty-goddess-potion-4', confirmed: true };
+    value.bottles.push({ id: dose.bottleId, title: '第4瓶 · 同一原特性重配', source: '第1瓶失败后同一份原特性，新普通药物与调配服务已经支付90便士。',
+      status: '已交付，尚未服用', chance: 44, command: dose });
+    value.actions = [action(dose, '独立确认服用第4瓶美神魔药', '0行动 · 当周准备已付150便士')]; value.preferredActionId = value.actions[0]!.id;
+    const before = structuredClone(value), view = show(value), dialog = openPrimary();
+    const saved = within(dialog).getByRole('region', { name: '已确认的身体变化' });
+    expect(within(saved).getByRole('heading', { name: '已确认的身体变化' })).toBeTruthy();
+    expect(saved.textContent).toContain('当前身体已经为女性。成功晋升美神后仍为女性。');
+    expect(saved.textContent).toContain('继续有效，无须再次确认');
+    expect(within(dialog).queryByRole('region', { name: '本次身体变化确认' })).toBeNull();
+    expect(within(dialog).queryByRole('button', { name: '确认接受晋升后的身体变化' })).toBeNull();
+    expect(dialog.textContent).toContain('当前成功率44%'); expect(dialog.textContent).toContain('当周准备已付150便士');
+    expect(dialog.textContent).toContain('健康−15精神−25排异+30'); expect(dialog.textContent).toContain('成功与失败均实际耗尽这一瓶及本次准备');
+    fireEvent.click(within(dialog).getByRole('button', { name: '取消，返回查看' }));
+    expect(view.onCommand).not.toHaveBeenCalled(); expect(value).toEqual(before);
+    const reopened = openPrimary(); fireEvent.click(confirm(reopened)); fireEvent.click(confirm(reopened));
+    expect(view.onCommand).toHaveBeenCalledExactlyOnceWith(dose); expect(value).toEqual(before);
+  });
+
   it('allows refusal without consuming a bottle or changing the body', () => {
     const value = fixture(); value.currentGender = value.originalGender = 'MALE';
     value.actions = [action({ type: 'DECLINE_TRANSFORMATION' }, '拒绝身体变化，继续停留创生者')]; value.preferredActionId = value.actions[0]!.id;

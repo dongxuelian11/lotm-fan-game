@@ -9,6 +9,8 @@ import { PRINCE_OF_ABOLITION_CASE_IDS, getPrinceOfAbolitionCurrentSite, validate
 import { validatePrinceOfAbolitionEncounterState } from '../../src/domain/prince-of-abolition/encounter.js';
 import { currentPrinceOfAbolitionCombatSource, replayPrinceOfAbolitionCombatRound } from '../../src/domain/prince-of-abolition/combat.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
+import { currentPrinceOfAbolitionReplayExpectation, PRINCE_OF_ABOLITION_CAPTURE_GUIDE_INDEX,
+  PRINCE_OF_ABOLITION_CAPTURE_GUIDE_TEXT, PRINCE_OF_ABOLITION_CURRENT_GUIDE_TEXT } from '../helpers/prince-of-abolition-current-replay.js';
 import { PRINCE_OF_ABOLITION_CAPTURE_EVIDENCE as evidence, PRINCE_OF_ABOLITION_METADATA_FILES as METADATA, PRINCE_OF_ABOLITION_CAPTURE_STAGES as STAGES } from './prince-of-abolition-capture-evidence.js';
 import { PRINCE_OF_ABOLITION_ROOT as ROOT, PRINCE_OF_ABOLITION_SOURCE as SOURCE, PRINCE_OF_ABOLITION_PRIOR as PRIOR,
   PRINCE_OF_ABOLITION_PREFIX_COUNT as PREFIX, PRINCE_OF_ABOLITION_INHERITED_COUNT as INHERITED, PRINCE_OF_ABOLITION_SEED as SEED,
@@ -32,6 +34,33 @@ const sum = <T>(rows: readonly T[], value: (row: T) => number) => rows.reduce((n
 it('requires actual frozen stage205 observations before claiming natural coverage', () => { observedCapture(); });
 
 describe.skipIf(evidence.observed === null)('Prince of Abolition literal original-seed capture', () => {
+  it('adapts only the exact frozen guidance for current replay while preserving original captures', () => {
+    const captured = capturedState('final'), originalHash = captureValueHash(captured), index = PRINCE_OF_ABOLITION_CAPTURE_GUIDE_INDEX;
+    const expected = currentPrinceOfAbolitionReplayExpectation(captured);
+    expect(captured.chronicle[index]!.text).toBe(PRINCE_OF_ABOLITION_CAPTURE_GUIDE_TEXT);
+    expect(expected.chronicle[index]!.text).toBe(PRINCE_OF_ABOLITION_CURRENT_GUIDE_TEXT);
+    const restored = structuredClone(expected); restored.chronicle[index]!.text = PRINCE_OF_ABOLITION_CAPTURE_GUIDE_TEXT;
+    same(restored, captured); expect(captureValueHash(captured)).toBe(originalHash);
+    same(currentPrinceOfAbolitionReplayExpectation(expected), expected);
+    const prefix = capturedState('prefixFinal'); expect(currentPrinceOfAbolitionReplayExpectation(prefix)).toBe(prefix);
+    const mirrored = structuredClone(captured); mirrored.lastResult = structuredClone(mirrored.chronicle[index]!);
+    const mirroredExpected = currentPrinceOfAbolitionReplayExpectation(mirrored);
+    expect(mirroredExpected.lastResult!.text).toBe(PRINCE_OF_ABOLITION_CURRENT_GUIDE_TEXT);
+    expect(mirrored.lastResult!.text).toBe(PRINCE_OF_ABOLITION_CAPTURE_GUIDE_TEXT);
+    for (const mutate of [
+      (state: SliceState) => { state.chronicle[index]!.text += 'altered'; },
+      (state: SliceState) => { state.chronicle[index]!.week++; },
+      (state: SliceState) => { state.chronicle[index]!.title += 'altered'; },
+      (state: SliceState) => { state.chronicle[index]!.id += 'altered'; },
+      (state: SliceState) => { state.chronicle.push(structuredClone(state.chronicle[index]!)); },
+      (state: SliceState) => { state.chronicle.splice(index, 1); },
+      (state: SliceState) => { state.lastResult = { ...state.chronicle[index]!, text: PRINCE_OF_ABOLITION_CURRENT_GUIDE_TEXT }; },
+    ]) {
+      const malformed = structuredClone(captured); mutate(malformed);
+      expect(() => currentPrinceOfAbolitionReplayExpectation(malformed)).toThrow();
+    }
+  }, 30_000);
+
   it('pins every immutable member, observed counts, both scripts and full freeze inventory', async () => {
     const e = observedCapture(), { boundaries, steps, snapshots } = captureMetadata();
     expect(e.commands).toBeGreaterThan(PREFIX); expect(e.uniqueTransitions).toBe(e.commands - PREFIX + 1);
@@ -150,7 +179,7 @@ describe.skipIf(evidence.observed === null)('Prince of Abolition literal origina
           // Two reducer states plus one parsed raw root at a time. Only digests retained.
           for (const root of ['beforeLast', 'final']) {
             const raw = readObjectEntry<SliceState>(path, root); expect([raw.schemaVersion, raw.contentVersion]).toEqual([202, 'prince-of-abolition-v202']);
-            same(root === 'beforeLast' ? before : state, currentCapture(raw));
+            same(root === 'beforeLast' ? before : state, currentPrinceOfAbolitionReplayExpectation(currentCapture(raw)));
           }
           stateHashes.set(state.revision, captureValueHash(state)); assertOriginalContinuity(state, original);
           if (count > PREFIX) {
@@ -162,7 +191,7 @@ describe.skipIf(evidence.observed === null)('Prince of Abolition literal origina
       }
       expect((await publicRows.next()).done).toBe(true);
     } finally { await publicRows.return(undefined); }
-    expect(count).toBe(e.commands); expect(state.revision).toBe(e.commands + 1); same(state, capturedState('final'));
+    expect(count).toBe(e.commands); expect(state.revision).toBe(e.commands + 1); same(state, currentPrinceOfAbolitionReplayExpectation(capturedState('final')));
     same(captureBody(state), e.final); assertValidSliceState(state); assertOriginalContinuity(state, original);
     expect(inheritedDeathVerified).toBe(true); expect(livingContinues).toBeGreaterThan(0);
     expect(sourceTerminals).toEqual(expect.arrayContaining([
@@ -170,16 +199,17 @@ describe.skipIf(evidence.observed === null)('Prince of Abolition literal origina
       { root: 'entropyDuke', targetId: 'ED2-OSWIN', enemyStatus: 'SURRENDERED', playerStatus: 'ACTIVE' },
     ]));
     for (const filename of new Set(Object.values(snapshots))) {
-      const saved = currentCapture(JSON.parse(readFileSync(capturePath(filename), 'utf8')));
+      const saved = currentPrinceOfAbolitionReplayExpectation(currentCapture(JSON.parse(readFileSync(capturePath(filename), 'utf8'))));
       expect(captureValueHash(saved), filename).toBe(stateHashes.get(saved.revision));
     }
     same(naturalEntry('creation'), sourceEntry('creation')); same(naturalEntry('strategy'), e.strategy); same(naturalEntry('provenance'), e.provenance);
     expect(naturalEntry('stage')).toBe(e.stage); expect(naturalEntry('error')).toBe(e.error); expect(naturalEntry('failurePhase')).toBe(e.failurePhase); same(naturalEntry('pendingIntent'), e.pendingIntent);
     same(treatments, e.treatments); same(treatments, naturalEntry('treatments')); same(treatments, summaryEntry('treatments'));
     expect(await captureFileHash(SOURCE)).toBe(evidence.sourceSha256); expect(await captureFileHash(PRIOR)).toBe(evidence.priorSha256);
-    // A single realistic budget for the whole inherited campaign and every new command.
+    // Windows run39354205666 reached the old 900s budget at912.162s with no assertion failure.
+    // Give this full inherited campaign replay headroom without changing its checkpoints.
     // No global timeout change, producer invocation, giant output, seed/cursor search or state substitution.
-  }, 900_000);
+  }, 1_200_000);
 
   it('accounts for real acquisition and life receipts without assuming successes, clinic visits or invented resources', () => {
     const e = observedCapture(), s = capturedState('final'), original = originalLivingPrefix(), stage = s.princeOfAbolition, life = stage.life;

@@ -1,3 +1,5 @@
+import { publicPryerCheck, publicPryerDate, publicPryerFields as publicFields } from '../sage/life.js';
+import { publicAbominationAttempt, publicAbominationBudget, publicAbominationFinance, publicAbominationLifePiece, publicAbominationPulse, publicAbominationCue, publicAbominationLifeWindow, publicAncientEvilOperation, publicChainedOriginalSite } from './public.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { DeterministicActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
@@ -74,7 +76,7 @@ export interface AbominationLifeProjection {
   volunteerEffortSpent: number; conditionVersion: number; viewBlocked: boolean; pulse: AbominationPulse | null; cue: AbominationCue | null;
   pieces: AbominationPiece[]; pending: AbominationLifeWindow | null; pendingRemainingSeconds: number; currentAttempt: AbominationAttempt | null;
   cases: { id: AbominationCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; permission: Record<Permission, Consent>; permissionVersion: number; contactOpen: boolean; returned: boolean; attempts: AbominationAttempt[] }[];
-  ledger: AbominationLifeReceipt[]; actions: AbominationLifeAction[];
+  ledger: AbominationPublicLifeReceipt[]; actions: AbominationLifeAction[];
 }
 const BARRIER: AbominationLifeAbilityId = 'chained.s1.spirit-barrier', CRY: AbominationLifeAbilityId = 'chained.s1.brief-cry';
 const POSITION: Record<AbominationSite['playerLocation'], number> = { START: 0, A: 4, B: 8, YARD: -4, OUTSIDE: -4 };
@@ -478,6 +480,22 @@ export function abominationLifeActions(s: SliceState): AbominationLifeAction[] {
   if (preferred) preferred.preferredAction = true;
   return out;
 }
+export function projectAbominationLifeReceipt(r: AbominationLifeReceipt) {
+  const c = r.command;
+  const command: AbominationActivityCommand = c.type === 'REFLECT' ? { type: c.type }
+    : 'method' in c ? publicFields(c, ['type', 'caseId', 'method'])
+    : 'permission' in c ? publicFields(c, ['type', 'caseId', 'permission'])
+    : publicFields(c, ['type', 'caseId']);
+  return {
+    ...publicFields(r, ['week', 'revision', 'checkBase', 'resistanceRoll', 'outcome', 'elapsedSeconds']), date: publicPryerDate(r.date), command, check: publicPryerCheck(r.check),
+    before: publicAbominationBudget(r.before), after: publicAbominationBudget(r.after), finance: publicAbominationFinance(r.finance),
+    paid: publicFields(r.paid, ['actions', 'pennies', 'spirituality', 'mind', 'volunteerEffort', 'pieceCharges', 'testCharges']),
+    moves: r.moves.map(m => ({ ...publicFields(m, ['actorId', 'from', 'to', 'metres', 'seconds']), itemIds: [...m.itemIds] })),
+    siteBefore: publicChainedOriginalSite(r.siteBefore), siteAfter: publicChainedOriginalSite(r.siteAfter),
+    operationBefore: publicAncientEvilOperation(r.operationBefore), operationAfter: publicAncientEvilOperation(r.operationAfter),
+  };
+}
+export type AbominationPublicLifeReceipt = ReturnType<typeof projectAbominationLifeReceipt>;
 export function projectAbominationLife(s: SliceState): AbominationLifeProjection {
   const l = s.abomination.life, site = projectedSite(s), actions = abominationLifeActions(s), preferred = actions.find(a => a.preferredAction) ?? actions.find(a => a.enabled);
   return { title: '原安静室的有限灵性束障与短促震声', story: '继续使用43岁的同一埃尔莎、室外哈伦、原衣、原包、原托盘与原纸。先取得本案邀请和许可，再实际走入原室；每案只购一件新耗材与一次有限测试来源。',
@@ -485,13 +503,13 @@ export function projectAbominationLife(s: SliceState): AbominationLifeProjection
     environment: '埃尔莎原在室外，先邀请，再经入口实走8米到原托盘，同一原衣与包随本人；本人从入口走4米到原托盘，再走4米到原纸并原路返回。8灵性2精神，检定失败或抵抗成功总4精神。束障20秒仅护一次局部精神脉冲；震声三秒迟滞一旦施加，撤回、停止和移动均不能抹去。普通归件与零行动等待持续开放。',
     nextStep: preferred?.label ?? (l.reflected ? '三案已收尾，可自行决定是否前往独立邻院。' : '当前没有待执行的原室操作。'), preferredActionId: preferred?.id ?? null,
     activeCase: l.activeCase, inside: hasAbominationLifeLock(s), insideCase: hasAbominationLifeLock(s), reflected: l.reflected,
-    site: structuredClone(site), operation: structuredClone(l.sourceWeek === null ? s.abomination.sourceScene?.originals.operation ?? s.ancientEvil.life.operation : l.operation), clockSeconds: site.clockSeconds, playerLocation: site.playerLocation, playerTravelMetres: site.playerTravelMetres,
-    volunteerEffortSpent: l.volunteerEffortSpent, conditionVersion: l.conditionVersion, viewBlocked: l.viewBlocked, pulse: structuredClone(l.pulse), cue: structuredClone(l.cue),
-    pieces: structuredClone(l.pieces), pending: structuredClone(l.pending), pendingRemainingSeconds: l.cue && !l.cue.executed ? l.cue.delayRemainingSeconds : l.pending ? Math.max(0, l.pending.expiresAt - site.clockSeconds) : 0,
-    currentAttempt: structuredClone(current(l)), cases: CASES.map(info => { const r = l.cases[info.id], a = r.attempts[0]; return { ...info,
+    site: publicChainedOriginalSite(site), operation: publicAncientEvilOperation(l.sourceWeek === null ? s.abomination.sourceScene?.originals.operation ?? s.ancientEvil.life.operation : l.operation), clockSeconds: site.clockSeconds, playerLocation: site.playerLocation, playerTravelMetres: site.playerTravelMetres,
+    volunteerEffortSpent: l.volunteerEffortSpent, conditionVersion: l.conditionVersion, viewBlocked: l.viewBlocked, pulse: l.pulse ? publicAbominationPulse(l.pulse) : null, cue: l.cue ? publicAbominationCue(l.cue) : null,
+    pieces: l.pieces.map(publicAbominationLifePiece), pending: l.pending ? publicAbominationLifeWindow(l.pending) : null, pendingRemainingSeconds: l.cue && !l.cue.executed ? l.cue.delayRemainingSeconds : l.pending ? Math.max(0, l.pending.expiresAt - site.clockSeconds) : 0,
+    currentAttempt: current(l) ? publicAbominationAttempt(current(l)!) : null, cases: CASES.map(info => { const r = l.cases[info.id], a = r.attempts[0]; return { ...info,
       observations: a ? [`实付${a.penniesSpent}便士、${a.spiritualitySpent}灵性/${a.mindSpent}精神；本案真实协作耗力${a.volunteerEffortSpent}，本人走${a.playerTravelMetres}米，埃尔莎走${a.volunteerTravelMetres}米。`,
         ...(a.checkTier ? [`本次知识20观察${TIER_LABELS[a.checkTier]}，原知识基础${a.checkBase}，不伪造加成。`] : []), ...(a.baselinePressure ? [`唯一精神脉冲基线45，本次压力${a.feltPressure}，该测试来源已消耗。`] : []), ...(a.resistanceRoll !== null ? [`本次真实抵抗骰${a.resistanceRoll}/100：${a.resisted ? '抵抗成功，未施加迟滞' : '未抵抗，已实际施加三秒迟滞'}。`] : []), ...(a.withdrawn ? ['本案指定许可已撤回；未用束障失效，已施加迟滞照常走完。'] : [])] : [],
       status: r.status, method: r.method, result: r.status === 'CANCELLED' ? '已普通退出，未完成的操作不领取报告成果。' : r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限作用已实际应用并记录。' : '已普通完成；没有未应用的能力奖励。',
-      permission: structuredClone(r.permission), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }),
-    ledger: structuredClone(l.journal), actions };
+      permission: publicFields(r.permission, ['OWNER', 'ABILITY']), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(publicAbominationAttempt) }; }),
+    ledger: l.journal.map(projectAbominationLifeReceipt), actions };
 }

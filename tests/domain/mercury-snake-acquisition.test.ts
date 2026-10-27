@@ -159,19 +159,26 @@ describe('Mercury Snake independent bottles and original workshop', () => {
     expect(oldWheelRoots(s)).toEqual(oldWheelRoots(source)); expect(source.cash).toBe(1060); expect(source.health).toBe(90);
     expect(s.mercurySnake.luck).toEqual(originalLuck); assertValidSliceState(s);
   }, 240_000);
-  it('requires three independent actual failures and the next real week for resupply', () => {
-    const initial = directedInitial2('THREE_FAILURES'); initial.actionsRemaining = initial.weeklyBudget = 3; // Explicit pre-journal UNIT budget.
-    let s = ms(initial, { type: 'LEARN_GUIDANCE' }); rejectMercurySnake(s, { type: 'REQUEST_SUPPLY' });
+  it('requires three actual failures before paid recovery of the same original', () => {
+    const initial = directedInitial2('THREE_FAILURES'); initial.actionsRemaining = initial.weeklyBudget = 3;
+    let s = ms(initial, { type: 'LEARN_GUIDANCE' });
+    const request = { type: 'REQUEST_RECOVERY_V1', bottleId: 'mercury-snake-potion-1' } as const;
+    rejectMercurySnake(s, request); rejectMercurySnake(s, { type: 'REQUEST_SUPPLY' });
     for (let number = 1; number <= 3; number++) {
-      const bottleId = `mercury-snake-potion-${number}`; s = prepareBottle(s, bottleId); s = ms(s, { type: 'CONSUME', bottleId, confirmed: true }); expect(s.progression.sequence).toBe(2);
+      const bottleId = `mercury-snake-potion-${number}`; s = prepareBottle(s, bottleId);
+      s = ms(s, { type: 'CONSUME', bottleId, confirmed: true }); expect(s.progression.sequence).toBe(2);
     }
-    s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 });
-    const before = s.cash; s = ms(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100);
-    const requested = s.mercurySnake.resupply.requestedWeek!; rejectMercurySnake(s, { type: 'RECEIVE_SUPPLY' });
-    s = ready(s, { afterWeek: requested }); s = ms(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.mercurySnake.bottles).toHaveLength(6); expect(s.mercurySnake.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.mercurySnake.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true);
-    expect(s.mercurySnake.bottles.slice(3).map(b => b.id)).toEqual(['mercury-snake-potion-4', 'mercury-snake-potion-5', 'mercury-snake-potion-6']);
+    const originals = structuredClone(s.mercurySnake.bottles);
+    s = ready(s, { ap: 2, cash: 150, health: 100, mind: 100 });
+    const before = s.cash; s = ms(s, request); expect(s.cash).toBe(before - 120);
+    const requested = s.mercurySnake.resupply.requestedWeek!;
+    const receive = { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: request.bottleId } as const;
+    rejectMercurySnake(s, receive); rejectMercurySnake(s, { type: 'RECEIVE_SUPPLY' });
+    s = ready(s, { ap: 2, cash: 30, afterWeek: requested }); s = ms(s, receive);
+    expect(s.mercurySnake.bottles.slice(0, 3)).toEqual(originals);
+    expect(s.mercurySnake.bottles).toHaveLength(4);
+    expect(s.mercurySnake.bottles[3]).toMatchObject({ id: 'mercury-snake-recovery-1', status: 'SUPPLIER', labourSteps: 0, acquiredWeek: null,
+      recovery: { sourceBottleId: request.bottleId, originalBottleId: request.bottleId, characteristicId: 'MS226-CHAR-1' } });
     expect(s.mercurySnake.luck).toEqual(originalLuck); expect(validateMercurySnakeState(s)).toBe(true);
   }, 240_000);
   it('rejects old commands, S0, wrong pathway and fabricated promotion', () => {

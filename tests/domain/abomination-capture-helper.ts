@@ -12,6 +12,7 @@ import { ABOMINATION_SOURCE_KEYS, ABOMINATION_ABILITY_IDS } from '../../src/doma
 import { ABOMINATION_CASE_IDS, getAbominationCurrentSite, abominationLifeMasteryGains } from '../../src/domain/abomination/life.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentAbominationReplayExpectation } from '../helpers/abomination-current-replay.js';
 import { ABOMINATION_CAPTURE_EVIDENCE, type AbominationObservedCapture } from './abomination-capture-evidence.js';
 
 export const ABOMINATION_ROOT = 'tests/fixtures/abomination-v02030';
@@ -98,7 +99,11 @@ export function assertPublicCaptureControl(state: SliceState, intent: SliceInten
 export function replayCaptureBoundary(name: string) {
   const save = namedBoundary(name);
   if (save.count > ABOMINATION_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-  sameCaptureValue(applySliceIntent(save.before, save.intent), save.final); return save;
+  // Only a live guidance command writes the new recovery explanation. Keep the
+  // captured boundary and later commands' historical guidance unchanged.
+  const expected = save.intent.type === 'ABOMINATION' && save.intent.command.type === 'LEARN_GUIDANCE'
+    ? currentAbominationReplayExpectation(save.final) : save.final;
+  sameCaptureValue(applySliceIntent(save.before, save.intent), expected); return save;
 }
 export const captureBody = (s: SliceState) => ({ status: s.status, revision: s.revision, week: s.week, date: s.date,
   H: s.health, M: s.mind, S: s.spirituality, cash: s.cash, AP: s.actionsRemaining, pollution: s.seer.pollution,

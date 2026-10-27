@@ -151,6 +151,9 @@ describe('UnagingDemoness same original body and finite mirror combat', () => {
     const s = fixture(); expect(unagingDemonessAbilityWheel(s, null).some(a => /plague|resurrect/.test(a.id))).toBe(false);
     expect(s.despair.encounter).toMatchObject({ targetId: 'DP4-VALEN-HOLT', enemyHealth: 60, enemySpirituality: 12, enemyStatus: 'SURRENDERED', enemyDisease: 0 });
     expect(currentUnagingDemonessCombatSource(s)).toMatchObject({ targetAge: 49, actualOriginalBody: true, enemyWeapon: 'UD3-CORBIN-ROD' }); s.progression.sequence = 4;
-    const view = projectUnagingDemonessCombat(s); expect(view.source).toBeNull(); expect(view.targetId).toBeNull(); expect(view.scene).toBeNull(); expect(JSON.stringify(view)).not.toMatch(/CORBIN|科宾/);
+    const privateEncounter = structuredClone(s.unagingDemoness.encounter), view = projectUnagingDemonessCombat(s);
+    expect(view).toEqual({ enemyName: '', targetId: null, enemyMind: null, enemySpirituality: null, powerUses: null, scene: null, summary: '' });
+    expect(view).not.toHaveProperty('source'); expect(JSON.stringify(view)).not.toMatch(/CORBIN|科宾/);
+    expect(s.unagingDemoness.encounter).toEqual(privateEncounter);
   });
 });

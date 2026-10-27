@@ -1,3 +1,4 @@
+import { publicPryerFields as publicFields } from '../sage/life.js';
 import { stableStringify } from '../canonical.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceInjury, SliceState } from '../slice/types.js';
@@ -37,7 +38,7 @@ export interface BloodDukeEncounterState {
 export type BloodDukeEncounterCommand = { type: 'PREPARE_ENCOUNTER' | 'ENCOUNTER_TALK' | 'ENCOUNTER_FIGHT' | 'LEAVE_ENCOUNTER' };
 export interface BloodDukeEncounterAction { id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: BloodDukeEncounterCommand }
 export interface BloodDukeEncounterProjection {
-  title: string; story: string; status: BloodDukeEncounterState['status']; inside: boolean; preparation: BloodDukePreparation | null;
+  title: string; story: string; status: BloodDukeEncounterState['status']; inside: boolean; preparation: BloodDukePublicPreparation | null;
   scene: null | { courtId: 'BL3-QUIET-ROOM'; playerLocation: string; noraLocation: string; ordinaryExit: 'OPEN'; distanceMetres: number; clockSeconds: number; playerTravelMetres: number };
   enemy: null | { id: typeof BLOOD_DUKE_TARGET_ID; name: '加雷斯·莫尔'; age: 44; pathway: 'warrior'; sequence: 3; health: number; mind: number; spirituality: number;
     status: BloodDukeEncounterState['enemyStatus']; weaponId: 'BD2-GARETH-SWORD'; weaponLocation: 'HAND' | 'COURT'; powerUses: Record<BloodDukePowerId, number>; abilities: string[] };
@@ -175,10 +176,16 @@ export function bloodDukeEncounterActions(s: SliceState): BloodDukeEncounterActi
     const command: BloodDukeEncounterCommand = { type }, reason = blockBloodDukeEncounter(s, command); return { id: `bloodDuke-${type}`, label, cost, command, enabled: reason === null, reason };
   });
 }
+export function projectBloodDukePreparation(p: BloodDukePreparation) { return {
+  ...publicFields(p, ['week', 'revision', 'mindPaid', 'lifeJournalLength', 'lifeClockSeconds']),
+  before: publicFields(p.before, ['cash', 'actions', 'health', 'mind', 'spirituality']),
+  after: publicFields(p.after, ['cash', 'actions', 'health', 'mind', 'spirituality']),
+}; }
+export type BloodDukePublicPreparation = ReturnType<typeof projectBloodDukePreparation>;
 export function projectBloodDukeEncounter(s: SliceState): BloodDukeEncounterProjection {
   const e = s.bloodDuke.encounter, root = s.blatherer.life;
   if (!stage(s)) return { title: '尚未开放的通行争议', story: '', status: e.status, inside: false, scene: null, preparation: null, enemy: null, actions: [], facts: [] };
-  return { title: '加雷斯的通行争议', story: BLOOD_DUKE_ENCOUNTER_STORY, status: e.status, inside: hasBloodDukeEncounterLock(s), preparation: e.preparation ? structuredClone(e.preparation) : null,
+  return { title: '加雷斯的通行争议', story: BLOOD_DUKE_ENCOUNTER_STORY, status: e.status, inside: hasBloodDukeEncounterLock(s), preparation: e.preparation ? projectBloodDukePreparation(e.preparation) : null,
     scene: { courtId: 'BL3-QUIET-ROOM', playerLocation: root.playerLocation, noraLocation: root.volunteer.location, ordinaryExit: 'OPEN', distanceMetres: root.playerLocation === 'START' ? 6 : 2, clockSeconds: root.clockSeconds, playerTravelMetres: root.playerTravelMetres },
     enemy: { id: e.targetId, name: '加雷斯·莫尔', age: 44, pathway: 'warrior', sequence: 3, health: e.enemyHealth, mind: e.enemyMind, spirituality: e.enemySpirituality,
       status: e.enemyStatus, weaponId: 'BD2-GARETH-SWORD', weaponLocation: e.weaponLocation, powerUses: { ...e.powerUses }, abilities: BLOOD_DUKE_POWERS.map(p => p.label) }, actions: bloodDukeEncounterActions(s),

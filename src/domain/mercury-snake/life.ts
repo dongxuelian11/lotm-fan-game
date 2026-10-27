@@ -1,3 +1,5 @@
+import { publicPryerFields as publicFields, publicPryerCheck, publicPryerDate } from '../sage/life.js';
+import { publicMercurySnakeAttempt, publicMercurySnakeLifePiece, publicMercurySnakeLifeWindow, publicMercurySnakeCapturedRelation, publicMercurySnakeLuck, publicWheelOriginalSite } from './public.js';
 import type { PublicCheckResult, PublicGameDate, PublicResolutionTier } from '../../shared/contracts.js';
 import { DeterministicActionRandomStream } from '../../resolution/deterministic-random.js';
 import { resolveNormalCheck } from '../../resolution/normal-check.js';
@@ -430,22 +432,31 @@ export function mercurySnakeLifeActions(s: SliceState): MercurySnakeLifeAction[]
 }
 const pinnedCart = (l: MercurySnakeLifeState) => l.site.cart.location === 'B';
 const pinnedParcel = (l: MercurySnakeLifeState) => l.site.parcel.location === 'B' && l.site.cart.location === 'A' && l.site.playerLocation === 'B';
+export function projectMercurySnakeLifeReceipt(r: MercurySnakeLifeReceipt): MercurySnakePublicLifeReceipt {
+  const c = r.command;
+  const command: MercurySnakeActivityCommand = c.type === 'REFLECT' || c.type === 'ACCUMULATE' ? { type: c.type }
+    : 'method' in c ? publicFields(c, ['type', 'caseId', 'method']) : 'permission' in c ? publicFields(c, ['type', 'caseId', 'permission']) : publicFields(c, ['type', 'caseId']);
+  return { ...publicFields(r, ['week', 'revision', 'elapsedSeconds', 'outcome']), date: publicPryerDate(r.date), command, check: publicPryerCheck(r.check),
+    paid: publicFields(r.paid, ['actions', 'pennies', 'spirituality', 'mind', 'volunteerMind', 'pieceCharges', 'luck']),
+    moves: r.moves.map(m => ({ ...publicFields(m, ['actorId', 'from', 'to', 'mode', 'metres', 'seconds']), itemIds: [...m.itemIds] })),
+  };
+}
 export function projectMercurySnakeLife(s: SliceState): MercurySnakeLifeProjection {
   const l = s.mercurySnake.life, site = projectedSite(s), actions = mercurySnakeLifeActions(s), preferred = actions.find(a => a.preferredAction);
   return { title: '原工坊的有限局部重启', story: '同一位三十九岁的薇拉、艾妲、原车和唯一四百克密封包继续留在原工坊。先分别询问本案许可，再实际同行、读原记录和准备有限耗材。返回只触及这两个亲见原物的先前位置。',
     source: '沿用实际已经收尾的原工坊。原车和原包仍归艾妲，原袋和两枚原签仍归薇拉。旧报告、旧伤与已经投降的人继续保留。',
     environment: '室外到入口再到原车共八米；本人从入口走四米到原车，再走四米读原记录并返回。每案观察一行动；能力准备一行动、二十便士。第一和第三案一件一次用量，第二案明确购买两次用量。每次施术八灵性、二精神，失败总四精神；重启不退资源、不回退时钟，片刻维系最多二十秒。普通放车、推回和退出始终不耗行动。',
     nextStep: preferred?.label ?? (l.reflected ? '三案已收尾，可自行决定是否前往独立邻院。' : '当前没有待执行的工坊操作。'), preferredActionId: preferred?.id ?? null, activeCase: l.activeCase,
-    inside: hasMercurySnakeLifeLock(s), insideCase: hasMercurySnakeLifeLock(s), reflected: l.reflected, site: structuredClone(site), operation: { door: (l.sourceWeek === null ? s.mercurySnake.sourceScene?.originals.operation ?? s.fateProphet.life.operation : l.operation).door },
+    inside: hasMercurySnakeLifeLock(s), insideCase: hasMercurySnakeLifeLock(s), reflected: l.reflected, site: publicWheelOriginalSite(site), operation: { door: (l.sourceWeek === null ? s.mercurySnake.sourceScene?.originals.operation ?? s.fateProphet.life.operation : l.operation).door },
     clockSeconds: site.clockSeconds, playerLocation: site.playerLocation, playerTravelMetres: site.playerTravelMetres, volunteerMindSpent: l.volunteerMindSpent, conditionVersion: l.conditionVersion, viewBlocked: l.viewBlocked,
-    pieces: structuredClone(l.pieces), captured: structuredClone(l.captured), pending: structuredClone(l.pending), pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - site.clockSeconds) : l.captured?.valid ? Math.max(0, l.captured.expiresAt - site.clockSeconds) : 0,
-    currentAttempt: structuredClone(current(l)), luck: { ...(l.sourceWeek === null ? s.winner.luck : s.mercurySnake.luck), capacity: 3 },
+    pieces: l.pieces.map(publicMercurySnakeLifePiece), captured: l.captured ? publicMercurySnakeCapturedRelation(l.captured) : null, pending: l.pending ? publicMercurySnakeLifeWindow(l.pending) : null, pendingRemainingSeconds: l.pending ? Math.max(0, l.pending.expiresAt - site.clockSeconds) : l.captured?.valid ? Math.max(0, l.captured.expiresAt - site.clockSeconds) : 0,
+    currentAttempt: current(l) ? publicMercurySnakeAttempt(current(l)!) : null, luck: { ...publicMercurySnakeLuck(l.sourceWeek === null ? s.winner.luck : s.mercurySnake.luck), capacity: 3 },
     cases: CASES.map(info => { const r = l.cases[info.id], a = r.attempts[0]; return { ...info, status: r.status, method: r.method,
       observations: a ? [`实付${a.penniesSpent}便士、${a.spiritualitySpent}灵性、${a.mindSpent}精神；本人走${a.playerTravelMetres}米，艾妲走${a.guideTravelMetres}米，薇拉走${a.volunteerTravelMetres}米。`,
         ...(a.restartTier ? [`本次重启检定${TIER_LABELS[a.restartTier]}，${a.restartApplied ? '同一车包实际返回。' : '没有发生能力返回。'}`] : []), ...(a.anchorTier ? [`本次维系检定${TIER_LABELS[a.anchorTier]}，${a.anchorApplied ? '确实维持了稍后返回所需的关系。' : '尚未帮助完成返回。'}`] : []),
         ...(a.returnKind === 'ORDINARY' ? ['本人实际推车或提包返回，这不是成功的局部重启。'] : []), ...(a.withdrawn ? ['本案指定许可已撤回，未用联系失效；成本与已经完成的返回保留。'] : [])] : [],
       result: r.status === 'CANCELLED' ? '已普通退出，未完成的操作不领取报告。' : r.result === 'NONE' ? null : r.result === 'ABILITY' ? '有限返回已经真实发生并记录。' : '已普通完成，没有未应用的能力奖励。',
-      permission: structuredClone(r.permission), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }), ledger: l.journal.map(e => ({ week: e.week, date: { ...e.date }, revision: e.revision, command: structuredClone(e.command), paid: { ...e.paid }, elapsedSeconds: e.elapsedSeconds, moves: structuredClone(e.moves), check: structuredClone(e.check), outcome: e.outcome })), actions };
+      permission: publicFields(r.permission, ['OWNER', 'ABILITY']), permissionVersion: r.permissionVersion, contactOpen: r.contactOpen, returned: r.returned, attempts: r.attempts.map(publicMercurySnakeAttempt) }; }), ledger: l.journal.map(projectMercurySnakeLifeReceipt), actions };
 }
 /** The mutable continuation allows only real motion, releases/returns and the
  * adult's recorded new effort. All original identities, ownership and history

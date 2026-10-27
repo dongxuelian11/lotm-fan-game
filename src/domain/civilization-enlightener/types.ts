@@ -10,13 +10,27 @@ export type CivilizationEnlightenerPreparationId = typeof CIVILIZATION_ENLIGHTEN
 export type CivilizationEnlightenerAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: CivilizationEnlightenerPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type CivilizationEnlightenerCommand = CivilizationEnlightenerAcquisitionCommand | CivilizationEnlightenerActivityCommand | CivilizationEnlightenerEncounterCommand;
+/** A later drug vessel carries the same finite original; its attempt ID is not a new characteristic. */
+export interface CivilizationEnlightenerRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number;
+}
+export interface CivilizationEnlightenerRecovery extends CivilizationEnlightenerRecoveryRequest { recoveredWeek: number }
+export interface CivilizationEnlightenerOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMAINS' | 'EMBODIED';
+}
+export interface CivilizationEnlightenerOriginalCharacteristics {
+  characteristics: CivilizationEnlightenerOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface CivilizationEnlightenerBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: CivilizationEnlightenerRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface CivilizationEnlightenerAcquisitionBudget {
@@ -39,7 +53,7 @@ export interface CivilizationEnlightenerSourceScene {
 }
 export interface CivilizationEnlightenerState {
   guidanceKnown: boolean; bottles: CivilizationEnlightenerBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: CivilizationEnlightenerRecoveryRequest };
   promotionWeek: number | null; knowledgeMentorActingAtPromotion: number | null;
   preparations: { taskId: CivilizationEnlightenerPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: CivilizationEnlightenerAcquisitionEvent[];
@@ -66,5 +80,5 @@ export interface CivilizationEnlightenerProjection {
   insideCase: boolean; environment: string;
 }
 export type CivilizationEnlightenerPublicView = CivilizationEnlightenerProjection;
-export type { CivilizationEnlightenerActivityCommand, CivilizationEnlightenerLifeProjection, CivilizationEnlightenerLifeState } from './life.js';
+export type { CivilizationEnlightenerActivityCommand, CivilizationEnlightenerLifeProjection, CivilizationEnlightenerLifeState, CivilizationEnlightenerPublicLifeReceipt } from './life.js';
 export type { CivilizationEnlightenerEncounterCommand, CivilizationEnlightenerEncounterProjection, CivilizationEnlightenerEncounterState } from './encounter.js';

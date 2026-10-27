@@ -4,6 +4,7 @@ import { applySliceIntent, assertValidSliceState, projectSliceState } from '../.
 import { migrateSliceState } from '../../src/domain/slice/migration.js';
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { THUNDER_GOD_PREPARATION_IDS, type ThunderGodCommand } from '../../src/domain/thunder-god/types.js';
+import { THUNDER_GOD_PRICES } from '../../src/domain/thunder-god/content.js';
 import { hasThunderGodLock } from '../../src/domain/thunder-god/index.js';
 
 export const catastropheNaturalPath = 'tests/fixtures/catastrophe-v01710/natural.json';
@@ -85,7 +86,9 @@ export const dose = { type: 'CONSUME', bottleId: 'thunder-god-potion-1', confirm
 export function prepareBottle(s: SliceState, bottleId: string, commands?: SliceIntent[]): SliceState {
   for (const taskId of THUNDER_GOD_PREPARATION_IDS) if (!s.thunderGod.preparations.some(p => p.taskId === taskId)) s = tg(ready(s, {}, commands), { type: 'PREPARE_TASK', taskId }, commands);
   while (s.thunderGod.bottles.find(b => b.id === bottleId)!.labourSteps < 5) s = tg(ready(s, {}, commands), { type: 'POTION_WORK', bottleId }, commands);
-  s = ready(s, { ap: 1, cash: 1250, health: 100, mind: 100, spirituality: 120, pollution: 0, afterWeek: s.catastrophe.promotionWeek! + 11 }, commands);
+  const bottle = s.thunderGod.bottles.find(b => b.id === bottleId)!;
+  const price = bottle.recovery ? THUNDER_GOD_PRICES.recoveryLabourBalance : THUNDER_GOD_PRICES.labourBalance;
+  s = ready(s, { ap: 1, cash: price + THUNDER_GOD_PRICES.preparation, health: 100, mind: 100, spirituality: 120, pollution: 0, afterWeek: s.catastrophe.promotionWeek! + 11 }, commands);
   s = tg(s, { type: 'BUY_POTION', bottleId }, commands);
   return tg(s, { type: 'PREPARE_PROMOTION' }, commands);
 }
@@ -95,7 +98,8 @@ export function prepared(): SliceState {
   return structuredClone(preparedCache);
 }
 let promotedCache: SliceState | undefined;
-/** Actual same-seed original bottles are attempted in order; every failure
+/** Actual same-seed originals are attempted in order, then the latest failed
+ * dose's same characteristic is recovered for a new carrier. Every failure
  * remains. The cap is a test guard, not an alternate outcome or seed search. */
 export function promoted(): SliceState {
   if (!promotedCache) {
@@ -106,8 +110,8 @@ export function promoted(): SliceState {
       s = tg(s, { type: 'CONSUME', bottleId: bottle.id, confirmed: true });
       if (s.progression.sequence === 1) { assertValidSliceState(s); promotedCache = s; break; }
       if (s.thunderGod.bottles.every(b => b.status === 'CONSUMED')) {
-        s = tg(ready(s, { ap: 1, cash: 100 }), { type: 'REQUEST_SUPPLY' });
-        s = tg(ready(s, { afterWeek: s.thunderGod.resupply.requestedWeek! }), { type: 'RECEIVE_SUPPLY' });
+        s = tg(ready(s, { ap: 1, cash: THUNDER_GOD_PRICES.recovery }), { type: 'REQUEST_RECOVERY_V1', bottleId: bottle.id });
+        s = tg(ready(s, { ap: 1, afterWeek: s.thunderGod.resupply.requestedWeek! }), { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: bottle.id });
       }
       const next = s.thunderGod.bottles.find(b => b.status === 'SUPPLIER')!;
       s = prepareBottle(s, next.id);

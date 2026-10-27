@@ -82,6 +82,52 @@ beforeEach(() => { vi.spyOn(window, "scrollTo").mockImplementation(() => {}); })
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 
 describe("Seer progression dossier", () => {
+  it("places the prepared bottle before spare materials without submitting or losing its projected facts", async () => {
+    const value = bottled();
+    value.actions.push({ id: "spare", label: "下一批备料", cost: "领域备料成本", enabled: true, reason: null, command: { type: "MATERIAL_WORK", batchId: "spare" } });
+    const { onCommand } = panel(value);
+    const bottles = screen.getByRole("region", { name: "已调配的魔药" });
+    const actions = screen.getByRole("group", { name: "成长行动" });
+    expect(bottles.compareDocumentPosition(actions) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
+    expect(bottles.querySelectorAll('svg[aria-hidden="true"]')).toHaveLength(2);
+    await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第一瓶魔药」/ }));
+    expect(document.activeElement).toBe(screen.getByRole("heading", { name: "第一瓶魔药" }));
+    expect(screen.getByText("71%")).toBeTruthy();
+    expect(screen.getByText("1 行动 · 消耗这瓶魔药")).toBeTruthy();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("folds only consumed promoted bottles into accessible records and keeps prepared bottles prominent", async () => {
+    const value = bottled();
+    const spent = { ...value, promoted: true, actions: [], bottles: [{ ...value.bottles[0]!, status: "已耗尽 · 成功晋升" }] };
+    const { onCommand, rerender } = panel(spent);
+    const fold = screen.getByText("查看已耗尽魔药记录 · 1 瓶").closest("details")!;
+    expect(fold.open).toBe(false);
+    await userEvent.click(screen.getByText("查看已耗尽魔药记录 · 1 瓶"));
+    expect(fold.open).toBe(true);
+    expect(screen.getByRole("region", { name: "已调配的魔药" }).textContent).toContain("劳务所得材料 · 第一批");
+    expect(screen.getByText("已耗尽 · 成功晋升")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /服用/ })).toBeNull();
+    rerender(<SeerPanel seer={{ ...value, promoted: true }} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.queryByText(/查看已耗尽魔药记录/)).toBeNull();
+    expect(screen.getByRole("button", { name: /查看并准备服用「第一瓶魔药」/ })).toBeTruthy();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("shows a committed failed bottle as empty without a second consumption control", async () => {
+    const value = bottled();
+    const onCommand = vi.fn();
+    const view = panel(value, onCommand);
+    await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第一瓶魔药」/ }));
+    const spent = { ...value, actions: [], bottles: [{ ...value.bottles[0]!, status: "已耗尽 · 排异，未晋升" }] };
+    view.rerender(<SeerPanel seer={spent} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.queryByRole("region", { name: "这瓶魔药的服用确认" })).toBeNull();
+    expect(screen.getByText("已耗尽 · 排异，未晋升")).toBeTruthy();
+    expect(screen.getByRole("region", { name: "已调配的魔药" }).querySelector(".seer-vial-liquid.is-empty")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /服用/ })).toBeNull();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
   it("offers discovery and the four-full-week guidance without revealing an unknown formula or abilities", async () => {
     const { onCommand } = panel(seer({
       formula: [{ name: "未见配方测试材料", quantity: 1, unit: "份" }],
@@ -134,7 +180,8 @@ describe("Seer progression dossier", () => {
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶魔药」/ }));
     expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.queryByText("71%")).toBeNull();
-    expect(screen.getByText("bottle-b")).toBeTruthy();
+    expect(screen.queryByText("bottle-b")).toBeNull();
+    expect(screen.getAllByText("第二瓶魔药")).toHaveLength(2);
     expect(screen.getByText(value.risk)).toBeTruthy();
     const current = screen.getByRole("region", { name: "服药前当前资源" });
     for (const text of ["76 / 100", "88 / 100", "12 / 15", resources.cash]) expect(within(current).getByText(text)).toBeTruthy();
@@ -204,6 +251,8 @@ describe("Seer progression dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "SEER", command: { type: "CONSUME", bottleId: "bottle-b", confirmed: true } });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });

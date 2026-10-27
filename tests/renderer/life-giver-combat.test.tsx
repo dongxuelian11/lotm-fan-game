@@ -1,4 +1,5 @@
 /* @vitest-environment jsdom */
+import { assertCombatRiskDisclosure, assertCombatHealth } from './combat-risk-assertions';
 import { cleanup, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
@@ -192,11 +193,9 @@ describe('Life Giver original Adrian, actual combat wheels and physical exits', 
       ['DARK_BOLT', 30], ['WARD', 20], ['JAM', 20], ['BODY_STRIKE', 25], ['ACCIDENT', 5],
     ]);
     expect(stage.textContent).toContain(battle.lifeGiver!.summary);
-    expect(stage.textContent?.replace(/\s+/g, ' ')).toContain(`健康 ${before.health} / 100`);
-    expect(stage.textContent?.replace(/\s+/g, ' ')).toContain(`健康 ${battle.enemyHealth} / 100`);
+    assertCombatHealth(stage, before.health, battle.enemyHealth);
     expect(within(stage).getByRole('heading', { name: battle.enemyName })).toBeTruthy();
-    const risk = within(stage).getByRole('region', { name: '伤势与恢复路线' });
-    expect(risk.closest('details')).toBeNull();
+    const risk = await assertCombatRiskDisclosure(stage, battle.consequenceWeights);
     for (const text of [`轻伤 ${battle.consequenceWeights.light}%`, `重伤 ${battle.consequenceWeights.heavy}%`, `死亡 ${battle.consequenceWeights.death}%`]) expect(risk.textContent).toContain(text);
     await userEvent.click(within(stage).getByText('查看公开轮盘与风险', { selector: 'summary' }));
     for (const entry of battle.enemyCountWheel) expect(within(stage).getByText(/^对手次数盘：/).textContent).toContain(`${entry.label} ${entry.weight}%`);

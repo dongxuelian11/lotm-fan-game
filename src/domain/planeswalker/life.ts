@@ -386,13 +386,51 @@ export function planeswalkerLifeActions(s: SliceState): PlaneswalkerLifeAction[]
   if (!l.reflected) add({ type: 'REFLECT' });
   return out;
 }
+/** Positive public copies keep known physical facts, never future replay fields. */
+const publicPlaneswalkerDate = (d: PublicGameDate): PublicGameDate => ({ epoch: d.epoch, year: d.year, month: d.month, day: d.day });
+const publicPlaneswalkerEndpoint = (e: PlaneswalkerVerifiedEndpoint): PlaneswalkerVerifiedEndpoint => ({
+  planetId: e.planetId, siteId: e.siteId, title: e.title, coordinateId: e.coordinateId, returnMarkerId: e.returnMarkerId, qualifiedWeek: e.qualifiedWeek,
+});
+const publicPlaneswalkerKit = (k: PlaneswalkerSiteState['kits'][PlaneswalkerKitCaseId]) => ({
+  id: k.id, source: k.source, caseId: k.caseId, pricePennies: k.pricePennies, status: k.status, purchasedWeek: k.purchasedWeek,
+  archivedWeek: k.archivedWeek, paidPennies: k.paidPennies, initialProtectionSeconds: k.initialProtectionSeconds,
+  protectionSeconds: k.protectionSeconds, astralLegs: k.astralLegs,
+});
+export function projectPlaneswalkerSite(p: PlaneswalkerSiteState): PlaneswalkerSiteState { return {
+  id: p.id, localMarkerId: p.localMarkerId, elapsedSeconds: p.elapsedSeconds, ordinaryExit: p.ordinaryExit,
+  introducedWeek: p.introducedWeek, introducedDate: p.introducedDate ? publicPlaneswalkerDate(p.introducedDate) : null,
+  playerLocation: p.playerLocation, playerMetres: p.playerMetres, playerAstralLegs: p.playerAstralLegs,
+  operatorId: p.operatorId, operatorName: p.operatorName, operatorAge: p.operatorAge, operatorLocation: p.operatorLocation,
+  operatorMetres: p.operatorMetres, operatorEnergy: p.operatorEnergy, operatorConsent: p.operatorConsent, operatorConsentWeek: p.operatorConsentWeek,
+  door: { id: p.door.id, state: p.door.state, operations: p.door.operations },
+  parcel: { id: p.parcel.id, owner: p.parcel.owner, quantity: p.parcel.quantity, location: p.parcel.location, ordinaryMetres: p.parcel.ordinaryMetres, astralLegs: p.parcel.astralLegs },
+  lamp: { id: p.lamp.id, oilRemaining: p.lamp.oilRemaining, patternKnown: p.lamp.patternKnown, shows: p.lamp.shows },
+  screen: { id: p.screen.id, state: p.screen.state, applications: p.screen.applications },
+  effect: { mode: p.effect.mode, expiresAt: p.effect.expiresAt },
+  verifiedEndpoint: p.verifiedEndpoint ? publicPlaneswalkerEndpoint(p.verifiedEndpoint) : null,
+  returnMarkerRead: p.returnMarkerRead, localPadsKnown: p.localPadsKnown,
+  kits: { 'symbolic-transit': publicPlaneswalkerKit(p.kits['symbolic-transit']), 'withdrawn-transit': publicPlaneswalkerKit(p.kits['withdrawn-transit']) },
+}; }
+export function projectPlaneswalkerAttempt(a: PlaneswalkerAttempt): PlaneswalkerAttempt { return {
+  week: a.week, method: a.method, closed: a.closed, result: a.result, performed: a.performed, interrupted: a.interrupted, inspected: a.inspected,
+  elapsedSeconds: a.elapsedSeconds, spiritualitySpent: a.spiritualitySpent, penniesSpent: a.penniesSpent, pollutionAdded: a.pollutionAdded,
+  protectionSpent: a.protectionSpent, playerTravelMetres: a.playerTravelMetres, playerAstralLegs: a.playerAstralLegs, operatorEnergySpent: a.operatorEnergySpent,
+  operatorConsent: a.operatorConsent, operatorConsentWeek: a.operatorConsentWeek, endpointsChecked: a.endpointsChecked, patternRead: a.patternRead,
+  parcelTaken: a.parcelTaken, departed: a.departed, returnMarkerChecked: a.returnMarkerChecked, returnedLocal: a.returnedLocal,
+  parcelReturned: a.parcelReturned, kitArchived: a.kitArchived, patternApplied: a.patternApplied, manualComparison: a.manualComparison,
+  permissionWithdrawn: a.permissionWithdrawn, effectStopped: a.effectStopped, waits: a.waits, doorOperations: a.doorOperations,
+  abilityTier: a.abilityTier, window: a.window, windowExpiresAt: a.windowExpiresAt, appliedAbilityIds: [...a.appliedAbilityIds],
+  moves: a.moves.map(m => ({ from: m.from, to: m.to, mode: m.mode, metres: m.metres, seconds: m.seconds, originalBody: m.originalBody, parcelId: m.parcelId, kitId: m.kitId })),
+  siteAtStart: projectPlaneswalkerSite(a.siteAtStart), siteAtClose: a.siteAtClose ? projectPlaneswalkerSite(a.siteAtClose) : null,
+}; }
+
 export function projectPlaneswalkerLife(s: SliceState): PlaneswalkerLifeProjection {
   const l = s.planeswalker.life, p = l.site;
   return { title: '通行室中的真实远行与三环光纹', story: PLANESWALKER_LIFE_STORY,
     environment: '通行室入口就是此前本地路线台原回程标记的位置；原标记没有搬迁。本地入口0米、近台2米、远台6米，普通出口在入口外2米；第一次观察会亲自实走两台并返回。玛拉42岁，是同一位当地协调人。异星灯原聚居点是此前本人已两次实访并核实当地传说的真实地点，绝不是这条本地米线的另一端。那里的原封闭生活舱提供有限正常呼吸，不提供真空或污染免疫。原包始终属于本人、只有一件；原灯有3份灯油，亲见光纹消耗1份且只展示一次。原屏保留已完成比对的记录，光纹作用停止后不会永久发光。',
     activeCase: l.activeCase, inside: hasPlaneswalkerLifeLock(s), insideCase: contactOpen(l), reflected: l.reflected,
-    site: structuredClone(p), clockSeconds: p.elapsedSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerMetres, playerAstralLegs: p.playerAstralLegs,
-    currentAttempt: structuredClone(current(l)), sitePhase: s.planeswalker.encounter.status === 'AVAILABLE' ? 'LIFE' : 'ENCOUNTER',
+    site: projectPlaneswalkerSite(p), clockSeconds: p.elapsedSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerMetres, playerAstralLegs: p.playerAstralLegs,
+    currentAttempt: current(l) ? projectPlaneswalkerAttempt(current(l)!) : null, sitePhase: s.planeswalker.encounter.status === 'AVAILABLE' ? 'LIFE' : 'ENCOUNTER',
     cases: CASES.map(d => { const r = l.cases[d.id], a = r.attempts.at(-1); return { id: d.id, title: d.title, story: d.story,
       observations: a ? [`本案实际${a.elapsedSeconds}秒，实耗${a.spiritualitySpent}灵性、${a.penniesSpent}便士、${a.protectionSpent}秒防护，污染增加${a.pollutionAdded}。`,
         `本人普通走${a.playerTravelMetres}米，异星实际通行${a.playerAstralLegs}程；玛拉始终是本地原协调人，实际消耗${a.operatorEnergySpent}精力。当前许可：${CONSENT_LABELS[a.operatorConsent]}。`,
@@ -402,7 +440,7 @@ export function projectPlaneswalkerLife(s: SliceState): PlaneswalkerLifeProjecti
         ...(a.patternApplied ? ['已用4秒在同一原屏完成短暂光纹比对，留下应用记录；停止后不永久发光。'] : []),
         ...(a.permissionWithdrawn ? ['玛拉在支付本次费用后撤回协调许可，本案没有出发，不退费用，也不增加通行掌握。'] : [])] : [],
       status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '技巧真实应用后完成了停止、原物收尾与必要的付费返程。' : '按普通方法或中止结果如实收尾，没有把未应用的成功算作掌握。',
-      contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: structuredClone(r.attempts) }; }), actions: planeswalkerLifeActions(s) };
+      contactOpen: r.contactOpen, returned: r.returned, closes: r.closes, attempts: r.attempts.map(projectPlaneswalkerAttempt) }; }), actions: planeswalkerLifeActions(s) };
 }
 function validBudget(v: unknown): v is PlaneswalkerLifeBudget {
   return record(v) && shape(v, ['actions', 'spirituality', 'cash', 'health', 'mind', 'pollution']) && integer(v.actions) && integer(v.spirituality, 0, 120) &&

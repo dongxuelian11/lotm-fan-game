@@ -6,6 +6,7 @@ import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import type { FerrymanEraCommand } from '../../src/domain/ferryman/era.js';
 import { PALE_EMPEROR_PREPARATION_IDS, PALE_EMPEROR_SOURCE_KEYS, type PaleEmperorCommand } from '../../src/domain/pale-emperor/types.js';
 import { hasPaleEmperorLock } from '../../src/domain/pale-emperor/index.js';
+import { PALE_EMPEROR_RECOVERY_PRICES, paleEmperorPrices } from '../../src/domain/pale-emperor/content.js';
 
 export const deathConsulNaturalPath = 'tests/fixtures/death-consul-v01730/natural.json';
 export const deathLegacyKeys = PALE_EMPEROR_SOURCE_KEYS;
@@ -71,12 +72,18 @@ export const dose = { type: 'CONSUME', bottleId: 'pale-emperor-potion-1', confir
 export function prepareBottle(s: SliceState, bottleId: string, commands?: SliceIntent[]): SliceState {
   for (const taskId of PALE_EMPEROR_PREPARATION_IDS) if (!s.paleEmperor.preparations.some(p => p.taskId === taskId)) s = pe(ready(s, {}, commands), { type: 'PREPARE_TASK', taskId }, commands);
   while (s.paleEmperor.bottles.find(b => b.id === bottleId)!.labourSteps < 5) s = pe(ready(s, {}, commands), { type: 'POTION_WORK', bottleId }, commands);
-  s = ready(s, { ap: 1, cash: 100, health: 100, mind: 100, spirituality: 120, pollution: 0, healed: true, afterWeek: s.deathConsul.promotionWeek! + 11 }, commands);
+  const bottle = s.paleEmperor.bottles.find(b => b.id === bottleId)!, era = s.paleEmperor.sourceEra!, prices = paleEmperorPrices(era);
+  const balance = bottle.recovery ? PALE_EMPEROR_RECOVERY_PRICES[era].afterLabour : prices.labourBalance;
+  s = ready(s, { ap: 1, cash: balance + prices.preparation, health: 100, mind: 100, spirituality: 120, pollution: 0, healed: true, afterWeek: s.deathConsul.promotionWeek! + 11 }, commands);
   s = pe(s, { type: 'BUY_POTION', bottleId }, commands); return pe(s, { type: 'PREPARE_PROMOTION' }, commands);
 }
 let preparedCache: SliceState | undefined;
 export function prepared(): SliceState { if (!preparedCache) preparedCache = prepareBottle(taught(), dose.bottleId); return structuredClone(preparedCache); }
 let promotedCache: SliceState | undefined;
+/** The native seed still succeeds on its third original. If a future directed
+ * path exhausts the originals, recover only the last failed dose's same
+ * characteristic through actual payment, next-week handover and fresh labour.
+ * The attempt cap never authorizes a fourth independent characteristic. */
 export function promoted(): SliceState {
   if (!promotedCache) {
     let s = prepared();
@@ -85,12 +92,13 @@ export function promoted(): SliceState {
       s = pe(s, { type: 'CONSUME', bottleId: bottle.id, confirmed: true });
       if (s.progression.sequence === 1) { assertValidSliceState(s); promotedCache = s; break; }
       if (s.paleEmperor.bottles.every(b => b.status === 'CONSUMED')) {
-        s = pe(ready(s, { ap: 1, cash: 20 }), { type: 'REQUEST_SUPPLY' });
-        s = pe(ready(s, { afterWeek: s.paleEmperor.resupply.requestedWeek! }), { type: 'RECEIVE_SUPPLY' });
+        const price = PALE_EMPEROR_RECOVERY_PRICES[s.paleEmperor.sourceEra!].investigation;
+        s = pe(ready(s, { ap: 1, cash: price }), { type: 'REQUEST_RECOVERY_V1', bottleId: bottle.id });
+        s = pe(ready(s, { ap: 1, afterWeek: s.paleEmperor.resupply.requestedWeek! }), { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: bottle.id });
       }
       s = prepareBottle(s, s.paleEmperor.bottles.find(b => b.status === 'SUPPLIER')!.id);
     }
-    if (!promotedCache) throw new Error('The fixed same-seed strategy exhausted twelve real bottles; preserve failure.');
+    if (!promotedCache) throw new Error('The fixed same-seed strategy exhausted twelve real doses of the same three originals; preserve failure.');
   }
   return structuredClone(promotedCache);
 }

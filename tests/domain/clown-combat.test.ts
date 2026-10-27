@@ -287,7 +287,7 @@ describe('current encounter sources, real consequences, and replay', () => {
     expect(resolveSliceCombatRound(state, 'ATTACK').round.playerAdvantage).toBe(315);
   });
 
-  it.each([null, 9] as const)('preserves the old %s profile draw order and base values', (sequence) => {
+  it.each([null, 9] as const)('preserves %s profile draw order while isolating ordinary first-case tuning', (sequence) => {
     const state = fixture();
     state.progression.sequence = sequence;
     state.progression.pathwayId = sequence === null ? null : 'diviner';
@@ -297,7 +297,7 @@ describe('current encounter sources, real consequences, and replay', () => {
     const draws = scriptRolls(1, 1, sequence === null ? 440 : 270, 400, 1);
     const { round } = resolveSliceCombatRound(state, 'ATTACK');
     expect(round.playerAdvantage).toBe(sequence === null ? 115 : 215);
-    expect(round.enemyAdvantage).toBe(114);
+    expect(round.enemyAdvantage).toBe(sequence === null ? 109 : 114); // ordinary95+physical14; recognizedS9 remains100+14
     expect(round.playerCount).toBe(1);
     expect(state.random.cursor).toBe(5);
     expect(draws).toHaveBeenCalledTimes(5);

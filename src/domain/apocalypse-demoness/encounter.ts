@@ -1,3 +1,4 @@
+import { projectDemonessPublicFields } from '../calamity-demoness/life.js';
 import type { ApocalypseDemonessOriginals } from './life.js';
 import { validApocalypseDemonessOriginals } from './life.js';
 import { SLICE_LIFE } from '../../content/slice-events.js';
@@ -226,8 +227,22 @@ export function apocalypseDemonessEncounterActions(s:SliceState){
   return choices.map(({command,label,cost})=>{const reason=blockApocalypseDemonessEncounter(s,command);return{id:`AD1-${command.type}${command.type==='ENCOUNTER_POLICY'?'-'+command.policy:''}`,command,label,cost,enabled:reason===null,reason,cleanup:command.type==='LEAVE_ENCOUNTER'};});
 }
 export const APOCALYPSE_DEMONESS_ENCOUNTER_STORY='一名43岁的独立成人在相邻修理院提出争议。本人、维瑞娜与马库斯须先实际离开原附室。购买一片新的三次战斗镜片，沿四米普通路到场，交谈并明确策略，再决定交战或和平离开。';
-export function projectApocalypseDemonessEncounter(s:SliceState){const e=s.apocalypseDemoness.encounter,known=e.scene.knownEnemyName!==null;return{title:known?'莱奥娜的相邻修理院争议':'相邻修理院中的独立对手',story:isApocalypseDemonessEncounterStage(s)?(known?'43岁的莱奥娜·布莱克以独立身体与精神自主行动，持自己的唯一原棍和三枚有限印记。伊瑞丝与旧人物仍保持其原结果。':APOCALYPSE_DEMONESS_ENCOUNTER_STORY):'',status:e.status,inside:hasApocalypseDemonessEncounterLock(s),policy:e.policy,policyConfirmed:e.journal.some(j=>j.command.type==='ENCOUNTER_POLICY'),scene:structuredClone(e.scene),materials:structuredClone(e.materials),
- enemy:{id:e.targetId,name:known?'莱奥娜·布莱克':null,age:known?43:null,sequence:known?1:null,health:e.enemyHealth,mind:e.enemyMind,spirituality:e.enemySpirituality,status:e.enemyStatus,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},pendingSource:structuredClone(e.pendingSource)},actions:apocalypseDemonessEncounterActions(s),facts:[
+export function projectApocalypseDemonessScene(p: ApocalypseDemonessScene): ApocalypseDemonessScene {
+  return { ...projectDemonessPublicFields(p, ['siteId', 'playerLocation', 'playerCoordinate', 'enemyCoordinate', 'ordinaryExit', 'visibleBodyLine', 'conditionVersion',
+    'observedConditionVersion', 'thirdPartiesInArea', 'observedSourceId', 'observationWeek', 'clockSeconds', 'externalSeconds', 'playerTravelMetres', 'enemyTravelMetres', 'knownPlayerName', 'knownEnemyName']),
+    presentMemberIds: [...p.presentMemberIds] };
+}
+export function projectApocalypseDemonessMaterials(m: ApocalypseDemonessMaterials): ApocalypseDemonessMaterials {
+  return { weapon: projectDemonessPublicFields(m.weapon, ['id', 'sourceId', 'owner', 'massKg', 'location', 'condition', 'visible']),
+    plate: m.plate ? projectDemonessPublicFields(m.plate, ['id', 'ownerId', 'quantity', 'location', 'initialCharges', 'charges', 'paidPennies', 'wear']) : null,
+    marks: m.marks.map(a => projectDemonessPublicFields(a, ['id', 'owner', 'status', 'usedRound'])) };
+}
+export const projectApocalypseDemonessPendingSource = (p: ApocalypseDemonessPendingSource | null): ApocalypseDemonessPendingSource | null =>
+  p ? projectDemonessPublicFields(p, ['id', 'markId', 'power', 'declaredAt', 'readyAt', 'declaredRound', 'declaredOrder', 'observed', 'conditionVersion', 'containmentUsed']) : null;
+export const projectApocalypseDemonessPowerUses = (p: Record<ApocalypseDemonessPowerId, number>) =>
+  ({ BODY_MARK: p.BODY_MARK, MENTAL_MARK: p.MENTAL_MARK, FEINT: p.FEINT });
+export function projectApocalypseDemonessEncounter(s:SliceState){const e=s.apocalypseDemoness.encounter,known=e.scene.knownEnemyName!==null;return{title:known?'莱奥娜的相邻修理院争议':'相邻修理院中的独立对手',story:isApocalypseDemonessEncounterStage(s)?(known?'43岁的莱奥娜·布莱克以独立身体与精神自主行动，持自己的唯一原棍和三枚有限印记。伊瑞丝与旧人物仍保持其原结果。':APOCALYPSE_DEMONESS_ENCOUNTER_STORY):'',status:e.status,inside:hasApocalypseDemonessEncounterLock(s),policy:e.policy,policyConfirmed:e.journal.some(j=>j.command.type==='ENCOUNTER_POLICY'),scene:projectApocalypseDemonessScene(e.scene),materials:projectApocalypseDemonessMaterials(e.materials),
+ enemy:{id:e.targetId,name:known?'莱奥娜·布莱克':null,age:known?43:null,sequence:known?1:null,health:e.enemyHealth,mind:e.enemyMind,spirituality:e.enemySpirituality,status:e.enemyStatus,weaponLocation:e.weaponLocation,powerUses:projectApocalypseDemonessPowerUses(e.powerUses),pendingSource:projectApocalypseDemonessPendingSource(e.pendingSource)},actions:apocalypseDemonessEncounterActions(s),facts:[
  '脉冲收束：8灵性2精神、知识18。借实际观察到且尚未释放的同一枚印记脉冲，20秒内辅助下一次普通打击30；不取消对方的后续攻击，不撤销已发生伤害。',
  '镜面缓冲：8灵性2精神、意志18。20秒内仅下一次可见身体冲击减势30，实耗新镜片一次并磨损5；不挡精神、不改旧伤。',
  '继承镜幕仍用6灵性、知识20，成功准备时实耗同一新镜片一次；下一实际身体冲击减势45，失败与到期不退款。两种防护只保留一个待用窗口，替换不退已耗次数。',

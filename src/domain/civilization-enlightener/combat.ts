@@ -3,8 +3,9 @@ import { resolveNormalCheck } from '../../resolution/normal-check.js';
 import type { PublicCheckResult, PublicGameDate } from '../../shared/contracts.js';
 import { stableStringify } from '../canonical.js';
 import { isValidGameDate } from '../game-calendar.js';
-import { KNOWLEDGE_MENTOR_COUNT_WHEEL, knowledgeMentorActionCount } from '../knowledge-mentor/combat.js';
+import { PYROMANIAC_COUNT_WHEEL, pyromaniacActionCount } from '../pyromaniac/count-wheel.js';
 import type { AlchemistCreation } from '../alchemist/life.js';
+import { projectCivilizationEnlightenerOriginalCreation } from './life.js';
 import type { SliceCombatRound, SliceInjury, SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
 import { CIVILIZATION_ENLIGHTENER_TARGET_ID, CIVILIZATION_ENLIGHTENER_SITE, CIVILIZATION_ENLIGHTENER_POWER_IDS, CIVILIZATION_ENLIGHTENER_POWERS,
   combatBody, initialCivilizationEnlightenerBody, hasCivilizationEnlightenerDisputeOpponent, originalCreations, validOriginals,
@@ -13,10 +14,10 @@ import { CIVILIZATION_ENLIGHTENER_TARGET_ID, CIVILIZATION_ENLIGHTENER_SITE, CIVI
   type CivilizationEnlightenerMaterials, type CivilizationEnlightenerScene, type CivilizationEnlightenerPolicy } from './encounter.js';
 
 /** Original bounded S1 design. The established S2 count/core/resource profile is unchanged. */
-export const CIVILIZATION_ENLIGHTENER_COUNT_WHEEL = KNOWLEDGE_MENTOR_COUNT_WHEEL;
-export const CIVILIZATION_ENLIGHTENER_ENEMY_COUNT_WHEEL = KNOWLEDGE_MENTOR_COUNT_WHEEL;
-export const civilizationEnlightenerActionCount = knowledgeMentorActionCount;
-export const civilizationEnlightenerEnemyActionCount = knowledgeMentorActionCount;
+export const CIVILIZATION_ENLIGHTENER_COUNT_WHEEL = PYROMANIAC_COUNT_WHEEL;
+export const CIVILIZATION_ENLIGHTENER_ENEMY_COUNT_WHEEL = PYROMANIAC_COUNT_WHEEL;
+export const civilizationEnlightenerActionCount = pyromaniacActionCount;
+export const civilizationEnlightenerEnemyActionCount = pyromaniacActionCount;
 export const PROCESS_ANALYSIS = 'paragon.s1.process-analysis', OPERATIONAL_GUIDANCE = 'paragon.s1.operational-guidance';
 export const CIVILIZATION_ENLIGHTENER_NEW_ABILITY_IDS = [PROCESS_ANALYSIS, OPERATIONAL_GUIDANCE] as const;
 export const CIVILIZATION_ENLIGHTENER_INHERITED_SKILL_IDS = ['paragon.s9.memory','paragon.s9.learning','paragon.s9.practice','paragon.s8.ancient-history','paragon.s8.wilderness','paragon.s8.ruin-caution',
@@ -238,6 +239,64 @@ export function civilizationEnlightenerCombatConsequence(round: SliceCombatRound
   if (o.playerHealthAfter === 0) text += '本人的原身体真实死亡，本周目终结。'; else if (o.enemyHealth === 0) text += '阿德里安原身体真实死亡，唯一原杆留地。'; else if (o.enemyStatus === 'SURRENDERED') text += '阿德里安因实际伤势或精神耗尽自主停止抵抗，仍活着，原杆放在地面。';
   return text + ' 本轮实际60秒；未使用窗口到时结束，已经花费的灵性与精神不退。同一原件资源保留，维拉与旧遭遇人物均不在场。';
 }
+/** Public evidence uses positive nested allowlists; no source replay inputs cross this boundary. */
+const publicInjury = (i: SliceInjury) => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision });
+const publicWindow = (w: CivilizationEnlightenerWindow) => ({
+  id: w.id, kind: w.kind, createdAt: w.createdAt, expiresAt: w.expiresAt, targetActionId: w.targetActionId, magnitude: w.magnitude,
+});
+const publicWindows = (w: CivilizationEnlightenerWindows) => ({
+  analysis: w.analysis ? publicWindow(w.analysis) : null, guidance: w.guidance ? publicWindow(w.guidance) : null,
+  attention: w.attention ? publicWindow(w.attention) : null, oldAnalysis: w.oldAnalysis ? publicWindow(w.oldAnalysis) : null,
+  calibration: w.calibration ? publicWindow(w.calibration) : null,
+});
+const publicPendingAction = (p: CivilizationEnlightenerPendingAction | null) => p ? ({
+  id: p.id, planned: p.planned, actual: p.actual, declaredAt: p.declaredAt, observedAt: p.observedAt,
+  observationSeconds: p.observationSeconds, visibleIntent: p.visibleIntent, mechanical: p.mechanical,
+}) : null;
+const publicMaterials = (m: CivilizationEnlightenerMaterials) => ({
+  weapon: { id: m.weapon.id, sourceId: m.weapon.sourceId, owner: m.weapon.owner, massKg: m.weapon.massKg, location: m.weapon.location, condition: m.weapon.condition },
+  mechanism: { id: m.mechanism.id, owner: m.mechanism.owner, location: m.mechanism.location, charge: m.mechanism.charge, capacity: m.mechanism.capacity, visible: m.mechanism.visible },
+});
+const publicScene = (p: CivilizationEnlightenerScene) => ({
+  siteId: p.siteId, playerLocation: p.playerLocation, playerCoordinate: p.playerCoordinate, enemyCoordinate: p.enemyCoordinate,
+  ordinaryExit: p.ordinaryExit, thirdPartiesInArea: p.thirdPartiesInArea, presentMemberIds: [...p.presentMemberIds],
+  observedSourceId: p.observedSourceId, observationWeek: p.observationWeek, clockSeconds: p.clockSeconds,
+  externalSeconds: p.externalSeconds, playerTravelMetres: p.playerTravelMetres, knownPlayerName: p.knownPlayerName, knownEnemyName: p.knownEnemyName,
+});
+const publicCheck = (c: PublicCheckResult | null): PublicCheckResult | null => c ? ({
+  ability: c.ability, baseAbility: c.baseAbility, modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+  effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier,
+}) : null;
+const publicPowerUses = (p: CivilizationEnlightenerCombatBody['powerUses']) => ({ MECHANICAL_PULSE: p.MECHANICAL_PULSE, MIND_PRESSURE: p.MIND_PRESSURE, WARD: p.WARD, ATTENTION: p.ATTENTION });
+const publicWheel = (w: SliceWheelEntry) => ({ id: w.id, label: w.label, weight: w.weight });
+export function projectCivilizationEnlightenerAction(a: CivilizationEnlightenerActionEvidence) { return {
+  order: a.order, actor: a.actor, id: a.id, planned: a.planned, selectedAbility: a.selectedAbility, fallbackReason: a.fallbackReason, label: a.label,
+  selfGain: a.selfGain, enemyReduction: a.enemyReduction, threatens: a.threatens, mentalPressure: a.mentalPressure, attackKind: a.attackKind,
+  rawContribution: a.rawContribution, rawReduction: a.rawReduction, paidCost: a.paidCost, mindCost: a.mindCost, physicalFactor: a.physicalFactor, check: publicCheck(a.check),
+  resistanceRoll: a.resistanceRoll, resistanceChance: a.resistanceChance, succeeded: a.succeeded, finiteResult: a.finiteResult,
+  windowsBefore: publicWindows(a.windowsBefore), windowsAfter: publicWindows(a.windowsAfter),
+  pendingBefore: publicPendingAction(a.pendingBefore), pendingAfter: publicPendingAction(a.pendingAfter), masteryApplied: [...a.masteryApplied], countered: [...a.countered],
+  creationsBefore: a.creationsBefore.map(projectCivilizationEnlightenerOriginalCreation), creationsAfter: a.creationsAfter.map(projectCivilizationEnlightenerOriginalCreation),
+  boxChargeSpent: a.boxChargeSpent, frameChargeSpent: a.frameChargeSpent, frameDurabilityDamage: a.frameDurabilityDamage, mechanismChargeSpent: a.mechanismChargeSpent,
+  atSeconds: a.atSeconds, elapsedSeconds: a.elapsedSeconds, travelMetres: a.travelMetres,
+  playerMindAfter: a.playerMindAfter, playerSpiritualityAfter: a.playerSpiritualityAfter, enemyMindAfter: a.enemyMindAfter, enemySpiritualityAfter: a.enemySpiritualityAfter,
+}; }
+export type CivilizationEnlightenerPublicActionEvidence = ReturnType<typeof projectCivilizationEnlightenerAction>;
+export function projectCivilizationEnlightenerRoundOutcome(o: CivilizationEnlightenerRoundOutcome) { return {
+  enemyHealth: o.enemyHealth, enemyMind: o.enemyMind, enemySpirituality: o.enemySpirituality, enemyStatus: o.enemyStatus,
+  enemyInjuries: o.enemyInjuries.map(publicInjury), enemyRisk: o.enemyRisk, weaponLocation: o.weaponLocation, powerUses: publicPowerUses(o.powerUses),
+  totalOwnerMindSpent: o.totalOwnerMindSpent, analysisAttempts: o.analysisAttempts, analysisSuccesses: o.analysisSuccesses, guidanceAttempts: o.guidanceAttempts, guidanceSuccesses: o.guidanceSuccesses,
+  targetId: o.targetId, round: o.round, stance: o.stance, continuing: o.continuing,
+  playerHealthAfter: o.playerHealthAfter, playerMindAfter: o.playerMindAfter, playerSpiritualityAfter: o.playerSpiritualityAfter,
+  playerInjuriesAfter: o.playerInjuriesAfter.map(publicInjury), playerRiskAfter: o.playerRiskAfter, materialsAfter: publicMaterials(o.materialsAfter),
+  creations: o.creations.map(projectCivilizationEnlightenerOriginalCreation),
+  masteryAfter: Object.fromEntries([...CIVILIZATION_ENLIGHTENER_INHERITED_SKILL_IDS, ...CIVILIZATION_ENLIGHTENER_NEW_ABILITY_IDS].filter(id => Object.hasOwn(o.masteryAfter, id)).map(id => [id, o.masteryAfter[id]!])),
+  rootAfter: publicScene(o.rootAfter), elapsedSeconds: o.elapsedSeconds,
+  playerActions: o.playerActions.map(projectCivilizationEnlightenerAction), enemyActions: o.enemyActions.map(projectCivilizationEnlightenerAction), expiredWindows: o.expiredWindows.map(publicWindow),
+  windowsAfter: publicWindows(o.windowsAfter), pendingEnemyActionAfter: o.pendingEnemyActionAfter,
+}; }
+export type CivilizationEnlightenerPublicRoundOutcome = ReturnType<typeof projectCivilizationEnlightenerRoundOutcome>;
+
 export function projectCivilizationEnlightenerCombat(s:SliceState){const e=s.civilizationEnlightener.encounter,last=s.combat?.encounterId==='CIVILIZATION_ENLIGHTENER_DISPUTE'?s.combat.lastRound?.civilizationEnlightenerOutcome:e.terminal?s.combatHistory[e.terminal.historyIndex]?.civilizationEnlightenerOutcome:null;
- return {enemyName:'阿德里安·黑尔（44岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:{...e.powerUses},policy:e.policy,materials:structuredClone(e.materials),creations:structuredClone(originalCreations(s)),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order):[],countWheel:CIVILIZATION_ENLIGHTENER_COUNT_WHEEL,enemyCountWheel:CIVILIZATION_ENLIGHTENER_ENEMY_COUNT_WHEEL,enemyAbilityWheel:CIVILIZATION_ENLIGHTENER_ENEMY_ABILITY_WHEEL,
+ return {enemyName:'阿德里安·黑尔（44岁）',targetId:e.targetId,enemyHealth:e.enemyHealth,enemyMind:e.enemyMind,enemySpirituality:e.enemySpirituality,weaponLocation:e.weaponLocation,powerUses:publicPowerUses(e.powerUses),policy:e.policy,materials:publicMaterials(e.materials),creations:originalCreations(s).map(projectCivilizationEnlightenerOriginalCreation),lastActionSequence:last?[...last.playerActions,...last.enemyActions].sort((a,b)=>a.order-b.order).map(projectCivilizationEnlightenerAction):[],countWheel:CIVILIZATION_ENLIGHTENER_COUNT_WHEEL.map(publicWheel),enemyCountWheel:CIVILIZATION_ENLIGHTENER_ENEMY_COUNT_WHEEL.map(publicWheel),enemyAbilityWheel:CIVILIZATION_ENLIGHTENER_ENEMY_ABILITY_WHEEL.map(publicWheel),
  facts:['体30%、感30%、意25%、知15%；双方1至6动作10/15/25/25/15/10，基础1250、底125、上限120，仅继续轮恢复12。','工艺析解仅在真实观察后影响一项待执行机械动作；操作启示仅增强后来一次真实可用本人原动作。','每轮各一次，失败仍付成本；空窗口、过期与资源不足回退均不增长掌握。','原盒原架储能耐久保持同一份，缺能不能启动；没有可用原指令片，也没有补发。','实际身体攻击走共同伤势盘；精神压力只扣精神，精神耗尽活着停战，身体死亡终结本周目。']};}

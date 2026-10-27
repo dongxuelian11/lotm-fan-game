@@ -628,11 +628,14 @@ body {
   border-color: var(--slice-red);
   background: #f6eee1;
 }
-.slice-action svg {
-  width: 39px;
+.slice-action .life-action-vignette {
+  width: 64px;
   height: 39px;
-  stroke-width: 1.25;
+  flex: none;
+  stroke-width: 1.6;
 }
+.life-vignette-wash { fill: currentColor; fill-opacity: .08; stroke: none; }
+.life-vignette-etch { stroke-width: 1; opacity: .7; }
 .slice-action strong {
   font-family: "Noto Serif CJK SC", "SimSun", serif;
   font-size: 27px;
@@ -1683,3 +1686,21 @@ body {
 .slice-recovery-notice { margin: 12px 0; padding: 14px 16px; border: 1px solid #a36a48; border-left: 4px solid #9d5138; border-radius: 8px; background: #fff7ed; color: #3a2921; line-height: 1.6; }
 .slice-recovery-notice p { margin: 6px 0; }
 .slice-recovery-notice .slice-button { margin-top: 8px; }
+
+/* Keep the next step visible; route browsing is optional. */
+.slice-growth-routes { margin: 0 0 18px; }
+.slice-growth-routes > summary { cursor: pointer; color: var(--slice-ink); padding: 8px 0; }
+.slice-growth-routes[open] > summary { margin-bottom: 12px; }
+.slice-action-feedback { position: sticky; top: 0; z-index: 2; padding: 10px 16px; margin: 0 0 18px; background: #f5f0e4; border-left: 3px solid #63795e; box-shadow: 0 2px 8px #0001; font-size: 16px; }
+.slice-action-feedback p { margin: 4px 0; }
+
+.slice-growth-jump {
+  color: var(--slice-red);
+  text-decoration: underline;
+  text-underline-offset: .18em;
+}
+.slice-growth-jump:hover { color: var(--slice-ink); }
+.slice-growth-jump:focus-visible {
+  outline: 3px solid var(--slice-red);
+  outline-offset: 4px;
+}

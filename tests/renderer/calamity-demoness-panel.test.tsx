@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CalamityDemonessPanel } from '../../src/renderer/CalamityDemonessPanel';
 import type { CalamityDemonessAction, CalamityDemonessCommand, CalamityDemonessProjection } from '../../src/domain/calamity-demoness/types';
-import type { CalamityDemonessAttempt, CalamityDemonessCaseId, CalamityDemonessSiteState } from '../../src/domain/calamity-demoness/life';
+import type { CalamityDemonessPublicAttempt, CalamityDemonessCaseId, CalamityDemonessPublicSite, CalamityDemonessPublicHistory } from '../../src/domain/calamity-demoness/life';
 
 // Small renderer-only public fixtures, not domain saves, replay evidence or natural outcomes.
 // They never load campaign fixtures or the whole application.
@@ -17,18 +17,16 @@ const INHERITED = [
   ['assassin.s4.plague', '渐进瘟疫与有限施法干扰', 8], ['assassin.s3.mirror-passage', '镜界通行', 8],
 ] as const;
 const TITLES: Record<CalamityDemonessCaseId, string> = { 'mirror-screen': '原镜前的一次封闭负载', 'black-flame-channel': '原箱内的一份封装残留物', 'revoked-window': '撤回许可后的普通路线' };
-function site(): CalamityDemonessSiteState {
+function historicalScene(): CalamityDemonessPublicHistory {
+  return { clockSeconds: 247, playerLocation: 'START', playerTravelMetres: 86,
+    vera: { name: '维瑞娜·肖', age: 46, location: 'START' },
+    marcus: { name: '马库斯·赫尔', age: 41, location: 'B' },
+    mirrorA: { id: 'UD3-MIRROR-A', intact: true }, mirrorB: { id: 'UD3-MIRROR-B', intact: true },
+    entry: { held: false }, shutter: { state: 'OPEN' } };
+}
+function site(): CalamityDemonessPublicSite {
   return { siteId: 'CD2-GALLERY-ANNEX', introducedWeek: 139, introducedDate: { epoch: 'FIFTH_EPOCH', year: 1352, month: 1, day: 1 }, clockSeconds: 48,
     playerLocation: 'A', playerTravelMetres: 12, playerEnergy: 88,
-    source: { root: 'unagingDemoness.life', promotionWeek: 115, introducedWeek: 139, snapshot: {
-      siteId: 'UD3-GALLERY', clockSeconds: 247, playerLocation: 'START', playerTravelMetres: 86,
-      vera: { id: 'UD3-VERA', name: '维瑞娜·肖', age: 46, alive: true, willing: true, location: 'START' },
-      marcus: { id: 'UD3-MARCUS', name: '马库斯·赫尔', age: 41, alive: true, willing: true, location: 'B' },
-      mirrorA: { id: 'UD3-MIRROR-A', owner: 'UD3-VERA', quantity: 1, location: 'A', intact: true },
-      mirrorB: { id: 'UD3-MIRROR-B', owner: 'UD3-VERA', quantity: 1, location: 'B', intact: true },
-      entry: { mirrorId: 'UD3-MIRROR-A', held: false, returnStepsRemaining: 0 },
-      shutter: { id: 'UD3-SHUTTER', operator: 'UD3-MARCUS', location: 'B', state: 'OPEN', remainingTests: 0, closures: 1, reopenings: 1 },
-    } },
     vera: { id: 'UD3-VERA', name: '维瑞娜·肖', age: 46, alive: true, willing: true, location: 'ENTRY', energy: 98, travelMetres: 2, mirrorConsent: 'GRANTED', boxConsent: 'UNASKED' },
     marcus: { id: 'UD3-MARCUS', name: '马库斯·赫尔', age: 41, alive: true, willing: true, location: 'ENTRY', energy: 76, travelMetres: 24, mirrorConsent: 'GRANTED', boxConsent: 'UNASKED' },
     mirrorA: { id: 'UD3-MIRROR-A', owner: 'UD3-VERA', quantity: 1, location: 'A', intact: true },
@@ -45,7 +43,7 @@ function site(): CalamityDemonessSiteState {
       { actorId: 'UD3-MARCUS', from: 'SOURCE_B', to: 'ENTRY', mode: 'SOURCE_ARRIVAL', metres: 24, seconds: 24 },
     ] };
 }
-function attempt(p: CalamityDemonessSiteState, overrides: Partial<CalamityDemonessAttempt> = {}): CalamityDemonessAttempt {
+function attempt(p: CalamityDemonessPublicSite, overrides: Partial<CalamityDemonessPublicAttempt> = {}): CalamityDemonessPublicAttempt {
   return { week: 139, method: 'ABILITY', closed: false, result: 'ABILITY', stopped: false, inspected: false, permissionWithdrawn: false,
     elapsedSeconds: 14, playerTravelMetres: 4, energySpent: 4, spiritualitySpent: 6, penniesSpent: 20,
     operatorConsent: 'GRANTED', ownerConsent: 'GRANTED', routeConsent: 'GRANTED', consentWeek: 139,
@@ -67,7 +65,7 @@ function view(promoted = true): CalamityDemonessProjection {
     ] : [])], acting: promoted ? 0 : 100, digestion: promoted ? '灾难魔女消化0/100。' : '不老魔女消化100/100。', pollution: 0,
     risk: '服药耗尽原瓶和当次检查。普通战斗仍可能造成伤势或死亡。', resources: { health: 100, maxHealth: 100, mind: 85, maxMind: 100, spirituality: 111, maxSpirituality: 120, cash: '3镑2苏勒', actionsRemaining: 1 },
     currentGender: 'FEMALE', inheritedHistory: ['第115周实际晋升不老魔女，原消化100/100保留。', '原科宾已经投降，原身体、原棍和旧伤保留。'], appearanceRecord: '延续女巫时期的女性身体，不重复变化。',
-    life: { title: '原馆舍附廊', story: '原人原物与实际消耗逐案保存。', environment: '门口0米，原镜A4米，原箱8米，原镜B12米。', activeCase: promoted ? 'mirror-screen' : null, inside: promoted, insideCase: promoted, reflected: false, site: p,
+    life: { title: '原馆舍附廊', story: '原人原物与实际消耗逐案保存。', environment: '门口0米，原镜A4米，原箱8米，原镜B12米。', activeCase: promoted ? 'mirror-screen' : null, inside: promoted, insideCase: promoted, reflected: false, site: p, historicalScene: historicalScene(),
       clockSeconds: p.clockSeconds, playerLocation: p.playerLocation, playerTravelMetres: p.playerTravelMetres, currentAttempt: promoted ? a : null,
       cases: (Object.keys(TITLES) as CalamityDemonessCaseId[]).map((id): CalamityDemonessProjection['life']['cases'][number] => ({ id, title: TITLES[id], story: '每案当前许可独立，普通退路始终保留。', observations: [], status: id === 'mirror-screen' && promoted ? 'ACTIVE' : 'AVAILABLE', method: id === 'mirror-screen' && promoted ? 'ABILITY' : null, result: null, contactOpen: id === 'mirror-screen' && promoted, returned: false, closes: 0, attempts: id === 'mirror-screen' && promoted ? [a] : [] })), actions: [] },
     encounter: { title: '庭院里的伊瑞丝', story: '伊瑞丝持自己的原棍提出通行争议。', status: 'AVAILABLE', inside: false, site: null, startSite: null, preparation: null, plate: null, enemy: null, actions: [], facts: [] }, insideCase: promoted, environment: '贝克兰德馆舍附廊' };
@@ -175,7 +173,7 @@ describe('Calamity Demoness real original mirrors, people and finite supplies', 
     expect(screen.getByRole('region', { name: '灾难魔女当前资源' }).textContent).toContain('111/120'); copyIsNatural(items); copyIsNatural(people); expect(value).toEqual(saved); expect(ui.onCommand).not.toHaveBeenCalled();
   });
   it('does not fabricate current original people or item arrival before the source is inspected', () => {
-    const value = view(), p = value.life.site; p.source = null; p.introducedWeek = null; p.mirrorA = null; p.mirrorB = null; p.vera = null; p.marcus = null; p.actorMoves = []; value.life.currentAttempt = null;
+    const value = view(), p = value.life.site; delete value.life.historicalScene; p.introducedWeek = null; p.mirrorA = null; p.mirrorB = null; p.vera = null; p.marcus = null; p.actorMoves = []; value.life.currentAttempt = null;
     renderView(value); const people = screen.getByRole('region', { name: '灾难魔女原人位置与当前许可' }); expect(people.textContent).toContain('尚无本人的现场行程'); expect(people.textContent).not.toContain('当前在附廊门口');
     expect(screen.getByRole('region', { name: '灾难魔女原镜与当前物资' }).textContent).toContain('尚未亲自核对');
   });

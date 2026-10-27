@@ -1,3 +1,4 @@
+import { publicPryerFields, publicPryerInjury, publicPryerScroll, publicPryerWorkshop, publicSageSite } from '../sage/life.js';
 import type { ActionRandomStream } from '../../resolution/deterministic-random.js';
 import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { SliceStance, SliceState, SliceWheelEntry } from '../slice/types.js';
@@ -217,7 +218,7 @@ export function projectMysticCombat(s: SliceState) {
   return { enemyName: '卢坎·维伊（MY4-LUCAN-VEY，原创成年序列5对手，G）', targetId: e.targetId,
     enemySpirituality: e.enemySpirituality, powerUses: { ...e.powerUses }, focused: e.focused, cageReady: e.cageReady, echoReady: e.echoReady,
     echoLearned: learned, publicDisclosed: disclosed, effectFactor: learned ? disclosed ? .15 : 1 : 0,
-    originalExit: true, pursuit: false, distanceMetres: 4, source: currentMysticCombatSource(s),
+    originalExit: true, pursuit: false, distanceMetres: 4,
     summary: `原敌剩余灵性${e.enemySpirituality}/40。${learned ? `已学迟钟回声：下一实际付费弧光×${echoMultiplier(disclosed)}${disclosed ? '，公开后仅余15%效力' : ''}` : '尚未学会迟钟回声；R只能使用实际已佩戴原眼镜聚焦或普通观察'}。原牢笼仅限制下一正贡献身体打击；所有有限效果本轮结束，费用不退，原眼镜戴回。`,
     enemyCountWheel: MYSTIC_ENEMY_COUNT_WHEEL, enemyAbilityWheel: MYSTIC_ENEMY_ABILITY_WHEEL };
 }
@@ -290,3 +291,11 @@ export function validateMysticRoundOutcome(v: unknown): v is MysticRoundOutcome 
   }
   return p.enemySpiritualityBefore - spent === p.enemySpirituality && p.playerSpiritualityBefore - playerSpent === p.playerSpiritualityAfter && a.playerMind - mindSpent === p.playerMindAfter;
 }
+
+export function publicMysticRound(o: MysticRoundOutcome) { return {
+  ...publicPryerFields(o, ['targetId', 'round', 'enemyHealth', 'enemyMind', 'enemySpirituality', 'enemyStatus', 'playerSpiritualityBefore', 'playerSpiritualityAfter', 'playerMindAfter', 'enemySpiritualityBefore', 'focused', 'cageReady', 'echoReady']),
+  powerUses: publicPryerFields(o.powerUses, ['ARC_BOLT', 'WARD']),
+  playerActions: o.playerActions.map(a => ({ ...publicPryerFields(a, ['order', 'id', 'paidCost', 'mindCost', 'checkChance', 'checkRoll', 'prepared', 'focusConsumed', 'selfGain', 'enemyReduction']), scroll: a.scroll ? publicPryerScroll(a.scroll) : null })),
+  enemyActions: o.enemyActions.map(a => publicPryerFields(a, ['order', 'planned', 'actual', 'paidCost', 'physicalFactor', 'cageApplied', 'echoApplied', 'echoMultiplier', 'selfGain', 'enemyReduction'])),
+}; }
+export type MysticPublicRoundOutcome = ReturnType<typeof publicMysticRound>;

@@ -185,7 +185,14 @@ describe('Calamity Demoness actual585-command continuation and shared invariants
     expect(e.startSite).toEqual(final.calamityDemoness.life.site);
     expect(e.startSite).toMatchObject({ playerLocation: 'ENTRY', playerTravelMetres: 72, playerEnergy: 28 });
     expect(e.currentSite).toMatchObject({ playerLocation: 'OUTSIDE', playerTravelMetres: 78, playerEnergy: 22, vera: { location: 'OUTSIDE' }, marcus: { location: 'OUTSIDE' } });
-    expect(projectSliceState(final).calamityDemoness.encounter.site).toEqual(e.currentSite);
+    const site = e.currentSite!, publicSite = projectSliceState(final).calamityDemoness.encounter.site;
+    // The same physical site remains public; its inherited private source is not.
+    expect(publicSite).toEqual({ siteId: site.siteId, introducedWeek: site.introducedWeek, introducedDate: site.introducedDate,
+      clockSeconds: site.clockSeconds, playerLocation: site.playerLocation, playerTravelMetres: site.playerTravelMetres, playerEnergy: site.playerEnergy,
+      vera: site.vera, marcus: site.marcus, mirrorA: site.mirrorA, mirrorB: site.mirrorB, load: site.load, box: site.box,
+      residue: site.residue, screen: site.screen, plates: site.plates, actorMoves: site.actorMoves });
+    expect(publicSite).not.toHaveProperty('source');
+    expect(site.source).not.toBeNull();
     expect(final.calamityDemoness.encounter).toEqual(terminal.final.calamityDemoness.encounter);
     expect(final.lastCombatRound).toEqual(terminal.final.lastCombatRound);
     preserveOriginals(snapshot('departureStart'), final);

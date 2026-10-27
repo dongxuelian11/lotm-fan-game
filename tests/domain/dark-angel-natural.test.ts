@@ -21,7 +21,8 @@ import { DARK_ANGEL_ROOT as ROOT, DARK_ANGEL_SOURCE as SOURCE, DARK_ANGEL_PRIOR 
   DARK_ANGEL_PREFIX_COUNT as PREFIX, DARK_ANGEL_INHERITED_COUNT as INHERITED,
   DARK_ANGEL_SEED as SEED, captureCommands as commands, boundaryIndex, boundarySteps, snapshotIndex,
   naturalEntry, sourceEntry, summaryEntry, capturePath, captureFileHash, insertionOrderHash, captureValueHash,
-  captureJsonLines, currentCapture, capturedState, capturedSnapshot, replayCaptureBoundary,
+  captureJsonLines, currentCapture, capturedState, capturedSnapshot, replayCaptureBoundary, namedBoundary,
+  currentDarkAngelReplayExpectation, archivedDarkAngelAcquisitionBoundary,
   captureBody, sourceOriginals, currentOriginals, assertPublicCaptureControl, assertOriginalContinuity,
   sameCaptureValue as same } from './dark-angel-capture-helper.js';
 
@@ -33,7 +34,7 @@ interface Transition { key: string; file: string; commandIndex: number; beforeRe
 
 // Frozen evidence describes this one original-seed capture. No directed prefix,
 // favorable reroll or invented successful application replaces an actual result.
-describe('Dark Angel exact615 natural history and complete original-seed public continuation', () => {
+describe('Dark Angel exact615 history, preserved824 capture and legal current continuation', () => {
   it('pins raw176 source, raw153 ancestry, frozen producer and every raw198 capture member before explicit CURRENT migration', async () => {
     expect(await captureFileHash(SOURCE)).toBe(expected.sourceSha256);
     expect(await captureFileHash(PRIOR)).toBe(expected.priorSha256);
@@ -114,7 +115,7 @@ describe('Dark Angel exact615 natural history and complete original-seed public 
     assertOriginalContinuity(final, original);
   }, 60_000);
 
-  it('replays every command from original creation, the exact615 prefix and all enabled public continuation controls', () => {
+  it('replays the legal723-command prefix and strictly reads the archived independent-fourth continuation', () => {
     expect(PREFIX).toBe(615); expect(commands).toHaveLength(expected.commands);
     const originalCommands = sourceEntry<SliceIntent[]>('commands'); expect(originalCommands).toHaveLength(PREFIX);
     same(commands.slice(0, PREFIX), originalCommands); expect(insertionOrderHash(originalCommands)).toBe(expected.prefixSha256);
@@ -122,7 +123,10 @@ describe('Dark Angel exact615 natural history and complete original-seed public 
     same(naturalEntry('strategy'), expected.strategy); expect(naturalEntry('seed')).toBe(SEED);
     let state = currentCapture(sourceEntry('initial')); const original = capturedState('prefixFinal');
     same(state, capturedState('initial')); expect(state.progression.sequence).toBeNull();
-    for (const [index, intent] of commands.entries()) {
+    const legacyRequest = namedBoundary('paid-next-week-resupply');
+    expect(commands[723]).toEqual({ type: 'DARK_ANGEL', command: { type: 'REQUEST_SUPPLY' } });
+    same(commands[723], legacyRequest.intent);
+    for (const [index, intent] of commands.slice(0, 723).entries()) {
       if (intent.type === 'CONTINUE_LIFE') {
         expect(index).toBeLessThan(PREFIX); expect(state.status).toBe('SLICE_COMPLETE'); expect(state.ending?.kind).not.toBe('DEATH');
       } else expect(state.status, `No command after death at step ${index + 1}`).toBe('ACTIVE');
@@ -133,13 +137,21 @@ describe('Dark Angel exact615 natural history and complete original-seed public 
       if (index === PREFIX - 1) same(state, original);
       if (index >= PREFIX) assertOriginalContinuity(state, original);
     }
-    same(state, capturedState('final')); same(captureBody(state), expected.final);
+    same(state, currentDarkAngelReplayExpectation(legacyRequest.before));
+    expect(state.darkAngel.bottles.map(b => b.outcome)).toEqual(['FAILURE', 'FAILURE', 'FAILURE']);
+    expect(state.random).toEqual({ seed: SEED, cursor: 356 }); expect(state.seer.pollution).toBe(30);
+    expect(() => applySliceIntent(state, legacyRequest.intent)).toThrow();
+    expect(projectSliceState(state).darkAngel.actions.some(action => ['REQUEST_SUPPLY', 'RECEIVE_SUPPLY'].includes(action.command.type))).toBe(false);
     assertValidSliceState(state); same(migrateSliceState(state), state);
-    expect(state.revision).toBe(capturedState('initial').revision + expected.commands);
+    expect(state.revision).toBe(capturedState('initial').revision + 723);
+    const archivedFinal = capturedState('final'); assertValidSliceState(archivedFinal);
+    expect(validateDarkAngelAcquisitionJournal(archivedFinal)).toBe(true);
+    same(migrateSliceState(archivedFinal), archivedFinal); same(captureBody(archivedFinal), expected.final);
+    expect(archivedFinal.revision).toBe(capturedState('initial').revision + expected.commands);
     expect(naturalEntry('stage')).toBe(expected.stage); expect(naturalEntry('error')).toBeNull();
     expect(naturalEntry('pendingIntent')).toBeNull(); expect(naturalEntry('failurePhase')).toBe('IDLE');
-  // The frozen producer took about442s including824 reductions, validation and
-  // capture I/O. Keep all assertions and give this full-history replay600s.
+  // The full824 capture remains byte-pinned and historically validated above.
+  // Current dispatch stops before its now-closed independent-fourth request.
   }, 600_000);
 
   it('keeps every boundary name, alias, snapshot, transition and command/public ledger complete and contiguous', async () => {
@@ -201,7 +213,7 @@ describe('Dark Angel exact615 natural history and complete original-seed public 
     }
   }, 240_000);
 
-  it('pays actual60p treatment,500p guidance, finite resupply and separate five-action1200+180p bottles without healing on purchase', () => {
+  it('retains actual60p treatment,500p guidance and archived paid supply while current fourth-original acquisition stays closed', () => {
     const original = capturedState('prefixFinal'), final = capturedState('final'), journal = final.darkAngel.acquisitionJournal;
     same(naturalEntry('treatments'), expected.treatments); expect(expected.treatments).toHaveLength(1);
     const treatment = replayCaptureBoundary('step-617-event_choice');
@@ -221,9 +233,11 @@ describe('Dark Angel exact615 natural history and complete original-seed public 
     same(journal.filter(row => row.check).map(row => [row.command, row.week, row.check!.roll,
       row.check!.chance, row.check!.tier, row.randomBefore, row.randomAfter]), expected.acquisitionChecks);
     for (const bottle of final.darkAngel.bottles.filter(row => row.status === 'CONSUMED')) {
-      const buy = replayCaptureBoundary(`actual1200p-buy-${bottle.id}`);
-      const prep = replayCaptureBoundary(`actual180p-current-week-prepare-${bottle.id}`);
-      const dose = replayCaptureBoundary(`consume-${bottle.id}`);
+      const readBoundary = ['dark-angel-potion-1', 'dark-angel-potion-2', 'dark-angel-potion-3'].includes(bottle.id)
+        ? replayCaptureBoundary : archivedDarkAngelAcquisitionBoundary;
+      const buy = readBoundary(`actual1200p-buy-${bottle.id}`);
+      const prep = readBoundary(`actual180p-current-week-prepare-${bottle.id}`);
+      const dose = readBoundary(`consume-${bottle.id}`);
       const work = journal.filter(row => row.command.type === 'POTION_WORK' && row.command.bottleId === bottle.id);
       expect(work).toHaveLength(5);
       for (const row of work) expect([row.before.actions - row.after.actions, row.before.cash - row.after.cash]).toEqual([1, 0]);
@@ -239,7 +253,7 @@ describe('Dark Angel exact615 natural history and complete original-seed public 
       expect(dose.final.mind).toBe(Math.max(1, dose.before.mind - costs[1]!));
       expect(dose.final.seer.pollution).toBe(Math.min(100, dose.before.seer.pollution + costs[2]!));
     }
-    const request = replayCaptureBoundary('paid-next-week-resupply'), delivery = replayCaptureBoundary('actual-next-week-new-stock');
+    const request = archivedDarkAngelAcquisitionBoundary('paid-next-week-resupply'), delivery = archivedDarkAngelAcquisitionBoundary('actual-next-week-new-stock');
     const receipt = request.final.darkAngel.acquisitionJournal.at(-1)!;
     expect(receipt.before.cash - receipt.after.cash).toBe(100);
     expect(delivery.before.week).toBeGreaterThan(request.before.week);

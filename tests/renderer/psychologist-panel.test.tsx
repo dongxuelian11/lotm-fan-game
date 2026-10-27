@@ -351,7 +351,9 @@ describe("Psychologist S7 dossier", () => {
       await userEvent.click(screen.getByRole("button", { name: "进入下一回合" }));
       const opponent = screen.getByRole("heading", { name: "原门厅当事人" }).closest("section")!;
       expect(within(opponent).getByText("精神 75 / 100")).toBeTruthy();
-      expect(within(opponent).getByText("健康 100 / 100")).toBeTruthy();
+      const health = within(opponent).getByRole("progressbar", { name: "对手健康" });
+      expect(health.getAttribute("aria-valuenow")).toBe("100");
+      expect(health.getAttribute("aria-valuemax")).toBe("100");
       expect(value.submitIntent).not.toHaveBeenCalled();
       cleanup();
     }
@@ -387,6 +389,8 @@ describe("Psychologist S7 dossier", () => {
     expect(submit).toHaveBeenCalledTimes(2);
     expect(submit.mock.calls[1]![0]).toBe(submit.mock.calls[0]![0]);
     expect(submit.mock.calls[1]![0].payload).toEqual({ type: "PSYCHOLOGIST", command });
+    expect(screen.getByRole("dialog", { name: "非凡成长" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });

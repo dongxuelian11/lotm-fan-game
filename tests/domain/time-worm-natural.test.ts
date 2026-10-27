@@ -11,6 +11,7 @@ import { currentTimeWormCombatSource, replayTimeWormCombatRound, timeWormActionC
 import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentTimeWormReplayExpectation } from '../helpers/time-worm-current-replay.js';
 import { actualTimeWormEvidence } from './time-worm-capture-evidence.js';
 import { TIME_WORM_ROOT, TIME_WORM_SOURCE, TIME_WORM_PEACEFUL_SOURCE, TIME_WORM_DEATH_SOURCE,
   TIME_WORM_PREFIX_COUNT, captureFileHash, captureValueHash, insertionOrderHash, sourceEntry,
@@ -114,10 +115,10 @@ describe('Time Worm exact551-command source and actual public continuation', () 
       expect(state.revision).toBe(before.revision + 1); expect(state.random.seed).toBe('marauder-natural-v038');
       expect(state.random.cursor).toBeGreaterThanOrEqual(before.random.cursor);
       if (index === 550) same(state, original);
-      if (index === 638) same(state, migrateSliceState(readObjectEntry(`${TIME_WORM_ROOT}/prior-blocker-natural.json`, 'final')));
+      if (index === 638) same(state, currentTimeWormReplayExpectation(migrateSliceState(readObjectEntry(`${TIME_WORM_ROOT}/prior-blocker-natural.json`, 'final'))));
       if (index >= 551) assertOriginalContinuity(state, original);
     }
-    same(state, capturedState('final')); assertValidSliceState(state); same(migrateSliceState(state), state);
+    same(state, currentTimeWormReplayExpectation(capturedState('final'))); assertValidSliceState(state); same(migrateSliceState(state), state);
     same(captureBody(state), expected.final); expect(state.revision).toBe(capturedState('initial').revision + expected.commandCount);
     expect(naturalEntry('stage')).toBe(expected.stage); expect(naturalEntry('error')).toBe(expected.error);
     expect(naturalEntry('pendingIntent')).toBeNull(); expect(naturalEntry('failurePhase')).toBe('IDLE');

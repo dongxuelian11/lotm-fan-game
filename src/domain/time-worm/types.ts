@@ -10,13 +10,36 @@ export type TimeWormPreparationId = typeof TIME_WORM_PREPARATION_IDS[number];
 export type TimeWormAcquisitionCommand =
   | { type: 'LEARN_GUIDANCE' | 'REQUEST_SUPPLY' | 'RECEIVE_SUPPLY' | 'PREPARE_PROMOTION' | 'LEAVE_PREPARATION' }
   | { type: 'PREPARE_TASK'; taskId: TimeWormPreparationId }
-  | { type: 'POTION_WORK' | 'BUY_POTION'; bottleId: string }
+  | { type: 'POTION_WORK' | 'BUY_POTION' | 'REQUEST_RECOVERY_V1' | 'RECOVER_CHARACTERISTIC_V1'; bottleId: string }
   | { type: 'CONSUME'; bottleId: string; confirmed: true };
 export type TimeWormCommand = TimeWormAcquisitionCommand | TimeWormActivityCommand | TimeWormEncounterCommand;
+/** The vessel may change; the three finite original characteristics do not. */
+export interface TimeWormRecoveryRequest {
+  version: 1; sourceBottleId: string; originalBottleId: string; characteristicId: string; requestedWeek: number; sourceReceiptRevision: number;
+  siteId: 'BACKLUND_ORIGINAL_TIME_WORM_PREPARATION'; custodian: 'ER0-TIME-WORM-SUPPLIER';
+}
+export interface TimeWormRecovery extends TimeWormRecoveryRequest { recoveredWeek: number }
+/** A contemporaneous supplier permission and physical inspection. It is never inferred from old consent. */
+export interface TimeWormRecoverySite {
+  siteId: 'BACKLUND_ORIGINAL_TIME_WORM_PREPARATION'; originals: TimeWormOriginals;
+  permission: { personId: 'ER0-TIME-WORM-SUPPLIER'; week: number; revision: number; purpose: 'INVESTIGATE' | 'RECOVER' };
+  originalBottleId: string; sourceBottleId: string; characteristicId: string; sourceReceiptRevision: number;
+  custodyBefore: 'FAILED_REMNANT' | 'SEALED_WITH_CUSTODIAN'; custodyAfter: 'SEALED_WITH_CUSTODIAN' | 'SUPPLIER';
+}
+export interface TimeWormOriginalCharacteristic {
+  characteristicId: string; originalBottleId: string; latestBottleId: string;
+  holder: 'SUPPLIER' | 'PLAYER' | 'FAILED_REMNANT' | 'EMBODIED';
+  consumptionHistory: { bottleId: string; revision: number; week: number; outcome: PublicResolutionTier }[];
+}
+export interface TimeWormOriginalCharacteristics {
+  characteristics: TimeWormOriginalCharacteristic[];
+  embodiedOriginalBottleId: string | null; embodiedBottleId: string | null;
+}
 export interface TimeWormBottle {
   id: string; source: string; stockedWeek: number | null; labourSteps: number;
   acquiredWeek: number | null; consumedWeek: number | null; preparationWeek: number | null;
   status: 'SUPPLIER' | 'PLAYER' | 'CONSUMED'; outcome: PublicResolutionTier | null;
+  recovery?: TimeWormRecovery;
 }
 /** Bounded acquisition evidence; inherited people, bodies, effects and inventory stay in their source history. */
 export interface TimeWormAcquisitionBudget {
@@ -30,6 +53,7 @@ export interface TimeWormAcquisitionEvent {
   actor: { name: string; gender: string; age: number; sourceHistoryDigest: string | null; sourceIdentityDigest: string; pathwayId: 'error'; fateTrojanPromotionWeek: number; marauderPromotionWeek: number };
   before: TimeWormAcquisitionBudget; after: TimeWormAcquisitionBudget; finance: TimeWormFinanceSnapshot;
   cursorBefore: number; cursorAfter: number; randomBefore: number | null; randomAfter: number | null; check: PublicCheckResult | null;
+  recoverySite?: TimeWormRecoverySite;
 }
 export const TIME_WORM_SOURCE_KEYS = ['marauder', 'swindler', 'cryptologist', 'fireThief', 'dreamStealer', 'parasite', 'deceitMentor', 'fateTrojan'] as const;
 export type TimeWormSourceHistory = Pick<SliceState, typeof TIME_WORM_SOURCE_KEYS[number]>;
@@ -42,7 +66,7 @@ export interface TimeWormSourceScene {
 }
 export interface TimeWormState {
   guidanceKnown: boolean; bottles: TimeWormBottle[];
-  resupply: { requestedWeek: number | null; deliveries: number };
+  resupply: { requestedWeek: number | null; deliveries: number; recovery?: TimeWormRecoveryRequest };
   promotionWeek: number | null; fateTrojanActingAtPromotion: number | null;
   preparations: { taskId: TimeWormPreparationId; completedWeek: number }[];
   preparedWeek: number | null; acquisitionJournal: TimeWormAcquisitionEvent[];

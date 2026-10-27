@@ -29,8 +29,8 @@ import { compareGameDates, gameDaysBetween, isValidGameDate } from '../game-cale
 import type { PublicGameDate, PublicCheckResult } from '../../shared/contracts.js';
 import { createPaleEmperorLifeState, initializePaleEmperorLifeState, applyPaleEmperorLifeCommand, projectPaleEmperorLife, paleEmperorLifeActions, validatePaleEmperorLifeState, validatePaleEmperorActivityCommand, hasPaleEmperorLifeLock, paleEmperorLifeLockedAtRevision, paleEmperorLifeMasteryGains } from './life.js';
 import { createPaleEmperorEncounterState, applyPaleEmperorEncounterCommand, projectPaleEmperorEncounter, paleEmperorEncounterActions, validatePaleEmperorEncounterState, validatePaleEmperorEncounterCommand, hasPaleEmperorEncounterLock, paleEmperorEncounterCompletedBudget } from './encounter.js';
-import { PALE_EMPEROR_ABILITIES, PALE_EMPEROR_INHERITED_ABILITIES, PALE_EMPEROR_BOTTLE_IDS, PALE_EMPEROR_FORMULA_STATUS, PALE_EMPEROR_LABOUR_STEPS, PALE_EMPEROR_LABOUR_TASKS, PALE_EMPEROR_MIN_DEATH_CONSUL_WEEKS, PALE_EMPEROR_POTION_SOURCES, PALE_EMPEROR_PREPARATIONS, paleEmperorPrices, paleEmperorSourceLabel, paleEmperorPotionSource, paleEmperorConsumptionRisk, PALE_EMPEROR_SOURCE_STATUS } from './content.js';
-import { PALE_EMPEROR_ABILITY_IDS, PALE_EMPEROR_PREPARATION_IDS, PALE_EMPEROR_SOURCE_KEYS, type PaleEmperorEraEvent, type PaleEmperorSourceEra, type PaleEmperorOriginals, type PaleEmperorSourceHistory, type PaleEmperorAcquisitionBudget, type PaleEmperorAcquisitionEvent, type PaleEmperorAcquisitionCommand, type PaleEmperorAction, type PaleEmperorBottle, type PaleEmperorCommand, type PaleEmperorProjection, type PaleEmperorState } from './types.js';
+import { PALE_EMPEROR_RECOVERY_SCHEMA_VERSION, PALE_EMPEROR_RECOVERY_PRICES, PALE_EMPEROR_RECOVERY_SITES, PALE_EMPEROR_ABILITIES, PALE_EMPEROR_INHERITED_ABILITIES, PALE_EMPEROR_BOTTLE_IDS, PALE_EMPEROR_FORMULA_STATUS, PALE_EMPEROR_LABOUR_STEPS, PALE_EMPEROR_LABOUR_TASKS, PALE_EMPEROR_MIN_DEATH_CONSUL_WEEKS, PALE_EMPEROR_POTION_SOURCES, PALE_EMPEROR_PREPARATIONS, paleEmperorPrices, paleEmperorSourceLabel, paleEmperorPotionSource, paleEmperorConsumptionRisk, PALE_EMPEROR_SOURCE_STATUS } from './content.js';
+import { PALE_EMPEROR_ABILITY_IDS, PALE_EMPEROR_PREPARATION_IDS, PALE_EMPEROR_SOURCE_KEYS, type PaleEmperorRecoveryRequest, type PaleEmperorRecoveryScene, type PaleEmperorRecoverySite, type PaleEmperorOriginalId, type PaleEmperorCharacteristicId, type PaleEmperorEraEvent, type PaleEmperorSourceEra, type PaleEmperorOriginals, type PaleEmperorSourceHistory, type PaleEmperorAcquisitionBudget, type PaleEmperorAcquisitionEvent, type PaleEmperorAcquisitionCommand, type PaleEmperorAction, type PaleEmperorBottle, type PaleEmperorCommand, type PaleEmperorProjection, type PaleEmperorState } from './types.js';
 
 const record = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const shape = (v: object, fields: readonly string[]) => Object.keys(v).sort().join('|') === [...fields].sort().join('|');
@@ -89,7 +89,91 @@ export const hasPaleEmperorRitualLock = (s: SliceState): boolean => s.paleEmpero
 export const hasPaleEmperorLock = (s: SliceState): boolean => hasPaleEmperorRitualLock(s) || hasPaleEmperorLifeLock(s) || hasPaleEmperorEncounterLock(s);
 const bottleNumber = (b: Pick<PaleEmperorBottle, 'id'>) => Number(b.id.slice('pale-emperor-potion-'.length));
 const sourceEraFor = (s: SliceState): PaleEmperorSourceEra => s.paleEmperor.sourceEra ?? currentDeathConsulSourceEra(s);
-const potionPrice = (s: SliceState, b: PaleEmperorBottle) => { const p = paleEmperorPrices(sourceEraFor(s)); return p.potion - (b.labourSteps === PALE_EMPEROR_LABOUR_STEPS ? p.labourCredit : 0); };
+const potionPrice = (s: SliceState, b: PaleEmperorBottle) => {
+  const era = sourceEraFor(s), p = paleEmperorPrices(era), r = PALE_EMPEROR_RECOVERY_PRICES[era];
+  return b.recovery ? b.labourSteps === PALE_EMPEROR_LABOUR_STEPS ? r.afterLabour : r.full : p.potion - (b.labourSteps === PALE_EMPEROR_LABOUR_STEPS ? p.labourCredit : 0);
+};
+const legacySupply = (c: { type: string }) => c.type === 'REQUEST_SUPPLY' || c.type === 'RECEIVE_SUPPLY';
+const recoveryCommand = (c: { type: string }) => c.type === 'REQUEST_RECOVERY_V1' || c.type === 'RECOVER_CHARACTERISTIC_V1';
+const isOriginalId = (id: string): id is PaleEmperorOriginalId => PALE_EMPEROR_BOTTLE_IDS.some(original => original === id);
+const characteristicId = (id: PaleEmperorOriginalId): PaleEmperorCharacteristicId => `${id}:characteristic`;
+export const paleEmperorRecoveredBottleSource = (id: string, r: PaleEmperorRecoveryRequest & { recoveredWeek: number }): string =>
+  `${r.sourceEra}第${r.recoveredWeek}周在${r.siteId}将${r.sourceBottleId}失败回执${r.sourceReceiptRevision}的同一份${r.characteristicId}封入普通重配瓶${id}；原劳动和原费用不返，不增加特性。`;
+function originalBottleId(state: PaleEmperorState, bottle: PaleEmperorBottle): PaleEmperorOriginalId | null {
+  const seen = new Set<string>(); let current = bottle;
+  while (current.recovery) {
+    if (seen.has(current.id)) return null; seen.add(current.id);
+    const r = current.recovery, previous = state.bottles.find(b => b.id === r.sourceBottleId);
+    if (!previous || !isOriginalId(r.originalBottleId) || r.characteristicId !== characteristicId(r.originalBottleId) || r.version !== 1 ||
+      bottleNumber(previous) >= bottleNumber(current) || previous.status !== 'CONSUMED' || !failed(previous.outcome) ||
+      previous.consumedWeek === null || previous.consumedWeek > r.requestedWeek || r.recoveredWeek <= r.requestedWeek || current.stockedWeek !== r.recoveredWeek ||
+      (previous.recovery ? previous.recovery.originalBottleId !== r.originalBottleId : previous.id !== r.originalBottleId)) return null;
+    current = previous;
+  }
+  return isOriginalId(current.id) ? current.id : null;
+}
+function recoverySource(state: PaleEmperorState, bottleId: string) {
+  if (state.bottles.slice(3).some(b => !b.recovery)) return null;
+  const bottle = state.bottles.find(b => b.id === bottleId);
+  if (!bottle || bottle.status !== 'CONSUMED' || !failed(bottle.outcome) || bottle.consumedWeek === null) return null;
+  const original = originalBottleId(state, bottle);
+  if (!original || state.bottles.some(b => b.recovery?.sourceBottleId === bottleId ||
+    originalBottleId(state, b) === original && (b.status !== 'CONSUMED' || success(b.outcome)))) return null;
+  const consumed = state.acquisitionJournal.filter(e => e.command.type === 'CONSUME' && e.command.bottleId === bottleId);
+  if (consumed.length !== 1 || consumed[0]!.week !== bottle.consumedWeek || consumed[0]!.check?.tier !== bottle.outcome || consumed[0]!.after.sequence !== 2) return null;
+  return { bottle, receipt: consumed[0]!, originalBottleId: original, characteristicId: characteristicId(original) };
+}
+const originalSupplyFailed = (state: PaleEmperorState) => state.bottles.length >= 3 && state.bottles.slice(0, 3).every((b, i) =>
+  b.id === PALE_EMPEROR_BOTTLE_IDS[i] && !Object.hasOwn(b, 'recovery') && b.status === 'CONSUMED' && failed(b.outcome));
+/** Authored private current scene. A failure receipt identifies the target;
+ * the first on-site investigation establishes its present physical record.
+ * Nothing is attached to old receipts or borrowed from Nora/Vera's residuals. */
+function initialRecoveryScene(s: SliceState): PaleEmperorRecoveryScene {
+  const sourceEra = sourceEraFor(s), site = PALE_EMPEROR_RECOVERY_SITES[sourceEra];
+  return { version: 1, sourceEra, siteId: site.id, location: site.location, actorId: `${s.runId}:original-player`, actorLocation: site.location,
+    custodian: { id: site.custodianId, name: site.name, age: site.age, present: true, location: site.location, investigation: 'ALLOW', handover: 'ALLOW' },
+    remnants: PALE_EMPEROR_BOTTLE_IDS.map(id => {
+      const source = recoverySource(s.paleEmperor, id); if (!source) throw new Error('三份原失败实物的来源尚未建立。');
+      return { originalBottleId: id, characteristicId: characteristicId(id), sourceBottleId: id, sourceReceiptRevision: source.receipt.revision,
+        physicalId: `${s.runId}:${id}:physical-remains`, physicalVersion: 1, location: site.location, custodianId: site.custodianId,
+        residualPresent: true, accessible: true, custody: 'FAILED_REMAINS' };
+    }) };
+}
+function currentRecoverySite(s: SliceState, bottleId: string, purpose: 'INVESTIGATE' | 'HANDOVER'): PaleEmperorRecoverySite | null {
+  const state = s.paleEmperor, source = recoverySource(state, bottleId), era = sourceEraFor(s), registered = PALE_EMPEROR_RECOVERY_SITES[era];
+  if (!source || !originalSupplyFailed(state) || s.world.city !== 'BACKLUND' || s.status !== 'ACTIVE' ||
+    s.deathConsul.life.site.playerLocation !== 'ENTRY' || s.deathConsul.life.site.effect.mode !== 'OFF' ||
+    era === 'POST_CYCLE' && s.ferryman.era.location !== 'RECEPTION') return null;
+  if (!state.recoveryScene && state.bottles.length !== 3) return null;
+  const scene = state.recoveryScene ?? initialRecoveryScene(s), person = scene.custodian;
+  const remnant = scene.remnants.find(r => r.originalBottleId === source.originalBottleId);
+  if (scene.version !== 1 || scene.sourceEra !== era || scene.siteId !== registered.id || scene.location !== registered.location ||
+    scene.actorId !== `${s.runId}:original-player` || scene.actorLocation !== scene.location ||
+    person.id !== registered.custodianId || person.name !== registered.name || person.age !== registered.age || !person.present || person.location !== scene.location ||
+    person[purpose === 'INVESTIGATE' ? 'investigation' : 'handover'] !== 'ALLOW' || !remnant ||
+    remnant.characteristicId !== source.characteristicId || remnant.sourceBottleId !== bottleId || remnant.sourceReceiptRevision !== source.receipt.revision ||
+    remnant.physicalId !== `${s.runId}:${source.originalBottleId}:physical-remains` || !integer(remnant.physicalVersion, 1) ||
+    remnant.location !== scene.location || remnant.custodianId !== person.id || !remnant.residualPresent || !remnant.accessible || remnant.custody !== 'FAILED_REMAINS') return null;
+  const investigating = purpose === 'INVESTIGATE', nextBottleId = `pale-emperor-potion-${state.bottles.length + 1}`;
+  const legacy = investigating && state.resupply.requestedWeek !== null && !state.resupply.recovery
+    ? state.acquisitionJournal.filter(e => e.command.type === 'REQUEST_SUPPLY').at(-1) : null;
+  return { siteId: scene.siteId, sourceReceiptRevision: source.receipt.revision, physicalVersion: remnant.physicalVersion,
+    originalBottleId: source.originalBottleId, sourceBottleId: bottleId, characteristicId: source.characteristicId,
+    permission: { personId: person.id, actorId: scene.actorId, purpose, status: 'ALLOW',
+      eventId: `${s.runId}:pale-emperor-recovery:${s.revision}:${purpose}`, week: s.week, revision: s.revision, location: scene.location, conditionVersion: remnant.physicalVersion },
+    custodyBefore: 'FAILED_REMAINS', custodyAfter: investigating ? 'FAILED_REMAINS' : 'SUPPLIER',
+    ...(legacy ? { supersededLegacyRequestRevision: legacy.revision } : {}),
+    observation: { physicalId: remnant.physicalId, location: remnant.location, custodianId: person.id, custodianPresent: person.present,
+      actorId: scene.actorId, actorLocation: scene.actorLocation, residualPresent: remnant.residualPresent, accessible: remnant.accessible, sourceEra: era },
+    placement: { physicalId: remnant.physicalId, physicalVersion: remnant.physicalVersion + (investigating ? 0 : 1),
+      custody: investigating ? 'FAILED_REMAINS' : 'SUPPLIER', bottleId: investigating ? null : nextBottleId } };
+}
+function recoverySiteReceipt(s: SliceState, c: PaleEmperorAcquisitionCommand): PaleEmperorRecoverySite | undefined {
+  if (!recoveryCommand(c) || !('bottleId' in c)) return undefined;
+  const site = currentRecoverySite(s, c.bottleId, c.type === 'REQUEST_RECOVERY_V1' ? 'INVESTIGATE' : 'HANDOVER');
+  if (!site) throw new Error('同一原失败残余、现场、本人和当次保管许可尚未实查。');
+  return site;
+}
 const deathConsulWeeks = (s: SliceState) => Math.max(0, (s.paleEmperor.promotionWeek ?? s.week) - (s.deathConsul.promotionWeek ?? s.week));
 const exhaustedSupply = (state: PaleEmperorState) => state.bottles.length >= 3 && state.bottles.every(b => b.status === 'CONSUMED' && ['FAILURE', 'GREAT_FAILURE'].includes(b.outcome ?? ''));
 const deliverySource = (s: SliceState, number: number, week: number) => paleEmperorPotionSource(sourceEraFor(s), number, week);
@@ -101,21 +185,23 @@ function promotionBlock(s: SliceState): string | null {
   if (!deathConsulReportsComplete(s)) return '先完成死亡执政官的三份实际报告与反思，并收好旧核验现场。';
   return hasPreparations(s) ? null : '先分别核对八阶原瓶与当前来源、残响的有限作用边界和普通返回路线；领取药瓶不能代做专业准备。';
 }
-export function validatePaleEmperorAcquisitionCommand(v: unknown): v is PaleEmperorAcquisitionCommand {
+function validateAcquisitionCommand(v: unknown, historicalReplay = false): v is PaleEmperorAcquisitionCommand {
   if (!record(v) || typeof v.type !== 'string') return false;
-  if (['LEARN_GUIDANCE', 'REQUEST_SUPPLY', 'RECEIVE_SUPPLY', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION'].includes(String(v.type))) return shape(v, ['type']);
+  if (legacySupply(v as { type: string })) return historicalReplay && shape(v, ['type']);
+  if (['LEARN_GUIDANCE', 'PREPARE_PROMOTION', 'LEAVE_PREPARATION'].includes(String(v.type))) return shape(v, ['type']);
   if (v.type === 'PREPARE_TASK') return shape(v, ['type', 'taskId']) && PALE_EMPEROR_PREPARATION_IDS.includes(v.taskId as typeof PALE_EMPEROR_PREPARATION_IDS[number]);
   if (typeof v.bottleId !== 'string' || !/^pale-emperor-potion-[1-9]\d{0,14}$/.test(v.bottleId)) return false;
-  if (['POTION_WORK', 'BUY_POTION'].includes(String(v.type))) return shape(v, ['type', 'bottleId']);
+  if (['POTION_WORK', 'BUY_POTION', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1'].includes(String(v.type))) return shape(v, ['type', 'bottleId']);
   return v.type === 'CONSUME' && shape(v, ['type', 'bottleId', 'confirmed']) && v.confirmed === true;
 }
+export function validatePaleEmperorAcquisitionCommand(v: unknown): v is PaleEmperorAcquisitionCommand { return validateAcquisitionCommand(v); }
 export const isPaleEmperorAcquisitionCommand = validatePaleEmperorAcquisitionCommand;
 export function validatePaleEmperorCommand(v: unknown): v is PaleEmperorCommand {
   return validatePaleEmperorAcquisitionCommand(v) || validatePaleEmperorActivityCommand(v) || validatePaleEmperorEncounterCommand(v);
 }
 export function paleEmperorAcquisitionBlock(s: SliceState, command: PaleEmperorAcquisitionCommand): string | null { return acquisitionBlock(s, command, false); }
 function acquisitionBlock(s: SliceState, command: PaleEmperorAcquisitionCommand, historicalReplay: boolean): string | null {
-  if (!validatePaleEmperorAcquisitionCommand(command)) return '苍白皇帝准备命令无效。';
+  if (!validateAcquisitionCommand(command, historicalReplay)) return legacySupply(command) ? '旧独立三瓶供货仅供历史读取；现在只能有价回收同一份原特性。' : '苍白皇帝准备命令无效。';
   if (s.status !== 'ACTIVE' || s.health <= 0 || s.mind <= 0) return '须本人仍活着且身体精神尚可；普通死亡不受指导服药保护。';
   if (s.activeEvent || s.combat || s.eventQueue.length || s.pulse !== 'NONE') return '先处理当前事件、真实战斗和未结周账。';
   if ((!historicalReplay && hasPaleEmperorOldPractice(s)) || hasPaleEmperorLifeLock(s) || hasPaleEmperorEncounterLock(s)) return '先停止旧现场的接触和能力、归还原物，再沿普通路线离开；旧人物、伤势与实战后果继续保留。';
@@ -128,8 +214,9 @@ function acquisitionBlock(s: SliceState, command: PaleEmperorAcquisitionCommand,
   if (state.guidanceKnown && (state.sourceEra !== currentDeathConsulSourceEra(s) || state.sourceWeek === null)) return '已登记渠道与当前真实时代不符。';
   if (era === 'POST_CYCLE' && s.ferryman.era.location !== 'RECEPTION') return '先沿普通道路实际回到当代接待处。';
   if (command.type === 'LEAVE_PREPARATION') return state.preparedWeek === null ? '没有本次尚未使用的场地准备。' : null;
+  if (!historicalReplay && state.bottles.slice(3).some(b => !b.recovery)) return '历史存在独立第4份及以后原特性，记录只读且不得洗成回收件；不能继续本入口。';
   if (state.preparedWeek !== null && command.type !== 'CONSUME') return '当前已经实际检查好服药场地；先独立确认饮药或0行动退出本次准备。';
-  const ap = ['LEARN_GUIDANCE', 'POTION_WORK', 'REQUEST_SUPPLY', 'PREPARE_TASK', 'PREPARE_PROMOTION'].includes(command.type) ? 1 : 0;
+  const ap = ['LEARN_GUIDANCE', 'POTION_WORK', 'REQUEST_SUPPLY', 'REQUEST_RECOVERY_V1', 'RECOVER_CHARACTERISTIC_V1', 'PREPARE_TASK', 'PREPARE_PROMOTION'].includes(command.type) ? 1 : 0;
   if (s.actionsRemaining < ap) return '本周剩余行动不足。';
   if (command.type === 'LEARN_GUIDANCE' && !deathConsulReportsComplete(s)) return '先完成死亡执政官三份生活报告与反思，再核对这次晋升的既往记录。';
   if (command.type === 'LEARN_GUIDANCE') return state.guidanceKnown ? '已经听取成品来源、专业准备与本次风险。' : s.cash < prices.guidance ? `本次专业指导需要${prices.guidance}便士。` : null;
@@ -137,9 +224,27 @@ function acquisitionBlock(s: SliceState, command: PaleEmperorAcquisitionCommand,
   if (command.type === 'PREPARE_TASK') return state.preparations.some(p => p.taskId === command.taskId) ? '这一项专业准备已经真实完成，不能重复领取经历。' : null;
   if (command.type === 'PREPARE_PROMOTION') {
     const reason = promotionBlock(s); if (reason) return reason;
+    if (state.resupply.recovery) return '先完成已经付费的同一原特性回收，再准备饮药。';
     if (!state.bottles.some(b => b.status === 'PLAYER')) return '先实际取得至少一瓶尚未服用的苍白皇帝原瓶。';
     return s.cash < prices.preparation ? `当次场地检查需要${prices.preparation}便士。` : null;
   }
+  if (command.type === 'REQUEST_RECOVERY_V1' || command.type === 'RECOVER_CHARACTERISTIC_V1') {
+    if (s.schemaVersion < PALE_EMPEROR_RECOVERY_SCHEMA_VERSION) return '原特性回收须使用新存档版本，旧履历不补写。';
+    if (!originalSupplyFailed(state) || state.bottles.slice(3).some(b => !b.recovery)) return '只有三份原特性均真实失败的历史可走同物回收；独立第四份不得改标。';
+    const source = recoverySource(state, command.bottleId), pending = state.resupply.recovery;
+    if (!source) return '须指定同一原份的最后真实失败；成功融合份、活后继、旧祖先或已回收件不可取出。';
+    const site = currentRecoverySite(s, command.bottleId, command.type === 'REQUEST_RECOVERY_V1' ? 'INVESTIGATE' : 'HANDOVER');
+    if (!site) return '同一失败残余不在原位、不可接近、保管人不在场或本次许可未获准，不能用钱补造。';
+    if (command.type === 'REQUEST_RECOVERY_V1') return pending ? '已有指定失败原瓶的调查委托，先完成同物交接。' :
+      s.cash < PALE_EMPEROR_RECOVERY_PRICES[era].investigation ? `本次实查需要1行动与${PALE_EMPEROR_RECOVERY_PRICES[era].investigation}便士；旧费用不退。` : null;
+    const request = state.acquisitionJournal.filter(e => e.command.type === 'REQUEST_RECOVERY_V1').at(-1);
+    if (!pending || !request?.recoverySite || pending.sourceBottleId !== command.bottleId || pending.sourceReceiptRevision !== source.receipt.revision ||
+      pending.originalBottleId !== source.originalBottleId || pending.characteristicId !== source.characteristicId || pending.sourceEra !== era ||
+      pending.siteId !== site.siteId || pending.custodianId !== site.observation.custodianId || pending.requestedWeek !== state.resupply.requestedWeek ||
+      !same(request.recoverySite.observation, site.observation) || request.recoverySite.placement.physicalVersion !== site.physicalVersion) return '须先付费查封这一份原失败实物，并保留同一现场与现物版本。';
+    return s.week <= pending.requestedWeek || gameDaysBetween(request.date, s.date) < 7 ? '必须至少七真实天后的下一周，才可原处重新取得交接许可。' : null;
+  }
+  if (legacySupply(command) && (state.resupply.recovery || state.recoveryScene || state.bottles.some(b => b.recovery))) return '原特性回收后不能续接旧独立供货。';
   if (command.type === 'REQUEST_SUPPLY' && s.cash < prices.resupply) return `申请下一批需要${prices.resupply}便士实际费用。`;
   if (command.type === 'REQUEST_SUPPLY') return state.resupply.requestedWeek !== null ? '已经申请下一批，必须等下一真实周实际到货。' : exhaustedSupply(state) ? null : '现有全部原瓶须真实服用且失败，才能申请下一批。';
   if (command.type === 'RECEIVE_SUPPLY') return state.resupply.requestedWeek === null ? '尚未申请下一批苍白皇帝原瓶。' : s.week <= state.resupply.requestedWeek ? '本周刚提出申请，下一真实周起才能确认到货。' : exhaustedSupply(state) ? null : '现有原瓶尚未全部耗尽失败。';
@@ -183,12 +288,40 @@ function applyAcquisitionMutation(s: SliceState, command: PaleEmperorAcquisition
     case 'POTION_WORK': {
       const bottle = state.bottles.find(b => b.id === command.bottleId)!;
       s.actionsRemaining--; bottle.labourSteps++;
+      if (bottle.recovery) {
+        const p = PALE_EMPEROR_RECOVERY_PRICES[era];
+        ctx.note('同一原特性本次普通新药劳务', `实付1行动，第${bottle.labourSteps}/5次；五次只抵本次${p.full - p.afterLabour}便士，余款${p.afterLabour}便士，旧劳务不转用。`); return;
+      }
       ctx.note(PALE_EMPEROR_LABOUR_TASKS[bottle.labourSteps - 1]!, `实际完成原瓶${bottle.id}第${bottle.labourSteps}/5项工作，花1行动。五次只抵本瓶${prices.labourCredit}便士，余款${prices.labourBalance}便士；部分劳动不折现、不转给其他原瓶，也不替代三项专业准备。`); return;
     }
     case 'BUY_POTION': {
       const bottle = state.bottles.find(b => b.id === command.bottleId)!, paid = potionPrice(s, bottle);
       s.cash -= paid; bottle.status = 'PLAYER'; bottle.acquiredWeek = s.week;
+      if (bottle.recovery) {
+        const remnant = state.recoveryScene!.remnants.find(r => r.originalBottleId === bottle.recovery!.originalBottleId)!;
+        remnant.custody = 'PLAYER'; remnant.residualPresent = false;
+        ctx.note('同一原特性的新药实际重配交付', `0行动、${paid}便士，交付普通重配瓶${bottle.id}；原特性仍是${bottle.recovery.characteristicId}，当次准备另付。`); return;
+      }
       ctx.note('苍白皇帝独立原瓶实际交付', `0行动、${paid}便士，实际领取${bottle.id}。${bottle.labourSteps === 5 ? `本瓶五项劳务抵${prices.labourCredit}便士。` : '未满五项劳动不部分抵扣。'}药瓶尚未服用，三项准备与当周场地检查仍须实际完成。`); return;
+    }
+    case 'REQUEST_RECOVERY_V1': {
+      const site = recoverySiteReceipt(s, command)!;
+      state.recoveryScene ??= initialRecoveryScene(s);
+      s.actionsRemaining--; s.cash -= PALE_EMPEROR_RECOVERY_PRICES[era].investigation;
+      state.resupply.requestedWeek = s.week;
+      state.resupply.recovery = { version: 1, sourceBottleId: command.bottleId, originalBottleId: site.originalBottleId,
+        characteristicId: site.characteristicId, sourceReceiptRevision: site.sourceReceiptRevision, requestedWeek: s.week,
+        siteId: site.siteId, custodianId: site.observation.custodianId, sourceEra: era };
+      ctx.note('当面调查并登记同一失败原特性', `1行动、${PALE_EMPEROR_RECOVERY_PRICES[era].investigation}便士；本人在${site.observation.location}与当前成年保管人核对${site.observation.physicalId}、真实失败回执及本次许可，残余仍由原处保管。至少七天后的下一周重新核查交接；旧申请费用保留不退。`); return;
+    }
+    case 'RECOVER_CHARACTERISTIC_V1': {
+      const site = recoverySiteReceipt(s, command)!, recovery = { ...state.resupply.recovery!, recoveredWeek: s.week };
+      const id = site.placement.bottleId!, remnant = state.recoveryScene!.remnants.find(r => r.originalBottleId === recovery.originalBottleId)!;
+      s.actionsRemaining--;
+      state.bottles.push({ ...freshBottle(id, paleEmperorRecoveredBottleSource(id, recovery), s.week), recovery });
+      remnant.physicalVersion = site.placement.physicalVersion; remnant.custody = 'SUPPLIER'; remnant.residualPresent = false;
+      state.resupply.deliveries++; state.resupply.requestedWeek = null; delete state.resupply.recovery;
+      ctx.note('原处交接封入普通重配瓶', `实付1行动，将同一份${recovery.characteristicId}交接封入${id}；新普通药物另付${PALE_EMPEROR_RECOVERY_PRICES[era].full}便士，或五次本次新劳务后${PALE_EMPEROR_RECOVERY_PRICES[era].afterLabour}便士。没有第四份特性，旧瓶和失败记录保留。`); return;
     }
     case 'REQUEST_SUPPLY':
       s.actionsRemaining--; s.cash -= prices.resupply; state.resupply.requestedWeek = s.week;
@@ -202,6 +335,12 @@ function applyAcquisitionMutation(s: SliceState, command: PaleEmperorAcquisition
     case 'CONSUME': {
       const bottle = state.bottles.find(b => b.id === command.bottleId)!, result = ctx.check('will', 30);
       bottle.status = 'CONSUMED'; bottle.outcome = result.tier; bottle.consumedWeek = s.week; bottle.preparationWeek = state.preparedWeek; state.preparedWeek = null;
+      if (bottle.recovery) {
+        const scene = state.recoveryScene!, remnant = scene.remnants.find(r => r.originalBottleId === bottle.recovery!.originalBottleId)!;
+        remnant.sourceBottleId = bottle.id; remnant.sourceReceiptRevision = s.revision; remnant.physicalVersion++;
+        remnant.location = scene.location; remnant.custodianId = scene.custodian.id;
+        remnant.custody = success(result.tier) ? 'EMBODIED' : 'FAILED_REMAINS'; remnant.residualPresent = !success(result.tier);
+      }
       if (success(result.tier)) {
         const mentalCost = result.tier === 'GREAT_SUCCESS' ? 8 : 15;
         s.mind = Math.max(1, s.mind - mentalCost); state.deathConsulActingAtPromotion = s.progression.acting; state.promotionWeek = s.week;
@@ -231,7 +370,7 @@ export function paleEmperorAcquisitionBudget(s: SliceState): PaleEmperorAcquisit
 function acquisitionState(state: PaleEmperorState) {
   return { guidanceKnown: state.guidanceKnown, sourceEra: state.sourceEra, sourceWeek: state.sourceWeek, bottles: state.bottles, resupply: state.resupply,
     promotionWeek: state.promotionWeek, deathConsulActingAtPromotion: state.deathConsulActingAtPromotion, sourceHistory: state.sourceHistory, sourceScene: state.sourceScene,
-    preparations: state.preparations, preparedWeek: state.preparedWeek };
+    preparations: state.preparations, preparedWeek: state.preparedWeek, ...(Object.hasOwn(state, 'recoveryScene') ? { recoveryScene: state.recoveryScene } : {}) };
 }
 /** The journal proves the cost of each particular bottle and preserves the actual failed attempts. */
 export function applyPaleEmperorAcquisition(s: SliceState, command: PaleEmperorAcquisitionCommand, ctx: SeerContext): void {
@@ -246,9 +385,10 @@ export function applyPaleEmperorAcquisition(s: SliceState, command: PaleEmperorA
     randomBefore = s.random.cursor; result = structuredClone(ctx.check(ability, difficulty)); randomAfter = s.random.cursor;
     return result;
   } };
+  const recoverySite = recoverySiteReceipt(s, command);
   applyAcquisitionMutation(s, command, recording);
   s.paleEmperor.acquisitionJournal.push({ week: s.week, date: structuredClone(s.date), revision: s.revision,
-    command: structuredClone(command), actor, before, after: paleEmperorAcquisitionBudget(s), cursorBefore, cursorAfter: s.random.cursor, randomBefore, randomAfter, check: result });
+    command: structuredClone(command), actor, before, after: paleEmperorAcquisitionBudget(s), cursorBefore, cursorAfter: s.random.cursor, randomBefore, randomAfter, check: result, ...(recoverySite ? { recoverySite } : {}) });
 }
 function validAcquisitionBudget(v: unknown): v is PaleEmperorAcquisitionBudget {
   if (!record(v) || !shape(v, ['actions', 'health', 'mind', 'spirituality', 'cash', 'pollution', 'gender', 'sequence', 'acting', 'coreStats', 'mastery', 'completedSources', 'injuries', 'injuryRisk', 'era']) ||
@@ -267,12 +407,13 @@ export function validatePaleEmperorAcquisitionJournal(s: SliceState): boolean {
   try {
     const journal = s.paleEmperor.acquisitionJournal, expected = createPaleEmperorState();
     if (!Array.isArray(journal) || journal.length > 10000) return false;
+    if (s.schemaVersion < PALE_EMPEROR_RECOVERY_SCHEMA_VERSION && (Object.hasOwn(s.paleEmperor, 'recoveryScene') || Object.hasOwn(s.paleEmperor.resupply, 'recovery') || s.paleEmperor.bottles.some(b => Object.hasOwn(b, 'recovery')) || journal.some(e => recoveryCommand(e.command) || Object.hasOwn(e, 'recoverySite')))) return false;
     let previous: PaleEmperorAcquisitionEvent | null = null, nextCursor = s.paleEmperor.sourceScene?.random.cursor ?? 0;
     for (const raw of journal) {
-      if (!record(raw) || !shape(raw, ['week', 'date', 'revision', 'command', 'actor', 'before', 'after', 'cursorBefore', 'cursorAfter', 'randomBefore', 'randomAfter', 'check']) ||
+      if (!record(raw) || !shape(raw, ['week', 'date', 'revision', 'command', 'actor', 'before', 'after', 'cursorBefore', 'cursorAfter', 'randomBefore', 'randomAfter', 'check', ...(Object.hasOwn(raw, 'recoverySite') ? ['recoverySite'] : [])]) ||
         !integer(raw.week, s.deathConsul.promotionWeek ?? s.week, s.week) || !integer(raw.revision, 0, s.revision) || !isValidGameDate(raw.date) ||
         compareGameDates(raw.date, s.date) > 0 || raw.week !== Math.floor(gameDaysBetween(ORIGIN, raw.date) / 7) + 1 ||
-        !validatePaleEmperorAcquisitionCommand(raw.command) || !validAcquisitionBudget(raw.before) || !validAcquisitionBudget(raw.after) || raw.before.sequence !== 2 ||
+        !validateAcquisitionCommand(raw.command, true) || !validAcquisitionBudget(raw.before) || !validAcquisitionBudget(raw.after) || raw.before.sequence !== 2 ||
         !record(raw.actor) || !shape(raw.actor, ['name', 'gender', 'age', 'sourceHistoryDigest', 'sourceIdentityDigest', 'pathwayId', 'deathConsulPromotionWeek', 'corpsecollectorPromotionWeek']) ||
         typeof raw.actor.name !== 'string' || raw.actor.name.length === 0 || raw.actor.name.length > 500 || typeof raw.actor.gender !== 'string' || raw.actor.gender.length === 0 || raw.actor.gender.length > 500 ||
         raw.actor.name !== s.character.name || raw.actor.gender !== raw.before.gender || raw.actor.age !== s.character.age ||
@@ -312,9 +453,11 @@ export function validatePaleEmperorAcquisitionJournal(s: SliceState): boolean {
         if (!same(check, event.check) || random.cursor !== event.randomAfter) throw new Error('服药结果与原随机记录不符。');
         shadow.random.cursor = random.cursor; nextCursor = random.cursor; return check;
       } };
+      if (recoveryCommand(event.command) ? !event.recoverySite || !same(recoverySiteReceipt(shadow, event.command), event.recoverySite) : Object.hasOwn(event, 'recoverySite')) return false;
       applyAcquisitionMutation(shadow, event.command, context, true);
       if (!same(paleEmperorAcquisitionBudget(shadow), event.after)) return false;
       if (event.command.type === 'CONSUME' ? checks !== 1 : checks !== 0 || event.check !== null || event.randomBefore !== null || event.randomAfter !== null) return false;
+      expected.acquisitionJournal.push(structuredClone(event));
       nextCursor = event.cursorAfter; previous = event;
     }
     if (!same(acquisitionState(expected), acquisitionState(s.paleEmperor))) return false;
@@ -357,12 +500,13 @@ export function paleEmperorAcquisitionActions(s: SliceState): PaleEmperorAction[
     for (const task of PALE_EMPEROR_PREPARATIONS) if (!state.preparations.some(p => p.taskId === task.id)) add(`pale-emperor-prepare-${task.id}`, task.title, '1行动 · 专业准备', { type: 'PREPARE_TASK', taskId: task.id });
     if (state.preparedWeek === null) add('prepare-pale-emperor-promotion', '实际检查本次服药场地', `1行动 · ${prices.preparation}便士 · 仅本周有效`, { type: 'PREPARE_PROMOTION' });
     else add('leave-pale-emperor-preparation', '沿原出口结束本次准备', '0行动 · 不退成本 · 未服原瓶保留', { type: 'LEAVE_PREPARATION' });
-    if (state.resupply.requestedWeek !== null) add('receive-pale-emperor-supply', '确认下一批三瓶实际到货', `0行动 · 最早第${state.resupply.requestedWeek + 1}周`, { type: 'RECEIVE_SUPPLY' });
-    else if (exhaustedSupply(state)) add('request-pale-emperor-supply', '申请下一批独立苍白皇帝成品', `1行动 · ${prices.resupply}便士 · 下一真实周起收货`, { type: 'REQUEST_SUPPLY' });
+    if (state.resupply.recovery) add('recover-pale-emperor-characteristic', `原处交接${state.resupply.recovery.characteristicId}`, `1行动 · 最早第${state.resupply.recovery.requestedWeek + 1}周且隔七天 · 新药另付`, { type: 'RECOVER_CHARACTERISTIC_V1', bottleId: state.resupply.recovery.sourceBottleId });
+    else if (originalSupplyFailed(state)) for (const bottle of state.bottles) if (recoverySource(state, bottle.id))
+      add(`request-recovery-${bottle.id}`, `实查${bottle.id}留下的同一原特性`, `1行动 · ${PALE_EMPEROR_RECOVERY_PRICES[sourceEraFor(s)].investigation}便士 · 原处当次许可 · 旧费不退`, { type: 'REQUEST_RECOVERY_V1', bottleId: bottle.id });
     for (const bottle of state.bottles) {
       if (bottle.status === 'SUPPLIER') {
-        if (bottle.labourSteps < PALE_EMPEROR_LABOUR_STEPS) add(`work-${bottle.id}`, `第${bottleNumber(bottle)}瓶 · ${PALE_EMPEROR_LABOUR_TASKS[bottle.labourSteps]}`, `1行动 · 劳动${bottle.labourSteps}/5 · 五次抵${prices.labourCredit}便士`, { type: 'POTION_WORK', bottleId: bottle.id });
-        add(`buy-${bottle.id}`, `领取第${bottleNumber(bottle)}瓶苍白皇帝魔药`, `0行动 · ${potionPrice(s, bottle)}便士`, { type: 'BUY_POTION', bottleId: bottle.id });
+        if (bottle.labourSteps < PALE_EMPEROR_LABOUR_STEPS) add(`work-${bottle.id}`, `第${bottleNumber(bottle)}瓶 · ${PALE_EMPEROR_LABOUR_TASKS[bottle.labourSteps]}`, `1行动 · 劳动${bottle.labourSteps}/5 · 五次抵${bottle.recovery ? PALE_EMPEROR_RECOVERY_PRICES[sourceEraFor(s)].full - PALE_EMPEROR_RECOVERY_PRICES[sourceEraFor(s)].afterLabour : prices.labourCredit}便士`, { type: 'POTION_WORK', bottleId: bottle.id });
+        add(`buy-${bottle.id}`, `领取第${bottleNumber(bottle)}瓶${bottle.recovery ? '同原特性重配' : '苍白皇帝'}魔药`, `0行动 · ${potionPrice(s, bottle)}便士`, { type: 'BUY_POTION', bottleId: bottle.id });
       } else if (bottle.status === 'PLAYER') add(`consume-${bottle.id}`, `独立确认服用第${bottleNumber(bottle)}瓶苍白皇帝魔药`, `0行动 · 死亡执政官消化${s.progression.acting}/100 · ${deathConsulWeeks(s)}/12整周`, { type: 'CONSUME', bottleId: bottle.id, confirmed: true });
     }
   }
@@ -382,9 +526,9 @@ export function projectPaleEmperor(s: SliceState): PaleEmperorProjection {
     title: '苍白皇帝·死神序列1', discovered: available, guidanceKnown: available && state.guidanceKnown, promoted,
     sourceEra: state.sourceEra, sourceLabel: available ? paleEmperorSourceLabel(era) : '', prices: available ? prices : null,
     formulaKnown: false, formula: [], ...(available ? { story: `${PALE_EMPEROR_FORMULA_STATUS}${PALE_EMPEROR_SOURCE_STATUS}` } : {}),
-    supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶${prices.potion}便士，或为本瓶完成五项真实劳动后支付${prices.labourBalance}便士；全部失败耗尽后才能申请下一批，跨真实周收货并逐瓶另行取得。` : '',
+    supplies: available ? `供应方尚持${state.bottles.filter(b => b.status === 'SUPPLIER').length}瓶，你持未服原瓶${state.bottles.filter(b => b.status === 'PLAYER').length}瓶，已耗尽${state.bottles.filter(b => b.status === 'CONSUMED').length}瓶。每瓶${prices.potion}便士，或为本瓶完成五项真实劳动后支付${prices.labourBalance}便士；三原份全部失败后，只能有价实查最后失败残余、取得当次许可并隔周回收同一份；重配普通新药${PALE_EMPEROR_RECOVERY_PRICES[era].full}便士或五次新劳务后${PALE_EMPEROR_RECOVERY_PRICES[era].afterLabour}便士，不新增第四份。${state.bottles.slice(3).some(b => !b.recovery) ? "历史独立第四份及以后保持只读，本入口关闭。" : ""}` : '',
     actions, nextStep: preferred ? `下一步：${preferred.label}。${preferred.cost}。` : actions.find(a => a.reason)?.reason ?? (promoted ? '已完成记录保留，可以继续正常生活。' : '先完成死亡执政官的实际经历。'), preferredActionId: preferred?.id ?? null,
-    bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · 苍白皇帝成品魔药`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周当次场地检查后服用。`}`,
+    bottles: available ? state.bottles.map(b => ({ id: b.id, title: `第${bottleNumber(b)}瓶 · ${b.recovery ? '同一原特性重配' : '苍白皇帝成品魔药'}`, source: `${b.source}${b.acquiredWeek === null ? '尚未交付。' : `第${b.acquiredWeek}周交付。`}${b.preparationWeek === null ? '' : `第${b.preparationWeek}周当次场地检查后服用。`}`,
       status: b.status === 'SUPPLIER' ? `供应方保管 · 劳动${b.labourSteps}/5` : b.status === 'PLAYER' ? '已交付，尚未服用' : `原瓶已耗尽 · ${b.outcome === 'GREAT_SUCCESS' ? '大成功晋升' : b.outcome === 'SUCCESS' ? '成功晋升' : b.outcome === 'GREAT_FAILURE' ? '严重排异，仍为死亡执政官' : '排异，仍为死亡执政官'}`,
       chance, command: { type: 'CONSUME', bottleId: b.id, confirmed: true } })) : [],
     preparations: available ? PALE_EMPEROR_PREPARATIONS.map(p => ({ taskId: p.id, title: p.title, completedWeek: state.preparations.find(v => v.taskId === p.id)?.completedWeek ?? null })) : [], preparedWeek: available ? state.preparedWeek : null,
@@ -628,13 +772,24 @@ export function validatePaleEmperorFinancialContinuity(s: SliceState): boolean {
   } catch { return false; }
 }
 
+function validRecovery(v: unknown, completed: boolean): v is PaleEmperorRecoveryRequest & { recoveredWeek: number } {
+  if (!record(v) || !shape(v, ['version', 'sourceBottleId', 'originalBottleId', 'characteristicId', 'sourceReceiptRevision', 'requestedWeek', 'siteId', 'custodianId', 'sourceEra', ...(completed ? ['recoveredWeek'] : [])]) ||
+    v.version !== 1 || typeof v.sourceBottleId !== 'string' || !/^pale-emperor-potion-[1-9]\d{0,14}$/.test(v.sourceBottleId) ||
+    typeof v.originalBottleId !== 'string' || !isOriginalId(v.originalBottleId) || v.characteristicId !== characteristicId(v.originalBottleId) ||
+    !integer(v.sourceReceiptRevision) || !integer(v.requestedWeek, 1) || (v.sourceEra !== 'ORIGINAL' && v.sourceEra !== 'POST_CYCLE')) return false;
+  const site = PALE_EMPEROR_RECOVERY_SITES[v.sourceEra];
+  return v.siteId === site.id && v.custodianId === site.custodianId && (!completed || integer(v.recoveredWeek, v.requestedWeek + 1));
+}
 /** Exact source identity and bounded chronological records; older modules own their detailed history. */
 export function validatePaleEmperorState(s: SliceState): boolean { try { return validateState(s); } catch { return false; } }
 function validateState(s: SliceState): boolean {
   const raw: unknown = s.paleEmperor;
-  if (!record(raw) || !shape(raw, ['guidanceKnown', 'sourceEra', 'sourceWeek', 'bottles', 'resupply', 'promotionWeek', 'deathConsulActingAtPromotion', 'preparations', 'preparedWeek', 'acquisitionJournal', 'eraJournal', 'sourceHistory', 'sourceScene', 'life', 'encounter']) || typeof raw.guidanceKnown !== 'boolean') return false;
-  if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries']) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || raw.bottles.length !== PALE_EMPEROR_BOTTLE_IDS.length * (raw.resupply.deliveries + 1) || !Array.isArray(raw.preparations) || !Array.isArray(raw.acquisitionJournal) || !Array.isArray(raw.eraJournal)) return false;
+  if (!record(raw) || !shape(raw, ['guidanceKnown', 'sourceEra', 'sourceWeek', 'bottles', 'resupply', 'promotionWeek', 'deathConsulActingAtPromotion', 'preparations', 'preparedWeek', 'acquisitionJournal', 'eraJournal', 'sourceHistory', 'sourceScene', 'life', 'encounter', ...(Object.hasOwn(raw, 'recoveryScene') ? ['recoveryScene'] : [])]) || typeof raw.guidanceKnown !== 'boolean') return false;
+  if (!record(raw.resupply) || !shape(raw.resupply, ['requestedWeek', 'deliveries', ...(Object.hasOwn(raw.resupply, 'recovery') ? ['recovery'] : [])]) || !integer(raw.resupply.deliveries, 0, s.week) || !Array.isArray(raw.bottles) || !Array.isArray(raw.preparations) || !Array.isArray(raw.acquisitionJournal) || !Array.isArray(raw.eraJournal)) return false;
   const state = raw as unknown as PaleEmperorState, promoted = isPaleEmperor(s), acquisitionStage = isPaleEmperorAcquisitionStage(s);
+  const recoveryDeliveries = state.bottles.filter(b => record(b) && Object.hasOwn(b, 'recovery')).length, legacyDeliveries = state.resupply.deliveries - recoveryDeliveries;
+  if (!integer(legacyDeliveries) || state.bottles.length !== 3 + legacyDeliveries * 3 + recoveryDeliveries || recoveryDeliveries > 0 && legacyDeliveries > 0) return false;
+  if (Object.hasOwn(state.resupply, 'recovery') && !validRecovery(state.resupply.recovery, false)) return false;
   const firstWeek = s.deathConsul.promotionWeek ?? s.week, firstConsumptionWeek = firstWeek + PALE_EMPEROR_MIN_DEATH_CONSUL_WEEKS, lastAcquisitionWeek = state.promotionWeek ?? s.week;
   if (state.guidanceKnown && (!knownChannel(s) || !validatePaleEmperorSource(s))) return false;
   if (state.guidanceKnown && (state.sourceEra !== currentDeathConsulSourceEra(s) || !integer(state.sourceWeek, firstWeek, lastAcquisitionWeek))) return false;
@@ -650,10 +805,16 @@ function validateState(s: SliceState): boolean {
   } else if (state.promotionWeek !== null || state.deathConsulActingAtPromotion !== null || PALE_EMPEROR_ABILITY_IDS.some(id => Object.hasOwn(s.progression.mastery, id))) return false;
   let successes = 0;
   for (const [index, b] of state.bottles.entries()) {
-    if (!record(b) || !shape(b, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'preparationWeek', 'status', 'outcome']) || b.id !== `pale-emperor-potion-${index + 1}` || !integer(b.labourSteps, 0, PALE_EMPEROR_LABOUR_STEPS)) return false;
+    if (!record(b) || !shape(b, ['id', 'source', 'stockedWeek', 'labourSteps', 'acquiredWeek', 'consumedWeek', 'preparationWeek', 'status', 'outcome', ...(Object.hasOwn(b, 'recovery') ? ['recovery'] : [])]) || b.id !== `pale-emperor-potion-${index + 1}` || !integer(b.labourSteps, 0, PALE_EMPEROR_LABOUR_STEPS)) return false;
     const stockWeek = b.stockedWeek ?? firstWeek;
     if (index < PALE_EMPEROR_BOTTLE_IDS.length) {
+      if (Object.hasOwn(b, 'recovery')) return false;
       if (state.guidanceKnown ? b.stockedWeek !== state.sourceWeek || b.source !== paleEmperorPotionSource(state.sourceEra!, index + 1, state.sourceWeek!) : b.stockedWeek !== null || b.source !== PALE_EMPEROR_POTION_SOURCES[index]!.source) return false;
+    } else if (Object.hasOwn(b, 'recovery')) {
+      if (!validRecovery(b.recovery, true) || !state.guidanceKnown || !integer(b.stockedWeek, firstConsumptionWeek + 1, lastAcquisitionWeek) ||
+        b.recovery!.recoveredWeek !== b.stockedWeek || b.source !== paleEmperorRecoveredBottleSource(b.id, b.recovery!) || !originalBottleId(state, b)) return false;
+      const prefix = { ...state, bottles: state.bottles.slice(0, index) }, source = recoverySource(prefix, b.recovery!.sourceBottleId);
+      if (!originalSupplyFailed(prefix) || !source || source.originalBottleId !== b.recovery!.originalBottleId || source.receipt.revision !== b.recovery!.sourceReceiptRevision) return false;
     } else {
       if (!state.guidanceKnown || !integer(b.stockedWeek, firstConsumptionWeek + 1, lastAcquisitionWeek) || b.source !== deliverySource(s, index + 1, b.stockedWeek)) return false;
       const batchStart = index - index % PALE_EMPEROR_BOTTLE_IDS.length;
@@ -672,7 +833,7 @@ function validateState(s: SliceState): boolean {
       } else return false;
     }
   }
-  if (state.resupply.requestedWeek !== null && (!integer(state.resupply.requestedWeek, firstConsumptionWeek, s.week) || !state.guidanceKnown || !acquisitionStage || state.preparedWeek !== null || !exhaustedSupply(state) || state.bottles.some(b => b.consumedWeek! > state.resupply.requestedWeek!))) return false;
+  if (state.resupply.requestedWeek !== null && (!integer(state.resupply.requestedWeek, firstConsumptionWeek, s.week) || !state.guidanceKnown || !acquisitionStage || state.preparedWeek !== null || !(state.resupply.recovery ? originalSupplyFailed(state) : exhaustedSupply(state)) || (!state.resupply.recovery && state.bottles.some(b => b.consumedWeek! > state.resupply.requestedWeek!)))) return false;
   if (successes !== (promoted ? 1 : 0) || !validatePaleEmperorAcquisitionJournal(s) || !validatePaleEmperorJournalContinuity(s) || !validatePaleEmperorEraJournal(s) || !validatePaleEmperorFinancialContinuity(s) || !validatePaleEmperorLifeState(s) || !validatePaleEmperorEncounterState(s)) return false;
   if (promoted) {
     const acting = Object.values(state.life.cases).filter(c => c.status === 'RESOLVED').length * 25 + (state.life.reflected ? 25 : 0);

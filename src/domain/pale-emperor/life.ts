@@ -74,7 +74,7 @@ export interface PaleEmperorLifeProjection {
   clockSeconds: number; elapsedSeconds: number; conditionVersion: number; playerLocation: PaleEmperorLifeState['playerLocation']; playerTravelMetres: number;
   site: PaleEmperorAnnex | null; originals: PaleEmperorOriginals; nora: PaleEmperorNora | null; pending: PaleEmperorLifeState['pending']; currentAttempt: PaleEmperorAttempt | null;
   cases: { id: PaleEmperorCaseId; title: string; story: string; observations: string[]; status: string; method: Method | null; result: string | null; contactOpen: boolean; returned: boolean; attempts: PaleEmperorAttempt[] }[];
-  ledger: PaleEmperorLifeReceipt[]; actions: PaleEmperorLifeAction[];
+  ledger: PaleEmperorPublicLifeReceipt[]; actions: PaleEmperorLifeAction[];
 }
 const QUIETING = 'death.s1.residual-quieting', INTERDICTION = 'death.s1.spiritual-interdiction';
 const same = (a: unknown, b: unknown): boolean => { try { return stableStringify(a) === stableStringify(b); } catch { return false; } };
@@ -391,9 +391,59 @@ export function paleEmperorLifeActions(s: SliceState): PaleEmperorLifeAction[] {
   if (!actions.some(x => x.command.type === 'ABORT')) step('ABORT', false, true);
   return actions;
 }
+/** Keep the full resolved ledger while withholding its replay source and stream offsets. */
+const publicLifeDate = (d: PublicGameDate) => ({ epoch: d.epoch, year: d.year, month: d.month, day: d.day });
+const publicLifeCheck = (c: PublicCheckResult | null): PublicCheckResult | null => c ? ({
+  ability: c.ability, baseAbility: c.baseAbility, effectiveAbility: c.effectiveAbility, difficulty: c.difficulty, chance: c.chance, roll: c.roll, tier: c.tier, modifiers: c.modifiers.map(m => ({ source: m.source, value: m.value })),
+}) : null;
+const publicLifeCommand = (c: PaleEmperorActivityCommand): PaleEmperorActivityCommand => {
+  switch (c.type) {
+    case 'OBSERVE': case 'REPORT': return { type: c.type, caseId: c.caseId };
+    case 'INVITE': return { type: c.type, caseId: c.caseId, method: c.method };
+    case 'CONSENT': case 'DECLINE_CONSENT': case 'WITHDRAW_CONSENT': return { type: c.type, permission: c.permission };
+    default: return { type: c.type };
+  }
+};
+const publicLifeBudget = (b: PaleEmperorLifeBudget) => ({
+  cash: b.cash, actions: b.actions, health: b.health, mind: b.mind, spirituality: b.spirituality, pollution: b.pollution, gender: b.gender, sequence: b.sequence, acting: b.acting, injuryRisk: b.injuryRisk,
+  coreStats: { physique: b.coreStats.physique, perception: b.coreStats.perception, will: b.coreStats.will, knowledge: b.coreStats.knowledge },
+  mastery: Object.fromEntries(PALE_EMPEROR_PUBLIC_LIFE_MASTERY.filter(id => Object.hasOwn(b.mastery, id)).map(id => [id, b.mastery[id]!])),
+  completedSources: [...b.completedSources],
+  injuries: b.injuries.map(i => ({ id: i.id, severity: i.severity, acquiredRevision: i.acquiredRevision, treatedRevision: i.treatedRevision })),
+});
+const publicLifeFinance = (f: PaleEmperorFinanceSnapshot) => ({
+  weeklyBudget: f.weeklyBudget, lifeTier: f.lifeTier, nextLifeTier: f.nextLifeTier, missedWeeks: f.missedWeeks, credit: f.credit, sourceEra: f.sourceEra,
+  debts: f.debts.map(d => ({ id: d.id, source: d.source, remaining: d.remaining, weeklyPayment: d.weeklyPayment, createdWeek: d.createdWeek })),
+  era: { location: f.era.location, elapsedSeconds: f.era.elapsedSeconds, travelledMetres: f.era.travelledMetres, works: f.era.works, rests: f.era.rests, weeksAdvanced: f.era.weeksAdvanced, income: f.era.income, expenses: f.era.expenses, emergencyWorks: f.era.emergencyWorks, emergencyWorkUsed: f.era.emergencyWorkUsed, treatments: f.era.treatments },
+});
+const publicLifeAnnex = (p: PaleEmperorAnnex | null) => p ? ({
+  id: p.id, introducedWeek: p.introducedWeek, lengthMetres: p.lengthMetres, ordinaryRoadMetres: p.ordinaryRoadMetres, ordinaryExit: p.ordinaryExit, introducedDate: publicLifeDate(p.introducedDate),
+  vessel: { id: p.vessel.id, nature: p.vessel.nature, quantity: p.vessel.quantity, owner: p.vessel.owner, source: p.vessel.source, holder: p.vessel.holder, location: p.vessel.location, agitation: p.vessel.agitation, lid: p.vessel.lid, seal: p.vessel.seal, scuffs: p.vessel.scuffs, travelledMetres: p.vessel.travelledMetres, version: p.vessel.version },
+  lid: { id: p.lid.id, location: p.lid.location, operations: p.lid.operations, travelledMetres: p.lid.travelledMetres },
+  screen: { id: p.screen.id, state: p.screen.state, location: p.screen.location, operations: p.screen.operations, travelledMetres: p.screen.travelledMetres },
+  door: { id: p.door.id, location: p.door.location, state: p.door.state, operations: p.door.operations },
+  box: { id: p.box.id, location: p.box.location, closed: p.box.closed, operations: p.box.operations, travelledMetres: p.box.travelledMetres },
+  loan: { custodianId: p.loan.custodianId, terms: p.loan.terms, grantedWeek: p.loan.grantedWeek, returnedWeek: p.loan.returnedWeek, grants: p.loan.grants, returns: p.loan.returns },
+  seals: p.seals.map(x => ({ id: x.id, price: x.price, state: x.state, purchasedWeek: x.purchasedWeek, usedWeek: x.usedWeek })),
+}) : null;
+const PALE_EMPEROR_PUBLIC_LIFE_MASTERY = [
+  'death.s9.corpse-physique', 'death.s9.spiritual-sight', 'death.s9.undead-knowledge',
+  'death.s8.death-eye', 'death.s8.spirit-contact', 'death.s7.spirit-ritual', 'death.s7.spirit-communication', 'death.s7.spirit-borrowing',
+  'death.s6.spirit-recruitment', 'death.s6.dead-words', 'death.s5.inner-underworld', 'death.s5.underworld-door',
+  'death.s4.underworld-seal', 'death.s3.bounded-ferry', 'death.s3.departure-ward', 'death.s2.pale-flame', 'death.s2.spirit-passage',
+  'death.s1.residual-quieting', 'death.s1.spiritual-interdiction',
+] as const;
+export function projectPaleEmperorLifeReceipt(e: PaleEmperorLifeReceipt) { return {
+  week: e.week, revision: e.revision, checkBase: e.checkBase, outcome: e.outcome, elapsedSeconds: e.elapsedSeconds, playerWalkedMetres: e.playerWalkedMetres, noraWalkedMetres: e.noraWalkedMetres, noraEnergySpent: e.noraEnergySpent, vesselCarriedMetres: e.vesselCarriedMetres,
+  date: publicLifeDate(e.date), command: publicLifeCommand(e.command), check: publicLifeCheck(e.check),
+  before: publicLifeBudget(e.before), after: publicLifeBudget(e.after), finance: publicLifeFinance(e.finance),
+  siteBefore: publicLifeAnnex(e.siteBefore), siteAfter: publicLifeAnnex(e.siteAfter), applications: [...e.applications],
+}; }
+export type PaleEmperorPublicLifeReceipt = ReturnType<typeof projectPaleEmperorLifeReceipt>;
+
 export function projectPaleEmperorLife(s: SliceState): PaleEmperorLifeProjection {
   const l = s.paleEmperor.life, actions = paleEmperorLifeActions(s);
   return { title: '附室里的同一只容器', story: '短暂安定残响，或阻住一条可见的传播线路。随后亲手合盖、搬运和归还；许可撤回后，普通收物与返程仍然可行。', source: '附室自有的一只非人、非灵魂残留容器，原盖、原屏、原门与原箱。诺拉·贝尔42岁，本次重新确认借用和能力许可；封条仅两条，实购实耗。', environment: '接待处至附室普通道路12米；两台相距4米。每次到场1行动，每次邀请10便士及1行动。原封存室、中转室和旧人旧物保持原状。', activeCase: l.activeCase, inside: locked(l), insideCase: locked(l), reflected: l.reflected, preferredActionId: actions.find(x => x.preferredAction)?.id ?? null,
     clockSeconds: l.clockSeconds, elapsedSeconds: l.elapsedSeconds, conditionVersion: l.conditionVersion, playerLocation: l.playerLocation, playerTravelMetres: l.playerTravelMetres, site: structuredClone(l.site), originals: paleEmperorOriginalSnapshot(s), nora: structuredClone(l.nora), pending: structuredClone(l.pending), currentAttempt: structuredClone(current(l)),
-    cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '原残留始终保留；到期只恢复躁动，不复原擦痕、封条、位置或身体。'], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '短暂窗口已经由实际动作应用；归还和离场后报告。' : '普通完成，保留已付费用和真实损耗，没有未应用能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }), ledger: structuredClone(l.journal), actions };
+    cases: CASES.map(d => { const r = l.cases[d.id]; return { id: d.id, title: d.title, story: d.story, observations: r.observedWeek === null ? [] : [d.story, '原残留始终保留；到期只恢复躁动，不复原擦痕、封条、位置或身体。'], status: r.status, method: r.method, result: r.result === 'NONE' ? null : r.result === 'ABILITY' ? '短暂窗口已经由实际动作应用；归还和离场后报告。' : '普通完成，保留已付费用和真实损耗，没有未应用能力奖励。', contactOpen: r.contactOpen, returned: r.returned, attempts: structuredClone(r.attempts) }; }), ledger: l.journal.map(projectPaleEmperorLifeReceipt), actions };
 }

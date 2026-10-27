@@ -12,6 +12,7 @@ import { DIVINE_HAND_SOURCE_KEYS, DIVINE_HAND_ABILITY_IDS } from '../../src/doma
 import { divineHandExpectedOriginals, divineHandLifeMasteryGains } from '../../src/domain/divine-hand/life.js';
 import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentDivineHandReplayExpectation } from '../helpers/divine-hand-current-replay.js';
 
 export const DIVINE_HAND_ROOT = 'tests/fixtures/divine-hand-v01980';
 export const DIVINE_HAND_SOURCE = 'tests/fixtures/glory-v01760/natural.json';
@@ -92,7 +93,11 @@ export function assertPublicCaptureControl(state: SliceState, intent: SliceInten
 export function replayCaptureBoundary(name: string) {
   const save = namedBoundary(name);
   if (save.count > DIVINE_HAND_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-  sameCaptureValue(applySliceIntent(save.before, save.intent), save.final);
+  // A restored historical boundary retains its original guidance. Only the
+  // command that actually writes guidance uses the exact current expectation.
+  const expected = save.intent.type === 'DIVINE_HAND' && save.intent.command.type === 'LEARN_GUIDANCE'
+    ? currentDivineHandReplayExpectation(save.final) : save.final;
+  sameCaptureValue(applySliceIntent(save.before, save.intent), expected);
   return save;
 }
 export const captureBody = (s: SliceState) => ({ status: s.status, revision: s.revision, week: s.week, date: s.date,

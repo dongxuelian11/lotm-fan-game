@@ -10,6 +10,7 @@ import type { SliceIntent, SliceState } from '../../src/domain/slice/types.js';
 import { SqliteSliceStore } from '../../src/persistence/slice-store.js';
 import { ABOMINATION_SOURCE_KEYS } from '../../src/domain/abomination/types.js';
 import { CURRENT_CONTENT_VERSION, CURRENT_SCHEMA_VERSION } from '../helpers/current-save-format.js';
+import { currentAbominationReplayExpectation } from '../helpers/abomination-current-replay.js';
 import { ABOMINATION_CAPTURE_EVIDENCE as evidence } from './abomination-capture-evidence.js';
 import { ABOMINATION_PREFIX_COUNT, ABOMINATION_SOURCE, ABOMINATION_PRIOR, captureMetadata, captureFileHash, captureValueHash,
   namedBoundary, capturedState, capturedSnapshot, observedCapture, currentCapture, sourceEntry,
@@ -35,7 +36,9 @@ describe.skipIf(evidence.observed === null)('Abomination actual representative S
     const { commands, steps } = captureMetadata(), save = namedBoundary(name), beforeHash = await captureFileHash(save.path);
     expect(save.count).toBe(steps[name]); same(save.intent, commands[save.count - 1]);
     if (save.count > ABOMINATION_PREFIX_COUNT) assertPublicCaptureControl(save.before, save.intent);
-    exerciseSqlite(save.before, save.intent, save.final, `abomination203:${save.count}`);
+    const expected = save.intent.type === 'ABOMINATION' && save.intent.command.type === 'LEARN_GUIDANCE'
+      ? currentAbominationReplayExpectation(save.final) : save.final;
+    exerciseSqlite(save.before, save.intent, expected, `abomination203:${save.count}`);
     expect(await captureFileHash(save.path)).toBe(beforeHash);
   }, 120_000);
 

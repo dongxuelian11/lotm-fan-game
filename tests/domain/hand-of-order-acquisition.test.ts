@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import { migrateSliceState } from '../../src/domain/slice/migration.js';
+import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { assertValidSliceState, projectSliceState } from '../../src/domain/slice/index.js';
 import { validateBalancerState } from '../../src/domain/balancer/index.js';
 import { createHandOfOrderState, handOfOrderInheritedView, handOfOrderAcquisitionBlock, handOfOrderOriginals,
   projectHandOfOrder, validateHandOfOrderState, validateHandOfOrderSource, validateHandOfOrderAcquisitionJournal } from '../../src/domain/hand-of-order/index.js';
 import { HAND_OF_ORDER_INHERITED_ABILITY_IDS, HAND_OF_ORDER_ABILITY_IDS, HAND_OF_ORDER_PREPARATION_IDS } from '../../src/domain/hand-of-order/types.js';
 import type { SliceState } from '../../src/domain/slice/types.js';
-import { originalBalancer, directedInitial2, taught, prepared, promoted, prepareBottle, step, hoo, ready, dose,
+import { originalBalancer, directedInitial2, taught, prepared, promoted, step, hoo, dose,
   rejectHandOfOrder, rejectIntent, oldJusticiarRoots } from './hand-of-order-directed-helper.js';
 const journal = (s: SliceState) => s.handOfOrder.acquisitionJournal;
 
@@ -103,14 +105,16 @@ describe('HandOfOrder independent acquisition and truthful S2 source', () => {
     expect(receipt.before).toEqual(receipt.after); expect(n.week).toBe(s.week + 1); expect(n.cash).toBe(s.cash - 30); expect(n.random).toEqual(s.random);
     expect(n.handOfOrder.bottles[0]!.status).toBe('PLAYER'); expect(n.injuries).toEqual(s.injuries); assertValidSliceState(n);
   }, 120_000);
-  it('requires three genuine failures, paid request and actual next week for fresh independent bottles', () => {
-    let s = taught('THREE_FAILURES'); rejectHandOfOrder(s, { type: 'REQUEST_SUPPLY' });
-    for (let number = 1; number <= 3; number++) { const bottleId = `hand-of-order-potion-${number}`; s = prepareBottle(s, bottleId); s = hoo(s, { type: 'CONSUME', bottleId, confirmed: true }); expect(s.progression.sequence).toBe(2); }
-    s = ready(s, { ap: 2, cash: 100, health: 100, mind: 100 }); const before = s.cash;
-    s = hoo(s, { type: 'REQUEST_SUPPLY' }); expect(s.cash).toBe(before - 100); const requested = s.handOfOrder.resupply.requestedWeek!;
-    rejectHandOfOrder(s, { type: 'RECEIVE_SUPPLY' }); s = ready(s, { afterWeek: requested }); s = hoo(s, { type: 'RECEIVE_SUPPLY' });
-    expect(s.handOfOrder.bottles).toHaveLength(6); expect(s.handOfOrder.bottles.slice(0, 3).every(b => b.status === 'CONSUMED')).toBe(true);
-    expect(s.handOfOrder.bottles.slice(3).every(b => b.status === 'SUPPLIER' && b.labourSteps === 0 && b.acquiredWeek === null)).toBe(true); assertValidSliceState(s);
+  it('blocks fresh independent supply after three failures and exposes same-original recovery instead', () => {
+    // The genuine706 checkpoint already contains three failures,190p and2AP;
+    // no predecessor replay or synthetic budget is needed for this admission check.
+    const s = migrateSliceState(readObjectEntry<SliceState>('tests/fixtures/hand-of-order-v02060/boundary-step-706-action.json', 'final'));
+    expect(s.handOfOrder.bottles.every(b => b.status === 'CONSUMED' && b.outcome === 'FAILURE')).toBe(true);
+    const before = structuredClone(s);
+    rejectHandOfOrder(s, { type: 'REQUEST_SUPPLY' }); rejectHandOfOrder(s, { type: 'RECEIVE_SUPPLY' });
+    expect(s).toEqual(before); expect(s.handOfOrder.bottles).toHaveLength(3);
+    expect(handOfOrderAcquisitionBlock(s, { type: 'REQUEST_RECOVERY_V1', bottleId: 'hand-of-order-potion-1' })).toBeNull();
+    assertValidSliceState(s);
   }, 240_000);
   it('rejects tampered source receipts, random evidence and forgedS1/S0 states', () => {
     for (const mutate of [
