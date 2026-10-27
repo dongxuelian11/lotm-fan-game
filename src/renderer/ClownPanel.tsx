@@ -25,7 +25,13 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
     (action) => action.command.type === "CONSUME" && action.command.bottleId === selectedBottleId,
   );
   const actions = clown.actions.filter((action) => action.command.type !== "CONSUME");
-  const nextAction = clown.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+  const practices = actions.filter((action) => action.command.type === "PRACTICE");
+  const escorts = actions.filter((action) => action.command.type === "RESCUE_TALK" || action.command.type === "RESCUE_FIGHT");
+  const supplies = actions.filter((action) => action.command.type === "BUY_PAPER");
+  const promotedNext = practices.find((action) => action.enabled)
+    ?? escorts.find((action) => action.enabled)
+    ?? supplies.find((action) => action.enabled);
+  const nextAction = (clown.promoted ? promotedNext : undefined) ?? clown.actions.find((action) => action.enabled && action.command.type === "CONSUME")
     ?? clown.actions.find((action) => action.enabled)
     ?? clown.actions[0];
   const confirming = !!selectedBottle && selectedAction?.command.type === "CONSUME" && !clown.promoted;
@@ -57,6 +63,20 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
     submitted.current = selectedBottle.id;
     setSubmittedBottleId(selectedBottle.id);
     onCommand(selectedAction.command);
+  }
+
+  function renderAction(action: ClownAction) {
+    return (
+      <div className={`seer-action${action.command.type === "RESCUE_FIGHT" ? " clown-risk-action" : ""}`} key={action.id}>
+        <button className="slice-choice" disabled={busy || blocked || !action.enabled}
+          onClick={() => onCommand(action.command)}
+          aria-describedby={action.reason ? `clown-reason-${action.id}` : undefined}>
+          <strong>{action.label}</strong>
+          <span className="slice-modifiers">{action.cost}</span>
+        </button>
+        {action.reason && <p className="seer-action-reason" id={`clown-reason-${action.id}`}>{action.reason}</p>}
+      </div>
+    );
   }
 
   if (confirming && selectedBottle && selectedAction) {
@@ -116,12 +136,13 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
 
       {clown.promoted && (
         <section className="clown-paper" aria-label="小丑纸张库存">
-          <h4>随身纸张 <strong>{clown.paperSheets} 张</strong></h4>
-          <p className="slice-muted">店内剩余 {clown.paperStock} 张 · 已使用 {clown.paperSpent} 张</p>
+          <div><h4>随身纸张 <strong>{clown.paperSheets} 张</strong></h4>
+          <p className="slice-muted">店内剩余 {clown.paperStock} 张 · 已使用 {clown.paperSpent} 张</p></div>
+          {supplies.length > 0 && <div className="clown-supplies">{supplies.map(renderAction)}</div>}
         </section>
       )}
 
-      {clown.story && <section className="clown-story" aria-label="当前小丑情境"><h3>当前情境</h3><p>{clown.story}</p></section>}
+      {!clown.promoted && clown.story && <section className="clown-story" aria-label="当前小丑情境"><h3>当前情境</h3><p>{clown.story}</p></section>}
 
       {clown.discovered && !clown.promoted && clown.bottles.length > 0 && (
         <section className="seer-bottles" aria-label="已调配的小丑魔药">
@@ -150,29 +171,30 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
         </section>
       )}
 
-      {actions.length > 0 && (
+      {!clown.promoted && actions.length > 0 && (
         <div className={!clown.promoted ? `clown-preparation${actions.length > 1 ? " clown-preparation-multiple" : ""}` : undefined}>
           <div className={`seer-actions${actions.length === 1 && !clown.promoted ? " clown-single-action" : ""}`} role="group" aria-label="小丑成长行动">
-            {actions.map((action) => (
-              <div className="seer-action" key={action.id}>
-                <button
-                  className="slice-choice"
-                  disabled={busy || blocked || !action.enabled}
-                  onClick={() => onCommand(action.command)}
-                  aria-describedby={action.reason ? `clown-reason-${action.id}` : undefined}
-                >
-                  <strong>{action.label}</strong>
-                  <span className="slice-modifiers">{action.cost}</span>
-                </button>
-                {action.reason && <p className="seer-action-reason" id={`clown-reason-${action.id}`}>{action.reason}</p>}
-              </div>
-            ))}
+            {actions.map(renderAction)}
           </div>
           {!clown.promoted && <dl className="clown-preparation-budget" aria-label="晋升准备当前资源">
             <div><dt>剩余行动</dt><dd>{resources.actionsRemaining}</dd></div>
             <div><dt>现有现金</dt><dd>{resources.cash}</dd></div>
           </dl>}
         </div>
+      )}
+
+      {clown.promoted && practices.length > 0 && (
+        <section className="clown-practices" aria-label="小丑日常实践">
+          <h3>日常实践</h3>
+          <div className="seer-actions" role="group" aria-label="小丑实践行动">{practices.map(renderAction)}</div>
+        </section>
+      )}
+      {clown.promoted && (clown.story || escorts.length > 0) && (
+        <section className="clown-story clown-escort" aria-label="当前小丑情境">
+          <h3>码头护送</h3>
+          {clown.story && <p>{clown.story}</p>}
+          {escorts.length > 0 && <div className="seer-actions" role="group" aria-label="护送处理方式">{escorts.map(renderAction)}</div>}
+        </section>
       )}
 
       {clown.discovered && !clown.promoted && <details className="seer-fold"><summary>查看服用风险与四档结果</summary><p>{clown.risk}</p></details>}
