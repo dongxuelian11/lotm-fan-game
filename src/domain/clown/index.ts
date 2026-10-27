@@ -233,6 +233,7 @@ export function projectClown(s: SliceState): ClownProjection {
   const remaining = s.clown.batches.filter(batch => !batch.acquired).length;
   const prepared = s.clown.bottles.filter(bottle => bottle.status === 'PREPARED').length;
   return {
+    rescueCombatStarted: s.clown.rescue.startHistoryIndex !== null,
     title: isPromoted ? '小丑 · 序列8' : '小丑之路', discovered: available,
     formulaKnown: available && s.clown.formulaKnown, promoted: isPromoted,
     formula: available && s.clown.formulaKnown ? CLOWN_FORMULA.map(({ name, quantity, unit }) => ({ name, quantity, unit })) : [],

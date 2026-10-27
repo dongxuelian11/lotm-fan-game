@@ -176,3 +176,10 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 自然承接此前首训，唯一一次护送交涉失败：rev65/week16，AP2→1；现金286、健康100、精神90、灵性3.5、扮演16不变，艾尔西仍持包裹，本周交涉锁定。真实失败结算后返回日常，未再试、未开启战斗、未买纸；窗口恢复约1360。
 - 额外复现未修复问题：fresh build加载S8时旧首案回合自动弹出。公开lastCombatRound无来源，caseArchive无回合边界，不能用猜测隐藏后续战斗；此片记录后交主任务审查最小只读来源方案，不扩大schema。
 - 外部证据 `output/clown-flow-20261027/QA-summary.json`。main/full-suite、CI、安装包未运行；没有推送，发布由主任务协调。
+
+## 2026-10-27 · S8 未开始护送战斗时的旧首案弹窗
+
+- 经实际 fresh build 重载复现后，单独增加只读投影 `clown.rescueCombatStarted`，直接取既存 `startHistoryIndex !== null`；未改存档、迁移、随机或战斗规则。交涉成功与失败均不会设置该战斗索引。
+- 仅在 ACTIVE、diviner S8、无当前战斗、有首案归档且该字段明确为false时沿用旧首案不自动弹出逻辑。字段缺失保留原行为；护送开始后的胜利/撤退/死亡、当前战斗继续展示。没有声称解决其他途径/序列的来源区分。
+- 投影6项、小丑20项、战斗展示55项（共81）通过；随后将死亡用例严格改为DEAD封存入口，相关5项再通过。main/renderer类型与构建通过。旧clown-adventure套件因缺失natural.json fixture未完成，不称全套通过。
+- 原生重新启动同一数据目录，rev65直接进入日常，无旧首案弹窗；原失败交涉与资源保留，重载前后读取的完整存档摘要完全相同。历史回放继续可访问。无新增游戏行动。
