@@ -469,3 +469,26 @@ describe("Faceless practice explanation wording", () => {
     expect(screen.getByRole("region", { name: "当前无面人现场" }).textContent).toBe(`当前现场${text}`);
   });
 });
+
+
+describe("Faceless current self-report wording", () => {
+  const original = "角色片段已完成，尚须按当前状态结束、复原并归还原服，才可报告。";
+  it("keeps an enabled public report and raw result unchanged without asking to end twice", () => {
+    const report = action({ type: "REPORT", caseId: "remember-self" }, "报告有限结果与身份边界", true, "1行动");
+    const value = faceless({ promoted: true, cases: [{ ...cases()[0]!, id: "remember-self", result: original }], actions: [report] });
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    const result = screen.getByRole("region", { name: "实际结果与有限报告" });
+    expect(result.textContent).toContain("角色片段已完成。按当前外貌与原服状态完成必要的复原和归还，再提交自我报告。");
+    expect(result.textContent).not.toContain("结束");
+    fireEvent.click(screen.getByRole("button", { name: /报告有限结果与身份边界/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(report.command);
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it.each([
+    { id: "stage-double", result: original },
+    { id: "remember-self", result: original + "新增说明。" },
+  ])("preserves unknown case or result: $id", entry => {
+    panel(faceless({ promoted: true, cases: [{ ...cases()[0]!, ...entry }] }));
+    expect(screen.getByRole("region", { name: "实际结果与有限报告" }).textContent).toBe(`实际结果与有限报告${entry.result}`);
+  });
+});

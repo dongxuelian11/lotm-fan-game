@@ -101,3 +101,22 @@ describe('Faceless failed-practice method-neutral retry wording', () => {
     expect(seerFeedbackText(record, false)).toBe(record.text);
   });
 });
+
+
+describe('Faceless self-report success wording', () => {
+  const text = '角色片段已经完成；还须明确复原本人外貌与原声，才足以提交自我报告。先0行动结束练习。';
+  it('keeps completion and the zero-action exit without assuming restoration is required', () => {
+    const record = { title: '扮演结束后记住自己', text }, before = JSON.stringify(record);
+    const display = seerFeedbackText(record, false);
+    expect(display).toBe('角色片段已经完成；先0行动结束练习。结束练习后，按当前外貌与原服状态完成必要的复原和归还，再提交自我报告。');
+    expect(JSON.stringify(record)).toBe(before);
+    expect(seerFeedbackText({ ...record, text: display }, false)).toBe(display);
+  });
+  it.each([
+    { title: '经过同意的舞台替身', text },
+    { title: '扮演结束后记住自己', text: text + '其他说明。' },
+    { title: '扮演结束后记住自己', text: '其他新成功文案。' },
+  ])('preserves unmatched public text: $title / $text', record => {
+    expect(seerFeedbackText(record, false)).toBe(record.text);
+  });
+});

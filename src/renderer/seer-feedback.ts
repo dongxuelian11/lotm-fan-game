@@ -14,6 +14,10 @@ export function seerReadableText(text: string): string {
 /** Add the current scene around the saved result without rewriting any saved fact. */
 export function seerFeedbackText(record: Pick<SliceRecord, 'title' | 'text'>, firstCaseResolved: boolean): string {
   const text = seerReadableText(record.text);
+  if (record.title === '扮演结束后记住自己'
+    && record.text === '角色片段已经完成；还须明确复原本人外貌与原声，才足以提交自我报告。先0行动结束练习。') {
+    return '角色片段已经完成；先0行动结束练习。结束练习后，按当前外貌与原服状态完成必要的复原和归还，再提交自我报告。';
+  }
   // The public receipt has no selected-method field; keep retry advice method-neutral.
   const facelessRetryTail = '下周可再准备，也可改走普通方法。';
   if (['经过同意的舞台替身', '熟人认出的一个小习惯', '扮演结束后记住自己'].includes(record.title)

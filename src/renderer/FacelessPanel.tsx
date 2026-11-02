@@ -306,7 +306,9 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
           <p className={selectedCase.preparation ? undefined : "slice-muted"}>{selectedCase.preparation || "当前没有待执行的准备。选择方法不会提前改变外貌、发声、借入衣物或产生成功结果。"}</p>
         </section>
         {selectedCase.result && <section aria-label="实际结果与有限报告" aria-live="polite" aria-atomic="true">
-          <h4>实际结果与有限报告</h4><p>{selectedCase.result}</p>
+          <h4>实际结果与有限报告</h4><p>{selectedCase.id === "remember-self"
+            && selectedCase.result === "角色片段已完成，尚须按当前状态结束、复原并归还原服，才可报告。"
+            ? "角色片段已完成。按当前外貌与原服状态完成必要的复原和归还，再提交自我报告。" : selectedCase.result}</p>
         </section>}
         {selectedCaseActions.length > 0 && <div className="magician-action-list" role="group" aria-label="当前无面人实践行动">{selectedCaseActions.map(actionButton)}</div>}
         <p className="slice-muted">普通方法保留自己的条件与结果。撤回准备与实际结束接触是不同操作；结束不治疗、不退款，不消除已发生的目击、拒绝或报告。是否可执行与实际成本由公开按钮显示。</p>
