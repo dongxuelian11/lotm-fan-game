@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { FACELESS_ABILITIES, FACELESS_CONSUMPTION_RISK, FACELESS_FORMULA, FACELESS_FORMULA_SOURCE } from "../../src/domain/faceless/content";
+import { FACELESS_ENVIRONMENT } from "../../src/domain/faceless/practice";
 import type { FacelessAction, FacelessCommand, FacelessProjection } from "../../src/domain/faceless/types";
 import type { MagicianProjection } from "../../src/domain/magician/types";
 import { FacelessMagicianHistory, FacelessPanel } from "../../src/renderer/FacelessPanel";
@@ -442,5 +443,29 @@ describe("Faceless failed-bottle recovery guidance", () => {
     render(<FacelessPanel faceless={failed()} resources={{ ...resources, health: 100, mind: 100 }} busy={false} onCommand={vi.fn()} />);
     expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("排异 25");
     expect(screen.queryByRole("button", { name: "返回日常休养" })).toBeNull();
+  });
+});
+
+
+describe("Faceless practice explanation wording", () => {
+  it("uses the public Chinese template and exit names, preserving costs, prop identity and raw projection", () => {
+    const value = faceless({ promoted: true, environment: FACELESS_ENVIRONMENT,
+      outfit: { ...borrowedOutfit(), summary: "同一原物FC6-PROP-COAT-1，已借1次、已还0次。外貌与声音能力不复制衣物；CLOSE和RESTORE_SELF都不代替归还。" } });
+    const before = JSON.stringify(value);
+    panel(value);
+    const scene = screen.getByRole("region", { name: "当前无面人现场" });
+    expect(scene.textContent).toContain("本人原貌、获同意的舞台替身和获同意的搬运工角色（后两者均为成年人）");
+    expect(scene.textContent).toContain("变化2灵性、复原1灵性，均0行动");
+    expect(scene.textContent).toContain("结束本次练习只停止练习，离场不自动复原或归还原服装");
+    for (const code of ["SELF", "STAGE_DOUBLE", "PORTER_PART", "CLOSE"]) expect(scene.textContent).not.toContain(code);
+    const outfit = screen.getByRole("region", { name: "原道具服与实际借还" });
+    expect(outfit.textContent).toContain("同一原物FC6-PROP-COAT-1，已借1次、已还0次");
+    expect(outfit.textContent).toContain("结束本次练习和复原本人外貌与原声都不代替归还");
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it("leaves unknown identifiers and other public wording untouched", () => {
+    const text = "CLOSE_EXTRA RESTORE_SELF_EXTRA X-CLOSE STAGE_DOUBLE_ALT SELF_UNKNOWN FC6-PROP-COAT-1";
+    panel(faceless({ promoted: true, environment: text }));
+    expect(screen.getByRole("region", { name: "当前无面人现场" }).textContent).toBe(`当前现场${text}`);
   });
 });

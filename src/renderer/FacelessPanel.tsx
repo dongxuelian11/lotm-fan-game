@@ -6,6 +6,13 @@ import type { SeerResources } from "./SeerPanel";
 import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 
+// Display-only wording for the two public practice explanations, not commands or saved history.
+function facelessPracticeText(text: string): string {
+  return text.replace("本人SELF、获同意成年人的STAGE_DOUBLE和PORTER_PART固定外貌与声线", "本人原貌、获同意的舞台替身和获同意的搬运工角色（后两者均为成年人）的固定外貌与声线")
+    .replace(/(?<![A-Za-z0-9_:-])RESTORE_SELF(?![A-Za-z0-9_:-])/g, "复原本人外貌与原声")
+    .replace(/(?<![A-Za-z0-9_:-])CLOSE(?![A-Za-z0-9_:-])/g, "结束本次练习");
+}
+
 const CASE_STATUS: Record<string, string> = {
   AVAILABLE: "尚未观察",
   OBSERVED: "已观察本人、模板与实际边界",
@@ -274,12 +281,12 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
         <div><dt>原物编号</dt><dd>{faceless.outfit.id}</dd></div>
         <div><dt>当前去向</dt><dd>{faceless.outfit.location}</dd></div>
       </dl>
-      <p>{faceless.outfit.summary}</p>
+      <p>{facelessPracticeText(faceless.outfit.summary)}</p>
       <p className="slice-muted">改变外貌不会生成或更换衣物。借出与归还须分别提交，关闭接触、失败、撤回准备或复原都不会自动把原物送回。</p>
       {outfitActions.length > 0 && <div className="magician-action-list" role="group" aria-label="原道具服借还行动">{outfitActions.map(actionButton)}</div>}
     </section>}
 
-    {faceless.promoted && faceless.environment && <section aria-label="当前无面人现场"><h4>当前现场</h4><p>{faceless.environment}</p></section>}
+    {faceless.promoted && faceless.environment && <section aria-label="当前无面人现场"><h4>当前现场</h4><p>{facelessPracticeText(faceless.environment)}</p></section>}
     {selectedCase && <section aria-label="无面人有限实践">
       <h3>外貌、举止与记住本人</h3>
       <label className="seer-case-selector">选择当前实践
