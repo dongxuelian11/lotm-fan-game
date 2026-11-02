@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { HunterAction, HunterCommand, HunterProjection } from "../domain/hunter/types";
 import type { SeerResources } from "./SeerPanel";
+import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 import "./hunter-styles.css";
 
@@ -32,8 +33,12 @@ export function HunterPanel({ hunter, resources, busy, blocked, onCommand }: Hun
   const cargoActions = hunter.actions.filter((action) => cargoTypes.includes(action.command.type));
   const actions = hunter.actions.filter((action) => action.command.type !== "CONSUME"
     && action.command.type !== "PRACTICE" && !cargoTypes.includes(action.command.type));
+  const waitingBottleAction = !hunter.promoted ? hunter.actions.find((action) =>
+    action.command.type === "CONSUME" && hunter.bottles.some((bottle) =>
+      action.command.type === "CONSUME" && bottle.id === action.command.bottleId && bottle.status === "已交付，尚未服用")) : undefined;
   const nextAction = (hunter.promoted ? selectedPractice ?? cargoActions.find((action) => action.enabled) : undefined)
     ?? hunter.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    ?? waitingBottleAction
     ?? hunter.actions.find((action) => action.enabled)
     ?? hunter.actions[0];
   const confirming = !!selectedBottle && selectedAction?.command.type === "CONSUME" && !hunter.promoted;
@@ -89,9 +94,9 @@ export function HunterPanel({ hunter, resources, busy, blocked, onCommand }: Hun
       <section className="seer-panel hunter-panel seer-confirmation" aria-label="这瓶猎人魔药的服用确认" aria-busy={busy}>
         <div className="slice-eyebrow">服用前，请再确认一次</div>
         <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-        <p className="seer-bottle-source">来源：{selectedBottle.source}</p>
+        <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
         <dl className="seer-facts">
-          <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
+          <div><dt>这一瓶</dt><dd>{seerReadableText(selectedBottle.id)}</dd></div>
           <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
           <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
           <div><dt>本次消耗</dt><dd>{selectedAction.cost}</dd></div>
@@ -197,7 +202,7 @@ export function HunterPanel({ hunter, resources, busy, blocked, onCommand }: Hun
             const action = hunter.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id);
             return (
               <article className="seer-bottle" key={bottle.id}>
-                <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
+                <div><h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><small>{bottle.status}</small></div>
                 {action && !hunter.promoted && (
                   <div>
                     <button

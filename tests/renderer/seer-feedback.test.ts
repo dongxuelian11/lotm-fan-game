@@ -152,3 +152,14 @@ it('formats known audience provenance and current receipts without modifying raw
     expect(seerReadableText(unknown)).toBe(unknown);
   }
 });
+
+
+it('labels only exact hunter original bottle IDs and preserves recorded facts', () => {
+  expect(seerReadableText('原瓶hunter-potion-12。hunter-potion-1')).toBe('第12瓶猎人原瓶。第1瓶猎人原瓶');
+  const record = { title: '猎人原瓶交付', text: '导师将第1瓶现成魔药hunter-potion-1交到你手中，支付60便士，0行动。原瓶尚未服用。' };
+  const before = JSON.stringify(record), readable = seerFeedbackText(record, false);
+  expect(readable).toBe('导师将第1瓶现成猎人魔药交到你手中，支付60便士，0行动。原瓶尚未服用。');
+  expect(JSON.stringify(record)).toBe(before);
+  expect(seerReadableText(readable)).toBe(readable);
+  for (const unknown of ['第2瓶现成魔药hunter-potion-1', '第1瓶现成魔药hunter-potion-1-extra', 'hunter-potion-x', 'hunter-potion-12:bottle', 'hunter-potion-12-extra', 'other-hunter-potion-12', 'hunter-potion-123extra']) expect(seerReadableText(unknown)).toBe(unknown);
+});

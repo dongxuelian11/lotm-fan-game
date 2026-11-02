@@ -134,7 +134,7 @@ describe("Hunter pathway dossier", () => {
     expect(onCommand).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(screen.getByRole("button", { name: /查看并准备服用「第一瓶猎人魔药」/ }));
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶猎人魔药」/ }));
-    expect(screen.getByText("hunter-potion-2")).toBeTruthy();
+    expect(screen.getByText("第2瓶猎人原瓶")).toBeTruthy();
     expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.queryByText("71%")).toBeNull();
     expect(screen.getByText("来源：导师留存的第二原瓶")).toBeTruthy();
@@ -313,5 +313,54 @@ describe("Hunter pathway dossier", () => {
     const battle = await screen.findByRole("dialog", { name: "仓库货物冲突" });
     expect(within(battle).getByText("陷阱原件：随身 1 套 · 现场 1 套 · 已损耗 0 套")).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
+  });
+});
+
+
+describe('Hunter owned original bottle guidance and labels', () => {
+  const work: HunterAction = { id: 'work-second', label: '第2瓶 · 仓库巡检', cost: '1行动', enabled: true, reason: null, command: { type: 'POTION_WORK', bottleId: 'hunter-potion-2' } };
+  function waiting(reason = '普通生活已完成2/4整周，第5周起可以服药。') {
+    const value = bottled(); value.bottles = value.bottles.slice(0, 1);
+    value.actions = [work, { ...value.actions[0]!, label: '服用第1瓶猎人魔药', enabled: false, reason }];
+    return value;
+  }
+  it.each(['普通生活已完成2/4整周，第5周起可以服药。', '当前状态不足，先休养。'])('prioritizes the public owned bottle gate: %s', reason => {
+    const value = waiting(reason), before = JSON.stringify(value);
+    const { onCommand } = panel(value);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(`服用第1瓶猎人魔药。${reason}`);
+    expect((screen.getByRole('button', { name: /查看并准备服用/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('button', { name: /第2瓶 · 仓库巡检/ }) as HTMLButtonElement).disabled).toBe(false);
+    expect(JSON.stringify(value)).toBe(before); expect(onCommand).not.toHaveBeenCalled();
+  });
+  it.each(['missing', '导师保管 · 劳动0/2', '已耗尽 · 排异，未晋升', '未知状态'])('does not recommend an unowned or missing bottle: %s', status => {
+    const value = waiting();
+    if (status === 'missing') value.bottles = []; else value.bottles[0]!.status = status;
+    panel(value);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(work.label);
+  });
+  it('prefers enabled consume and does not prioritize waiting bottles after promotion', () => {
+    const value = waiting(), ready = bottled().actions[1]!;
+    value.actions.push(ready); value.bottles.push(bottled().bottles[1]!);
+    const { rerender, onCommand } = panel(value);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(ready.label);
+    const promoted = { ...waiting(), promoted: true };
+    rerender(<HunterPanel hunter={promoted} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(work.label);
+  });
+  it('displays readable source and confirmation while retaining the exact consume command', async () => {
+    const value = bottled(); value.bottles = value.bottles.slice(0, 1); value.actions = value.actions.slice(0, 1);
+    value.actions[0]!.label = '服用第1瓶猎人魔药';
+    value.bottles[0]!.source = '第3周交付给你；原瓶hunter-potion-1。';
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    expect(screen.getByText('来源：第3周交付给你；第1瓶猎人原瓶。')).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+    const confirm = screen.getByRole('region', { name: '这瓶猎人魔药的服用确认' });
+    expect(confirm.textContent).toContain('这一瓶第1瓶猎人原瓶');
+    expect(confirm.textContent).not.toContain('hunter-potion-');
+    await userEvent.click(screen.getByRole('button', { name: '暂不服用' })); expect(onCommand).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+    await userEvent.click(screen.getByRole('button', { name: '确认服用「第一瓶猎人魔药」' }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(value.actions[0]!.command);
+    expect(JSON.stringify(value)).toBe(before);
   });
 });
