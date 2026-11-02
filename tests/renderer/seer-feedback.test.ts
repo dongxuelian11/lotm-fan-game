@@ -76,3 +76,28 @@ describe('Seer scene presentation without rewriting historical records', () => {
     expect(seerReadableText(unknown)).toBe(unknown);
   }
  });
+
+
+describe('Faceless failed-practice method-neutral retry wording', () => {
+  const tail = '下周可再准备，也可改走普通方法。';
+  const replacement = '下周可再次准备；普通方法也是可选路线。';
+  const titles = ['经过同意的舞台替身', '熟人认出的一个小习惯', '扮演结束后记住自己'];
+  it.each(titles)('changes only the known retry tail for %s without assuming a selected method', title => {
+    for (const fatigue of ['', '额外疲劳，精神损失至多5。']) {
+      const prefix = `这次练习不足以支持结论。${fatigue}外貌与原服装仍保持，已付成本不返还；先实际结束接触，`;
+      const record = { title, text: prefix + tail }, before = JSON.stringify(record);
+      const display = seerFeedbackText(record, false);
+      expect(display).toBe(prefix + replacement);
+      expect(JSON.stringify(record)).toBe(before);
+      expect(seerFeedbackText({ title, text: display }, false)).toBe(display);
+    }
+  });
+  it.each([
+    { title: '其他练习', text: '这次练习不足以支持结论。' + tail },
+    { title: titles[0]!, text: '这次练习成功。' + tail },
+    { title: titles[1]!, text: '这次练习不足以支持结论。其他新提示。' },
+    { title: titles[2]!, text: '这次练习不足以支持结论。' + tail + '新增后续说明。' },
+  ])('preserves an unknown title, prefix or tail: $title / $text', record => {
+    expect(seerFeedbackText(record, false)).toBe(record.text);
+  });
+});
