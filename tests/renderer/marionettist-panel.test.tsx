@@ -291,3 +291,38 @@ it("renders current bottle provenance and identity while preserving cancel and t
   expect(onCommand).toHaveBeenCalledExactlyOnceWith(value.bottles[0]!.command);
   expect(JSON.stringify(value)).toBe(before);
 });
+
+
+describe("Marionettist coast next-step guidance", () => {
+  it.each(["CONSUME", "BEGIN_SONG", "END_SONG", "RETURN_CLUB"] as const)("uses existing enabled %s on the coast even though insideCase is true", type => {
+    const chosen = type === "CONSUME" ? consume : action({ type }, `公开${type}`, true, "原公开成本");
+    const value = { ...bottled(), insideCase: true, actions: [chosen] };
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    const summary = screen.getByRole("region", { name: "秘偶大师成长下一步" });
+    expect(summary.textContent).toContain(`下一步：${chosen.label}`);
+    expect(summary.textContent).not.toContain("先实际结束本次接触");
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it("keeps actual CLOSE ahead of a ready coast action", () => {
+    const close = action({ type: "CLOSE", caseId: "living-lines" }, "结束原接触", true);
+    panel({ ...bottled(), insideCase: true, actions: [consume, close] });
+    expect(screen.getByRole("region", { name: "秘偶大师成长下一步" }).textContent).toContain("先实际结束本次接触：结束原接触");
+  });
+  it("does not recommend disabled consume or song, preserves ready return and its original command", () => {
+    const back = action({ type: "RETURN_CLUB" }, "按已付原路返回", true, "0行动 · 已付往返费用");
+    const value = { ...bottled(), insideCase: true, actions: [{ ...consume, enabled: false }, action({ type: "BEGIN_SONG" }, "尚不能开歌", false), back] };
+    const { onCommand } = panel(value);
+    expect(screen.getByRole("region", { name: "秘偶大师成长下一步" }).textContent).toContain("下一步：按已付原路返回");
+    fireEvent.click(screen.getByRole("button", { name: /按已付原路返回/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(back.command);
+  });
+  it.each(["no-enabled", "not-coast", "read-only"])("preserves the existing %s fallback", mode => {
+    const value = { ...bottled(), insideCase: true };
+    if (mode === "no-enabled") value.actions = [{ ...consume, enabled: false }];
+    if (mode === "not-coast") value.ritual = { ...value.ritual, location: "CLUB" };
+    render(<MarionettistPanel marionettist={value} resources={resources} busy={false} readOnly={mode === "read-only"} onCommand={vi.fn()} />);
+    const summary = screen.getByRole("region", { name: "秘偶大师成长下一步" });
+    expect(summary.textContent).toContain(mode === "read-only" ? "这份卷宗只供回看" : "当前没有可执行的成长行动");
+  });
+});

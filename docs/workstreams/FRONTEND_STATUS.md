@@ -383,3 +383,9 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 基于 `765fd3f12c22a7fed608ef5231c0d5d3fd8911f8`，仅扩展已知秘偶大师批次的显示标签，并用于当前来源及确认页的原瓶标识。未知标识前后缀保持原样；命令、原始来源、历史、领域、随机数与旧无面人经历页不变。
 
 验证：反馈与秘偶大师面板测试 42/42、完整 main/renderer typecheck、production build、diff check 与独立源码/实际截图审查通过。同 revision 216 普通/大字来源、确认、取消检查通过，原46%成功率、0行动、12/12整周及真实歌唱条件保留，取消前后存档 SHA256 不变，原瓶仍未服用。revision 214 调配瞬时回执未重演，转换仅由真实输入及测试覆盖。本独立改动不纳入冻结 PR56。
+
+## 2026-11-02 海岸现场的秘偶大师下一步指引
+
+基于 `5fe275075c7f29e89fd3dbf5d7af36d1fb1c02d6`，保留领域 insideCase 包括海岸的原有含义。仅在无实际 CLOSE 且当前位置为海岸时，让顶部指引使用既有 enabled 服药/开歌/停歌返程动作；真实 CLOSE 优先，非海岸捕获分支不变。展示不重新计算资格，不改按钮、原命令、成本或领域规则。
+
+验证：面板测试 30/30、完整 main/renderer typecheck、production build、diff check 与独立源码/像素审查通过。同 revision 216 普通/大字顶部正确指向当前原瓶；原46%/0行动/12周确认及取消保留，存档 SHA256 不变、未服药或停歌。revision 215 开歌前状态未重演，BEGIN_SONG 选择仅源码/测试覆盖。本独立改动不纳入冻结 PR56。

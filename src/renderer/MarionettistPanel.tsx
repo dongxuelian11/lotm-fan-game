@@ -122,10 +122,13 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
   const encounterActions = marionettist.actions.filter((action) => ["ENCOUNTER_TALK", "ENCOUNTER_FIGHT"].includes(action.command.type));
   const growthActions = marionettist.actions.filter((action) => action.command.type !== "CONSUME" && !isCaseAction(action)
     && !isRitualAction(action) && !isPuppetAction(action) && !encounterActions.includes(action));
-  const nextAction = marionettist.insideCase ? closeAction
-    : marionettist.actions.find((action) => action.enabled && action.command.type === "CONSUME")
-      ?? marionettist.actions.find((action) => action.enabled && action.command.type === "BEGIN_SONG")
-      ?? marionettist.actions.find((action) => action.enabled && ["END_SONG", "RETURN_CLUB"].includes(action.command.type))
+  const readyRitualAction = marionettist.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    ?? marionettist.actions.find((action) => action.enabled && action.command.type === "BEGIN_SONG")
+    ?? marionettist.actions.find((action) => action.enabled && ["END_SONG", "RETURN_CLUB"].includes(action.command.type));
+  // insideCase also covers the coast; it does not imply an actual practice CLOSE exists.
+  const nextAction = marionettist.insideCase
+    ? closeAction ?? (marionettist.ritual.location === "COAST" ? readyRitualAction : undefined)
+    : readyRitualAction
       ?? [...puppetActions, ...selectedCaseActions, ...ritualActions, ...growthActions, ...encounterActions].find((action) => action.enabled)
       ?? marionettist.actions[0];
 
@@ -237,7 +240,7 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
       <span className="seer-seal">{marionettist.promoted ? "序列 5" : "秘偶大师晋升卷宗"}</span>
       <h3>{marionettist.title}</h3>
       <p className="seer-next">{readOnly ? "这份卷宗只供回看。" : nextAction
-        ? <><strong>{marionettist.insideCase ? "先实际结束本次接触：" : "下一步："}</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</>
+        ? <><strong>{marionettist.insideCase && nextAction === closeAction ? "先实际结束本次接触：" : "下一步："}</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</>
         : "当前没有可执行的成长行动，可回看已保存的经历。"}</p>
       <p className="slice-muted">{marionettist.digestion}</p>
     </section>
