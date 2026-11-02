@@ -72,7 +72,7 @@ function blocked(s: SliceState, command: HunterCommand): string | null {
   if (command.type === 'REFLECT') {
     if (s.seer.completedSources.includes('hunter-reflection')) return '这些经历已经复盘过，不重复增加扮演。';
     if (!HUNTER_PRACTICE_IDS.every(id => h.observations.includes(id))) return '先完成六项猎人实践，再复盘亲见经历。';
-    return h.cargo.status !== 'RESCUED' ? '先实际解决货运争议，和平交涉同样可以完成。' : null;
+    return !['RESCUED', 'RETREATED'].includes(h.cargo.status) ? '先实际解决货运争议，或在真实撤离后复盘；和平交涉同样可以完成。' : null;
   }
   if (command.type === 'PRACTICE') {
     const practice = PRACTICES.find(candidate => candidate.id === command.practiceId);
@@ -127,9 +127,9 @@ export function hunterAdventureActions(s: SliceState): HunterAction[] {
     '1行动 · 亲自返回货运狭口、确认无人抵抗后拆回原绳与木楔；不跨地免费回收',
     { type: 'RECOVER_TRAP' },
   ));
-  if (HUNTER_PRACTICE_IDS.every(id => s.hunter.observations.includes(id)) && s.hunter.cargo.status === 'RESCUED' && !s.seer.completedSources.includes('hunter-reflection')) actions.push(add(
-    'hunter-reflection', '复盘亲见的追踪与货运经历',
-    '1行动 · 扮演+8，仅一次 · 六项实践与货运争议均已完成；不增加能力掌握',
+  if (HUNTER_PRACTICE_IDS.every(id => s.hunter.observations.includes(id)) && ['RESCUED', 'RETREATED'].includes(s.hunter.cargo.status) && !s.seer.completedSources.includes('hunter-reflection')) actions.push(add(
+    'hunter-reflection', s.hunter.cargo.status === 'RETREATED' ? '复盘追踪实践与真实撤离的边界' : '复盘亲见的追踪与货运经历',
+    s.hunter.cargo.status === 'RETREATED' ? '1行动 · 扮演+28，仅一次 · 六项实践完成且已经撤离；不增加能力掌握、不改变货运结果' : '1行动 · 扮演+8，仅一次 · 六项实践与货运争议均已完成；不增加能力掌握',
     { type: 'REFLECT' },
   ));
   return actions;
@@ -143,6 +143,11 @@ export function applyHunterAdventure(s: SliceState, command: HunterCommand, ctx:
   const h = s.hunter;
   if (command.type === 'REFLECT') {
     s.seer.completedSources.push('hunter-reflection');
+    if (h.cargo.status === 'RETREATED') {
+      s.progression.acting = Math.min(100, s.progression.acting + 28);
+      ctx.note('真实撤离后的复盘', '你花费1行动，结合六项已完成实践复盘真实撤离：追踪只说明可见痕迹的方向，准备与介入都有边界，知道何时退出不等于解决了争议。货运仍未解决，货主和原箱的结果不改写，遗留的陷阱原件与已有伤势照旧。扮演+28，最高100；仅此一次，不增加能力掌握、钱款或物品，不重新结算旧战斗。');
+      return;
+    }
     s.progression.acting = Math.min(100, s.progression.acting + 8);
     ctx.note('亲见经历的复盘', '你花费1行动，回顾六项实践和已经解决的货运争议：追踪只依据真实痕迹，方向不等于幕后身份；绳结检查与陷阱只能依托实际原件，货主的原箱也不因争议解决而归你。和平交涉同样是真实经历，无须为了成长强迫战斗。扮演+8，最高100；这次复盘不增加能力掌握，不改写先前失败，也不重新结算旧奖励。');
     return;
@@ -243,7 +248,7 @@ export function validateHunterAdventure(s: SliceState): boolean {
   if (cargo.status === 'RESCUED' && cargo.startHistoryIndex === null && !s.seer.completedSources.includes('hunter-cargo')) return false;
   if (s.seer.completedSources.includes('hunter-cargo') && !['RESCUED', 'RETREATED'].includes(cargo.status)) return false;
   const reflections = s.seer.completedSources.filter(source => source === 'hunter-reflection').length;
-  if (reflections > 1 || reflections === 1 && (cargo.status !== 'RESCUED' || !HUNTER_PRACTICE_IDS.every(id => h.observations.includes(id)))) return false;
+  if (reflections > 1 || reflections === 1 && (!['RESCUED', 'RETREATED'].includes(cargo.status) || !HUNTER_PRACTICE_IDS.every(id => h.observations.includes(id)))) return false;
   if (h.trapLocation === 'HUNTER_CARGO' && h.observations.length === 0) return false;
   return true;
 }

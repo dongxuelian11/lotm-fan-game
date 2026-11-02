@@ -425,3 +425,11 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 最终 42 项定向测试、完整 main/renderer 类型检查、完整构建与 diff 检查通过；初次旧确认测试仍期望内部瓶号，更正为中文展示后完整串行复验。独立源码审查通过。
 - 同 rev13 正式重启，普通／大字门槛与来源、近期实际交付摘要通过，2/4整周及第5周原原因、60便士／0行动／劳务抵600便士不变。纯导航、Escape 关闭重开前后玩家只读核验 SHA 均为 `faefe463bc0139566653bd652c3885b9d93ec814def27ad8208166decb2bd5ba`。瞬时领取回执未重演；enabled 服药确认／取消待自然第5周后原生验证，目前只自动测试，不夸提前覆盖。
 - 独立实际像素收据另附；本地候选未推送、未混改 PR56，不代表完整 CI 或发行包验收。
+
+## 2026-11-02 · 主任务授权的猎人真实撤离后有限消化恢复
+
+- 基线 `9da31ef8074bfdb6ed66f5cc9537e23cca78a867`；这是一项明确获批的领域修复，不是 renderer 擅改规则。实际普通人首案已结束后才晋升的猎人，货运撤离后原六实践上限72，无法达到挑衅者要求100。复用 REFLECT：六实践全部完成、货运 RETREATED、未反思时，1行动一次+28扮演，最高100，无额外掌握／钱／物品／RNG；RESCUED 原+8和原叙述不变。原货运结果、物权、陷阱、伤势、战斗历史均保留。blocked／projection／apply／validator 同步，LOST／死亡不开放，沿用公共门控和同一唯一反思标记，不新增字段或迁移。
+- 独立源码审查通过。197 项 domain acquisition/adventure/combat 与 renderer 测试、5 项原历史 shared 测试、完整 main/renderer 类型检查与构建通过。新增覆盖5/6、全部终态、重复、公共门控、无 RNG／全状态差异限域、旧首案额外进度封顶、S8成熟仍保留、最后AP跨周生活费与确定重放。初次测试误把生活费仅在正文检索，改为标题+正文后复验，未改变结算逻辑。
+- Hunter/Clown 原冻结 fixture 从 canonical archive 精确恢复，未重新基线；四份 Hunter 快照 private/public/save-roundtrip 在旧构建与候选完全一致，真实 rev36 public SHA 亦一致。原 DB 字符串 SHA 与 JSON.stringify 哈希分开记录，不混称。原 fixture、私有存档、DB 均不入源码提交或小备份。
+- 原生同36重启原状态不变；随后自然实践与失败冷却、工作、原绳购买均真实执行。rev49五项/60仍无反思，51六项/72普通大字出现反思；52实际一次72→100、AP2→1。原 hunter 全对象（RETREATED/物权/陷阱）、mastery/random/world/combatHistory/健康/精神/灵性/现金/周数均不变，反思按钮消失。52 SHA `55b2fae00fd2319ae2ecf795bfd3db78f2e6494df33a6f705f879591635d7dc6`；独立像素审查通过。未重演51，未改seed或恢复旧档。
+- 发现的顶部购买推荐及“下一序列尚未开放”另作 renderer 小修，不混入本领域提交；尚未购买或服用S8。本地验证不等同完整CI/发行验收，未触冻结PR56。
