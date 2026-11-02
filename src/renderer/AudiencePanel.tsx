@@ -4,6 +4,15 @@ import type { SeerResources } from "./SeerPanel";
 import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 
+function audienceSceneStatus(status: string): string {
+  switch (status) {
+    case "AVAILABLE": return "尚未观察";
+    case "OBSERVED": return "已观察，待核实";
+    case "RESOLVED": return "核验已完成";
+    default: return status;
+  }
+}
+
 interface AudiencePanelProps {
   audience: AudienceProjection;
   resources: SeerResources;
@@ -155,13 +164,13 @@ export function AudiencePanel({ audience, resources, busy, blocked, onCommand }:
             <label className="seer-case-selector">
               选择社会情境
               <select value={selectedScene.id} disabled={busy || blocked} onChange={(event) => setSelectedSceneId(event.target.value)}>
-                {audience.scenes.map((scene) => <option key={scene.id} value={scene.id}>{scene.title} · {scene.status}</option>)}
+                {audience.scenes.map((scene) => <option key={scene.id} value={scene.id}>{scene.title} · {audienceSceneStatus(scene.status)}</option>)}
               </select>
             </label>
           )}
           <section className="seer-current-case" aria-label="当前社会情境">
             <h4>{selectedScene.title}</h4>
-            <span className="slice-muted">{selectedScene.status}</span>
+            <span className="slice-muted">{audienceSceneStatus(selectedScene.status)}</span>
             <p>{selectedScene.story}</p>
             <section className="seer-fold" aria-label="亲眼观察到的线索">
               <h4>亲眼观察到的线索</h4>

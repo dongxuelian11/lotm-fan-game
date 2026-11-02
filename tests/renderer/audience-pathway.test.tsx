@@ -410,3 +410,20 @@ describe('Prepared audience bottle next-step guidance', () => {
     expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain('询问收据日期');
   });
 });
+
+
+it.each([
+  ['AVAILABLE', '尚未观察'], ['OBSERVED', '已观察，待核实'], ['RESOLVED', '核验已完成'],
+  ['FUTURE_STATUS', 'FUTURE_STATUS'], ['OBSERVED_EXTRA', 'OBSERVED_EXTRA'], ['已观察，尚待处理', '已观察，尚待处理'],
+])('labels only the exact public social status %s in the selector and current case', (status, label) => {
+  const value = social(); value.scenes[0]!.status = status;
+  const before = JSON.stringify(value);
+  const { onCommand } = panel(value);
+  expect(screen.getByRole('option', { name: `柜台收据 · ${label}` })).toBeTruthy();
+  expect(screen.getByRole('region', { name: '当前社会情境' }).textContent).toContain(label);
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'backstage-letter' } });
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'counter-receipt' } });
+  expect(screen.getByRole('region', { name: '当前社会情境' }).textContent).toContain(label);
+  expect(onCommand).not.toHaveBeenCalled();
+  expect(JSON.stringify(value)).toBe(before);
+});
