@@ -361,3 +361,52 @@ it('uses readable audience labels in the existing recent-result summary without 
   expect(screen.getByText('第1批观众原瓶已耗尽。意志判定20/72，成功。')).toBeTruthy();
   expect(JSON.stringify(state.chronicle)).toBe(before);
 });
+
+
+describe('Prepared audience bottle next-step guidance', () => {
+  const work: AudienceAction = { id: 'second-batch-work', label: '第2批 · 整理阅览室目录', cost: '1行动', enabled: true, reason: null, command: { type: 'MATERIAL_WORK', batchId: 'audience-batch-2' } };
+  function waiting(reason = '普通生活已完成2/4整周，第5周起可以服药。') {
+    const value = bottled();
+    value.bottles = [{ ...value.bottles[0]!, status: '已调配，尚未服用' }];
+    value.actions = [work, { ...value.actions[0]!, enabled: false, reason }];
+    return value;
+  }
+  it.each(['普通生活已完成2/4整周，第5周起可以服药。', '当前健康或精神不足，先休养。'])('keeps the original public bottle gate visible: %s', reason => {
+    const value = waiting(reason), before = JSON.stringify(value);
+    const { onCommand } = panel(value);
+    const next = screen.getByRole('region', { name: '观众成长下一步' });
+    expect(next.textContent).toContain(`下一步：${value.actions[1]!.label}。${reason}`);
+    expect(next.textContent).not.toContain(work.label);
+    expect((screen.getByRole('button', { name: /查看并准备服用/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('button', { name: /第2批 · 整理阅览室目录/ }) as HTMLButtonElement).disabled).toBe(false);
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it('retains the waiting bottle when no material actions are available', () => {
+    const value = waiting(); value.actions = value.actions.slice(1);
+    panel(value);
+    expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain(value.actions[0]!.reason!);
+  });
+  it('still prefers an enabled consume over an earlier waiting bottle', () => {
+    const value = waiting();
+    const second = bottled();
+    value.bottles.push(second.bottles[1]!); value.actions.push(second.actions[1]!);
+    panel(value);
+    expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain(second.actions[1]!.label);
+  });
+  it.each(['missing-bottle', 'consumed', 'missing-action', 'unknown-status'] as const)('does not invent a prepared-bottle goal for %s', condition => {
+    const value = waiting();
+    if (condition === 'missing-bottle') value.bottles = [];
+    if (condition === 'consumed') value.bottles[0]!.status = '已耗尽 · 排异，未晋升';
+    if (condition === 'unknown-status') value.bottles[0]!.status = '未知状态';
+    if (condition === 'missing-action') value.actions = [work];
+    panel(value);
+    expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain(work.label);
+  });
+  it('leaves promoted social guidance ahead of any preparation residue', () => {
+    const value = social(), pending = waiting();
+    value.actions.push(...pending.actions); value.bottles = pending.bottles;
+    panel(value);
+    expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain('询问收据日期');
+  });
+});

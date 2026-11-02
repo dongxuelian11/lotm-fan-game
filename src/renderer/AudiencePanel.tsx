@@ -34,8 +34,14 @@ export function AudiencePanel({ audience, resources, busy, blocked, onCommand }:
   const actions = audience.actions.filter((action) => action.command.type !== "CONSUME"
     && action.command.type !== "OBSERVE" && action.command.type !== "DISCUSS" && action.command.type !== "REFLECT"
     && (audience.discovered || action.command.type === "DISCOVER"));
+  // A prepared original bottle remains the next step even while its public gate is unmet.
+  // Reuse the action's reason rather than recommending another batch or recalculating eligibility.
+  const waitingBottleAction = !audience.promoted ? audience.actions.find((action) =>
+    action.command.type === "CONSUME" && audience.bottles.some((bottle) =>
+      action.command.type === "CONSUME" && bottle.id === action.command.bottleId && bottle.status === "已调配，尚未服用")) : undefined;
   const nextAction = (audience.promoted ? selectedSceneActions.find((action) => action.enabled) ?? reflections.find((action) => action.enabled) : undefined)
     ?? audience.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    ?? waitingBottleAction
     ?? actions.find((action) => action.enabled)
     ?? (audience.promoted ? selectedSceneActions[0] : undefined) ?? actions[0];
   const confirming = !!selectedBottle && selectedAction?.command.type === "CONSUME" && !audience.promoted;
