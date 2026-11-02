@@ -60,3 +60,19 @@ describe('Seer scene presentation without rewriting historical records', () => {
   expect(readable).toBe('第24周；仅由第2批备料的六项材料调配，第2批魔术师原瓶');
   expect(seerReadableText(readable)).toBe(readable);
  });
+
+ it('formats faceless provenance and outcomes without changing original records', () => {
+  const source = '第40周；仅由faceless-batch-12的六项材料调配，原瓶faceless-batch-12:bottle';
+  const readable = seerReadableText(source);
+  expect(readable).toBe('第40周；仅由第12批备料的六项材料调配，第12批无面人原瓶');
+  expect(seerReadableText(readable)).toBe(readable);
+  expect(seerReadableText('faceless-batch-12:bottle')).toBe('第12批无面人原瓶');
+  const record = { title: '无面人魔药发生排异', text: '原瓶faceless-batch-1:bottle已耗尽。意志判定58/48，失败：精神−20、健康−10、排异+25。' };
+  const before = JSON.stringify(record);
+  expect(seerFeedbackText(record, false)).toBe('第1批无面人原瓶已耗尽。意志判定58/48，失败：精神−20、健康−10、排异+25。');
+  expect(JSON.stringify(record)).toBe(before);
+  expect(source).toContain('faceless-batch-12:bottle');
+  for (const unknown of ['unrelated-batch-1:bottle', 'faceless-batch-x:bottle', 'faceless-batch-12:unknown', 'faceless-batch-12:bottle-extra', 'other-faceless-batch-12:bottle']) {
+    expect(seerReadableText(unknown)).toBe(unknown);
+  }
+ });

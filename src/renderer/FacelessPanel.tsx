@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FacelessAction, FacelessCommand, FacelessProjection } from "../domain/faceless/types";
 import type { MagicianProjection } from "../domain/magician/types";
 import type { SeerResources } from "./SeerPanel";
+import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 
 const CASE_STATUS: Record<string, string> = {
@@ -48,7 +49,7 @@ export function FacelessMagicianHistory({ magician }: { magician: MagicianProjec
     {magician.bottles.length > 0 && <details className="seer-fold" open>
       <summary>魔术师原瓶 · 来源与去向</summary>
       {magician.bottles.map((bottle) => <article className="magician-history-bottle" key={bottle.id}>
-        <h4>{bottle.title}</h4><p>来源：{bottle.source}</p><p>{bottle.status}</p>
+        <h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><p>{bottle.status}</p>
       </article>)}
     </details>}
     {magician.abilities.length > 0 && <details className="seer-fold">
@@ -193,9 +194,9 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
     }}>
     <div className="slice-eyebrow">服用前，请再确认一次</div>
     <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-    <p className="seer-bottle-source">来源：{selectedBottle.source}</p>
+    <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
     <dl className="seer-facts">
-      <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
+      <div><dt>这一瓶</dt><dd>{seerReadableText(selectedBottle.id)}</dd></div>
       <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
       <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
       <div><dt>本次消耗</dt><dd>{selectedBottleAction.cost}</dd></div>
@@ -323,7 +324,7 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
       {faceless.bottles.map((bottle) => {
         const action = faceless.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id);
         return <article className={action && !faceless.promoted ? "seer-bottle" : "magician-history-bottle"} key={bottle.id}>
-          <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
+          <div><h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><small>{bottle.status}</small></div>
           {action && !faceless.promoted && !faceless.insideCase && !readOnly && <div>
             <button className="slice-button" disabled={busy || interactionBlocked || !action.enabled} onClick={() => openBottle(action)}
               ref={(node) => { if (node) bottleButtons.current.set(bottle.id, node); else bottleButtons.current.delete(bottle.id); }}

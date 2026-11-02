@@ -56,6 +56,25 @@ function panel(value: FacelessProjection, onCommand = vi.fn()) {
 afterEach(cleanup);
 
 describe("Faceless sequence-six committed appearance, original bottles and explicit exits", () => {
+  it("shows readable original-bottle provenance while confirming the unchanged bottle command", async () => {
+    const value = bottled();
+    value.bottles[0]!.source = "第40周；仅由faceless-batch-1的六项材料调配，原瓶faceless-batch-1:bottle";
+    const before = JSON.stringify(value);
+    const { onCommand } = panel(value);
+    const readable = "来源：第40周；仅由第1批备料的六项材料调配，第1批无面人原瓶";
+    expect(screen.getAllByText(readable).length).toBeGreaterThan(0);
+    await userEvent.click(screen.getByRole("button", { name: '查看并准备服用「第一瓶无面人魔药」' }));
+    expect(screen.getByText(readable)).toBeTruthy();
+    expect(screen.getByText("第1批无面人原瓶", { selector: "dd" })).toBeTruthy();
+    expect(screen.queryByText("faceless-batch-1:bottle", { selector: "dd" })).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: "暂不服用" }));
+    expect(onCommand).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: '查看并准备服用「第一瓶无面人魔药」' }));
+    await userEvent.click(screen.getByRole("button", { name: '确认服用「第一瓶无面人魔药」' }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(value.bottles[0]!.command);
+    expect(JSON.stringify(value)).toBe(before);
+  });
+
   it("keeps current cash and actions beside visibly separate material batches without hiding spare choices", () => {
     const firstBuy = action({ type: "BUY_MATERIALS", batchId: "faceless-batch-1" }, "第一批采购", false, "240便士");
     const firstWork = action({ type: "MATERIAL_WORK", batchId: "faceless-batch-1" }, "第一批劳动");
@@ -195,7 +214,7 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
   it("shows actual risk, resources and source before independently confirming exactly the selected original once", async () => {
     const { onCommand } = panel(bottled());
     await userEvent.click(screen.getByRole("button", { name: "查看并准备服用「第二瓶无面人魔药」" }));
-    expect(screen.getByText("faceless-batch-2:bottle")).toBeTruthy(); expect(screen.getByText("43%")).toBeTruthy();
+    expect(screen.getByText("第2批无面人原瓶")).toBeTruthy(); expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.getByText("来源：第二批六项实际采购原料的调配记录")).toBeTruthy();
     expect(screen.getByRole("region", { name: "无面人服用风险与四档结果" }).textContent).toContain(FACELESS_CONSUMPTION_RISK);
     const current = within(screen.getByRole("region", { name: "服药前当前资源" }));
@@ -213,11 +232,11 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     const error = { message: "本次保存失败，可重试同一操作。", retryable: true };
     rerender(<FacelessPanel faceless={value} resources={resources} busy={false} error={error} onCommand={onCommand} />);
     expect(screen.getByRole("region", { name: "这瓶无面人魔药的服用确认" })).toBeTruthy();
-    expect(screen.getByText("faceless-batch-1:bottle")).toBeTruthy();
+    expect(screen.getByText("第1批无面人原瓶")).toBeTruthy();
     expect((screen.getByRole("button", { name: "暂不服用" }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "确认服用「第一瓶无面人魔药」" }));
     await userEvent.keyboard("{Escape}");
-    expect(screen.getByText("faceless-batch-1:bottle")).toBeTruthy(); expect(onCommand).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("第1批无面人原瓶")).toBeTruthy(); expect(onCommand).toHaveBeenCalledTimes(1);
     rerender(<FacelessPanel faceless={value} resources={resources} busy={true} error={error} onCommand={onCommand} />);
     expect(screen.getByRole("button", { name: "正在结算并保存…" })).toBeTruthy();
     const committed = { ...value, promoted: true, actions: [], bottles: value.bottles.map((bottle, index) => index === 0 ? { ...bottle, status: "原瓶已耗用 · 已晋升" } : bottle) };
