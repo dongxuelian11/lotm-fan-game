@@ -318,6 +318,14 @@ const POSTURES: Record<SliceStance, string> = {
 };
 /** A settled S8 escort must not be offered again by the generic life hint. */
 export function clownLifeGuidance(state: SliceProjection): string {
+  if (state.status === "ACTIVE" && !state.activeEvent && !state.combat && state.health > 0 && state.mind > 0
+    && state.progression.pathwayId === "diviner" && state.progression.sequence === 6 && state.faceless?.promoted
+    && state.nextStep === "首案卷宗已保存。可在非凡成长中接取俱乐部委托，也可工作、学习或休养。") {
+    const guide = dashboardGuide(state);
+    if (guide.destination === "GROWTH" || guide.destination === "ADVANCE") {
+      return `${guide.goal}。${guide.detail}${guide.destination === "ADVANCE" ? "成熟条件与费用仍以成长卷宗为准。" : ""}`;
+    }
+  }
   if (state.status !== "ACTIVE" || state.activeEvent || state.combat
     || state.progression.pathwayId !== "diviner" || state.progression.sequence !== 8
     || !state.clown?.rescueOutcome) return state.nextStep;
