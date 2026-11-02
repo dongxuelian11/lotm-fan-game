@@ -482,3 +482,42 @@
 }
 .seer-reflection-pending .slice-choice { display: flex; align-items: center; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; }
 .seer-reflection-pending .slice-modifiers { margin: 0; }
+
+/* Preparation keeps actual spendable resources beside batch actions, not a sticky old receipt. */
+.magician-preparation-budget {
+  position: sticky; top: 0; z-index: 3;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 16px;
+  margin: 0; padding: 12px 18px;
+  background: var(--slice-paper-light);
+  border-top: 3px double var(--slice-red); border-bottom: 1px solid var(--slice-line);
+  box-shadow: 0 3px 7px #0001;
+}
+.magician-preparation-budget > div + div { border-left: 1px solid var(--slice-line); padding-left: 16px; }
+.magician-preparation-budget dt { color: var(--slice-muted); font-size: .7em; }
+.magician-preparation-budget dd { margin: 3px 0 0; color: var(--slice-ink); font-weight: 700; line-height: 1.35; }
+.magician-spare-batches { margin-top: 20px; }
+.magician-preparation-batch + .magician-preparation-batch { padding-top: 18px; border-top: 1px solid var(--slice-line); }
+.slice-action-feedback.magician-preparation-feedback { position: static; box-shadow: none; }
+.magician-preparation-batch > .seer-action:only-child { grid-column: 1 / -1; }
+
+.magician-risk-outcomes { margin: 16px 0; display: grid; gap: 0; }
+.magician-risk-outcomes > div { display: grid; grid-template-columns: 5em minmax(0, 1fr); gap: 16px; padding: 9px 0; border-top: 1px solid var(--slice-line); }
+.magician-risk-outcomes dt { font-weight: 700; color: var(--slice-ink); }
+.magician-risk-outcomes dd { margin: 0; }
+.magician-risk-outcomes > div:nth-last-child(-n+2) dt { color: var(--slice-red); }
+.magician-risk-protection { padding-top: 8px; }
+.magician-risk-details { margin-top: 16px; }
+.magician-confirm-summary { border-top: 3px double var(--slice-red); padding: 12px 16px; margin: 18px 0; background: rgba(255, 255, 255, .2); }
+.magician-confirm-summary dd { font-weight: 700; }
+
+/* The current Faceless supply batch remains distinct from its optional reserves. */
+.faceless-preparation-budget { position: static; box-shadow: none; }
+.faceless-preparation-budget dd { overflow-wrap: anywhere; }
+.faceless-preparation-batch { margin-top: 18px; padding: 14px 18px; border: 1px solid var(--slice-line); }
+.faceless-preparation-batch:first-of-type { border-left: 4px solid var(--slice-red); background: var(--slice-paper-light); }
+.faceless-preparation-batch h5 { margin: 0 0 12px; color: var(--slice-muted); font-size: .85em; }
+.faceless-preparation-batch:first-of-type h5 { color: var(--slice-ink); }
+@media (max-width: 600px) {
+  .faceless-preparation-batch { padding: 12px; }
+  .faceless-preparation-batch .seer-actions { grid-template-columns: minmax(0, 1fr); }
+}

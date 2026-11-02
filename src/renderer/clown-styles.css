@@ -96,3 +96,57 @@
   .clown-panel .clown-paper { grid-template-columns: minmax(0, 1fr); }
   .clown-escort { padding: 16px; }
 }
+
+/* Current resources, not an old receipt, stay beside promoted action choices. */
+.clown-current-budget {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: .8fr 1fr 1fr minmax(0, 1.6fr);
+  gap: 12px;
+  margin: 0;
+  padding: 12px 18px;
+  background: var(--slice-paper-light);
+  border-top: 3px double var(--slice-red);
+  border-bottom: 1px solid var(--slice-line);
+  box-shadow: 0 3px 7px #0001;
+}
+.clown-current-budget > div + div { border-left: 1px solid var(--slice-line); padding-left: 16px; }
+.clown-current-budget dt { color: var(--slice-muted); font-size: .7em; }
+.clown-current-budget dd { margin: 3px 0 0; color: var(--slice-ink); font-weight: 700; font-size: 1em; line-height: 1.35; }
+.clown-current-budget small,
+.slice-large-text .clown-current-budget dd small { font-size: .7em; font-weight: 400; }
+.slice-action-feedback.clown-action-feedback { position: static; box-shadow: none; }
+@media (max-width: 700px) {
+  .clown-current-budget { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px 12px; }
+  .clown-current-budget > div:nth-child(3) { border-left: 0; padding-left: 0; }
+}
+
+/* A settled escort is a dossier record, not another available action card. */
+.clown-escort-heading { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px; margin-bottom: 18px; }
+.clown-escort-heading h3 { margin: 0; }
+.clown-escort-outcome { color: var(--slice-red); font-size: .9em; }
+.clown-escort-record { padding: 16px 20px; border-top: 1px solid var(--slice-line); border-left: 3px double var(--slice-red); background: transparent; }
+.clown-escort-record .clown-escort-heading { margin-bottom: 8px; }
+.clown-escort-record > p { margin: 0; line-height: 1.6; }
+
+/* Read each confirmed outcome as a compact dossier row, in receipt order. */
+.slice-action-feedback.clown-action-feedback { font-size: .9em; line-height: 1.55; }
+.clown-receipt-entry { display: grid; grid-template-columns: 8em minmax(0, 1fr); gap: 6px 18px; padding: 9px 0; }
+.clown-receipt-entry + .clown-receipt-entry { border-top: 1px solid var(--slice-line); }
+.clown-receipt-entry h3 { margin: 0; font-size: 1em; line-height: inherit; color: var(--slice-ink); }
+.slice-action-feedback .clown-receipt-entry p { margin: 0; }
+@media (max-width: 700px) {
+  .clown-receipt-entry { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+}
+
+/* Current digestion is a quiet ink scale, not an unlock promise. */
+.clown-acting-progress { margin: 16px 0 10px; max-width: 34em; }
+.clown-acting-progress > div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.clown-acting-progress strong { color: var(--slice-red); font-size: 1.25em; }
+.clown-acting-progress small,
+.slice-large-text .clown-acting-progress small { font-size: .7em; font-weight: 400; color: var(--slice-muted); }
+.clown-acting-progress meter { display: block; width: 100%; height: 12px; margin-top: 6px; }
+.clown-acting-progress meter::-webkit-meter-bar { background: var(--slice-paper-light); border: 1px solid var(--slice-line); border-radius: 0; }
+.clown-acting-progress meter::-webkit-meter-optimum-value { background: #79645c; }

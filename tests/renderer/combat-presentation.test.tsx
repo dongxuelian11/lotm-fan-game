@@ -11,12 +11,14 @@ import {
 } from '../../src/domain/slice/index.js';
 import type { SliceProjection, SliceStance, SliceState } from '../../src/domain/slice/types.js';
 import { CombatStage, firstCaseInjuryTarget } from '../../src/renderer/CombatStage.js';
+import { hasReadClownRound, rememberClownRound } from '../../src/renderer/clown-round-bookmark.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
 import type { SliceBridge } from '../../src/shared/slice-contracts.js';
 
 afterEach(() => {
   cleanup();
+  window.localStorage.clear();
   delete window.sliceGame;
   vi.restoreAllMocks();
 });
@@ -300,6 +302,7 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
 
     const outcome = screen.getByRole('status');
     expect(within(outcome).getByText(label)).toBeTruthy();
+    expect(outcome.classList.contains('combat-retreat-outcome')).toBe(false);
     expect(outcome.textContent).toContain(`行动次数：你 ${round.playerCount} · 对手 ${round.enemyCount}`);
     expect(outcome.textContent).toContain(round.first === 'PLAYER' ? '你先行动' : '对手先行动');
   });
@@ -310,9 +313,39 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     render(<CombatStage state={state} round={state.lastCombatRound} fast={false} />);
 
     const outcome = screen.getByRole('status');
-    expect(within(outcome).getByText('撤退失败')).toBeTruthy();
+    expect(within(outcome).getByText('撤退失败').classList.contains('combat-goal-heading')).toBe(true);
+    expect(outcome.classList.contains('combat-retreat-outcome')).toBe(true);
+    expect(within(outcome).getByText('仍在战斗中')).toBeTruthy();
     expect(within(outcome).queryByText('你赢得本回合')).toBeNull();
     expect(within(outcome).queryByText('成功脱离战斗')).toBeNull();
+  });
+
+  it.each(['DEAD', 'REVIVAL_PENDING', 'NO_COMBAT'] as const)('does not imply another battle action after %s', (terminal) => {
+    // Presentation-only terminal projections; not native play or saved-state changes.
+    const state = projectSliceState(resolvedRound(candidate => candidate.lastCombatRound?.retreat === 'FAILURE', 'RETREAT'));
+    if (terminal !== 'REVIVAL_PENDING') state.combat = null;
+    if (terminal !== 'NO_COMBAT') state.status = terminal;
+    if (terminal === 'DEAD') state.health = 0;
+    const before = JSON.stringify(state);
+    render(<CombatStage state={state} round={state.lastCombatRound} fast />);
+    const outcome = screen.getByRole('status');
+    expect(within(outcome).queryByText('仍在战斗中')).toBeNull();
+    expect(outcome.querySelector('.combat-goal-heading')?.textContent).toBe(terminal === 'DEAD' ? '角色已死亡' : '撤退失败');
+    expect(within(outcome).getByText('撤退失败')).toBeTruthy();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it.each(['PLAYER', 'ENEMY'] as const)('keeps all wheels and consequences beneath the failed retreat goal when %s wins', async (winner) => {
+    const state = projectSliceState(resolvedRound(candidate => candidate.lastCombatRound?.retreat === 'FAILURE' && candidate.lastCombatRound.winner === winner && (winner !== 'ENEMY' || candidate.health < 100), 'RETREAT'));
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const round = state.lastCombatRound!;
+    expect(dialog.querySelector('.combat-goal-heading')?.textContent).toBe('撤退失败');
+    expect(wheelValues(visibleWheels(dialog))).toEqual([String(round.playerCount), String(round.enemyCount), winner === 'PLAYER' ? '你胜' : '对手胜']);
+    expect(within(within(dialog).getByLabelText('本回合实际后果')).getByText(round.consequence)).toBeTruthy();
+    if (winner === 'ENEMY') expect(state.health).toBeLessThan(100);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
   });
 
   it('shows successful retreat without inventing enemy health after the battle has ended', () => {
@@ -321,7 +354,7 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     expect(state.combat).toBeNull();
     render(<CombatStage state={state} round={state.lastCombatRound} fast={false} />);
 
-    expect(within(screen.getByRole('status')).getByText('成功脱离战斗')).toBeTruthy();
+    expect(within(screen.getByRole('status')).getByText('成功脱离战斗').classList.contains('combat-goal-heading')).toBe(true);
     expect(screen.getAllByRole('progressbar')).toHaveLength(1);
     expect(screen.queryByRole('progressbar', { name: '对手健康' })).toBeNull();
     const enemy = screen.getByRole('region', { name: '对手战斗状态' });
@@ -795,5 +828,118 @@ describe('resuming life after the first case', () => {
     expect(within(history!).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
     expect(bridge.submitIntent).not.toHaveBeenCalled();
     expect(JSON.stringify(state)).toBe(before);
+  });
+});
+
+
+describe('acknowledged terminal Clown round bookmark (UI only)', () => {
+  function terminalClown() {
+    const saved = resolvedRound(state => state.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    const continued = applySliceIntent(saved, { type: 'CONTINUE_LIFE' });
+    continued.progression = { ...continued.progression, pathwayId: 'diviner', sequence: 8 };
+    continued.clown.rescue.startHistoryIndex = continued.combatHistory.length - 1;
+    continued.clown.rescue.status = 'RETREATED';
+    return projectSliceState(continued);
+  }
+
+  it('only remembers explicit return, suppresses that round on reopen and retains history without submitting', async () => {
+    const state = terminalClown(), before = JSON.stringify(state);
+    let bridge = await openSave(state);
+    const dialog = await screen.findByRole('dialog', { name: '战斗回合结果' });
+    expect(hasReadClownRound(state)).toBe(false);
+    fireEvent.click(within(dialog).getByRole('button', { name: '返回生活' }));
+    expect(hasReadClownRound(state)).toBe(true);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    cleanup();
+    bridge = await openSave(state);
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /完整纪事/ }));
+    expect(await screen.findByRole('heading', { name: '战斗完整回放' })).toBeTruthy();
+    const history = screen.getByRole('heading', { name: '战斗完整回放' }).closest('section');
+    expect(within(history!).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it.each(['other-run', 'new-round', 'changed-round', 'dead', 'active', 'missing-field', 'other-sequence'] as const)('never suppresses %s', scenario => {
+    const original = terminalClown();
+    rememberClownRound(original);
+    const state = structuredClone(original);
+    if (scenario === 'other-run') state.runId += '-other';
+    if (scenario === 'new-round') state.combatHistory.push(structuredClone(state.lastCombatRound!));
+    if (scenario === 'changed-round') state.lastCombatRound!.round++;
+    if (scenario === 'dead') state.status = 'DEAD';
+    if (scenario === 'active') state.combat = projectSliceState(firstCase()).combat;
+    if (scenario === 'missing-field') delete state.clown.rescueCombatStarted;
+    if (scenario === 'other-sequence') state.progression.sequence = 9;
+    expect(hasReadClownRound(state)).toBe(false);
+  });
+
+  it('honors an explicitly read S8 round after same-run S7 promotion while retaining accessible history', async () => {
+    const original = terminalClown();
+    let bridge = await openSave(original);
+    const dialog = await screen.findByRole('dialog', { name: '战斗回合结果' });
+    fireEvent.click(within(dialog).getByRole('button', { name: '返回生活' }));
+    expect(hasReadClownRound(original)).toBe(true);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    cleanup();
+    // Synthetic promoted public projection: only the presentation stage changes, not the saved round.
+    const promoted = structuredClone(original);
+    promoted.progression.sequence = 7;
+    promoted.magician.promoted = true;
+    const before = JSON.stringify(promoted);
+    expect(hasReadClownRound(promoted)).toBe(true);
+    bridge = await openSave(promoted);
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /完整纪事/ }));
+    const heading = await screen.findByRole('heading', { name: '战斗完整回放' });
+    expect(within(heading.closest('section')!).getByText(promoted.lastCombatRound!.consequence)).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(promoted)).toBe(before);
+  });
+
+  it.each(['history-grows', 'content-changes', 'dead', 'active', 'other-run', 'not-promoted', 'other-sequence', 'other-pathway'] as const)('does not reuse the S8 bookmark for S7 %s', scenario => {
+    const original = terminalClown(); rememberClownRound(original);
+    const promoted = structuredClone(original);
+    promoted.progression.sequence = 7; promoted.magician.promoted = true;
+    const sameRoundNumber = promoted.lastCombatRound!.round;
+    if (scenario === 'history-grows') promoted.combatHistory.push(structuredClone(promoted.lastCombatRound!));
+    if (scenario === 'content-changes') promoted.lastCombatRound!.consequence += ' 本次后果已经不同。';
+    if (scenario === 'dead') promoted.status = 'DEAD';
+    if (scenario === 'active') promoted.combat = projectSliceState(firstCase()).combat;
+    if (scenario === 'other-run') promoted.runId += '-different';
+    if (scenario === 'not-promoted') promoted.magician.promoted = false;
+    if (scenario === 'other-sequence') promoted.progression.sequence = 6;
+    if (scenario === 'other-pathway') promoted.progression.pathwayId = 'white-tower';
+    expect(promoted.lastCombatRound!.round).toBe(sameRoundNumber);
+    expect(hasReadClownRound(promoted)).toBe(false);
+  });
+
+  it('cannot create or overwrite a terminal-round bookmark from S7', () => {
+    const original = terminalClown(), promoted = structuredClone(original);
+    promoted.progression.sequence = 7; promoted.magician.promoted = true;
+    const key = `slice-ui:clown-read-round:${original.runId}`;
+    const write = vi.spyOn(Storage.prototype, 'setItem');
+    rememberClownRound(promoted);
+    expect(write).not.toHaveBeenCalled(); expect(window.localStorage.getItem(key)).toBeNull();
+    expect(hasReadClownRound(promoted)).toBe(false);
+    rememberClownRound(original);
+    const savedBookmark = window.localStorage.getItem(key);
+    expect(savedBookmark).not.toBeNull(); write.mockClear();
+    promoted.lastCombatRound!.consequence += ' 新的S7结果不能写入旧护送书签。';
+    rememberClownRound(promoted);
+    expect(write).not.toHaveBeenCalled(); expect(window.localStorage.getItem(key)).toBe(savedBookmark);
+    expect(hasReadClownRound(promoted)).toBe(false); expect(hasReadClownRound(original)).toBe(true);
+  });
+
+  it('treats missing, corrupt or unavailable UI storage as unread', () => {
+    const state = terminalClown();
+    expect(hasReadClownRound(state)).toBe(false);
+    window.localStorage.setItem(`slice-ui:clown-read-round:${state.runId}`, 'invalid');
+    expect(hasReadClownRound(state)).toBe(false);
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('unavailable'); });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('unavailable'); });
+    expect(() => rememberClownRound(state)).not.toThrow();
+    expect(hasReadClownRound(state)).toBe(false);
   });
 });

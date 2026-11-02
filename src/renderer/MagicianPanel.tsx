@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { MAGICIAN_CONSUMPTION_RULE, MAGICIAN_CONSUMPTION_OUTCOMES, MAGICIAN_CONSUMPTION_PROTECTION } from "../domain/magician/content";
 import type { MagicianAction, MagicianCommand, MagicianProjection } from "../domain/magician/types";
 import type { ClownCommand, ClownProjection } from "../domain/clown/types";
 import type { SeerProjection } from "../domain/seer/types";
@@ -11,6 +12,7 @@ interface MagicianPanelProps {
   busy: boolean;
   blocked: boolean;
   onCommand: (command: MagicianCommand) => void;
+  onOpenFaceless?: () => void;
 }
 
 /** Historical records never turn old growth or original bottles into repeatable actions. */
@@ -81,7 +83,7 @@ function HistoricalRecords({ pathway, name }: { pathway: SeerProjection | ClownP
 }
 
 /** Availability, quantities, costs and outcomes come only from the committed public projection. */
-export function MagicianPanel({ magician, resources, busy, blocked, onCommand }: MagicianPanelProps) {
+export function MagicianPanel({ magician, resources, busy, blocked, onCommand, onOpenFaceless }: MagicianPanelProps) {
   const [selectedPracticeId, setSelectedPracticeId] = useState<string | null>(null);
   const [selectedBottleId, setSelectedBottleId] = useState<string | null>(null);
   const [submittedBottleId, setSubmittedBottleId] = useState<string | null>(null);
@@ -103,12 +105,20 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand }:
   const supplyActions = magician.actions.filter((action) => ["BUY_OIL", "PREPARE_LANTERN", "PREPARE_FIGURINE"].includes(action.command.type));
   const injuryActions = magician.actions.filter((action) => action.command.type === "TRANSFER_INJURY");
   const remainingActions = magician.actions.filter((action) => !["CONSUME", "PRACTICE", "BUY_OIL", "PREPARE_LANTERN", "PREPARE_FIGURINE", "TRANSFER_INJURY", "ENCOUNTER_TALK", "ENCOUNTER_FIGHT"].includes(action.command.type));
+  const preparationGroups = new Map<string, MagicianAction[]>();
+  for (const action of remainingActions) {
+    const key = "batchId" in action.command ? action.command.batchId : "guidance";
+    preparationGroups.set(key, [...(preparationGroups.get(key) ?? []), action]);
+  }
+  const batches = [...preparationGroups.entries()];
+  const currentBatchActions = batches[0]?.[1] ?? [];
+  const preparedBottleAction = magician.actions.find((action) => action.command.type === "CONSUME");
+  const reflectionActions = remainingActions.filter((action) => action.command.type === "REFLECT");
   const nextAction = magician.promoted
-    ? selectedPracticeActions.find((action) => action.enabled) ?? supplyActions.find((action) => action.enabled)
-      ?? sceneActions.find((action) => action.enabled) ?? remainingActions.find((action) => action.enabled)
-      ?? selectedPracticeActions[0] ?? remainingActions[0]
-    : magician.actions.find((action) => action.enabled && action.command.type === "CONSUME")
-      ?? remainingActions.find((action) => action.enabled) ?? remainingActions[0];
+    ? selectedPracticeActions.find((action) => action.enabled) ?? practiceActions.find((action) => action.enabled)
+      ?? sceneActions.find((action) => action.enabled) ?? reflectionActions.find((action) => action.enabled)
+      ?? selectedPracticeActions[0] ?? practiceActions[0] ?? sceneActions[0] ?? reflectionActions[0]
+    : preparedBottleAction ?? currentBatchActions.find((action) => action.enabled) ?? currentBatchActions[0];
   const confirming = !!selectedBottle && selectedAction?.command.type === "CONSUME" && !magician.promoted;
   const confirmationLocked = busy || blocked || submittedBottleId !== null;
 
@@ -156,11 +166,19 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand }:
       <dl className="seer-facts">
         <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
         <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
-        <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
-        <div><dt>本次消耗</dt><dd>{selectedAction.cost}</dd></div>
       </dl>
       <section className="slice-notice seer-risk" aria-label="魔术师服用风险与四档结果">
-        <strong>服用风险与四档结果</strong><p>{magician.risk}</p>
+        <strong>服用风险与四档结果</strong>
+        <p>{MAGICIAN_CONSUMPTION_RULE}</p>
+        <dl className="magician-risk-outcomes">
+          {MAGICIAN_CONSUMPTION_OUTCOMES.map(({ label, effect }) => <div key={label}>
+            <dt>{label}</dt><dd>{effect}</dd>
+          </div>)}
+        </dl>
+        <p className="magician-risk-protection">{MAGICIAN_CONSUMPTION_PROTECTION}</p>
+        <details className="seer-fold magician-risk-details">
+          <summary>筹备与补货说明 · 完整规则</summary><p>{magician.risk}</p>
+        </details>
       </section>
       <section aria-label="服药前当前资源" className="seer-current-resources">
         <h4>你现在的状态</h4>
@@ -174,6 +192,10 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand }:
         </dl>
       </section>
       {selectedAction.reason && <p className="seer-action-reason" id="magician-confirm-reason">{selectedAction.reason}</p>}
+      <dl className="seer-facts magician-confirm-summary" aria-label="本次服用确认摘要">
+        <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
+        <div><dt>本次消耗</dt><dd>{selectedAction.cost}</dd></div>
+      </dl>
       <div className="seer-confirm-buttons">
         <button className="slice-button quiet" disabled={confirmationLocked} onClick={() => setSelectedBottleId(null)}>暂不服用</button>
         <button className="slice-button" disabled={confirmationLocked || !selectedAction.enabled} onClick={confirmBottle}
@@ -185,7 +207,7 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand }:
     </section>
   );
 
-  const bottleRecords = magician.bottles.map((bottle) => {
+  const bottleRecord = (bottle: MagicianProjection["bottles"][number]) => {
     const action = !magician.promoted ? magician.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id) : undefined;
     return <article className="seer-bottle" key={bottle.id}>
       <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
@@ -199,15 +221,26 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand }:
         {action.reason && <p className="seer-action-reason" id={`magician-bottle-${bottle.id}`}>{action.reason}</p>}
       </div>}
     </article>;
-  });
+  };
+  const preparedBottleIds = new Set(magician.actions.flatMap((action) => action.command.type === "CONSUME" ? [action.command.bottleId] : []));
+  const preparedBottles = magician.bottles.filter((bottle) => preparedBottleIds.has(bottle.id));
+  const exhaustedBottles = magician.bottles.filter((bottle) => !preparedBottleIds.has(bottle.id));
 
   return <div className="seer-panel magician-panel" aria-busy={busy}>
     <section className="seer-summary" aria-label="魔术师成长下一步">
       <span className="seer-seal">{magician.promoted ? "序列 7" : "魔术师晋升准备"}</span>
       <h3>{magician.title}</h3>
-      <p className="seer-next">{nextAction ? <><strong>下一步：</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</> : "暂时没有可执行的成长行动。"}</p>
+      {magician.promoted && magician.acting >= 100 ? <>
+        <p className="seer-next"><strong>魔术师扮演已达100。</strong>可查看无面人筹备；仍需实际度过12整周并满足配方、材料与独立服药条件。</p>
+        {onOpenFaceless && <button className="slice-button quiet" disabled={busy || blocked} onClick={onOpenFaceless}>查看无面人筹备</button>}
+      </> : <p className="seer-next">{nextAction ? <><strong>下一步：</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</> : "暂时没有可执行的成长行动。"}</p>}
       <p className="slice-muted">{magician.promoted ? `扮演进度 ${magician.acting} · ${magician.digestion}` : magician.digestion}</p>
     </section>
+
+    {!magician.promoted && <dl className="magician-preparation-budget" aria-label="魔术师筹备当前资源">
+      <div><dt>剩余行动</dt><dd>{resources.actionsRemaining}</dd></div>
+      <div><dt>现金</dt><dd>{resources.cash}</dd></div>
+    </dl>}
 
     {magician.promoted && selectedPractice && <section aria-label="魔术师实践">
       <label className="seer-case-selector">选择一次实践
@@ -237,19 +270,27 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand }:
       {sceneActions.length > 0 && <div className="seer-actions" role="group" aria-label="魔术师情境行动">{sceneActions.map(actionButton)}</div>}
     </section>}
     {!sceneHasRecord && !magician.story && sceneActions.length > 0 && <div className="seer-actions" role="group" aria-label="魔术师情境行动">{sceneActions.map(actionButton)}</div>}
+    {magician.discovered && !magician.promoted && preparedBottles.length > 0 && <section className="seer-bottles" aria-label="已调配的魔术师魔药"><h3>已调配的魔术师魔药</h3>{preparedBottles.map(bottleRecord)}</section>}
     {remainingActions.length > 0 && <section aria-label={magician.promoted ? "魔术师成长行动" : "魔术师材料与调配"}>
       {!magician.promoted && <h4>材料与调配</h4>}
-      <div className="seer-actions">{remainingActions.map(actionButton)}</div>
+      {magician.promoted ? <div className="seer-actions">{remainingActions.map(actionButton)}</div> : <>
+        <div className="seer-actions magician-preparation-batch" role="group" aria-label="当前准备批次">{currentBatchActions.map(actionButton)}</div>
+        {batches.length > 1 && <details className="seer-fold magician-spare-batches">
+          <summary>其他批次 · 备用材料（{batches.length - 1}批）</summary>
+          {batches.slice(1).map(([id, actions]) => <div className="seer-actions magician-preparation-batch" role="group" aria-label="备用准备批次" key={id}>{actions.map(actionButton)}</div>)}
+        </details>}
+      </>}
     </section>}
+    {magician.discovered && !magician.promoted && exhaustedBottles.length > 0 && <details className="seer-fold">
+      <summary>已耗尽原瓶记录 · {exhaustedBottles.length}瓶</summary>{exhaustedBottles.map(bottleRecord)}
+    </details>}
     {injuryActions.length > 0 && <details className="seer-fold">
       <summary>查看可转移的自身伤势</summary>
       <p>同一处伤势只能在自己的身体内部转移一次，不恢复健康，也不会消除已经结算的伤势。</p>
       <div className="magician-action-list" role="group" aria-label="自身伤势转移">{injuryActions.map(actionButton)}</div>
     </details>}
 
-    {magician.discovered && magician.bottles.length > 0 && (magician.promoted
-      ? <details className="seer-fold"><summary>魔术师原瓶 · 来源与去向</summary>{bottleRecords}</details>
-      : <section className="seer-bottles" aria-label="已调配的魔术师魔药"><h3>已调配的魔术师魔药</h3>{bottleRecords}</section>)}
+    {magician.discovered && magician.promoted && magician.bottles.length > 0 && <details className="seer-fold"><summary>魔术师原瓶 · 来源与去向</summary>{magician.bottles.map(bottleRecord)}</details>}
     {magician.discovered && !magician.promoted && <details className="seer-fold"><summary>查看服用风险与四档结果</summary><p>{magician.risk}</p></details>}
     {magician.discovered && magician.formulaKnown && magician.formula.length > 0 && <details className="seer-fold">
       <summary>查看已知魔术师配方 · {magician.formula.length} 种材料</summary>

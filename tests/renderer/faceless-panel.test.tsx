@@ -56,6 +56,90 @@ function panel(value: FacelessProjection, onCommand = vi.fn()) {
 afterEach(cleanup);
 
 describe("Faceless sequence-six committed appearance, original bottles and explicit exits", () => {
+  it("keeps current cash and actions beside visibly separate material batches without hiding spare choices", () => {
+    const firstBuy = action({ type: "BUY_MATERIALS", batchId: "faceless-batch-1" }, "第一批采购", false, "240便士");
+    const firstWork = action({ type: "MATERIAL_WORK", batchId: "faceless-batch-1" }, "第一批劳动");
+    const spare = action({ type: "MATERIAL_WORK", batchId: "faceless-batch-2" }, "第二批劳动");
+    const { onCommand, rerender } = panel(faceless({ actions: [firstBuy, spare, firstWork] }));
+    const budget = screen.getByLabelText("无面人筹备当前资源");
+    expect(budget.textContent).toBe(`剩余行动0现金${resources.cash}`);
+    const current = screen.getByRole("region", { name: "当前准备批次" });
+    expect(within(current).getAllByRole("button")).toHaveLength(2);
+    expect(current.textContent).toContain("240便士");
+    expect(current.textContent).not.toContain("第二批劳动");
+    const reserve = screen.getByRole("region", { name: "备用准备批次" });
+    fireEvent.click(within(reserve).getByRole("button", { name: /^第二批劳动/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(spare.command);
+    rerender(<FacelessPanel faceless={faceless({ actions: [spare] })} resources={{ ...resources, cash: "6便士", actionsRemaining: 2 }} busy={false} onCommand={onCommand} />);
+    expect(screen.getByLabelText("无面人筹备当前资源").textContent).toBe("剩余行动2现金6便士");
+    expect(screen.getByRole("region", { name: "当前准备批次" }).textContent).toContain("第二批劳动");
+    expect(screen.queryByRole("region", { name: "备用准备批次" })).toBeNull();
+  });
+
+  it.each(["", "原材料劳务5/5，备用供货仍需等到下周。"])("lays out all four projected risk outcomes preserving the full projected prefix (%s)", async (prefix) => {
+    panel({ ...bottled(), risk: prefix + FACELESS_CONSUMPTION_RISK });
+    await userEvent.click(screen.getByRole("button", { name: '查看并准备服用「第一瓶无面人魔药」' }));
+    const risk = screen.getByRole("region", { name: "无面人服用风险与四档结果" });
+    expect(risk.textContent).toBe(`服用风险与四档结果${prefix}${FACELESS_CONSUMPTION_RISK}`);
+    expect(within(risk).getAllByRole("term").map((item) => item.textContent)).toEqual(["大成功：", "成功：", "失败：", "灾难："]);
+    expect(within(risk).getAllByRole("definition").map((item) => item.textContent)).toEqual([
+      "晋升、精神−5；", "晋升、精神−10；", "未晋升、精神−20、健康−10、排异+25；", "中断晋升、精神−40、健康−20、排异+50。",
+    ]);
+  });
+
+  it("retains intervening projected risk notes instead of dropping them during layout", async () => {
+    const risk = FACELESS_CONSUMPTION_RISK.replace("成功：晋升、精神−10；", "成功：晋升、精神−10；本次额外说明须保留。");
+    panel({ ...bottled(), risk });
+    await userEvent.click(screen.getByRole("button", { name: '查看并准备服用「第一瓶无面人魔药」' }));
+    expect(screen.getByRole("region", { name: "无面人服用风险与四档结果" }).textContent).toBe(`服用风险与四档结果${risk}`);
+  });
+
+  it("keeps the first completed labour batch's cash blocker ahead of available spare work", () => {
+    const buy = { ...action({ type: "BUY_MATERIALS", batchId: "faceless-batch-1" }, "领取第一批", false), reason: "这批采购需要240便士。" };
+    const spare = action({ type: "MATERIAL_WORK", batchId: "faceless-batch-2" }, "备用第二批劳动");
+    const { onCommand } = panel(faceless({ actions: [buy, spare] }));
+    const summary = screen.getByRole("region", { name: "无面人成长下一步" });
+    expect(summary.textContent).toContain("领取第一批。这批采购需要240便士。");
+    expect(summary.textContent).not.toContain("备用第二批劳动");
+    fireEvent.click(screen.getByRole("button", { name: /^备用第二批劳动/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(spare.command);
+  });
+
+  it.each([true, false])("prioritizes a prepared bottle over spare work (enabled=%s)", (enabled) => {
+    const value = bottled();
+    const bottleAction = { ...value.actions[0]!, enabled, reason: enabled ? null : "晋升后11/12整周，尚不能服药。" };
+    value.actions = [action({ type: "MATERIAL_WORK", batchId: "faceless-batch-3" }, "备用第三批劳动"), bottleAction];
+    const { onCommand } = panel(value);
+    const summary = screen.getByRole("region", { name: "无面人成长下一步" });
+    expect(summary.textContent).toContain(bottleAction.label);
+    expect(summary.textContent).not.toContain("备用第三批劳动");
+    if (!enabled) expect(summary.textContent).toContain(bottleAction.reason);
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("selects enabled work within the current batch and retains spare purchasing", () => {
+    const work = action({ type: "MATERIAL_WORK", batchId: "faceless-batch-1" }, "第一批劳动");
+    panel(faceless({ actions: [action({ type: "BUY_MATERIALS", batchId: "faceless-batch-1" }, "第一批采购", false), work,
+      action({ type: "BUY_MATERIALS", batchId: "faceless-batch-2" }, "第二批采购")] }));
+    expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("第一批劳动");
+    expect((screen.getByRole("button", { name: /^第二批采购/ }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("uses the next batch after an exhausted bottle, without treating its history as usable", () => {
+    const value = bottled(); value.bottles = [{ ...value.bottles[0]!, status: "已耗尽 · 排异，未晋升" }];
+    value.actions = [action({ type: "BREW", batchId: "faceless-batch-2" }, "调配第二批", false),
+      action({ type: "MATERIAL_WORK", batchId: "faceless-batch-3" }, "第三批劳动")];
+    panel(value);
+    expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("调配第二批");
+    expect(screen.queryByRole("button", { name: /查看并准备服用/ })).toBeNull();
+  });
+
+  it.each(["REQUEST_SUPPLY", "RECEIVE_SUPPLY"] as const)("preserves the standalone %s supply step", (type) => {
+    const supply = action({ type }, "本次补货", false);
+    panel(faceless({ actions: [supply] }));
+    expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("本次补货。当前公开条件尚未满足。");
+  });
+
   it("uses the public sequence-seven maturity gate without exposing unknown ingredients or inventing shortcuts", () => {
     const reason = "魔术师扮演100；晋升后11/12个完整周，尚未满足成熟条件。";
     const value = faceless({ digestion: reason, formula: [...FACELESS_FORMULA], actions: [{ ...learn, enabled: false, reason }] });

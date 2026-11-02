@@ -12,7 +12,19 @@ describe('read-only clown rescue battle provenance', () => {
     state.clown.rescue.status = status;
     state.clown.rescue.startHistoryIndex = startHistoryIndex;
     const before = JSON.stringify(state);
-    expect(projectSliceState(state).clown.rescueCombatStarted).toBe(startHistoryIndex !== null);
+    const projected = projectSliceState(state);
+    expect(projected.clown.rescueCombatStarted).toBe(startHistoryIndex !== null);
+    if (status === 'RESCUED' || status === 'RETREATED' || status === 'LOST') {
+      expect(projected.clown.rescueOutcome).toBe(status);
+      expect(projected.clown.actions.some(action => action.command.type === 'RESCUE_TALK' || action.command.type === 'RESCUE_FIGHT')).toBe(false);
+    } else expect(Object.hasOwn(projected.clown, 'rescueOutcome')).toBe(false);
+    if (status === 'RETREATED') {
+      expect(projected.clown.story).toContain('没有替艾尔西解决冲突');
+      expect(projected.clown.story).toContain('后续仍待确认');
+      expect(projected.clown.story).toContain('不能再次介入');
+    }
+    if (status === 'LOST') expect(projected.clown.story).toContain('护送没有被记作完成');
+    if (status === 'RESCUED') expect(projected.clown.story).toContain('艾尔西已带着原包裹离开');
     expect(JSON.stringify(state)).toBe(before);
   });
 
@@ -21,8 +33,10 @@ describe('read-only clown rescue battle provenance', () => {
   ] as const)('does not add S8 presentation facts to %s sequence %s public captures', (pathwayId, sequence) => {
     const state = createSliceRun('clown-history-scope', sliceDefaultCreationSelection, 'projection-seed');
     state.progression = { ...state.progression, pathwayId, sequence };
+    state.clown.rescue.status = 'RETREATED';
     const before = JSON.stringify(state);
     expect(Object.hasOwn(projectSliceState(state).clown, 'rescueCombatStarted')).toBe(false);
+    expect(Object.hasOwn(projectSliceState(state).clown, 'rescueOutcome')).toBe(false);
     expect(JSON.stringify(state)).toBe(before);
   });
 });
