@@ -61,6 +61,8 @@ export interface ClownAction {
 export interface ClownProjection {
   /** Read-only history fact; absent older projections must not suppress saved rounds. */
   rescueCombatStarted?: boolean;
+  /** Existing terminal escort state, exposed only on the current diviner S8 page. */
+  rescueOutcome?: 'RESCUED' | 'RETREATED' | 'LOST';
   title: string; discovered: boolean; formulaKnown: boolean; promoted: boolean;
   story?: string;
   formula: { name: string; quantity: number; unit: string }[];

@@ -9,7 +9,7 @@ import { SEER_ABILITY_IDS } from "../../src/domain/seer/types";
 import type { SliceProjection } from "../../src/domain/slice/types";
 import { ClownPanel } from "../../src/renderer/ClownPanel";
 import type { SeerResources } from "../../src/renderer/SeerPanel";
-import { SliceApp } from "../../src/renderer/SliceApp";
+import { SliceApp, sliceMoney, clownLifeGuidance } from "../../src/renderer/SliceApp";
 import type { SliceBridge, SliceEnvelope, SliceReceipt, SliceResult } from "../../src/shared/slice-contracts";
 
 const resources: SeerResources = {
@@ -98,14 +98,60 @@ async function openClown() {
   await userEvent.click(screen.getByRole("button", { name: /非凡成长/ }));
   await userEvent.click(screen.getByRole("button", { name: "小丑晋升" }));
 }
-beforeEach(() => { vi.spyOn(window, "scrollTo").mockImplementation(() => {}); });
+const scrollIntoView = vi.fn();
+beforeEach(() => {
+  vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+  Object.defineProperty(HTMLElement.prototype, "scrollIntoView", { configurable: true, value: scrollIntoView });
+  scrollIntoView.mockClear();
+});
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 
 describe("Clown progression dossier", () => {
+  it.each([0, 64, 100])("shows current acting %s on a separate scale without changing historical digestion", (acting) => {
+    const value = clown({ promoted: true, acting, digestion: "占卜家100/100已保留；能力掌握分别记录。" });
+    const { rerender } = render(<ClownPanel clown={value} currentSequence resources={resources} busy={false} blocked={false} onCommand={vi.fn()} />);
+    const meter = screen.getByRole("meter", { name: "小丑扮演进度" });
+    expect(meter.getAttribute("value")).toBe(String(acting));
+    expect(meter.getAttribute("max")).toBe("100");
+    expect(screen.getByText(value.digestion)).toBeTruthy();
+    rerender(<ClownPanel clown={value} resources={resources} busy={false} blocked={false} onCommand={vi.fn()} />);
+    expect(screen.queryByRole("meter")).toBeNull();
+    expect(within(screen.getByRole("region", { name: "小丑成长下一步" })).getByText(`扮演进度 ${acting} · 消化：${value.digestion}`)).toBeTruthy();
+    rerender(<ClownPanel clown={clown()} currentSequence resources={resources} busy={false} blocked={false} onCommand={vi.fn()} />);
+    expect(screen.queryByRole("meter")).toBeNull();
+  });
+
+  it.each(["RETREATED", "RESCUED", "LOST"] as const)("does not offer terminal %s escort from the life sidebar", async rescueOutcome => {
+    const state = fixture(8);
+    state.nextStep = "旧通用提示：可进行实践与护送。";
+    state.clown.rescueOutcome = rescueOutcome;
+    const available = state.clown.actions.find(a => a.command.type === "PRACTICE" && a.enabled)!;
+    expect(clownLifeGuidance(state)).toContain(`当前可实践「${available.label}」`);
+    expect(clownLifeGuidance(state)).toContain("不能再次介入");
+    await enter(bridge(state));
+    expect(within(screen.getByRole("region", { name: "当前任务与线索" })).getByText(clownLifeGuidance(state))).toBeTruthy();
+    state.clown.actions = state.clown.actions.map(a => ({ ...a, enabled: false }));
+    expect(clownLifeGuidance(state)).toContain("返回日常安排工作或休养");
+    expect(clownLifeGuidance(state)).not.toContain("当前可实践");
+  });
+
+  it("preserves original guidance for missing outcome, another sequence and blocked event/combat", () => {
+    const state = fixture(8); state.nextStep = "当前权威指引";
+    expect(clownLifeGuidance(state)).toBe(state.nextStep);
+    state.clown.rescueOutcome = "RETREATED";
+    state.canAct = false;
+    expect(clownLifeGuidance(state)).not.toContain("当前可实践");
+    expect(clownLifeGuidance({ ...state, progression: { ...state.progression, sequence: 9 } })).toBe(state.nextStep);
+    expect(clownLifeGuidance({ ...state, activeEvent: { id: "pending" } as SliceProjection["activeEvent"] })).toBe(state.nextStep);
+    expect(clownLifeGuidance({ ...state, combat: { round: 1 } as SliceProjection["combat"] })).toBe(state.nextStep);
+    expect(clownLifeGuidance({ ...state, status: "DEAD" })).toBe(state.nextStep);
+  });
+
   it("pairs preparation costs with exact current resources without executing on focus", async () => {
     const value = clown(), snapshot = JSON.stringify(value);
     const { onCommand, container } = panel(value);
     expect(container.querySelector(".clown-single-action")).toBeTruthy();
+    expect(screen.queryByLabelText("小丑行动当前资源")).toBeNull();
     expect(container.querySelector(".clown-preparation-multiple")).toBeNull();
     expect(screen.getByLabelText("晋升准备当前资源").textContent).toContain(resources.cash);
     expect(screen.getByLabelText("晋升准备当前资源").textContent).toContain(`剩余行动${resources.actionsRemaining}`);
@@ -148,6 +194,7 @@ describe("Clown progression dossier", () => {
   it("does not add preparation budgeting to promoted practice", () => {
     panel(clown({ promoted: true }));
     expect(screen.queryByLabelText("晋升准备当前资源")).toBeNull();
+    expect(screen.getByLabelText("小丑行动当前资源").textContent).toContain(resources.cash);
   });
 
   it("shows the public prerequisite without revealing an unknown formula or future abilities", () => {
@@ -199,6 +246,50 @@ describe("Clown progression dossier", () => {
     rerender(<ClownPanel clown={{ ...value, story: "护送已结束。", actions: [paper] }} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
     expect(screen.queryByRole("group", { name: "护送处理方式" })).toBeNull();
     expect(screen.getByText("护送已结束。")).toBeTruthy();
+    expect(screen.getByRole("region", { name: "当前小丑情境" }).classList.contains("clown-escort-record")).toBe(false);
+  });
+
+  it.each([80, 100])("does not mistake supplies for growth after terminal escort at %i", (acting) => {
+    const paper: ClownAction = { id: "paper", label: "购买10张纸", cost: "0行动 · 10便士", enabled: true, reason: null, command: { type: "BUY_PAPER" } };
+    render(<ClownPanel clown={clown({ promoted: true, rescueOutcome: "RETREATED", acting, actions: [paper] })} currentSequence resources={resources} busy={false} blocked={false} onCommand={vi.fn()} />);
+    const summary = screen.getByRole("region", { name: "小丑成长下一步" });
+    expect(summary.textContent).not.toContain("下一步：购买");
+    expect(summary.textContent).toContain(acting < 100 ? "补充纸张不会增加扮演" : "魔术师晋升条件");
+    expect(screen.getByRole("button", { name: /购买10张纸/ })).toBeTruthy();
+  });
+
+  it("keeps a blocked practice's real reason instead of claiming practices are complete", () => {
+    const practice: ClownAction = { id: "practice", label: "复核实践", cost: "1行动", enabled: false, reason: "本周已经尝试过，下周再练。", command: { type: "PRACTICE", practiceId: "quiet-support" } };
+    render(<ClownPanel clown={clown({ promoted: true, rescueOutcome: "RETREATED", acting: 80, actions: [practice] })} currentSequence resources={resources} busy={false} blocked={false} onCommand={vi.fn()} />);
+    expect(screen.getByRole("region", { name: "小丑成长下一步" }).textContent).toContain(practice.reason);
+    expect(screen.getByRole("region", { name: "小丑成长下一步" }).textContent).not.toContain("当前实践已完成");
+  });
+
+  it("routes exhausted current growth back to daily life without inventing another practice", async () => {
+    const state = fixture(8);
+    state.progression.acting = 80;
+    state.clown = { ...state.clown!, acting: 80, rescueOutcome: "RETREATED", actions: [] };
+    const api = bridge(state);
+    await enter(api);
+    expect(screen.getByText("当前实践已完成，扮演尚未满")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "安排日常行动" })).toBeTruthy();
+    expect(api.submitIntent).not.toHaveBeenCalled();
+  });
+
+  it("offers a projected retreat reflection ahead of supplies without reopening the escort", async () => {
+    const reflection: ClownAction = { id: "retreat-reflection", label: "撤离后稳住自己的表情", cost: "1行动 · 意志难度12 · 成功扮演+20（上限100）；失败消耗行动，下周可重试。", enabled: true, reason: null, command: { type: "PRACTICE", practiceId: "retreat-reflection" } };
+    const paper: ClownAction = { id: "paper", label: "购买10张纸", cost: "0行动 · 10便士", enabled: true, reason: null, command: { type: "BUY_PAPER" } };
+    const onCommand = vi.fn();
+    const value = clown({ promoted: true, rescueOutcome: "RETREATED", acting: 80, story: "护送未解决，包裹未转移。", actions: [paper, reflection] });
+    const { rerender } = render(<ClownPanel clown={value} currentSequence resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.getByRole("region", { name: "小丑成长下一步" }).textContent).toContain(`下一步：${reflection.label}`);
+    expect(screen.getByRole("region", { name: "当前小丑情境" }).textContent).toContain("已撤离 · 未解决");
+    await userEvent.click(screen.getByRole("button", { name: new RegExp(reflection.label) }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(reflection.command);
+    rerender(<ClownPanel clown={{ ...value, actions: [paper, { ...reflection, enabled: false, reason: "本周已经尝试过，下周再练。" }] }} currentSequence resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.getByRole("region", { name: "小丑成长下一步" }).textContent).toContain("下周再练");
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(reflection.label) }));
+    expect(onCommand).toHaveBeenCalledTimes(1);
   });
 
   it("cancels free, focuses the selected bottle, and confirms only that exact bottle once at zero AP", async () => {
@@ -314,6 +405,56 @@ describe("Clown progression dossier", () => {
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 
+  it("keeps ordered cross-week receipts, repeated titles and exact resources without charging on reopen", async () => {
+    const state = fixture(8), value = bridge(state);
+    const practice = state.clown.actions.find(action => action.command.type === "PRACTICE")!;
+    const record = { id: "resource-test-result", week: state.week, title: "实践未能完成", text: "原纸已消耗，没有成长奖励。" };
+    const records = [record,
+      { id: "resource-test-growth", week: state.week, title: "能力有了长进", text: "另一项原有成长记录，不能替代失败。" },
+      { id: "resource-test-living", week: state.week, title: "本周生活费", text: "已支付120便士，工作工资不重复入账。" },
+      { id: "resource-test-next", week: state.week + 1, title: "新的一周", text: "日期推进7天，本周3次行动。" },
+      { ...record, id: "resource-test-repeat", week: state.week + 1, text: "同名记录仍按原顺序显示。" },
+    ];
+    const next = { ...state, revision: state.revision + 1, actionsRemaining: state.actionsRemaining - 1,
+      spirituality: state.spirituality - 1, cash: state.cash - 10,
+      clown: { ...state.clown, acting: 16, paperSheets: state.clown.paperSheets - 1 },
+      lastResult: record, chronicle: [...state.chronicle, ...records] };
+    const submit = vi.fn<(envelope: SliceEnvelope) => Promise<SliceResult<SliceReceipt>>>()
+      .mockImplementation(async envelope => receipt(next, envelope));
+    value.submitIntent = submit;
+    await enter(value);
+    await userEvent.click(screen.getByRole("button", { name: /非凡成长/ }));
+    const budget = screen.getByLabelText("小丑行动当前资源");
+    expect(budget.textContent).toContain(`剩余行动${state.actionsRemaining}`);
+    expect(budget.textContent).toContain(`灵性${state.spirituality} / ${state.maxSpirituality}`);
+    expect(budget.textContent).toContain(`随身纸张${state.clown.paperSheets} 张`);
+    expect(within(screen.getByRole("button", { name: new RegExp(practice.label) })).getByText(practice.cost)).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: new RegExp(practice.label) }));
+    expect(submit).toHaveBeenCalledTimes(1);
+    expect(submit.mock.calls[0]![0].payload).toEqual({ type: "CLOWN", command: practice.command });
+    expect(budget.textContent).toContain(`剩余行动${next.actionsRemaining}`);
+    expect(budget.textContent).toContain(`灵性${next.spirituality} / ${next.maxSpirituality}`);
+    expect(budget.textContent).toContain(`随身纸张${next.clown.paperSheets} 张`);
+    expect(budget.textContent).toContain(`现金${sliceMoney(next.cash)}`);
+    expect(screen.getByRole("meter", { name: "小丑扮演进度" }).getAttribute("value")).toBe("16");
+    const feedback = screen.getByRole("status", { name: "本次行动结果" });
+    expect(feedback.classList.contains("clown-action-feedback")).toBe(true);
+    expect(feedback.textContent).toContain(record.text);
+    const entries = within(feedback).getAllByRole("article");
+    expect(entries).toHaveLength(records.length);
+    entries.forEach((entry, i) => {
+      expect(within(entry).getByRole("heading", { level: 3 }).textContent).toBe(records[i]!.title);
+      expect(entry.querySelector("p")?.textContent).toBe(records[i]!.text);
+    });
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: "start", behavior: "instant" });
+    const budgetText = budget.textContent;
+    await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
+    await userEvent.click(screen.getByRole("button", { name: /非凡成长/ }));
+    expect(screen.getByLabelText("小丑行动当前资源").textContent).toBe(budgetText);
+    expect(screen.getByRole("status", { name: "本次行动结果" }).textContent).toContain(record.text);
+    expect(submit).toHaveBeenCalledTimes(1);
+  });
+
   it("shows finite paper depletion and its projected purchase restriction", () => {
     const { onCommand } = panel(clown({ promoted: true, paperStock: 0, paperSheets: 0, paperSpent: 30,
       actions: [{ id: "paper", label: "纸张已售罄", cost: "0行动 · 供应方剩0张", enabled: false, reason: "这一批纸不会自动补货。", command: { type: "BUY_PAPER" } }],
@@ -393,4 +534,18 @@ describe("Clown progression dossier", () => {
     await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
+});
+
+
+it.each([
+  ['RESCUED', '已护送离开'], ['RETREATED', '已撤离 · 未解决'], ['LOST', '护送未完成'],
+] as const)('presents authoritative %s escort outcome as a quiet record without changing story or actions', (rescueOutcome, heading) => {
+  const story = '原有结果正文，保留原物与未知后续。';
+  const { onCommand } = panel(clown({ promoted: true, rescueOutcome, story, actions: [] }));
+  const record = screen.getByRole('region', { name: '当前小丑情境' });
+  expect(record.classList.contains('clown-escort-record')).toBe(true);
+  expect(within(record).getByText(heading)).toBeTruthy();
+  expect(within(record).getByText(story)).toBeTruthy();
+  expect(within(record).queryByRole('button')).toBeNull();
+  expect(onCommand).not.toHaveBeenCalled();
 });

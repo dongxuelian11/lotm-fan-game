@@ -18,6 +18,9 @@ export function CombatStage({ state, round, fast }: {
   const firstCase = battle?.title === '首案 · 追击携铃者';
   const portrait = `${import.meta.env.BASE_URL}assets/portraits/portrait_${state.character.portraitId.replace('portrait-', '').padStart(2, '0')}.webp`;
   const outcome = !round ? '选择姿态，再结算这一回合' : round.retreat === 'SUCCESS' ? '成功脱离战斗' : round.retreat === 'FAILURE' ? '撤退失败' : round.winner === 'PLAYER' ? '你赢得本回合' : round.winner === 'ENEMY' ? '对手赢得本回合' : '本回合未分胜负';
+  const retreatResult = round?.retreat === 'SUCCESS' || round?.retreat === 'FAILURE';
+  const retreatDeath = round?.retreat === 'FAILURE' && state.status === 'DEAD';
+  const retreatDetail = retreatDeath ? '撤退失败' : round?.retreat === 'FAILURE' && state.status === 'ACTIVE' && battle ? '仍在战斗中' : null;
   const animate = !!round && !fast;
   const injuryTarget = firstCaseInjuryTarget(state, round);
   return <section className={`combat-stage ${firstCase ? 'combat-stage-boiler' : ''} ${animate ? 'combat-stage-reveal' : ''}`} aria-label="当前战场" data-animated={animate} key={`${state.runId}:${round?.round ?? 'ready'}`}>
@@ -47,8 +50,9 @@ export function CombatStage({ state, round, fast }: {
         </svg>}
       </section>
     </div>
-    <div className="combat-round-outcome" role={round ? 'status' : undefined}>
-      <strong>{outcome}</strong>
+    <div className={`combat-round-outcome ${retreatResult ? "combat-retreat-outcome" : ""}`} role={round ? 'status' : undefined}>
+      <strong className={retreatResult ? "combat-goal-heading" : undefined}>{retreatDeath ? "角色已死亡" : outcome}</strong>
+      {retreatDetail && <span className="combat-goal-detail">{retreatDetail}</span>}
       {round && <span>行动次数：你 {round.playerCount} · 对手 {round.enemyCount}　{round.first === 'PLAYER' ? '你先行动' : '对手先行动'}</span>}
     </div>
   </section>;

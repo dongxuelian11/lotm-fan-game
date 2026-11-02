@@ -4,7 +4,7 @@ import { createSliceRun } from '../../src/domain/slice/index.js';
 import type { SliceCombatRound, SliceState } from '../../src/domain/slice/types.js';
 import { createMagicianState } from '../../src/domain/magician/index.js';
 import {
-  applyMagicianPractice, isMagicianActivity, magicianActions, magicianPractices,
+  applyMagicianPractice, isMagicianActivity, magicianActions, magicianPractices, MAGICIAN_DISPUTE_STORY,
   settleMagicianEncounter, validateMagicianPractice,
 } from '../../src/domain/magician/practice.js';
 import { MAGICIAN_ABILITY_IDS, type MagicianActivityCommand } from '../../src/domain/magician/types.js';
@@ -277,5 +277,78 @@ describe('Magician activity save invariants', () => {
     expect(validateMagicianPractice(s)).toBe(false); s.injuries[0]!.severity = 'LIGHT';
     expect(validateMagicianPractice(s)).toBe(true); s.injuries = []; expect(validateMagicianPractice(s)).toBe(true);
     s.magician.damageTransfers.push('heavy'); expect(validateMagicianPractice(s)).toBe(false);
+  });
+});
+
+
+describe('Magician dispute terminal story projection', () => {
+  function projectedDispute(s: SliceState) {
+    const before = structuredClone(s);
+    const projected = magicianPractices(s).find(p => p.id === 'magician-dispute')!;
+    const actions = magicianActions(s);
+    expect(s).toEqual(before);
+    return { projected, actions };
+  }
+  function terminalNoReentry(s: SliceState) {
+    const { actions } = projectedDispute(s);
+    expect(actions.some(a => a.command.type === 'ENCOUNTER_TALK' || a.command.type === 'ENCOUNTER_FIGHT')).toBe(false);
+    reject(s, { type: 'ENCOUNTER_TALK' }); reject(s, { type: 'ENCOUNTER_FIGHT' });
+  }
+
+  it('describes actual peaceful verification rather than a battle after successful talk', () => {
+    const s = onePractice(); apply(s, { type: 'ENCOUNTER_TALK' });
+    expect(s.magician.encounter.startHistoryIndex).toBeNull();
+    const { projected } = projectedDispute(s);
+    expect(projected.status).toBe('当面核对完成，莉亚已带原箱返回剧院');
+    expect(projected.story).toContain('原通行记录，莫里核对后让开');
+    expect(projected.story).toContain('原道具箱仍归剧院');
+    expect(projected.story).toContain('没有战利品或心智控制');
+    expect(projected.story).not.toMatch(/抵抗已经结束|死亡|击杀|持短棍拦住/);
+    terminalNoReentry(s);
+  });
+
+  it.each(['ENEMY_SURRENDERED', 'ENEMY_DEAD'] as const)('describes completed battle %s without inventing how the opponent died or moved', outcome => {
+    const s = onePractice(); apply(s, { type: 'ENCOUNTER_FIGHT' });
+    s.combatHistory.push(round()); s.combat!.enemyStatus = outcome === 'ENEMY_DEAD' ? 'DEAD' : 'SURRENDERED';
+    const ctx = context(s); settleMagicianEncounter(s, outcome, ctx.c, ctx.award);
+    expect(s.magician.encounter.startHistoryIndex).toBe(0);
+    const { projected } = projectedDispute(s);
+    expect(projected.status).toBe('抵抗结束，原箱由本人带走');
+    expect(projected.story).toContain('原通路上的抵抗已经结束');
+    expect(projected.story).toContain('莉亚自己抱着剧院原道具箱');
+    expect(projected.story).toContain('没有物品自动归你');
+    expect(projected.story).toContain('随身灯火已熄灭');
+    expect(projected.story).not.toMatch(/核对后让开|莫里.*死亡|击杀|你可以/);
+    terminalNoReentry(s);
+  });
+
+  it.each(['RETREATED', 'PLAYER_DEAD'] as const)('preserves the unresolved %s consequences instead of offering the old scene again', outcome => {
+    const s = onePractice(); light(s); apply(s, { type: 'ENCOUNTER_FIGHT' }); s.combatHistory.push(round());
+    const ctx = context(s); settleMagicianEncounter(s, outcome, ctx.c, ctx.award);
+    if (outcome === 'PLAYER_DEAD') s.status = 'DEAD';
+    const { projected } = projectedDispute(s);
+    if (outcome === 'RETREATED') {
+      expect(projected.status).toBe('你已退离，人和原箱未随你转移');
+      expect(projected.story).toContain('莉亚与原道具箱的后续仍未解决');
+      expect(projected.story).toContain('没有自动随你移动');
+      expect(projected.story).toContain('已耗纸料、灯油和实际伤势保留');
+      expect(projected.story).not.toContain('死亡已经实际结算');
+    } else {
+      expect(projected.status).toBe('已死亡，原争议未解决');
+      expect(projected.story).toContain('你的死亡已经实际结算');
+      expect(projected.story).toContain('原争议未记作完成');
+      expect(projected.story).toContain('没有成长或战利品');
+    }
+    expect(projected.story).not.toMatch(/你可以|核对后让开|莉亚自己抱着.*走回/);
+    terminalNoReentry(s);
+  });
+
+  it.each(['AVAILABLE', 'FIGHTING'] as const)('retains the original risk-bearing scene in %s without changing saved facts', status => {
+    const s = onePractice();
+    if (status === 'FIGHTING') apply(s, { type: 'ENCOUNTER_FIGHT' });
+    const { projected, actions } = projectedDispute(s);
+    expect(projected.story).toBe(MAGICIAN_DISPUTE_STORY);
+    expect(projected.status).toBe(status === 'AVAILABLE' ? '可交涉或承担战斗风险' : '实际战斗中');
+    if (status === 'AVAILABLE') expect(actions.filter(a => a.command.type === 'ENCOUNTER_TALK' || a.command.type === 'ENCOUNTER_FIGHT')).toHaveLength(2);
   });
 });

@@ -8,11 +8,20 @@ const LESSONS=[
  {id:'paper-target',title:'一张纸与固定靶',body:'指导者把厚软木靶固定在无人通行的练习区。只使用你实际买来的普通纸，投出的一张不回库存，也不对真人练刀。',stat:'physique' as const,difficulty:12,spirituality:1},
  {id:'composed-apology',title:'在责备声中把话说完',body:'你在整理剧院告示时漏掉了排练时刻，朱迪丝当面提出责备。练习稳住表情并诚实道歉，不把角色表情当作自己没有难过，也不否认这次疏漏。',stat:'will' as const,difficulty:12,spirituality:0},
 ];
+const RETREAT_REFLECTION='retreat-reflection';
+const REFLECTION_SOURCE=`clown-practice:${RETREAT_REFLECTION}`;
+const allLessonsComplete=(s:SliceState)=>LESSONS.every(lesson=>s.clown.practices.includes(lesson.id));
+const reflectionAvailable=(s:SliceState)=>s.clown.rescue.status==='RETREATED'&&allLessonsComplete(s)&&s.progression.acting<100&&!s.clown.practices.includes(RETREAT_REFLECTION);
 export const CLOWN_RESCUE_STORY='快递员艾尔西在公开码头巷口被一名持短棍者拦住，对方索要无凭据的通行费。她仍抱着自己受托的包裹。你可以当面交涉，也可以明确承担真实受伤/死亡风险介入；退离不会替她解决冲突，包裹也不会成为你的战利品。';
 function common(s:SliceState){return s.status!=='ACTIVE'?'当前周目无法行动。':s.progression.pathwayId!=='diviner'||s.progression.sequence!==8?'成为小丑后才能进行这些实践。':s.world.city!=='BACKLUND'?'需要在贝克兰德。':s.activeEvent||s.combat?'先处理当前事件或战斗。':s.health<=0||s.mind<=0?'先休养恢复身体与精神。':s.actionsRemaining<1?'本周剩余行动不足。':null;}
 function blocked(s:SliceState,c:ClownCommand):string|null{
  const reason=common(s);if(reason)return reason;
  if(c.type==='PRACTICE'){
+  if(c.practiceId===RETREAT_REFLECTION){
+   if(!reflectionAvailable(s))return '仅在五项实践完成、护送撤离且小丑消化未满时复盘一次。';
+   if(s.clown.trainingAttempts[RETREAT_REFLECTION]===s.week)return '本周已经尝试过，下周再练。';
+   return null;
+  }
   const lesson=LESSONS.find(x=>x.id===c.practiceId);if(!lesson)return '未知的练习。';
   if(s.clown.practices.includes(lesson.id))return '这项实践已完成，不重复发奖。';
   if(s.clown.trainingAttempts[lesson.id]===s.week)return '本周已经尝试过，下周再练。';
@@ -30,6 +39,7 @@ export function clownAdventureActions(s:SliceState):ClownAction[]{
  if(s.progression.pathwayId!=='diviner'||s.progression.sequence!==8)return [];
  const add=(id:string,label:string,cost:string,command:ClownCommand):ClownAction=>{const reason=blocked(s,command);return{id,label,cost,command,enabled:!reason,reason};};
  return [
+ ...(reflectionAvailable(s)?[add(RETREAT_REFLECTION,'撤离后的复盘与自控','1行动 · 意志难度12 · 成功扮演+20（最多100），仅一次；失败消耗行动，下周可重试。护送仍是撤离，不改变快递员与包裹的未知后续。',{type:'PRACTICE',practiceId:RETREAT_REFLECTION})]:[]),
  ...LESSONS.filter(x=>!s.clown.practices.includes(x.id)).map(x=>add(x.id,x.title,`1行动 · ${x.spirituality}灵性${x.id==='paper-target'?' · 1张原纸':''} · ${x.body}`,{type:'PRACTICE',practiceId:x.id})),
  ...(s.clown.rescue.status==='AVAILABLE'?[
  add('clown-rescue-talk','陪快递员当面交涉',`1行动 · 意志难度14 · 成功护送离开，失败不转移原物`,{type:'RESCUE_TALK'}),
@@ -41,6 +51,12 @@ export function applyClownAdventure(s:SliceState,c:ClownCommand,ctx:SeerContext,
  const reason=blocked(s,c);if(reason)throw new Error(reason);
  s.actionsRemaining--;
  if(c.type==='PRACTICE'){
+  if(c.practiceId===RETREAT_REFLECTION){
+   s.clown.trainingAttempts[RETREAT_REFLECTION]=s.week;
+   const r=ctx.check('will',12),ok=r.tier==='SUCCESS'||r.tier==='GREAT_SUCCESS',before=s.progression.acting;
+   if(ok){s.clown.practices.push(RETREAT_REFLECTION);s.seer.completedSources.push(REFLECTION_SOURCE);s.progression.acting=Math.min(100,before+20);}
+   ctx.note('撤离后的复盘与自控',`你重新梳理亲历的撤离，承认害怕与未能完成护送的失落，练习稳住表情和呼吸，不把自控说成事情已获解决。本次${ok?`完成实践，扮演${before}→${s.progression.acting}/100；不额外增加能力掌握。`:'未能稳定完成，已消耗1行动，没有成长奖励，下周可重试。'}护送仍是撤离，快递员和包裹的后续仍待确认。`);return;
+  }
   const lesson=LESSONS.find(x=>x.id===c.practiceId)!;s.spirituality-=lesson.spirituality;s.clown.trainingAttempts[lesson.id]=s.week;
   if(lesson.id==='paper-target'){s.clown.paperSheets--;s.clown.paperSpent++;}
   const r=ctx.check(lesson.stat,lesson.difficulty),ok=r.tier==='SUCCESS'||r.tier==='GREAT_SUCCESS';
@@ -71,9 +87,13 @@ export function settleClownRescue(s:SliceState,outcome:string,ctx:SeerContext,aw
  s.combat=null;
 }
 export function validateClownAdventure(s:SliceState):boolean{
- const x=s.clown;if(!Array.isArray(x.practices)||new Set(x.practices).size!==x.practices.length||x.practices.some(id=>!LESSONS.some(l=>l.id===id)))return false;
- if(!x.trainingAttempts||Object.entries(x.trainingAttempts).some(([id,week])=>!LESSONS.some(l=>l.id===id)||!Number.isSafeInteger(week)||week<1||week>s.week))return false;
+ const x=s.clown;if(!Array.isArray(x.practices)||new Set(x.practices).size!==x.practices.length||x.practices.some(id=>id!==RETREAT_REFLECTION&&!LESSONS.some(l=>l.id===id)))return false;
+ if(!x.trainingAttempts||Object.entries(x.trainingAttempts).some(([id,week])=>id!==RETREAT_REFLECTION&&!LESSONS.some(l=>l.id===id)||!Number.isSafeInteger(week)||week<1||week>s.week))return false;
  if(x.practices.some(id=>!s.seer.completedSources.includes(`clown-practice:${id}`)))return false;
+ const reflected=x.practices.includes(RETREAT_REFLECTION);
+ if(reflected!==s.seer.completedSources.includes(REFLECTION_SOURCE))return false;
+ if((reflected||Object.hasOwn(x.trainingAttempts,RETREAT_REFLECTION))&&(x.rescue?.status!=='RETREATED'||!allLessonsComplete(s)))return false;
+ if(reflected&&!Object.hasOwn(x.trainingAttempts,RETREAT_REFLECTION))return false;
  const r=x.rescue;if(!r||!['AVAILABLE','FIGHTING','RESCUED','RETREATED','LOST'].includes(r.status)||!['RESISTING','SURRENDERED','DEAD'].includes(r.enemyStatus)||r.parcelOwner!=='courier-elsie'||r.parcelHolder!=='COURIER')return false;
  return (r.attemptWeek===null||Number.isSafeInteger(r.attemptWeek)&&r.attemptWeek>=1&&r.attemptWeek<=s.week)&&(r.startHistoryIndex===null||Number.isSafeInteger(r.startHistoryIndex)&&r.startHistoryIndex>=0&&r.startHistoryIndex<=s.combatHistory.length)&&(r.status!=='FIGHTING'||s.combat?.encounterId==='CLOWN_RESCUE');
 }

@@ -1,3 +1,4 @@
+import { learningTargetDescription } from "../../src/renderer/learning-preview";
 import {createSliceRun,projectSliceState} from '../../src/domain/slice/index';
 /* @vitest-environment jsdom */
 import {
@@ -573,5 +574,29 @@ describe("readable playable slice", () => {
     expect(b.submitIntent).not.toHaveBeenCalled();
     expect(screen.getAllByRole("button", { name: /^进攻/ })).toHaveLength(1);
     expect(screen.queryByRole("button", { name: /^控制/ })).toBeNull();
+  });
+});
+
+
+describe("learning descriptions before committing an action", () => {
+  it("shows exact capped learning previews from public fields before selection and never submits merely on opening", async () => {
+    const raw = createSliceRun("learning-preview-renderer", sliceDefaultCreationSelection, "learning-preview-renderer");
+    raw.character.coreStats.knowledge = 22;
+    raw.character.learningBonus = 2;
+    const publicTargets = projectSliceState(raw).learnTargets;
+    const state = projection({ learnTargets: publicTargets, character: { ...raw.character, name: "艾琳" }, progression: raw.progression }), b = bridge(state);
+    const before = JSON.stringify(state);
+    await enter(state, b);
+    await userEvent.click(screen.getByRole("button", { name: /学习，1行动/ }));
+    const dialog = screen.getByRole("dialog", { name: "选择学习主题" });
+    for (const target of publicTargets) {
+      const description = within(dialog).getByText(learningTargetDescription(state, target));
+      expect(description.closest("button")?.textContent).toContain(target.label);
+      expect(description.textContent).toContain("当前知识22");
+      expect(description.textContent).toContain("成功也不增加知识");
+    }
+    expect(b.submitIntent).not.toHaveBeenCalled(); expect(JSON.stringify(state)).toBe(before);
+    await userEvent.click(within(dialog).getByRole("button", { name: "关闭选择学习主题" }));
+    expect(b.submitIntent).not.toHaveBeenCalled();
   });
 });

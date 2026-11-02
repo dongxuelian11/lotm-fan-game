@@ -72,6 +72,23 @@ function isCaseAction(action: FacelessAction): boolean {
   return "caseId" in action.command && action.command.type !== "BORROW_OUTFIT";
 }
 
+/** Lay out the projected wording without replacing any probability, consequence or protection. */
+function ConsumptionRisk({ text }: { text: string }) {
+  const outcomes = [...text.matchAll(/(大成功|成功|失败|灾难)：([^；。]+[；。])/g)];
+  if (outcomes.length === 0 || outcomes.some((outcome, index) => index > 0
+    && outcome.index !== outcomes[index - 1]!.index + outcomes[index - 1]![0].length)) return <p>{text}</p>;
+  const last = outcomes[outcomes.length - 1]!;
+  return <>
+    <p>{text.slice(0, outcomes[0]!.index)}</p>
+    <dl className="magician-risk-outcomes">
+      {outcomes.map((outcome) => <div key={outcome.index}>
+        <dt>{outcome[1]}：</dt><dd>{outcome[2]}</dd>
+      </div>)}
+    </dl>
+    <p className="magician-risk-protection">{text.slice(last.index + last[0].length)}</p>
+  </>;
+}
+
 /** Appearance, voice, costume ownership and outcomes change only on committed public state. */
 export function FacelessPanel({ faceless, resources, busy, blocked = false, error = null, readOnly = false, onCommand }: FacelessPanelProps) {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
@@ -101,9 +118,22 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
     || (action.command.type === "BORROW_OUTFIT" && action.command.caseId === selectedCase?.id));
   const growthActions = faceless.insideCase ? [] : faceless.actions.filter((action) => !isCaseAction(action)
     && !["CONSUME", "CHANGE_APPEARANCE", "RESTORE_SELF", "BORROW_OUTFIT", "RETURN_OUTFIT", "ENCOUNTER_TALK", "ENCOUNTER_FIGHT"].includes(action.command.type));
+  // Preserve the current bottle or batch's real blocker instead of recommending spare work.
+  const preparedBottleAction = faceless.actions.find((action) => action.command.type === "CONSUME");
+  const firstPreparation = growthActions[0];
+  const preparationBatchId = firstPreparation && "batchId" in firstPreparation.command ? firstPreparation.command.batchId : null;
+  const currentPreparationActions = preparationBatchId !== null
+    ? growthActions.filter((action) => "batchId" in action.command
+      && action.command.batchId === preparationBatchId)
+    : firstPreparation ? [firstPreparation] : [];
+  const preparationGroups = new Map<string, FacelessAction[]>();
+  for (const action of growthActions) {
+    const key = "batchId" in action.command ? action.command.batchId : "guidance";
+    preparationGroups.set(key, [...(preparationGroups.get(key) ?? []), action]);
+  }
+  const preparationBatches = [...preparationGroups.entries()];
   const nextAction = faceless.insideCase ? closeAction : !faceless.promoted
-    ? faceless.actions.find((action) => action.command.type === "CONSUME" && action.enabled)
-      ?? growthActions.find((action) => action.enabled) ?? growthActions[0]
+    ? preparedBottleAction ?? currentPreparationActions.find((action) => action.enabled) ?? firstPreparation
     : [...selectedCaseActions, ...appearanceActions, ...outfitActions, ...growthActions].find((action) => action.enabled)
       ?? selectedCaseActions[0] ?? growthActions[0];
   const confirming = !!selectedBottle && selectedBottleAction?.command.type === "CONSUME" && !faceless.promoted && !faceless.insideCase && !readOnly;
@@ -171,7 +201,7 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
       <div><dt>本次消耗</dt><dd>{selectedBottleAction.cost}</dd></div>
     </dl>
     <section className="slice-notice seer-risk" aria-label="无面人服用风险与四档结果">
-      <h4>服用风险与四档结果</h4><p>{faceless.risk}</p>
+      <h4>服用风险与四档结果</h4><ConsumptionRisk text={faceless.risk} />
     </section>
     <section className="seer-current-resources" aria-label="服药前当前资源">
       <h4>你现在的状态</h4>
@@ -207,6 +237,11 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
       <p className="slice-muted">{faceless.digestion}</p>
       {!faceless.promoted && <p className="slice-muted">配方与材料可以提前准备；服用前须完成魔术师消化与成长所需整周。学习配方、取得实际材料、调配独立原瓶与逐瓶确认服用分别进行，成熟门槛、劳务进度与费用以当前公开记录为准；准备期间仍可继续普通生活。</p>}
     </section>
+
+    {!faceless.promoted && <dl className="magician-preparation-budget faceless-preparation-budget" aria-label="无面人筹备当前资源">
+      <div><dt>剩余行动</dt><dd>{resources.actionsRemaining}</dd></div>
+      <div><dt>现金</dt><dd>{resources.cash}</dd></div>
+    </dl>}
 
     {faceless.promoted && <section className="slice-notice" aria-label="当前持续外貌与本人身份">
       <h4>当前持续外貌</h4>
@@ -262,7 +297,16 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
       </section>
     </section>}
 
-    {growthActions.length > 0 && <div className="magician-action-list" role="group" aria-label="无面人成长行动">{growthActions.map(actionButton)}</div>}
+    {growthActions.length > 0 && <section aria-label={faceless.promoted ? "无面人成长行动" : "无面人材料与调配"}>
+      {faceless.promoted ? <div className="magician-action-list">{growthActions.map(actionButton)}</div> : <>
+        <h4>材料与调配</h4>
+        {preparationBatches.map(([id, actions], index) => <section className="faceless-preparation-batch" key={id}
+          aria-label={index === 0 ? "当前准备批次" : "备用准备批次"}>
+          <h5>{id === "guidance" ? "配方与补货" : index === 0 ? "当前批次" : "备用材料"}</h5>
+          <div className="seer-actions magician-preparation-batch" role="group" aria-label={index === 0 ? "当前批次行动" : "备用材料行动"}>{actions.map(actionButton)}</div>
+        </section>)}
+      </>}
+    </section>}
     {faceless.story && <p className="slice-muted">{faceless.story}</p>}
     {faceless.discovered && faceless.supplies && <section className="slice-notice" aria-label="无面人实际材料与批次">
       <h4>实际材料与独立批次</h4><p>{faceless.supplies}</p>

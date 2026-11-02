@@ -194,11 +194,22 @@ export function magicianActions(s: SliceState): MagicianAction[] {
 
 export function magicianPractices(s: SliceState): MagicianProjection['practices'] {
   if (!promoted(s)) return [];
+  const encounter = s.magician.encounter;
+  const talkedThrough = encounter.status === 'RESOLVED' && encounter.startHistoryIndex === null;
+  const terminalStory = encounter.status === 'RESOLVED'
+    ? talkedThrough
+      ? '你请莉亚出示当面持有的原通行记录，莫里核对后让开。莉亚自己抱着原箱走回剧院；原道具箱仍归剧院，没有战利品或心智控制。'
+      : '原通路上的抵抗已经结束，莉亚自己抱着剧院原道具箱走回原目的地。没有物品自动归你，随身灯火已熄灭。'
+    : encounter.status === 'RETREATED'
+      ? '你已从原通路退离，莉亚与原道具箱的后续仍未解决，没有自动随你移动。本次不发成长，已耗纸料、灯油和实际伤势保留，随身灯火已熄灭。'
+      : encounter.status === 'LOST'
+        ? '你的死亡已经实际结算，原争议未记作完成，也没有成长或战利品。已耗原物和伤势事实保留，随身灯火已熄灭。'
+        : MAGICIAN_DISPUTE_STORY;
   return [
     ...PRACTICES.map(p => ({ id: p.id, title: p.title, story: p.story,
       status: s.magician.practices.includes(p.id) ? '已实际完成' : s.magician.practiceAttempts[p.id] === s.week ? '本周未成，下周可重试' : '尚未完成' })),
-    { id: 'magician-dispute', title: '侧巷里的原道具箱', story: MAGICIAN_DISPUTE_STORY,
-      status: ({ AVAILABLE: '可交涉或承担战斗风险', FIGHTING: '实际战斗中', RESOLVED: '抵抗结束，原箱由本人带走', RETREATED: '你已退离，人和原箱未随你转移', LOST: '已死亡，原争议未解决' } as const)[s.magician.encounter.status] },
+    { id: 'magician-dispute', title: '侧巷里的原道具箱', story: terminalStory,
+      status: talkedThrough ? '当面核对完成，莉亚已带原箱返回剧院' : ({ AVAILABLE: '可交涉或承担战斗风险', FIGHTING: '实际战斗中', RESOLVED: '抵抗结束，原箱由本人带走', RETREATED: '你已退离，人和原箱未随你转移', LOST: '已死亡，原争议未解决' } as const)[s.magician.encounter.status] },
   ];
 }
 

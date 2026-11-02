@@ -6,6 +6,7 @@ import "./clown-styles.css";
 
 interface ClownPanelProps {
   clown: ClownProjection;
+  currentSequence?: boolean;
   resources: SeerResources;
   busy: boolean;
   blocked: boolean;
@@ -13,7 +14,7 @@ interface ClownPanelProps {
 }
 
 /** Costs, prerequisites, stories and outcomes are supplied by the public projection. */
-export function ClownPanel({ clown, resources, busy, blocked, onCommand }: ClownPanelProps) {
+export function ClownPanel({ clown, currentSequence = false, resources, busy, blocked, onCommand }: ClownPanelProps) {
   const [selectedBottleId, setSelectedBottleId] = useState<string | null>(null);
   const [submittedBottleId, setSubmittedBottleId] = useState<string | null>(null);
   const submitted = useRef<string | null>(null);
@@ -27,13 +28,17 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
   const actions = clown.actions.filter((action) => action.command.type !== "CONSUME");
   const practices = actions.filter((action) => action.command.type === "PRACTICE");
   const escorts = actions.filter((action) => action.command.type === "RESCUE_TALK" || action.command.type === "RESCUE_FIGHT");
+  const escortOutcome = clown.rescueOutcome ? { RESCUED: "已护送离开", RETREATED: "已撤离 · 未解决", LOST: "护送未完成" }[clown.rescueOutcome] : null;
   const supplies = actions.filter((action) => action.command.type === "BUY_PAPER");
   const promotedNext = practices.find((action) => action.enabled)
     ?? escorts.find((action) => action.enabled)
     ?? supplies.find((action) => action.enabled);
-  const nextAction = (clown.promoted ? promotedNext : undefined) ?? clown.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+  const nextAction = clown.promoted && currentSequence
+    ? practices.find((action) => action.enabled) ?? escorts.find((action) => action.enabled) ?? practices[0] ?? escorts[0]
+    : (clown.promoted ? promotedNext : undefined) ?? clown.actions.find((action) => action.enabled && action.command.type === "CONSUME")
     ?? clown.actions.find((action) => action.enabled)
     ?? clown.actions[0];
+  const exhaustedGrowth = currentSequence && clown.promoted && !!clown.rescueOutcome && practices.length === 0;
   const confirming = !!selectedBottle && selectedAction?.command.type === "CONSUME" && !clown.promoted;
   const confirmationLocked = busy || blocked || submittedBottleId !== null;
 
@@ -128,11 +133,24 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
       <section className="seer-summary" aria-label="小丑成长下一步">
         <span className="seer-seal">{clown.promoted ? "序列 8" : "小丑晋升准备"}</span>
         <h3>{clown.title}</h3>
-        {nextAction ? (
+        {exhaustedGrowth ? (
+          <p className="seer-next">当前实践已完成，护送已结束。{clown.acting < 100 ? "扮演尚未满100；补充纸张不会增加扮演。" : "可在成长卷宗查看魔术师晋升条件。"}</p>
+        ) : nextAction ? (
           <p className="seer-next"><strong>下一步：</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</p>
         ) : <p className="seer-next">暂时没有可执行的成长行动。</p>}
-        <p className="slice-muted">{clown.promoted ? `扮演进度 ${clown.acting} · 消化：${clown.digestion}` : clown.digestion}</p>
+        {clown.promoted && currentSequence && <div className="clown-acting-progress">
+          <div><span>小丑扮演</span><strong>{clown.acting} <small>/ 100</small></strong></div>
+          <meter min={0} max={100} value={clown.acting} aria-label="小丑扮演进度">{clown.acting} / 100</meter>
+        </div>}
+        <p className="slice-muted">{clown.promoted && !currentSequence ? `扮演进度 ${clown.acting} · 消化：${clown.digestion}` : clown.digestion}</p>
       </section>
+
+      {clown.promoted && <dl className="clown-current-budget" aria-label="小丑行动当前资源">
+        <div><dt>剩余行动</dt><dd>{resources.actionsRemaining}</dd></div>
+        <div><dt>灵性</dt><dd>{resources.spirituality} <small>/ {resources.maxSpirituality}</small></dd></div>
+        <div><dt>随身纸张</dt><dd>{clown.paperSheets} <small>张</small></dd></div>
+        <div><dt>现金</dt><dd>{resources.cash}</dd></div>
+      </dl>}
 
       {clown.promoted && (
         <section className="clown-paper" aria-label="小丑纸张库存">
@@ -190,8 +208,8 @@ export function ClownPanel({ clown, resources, busy, blocked, onCommand }: Clown
         </section>
       )}
       {clown.promoted && (clown.story || escorts.length > 0) && (
-        <section className="clown-story clown-escort" aria-label="当前小丑情境">
-          <h3>码头护送</h3>
+        <section className={`clown-story clown-escort${escortOutcome ? " clown-escort-record" : ""}`} aria-label="当前小丑情境">
+          <div className="clown-escort-heading"><h3>码头护送</h3>{escortOutcome && <strong className="clown-escort-outcome">{escortOutcome}</strong>}</div>
           {clown.story && <p>{clown.story}</p>}
           {escorts.length > 0 && <div className="seer-actions" role="group" aria-label="护送处理方式">{escorts.map(renderAction)}</div>}
         </section>

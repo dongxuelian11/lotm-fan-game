@@ -189,3 +189,124 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - PR54 首轮 CI 分片1/2实际发现新字段无条件加入无关途径，使白塔、深渊、审判者等原始公开投影严格比较/哈希不一致。修复产品投影：只在真正 diviner S8 输出可选 `rescueCombatStarted`，与唯一消费条件一致；其他途径及S9/S7不新增该字段。
 - 保留全部历史捕获原字节、哈希及严格比较，不修改适配器。检查真实小丑v050捕获消费者：比较私有状态、既有能力及首案归档，不比较含新字段的完整公开投影；本机原natural.json仍缺失，不冒充捕获套件已跑。新增非S8字段缺席/不变性断言，原S8六种来源与当前/死亡/缺字段展示回归保留。
 - 与待发布撤退视觉片94d3521分支隔离；本片仅修PR54，不包含后续UI变更。验证与新精确CI运行由外部审查日志记录。
+
+## 2026-10-27 · 撤退意图结果优先于回合胜负
+
+- 在独立本地 `feature/retreat-outcome-clarity`（基线2b6a4b2）处理实际S8第2回合“撤退失败但胜负盘你胜”的层级歧义；PR54原分支/远端不变，不推送。
+- 仅使用既有retreat字段，为成功/失败结果增加独立28px标题行和双线分隔，次数/先后保持次级；三个核心盘、数值、普通攻击展示不变。失败且DEAD时死亡优先、保留撤退失败；只有ACTIVE且仍有combat才显示“仍在战斗中”，REVIVAL_PENDING/无战斗历史不暗示可再行动。
+- 战斗展示完整60项、renderer类型与构建通过，含失败撤退+玩家胜、失败+受伤、成功无胜负盘转动、死亡/复活待定/无战斗、普通结果与减动画。首轮新增受伤断言错误地选到未受伤的敌胜样本；修正测试取样条件实际要求健康降低，未弱化断言，最终完整60项通过。
+- 原生只读重载真实rev71成功撤离，1280与约1360宽三盘、实际后果、返回生活可见；快速显示不改变存档。没有倒改rev70重现失败，失败/死亡变化由结构展示测试覆盖而非声称原生后图；原rev70失败前图保留于clown-combat-20261027。
+- 外部证据 output/retreat-clarity-20261027/QA-summary.json。该阶段无游戏行动，无领域/随机/存档改动；主类型、全套、CI和安装包未运行。
+
+## 2026-10-27 · 小丑实践的当前资源与回执层级
+
+- 本地 feature/clown-resource-flow 以 b00a58e 为基础，保留撤退展示修复（cherry-pick 为 c132228）；原 b00a58e 与 94d3521 分支不动，无远端操作。
+- 实际伤后休养→纸靶实践发现：费用在下方，行动/现金在遮罩后，纸张/灵性需翻找，而旧回执常驻遮住操作。仅晋升小丑增加紧凑当前资源横栏（直接公开投影：AP/灵性/纸/现金）；回执完整回到正常流，新回执及重开时立即定位，滚动后让当前资源保持可见。未晋升布局、费用、规则和三轮盘不变。
+- 自然同存档：rev71休养至rev72健康100伤势清除；唯一纸靶实践失败、消耗1纸与1灵性，周结算扣120至rev73/week18/AP3/cash36；正常工作一次工资180，最终rev74/AP2/cash216/spirit24/45/paper8/acting16。未重试失败、未再战斗、未改存档。
+- 原生1280普通/大字与约1360普通布局检查，资源和4实践按钮同屏；大字单位小于数值且无挤压。工资回执关闭重开仍可见，工作后/重开后/最终只读状态完全一致。恢复普通字号宽窗口并返回日常。
+- 小丑21、战斗展示60、来源投影10（共91）测试通过；追加精确现金/非晋升资源断言的定向2项通过；renderer类型、最终构建通过。基线main编译通过；未跑全套、CI、安装包。
+- 已记录但未扩大修复：加载时已完成护送回合仍自动回看；大字下旧成功撤退轮盘文字偏拥挤，保持后续视觉审查，不声称此次解决。证据 output/clown-resources-20261027/QA-summary.json。
+
+## 2026-10-27 · 已明确返回生活的小丑护送回合不再自动回看
+
+- 独立本地 feature/clown-read-round 基于已备份 fb62192，旧资源/撤退/投影分支保留。只新增Renderer本机已读书签，不改领域存档或随机。
+- 确认原因：loadRun恢复lastCombatRound，而返回生活此前只清React状态；rescueCombatStarted=true不能区分已读。仅ACTIVE、diviner S8、无combat、护送确已开始且有保存回合时，在明确返回生活写入runId+历史长度+回合完整内容。重载完全匹配才不自动弹；死亡/进行中/新回合/另一角色/缺字段/存储不可用仍走原展示，完整纪事不变。没有用时间、叙事标题或结局猜测已读，也不自动回填旧存档。
+- 原生真实rev74：首次仍弹已保存第3回合→点击返回生活→重载继续直接日常→完整纪事仍能展开该真实成功撤离后果。前后只读状态逐字一致，无任何游戏行动或新战斗。证据 output/clown-read-round-20261027。
+- 战斗展示完整69项通过；最终测试类型修正后的书签定向9项通过（其余60未在该次重复）；renderer类型、构建与diff检查通过。首次新增历史断言因未限定section而重复匹配失败，限定真实回放section后修正；类型初次因新增测试误用私有combat形状失败，改用真实公开投影构造后通过。未弱化产品行为。
+- 限制：书签为本机UI偏好，首次/清除本机数据后仍显示旧回合一次，需明确返回生活；不跨设备同步，不宣称解决其他序列回看策略。main/full-suite/CI/安装包未运行，无远端操作。
+
+## 2026-10-27 · 护送终结记录明确区分撤离与完成
+
+- 独立本地 feature/clown-escort-record 基于 f5df620/v77，旧分支保留。原生同rev74观察：永久撤离后的护送大卡仅写“已有记录”，既不说明未解决，也不说明不能再次介入，容易误读为成功。
+- 只在diviner S8已有终结状态RESCUED/RETREATED/LOST输出可选rescueOutcome；依据既有权威状态调整story，不从回合胜负猜测。撤离明确“未替艾尔西解决冲突/后续仍待确认/未转入库存/不能再次介入”，死亡只说明玩家死亡与未完成，不虚构快递员生死。其他途径/序列、AVAILABLE/FIGHTING不新增字段。没有迁移、数值、随机或可重入规则变化。
+- 终结卡采用紧凑卷宗记录样式：同一标题行显示结果，酒红侧线替代待处理卡顶线，正文保留可读，仍可访问历史。旧投影缺字段回退原情境卡；原风险、费用与命令不变。
+- 唯一自然实践：陪伴道具师成功，rev74→75、AP2→1、acting16→32、敏捷掌握0→8；week18/cash216/HP100/mind100/spirit24/45/paper8不变。首次滚动中坐标落空后先确认rev74未变，再定位执行一次；未重复尝试或重置。护送既有失败保留。
+- 最终renderer24项、只读投影10项通过，含终结字段缺席作用域与缺字段旧卡回退；main/renderer类型、main/renderer构建、diff检查通过。额外尝试clown-adventure捕获套件因原tests/fixtures/clown-v050/natural.json缺失而未运行，不补造fixture、不声称该套件通过；初次混合运行34项通过但该文件加载失败，最终两受影响文件各自通过。
+- 原生同rev75普通宽窗与1280大字完整后果可读；Main重启加载新投影仍直接回日常，无旧护送弹窗（书签仅匹配战斗历史长度与lastCombatRound，新增投影字段不在签名内）。实践后/构建重启后/最终只读状态逐字一致。恢复普通字号宽窗并返回日常，无更多行动。
+- 证据 output/clown-escort-record-20261027/QA-summary.json。全套、CI、安装包未运行；无远端操作，等待独立审查。
+
+## 2026-10-28 · 小丑成长与周结算回执排版
+
+- 基线 `ebb700d`，新分支 `feature/clown-weekly-flow`，保全所有旧分支。自然实践最后一个行动：真实成功，纸张飞刀随机掌握 +8、扮演 32→48；生活费 120 与新周结算均保留。随后正常领取第 19 周工资 180，停在 rev77 / AP2 / cash276 / spirit22。
+- 仅为晋升后 S8 小丑抽屉的回执增加标题/正文分栏、细分隔和随大字号设置放大的正文；不改变记录顺序、文案、领域字段、成本或结算。原有资源横栏与非固定回执位置保留，其他途径和占卜家里程碑不改。
+- 24 项小丑 UI 测试、19 项占卜家回执回归、renderer 类型检查及构建通过。覆盖跨周记录、同名多记录、失败成本原文、资源同步、关闭重开不重复提交。
+- 原生 1360 普通及 1280 大字号检查完成。before 为真实跨周四条回执；生产重载会清空瞬时回执，after 为随后真实工资回执，不冒称相同内容 A/B 或四条 after。工资后关闭重开与改字号的存档 hash、回执列表完全相同。
+- 证据在 `output/clown-weekly-20261028`（工作区外层）。无远端/认证操作；未运行全量 CI、打包及缺失 natural.json 的捕获型小丑领域套件，不以定向测试代替这些边界。
+
+## 2026-10-28 · 当前小丑成长刻度与护送终结后的生活提示
+
+- 基线 `79bc92b`，新分支 `feature/clown-growth-continuation`。本周只自然实践一次“在责备声中把话说完”：真实成功，rev79→80 / AP3→2 / acting48→64，随机纸张飞刀掌握8→16；现金156、灵性21、纸张7不变。上周失败与护送撤离保留，不重试刷结果。
+- 当前 diviner S8 的扮演数值配低饱和墨色刻度条，完整保留公开消化说明为次级正文；不解析叙事，不新增解锁承诺或领域字段。准备阶段及其他序列的历史面板不加当前刻度。
+- 生活右栏仅在明确已有终结 rescueOutcome 的活动 S8、无事件/战斗时替换过时的“可护送”通用提示，提示不可重入并引用真实 enabled 实践；无可用实践回到日常，不创造新任务。缺字段、其他序列、事件、战斗、死亡仍沿用原提示。
+- 31 项小丑 renderer 测试、renderer 类型及构建通过，含刻度0/64/100、行动回执同步、三种终结状态、无可用实践和旧提示保护。首轮3项测试因摘要与已有折叠历史同文命中多个元素而失败，改为限定摘要区域后通过，原始失败日志保留。
+- 原生1360普通及1280大字号检查日常、成长、关闭重开；同rev80存档内容hash及回执列表重载前后完全一致，无旧护送自动弹窗。生产重载清空瞬时多条回执，截图比较针对相同64/100成长与终结护送状态，不声称完整回执内容相同。
+- 证据目录：工作区 `output/clown-growth-20261028`。无远端/认证操作；全量CI、打包、捕获领域套件未运行。保持rev80等待独立审查及备份。
+
+## 2026-10-28 · 成长终点不再把补纸当作下一步
+
+- 基线2b93398，新分支feature/clown-progression-loop。真实工作及最后一项纸靶实践后rev82/week21/AP3/cash216/spirit20/paper6/acting80，五实践完成，原护送RETREATED保留；未刷取、未改存档。发现购买纸被列为成长下一步，以及五实践80无法接续S7的领域覆盖缺口；后者单独处理，不用提示掩盖。
+- 当前S8仅优先实际实践/护送命令；已终结且无实践时明确纸张不加扮演，满进度则提示查看已有魔术师条件。生活主引导在未满且无剩余实践时回日常，不虚构可做任务。纸张真实库存、购买动作/费用、历史保留；缺终结字段及非当前序列不套用终点说明。
+- 此提交只改Renderer。证据与各阶段检查见工作区output/clown-loop-20261028；下一提交才引入获批的有限撤离后复盘。
+
+## 2026-10-28 · 魔术师筹备的当前批次与实际预算
+
+- v81/f1ea0a1后继续真实S7筹备，新分支feature/magician-preparation-loop。正常领第21、22周工资、学习配方240便士、跨周生活费各120、完成第一批四项劳动，停在rev90/week23/AP1/cash96、周龄8/8、扮演100。没有重复领取工资、没有开始备用批次。
+- 观察到第一批已抵1800主材费、只差150辅材时，摘要却推荐第二批重新劳动；平铺动作还让不同批次左右混杂。现只按现有命令batchId分组：保留首个未完批次的目标与真实阻塞原因，已备原瓶优先；其他批次置于明确可展开的备用区域，精确命令/费用不变，不隐藏不可逆风险。
+- 仅筹备页增加紧凑AP/现金资源横栏，不复制S8纸张库存。筹备回执改静态以免与资源重复吸顶，沿用现有结算后滚动查看结果。已晋升实践与确认服药的原资源/风险界面不变。无领域/随机/价格变化。
+- 同rev90普通及1280大字改前证据与最终验证详见output/magician-loop-20261028/QA-summary.json。后续真实购买/结算另行记录，不把不同状态截图冒称相同内容对照。
+- 37项魔术师Renderer测试、最终renderer类型检查/构建通过。真实rev90改前改后存档摘要及原始内容hash完全一致；备用批次展开仍可用，已备瓶/失败重配/阻塞摘要由定向测试覆盖，未伪造原生瓶状态。
+- 随后正常领取第23周工资并跨周支付生活费，rev91现金156/AP3；实际购入第一批六料扣150且0AP，rev92现金6/AP3，摘要准确指向缺60便士的调配。关闭重开抽屉的存档摘要与hash完全一致，未重复扣费。未继续调配/服药，等待本提交审查备份。
+
+## 2026-10-28 · 魔术师原瓶确认风险分层
+
+- 基线5109c5f/v82，新分支feature/magician-risk-clarity。真实第24周领取工资180后，用第一批六料支付1行动/60调配原瓶，停在rev94/AP1/cash126/HP100/mind100/spirit20，原瓶尚未服用。普通及1280大字号观察到四档后果与补货规则混成长段，最终确认位置看不到原瓶成功率。
+- 经主任务批准，固定内容拆成同源规则、四档后果和保护说明；既有公开risk文本按原顺序拼接完全不变，无公开投影新字段、无领域结算/概率/存档变更。默认展示全部四档后果和保护边界，完整筹备补货说明仍可展开。实际原瓶概率和动作成本移至最终确认按钮前，不硬编码或夸大概率。
+- 先保持未消费原瓶完成同rev94原生前后检查和测试，提交审查后才自然服用，不回滚制造对照。截图、检查日志、实际服药结果将记在工作区output/magician-consumption-20261028/QA-summary.json。确认前取消不提交指令，使用已有一次提交锁。
+- 42项Renderer测试、main/renderer类型与两端构建通过；测试包括完整原文逐字相等、四档/保护默认可见、所选瓶的实际概率/成本、取消和忙碌/重复确认保护。原生普通及1280大字四档和确认摘要已检查；完整补货原文可展开，取消重开/重载后同rev94摘要与存档hash完全不变。未在本提交前消费原瓶，等待短暂独立审查后自然继续。
+
+## 2026-10-28 · 失败后重配行动与耗尽原瓶记录
+
+- 基线f7402b3/v83，新分支feature/magician-recovery-records。第一瓶真实失败后，正常3次休养将排异25→15→5→0，健康/精神回到100；第25、26周工资和两次生活费照常结算。第二批仅完成第一项劳动，当前rev101/week26/AP1/cash246/spirit40.25，第一瓶失败耗尽仍保留。
+- 观察到旧瓶大卡置顶使1280大字号的当前第二批劳动落到屏下。现仅按既有CONSUME动作的bottleId关联区分准备瓶与耗尽记录；含disabled的准备原瓶仍优先，耗尽记录放在当前材料行动之后的计数折叠内，来源/失败状态原文全部保留。已晋升历史、确认/取消/一次提交逻辑不变；无领域或投影变更。
+- 同状态普通/1280大字前后、历史展开及后续自然筹备证据见工作区output/magician-recovery-20261028。生产重载清空瞬时劳务回执，比较仅为同存档布局而非相同回执内容。
+- 46项魔术师Renderer测试、renderer类型/构建通过，包含有效/耗尽混合、disabled原瓶仍保留、全耗尽当前批次可见、历史展开、晋升后原历史以及确认取消回归。普通与1280大字原生检查当前劳动按钮与预算同屏，历史可展开看到“排异，未晋升”。同rev101重载/改字号/展开前后存档摘要与hash完全相同。Main/领域未变，本切片未重跑全CI或缺fixture套件。
+
+## 2026-10-28 · 魔术师晋升后的局部入口滚动
+
+- 基线886a07f/v84，新分支feature/magician-promotion-entry。第二批完整4次劳动、第27/28周工资与周生活费均正常结算；支付150辅材、1AP/60调配，第二瓶真实意志39/54成功。停在rev109/week28/S7acting0/AP1/cash156/HP100/mind90/spirit40.25，上限60但未补满；原第一瓶58/54失败仍保留。
+- 观察到确认页底部scrollTop在S8→S7组件切换后保留，sticky成功回执在顶，但新实践入口在上方不可见。根因既有回执滚动限定准备期，晋升同次状态变化使条件失效。只增加同run magician.promoted false→true时最近.slice-dialog的scrollTop=0；不是整页跳转、不改后续普通实践滚动/页面、不新增持久化或领域规则。
+- 真实晋升不允许回滚重演：bug截图来自实际rev109，修后转换由定向组件状态转换测试覆盖；原生只检查当前S7入口和之后一次自然实践，不冒称原生重演晋升。
+
+### 2026-10-28 — Preserve explicitly read escort record after S7 promotion
+- The local read bookmark can recognize the identical previously acknowledged S8 round after promotion to active S7 Magician; writing remains S8-only.
+- Exact same-run history length and full round signature remain required. Missing bookmark, changed/new round, active combat, death and other sequences retain existing reveal behavior.
+- No projection, domain save, combat rule or RNG changes. Native verification uses the existing rev110 timeline without creating a synthetic bookmark.
+
+### 2026-10-28 — Persistent theatre dispute consequences
+- Existing encounter status and startHistoryIndex distinguish resolved negotiation from completed combat without new state or string parsing.
+- Terminal practice cards describe already-settled consequences instead of inviting intervention in an ongoing obstruction; active story and archived notes remain unchanged.
+- Actual successful negotiation at rev113 supplies native normal/large-text evidence; other terminal outcomes are synthetic test coverage, not replayed live outcomes.
+
+### 2026-10-28 — S7 unfinished goals before optional supplies
+- Base60c50ab/v87, branchfeature/magician-next-step. Real same-save play completed distinct rope, paper, lamplit and shallow-water practices; the earlier shallow-water failure/cost remains. Six practices plus peaceful dispute and one reflection naturally reached acting100 at rev123/week32/AP1/cash204/spirit24.25.
+- At92 and100 the growth heading still recommended optional oil instead of reflection/next-stage preparation. Guidance now chooses existing unfinished practice/scene/reflection actions (including their actual disabled reason), never optional supply as the growth goal. Original preparation bottle/batch ordering remains untouched.
+- At100 display the existing S6 preparation path with explicit12-week/formula/material/independent-consumption conditions, and reuse existing page navigation when available. No rule, projection, save or RNG changes. Normal/1280large native same-revision evidence and final frozen-tree checks recorded in output/magician-growth-20261028/QA-summary.json; previous before screenshots have transient receipts that reload clears.
+
+### 2026-10-28 — Truthful ordinary learning gains at the existing cap
+- Base6f8b595/v88, branchfeature/learning-gain-clarity. Natural S7 study of old notes succeeded but knowledge22→22 while menu promised extra+2; random body-control mastery16→21 was a separate real reward. Cost/roll and completed topic remain preserved.
+- Continued normal income/recovery and five distinct first-batch Faceless labour steps to rev140/week38/AP3/cash240, mature10/12weeks. Paying360 for guidance triggered an actual unpaid bill:24 paid/96 owed, subsequent two30 instalments leave36, destitute life30/week. No reset, free materials or forced success.
+- Extract only the exact existing knowledge cap/bonus and check difficulty into a shared pure helper used by settlement and public target text. Preview shows actual limited increase or unchanged above-cap value, distinguishing optional random known-ability mastery. Ordinary20/paragon30 caps, education bonus, notes+2, check/RNG and completion rules unchanged; no new projection fields/schema.
+- Same rev140 ordinary and1280large menu evidence plus final frozen-tree types/build/tests recorded in output/faceless-preparation-20261028/QA-summary.json. Current notes already completed; its pre-action promise and actual22→22 receipt are earlier native evidence, not recreated after fix. Notes/near-cap/paragon cases are synthetic tests only.
+- Final frozen-source validation:189/189 targeted tests, main+renderer type checks, both builds and diff check passed. Existing cap is computed once for preview/settlement without consuming random input.
+- Native AFTER verification is BLOCKED, not complete: normal close of old game followed by existing launcher restart was rejected by action review. One retry after read-only script verification and empty-terminal screenshot was also rejected; no alternate route was used. Same rev140 full state JSON remains byte-identical. Before normal/large and actual earlier22→22 receipt remain valid native evidence; no after screenshot is claimed. Parent requested local commit for review/backup with this explicit acceptance gap.
+
+### 2026-11-01 — Faceless preparation hierarchy and readable confirmation
+- Isolated v89 source restored without Git; 4,249 available tracked blobs match the saved target manifest. The same 194 historical fixtures are missing. Prior Faceless next-action candidate restored with both file hashes matching its saved receipt.
+- Show current cash and action points beside preparation, with a static budget strip to avoid colliding with existing action feedback. Group current and reserve material actions into distinct dossier cards; reserve choices remain visible, all costs, disabled reasons and commands unchanged.
+- Confirmation lays out the projected four outcome sentences separately, preserving the full projected prefix, punctuation and protection text. Unusual intervening wording falls back to the unchanged paragraph rather than dropping content. No domain values, projection fields, save data or RNG changed.
+- Automated validation and final hashes are recorded in the sibling qa directory. Native visual and playtest acceptance remain NOT_RUN, pending the specific restart confirmation. No new screenshots, Git commit, remote publication or PR approval is claimed.
+
+### 2026-11-02 — Preserve historical public learning snapshots
+- Before draft publication, the real Door928 capture comparison failed: only the three `learnTargets` descriptions differed; private state equality passed. No archived input, pinned hash, or historical assertion was changed.
+- Restore the existing public target descriptions exactly. The current learning menu formats accurate capped gains from the existing public character and pathway fields. A small pure calculation is shared with settlement; no rule, random draw, command or projection-field change.
+- Added unchanged-projection and unknown-topic fallback coverage; final targeted tests, exact Door928 comparison, types and builds are recorded outside the repository. Native acceptance remains pending explicit restart confirmation.

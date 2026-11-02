@@ -28,4 +28,15 @@ export const MAGICIAN_ABILITIES: { id: MagicianAbilityId; label: string; descrip
   { id: 'diviner.s7.bone-softening', label: '骨骼软化', description: '软化骨骼以挣脱绳索等束缚、通过合适的狭窄处；不是力场，也不能无视真实障碍与伤势。' },
   { id: 'diviner.s7.paper-weapon', label: '纸张武器', description: '把实际持有的纸张暂时变成武器；需要真实纸料，不能永久制造装备或凭空增加库存。' },
 ];
-export const MAGICIAN_CONSUMPTION_RISK = '本段数值为原创游戏规则（G）：服药必定消耗所选魔术师原瓶，0行动，意志难度18；小丑扮演须达100且小丑晋升后满8整周。大成功：晋升、精神−5；成功：晋升、精神−10；失败：未晋升、精神−20、健康−10、排异+25；灾难：中断晋升、精神−40、健康−20、排异+50。指导者在场处理这次服药排异，不随机即死；休养每次消退至多10排异，用过的原瓶不会恢复。这项保护仅适用于本次指导服药，不适用于战斗与其它危险。';
+/** Shared presentation copy; concatenation preserves the existing public risk text exactly. */
+export const MAGICIAN_CONSUMPTION_RULE = '本段数值为原创游戏规则（G）：服药必定消耗所选魔术师原瓶，0行动，意志难度18；小丑扮演须达100且小丑晋升后满8整周。';
+export const MAGICIAN_CONSUMPTION_OUTCOMES = [
+  { label: '大成功', effect: '晋升、精神−5' },
+  { label: '成功', effect: '晋升、精神−10' },
+  { label: '失败', effect: '未晋升、精神−20、健康−10、排异+25' },
+  { label: '灾难', effect: '中断晋升、精神−40、健康−20、排异+50' },
+] as const;
+export const MAGICIAN_CONSUMPTION_PROTECTION = '指导者在场处理这次服药排异，不随机即死；休养每次消退至多10排异，用过的原瓶不会恢复。这项保护仅适用于本次指导服药，不适用于战斗与其它危险。';
+export const MAGICIAN_CONSUMPTION_RISK = MAGICIAN_CONSUMPTION_RULE
+  + MAGICIAN_CONSUMPTION_OUTCOMES.map(({ label, effect }) => `${label}：${effect}`).join('；') + '。'
+  + MAGICIAN_CONSUMPTION_PROTECTION;
