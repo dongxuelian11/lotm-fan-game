@@ -4,7 +4,9 @@ import { SEER_MENTOR } from '../domain/seer/content';
 /** Display labels only. Historical source strings and chronicle records stay replay-stable. */
 export function seerReadableText(text: string): string {
   return text.replace(/(?:原瓶)?seer-batch-(\d+):bottle/g, '第$1批原瓶')
-    .replace(/seer-batch-(\d+)/g, '第$1批备料');
+    .replace(/seer-batch-(\d+)/g, '第$1批备料')
+    .replace(/(?:原瓶)?magician-batch-(\d+):bottle/g, '第$1批魔术师原瓶')
+    .replace(/magician-batch-(\d+)/g, '第$1批备料');
 }
 
 /** Add the current scene around the saved result without rewriting any saved fact. */

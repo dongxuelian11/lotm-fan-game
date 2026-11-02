@@ -49,3 +49,14 @@ describe('Seer scene presentation without rewriting historical records', () => {
     expect(source).toContain('seer-batch-1:bottle');
   });
 });
+
+ it('formats magician provenance and failure text without altering the recorded outcome', () => {
+  const record = { title: '魔术师魔药发生排异', text: '原瓶magician-batch-1:bottle已耗尽。意志判定58/54，失败：精神−20、健康−10、排异+25。' };
+  const before = JSON.stringify(record);
+  expect(seerFeedbackText(record, false)).toBe('第1批魔术师原瓶已耗尽。意志判定58/54，失败：精神−20、健康−10、排异+25。');
+  expect(JSON.stringify(record)).toBe(before);
+  const source = '第24周；仅由magician-batch-2的六项材料调配，原瓶magician-batch-2:bottle';
+  const readable = seerReadableText(source);
+  expect(readable).toBe('第24周；仅由第2批备料的六项材料调配，第2批魔术师原瓶');
+  expect(seerReadableText(readable)).toBe(readable);
+ });

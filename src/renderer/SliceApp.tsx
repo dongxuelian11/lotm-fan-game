@@ -9190,6 +9190,7 @@ export function SliceApp() {
                 busy={busy}
                 blocked={error !== null}
                 onCommand={(magicianCommand) => command({ type: "MAGICIAN", command: magicianCommand })}
+                onRecovery={closeDrawer}
                 {...(facelessAvailable && state.progression.sequence === 7 && !combat && !event ? { onOpenFaceless: () => setGrowthPage("FACELESS") } : {})}
               />
             )}

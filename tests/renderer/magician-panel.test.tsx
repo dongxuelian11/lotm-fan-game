@@ -136,7 +136,7 @@ describe("Magician S7 dossier", () => {
     expect(onCommand).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(screen.getByRole("button", { name: /查看并准备服用「第一瓶/ }));
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶/ }));
-    expect(screen.getByText("magician-batch-2:bottle")).toBeTruthy();
+    expect(screen.getByText("第2批魔术师原瓶")).toBeTruthy();
     expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.queryByText("71%")).toBeNull();
     expect(screen.getByText("来源：第二批实际采购材料调配")).toBeTruthy();
@@ -393,7 +393,7 @@ describe("Magician preparation batch hierarchy", () => {
   it.each([true, false])("prioritizes a prepared bottle over further material work (enabled %s)", enabled => {
     const value = bottled(), { second } = batchActions();
     const consume = { ...value.actions[0]!, enabled, reason: enabled ? null : "晋升后尚未度过8整周。" };
-    panel({ ...value, actions: [second, consume] });
+    panel({ ...value, bottles: value.bottles.slice(0, 2), actions: [second, consume] });
     const next = screen.getByRole("region", { name: "魔术师成长下一步" });
     expect(next.textContent).toContain(consume.label); expect(next.textContent).not.toContain(second.label);
     if (!enabled) expect(next.textContent).toContain(consume.reason);
@@ -405,7 +405,7 @@ describe("Magician preparation batch hierarchy", () => {
     const third = action({ type: "MATERIAL_WORK", batchId: "magician-batch-3" });
     const failed = { ...value.bottles[0]!, status: "已耗尽 · 排异，未晋升" };
     const { onCommand } = panel({ ...value, bottles: [failed], actions: [second, third] });
-    expect(screen.getByRole("region", { name: "魔术师成长下一步" }).textContent).toContain(second.label);
+    expect(screen.getByRole("region", { name: "魔术师成长下一步" }).textContent).toContain("先休养，再考虑重试");
     expect(screen.getByText(failed.status)).toBeTruthy();
     expect(screen.queryByRole("button", { name: /查看并准备服用/ })).toBeNull();
     const summary = screen.getByText(/^其他批次 · 备用材料/), folded = summary.closest("details")!;
@@ -510,7 +510,7 @@ describe("Magician consumption risk readability", () => {
     expect(within(summary).getByText("43%")).toBeTruthy();
     expect(within(summary).getByText(value.actions[1]!.cost)).toBeTruthy();
     expect(summary.textContent).not.toContain("71%"); expect(summary.textContent).not.toContain(value.actions[0]!.cost);
-    expect(screen.getByText("magician-batch-2:bottle")).toBeTruthy();
+    expect(screen.getByText("第2批魔术师原瓶")).toBeTruthy();
     expect(screen.getByText("来源：第二批实际采购材料调配")).toBeTruthy();
     const confirm = screen.getByRole("button", { name: "确认服用「第二瓶魔术师魔药」" });
     expect(summary.compareDocumentPosition(confirm) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
@@ -562,7 +562,7 @@ describe("Magician recovery original-bottle records", () => {
     const summary = screen.getByText("已耗尽原瓶记录 · 1瓶"), records = summary.closest("details")!;
     expect(button.closest("details")).toBeNull(); expect(records.open).toBe(false);
     expect(button.compareDocumentPosition(records) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
-    expect(screen.getByRole("region", { name: "魔术师成长下一步" }).textContent).toContain(current.label);
+    expect(screen.getByRole("region", { name: "魔术师成长下一步" }).textContent).toContain("先休养，再考虑重试");
     expect(screen.queryByRole("button", { name: /查看并准备服用/ })).toBeNull();
     await userEvent.click(summary);
     expect(within(records).getByText(failed.status)).toBeTruthy();
@@ -738,3 +738,41 @@ describe("Magician growth guidance follows unfinished goals", () => {
     expect(screen.getByRole("button", { name: new RegExp(oil.label) })).toBeTruthy();
   });
 });
+
+ describe("Magician failed-ascent recovery guidance", () => {
+  const failed = () => magician({ bottles: [bottled().bottles[2]!], actions: [action({ type: "MATERIAL_WORK", batchId: "magician-batch-2" })], pollution: 25 });
+  it("prioritizes recovery without spending an action or hiding material preparation", () => {
+    const onRecovery = vi.fn(), onCommand = vi.fn();
+    render(<MagicianPanel magician={failed()} resources={resources} busy={false} blocked={false} onCommand={onCommand} onRecovery={onRecovery} />);
+    expect(screen.getByRole("region", { name: "魔术师成长下一步" }).textContent).toContain("先休养，再考虑重试");
+    expect(screen.getByText(/休养不保证晋升成功/)).toBeTruthy();
+    expect(screen.getByRole("region", { name: "魔术师材料与调配" }).textContent).toContain("领域成本MATERIAL_WORK");
+    fireEvent.click(screen.getByRole("button", { name: "返回日常休养" }));
+    expect(onRecovery).toHaveBeenCalledOnce();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+  it.each(["recovered", "promoted", "no-failure"])("does not retain stale recovery guidance: %s", (condition) => {
+    const value = failed();
+    if (condition === "recovered") value.pollution = 0;
+    if (condition === "promoted") value.promoted = true;
+    if (condition === "no-failure") value.bottles = [];
+    render(<MagicianPanel magician={value} resources={condition === "recovered" ? { ...resources, health: 100, mind: 100 } : resources} busy={false} blocked={false} onCommand={vi.fn()} />);
+    expect(screen.queryByText(/先休养，再考虑重试/)).toBeNull();
+  });
+  it.each(["health", "mind", "pollution"])("retains warning while %s remains unrecovered", (field) => {
+    const value = { ...failed(), pollution: field === "pollution" ? 1 : 0 };
+    render(<MagicianPanel magician={value} resources={{ ...resources, health: field === "health" ? 99 : 100, mind: field === "mind" ? 99 : 100 }} busy={false} blocked={false} onCommand={vi.fn()} />);
+    expect(screen.getByText(/先休养，再考虑重试/)).toBeTruthy();
+  });
+ });
+
+ it("returns from failed-ascent guidance to existing daily actions without submitting", async () => {
+  const value = fixture(8, { magician: magician({ bottles: [bottled().bottles[2]!], pollution: 25 }), health: 90, mind: 80 });
+  const api = bridge(value);
+  await enter(api);
+  await userEvent.click(screen.getByRole("button", { name: "查看晋升准备" }));
+  await userEvent.click(screen.getByRole("button", { name: "返回日常休养" }));
+  expect(screen.queryByRole("button", { name: "返回日常休养" })).toBeNull();
+  expect(screen.getByRole("button", { name: /休养/ })).toBeTruthy();
+  expect(api.submitIntent).not.toHaveBeenCalled();
+ });
