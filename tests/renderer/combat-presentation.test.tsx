@@ -108,7 +108,7 @@ async function openSave(state: ReturnType<typeof projectSliceState>) {
   };
   window.sliceGame = bridge;
   render(<SliceApp />);
-  fireEvent.click(await screen.findByRole('button', { name: /继续游戏/ }));
+  fireEvent.click(await screen.findByRole('button', { name: state.status === 'DEAD' ? /查看封存/ : /继续游戏/ }));
   fireEvent.click(await screen.findByRole('button', { name: new RegExp(state.character.name) }));
   await screen.findByRole('heading', { name: '人物卷宗' });
   return bridge;
@@ -719,6 +719,41 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
 
 
 describe('resuming life after the first case', () => {
+  it.each(['untouched', 'talk-failed', 'talk-succeeded'] as const)('keeps archived S8 first-case rounds in history after %s', async (scenario) => {
+    const finished = resolvedRound(state => state.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    const saved = applySliceIntent(finished, { type: 'CONTINUE_LIFE' });
+    saved.progression = { ...saved.progression, pathwayId: 'diviner', sequence: 8 };
+    saved.clown.rescue.attemptWeek = scenario === 'untouched' ? null : saved.week;
+    saved.clown.rescue.status = scenario === 'talk-succeeded' ? 'RESCUED' : 'AVAILABLE';
+    const state = projectSliceState(saved), before = JSON.stringify(state);
+    expect(state.clown.rescueCombatStarted).toBe(false);
+    const bridge = await openSave(state);
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /完整纪事/ }));
+    const chronicle = await screen.findByRole('dialog', { name: '完整纪事' });
+    expect(within(chronicle).getByRole('heading', { name: '战斗完整回放' })).toBeTruthy();
+    const history = within(chronicle).getByRole('heading', { name: '战斗完整回放' }).closest('section');
+    expect(within(history!).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it.each(['active', 'rescued', 'retreated', 'dead', 'missing-field'] as const)('preserves S8 round presentation for %s', async (scenario) => {
+    const finished = resolvedRound(state => state.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    const saved = applySliceIntent(finished, { type: 'CONTINUE_LIFE' });
+    saved.progression = { ...saved.progression, pathwayId: 'diviner', sequence: 8 };
+    saved.clown.rescue.startHistoryIndex = saved.combatHistory.length - 1;
+    saved.clown.rescue.status = scenario === 'active' ? 'FIGHTING' : scenario === 'rescued' ? 'RESCUED' : scenario === 'dead' ? 'LOST' : 'RETREATED';
+    if (scenario === 'active') saved.combat = { encounterId: 'CLOWN_RESCUE', round: 2, enemyHealth: 100, enemyMind: 100, enemyInjuries: [], enemyRisk: 0, enemyStatus: 'RESISTING', lastRound: saved.lastCombatRound };
+    if (scenario === 'dead') { saved.status = 'DEAD'; saved.health = 0; }
+    const state = projectSliceState(saved);
+    if (scenario === 'missing-field') delete state.clown.rescueCombatStarted;
+    const before = JSON.stringify(state), bridge = await openSave(state);
+    expect(await screen.findByRole('dialog', { name: '战斗回合结果' })).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
   it.each([false, true])('still opens a current saved battle round (promoted Seer: %s)', async (promoted) => {
     const saved = resolvedRound(candidate => Boolean(candidate.combat && candidate.lastCombatRound));
     if (promoted) saved.progression = { ...saved.progression, pathwayId: 'diviner', sequence: 9, promotionWeek: saved.week };

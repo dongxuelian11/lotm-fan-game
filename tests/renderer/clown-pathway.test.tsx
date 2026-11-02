@@ -177,6 +177,30 @@ describe("Clown progression dossier", () => {
     expect(onCommand).toHaveBeenCalledExactlyOnceWith(practice.command);
   });
 
+  it("separates ordinary practice, supplies, and courier choices while retaining exact commands", async () => {
+    const paper: ClownAction = { id: "paper", label: "购买10张纸", cost: "0行动 · 10便士", enabled: true, reason: null, command: { type: "BUY_PAPER" } };
+    const practice: ClownAction = { id: "practice", label: "练习身体控制", cost: "1行动 · 原训练叙事", enabled: true, reason: null, command: { type: "PRACTICE", practiceId: "body" } };
+    const talk: ClownAction = { id: "talk", label: "当面交涉", cost: "1行动 · 意志难度14", enabled: true, reason: null, command: { type: "RESCUE_TALK" } };
+    const fight: ClownAction = { id: "fight", label: "介入冲突", cost: "1行动 · 可能受伤或死亡", enabled: true, reason: null, command: { type: "RESCUE_FIGHT" } };
+    const value = clown({ promoted: true, story: "快递员保管原包裹。", actions: [paper, practice, talk, fight] });
+    const { onCommand, rerender } = panel(value);
+    expect(screen.getByRole("region", { name: "小丑成长下一步" }).textContent).toContain(`下一步：${practice.label}`);
+    expect(within(screen.getByRole("region", { name: "小丑纸张库存" })).getByRole("button", { name: /购买10张纸/ })).toBeTruthy();
+    const ordinary = screen.getByRole("region", { name: "小丑日常实践" });
+    expect(within(ordinary).getAllByRole("button")).toHaveLength(1);
+    const escort = screen.getByRole("region", { name: "当前小丑情境" });
+    expect(escort.textContent).toContain(value.story);
+    expect(within(escort).getAllByRole("button")).toHaveLength(2);
+    expect(within(escort).getByText(fight.cost)).toBeTruthy();
+    await userEvent.click(within(escort).getByRole("button", { name: /当面交涉/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(talk.command);
+    rerender(<ClownPanel clown={{ ...value, actions: [paper, { ...practice, enabled: false, reason: "本周已练习" }, talk, fight] }} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.getByRole("region", { name: "小丑成长下一步" }).textContent).toContain(`下一步：${talk.label}`);
+    rerender(<ClownPanel clown={{ ...value, story: "护送已结束。", actions: [paper] }} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.queryByRole("group", { name: "护送处理方式" })).toBeNull();
+    expect(screen.getByText("护送已结束。")).toBeTruthy();
+  });
+
   it("cancels free, focuses the selected bottle, and confirms only that exact bottle once at zero AP", async () => {
     const { onCommand } = panel(bottled());
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第一瓶小丑魔药」/ }));

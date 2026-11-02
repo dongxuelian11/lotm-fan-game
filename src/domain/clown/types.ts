@@ -59,6 +59,8 @@ export interface ClownAction {
   id: string; label: string; cost: string; enabled: boolean; reason: string | null; command: ClownCommand;
 }
 export interface ClownProjection {
+  /** Read-only history fact; absent older projections must not suppress saved rounds. */
+  rescueCombatStarted?: boolean;
   title: string; discovered: boolean; formulaKnown: boolean; promoted: boolean;
   story?: string;
   formula: { name: string; quantity: number; unit: string }[];
