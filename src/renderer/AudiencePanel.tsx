@@ -56,6 +56,13 @@ export function AudiencePanel({ audience, resources, busy, blocked, onCommand }:
   const confirming = !!selectedBottle && selectedAction?.command.type === "CONSUME" && !audience.promoted;
   const confirmationLocked = busy || blocked || submittedBottleId !== null;
 
+  // Remember the initially displayed default too, not only explicit selector changes.
+  // A valid scene stays selected when a result changes which actions are enabled.
+  useEffect(() => {
+    const sceneId = audience.promoted ? selectedScene?.id ?? null : null;
+    if (selectedSceneId !== sceneId) setSelectedSceneId(sceneId);
+  }, [audience.promoted, selectedScene?.id, selectedSceneId]);
+
   useEffect(() => {
     if (selectedBottleId && (!selectedBottle || !selectedAction || audience.promoted)) {
       setSelectedBottleId(null);

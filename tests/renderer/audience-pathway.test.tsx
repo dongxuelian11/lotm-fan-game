@@ -427,3 +427,52 @@ it.each([
   expect(onCommand).not.toHaveBeenCalled();
   expect(JSON.stringify(value)).toBe(before);
 });
+
+
+describe('Audience case selection across transaction projections', () => {
+  const renderPanel = (value: AudienceProjection, onCommand: (command: AudienceAction["command"]) => void, key = 'same-run') =>
+    <AudiencePanel key={key} audience={value} resources={resources} busy={false} blocked={false} onCommand={onCommand} />;
+  const current = () => screen.getByRole('region', { name: '当前社会情境' }).textContent;
+  it('keeps the initial useful default after failure, a weekly unlock and successful resolution', () => {
+    const value = social(), onCommand = vi.fn();
+    // Earlier scene cannot act this week; the automatic initial default is the later scene.
+    value.actions = value.actions.map(a => 'caseId' in a.command && a.command.caseId === 'counter-receipt' ? { ...a, enabled: false, reason: '下周可再试。' } : a);
+    const view = render(renderPanel(value, onCommand));
+    expect(current()).toContain('剧院门口有人递出一封信。');
+    const failed = { ...value, actions: value.actions.map(a => ({ ...a, enabled: false })) };
+    view.rerender(renderPanel(failed, onCommand));
+    expect(current()).toContain('剧院门口有人递出一封信。');
+    const nextWeek = social();
+    view.rerender(renderPanel(nextWeek, onCommand));
+    expect(current()).toContain('剧院门口有人递出一封信。');
+    const resolved = { ...nextWeek, scenes: nextWeek.scenes.map(s => s.id === 'backstage-letter' ? { ...s, status: 'RESOLVED', story: '当前邀约已经共同核实。' } : s), actions: nextWeek.actions.filter(a => !('caseId' in a.command) || a.command.caseId !== 'backstage-letter') };
+    view.rerender(renderPanel(resolved, onCommand));
+    expect(current()).toContain('当前邀约已经共同核实。');
+    expect(current()).toContain('核验已完成');
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+  it('falls back only when the selected scene disappears, including empty scenes', async () => {
+    const value = social(), onCommand = vi.fn();
+    const view = render(renderPanel(value, onCommand));
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'backstage-letter');
+    view.rerender(renderPanel({ ...value, scenes: value.scenes.slice(0, 1) }, onCommand));
+    expect(current()).toContain('店员把一张收据放在柜台上。');
+    view.rerender(renderPanel({ ...value, scenes: [] }, onCommand));
+    expect(screen.queryByRole('region', { name: '当前社会情境' })).toBeNull();
+    view.rerender(renderPanel(value, onCommand));
+    expect(current()).toContain('店员把一张收据放在柜台上。');
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+  it('resets at the existing new-run key and when leaving the promoted stage', async () => {
+    const value = social(), onCommand = vi.fn();
+    const view = render(renderPanel(value, onCommand));
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'backstage-letter');
+    view.rerender(renderPanel(value, onCommand, 'new-run'));
+    expect(current()).toContain('店员把一张收据放在柜台上。');
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'backstage-letter');
+    view.rerender(renderPanel({ ...value, promoted: false }, onCommand, 'new-run'));
+    view.rerender(renderPanel(value, onCommand, 'new-run'));
+    expect(current()).toContain('店员把一张收据放在柜台上。');
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+});
