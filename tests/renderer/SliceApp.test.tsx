@@ -192,6 +192,49 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe("readable playable slice", () => {
+  it("shows confirmed net changes once and clears them after a rejected action", async () => {
+    const initial = projection();
+    const b = bridge(initial);
+    let attempts = 0;
+    vi.mocked(b.submitIntent).mockImplementation(async envelope => {
+      attempts++;
+      return attempts === 1 ? ok(receipt(projection({ revision: 2, cash: 1080, actionsRemaining: 2 }), envelope))
+        : { ok: false, error: { code: "SAVE_FAILED", message: "保存失败，请重试。", retryable: true } };
+    });
+    await enter(initial, b);
+    await userEvent.click(screen.getByRole("button", { name: /工作，1行动/ }));
+    const summary = await screen.findByRole("status", { name: "本次结算净变化" });
+    expect(within(summary).getByText("行动点：3 → 2")).toBeTruthy();
+    expect(screen.getAllByRole("status", { name: "本次结算净变化" })).toHaveLength(1);
+    await userEvent.click(screen.getByRole("button", { name: /休养，1行动/ }));
+    await screen.findByRole("alert");
+    expect(screen.queryByRole("status", { name: "本次结算净变化" })).toBeNull();
+  });
+  it("clears transient settlement feedback when returning to a saved character", async () => {
+    const initial = projection();
+    const b = bridge(initial);
+    vi.mocked(b.submitIntent).mockImplementation(async envelope => ok(receipt(projection({ revision: 2, cash: 1080 }), envelope)));
+    await enter(initial, b);
+    await userEvent.click(screen.getByRole("button", { name: /工作，1行动/ }));
+    await screen.findByRole("status", { name: "本次结算净变化" });
+    await userEvent.click(screen.getByRole("button", { name: "返回标题" }));
+    await userEvent.click(screen.getByRole("button", { name: /继续游戏/ }));
+    await userEvent.click(screen.getByRole("button", { name: /艾琳/ }));
+    await screen.findByRole("heading", { name: "人物卷宗" });
+    expect(screen.queryByRole("status", { name: "本次结算净变化" })).toBeNull();
+  });
+  it("does not duplicate net changes when a receipt repeats the visible revision", async () => {
+    const initial = projection();
+    const next = projection({ revision: 2, cash: 1080, actionsRemaining: 2 });
+    const b = bridge(initial);
+    vi.mocked(b.submitIntent).mockImplementation(async envelope => ok(receipt(next, envelope)));
+    await enter(initial, b);
+    await userEvent.click(screen.getByRole("button", { name: /工作，1行动/ }));
+    await screen.findByRole("status", { name: "本次结算净变化" });
+    await userEvent.click(screen.getByRole("button", { name: /休养，1行动/ }));
+    await waitFor(() => expect(b.submitIntent).toHaveBeenCalledTimes(2));
+    expect(screen.queryByRole("status", { name: "本次结算净变化" })).toBeNull();
+  });
   it("plays a real ordinary week and noncombat case through the shared browser rules", async () => {
     const b = createSliceBrowserBridge();
     window.sliceGame = b;
@@ -437,6 +480,7 @@ describe("readable playable slice", () => {
     await userEvent.click(screen.getByRole("button", { name: /工作，1行动/ }));
     await screen.findByRole("alert");
     expect(screen.getByText("行动 3 / 3")).toBeTruthy();
+    expect(screen.queryByRole("status", { name: "本次结算净变化" })).toBeNull();
     await userEvent.click(screen.getByRole("button", { name: "重试这次操作" }));
     await screen.findByText("行动 2 / 3");
     expect(b.submitIntent).toHaveBeenCalledTimes(2);

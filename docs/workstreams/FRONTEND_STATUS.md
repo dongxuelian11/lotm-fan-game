@@ -1,5 +1,7 @@
 # Frontend workstream status
 
+下方首个状态块是 R1 历史接管记录，不代表当前仅有 R1 技术壳或仍处于该轮 hold。后续工作按日期条目记录；每项验证只覆盖该条目的提交与范围，不能累加为当前完整验收。当前产品版本与范围见根目录 `package.json` 和 `README.md`。
+
 ```text
 WORKSTREAM=FRONTEND
 THREAD_ID=01a04d7d-abe2-7732-9ac0-e4ff95397ca2
@@ -310,3 +312,12 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - Before draft publication, the real Door928 capture comparison failed: only the three `learnTargets` descriptions differed; private state equality passed. No archived input, pinned hash, or historical assertion was changed.
 - Restore the existing public target descriptions exactly. The current learning menu formats accurate capped gains from the existing public character and pathway fields. A small pure calculation is shared with settlement; no rule, random draw, command or projection-field change.
 - Added unchanged-projection and unknown-topic fallback coverage; final targeted tests, exact Door928 comparison, types and builds are recorded outside the repository. Native acceptance remains pending explicit restart confirmation.
+
+## 2026-11-02 — Pro review: bounded daily player clarity (local candidate)
+
+- Base: `a338a72e44e5ab3726fff62b20eefd944a9d98d1`; isolated `work/frontend-pro-player-clarity`, not a change to frozen PR55.
+- Added a wrapping paper-ledger summary in the ordinary daily view and learning/investigation drawer: current week/AP/cash, health/mind/spirituality, current-tier weekly living charge, separately labelled next-week plan, and debt balance explicitly distinguished from this week's repayment.
+- Added transient confirmed before/after public-resource feedback. Same-run intent/revision checks prevent stale or duplicate receipt summaries; failed requests, reload and return-to-title clear it. Week changes explicitly include weekly settlement, not action-only rewards. Existing action/check text, permanent history, hidden fields and combat wheels are unchanged.
+- Scope is these existing daily/drawer surfaces, not a redesign of dedicated high-sequence pages. No new objectives, mechanics, balance, projection or save-schema changes.
+- Verification: affected renderer suite 5 files / 137 tests passed; main and renderer typechecks and production build passed. Renderer typecheck was initially killed during concurrent verification; sequential rerun passed. Build retains large-chunk warnings.
+- Source review confirms wrapping, non-fixed-height layout for normal/large text; no native/browser launch, visual screenshot or real playtest was performed. Native visual/playtest acceptance remains pending explicit restart confirmation. No Git push or PR modification.

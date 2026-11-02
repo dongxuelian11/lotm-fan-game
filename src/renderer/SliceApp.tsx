@@ -1,3 +1,4 @@
+import { DailyStateSummary, SettlementSummary, settlementChange, type SettlementChange } from "./DailyStateSummary";
 import { learningTargetDescription } from "./learning-preview";
 import { hasReadClownRound, rememberClownRound } from "./clown-round-bookmark";
 import { CombatStage, firstCaseInjuryTarget } from "./CombatStage";
@@ -3697,6 +3698,7 @@ export function SliceApp() {
   const [screen, setScreen] = useState<Screen>("TITLE");
   const [drawer, setDrawer] = useState<Drawer>(null);
   const [actionResults, setActionResults] = useState<SliceRecord[]>([]);
+  const [settlement, setSettlement] = useState<SettlementChange | null>(null);
   const [growthPage, setGrowthPage] = useState<"SEER" | "CLOWN" | "ANCIENT_ALCHEMIST" | "IMPERATIVE_MAGE" | "FALLEN_EARL" | "MISFORTUNE_MAGE" | "PUPPET" | "DEVIL" | "BLACK_KNIGHT" | "MYSTIC" | "DESPAIR" | "DEMON_HUNTER" | "PARASITE" | "SECRETS_SORCERER" | "UNDYING" | "UNSHADOWED" | "CATACLYSM_PRIEST" | "PROPHET" | "NIGHTWATCHER" | "WITCH_KING" | "ALCHEMIST" | "MANIPULATOR" | "IRON_BLOOD_KNIGHT" | "BIZARRO_SORCERER" | "DRUID" | "PUNISHMENT_KNIGHT" | "MENTOR_DISORDER" | "WINNER" | "WRAITH" | "DESIRE_APOSTLE" | "SHEPHERD" | "STAR_MYSTIC" | "PAIN" | "GUARDIAN" | "DREAM_STEALER" | "TRAVELER" | "GATEKEEPER" | "PRIEST_OF_LIGHT" | "OCEAN_SINGER" | "MYSTICISM_MAGISTER" | "SPIRIT_WARLOCK" | "CRIMSON_SCHOLAR" | "ASTRONOMER" | "DREAMWALKER" | "REAPER" | "MARIONETTIST" | "BIOLOGIST" | "JUDGE" | "CORRUPTION_BARON" | "CALAMITY_PRIEST" | "ZOMBIE" | "DEMON" | "ROSE_BISHOP" | "SCROLL_PROFESSOR" | "PLEASURE" | "DAWN_PALADIN" | "FIRE_THIEF" | "RECORDER" | "SPIRIT_GUIDE" | "NOTARY" | "WIND_BLESSED" | "POLYMATH" | "SOOTHER" | "POTION_PROFESSOR" | "ARTISAN" | "HYPNOTIST" | "CONSPIRATOR" | "FACELESS" | "MAGICIAN" | "HUNTER" | "PROVOKER" | "PYROMANIAC" | "AUDIENCE" | "MINDREADER" | "PSYCHOLOGIST" | "SAVANT" | "ARCHAEOLOGIST" | "APPRAISER" | "APOTHECARY" | "TAMER" | "VAMPIRE" | "SLEEPLESS" | "MIDNIGHT" | "NIGHTMARE" | "READER" | "REASONER" | "DETECTIVE" | "SAILOR" | "RAGER" | "NAVIGATOR" | "BARD" | "LIGHTPRAYER" | "SUNPRIEST" | "CORPSECOLLECTOR" | "GRAVEDIGGER" | "SPIRITMEDIUM" | "APPRENTICE" | "TRICKMASTER" | "ASTROLOGER" | "MARAUDER" | "SWINDLER" | "CRYPTOLOGIST" | "WARRIOR" | "GLADIATOR" | "WEAPONMASTER" | "ASSASSIN" | "INSTIGATOR" | "WITCH" | "PRYER" | "COMBAT_SCHOLAR" | "WIZARD" | "SECRET_SUPPLICANT" | "LISTENER" | "SHADOW_ASCETIC" | "CRIMINAL" | "UNWINGED" | "SERIAL_KILLER" | "PRISONER" | "MADMAN" | "WEREWOLF" | "MONSTER" | "MACHINE" | "LUCKY" | "LAWYER" | "BARBARIAN" | "BRIBER" | "ARBITER" | "SHERIFF" | "INTERROGATOR" | "CULTIVATOR" | "PHYSICIAN" | "HARVESTPRIEST">("SEER");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<SliceError | null>(null);
@@ -4438,6 +4440,7 @@ export function SliceApp() {
     if (guard.current || !window.sliceGame) return;
     guard.current = true;
     setBusy(true);
+    setSettlement(null);
     retry.current = () => {
       void execute(envelope);
     };
@@ -4467,6 +4470,11 @@ export function SliceApp() {
       }
       const next = result.value.state;
       const current = stateRef.current;
+      if (current?.runId === envelope.runId && current.revision === envelope.expectedRevision
+        && result.value.intentId === envelope.intentId && result.value.previousRevision === current.revision
+        && result.value.newRevision === next.revision) {
+        setSettlement(settlementChange(current, next));
+      }
       if (
         !current ||
         next.runId !== current.runId ||
@@ -4857,6 +4865,7 @@ export function SliceApp() {
         stateRef.current = result.value;
         setState(result.value);
         setActionResults([]);
+        setSettlement(null);
         setScreen("PLAY");
         setInspect(false);
         setDrawer(null);
@@ -4886,6 +4895,7 @@ export function SliceApp() {
   const title = () => {
     if (pending.current !== null || ((monsterInside || machineInside || luckyInside || lawyerInside || barbarianInside || briberInside || arbiterInside || sheriffInside || interrogatorInside || cultivatorInside || physicianInside || harvestpriestInside || facelessInside || conspiratorInside || hypnotistInside || artisanInside || potionProfessorInside || sootherInside || polymathInside || windBlessedInside || notaryInside || spiritGuideInside || recorderInside || fireThiefInside || dawnPaladinInside || pleasureInside || scrollProfessorInside || roseBishopInside || demonInside || zombieInside || calamityPriestInside || corruptionBaronInside || judgeInside || biologistInside || marionettistInside || reaperInside || dreamwalkerInside || astronomerInside || crimsonScholarInside || spiritWarlockInside || mysticismMagisterInside || oceanSingerInside || priestOfLightInside || gatekeeperInside || travelerInside || dreamStealerInside || guardianInside || painInside || starMysticInside || shepherdInside || desireApostleInside || wraithInside || winnerInside || mentorDisorderInside || punishmentKnightInside || druidInside || bizarroInside || ironBloodInside || manipulatorInside || alchemistInside || witchKingInside || nightwatcherInside || prophetInside || undyingInside || secretsSorcererInside || parasiteInside || demonHunterInside || despairInside || mysticInside || blackKnightInside || devilInside || puppetInside || misfortuneMageInside || fallenEarlInside || imperativeMageInside || ancientAlchemistInside || unshadowedInside || cataclysmPriestInside) && !state?.ending)) return;
     setScreen("TITLE");
+    setSettlement(null);
     setDrawer(null);
     setInspect(false);
     setRoundReveal(null);
@@ -7330,6 +7340,8 @@ export function SliceApp() {
               </aside>
               <main className="slice-week-stage">
                 <div className="slice-week-content">
+                  <DailyStateSummary state={state} money={sliceMoney} />
+                  <SettlementSummary change={settlement?.runId === state.runId && settlement.revision === state.revision ? settlement : null} money={sliceMoney} />
                   {!state.ending && guide && <section className="slice-next-guide" aria-label="接下来">
                     <h2>接下来</h2>
                     <h3>{guide.goal}</h3>
@@ -7594,6 +7606,8 @@ export function SliceApp() {
               }
               {...(drawerLocked ? {} : { onClose: closeDrawer })}
             />
+            {(drawer === "LEARN" || drawer === "INVESTIGATE") && <DailyStateSummary state={state} money={sliceMoney} />}
+            {(drawer === "SEER" || drawer === "TOWN") && <SettlementSummary change={settlement?.runId === state.runId && settlement.revision === state.revision ? settlement : null} money={sliceMoney} />}
             {drawer === "SEER" && <a className="slice-growth-jump" href="#growth-routes" onClick={event => {
               event.preventDefault();
               const routes = document.getElementById("growth-routes") as HTMLDetailsElement | null;

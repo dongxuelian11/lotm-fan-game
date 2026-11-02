@@ -1,5 +1,7 @@
 # 开发轮次账本
 
+> 历史边界：下列 `CURRENT_ROUND`、任务状态与授权记录属于早期 R0/R1 轮次，不是当前产品或任务状态。当前版本与范围见根目录 `package.json`、`README.md`；后续阶段证据按 README 链接查阅，当前提交、PR 与检查结果单独核实。保留本账本用于追溯，不以旧 hold 或完成记录推断新的授权与验收。
+
 `ROUND_LEDGER_REVISION=21 / CURRENT_ROUND=R1 / STATUS=R1_CORRECTED_BUILD_AWAITING_PLAYER_REVIEW`
 
 `CONTRACT=docs/rounds/R1_DESKTOP_AUTHORITY_CONTRACT.md`
@@ -22,7 +24,7 @@
 
 `BACKEND_STATUS=INTEGRATED_AWAITING_PLAYER_ACCEPTANCE`
 
-此文件记录可从仓库恢复的实际开发状态。设计决定仍以 `PROJECT_STATE_LEDGER.md` 为准。
+此文件记录可从仓库恢复的早期轮次状态。对应设计决定仍查阅 `PROJECT_STATE_LEDGER.md`。
 
 ## 任务注册
 
