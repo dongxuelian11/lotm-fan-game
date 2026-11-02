@@ -120,3 +120,19 @@ describe('Faceless self-report success wording', () => {
     expect(seerFeedbackText(record, false)).toBe(record.text);
   });
 });
+
+
+it('formats only known marionettist bottle and material identifiers without changing raw receipts', () => {
+  const source = '第52周；仅由marionettist-batch-12的六项材料调配，原瓶marionettist-batch-12:bottle';
+  const readable = '第52周；仅由第12批备料的六项材料调配，第12批秘偶大师原瓶';
+  expect(seerReadableText(source)).toBe(readable);
+  expect(seerReadableText(readable)).toBe(readable);
+  expect(seerReadableText('marionettist-batch-12:bottle')).toBe('第12批秘偶大师原瓶');
+  const record = { title: '一瓶秘偶大师魔药', text: '六项材料已全部消耗，得到独立原瓶marionettist-batch-1:bottle，尚未服用。无面人扮演100且晋升后满12整周才能确认服药。' };
+  const before = JSON.stringify(record);
+  expect(seerFeedbackText(record, false)).toBe('六项材料已全部消耗，得到独立第1批秘偶大师原瓶，尚未服用。无面人扮演100且晋升后满12整周才能确认服药。');
+  expect(JSON.stringify(record)).toBe(before);
+  for (const unknown of ['marionettist-batch-x:bottle', 'marionettist-batch-12:unknown', 'marionettist-batch-12:bottle-extra', 'other-marionettist-batch-12:bottle']) {
+    expect(seerReadableText(unknown)).toBe(unknown);
+  }
+});

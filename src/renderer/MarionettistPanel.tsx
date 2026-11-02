@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FacelessCommand, FacelessProjection } from "../domain/faceless/types";
 import type { MarionettistAction, MarionettistCommand, MarionettistProjection } from "../domain/marionettist/types";
 import type { SeerResources } from "./SeerPanel";
+import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 
 const CASE_STATUS: Record<string, string> = {
@@ -187,9 +188,9 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
     onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); if (!confirmationLocked) setConfirmation(null); } }}>
     <div className="slice-eyebrow">在真实现场歌声中，独立确认这一瓶</div>
     <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-    <p>来源：{selectedBottle.source}</p>
+    <p>来源：{seerReadableText(selectedBottle.source)}</p>
     <dl className="seer-facts">
-      <div><dt>这一原瓶</dt><dd>{selectedBottle.id}</dd></div>
+      <div><dt>这一原瓶</dt><dd>{seerReadableText(selectedBottle.id)}</dd></div>
       <div><dt>原瓶状态</dt><dd>{selectedBottle.status}</dd></div>
       <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
       <div><dt>本次消耗</dt><dd>{confirmation.cost}</dd></div>
@@ -307,7 +308,7 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
       {marionettist.bottles.map((bottle) => {
         const action = marionettist.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id);
         return <article className={action ? "seer-bottle" : "magician-history-bottle"} key={bottle.id}>
-          <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
+          <div><h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><small>{bottle.status}</small></div>
           {action && !readOnly && <div>
             <button className="slice-button" disabled={locked || !action.enabled} onClick={() => openConfirmation(action)}
               ref={(node) => { if (node) actionButtons.current.set(action.id, node); else actionButtons.current.delete(action.id); }}>
