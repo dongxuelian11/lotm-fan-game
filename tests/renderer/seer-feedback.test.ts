@@ -136,3 +136,19 @@ it('formats only known marionettist bottle and material identifiers without chan
     expect(seerReadableText(unknown)).toBe(unknown);
   }
 });
+
+
+it('formats known audience provenance and current receipts without modifying raw records', () => {
+  const source = '第3周；仅由audience-batch-12的六项材料调配，原瓶audience-batch-12:bottle';
+  const readable = '第3周；仅由第12批备料的六项材料调配，第12批观众原瓶';
+  expect(seerReadableText(source)).toBe(readable);
+  expect(seerReadableText(readable)).toBe(readable);
+  expect(seerReadableText('audience-batch-12:bottle')).toBe('第12批观众原瓶');
+  const record = { title: '成为观众', text: '原瓶audience-batch-1:bottle已耗尽。意志判定20/72，成功。' };
+  const before = JSON.stringify(record);
+  expect(seerFeedbackText(record, false)).toBe('第1批观众原瓶已耗尽。意志判定20/72，成功。');
+  expect(JSON.stringify(record)).toBe(before);
+  for (const unknown of ['audience-batch-x:bottle', 'audience-batch-12:unknown', 'audience-batch-12:bottle-extra', 'other-audience-batch-12:bottle', 'audience-batch-123extra']) {
+    expect(seerReadableText(unknown)).toBe(unknown);
+  }
+});

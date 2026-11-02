@@ -389,3 +389,10 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 基于 `5fe275075c7f29e89fd3dbf5d7af36d1fb1c02d6`，保留领域 insideCase 包括海岸的原有含义。仅在无实际 CLOSE 且当前位置为海岸时，让顶部指引使用既有 enabled 服药/开歌/停歌返程动作；真实 CLOSE 优先，非海岸捕获分支不变。展示不重新计算资格，不改按钮、原命令、成本或领域规则。
 
 验证：面板测试 30/30、完整 main/renderer typecheck、production build、diff check 与独立源码/像素审查通过。同 revision 216 普通/大字顶部正确指向当前原瓶；原46%/0行动/12周确认及取消保留，存档 SHA256 不变、未服药或停歌。revision 215 开歌前状态未重演，BEGIN_SONG 选择仅源码/测试覆盖。本独立改动不纳入冻结 PR56。
+
+## 2026-11-02 · 观众原瓶来源与当前回执可读标签
+
+- 基线 `a98af569ff7ca28db815f86f9bdf606d47638855`；仅现有 renderer formatter 为已知 `audience-batch-N(:bottle)` 显示“第N批备料／第N批观众原瓶”，保留未知前后缀；观众当前瓶来源、确认来源与瓶号接入。既有当前／近期回执沿同 formatter 展示，原始纪事、投影、命令、风险、门槛和 RNG 不变。
+- 40 项定向 renderer 测试、main/renderer 完整类型检查、完整构建与 diff 检查通过。包括未知标识原样、取消无命令、确认原命令不变、近期摘要中文显示且输入纪事不变。环境重启中断的首次构建不计通过；恢复后最终 tests→types→build 串行全部 exit 0。
+- 原生同观众 rev21 官方重启，普通／大字已耗瓶来源与近期晋升摘要通过：材料顺序、已耗尽成功状态、真实 53/72、能力初始掌握0及灵性上限30但未补满保留。玩家只读核验前后 current_json SHA 均为 `82386d59eff9bc44b5f04713e0ed7c4261c84cf9f96b0b00112378ff9d9d68c1`。未重演 rev20 服药确认；其修后覆盖仅自动测试，瞬时成功回执未重新执行。
+- 独立源码与原生像素审查收据另附；本地候选不代表已推送、合并、完整 CI 或发行包验收。未混改冻结 PR56。

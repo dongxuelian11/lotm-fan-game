@@ -330,3 +330,34 @@ describe("Audience pathway dossier", () => {
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });
+
+
+it('labels the current audience original bottle while forwarding its exact raw command', async () => {
+  const value = bottled();
+  const id = 'audience-batch-1:bottle';
+  const command = { type: 'CONSUME' as const, bottleId: id, confirmed: true as const };
+  value.bottles = [{ ...value.bottles[0]!, id, command, source: '仅由audience-batch-1的六项材料调配，原瓶audience-batch-1:bottle' }];
+  value.actions = [{ ...value.actions[0]!, command }];
+  const before = JSON.stringify(value);
+  const { onCommand } = panel(value);
+  expect(screen.getByRole('region', { name: '已调配的观众魔药' }).textContent).toContain('仅由第1批备料的六项材料调配，第1批观众原瓶');
+  await userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+  const confirmation = screen.getByRole('region', { name: '这瓶观众魔药的服用确认' });
+  expect(confirmation.textContent).toContain('这一瓶第1批观众原瓶');
+  expect(confirmation.textContent).not.toContain('audience-batch-');
+  await userEvent.click(screen.getByRole('button', { name: '暂不服用' }));
+  expect(onCommand).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+  await userEvent.click(screen.getByRole('button', { name: '确认服用「第一瓶观众魔药」' }));
+  expect(onCommand).toHaveBeenCalledExactlyOnceWith(command);
+  expect(JSON.stringify(value)).toBe(before);
+});
+
+it('uses readable audience labels in the existing recent-result summary without rewriting the chronicle', async () => {
+  const state = fixture(social(), true);
+  state.chronicle = [{ id: 'audience-success', week: 5, title: '成为观众', text: '原瓶audience-batch-1:bottle已耗尽。意志判定20/72，成功。' }];
+  const before = JSON.stringify(state.chronicle);
+  await enter(bridge(state));
+  expect(screen.getByText('第1批观众原瓶已耗尽。意志判定20/72，成功。')).toBeTruthy();
+  expect(JSON.stringify(state.chronicle)).toBe(before);
+});

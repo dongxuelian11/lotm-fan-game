@@ -10,7 +10,9 @@ export function seerReadableText(text: string): string {
     .replace(/(?<![A-Za-z0-9_:-])(?:原瓶)?faceless-batch-(\d+):bottle(?![A-Za-z0-9_:-])/g, '第$1批无面人原瓶')
     .replace(/(?<![A-Za-z0-9_:-])faceless-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料')
     .replace(/(?<![A-Za-z0-9_:-])(?:原瓶)?marionettist-batch-(\d+):bottle(?![A-Za-z0-9_:-])/g, '第$1批秘偶大师原瓶')
-    .replace(/(?<![A-Za-z0-9_:-])marionettist-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料');
+    .replace(/(?<![A-Za-z0-9_:-])marionettist-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料')
+    .replace(/(?<![A-Za-z0-9_:-])(?:原瓶)?audience-batch-(\d+):bottle(?![A-Za-z0-9_:-])/g, '第$1批观众原瓶')
+    .replace(/(?<![A-Za-z0-9_:-])audience-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料');
 }
 
 /** Add the current scene around the saved result without rewriting any saved fact. */
