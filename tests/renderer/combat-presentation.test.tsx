@@ -875,7 +875,8 @@ describe('acknowledged terminal Clown round bookmark (UI only)', () => {
     expect(hasReadClownRound(state)).toBe(false);
   });
 
-  it('honors an explicitly read S8 round after same-run S7 promotion while retaining accessible history', async () => {
+  describe.each([7, 6] as const)('promoted sequence %s', sequence => {
+  it('honors an explicitly read S8 round after same-run promotion while retaining accessible history', async () => {
     const original = terminalClown();
     let bridge = await openSave(original);
     const dialog = await screen.findByRole('dialog', { name: '战斗回合结果' });
@@ -885,8 +886,9 @@ describe('acknowledged terminal Clown round bookmark (UI only)', () => {
     cleanup();
     // Synthetic promoted public projection: only the presentation stage changes, not the saved round.
     const promoted = structuredClone(original);
-    promoted.progression.sequence = 7;
+    promoted.progression.sequence = sequence;
     promoted.magician.promoted = true;
+    if (sequence === 6) promoted.faceless!.promoted = true;
     const before = JSON.stringify(promoted);
     expect(hasReadClownRound(promoted)).toBe(true);
     bridge = await openSave(promoted);
@@ -898,26 +900,29 @@ describe('acknowledged terminal Clown round bookmark (UI only)', () => {
     expect(JSON.stringify(promoted)).toBe(before);
   });
 
-  it.each(['history-grows', 'content-changes', 'dead', 'active', 'other-run', 'not-promoted', 'other-sequence', 'other-pathway'] as const)('does not reuse the S8 bookmark for S7 %s', scenario => {
+  it.each(['missing-bookmark', 'history-grows', 'content-changes', 'dead', 'active', 'other-run', 'not-promoted', 'other-sequence', 'other-pathway'] as const)('does not reuse the S8 bookmark after promotion: %s', scenario => {
     const original = terminalClown(); rememberClownRound(original);
     const promoted = structuredClone(original);
-    promoted.progression.sequence = 7; promoted.magician.promoted = true;
+    promoted.progression.sequence = sequence; promoted.magician.promoted = true;
+    if (sequence === 6) promoted.faceless!.promoted = true;
     const sameRoundNumber = promoted.lastCombatRound!.round;
+    if (scenario === 'missing-bookmark') window.localStorage.clear();
     if (scenario === 'history-grows') promoted.combatHistory.push(structuredClone(promoted.lastCombatRound!));
     if (scenario === 'content-changes') promoted.lastCombatRound!.consequence += ' 本次后果已经不同。';
     if (scenario === 'dead') promoted.status = 'DEAD';
     if (scenario === 'active') promoted.combat = projectSliceState(firstCase()).combat;
     if (scenario === 'other-run') promoted.runId += '-different';
-    if (scenario === 'not-promoted') promoted.magician.promoted = false;
-    if (scenario === 'other-sequence') promoted.progression.sequence = 6;
+    if (scenario === 'not-promoted') { if (sequence === 7) promoted.magician.promoted = false; else promoted.faceless!.promoted = false; }
+    if (scenario === 'other-sequence') promoted.progression.sequence = 5;
     if (scenario === 'other-pathway') promoted.progression.pathwayId = 'white-tower';
     expect(promoted.lastCombatRound!.round).toBe(sameRoundNumber);
     expect(hasReadClownRound(promoted)).toBe(false);
   });
 
-  it('cannot create or overwrite a terminal-round bookmark from S7', () => {
+  it('cannot create or overwrite a terminal-round bookmark after promotion', () => {
     const original = terminalClown(), promoted = structuredClone(original);
-    promoted.progression.sequence = 7; promoted.magician.promoted = true;
+    promoted.progression.sequence = sequence; promoted.magician.promoted = true;
+    if (sequence === 6) promoted.faceless!.promoted = true;
     const key = `slice-ui:clown-read-round:${original.runId}`;
     const write = vi.spyOn(Storage.prototype, 'setItem');
     rememberClownRound(promoted);
@@ -926,10 +931,12 @@ describe('acknowledged terminal Clown round bookmark (UI only)', () => {
     rememberClownRound(original);
     const savedBookmark = window.localStorage.getItem(key);
     expect(savedBookmark).not.toBeNull(); write.mockClear();
-    promoted.lastCombatRound!.consequence += ' 新的S7结果不能写入旧护送书签。';
+    promoted.lastCombatRound!.consequence += ' 新的晋升后结果不能写入旧护送书签。';
     rememberClownRound(promoted);
     expect(write).not.toHaveBeenCalled(); expect(window.localStorage.getItem(key)).toBe(savedBookmark);
     expect(hasReadClownRound(promoted)).toBe(false); expect(hasReadClownRound(original)).toBe(true);
+  });
+
   });
 
   it('treats missing, corrupt or unavailable UI storage as unread', () => {
