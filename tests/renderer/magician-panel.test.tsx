@@ -237,6 +237,37 @@ describe("Magician S7 dossier", () => {
     expect(within(abilities).queryByRole("button")).toBeNull();
   });
 
+  it("introduces only current public abilities and opens the existing details without a game action", async () => {
+    const value = magician({ promoted: true, abilities: MAGICIAN_ABILITIES.slice(0, 2).map((ability) => ({ ...ability, mastery: 0 })) });
+    const { onCommand } = panel(value);
+    const overview = screen.getByRole("group", { name: "当前魔术师能力概览" });
+    expect(overview.textContent).toContain("当前魔术师能力 · 2 项");
+    expect(overview.querySelector("p")?.classList.contains("seer-small-note")).toBe(false);
+    expect(overview.textContent).toContain(value.abilities.map((ability) => ability.label).join(" · "));
+    expect(overview.textContent).not.toContain("新解锁");
+    expect(overview.textContent).not.toContain(MAGICIAN_ABILITIES[2]!.label);
+    const details = screen.getByLabelText("魔术师能力与消化") as HTMLDetailsElement;
+    expect(details.open).toBe(false);
+    const summary = within(details).getByText("能力与消化 · 2 项能力");
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      await userEvent.click(within(overview).getByRole("button", { name: "查看能力详情" }));
+      expect(details.open).toBe(true);
+      expect(document.activeElement).toBe(summary);
+      expect(scrollIntoView).toHaveBeenLastCalledWith({ block: "nearest", inline: "nearest" });
+      if (attempt === 0) await userEvent.click(summary);
+    }
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
+  it("does not announce abilities before promotion or invent names for an empty public list", () => {
+    const { rerender, onCommand } = panel(magician({ abilities: MAGICIAN_ABILITIES.map((ability) => ({ ...ability, mastery: 0 })) }));
+    expect(screen.queryByRole("group", { name: "当前魔术师能力概览" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "查看能力详情" })).toBeNull();
+    rerender(<MagicianPanel magician={magician({ promoted: true, abilities: [] })} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.queryByRole("group", { name: "当前魔术师能力概览" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "查看能力详情" })).toBeNull();
+  });
+
   it("only offers injury transfer for actual projected wounds and never displays a health increase", async () => {
     const current = action({ type: "TRANSFER_INJURY", injuryId: "actual-injury-4" });
     const { onCommand } = panel(magician({ promoted: true, actions: [current] }));

@@ -91,6 +91,8 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand, o
   const [submittedBottleId, setSubmittedBottleId] = useState<string | null>(null);
   const submitted = useRef<string | null>(null);
   const confirmationHeading = useRef<HTMLHeadingElement>(null);
+  const abilitiesDetails = useRef<HTMLDetailsElement>(null);
+  const abilitiesSummary = useRef<HTMLElement>(null);
   const returnBottleId = useRef<string | null>(null);
   const bottleButtons = useRef(new Map<string, HTMLButtonElement>());
   const selectedBottle = magician.bottles.find((bottle) => bottle.id === selectedBottleId);
@@ -235,6 +237,15 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand, o
     <section className="seer-summary" aria-label="魔术师成长下一步">
       <span className="seer-seal">{magician.promoted ? "序列 7" : "魔术师晋升准备"}</span>
       <h3>{magician.title}</h3>
+      {magician.promoted && magician.abilities.length > 0 && <div role="group" aria-label="当前魔术师能力概览">
+        <p><strong>当前魔术师能力 · {magician.abilities.length} 项：</strong>{magician.abilities.map((ability) => ability.label).join(" · ")}</p>
+        <button className="slice-button quiet" onClick={() => {
+          if (!abilitiesDetails.current) return;
+          abilitiesDetails.current.open = true;
+          abilitiesSummary.current?.focus({ preventScroll: true });
+          abilitiesDetails.current.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }}>查看能力详情</button>
+      </div>}
       {needsRecovery ? <>
         <p className="seer-next"><strong>下一步：先休养，再考虑重试。</strong>原瓶已耗尽；健康 {resources.health}/{resources.maxHealth} · 精神 {resources.mind}/{resources.maxMind} · 排异 {magician.pollution}。</p>
         <p className="slice-muted">可返回日常查看休养成本与效果。休养不保证晋升成功；下方仍可筹备新一瓶，材料与调配费用照常。</p>
@@ -306,8 +317,8 @@ export function MagicianPanel({ magician, resources, busy, blocked, onCommand, o
       <ul className="seer-formula">{magician.formula.map((material) => <li key={material.name}><span>{material.name}</span><strong>{material.quantity} {material.unit}</strong></li>)}</ul>
       <p className="slice-muted">这里是已知配方。取得材料、调配成瓶与确认服用是三个独立步骤。</p>
     </details>}
-    {magician.promoted && <details className="seer-fold" aria-label="魔术师能力与消化">
-      <summary>能力与消化 · {magician.abilities.length} 项能力</summary>
+    {magician.promoted && <details ref={abilitiesDetails} className="seer-fold" aria-label="魔术师能力与消化">
+      <summary ref={abilitiesSummary}>能力与消化 · {magician.abilities.length} 项能力</summary>
       <p>灵性 {resources.spirituality} / {resources.maxSpirituality} · 污染 {magician.pollution}</p>
       {magician.abilities.map((ability) => <details className="seer-fold" key={ability.id}>
         <summary>{ability.label} · 掌握 {ability.mastery}</summary><p>{ability.description}</p>
