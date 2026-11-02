@@ -67,6 +67,7 @@ interface FacelessPanelProps {
   error?: { message: string; retryable?: boolean } | string | null;
   readOnly?: boolean;
   onCommand: (command: FacelessCommand) => void;
+  onRecovery?: () => void;
 }
 
 function isCaseAction(action: FacelessAction): boolean {
@@ -91,7 +92,7 @@ function ConsumptionRisk({ text }: { text: string }) {
 }
 
 /** Appearance, voice, costume ownership and outcomes change only on committed public state. */
-export function FacelessPanel({ faceless, resources, busy, blocked = false, error = null, readOnly = false, onCommand }: FacelessPanelProps) {
+export function FacelessPanel({ faceless, resources, busy, blocked = false, error = null, readOnly = false, onCommand, onRecovery }: FacelessPanelProps) {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [selectedBottleId, setSelectedBottleId] = useState<string | null>(null);
   const [submittedBottleId, setSubmittedBottleId] = useState<string | null>(null);
@@ -137,6 +138,9 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
     ? preparedBottleAction ?? currentPreparationActions.find((action) => action.enabled) ?? firstPreparation
     : [...selectedCaseActions, ...appearanceActions, ...outfitActions, ...growthActions].find((action) => action.enabled)
       ?? selectedCaseActions[0] ?? growthActions[0];
+  const needsRecovery = !faceless.promoted && !faceless.insideCase && !readOnly
+    && faceless.bottles.some((bottle) => bottle.status.startsWith("已耗尽") && bottle.status.includes("排异"))
+    && (resources.health < resources.maxHealth || resources.mind < resources.maxMind || faceless.pollution > 0);
   const confirming = !!selectedBottle && selectedBottleAction?.command.type === "CONSUME" && !faceless.promoted && !faceless.insideCase && !readOnly;
   const confirmationLocked = busy || interactionBlocked || submittedBottleId !== null;
 
@@ -231,10 +235,14 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
     <section className="seer-summary" aria-label="无面人成长下一步">
       <span className="seer-seal">{faceless.promoted ? "序列 6" : "无面人晋升卷宗"}</span>
       <h3>{faceless.title}</h3>
-      <p className="seer-next">{readOnly ? "这份无面人卷宗只供回看。" : faceless.insideCase
+      {needsRecovery ? <>
+        <p className="seer-next"><strong>下一步：先休养，再考虑重试。</strong>原瓶已耗尽；健康 {resources.health}/{resources.maxHealth} · 精神 {resources.mind}/{resources.maxMind} · 排异 {faceless.pollution}。</p>
+        <p className="slice-muted">可返回日常查看休养成本与效果。休养不保证晋升成功；下方仍可筹备新一瓶，材料与调配费用照常。</p>
+        {onRecovery && <button className="slice-button quiet" disabled={busy || interactionBlocked} onClick={onRecovery}>返回日常休养</button>}
+      </> : <p className="seer-next">{readOnly ? "这份无面人卷宗只供回看。" : faceless.insideCase
         ? <><strong>先实际结束本次接触：</strong>{nextAction?.label || "查看当前公开结束选项"}。结束接触不会复原外貌，也不会归还借来的原道具服。</>
         : nextAction ? <><strong>下一步：</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</>
-        : "暂时没有可执行的成长行动。"}</p>
+        : "暂时没有可执行的成长行动。"}</p>}
       <p className="slice-muted">{faceless.digestion}</p>
       {!faceless.promoted && <p className="slice-muted">配方与材料可以提前准备；服用前须完成魔术师消化与成长所需整周。学习配方、取得实际材料、调配独立原瓶与逐瓶确认服用分别进行，成熟门槛、劳务进度与费用以当前公开记录为准；准备期间仍可继续普通生活。</p>}
     </section>

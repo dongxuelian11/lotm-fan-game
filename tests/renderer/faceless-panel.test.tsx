@@ -144,11 +144,11 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     expect((screen.getByRole("button", { name: /^第二批采购/ }) as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it("uses the next batch after an exhausted bottle, without treating its history as usable", () => {
+  it("uses the next batch after recovery, without treating an exhausted bottle as usable", () => {
     const value = bottled(); value.bottles = [{ ...value.bottles[0]!, status: "已耗尽 · 排异，未晋升" }];
     value.actions = [action({ type: "BREW", batchId: "faceless-batch-2" }, "调配第二批", false),
       action({ type: "MATERIAL_WORK", batchId: "faceless-batch-3" }, "第三批劳动")];
-    panel(value);
+    render(<FacelessPanel faceless={{ ...value, pollution: 0 }} resources={{ ...resources, health: 100, mind: 100 }} busy={false} onCommand={vi.fn()} />);
     expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("调配第二批");
     expect(screen.queryByRole("button", { name: /查看并准备服用/ })).toBeNull();
   });
@@ -406,5 +406,41 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
       expect(history.getByText(text)).toBeTruthy();
     expect(history.getByText("原幻术 · 掌握 120：原视听示范不能制造物质。")).toBeTruthy();
     expect(history.queryAllByRole("button")).toHaveLength(0); expect(history.queryByRole("combobox")).toBeNull();
+  });
+});
+
+
+describe("Faceless failed-bottle recovery guidance", () => {
+  const failed = () => faceless({ pollution: 25, bottles: [{ ...bottled().bottles[0]!, status: "已耗尽 · 排异，未晋升" }],
+    actions: [action({ type: "MATERIAL_WORK", batchId: "faceless-batch-2" }, "第二批劳动", true, "1行动 · 实际劳务")] });
+  it("prioritizes recovery without consuming an action or hiding preparation costs", async () => {
+    const value = failed(), before = JSON.stringify(value), onCommand = vi.fn(), onRecovery = vi.fn();
+    render(<FacelessPanel faceless={value} resources={resources} busy={false} onCommand={onCommand} onRecovery={onRecovery} />);
+    const summary = screen.getByRole("region", { name: "无面人成长下一步" });
+    expect(summary.textContent).toContain("下一步：先休养，再考虑重试。");
+    expect(summary.textContent).toContain("健康 76/100 · 精神 88/100 · 排异 25");
+    expect(summary.textContent).toContain("休养不保证晋升成功");
+    expect(screen.getByRole("button", { name: /第二批劳动/ }).textContent).toContain("1行动 · 实际劳务");
+    await userEvent.click(screen.getByRole("button", { name: "返回日常休养" }));
+    expect(onRecovery).toHaveBeenCalledOnce();
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it.each(["busy", "blocked", "error"])("blocks the navigation callback while %s", (mode) => {
+    const onRecovery = vi.fn();
+    render(<FacelessPanel faceless={failed()} resources={resources} busy={mode === "busy"} blocked={mode === "blocked"} error={mode === "error" ? "保存失败" : null} onCommand={vi.fn()} onRecovery={onRecovery} />);
+    const button = screen.getByRole("button", { name: "返回日常休养" }) as HTMLButtonElement;
+    expect(button.disabled).toBe(true); fireEvent.click(button); expect(onRecovery).not.toHaveBeenCalled();
+  });
+  it.each(["normal", "recovered", "promoted", "readOnly", "insideCase"])("does not override %s public guidance", (mode) => {
+    const value = mode === "normal" ? faceless() : { ...failed(), pollution: mode === "recovered" ? 0 : 25, promoted: mode === "promoted", insideCase: mode === "insideCase" };
+    render(<FacelessPanel faceless={value} resources={mode === "recovered" ? { ...resources, health: 100, mind: 100 } : resources} busy={false} readOnly={mode === "readOnly"} onCommand={vi.fn()} onRecovery={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: "返回日常休养" })).toBeNull();
+    expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).not.toContain("下一步：先休养");
+  });
+  it("keeps residual rejection guidance after health and mind recover, without inventing a missing callback", () => {
+    render(<FacelessPanel faceless={failed()} resources={{ ...resources, health: 100, mind: 100 }} busy={false} onCommand={vi.fn()} />);
+    expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("排异 25");
+    expect(screen.queryByRole("button", { name: "返回日常休养" })).toBeNull();
   });
 });

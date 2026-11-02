@@ -9171,7 +9171,7 @@ export function SliceApp() {
             )}
             {drawer === "SEER" && showingFaceless && (state.progression.sequence===5||state.progression.sequence===4) && state.faceless && <MarionettistFacelessHistory faceless={state.faceless} busy={busy} blocked={error!==null || pending.current!==null} onCommand={c=>command({type:"FACELESS",command:c})}/> }
             {drawer === "SEER" && showingFaceless && state.progression.sequence!==5 && state.progression.sequence!==4 && state.faceless && (
-              <FacelessPanel faceless={state.faceless} resources={{health:state.health,maxHealth:state.maxHealth,mind:state.mind,maxMind:state.maxMind,spirituality:state.spirituality,maxSpirituality:state.maxSpirituality,cash:sliceMoney(state.cash),actionsRemaining:state.actionsRemaining}} busy={busy} blocked={error !== null} error={error?.message ?? null} onCommand={c=>command({type:"FACELESS",command:c})}/>
+              <FacelessPanel faceless={state.faceless} resources={{health:state.health,maxHealth:state.maxHealth,mind:state.mind,maxMind:state.maxMind,spirituality:state.spirituality,maxSpirituality:state.maxSpirituality,cash:sliceMoney(state.cash),actionsRemaining:state.actionsRemaining}} busy={busy} blocked={error !== null} error={error?.message ?? null} onCommand={c=>command({type:"FACELESS",command:c})} onRecovery={closeDrawer}/>
             )}
             {drawer === "SEER" && showingMagician && state.magician && (
               <MagicianPanel
