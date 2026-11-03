@@ -188,8 +188,8 @@ describe("Provoker pathway dossier", () => {
     expect(onCommand).toHaveBeenCalledExactlyOnceWith(choices[0]!.command);
     rerender(<ProvokerPanel provoker={{ ...value, actions: value.actions.slice(0, 1) }} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
     expect(screen.queryByRole("button", { name: /公开行动challenge/ })).toBeNull();
-    expect((screen.getByRole("combobox", { name: "选择当前情境" }) as HTMLSelectElement).value).toBe("invoice-claim");
-    expect(screen.getByRole("region", { name: "当前挑衅者情境" }).textContent).toContain("可以实际去看。");
+    expect((screen.getByRole("combobox", { name: "选择当前情境" }) as HTMLSelectElement).value).toBe("queue-boast");
+    expect(screen.getByRole("region", { name: "当前挑衅者情境" }).textContent).toContain("亲眼看到他把晚号排到早号前。");
   });
 
   it("keeps the encounter folded separately and forwards finite reflection and encounter commands", async () => {
@@ -371,5 +371,54 @@ describe('earned but unclaimed Provoker original guidance', () => {
     const value = waiting(); value.promoted = true;
     panel(value);
     expect(screen.getByRole('region', { name: '挑衅者成长下一步' }).textContent).toContain('下一步：第2瓶仓库劳动');
+  });
+});
+
+
+describe('Provoker current case survives its action removal', () => {
+  function casesValue() {
+    return provoker({ promoted: true,
+      cases: [
+        { id: 'invoice-claim', title: '首案', story: '首案公开事实' },
+        { id: 'queue-boast', title: '次案', story: '次案公开事实' },
+        { id: 'yard-hound', title: '未提供行动的其他案', story: '不扩大下拉公开范围' },
+      ],
+      actions: [action('first', { type: 'OBSERVE', caseId: 'invoice-claim' }), action('second', { type: 'OBSERVE', caseId: 'queue-boast' })],
+    });
+  }
+  it('solidifies the automatic default and keeps it through observation, disablement and completion', async () => {
+    const value = casesValue(); const { rerender, onCommand } = panel(value);
+    const update = (next: ProvokerProjection) => rerender(<ProvokerPanel provoker={next} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    expect(screen.queryByRole('option', { name: '未提供行动的其他案' })).toBeNull();
+    update({ ...value, actions: [action('second-choice', { type: 'CHOOSE', caseId: 'queue-boast', choice: 'CHALLENGE' }), action('first-choice', { type: 'CHOOSE', caseId: 'invoice-claim', choice: 'CHALLENGE' }, { enabled: false, reason: '本周已尝试' })] });
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    update({ ...value, actions: value.actions.slice(1) });
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    expect(screen.getByRole('region', { name: '当前挑衅者情境' }).textContent).toContain('首案公开事实');
+    expect(within(screen.getByRole('group', { name: '当前情境行动' })).queryAllByRole('button')).toHaveLength(0);
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'queue-boast');
+    expect(screen.queryByRole('option', { name: '首案' })).toBeNull();
+    expect(screen.queryByRole('option', { name: '未提供行动的其他案' })).toBeNull();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+  it('falls back only when a case disappears and clears empty or non-promoted selections', () => {
+    const value = casesValue(); const { rerender, onCommand } = panel(value);
+    const update = (next: ProvokerProjection) => rerender(<ProvokerPanel provoker={next} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    update({ ...value, cases: value.cases.slice(1) });
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('queue-boast');
+    update({ ...value, cases: [], actions: [] }); expect(screen.queryByRole('combobox')).toBeNull();
+    update(value); expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    update({ ...value, promoted: false, cases: [], actions: [] });
+    update({ ...value, actions: [action('chosen', { type: 'CHOOSE', caseId: 'queue-boast', choice: 'CHALLENGE' }), ...value.actions] });
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('queue-boast');
+  });
+  it('uses the existing run key to reset a previous run selection', async () => {
+    const value = casesValue(), onCommand = vi.fn();
+    const { rerender } = render(<ProvokerPanel key="run-one" provoker={value} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'queue-boast');
+    rerender(<ProvokerPanel key="run-two" provoker={value} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    expect(onCommand).not.toHaveBeenCalled();
   });
 });

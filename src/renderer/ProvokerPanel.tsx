@@ -27,12 +27,15 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
     (action) => action.command.type === "CONSUME" && action.command.bottleId === selectedBottleId,
   );
   const caseActions = provoker.actions.filter((action) => action.command.type === "OBSERVE" || action.command.type === "CHOOSE");
-  const cases = provoker.cases.filter((entry) => caseActions.some((action) =>
+  const actionableCases = provoker.cases.filter((entry) => caseActions.some((action) =>
     (action.command.type === "OBSERVE" || action.command.type === "CHOOSE") && action.command.caseId === entry.id,
   ));
-  const selectedCase = cases.find((entry) => entry.id === selectedCaseId)
-    ?? cases.find((entry) => caseActions.some((action) => action.command.type === "CHOOSE" && action.command.caseId === entry.id))
-    ?? cases[0];
+  const selectedCase = provoker.cases.find((entry) => entry.id === selectedCaseId)
+    ?? actionableCases.find((entry) => caseActions.some((action) => action.command.type === "CHOOSE" && action.command.caseId === entry.id))
+    ?? actionableCases[0];
+  // Keep only the current already-seen case alongside the original actionable choices.
+  const cases = selectedCase && !actionableCases.some((entry) => entry.id === selectedCase.id)
+    ? [...actionableCases, selectedCase] : actionableCases;
   const selectedCaseActions = selectedCase ? caseActions.filter((action) =>
     (action.command.type === "OBSERVE" || action.command.type === "CHOOSE") && action.command.caseId === selectedCase.id,
   ) : [];
@@ -54,6 +57,11 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
     ?? provoker.actions[0];
   const confirming = !!selectedBottle && selectedBottleAction?.command.type === "CONSUME" && !provoker.promoted;
   const confirmationLocked = busy || blocked || submittedBottleId !== null;
+
+  useEffect(() => {
+    const caseId = provoker.promoted ? selectedCase?.id ?? null : null;
+    if (selectedCaseId !== caseId) setSelectedCaseId(caseId);
+  }, [provoker.promoted, selectedCase?.id, selectedCaseId]);
 
   useEffect(() => {
     if (selectedBottleId && (!selectedBottle || !selectedBottleAction || provoker.promoted)) {
