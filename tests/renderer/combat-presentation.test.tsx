@@ -11,6 +11,7 @@ import {
 } from '../../src/domain/slice/index.js';
 import type { SliceProjection, SliceStance, SliceState } from '../../src/domain/slice/types.js';
 import { CombatStage, firstCaseInjuryTarget } from '../../src/renderer/CombatStage.js';
+import { hasReadHunterRound, rememberHunterRound } from '../../src/renderer/hunter-round-bookmark.js';
 import { hasReadClownRound, rememberClownRound } from '../../src/renderer/clown-round-bookmark.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
@@ -948,5 +949,79 @@ describe('acknowledged terminal Clown round bookmark (UI only)', () => {
     vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('unavailable'); });
     expect(() => rememberClownRound(state)).not.toThrow();
     expect(hasReadClownRound(state)).toBe(false);
+  });
+});
+
+
+describe('acknowledged terminal Hunter round bookmark (UI only)', () => {
+  function terminalHunter() {
+    const saved = resolvedRound(state => state.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    const state = projectSliceState(applySliceIntent(saved, { type: 'CONTINUE_LIFE' }));
+    // Public presentation fixture: no authority, RNG or historical round is rewritten.
+    state.progression = { ...state.progression, pathwayId: 'hunter', sequence: 9 };
+    state.hunter.promoted = true;
+    return state;
+  }
+
+  it('requires explicit acknowledgement, retains manual history and never submits a game action', async () => {
+    const state = terminalHunter(), before = JSON.stringify(state);
+    let bridge = await openSave(state);
+    const dialog = await screen.findByRole('dialog', { name: '战斗回合结果' });
+    expect(hasReadHunterRound(state)).toBe(false);
+    fireEvent.click(within(dialog).getByRole('button', { name: '返回生活' }));
+    expect(hasReadHunterRound(state)).toBe(true);
+    expect(hasReadClownRound(state)).toBe(false);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    cleanup();
+    bridge = await openSave(state);
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /完整纪事/ }));
+    const heading = await screen.findByRole('heading', { name: '战斗完整回放' });
+    expect(within(heading.closest('section')!).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it.each(['missing', 'other-run', 'new-round', 'changed-round', 'changed-history', 'dead', 'active', 'not-promoted', 'other-sequence', 'other-pathway', 'no-round'] as const)('does not suppress %s', scenario => {
+    const state = terminalHunter();
+    rememberHunterRound(state);
+    if (scenario === 'missing') window.localStorage.clear();
+    if (scenario === 'other-run') state.runId += '-other';
+    if (scenario === 'new-round') state.combatHistory.push(structuredClone(state.lastCombatRound!));
+    if (scenario === 'changed-round') state.lastCombatRound = { ...state.lastCombatRound!, consequence: 'Different terminal result' };
+    if (scenario === 'changed-history') state.combatHistory[0] = { ...state.combatHistory[0]!, consequence: 'Changed earlier history, same length' };
+    if (scenario === 'dead') state.status = 'DEAD';
+    if (scenario === 'active') state.combat = projectSliceState(firstCase()).combat;
+    if (scenario === 'not-promoted') state.hunter.promoted = false;
+    if (scenario === 'other-sequence') state.progression.sequence = 8;
+    if (scenario === 'other-pathway') state.progression.pathwayId = 'diviner';
+    if (scenario === 'no-round') state.lastCombatRound = null;
+    expect(hasReadHunterRound(state)).toBe(false);
+  });
+
+  it.each(['dead', 'active', 'not-promoted', 'other-sequence', 'other-pathway', 'no-round'] as const)('cannot write for %s', scenario => {
+    const state = terminalHunter();
+    if (scenario === 'dead') state.status = 'DEAD';
+    if (scenario === 'active') state.combat = projectSliceState(firstCase()).combat;
+    if (scenario === 'not-promoted') state.hunter.promoted = false;
+    if (scenario === 'other-sequence') state.progression.sequence = 8;
+    if (scenario === 'other-pathway') state.progression.pathwayId = 'diviner';
+    if (scenario === 'no-round') state.lastCombatRound = null;
+    const write = vi.spyOn(Storage.prototype, 'setItem');
+    rememberHunterRound(state);
+    expect(write).not.toHaveBeenCalled();
+  });
+
+  it('uses a separate key and treats corrupt or unavailable storage as unread', () => {
+    const state = terminalHunter();
+    const key = `slice-ui:hunter-read-round:${state.runId}`;
+    window.localStorage.setItem(`slice-ui:clown-read-round:${state.runId}`, JSON.stringify([state.lastCombatRound, state.combatHistory]));
+    expect(hasReadHunterRound(state)).toBe(false);
+    window.localStorage.setItem(key, 'invalid');
+    expect(hasReadHunterRound(state)).toBe(false);
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('unavailable'); });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('unavailable'); });
+    expect(() => rememberHunterRound(state)).not.toThrow();
+    expect(hasReadHunterRound(state)).toBe(false);
   });
 });
