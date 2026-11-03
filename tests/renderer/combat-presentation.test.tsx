@@ -225,6 +225,42 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     expect(JSON.stringify(state)).toBe(before);
   });
 
+  it('explains the empty retreat ability wheel without changing risk, stance switching or commands', async () => {
+    const state = projectSliceState(firstCase()), before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const toggle = within(dialog).getByText('查看公开轮盘与风险', { selector: 'summary' });
+    fireEvent.click(toggle);
+    const details = toggle.closest('details')!;
+    const explanation = '撤退不抽取己方能力，先单独判定是否脱离。失败后即使赢得本回合，也不代表已离开战斗。';
+    const ownAbility = () => within(details).getByText(/^你的能力盘：/);
+    const attackText = ownAbility().textContent;
+    expect(attackText).not.toContain(explanation);
+    expect(state.combat!.playerAbilityWheels?.RETREAT).toEqual([]);
+
+    for (let repeat = 0; repeat < 2; repeat += 1) {
+      const retreat = within(dialog).getByRole('button', { name: /^尝试撤退/ });
+      fireEvent.click(retreat);
+      expect(ownAbility().textContent).toBe(`你的能力盘：${explanation}`);
+      expect(retreat.textContent).toContain('本回合全部行动用于撤离，失败仍可能受伤或死亡');
+      expect(visibleWheels(dialog).querySelectorAll('.slice-wheel')).toHaveLength(3);
+      fireEvent.click(within(dialog).getByRole('button', { name: /^进攻/ }));
+      expect(ownAbility().textContent).toBe(attackText);
+      expect(within(details).queryByText(explanation, { exact: false })).toBeNull();
+    }
+    await assertCombatRiskDisclosure(dialog, state.combat!.consequenceWeights);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^尝试撤退/ }));
+    fireEvent.click(within(dialog).getByRole('button', { name: '确认姿态，结算完整回合' }));
+    expect(bridge.submitIntent).toHaveBeenCalledTimes(1);
+    expect(bridge.submitIntent).toHaveBeenCalledWith(expect.objectContaining({
+      payload: { type: 'COMBAT_ROUND', stance: 'RETREAT' },
+    }));
+    await screen.findByText('Presentation must not submit an intent');
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
   it('keeps projected bell facts distinct from current stance status without submitting', async () => {
     // Directed presentation-only projection; not a captured S4 campaign or domain transition.
     const state = projectSliceState(firstCase());

@@ -3594,7 +3594,7 @@ function Combat({
                     </p>
                     <p>
                       你的能力盘：
-                      {(
+                      {stance === "RETREAT" ? "撤退不抽取己方能力，先单独判定是否脱离。失败后即使赢得本回合，也不代表已离开战斗。" : (
                         battle.playerAbilityWheels?.[stance] ??
                         battle.playerAbilityWheel
                       )
