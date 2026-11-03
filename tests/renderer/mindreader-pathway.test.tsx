@@ -406,3 +406,25 @@ it('keeps unknown public bottle source text intact', async () => {
   await userEvent.click(screen.getByText('读心者独立原瓶 · 来源与去向'));
   expect(screen.getByText(`来源：${value.bottles[0]!.source}`)).toBeTruthy();
 });
+
+it.each([
+  ['AVAILABLE', '尚未到场'],
+  ['OBSERVED', '已观察，待核实'],
+  ['RESOLVED', '核实已完成'],
+  ['FUTURE_STATUS', 'FUTURE_STATUS'],
+  ['OBSERVED_EXTRA', 'OBSERVED_EXTRA'],
+  ['已读心，尚待交谈', '已读心，尚待交谈'],
+])('displays the exact Mindreader scene status %s without changing public input or commands', async (status, label) => {
+  const value = social();
+  value.scenes[0]!.status = status;
+  const before = JSON.stringify(value), { onCommand } = panel(value);
+  const current = screen.getByRole('region', { name: '当前社会情境' });
+  expect(within(current).getByText(label)).toBeTruthy();
+  expect(screen.getByRole('option', { name: `迟疑的收据 · ${label}` })).toBeTruthy();
+  fireEvent.change(screen.getByLabelText('选择社会情境'), { target: { value: 'letter' } });
+  expect(within(current).getByText('尚未观察')).toBeTruthy();
+  fireEvent.change(screen.getByLabelText('选择社会情境'), { target: { value: 'receipt' } });
+  expect(within(current).getByText(label)).toBeTruthy();
+  expect(onCommand).not.toHaveBeenCalled();
+  expect(JSON.stringify(value)).toBe(before);
+});

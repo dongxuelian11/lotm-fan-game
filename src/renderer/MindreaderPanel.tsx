@@ -48,6 +48,15 @@ export function AudienceHistory({ audience }: { audience: AudienceProjection }) 
 }
 
 /** Display visible facts, genuine shallow reading and dialogue as distinct public records. */
+function mindreaderSceneStatus(status: string): string {
+  switch (status) {
+    case "AVAILABLE": return "尚未到场";
+    case "OBSERVED": return "已观察，待核实";
+    case "RESOLVED": return "核实已完成";
+    default: return status;
+  }
+}
+
 export function MindreaderPanel({ mindreader, resources, busy, blocked, onCommand }: MindreaderPanelProps) {
   const [selectedSceneId, setSelectedSceneId] = useState<string | null>(null);
   const [selectedBottleId, setSelectedBottleId] = useState<string | null>(null);
@@ -182,13 +191,13 @@ export function MindreaderPanel({ mindreader, resources, busy, blocked, onComman
             <label className="seer-case-selector">
               选择社会情境
               <select value={selectedScene.id} disabled={busy || blocked} onChange={(event) => setSelectedSceneId(event.target.value)}>
-                {mindreader.scenes.map((scene) => <option key={scene.id} value={scene.id}>{scene.title} · {scene.status}</option>)}
+                {mindreader.scenes.map((scene) => <option key={scene.id} value={scene.id}>{scene.title} · {mindreaderSceneStatus(scene.status)}</option>)}
               </select>
             </label>
           )}
           <section className="seer-current-case" aria-label="当前社会情境">
             <h4>{selectedScene.title}</h4>
-            <span className="slice-muted">{selectedScene.status}</span>
+            <span className="slice-muted">{mindreaderSceneStatus(selectedScene.status)}</span>
             <p>{selectedScene.story}</p>
             <section className="seer-fold" aria-label="亲眼观察到的线索">
               <h4>亲眼观察到的线索</h4>
