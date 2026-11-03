@@ -13,6 +13,8 @@ export function seerReadableText(text: string): string {
     .replace(/(?<![A-Za-z0-9_:-])marionettist-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料')
     .replace(/(?<![A-Za-z0-9_:-])(?:原瓶)?audience-batch-(\d+):bottle(?![A-Za-z0-9_:-])/g, '第$1批观众原瓶')
     .replace(/(?<![A-Za-z0-9_:-])audience-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料')
+    .replace(/(?<![A-Za-z0-9_:-])(?:原瓶)?mindreader-batch-(\d+):bottle(?![A-Za-z0-9_:-])/g, '第$1批读心者原瓶')
+    .replace(/(?<![A-Za-z0-9_:-])mindreader-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料')
     .replace(/(?<![A-Za-z0-9_:-])(?:第(\d+)瓶现成魔药|原瓶)?hunter-potion-(\d+)(?![A-Za-z0-9_:-])/g,
       (match: string, describedNumber: string | undefined, bottleNumber: string) => {
         if (describedNumber) return describedNumber === bottleNumber ? `第${bottleNumber}瓶现成猎人魔药` : match;

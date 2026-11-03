@@ -167,7 +167,7 @@ describe("Mindreader pathway dossier", () => {
     expect(onCommand).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(screen.getByRole("button", { name: /查看并准备服用「第一瓶读心者魔药」/ }));
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶读心者魔药」/ }));
-    expect(screen.getByText("mindreader-batch-2:bottle")).toBeTruthy();
+    expect(screen.getByText("第2批读心者原瓶")).toBeTruthy();
     expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.queryByText("71%")).toBeNull();
     expect(screen.getByRole("region", { name: "读心者服用风险与四档结果" }).textContent).toContain(risk);
@@ -197,7 +197,7 @@ describe("Mindreader pathway dossier", () => {
     const { onCommand, rerender } = panel(value);
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶读心者魔药」/ }));
     rerender(<MindreaderPanel mindreader={{ ...value, actions: value.actions.map((action) => ({ ...action, enabled: false, reason: "当前精神不足，先休养。" })) }} resources={{ ...resources, mind: 0 }} busy={false} blocked={false} onCommand={onCommand} />);
-    expect(screen.getByText("mindreader-batch-2:bottle")).toBeTruthy();
+    expect(screen.getByText("第2批读心者原瓶")).toBeTruthy();
     expect(screen.getByText("当前精神不足，先休养。")).toBeTruthy();
     const confirm = screen.getByRole("button", { name: "确认服用「第二瓶读心者魔药」" });
     expect((confirm as HTMLButtonElement).disabled).toBe(true);
@@ -379,4 +379,30 @@ describe("Mindreader pathway dossier", () => {
     await userEvent.click(screen.getByRole("button", { name: "关闭非凡成长" }));
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
+});
+
+it('shows readable current bottle provenance and confirmation while preserving raw identity and cancellation', async () => {
+  const value = bottled();
+  value.bottles[0]!.source = '阅览室观察导师调配台，第12周；仅由mindreader-batch-1的六项材料调配，原瓶mindreader-batch-1:bottle';
+  const before = JSON.stringify(value), { onCommand } = panel(value);
+  const readableSource = '来源：阅览室观察导师调配台，第12周；仅由第1批备料的六项材料调配，第1批读心者原瓶';
+  await userEvent.click(screen.getByText('读心者独立原瓶 · 来源与去向'));
+  expect(screen.getByText(readableSource)).toBeTruthy();
+  await userEvent.click(screen.getByRole('button', { name: /查看并准备服用「第一瓶读心者魔药」/ }));
+  expect(screen.getByText(readableSource)).toBeTruthy();
+  expect(screen.getByText('第1批读心者原瓶')).toBeTruthy();
+  await userEvent.click(screen.getByRole('button', { name: '暂不服用' }));
+  expect(onCommand).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: /查看并准备服用「第一瓶读心者魔药」/ }));
+  fireEvent.click(screen.getByRole('button', { name: '确认服用「第一瓶读心者魔药」' }));
+  expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'CONSUME', bottleId: 'mindreader-batch-1:bottle', confirmed: true });
+  expect(JSON.stringify(value)).toBe(before);
+});
+
+it('keeps unknown public bottle source text intact', async () => {
+  const value = bottled();
+  value.bottles[0]!.source = '未知来源 other-mindreader-batch-1:bottle / mindreader-batch-1:unknown';
+  panel(value);
+  await userEvent.click(screen.getByText('读心者独立原瓶 · 来源与去向'));
+  expect(screen.getByText(`来源：${value.bottles[0]!.source}`)).toBeTruthy();
 });

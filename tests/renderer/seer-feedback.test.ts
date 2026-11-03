@@ -176,3 +176,23 @@ it('labels exact Provoker originals and same-number finished-potion delivery wit
   expect(seerReadableText(shown)).toBe(shown);
   for (const unknown of ['第2瓶序列8成品魔药provoker-potion-1', '第1瓶序列8成品魔药provoker-potion-1-extra', 'provoker-potion-x', 'provoker-potion-12:bottle', 'provoker-potion-12-extra', 'other-provoker-potion-12', 'provoker-potion-123extra']) expect(seerReadableText(unknown)).toBe(unknown);
 });
+
+it('labels exact Mindreader provenance and actual brew receipt without changing recorded facts', () => {
+  const source = '阅览室观察导师调配台，第12周；仅由mindreader-batch-1的六项材料调配，原瓶mindreader-batch-1:bottle';
+  expect(seerReadableText(source)).toBe('阅览室观察导师调配台，第12周；仅由第1批备料的六项材料调配，第1批读心者原瓶');
+  const record = { title: '一瓶读心者魔药', text: '花费1行动、60便士，在导师指导下将第1批六项原材料调配成药。调配须遵守当前导师指导，不能自行把清单排列当作投料顺序。六项材料已全部消耗，得到独立原瓶mindreader-batch-1:bottle，尚未服用。观众扮演100且晋升后满6整周才能确认服药。' };
+  const before = JSON.stringify(record), shown = seerFeedbackText(record, false);
+  expect(shown).toBe(record.text.replace('原瓶mindreader-batch-1:bottle', '第1批读心者原瓶'));
+  expect(JSON.stringify(record)).toBe(before);
+  expect(seerReadableText(shown)).toBe(shown);
+  expect(seerReadableText('mindreader-batch-12:bottle')).toBe('第12批读心者原瓶');
+  expect(seerReadableText('由mindreader-batch-12的六项材料调配')).toBe('由第12批备料的六项材料调配');
+  for (const unknown of ['mindreader-batch-x:bottle', 'mindreader-batch-1:unknown', 'mindreader-batch-1:bottle-extra', 'other-mindreader-batch-1:bottle', 'mindreader-batch-123extra', 'mindreader-batch-1:bottle_v2', 'prefixmindreader-batch-1', 'mindreader-batch-1:bottle:next']) {
+    expect(seerReadableText(unknown)).toBe(unknown);
+  }
+});
+
+it('keeps existing potion label outputs while adding Mindreader labels', () => {
+  const raw = 'seer-batch-1:bottle；magician-batch-2:bottle；faceless-batch-3:bottle；marionettist-batch-4:bottle；audience-batch-5:bottle；hunter-potion-6；provoker-potion-7；mindreader-batch-8:bottle';
+  expect(seerReadableText(raw)).toBe('第1批原瓶；第2批魔术师原瓶；第3批无面人原瓶；第4批秘偶大师原瓶；第5批观众原瓶；第6瓶猎人原瓶；第7瓶挑衅者原瓶；第8批读心者原瓶');
+});

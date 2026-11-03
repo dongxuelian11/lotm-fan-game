@@ -1,3 +1,4 @@
+import { seerReadableText } from "./seer-feedback";
 import { useEffect, useRef, useState } from "react";
 import type { AudienceProjection } from "../domain/audience/types";
 import type { MindreaderAction, MindreaderCommand, MindreaderProjection } from "../domain/mindreader/types";
@@ -124,9 +125,9 @@ export function MindreaderPanel({ mindreader, resources, busy, blocked, onComman
       <section className="seer-panel mindreader-panel seer-confirmation" aria-label="这瓶读心者魔药的服用确认" aria-busy={busy}>
         <div className="slice-eyebrow">服用前，请再确认一次</div>
         <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-        <p className="seer-bottle-source">来源：{selectedBottle.source}</p>
+        <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
         <dl className="seer-facts">
-          <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
+          <div><dt>这一瓶</dt><dd>{seerReadableText(selectedBottle.id)}</dd></div>
           <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
           <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
           <div><dt>本次消耗</dt><dd>{selectedAction.cost}</dd></div>
@@ -229,7 +230,7 @@ export function MindreaderPanel({ mindreader, resources, busy, blocked, onComman
             const action = mindreader.actions.find((entry) => entry.command.type === "CONSUME" && entry.command.bottleId === bottle.id);
             return (
               <article className="seer-bottle" key={bottle.id}>
-                <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
+                <div><h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><small>{bottle.status}</small></div>
                 {action && !mindreader.promoted && (
                   <div>
                     <button
