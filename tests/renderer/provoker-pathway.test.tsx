@@ -199,7 +199,7 @@ describe("Provoker pathway dossier", () => {
     await userEvent.click(screen.getByRole("button", { name: /公开行动reflect/ }));
     expect(onCommand).toHaveBeenLastCalledWith({ type: "REFLECT" });
     await userEvent.click(screen.getByText("货栈争议"));
-    expect(screen.getByRole("region", { name: "当前货栈情境" }).textContent).toContain("实际车主保管原空车。");
+    expect(screen.getByRole("region", { name: "货栈争议历史背景" }).textContent).toContain("实际车主保管原空车。");
     for (const item of actions.slice(0, 2)) {
       await userEvent.click(screen.getByRole("button", { name: new RegExp(item.label) }));
       expect(onCommand).toHaveBeenLastCalledWith(item.command);
@@ -421,4 +421,25 @@ describe('Provoker current case survives its action removal', () => {
     expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
     expect(onCommand).not.toHaveBeenCalled();
   });
+});
+
+
+it.each([true, false])('labels the retained encounter story as historical background with actions=%s', hasActions => {
+  const story = '货栈入口的威斯扣住了本来可以通行的空车。原车与货物仍由主人保管。';
+  const value = provoker({ promoted: true, story,
+    actions: hasActions ? [action('talk', { type: 'ENCOUNTER_TALK' })] : [] });
+  const before = JSON.stringify(value), { onCommand } = panel(value);
+  fireEvent.click(screen.getByText('货栈争议'));
+  const background = screen.getByRole('region', { name: '货栈争议历史背景' });
+  expect(within(background).getByRole('heading', { name: '事件起因（历史背景）' })).toBeTruthy();
+  expect(within(background).getByText(story)).toBeTruthy();
+  expect(screen.queryByRole('region', { name: '当前货栈情境' })).toBeNull();
+  if (hasActions) {
+    fireEvent.click(screen.getByRole('button', { name: /公开行动talk/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'ENCOUNTER_TALK' });
+  } else {
+    expect(screen.queryByRole('group', { name: '货栈争议行动' })).toBeNull();
+    expect(onCommand).not.toHaveBeenCalled();
+  }
+  expect(JSON.stringify(value)).toBe(before);
 });

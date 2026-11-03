@@ -496,3 +496,10 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 5文件69项定向测试、完整main/renderer类型与生产构建、diff检查通过，独立源码／日志审查无阻断。原canonical Hunter／Provoker输入、迁移private/public/roundtrip哈希及当前真实69raw/public前后完全一致；四选择×成功失败的完整私有／公开／action哈希、check/award/note次序和原结果文字逐字相同。未修改或重基线历史fixture。
 - 实际69三案已经完成，不回退或重开。选择修后原生为NOT_RUN；另有1项临时规范组件HTML导出检查通过，不计入69项产品门禁。受控headless截图受环境socket权限及升级执行环境失败阻断，无可用after图，不把DOM或HTML当像素验收。原生同69联合冷启的独立记录由玩家任务提供，不能当作已完成选择的重演。
 - 新本地源码候选，已发布85de标签／安装包及PR56不变。Windows实机、完整CI及新发行包NOT_RUN。
+
+## 2026-11-03 · 货栈常量故事明确为历史背景
+
+- 基线 `219c9cad21477b1801e699bea0569ddd8682f32f`。实际72已交涉解决且复盘100，原常量故事仍用“当前货栈情境”语义展示起初扣车。仅在原story前新增可见“事件起因（历史背景）”标题，并把ARIA标为“货栈争议历史背景”；原summary、故事全文与所有行动不变，不从文本推断当前结果，不扩公开schema或改领域。
+- 28项Provoker renderer测试、完整main/renderer类型检查及构建通过，独立源码审查通过。覆盖有／无行动时原文完整、原命令与输入不变。
+- 同实际72正式重启，正常／大字历史背景标题及全文均清楚，扮演100及无重新行动保持，纯导航无S7购买或游戏命令，独立像素收据另附。玩家核验三档current_json SHA不变，Hunter72为 `755ef8e11c17d27a35c9633157a4ef710c7626cf29ecfb7eae64782d8a8aab69`。不把常量背景当新结果，不重演已完成交涉。
+- Linux原生限定，不等同Windows实机或完整发行CI；不变更已发布85de标签／资产。

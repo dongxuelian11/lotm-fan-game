@@ -187,7 +187,7 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
       {(provoker.story || encounterActions.length > 0) && (
         <details className="seer-fold provoker-encounter">
           <summary>货栈争议</summary>
-          {provoker.story && <section aria-label="当前货栈情境"><p className="provoker-story">{provoker.story}</p></section>}
+          {provoker.story && <section aria-label="货栈争议历史背景"><h4>事件起因（历史背景）</h4><p className="provoker-story">{provoker.story}</p></section>}
           {encounterActions.length > 0 && <div className="seer-actions" role="group" aria-label="货栈争议行动">{encounterActions.map(actionButton)}</div>}
         </details>
       )}
