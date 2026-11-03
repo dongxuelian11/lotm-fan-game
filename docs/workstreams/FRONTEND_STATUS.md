@@ -561,3 +561,10 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 基线 `86ac4a898abec6e46dd9fffca7ab4a83536d3b3a`；仅 MarionettistPanel、seer-feedback、对应两测试及本条记录。真实221规则与223成功公开回执含 PREPARE/PERFORM/CLOSE/WITHDRAW；改为精确已知观察／结果句、完整环境规则句及三个精确标题＋完整成功回执的展示映射，使用现有中文按钮名。未知句原样，成本、失败不退、实际释放后报告、自愿成年人及不完整转化限制保留。
 - 不改命令、领域、原始回执、历史、存档或物品编号。最终两文件61测试、完整 main/renderer 类型与生产构建通过（既有 chunk-size 警告）；首次新增测试 caseId 类型过宽的 TS2322 已用已知 literal 修正，初错日志保留。日志 `output/marionettist-practice-copy-20261103/`。
 - 独立源码审查通过。真实 Diviner224 官方冷启零命令验收普通／大字静态规则，完整中文动作名与原费用／失败限制可滚动阅读；三档224/72/52状态哈希由试玩者核验前后一致。图及 `practice-copy224-native-qa.json` 在 `output/diviner-s5-native-20261103/`。223瞬时成功与 controlled-release 新观察修后原生仍 NOT_RUN，仅公开输入／源码／测试覆盖，未重演或制造状态。
+
+## 2026-11-03 — Chaos Hunter 历史导航测试按条目读取原输入
+
+- 基线 `1234d47c23c3cbd99dafef559ef76ead7163425d`。PR59 Windows historical1 batch16 在原7例的第4例期间发生 V8 OOM；无失败断言报告。关闭历史的轮盘本已延迟挂载，未发现需修改产品轮盘的证据。
+- Linux Node24.22.1/Vitest4.1.11、同 canonical 原输入和 `--max-old-space-size=768` 对照：main66048与1234原第4单例、原7例整套均通过，未复现 Windows OOM。原53,482,831字节 boundaries 含37条；只将该测试的全量解析改为现有 `readObjectEntry` 读取原键，7例、顺序、旧断言、fixtures、产品代码和内存预算不变。五种键值逐条与旧查找 deepStrictEqual，缺键仍抛错。
+- 单次同环境全套实测：1234原加载33.72秒／RSS峰值999.9MiB；流式28.59秒／895.4MiB。RSS包含非堆内存；采样heap只作当前线程下界，不是全部worker堆峰值。最终原7例、既有helper测试1例、完整 main/renderer 类型及生产构建通过；独立源码审查通过。构建仅既有chunk-size警告。
+- 证据在 `output/chaos-oom-probe-20261103/` 与 `output/chaos-fixture-stream-20261103/`；最初计时壳因 `/usr/bin/time` 不存在，在测试启动前退出127，改用Python资源计量，保留记录。此为测试内存加固，不宣称 Windows CI 已验证；未推送、重试CI、改冻结头或进行游戏行动。

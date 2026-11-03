@@ -1,5 +1,6 @@
 /* @vitest-environment jsdom */
 import { readFileSync } from 'node:fs';
+import { readObjectEntry } from '../helpers/read-object-entry.js';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -27,9 +28,10 @@ function savedGame(state: unknown, failFirst = false) {
 }
 type SavedGame = ReturnType<typeof savedGame>;
 function boundary(type: ChaosHunterCommand['type'], promotedOnly = false) {
-  const all = Object.values(JSON.parse(readFileSync('tests/fixtures/chaos-hunter-v01600/boundaries.json', 'utf8')) as Record<string, Boundary>);
-  const result = all.find(b => b.lastIntent.type === 'CHAOS_HUNTER' && b.lastIntent.command.type === type && (!promotedOnly || b.beforeLast.progression.sequence === 4 && b.final.progression.sequence === 3));
-  if (!result) throw new Error(`Missing actual saved ${type} boundary; do not invent natural results.`); return result;
+  // Read the original named entry without retaining all 37 saved-state pairs.
+  const key = type === 'LEARN_GUIDANCE' ? 'guidance' : type === 'PREPARE_PROMOTION' ? 'prepare-current-week' : type === 'CONSUME' ? promotedOnly ? 'promotion' : 'consume-failure' : null;
+  const result = key ? readObjectEntry<Boundary>('tests/fixtures/chaos-hunter-v01600/boundaries.json', key) : undefined;
+  if (!result || result.lastIntent.type !== 'CHAOS_HUNTER' || result.lastIntent.command.type !== type || (promotedOnly && !(result.beforeLast.progression.sequence === 4 && result.final.progression.sequence === 3))) throw new Error(`Missing actual saved ${type} boundary; do not invent natural results.`); return result;
 }
 function expectOriginals(s: SliceState, before: SliceState) {
   for (const root of roots) expect(s[root]).toEqual(before[root]);
@@ -118,8 +120,9 @@ describe('ChaosHunter navigation with actual saved command boundaries', () => {
     expect(game.state.imperativeMage).toEqual(original().final.imperativeMage);
   }, 20_000);
   it('submits the actual optional combat stance without creating a separate pool or changing any old original', async () => {
-    // Retain only the selected real boundary while rendering; the full archive is large.
-    const b = (() => Object.values(JSON.parse(readFileSync('tests/fixtures/chaos-hunter-v01600/boundaries.json', 'utf8')) as Record<string, Boundary>).find(v => v.lastIntent.type === 'COMBAT_ROUND')!)();
+    // Stream the same first actual combat boundary; do not parse the whole archive.
+    const b = readObjectEntry<Boundary>('tests/fixtures/chaos-hunter-v01600/boundaries.json', 'combat-first');
+    if (b.lastIntent.type !== 'COMBAT_ROUND') throw new Error('Missing actual first combat boundary; do not invent natural results.');
     const game = savedGame(b.beforeLast), before = structuredClone(game.state); await mount(game, false);
     expect(screen.queryByRole('group', { name: /本回合幸运储备/ })).toBeNull();
     expect(game.state).toEqual(before); expect(game.submit).not.toHaveBeenCalled();
