@@ -549,3 +549,44 @@ it.each([
   expect(within(record).queryByRole('button')).toBeNull();
   expect(onCommand).not.toHaveBeenCalled();
 });
+
+
+describe("S6 current daily guidance reuses the dashboard route", () => {
+  const stale = "首案卷宗已保存。可在非凡成长中接取俱乐部委托，也可工作、学习或休养。";
+  function current(acting = 100) {
+    const state = fixture(8);
+    state.progression.sequence = 6; state.progression.acting = acting;
+    state.faceless!.promoted = true; state.faceless!.acting = acting;
+    state.nextStep = stale;
+    return state;
+  }
+  it.each([50, 100])("shows the existing correct goal and opens its existing entry for acting %s without a command", async acting => {
+    const state = current(acting), before = JSON.stringify(state), value = bridge(state);
+    expect(clownLifeGuidance(state)).not.toContain("接取俱乐部委托");
+    expect(clownLifeGuidance(state)).toContain(acting < 100 ? "实践当前能力，消化魔药" : "准备秘偶大师晋升");
+    if (acting === 100) {
+      expect(clownLifeGuidance(state)).toContain("12整周");
+      expect(clownLifeGuidance(state)).toContain("成熟条件与费用仍以成长卷宗为准");
+    }
+    await enter(value);
+    expect(within(screen.getByRole("region", { name: "当前任务与线索" })).getByText(clownLifeGuidance(state))).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: acting < 100 ? "查看当前成长" : "查看秘偶大师晋升" }));
+    expect(screen.getByRole("region", { name: acting < 100 ? "无面人成长下一步" : "秘偶大师成长下一步" })).toBeTruthy();
+    expect(value.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+  it.each(["different-hint", "dead", "event", "combat", "health", "mind", "not-promoted", "missing-faceless", "other-sequence", "other-pathway"])("preserves authoritative guidance for %s", scenario => {
+    const state = current();
+    if (scenario === "different-hint") state.nextStep = "先处理当前公开事项。";
+    if (scenario === "dead") state.status = "DEAD";
+    if (scenario === "event") state.activeEvent = { id: "pending" } as SliceProjection["activeEvent"];
+    if (scenario === "combat") state.combat = { round: 1 } as SliceProjection["combat"];
+    if (scenario === "health") state.health = 0;
+    if (scenario === "mind") state.mind = 0;
+    if (scenario === "not-promoted") state.faceless!.promoted = false;
+    if (scenario === "missing-faceless") Reflect.deleteProperty(state, "faceless");
+    if (scenario === "other-sequence") state.progression.sequence = 7;
+    if (scenario === "other-pathway") state.progression.pathwayId = "white-tower";
+    expect(clownLifeGuidance(state)).toBe(state.nextStep);
+  });
+});

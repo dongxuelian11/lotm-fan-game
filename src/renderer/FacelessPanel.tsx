@@ -6,6 +6,13 @@ import type { SeerResources } from "./SeerPanel";
 import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 
+// Display-only wording for the two public practice explanations, not commands or saved history.
+function facelessPracticeText(text: string): string {
+  return text.replace("本人SELF、获同意成年人的STAGE_DOUBLE和PORTER_PART固定外貌与声线", "本人原貌、获同意的舞台替身和获同意的搬运工角色（后两者均为成年人）的固定外貌与声线")
+    .replace(/(?<![A-Za-z0-9_:-])RESTORE_SELF(?![A-Za-z0-9_:-])/g, "复原本人外貌与原声")
+    .replace(/(?<![A-Za-z0-9_:-])CLOSE(?![A-Za-z0-9_:-])/g, "结束本次练习");
+}
+
 const CASE_STATUS: Record<string, string> = {
   AVAILABLE: "尚未观察",
   OBSERVED: "已观察本人、模板与实际边界",
@@ -67,6 +74,7 @@ interface FacelessPanelProps {
   error?: { message: string; retryable?: boolean } | string | null;
   readOnly?: boolean;
   onCommand: (command: FacelessCommand) => void;
+  onRecovery?: () => void;
 }
 
 function isCaseAction(action: FacelessAction): boolean {
@@ -91,7 +99,7 @@ function ConsumptionRisk({ text }: { text: string }) {
 }
 
 /** Appearance, voice, costume ownership and outcomes change only on committed public state. */
-export function FacelessPanel({ faceless, resources, busy, blocked = false, error = null, readOnly = false, onCommand }: FacelessPanelProps) {
+export function FacelessPanel({ faceless, resources, busy, blocked = false, error = null, readOnly = false, onCommand, onRecovery }: FacelessPanelProps) {
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [selectedBottleId, setSelectedBottleId] = useState<string | null>(null);
   const [submittedBottleId, setSubmittedBottleId] = useState<string | null>(null);
@@ -137,6 +145,9 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
     ? preparedBottleAction ?? currentPreparationActions.find((action) => action.enabled) ?? firstPreparation
     : [...selectedCaseActions, ...appearanceActions, ...outfitActions, ...growthActions].find((action) => action.enabled)
       ?? selectedCaseActions[0] ?? growthActions[0];
+  const needsRecovery = !faceless.promoted && !faceless.insideCase && !readOnly
+    && faceless.bottles.some((bottle) => bottle.status.startsWith("已耗尽") && bottle.status.includes("排异"))
+    && (resources.health < resources.maxHealth || resources.mind < resources.maxMind || faceless.pollution > 0);
   const confirming = !!selectedBottle && selectedBottleAction?.command.type === "CONSUME" && !faceless.promoted && !faceless.insideCase && !readOnly;
   const confirmationLocked = busy || interactionBlocked || submittedBottleId !== null;
 
@@ -231,10 +242,14 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
     <section className="seer-summary" aria-label="无面人成长下一步">
       <span className="seer-seal">{faceless.promoted ? "序列 6" : "无面人晋升卷宗"}</span>
       <h3>{faceless.title}</h3>
-      <p className="seer-next">{readOnly ? "这份无面人卷宗只供回看。" : faceless.insideCase
+      {needsRecovery ? <>
+        <p className="seer-next"><strong>下一步：先休养，再考虑重试。</strong>原瓶已耗尽；健康 {resources.health}/{resources.maxHealth} · 精神 {resources.mind}/{resources.maxMind} · 排异 {faceless.pollution}。</p>
+        <p className="slice-muted">可返回日常查看休养成本与效果。休养不保证晋升成功；下方仍可筹备新一瓶，材料与调配费用照常。</p>
+        {onRecovery && <button className="slice-button quiet" disabled={busy || interactionBlocked} onClick={onRecovery}>返回日常休养</button>}
+      </> : <p className="seer-next">{readOnly ? "这份无面人卷宗只供回看。" : faceless.insideCase
         ? <><strong>先实际结束本次接触：</strong>{nextAction?.label || "查看当前公开结束选项"}。结束接触不会复原外貌，也不会归还借来的原道具服。</>
         : nextAction ? <><strong>下一步：</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</>
-        : "暂时没有可执行的成长行动。"}</p>
+        : "暂时没有可执行的成长行动。"}</p>}
       <p className="slice-muted">{faceless.digestion}</p>
       {!faceless.promoted && <p className="slice-muted">配方与材料可以提前准备；服用前须完成魔术师消化与成长所需整周。学习配方、取得实际材料、调配独立原瓶与逐瓶确认服用分别进行，成熟门槛、劳务进度与费用以当前公开记录为准；准备期间仍可继续普通生活。</p>}
     </section>
@@ -266,12 +281,12 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
         <div><dt>原物编号</dt><dd>{faceless.outfit.id}</dd></div>
         <div><dt>当前去向</dt><dd>{faceless.outfit.location}</dd></div>
       </dl>
-      <p>{faceless.outfit.summary}</p>
+      <p>{facelessPracticeText(faceless.outfit.summary)}</p>
       <p className="slice-muted">改变外貌不会生成或更换衣物。借出与归还须分别提交，关闭接触、失败、撤回准备或复原都不会自动把原物送回。</p>
       {outfitActions.length > 0 && <div className="magician-action-list" role="group" aria-label="原道具服借还行动">{outfitActions.map(actionButton)}</div>}
     </section>}
 
-    {faceless.promoted && faceless.environment && <section aria-label="当前无面人现场"><h4>当前现场</h4><p>{faceless.environment}</p></section>}
+    {faceless.promoted && faceless.environment && <section aria-label="当前无面人现场"><h4>当前现场</h4><p>{facelessPracticeText(faceless.environment)}</p></section>}
     {selectedCase && <section aria-label="无面人有限实践">
       <h3>外貌、举止与记住本人</h3>
       <label className="seer-case-selector">选择当前实践
@@ -291,7 +306,9 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
           <p className={selectedCase.preparation ? undefined : "slice-muted"}>{selectedCase.preparation || "当前没有待执行的准备。选择方法不会提前改变外貌、发声、借入衣物或产生成功结果。"}</p>
         </section>
         {selectedCase.result && <section aria-label="实际结果与有限报告" aria-live="polite" aria-atomic="true">
-          <h4>实际结果与有限报告</h4><p>{selectedCase.result}</p>
+          <h4>实际结果与有限报告</h4><p>{selectedCase.id === "remember-self"
+            && selectedCase.result === "角色片段已完成，尚须按当前状态结束、复原并归还原服，才可报告。"
+            ? "角色片段已完成。按当前外貌与原服状态完成必要的复原和归还，再提交自我报告。" : selectedCase.result}</p>
         </section>}
         {selectedCaseActions.length > 0 && <div className="magician-action-list" role="group" aria-label="当前无面人实践行动">{selectedCaseActions.map(actionButton)}</div>}
         <p className="slice-muted">普通方法保留自己的条件与结果。撤回准备与实际结束接触是不同操作；结束不治疗、不退款，不消除已发生的目击、拒绝或报告。是否可执行与实际成本由公开按钮显示。</p>

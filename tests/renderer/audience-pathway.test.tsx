@@ -330,3 +330,149 @@ describe("Audience pathway dossier", () => {
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
 });
+
+
+it('labels the current audience original bottle while forwarding its exact raw command', async () => {
+  const value = bottled();
+  const id = 'audience-batch-1:bottle';
+  const command = { type: 'CONSUME' as const, bottleId: id, confirmed: true as const };
+  value.bottles = [{ ...value.bottles[0]!, id, command, source: '仅由audience-batch-1的六项材料调配，原瓶audience-batch-1:bottle' }];
+  value.actions = [{ ...value.actions[0]!, command }];
+  const before = JSON.stringify(value);
+  const { onCommand } = panel(value);
+  expect(screen.getByRole('region', { name: '已调配的观众魔药' }).textContent).toContain('仅由第1批备料的六项材料调配，第1批观众原瓶');
+  await userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+  const confirmation = screen.getByRole('region', { name: '这瓶观众魔药的服用确认' });
+  expect(confirmation.textContent).toContain('这一瓶第1批观众原瓶');
+  expect(confirmation.textContent).not.toContain('audience-batch-');
+  await userEvent.click(screen.getByRole('button', { name: '暂不服用' }));
+  expect(onCommand).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+  await userEvent.click(screen.getByRole('button', { name: '确认服用「第一瓶观众魔药」' }));
+  expect(onCommand).toHaveBeenCalledExactlyOnceWith(command);
+  expect(JSON.stringify(value)).toBe(before);
+});
+
+it('uses readable audience labels in the existing recent-result summary without rewriting the chronicle', async () => {
+  const state = fixture(social(), true);
+  state.chronicle = [{ id: 'audience-success', week: 5, title: '成为观众', text: '原瓶audience-batch-1:bottle已耗尽。意志判定20/72，成功。' }];
+  const before = JSON.stringify(state.chronicle);
+  await enter(bridge(state));
+  expect(screen.getByText('第1批观众原瓶已耗尽。意志判定20/72，成功。')).toBeTruthy();
+  expect(JSON.stringify(state.chronicle)).toBe(before);
+});
+
+
+describe('Prepared audience bottle next-step guidance', () => {
+  const work: AudienceAction = { id: 'second-batch-work', label: '第2批 · 整理阅览室目录', cost: '1行动', enabled: true, reason: null, command: { type: 'MATERIAL_WORK', batchId: 'audience-batch-2' } };
+  function waiting(reason = '普通生活已完成2/4整周，第5周起可以服药。') {
+    const value = bottled();
+    value.bottles = [{ ...value.bottles[0]!, status: '已调配，尚未服用' }];
+    value.actions = [work, { ...value.actions[0]!, enabled: false, reason }];
+    return value;
+  }
+  it.each(['普通生活已完成2/4整周，第5周起可以服药。', '当前健康或精神不足，先休养。'])('keeps the original public bottle gate visible: %s', reason => {
+    const value = waiting(reason), before = JSON.stringify(value);
+    const { onCommand } = panel(value);
+    const next = screen.getByRole('region', { name: '观众成长下一步' });
+    expect(next.textContent).toContain(`下一步：${value.actions[1]!.label}。${reason}`);
+    expect(next.textContent).not.toContain(work.label);
+    expect((screen.getByRole('button', { name: /查看并准备服用/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('button', { name: /第2批 · 整理阅览室目录/ }) as HTMLButtonElement).disabled).toBe(false);
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it('retains the waiting bottle when no material actions are available', () => {
+    const value = waiting(); value.actions = value.actions.slice(1);
+    panel(value);
+    expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain(value.actions[0]!.reason!);
+  });
+  it('still prefers an enabled consume over an earlier waiting bottle', () => {
+    const value = waiting();
+    const second = bottled();
+    value.bottles.push(second.bottles[1]!); value.actions.push(second.actions[1]!);
+    panel(value);
+    expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain(second.actions[1]!.label);
+  });
+  it.each(['missing-bottle', 'consumed', 'missing-action', 'unknown-status'] as const)('does not invent a prepared-bottle goal for %s', condition => {
+    const value = waiting();
+    if (condition === 'missing-bottle') value.bottles = [];
+    if (condition === 'consumed') value.bottles[0]!.status = '已耗尽 · 排异，未晋升';
+    if (condition === 'unknown-status') value.bottles[0]!.status = '未知状态';
+    if (condition === 'missing-action') value.actions = [work];
+    panel(value);
+    expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain(work.label);
+  });
+  it('leaves promoted social guidance ahead of any preparation residue', () => {
+    const value = social(), pending = waiting();
+    value.actions.push(...pending.actions); value.bottles = pending.bottles;
+    panel(value);
+    expect(screen.getByRole('region', { name: '观众成长下一步' }).textContent).toContain('询问收据日期');
+  });
+});
+
+
+it.each([
+  ['AVAILABLE', '尚未观察'], ['OBSERVED', '已观察，待核实'], ['RESOLVED', '核验已完成'],
+  ['FUTURE_STATUS', 'FUTURE_STATUS'], ['OBSERVED_EXTRA', 'OBSERVED_EXTRA'], ['已观察，尚待处理', '已观察，尚待处理'],
+])('labels only the exact public social status %s in the selector and current case', (status, label) => {
+  const value = social(); value.scenes[0]!.status = status;
+  const before = JSON.stringify(value);
+  const { onCommand } = panel(value);
+  expect(screen.getByRole('option', { name: `柜台收据 · ${label}` })).toBeTruthy();
+  expect(screen.getByRole('region', { name: '当前社会情境' }).textContent).toContain(label);
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'backstage-letter' } });
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: 'counter-receipt' } });
+  expect(screen.getByRole('region', { name: '当前社会情境' }).textContent).toContain(label);
+  expect(onCommand).not.toHaveBeenCalled();
+  expect(JSON.stringify(value)).toBe(before);
+});
+
+
+describe('Audience case selection across transaction projections', () => {
+  const renderPanel = (value: AudienceProjection, onCommand: (command: AudienceAction["command"]) => void, key = 'same-run') =>
+    <AudiencePanel key={key} audience={value} resources={resources} busy={false} blocked={false} onCommand={onCommand} />;
+  const current = () => screen.getByRole('region', { name: '当前社会情境' }).textContent;
+  it('keeps the initial useful default after failure, a weekly unlock and successful resolution', () => {
+    const value = social(), onCommand = vi.fn();
+    // Earlier scene cannot act this week; the automatic initial default is the later scene.
+    value.actions = value.actions.map(a => 'caseId' in a.command && a.command.caseId === 'counter-receipt' ? { ...a, enabled: false, reason: '下周可再试。' } : a);
+    const view = render(renderPanel(value, onCommand));
+    expect(current()).toContain('剧院门口有人递出一封信。');
+    const failed = { ...value, actions: value.actions.map(a => ({ ...a, enabled: false })) };
+    view.rerender(renderPanel(failed, onCommand));
+    expect(current()).toContain('剧院门口有人递出一封信。');
+    const nextWeek = social();
+    view.rerender(renderPanel(nextWeek, onCommand));
+    expect(current()).toContain('剧院门口有人递出一封信。');
+    const resolved = { ...nextWeek, scenes: nextWeek.scenes.map(s => s.id === 'backstage-letter' ? { ...s, status: 'RESOLVED', story: '当前邀约已经共同核实。' } : s), actions: nextWeek.actions.filter(a => !('caseId' in a.command) || a.command.caseId !== 'backstage-letter') };
+    view.rerender(renderPanel(resolved, onCommand));
+    expect(current()).toContain('当前邀约已经共同核实。');
+    expect(current()).toContain('核验已完成');
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+  it('falls back only when the selected scene disappears, including empty scenes', async () => {
+    const value = social(), onCommand = vi.fn();
+    const view = render(renderPanel(value, onCommand));
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'backstage-letter');
+    view.rerender(renderPanel({ ...value, scenes: value.scenes.slice(0, 1) }, onCommand));
+    expect(current()).toContain('店员把一张收据放在柜台上。');
+    view.rerender(renderPanel({ ...value, scenes: [] }, onCommand));
+    expect(screen.queryByRole('region', { name: '当前社会情境' })).toBeNull();
+    view.rerender(renderPanel(value, onCommand));
+    expect(current()).toContain('店员把一张收据放在柜台上。');
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+  it('resets at the existing new-run key and when leaving the promoted stage', async () => {
+    const value = social(), onCommand = vi.fn();
+    const view = render(renderPanel(value, onCommand));
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'backstage-letter');
+    view.rerender(renderPanel(value, onCommand, 'new-run'));
+    expect(current()).toContain('店员把一张收据放在柜台上。');
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'backstage-letter');
+    view.rerender(renderPanel({ ...value, promoted: false }, onCommand, 'new-run'));
+    view.rerender(renderPanel(value, onCommand, 'new-run'));
+    expect(current()).toContain('店员把一张收据放在柜台上。');
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+});

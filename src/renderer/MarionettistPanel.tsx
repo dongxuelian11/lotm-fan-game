@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FacelessCommand, FacelessProjection } from "../domain/faceless/types";
 import type { MarionettistAction, MarionettistCommand, MarionettistProjection } from "../domain/marionettist/types";
 import type { SeerResources } from "./SeerPanel";
+import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 
 const CASE_STATUS: Record<string, string> = {
@@ -121,10 +122,13 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
   const encounterActions = marionettist.actions.filter((action) => ["ENCOUNTER_TALK", "ENCOUNTER_FIGHT"].includes(action.command.type));
   const growthActions = marionettist.actions.filter((action) => action.command.type !== "CONSUME" && !isCaseAction(action)
     && !isRitualAction(action) && !isPuppetAction(action) && !encounterActions.includes(action));
-  const nextAction = marionettist.insideCase ? closeAction
-    : marionettist.actions.find((action) => action.enabled && action.command.type === "CONSUME")
-      ?? marionettist.actions.find((action) => action.enabled && action.command.type === "BEGIN_SONG")
-      ?? marionettist.actions.find((action) => action.enabled && ["END_SONG", "RETURN_CLUB"].includes(action.command.type))
+  const readyRitualAction = marionettist.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    ?? marionettist.actions.find((action) => action.enabled && action.command.type === "BEGIN_SONG")
+    ?? marionettist.actions.find((action) => action.enabled && ["END_SONG", "RETURN_CLUB"].includes(action.command.type));
+  // insideCase also covers the coast; it does not imply an actual practice CLOSE exists.
+  const nextAction = marionettist.insideCase
+    ? closeAction ?? (marionettist.ritual.location === "COAST" ? readyRitualAction : undefined)
+    : readyRitualAction
       ?? [...puppetActions, ...selectedCaseActions, ...ritualActions, ...growthActions, ...encounterActions].find((action) => action.enabled)
       ?? marionettist.actions[0];
 
@@ -187,9 +191,9 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
     onKeyDown={(event) => { if (event.key === "Escape") { event.stopPropagation(); if (!confirmationLocked) setConfirmation(null); } }}>
     <div className="slice-eyebrow">在真实现场歌声中，独立确认这一瓶</div>
     <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-    <p>来源：{selectedBottle.source}</p>
+    <p>来源：{seerReadableText(selectedBottle.source)}</p>
     <dl className="seer-facts">
-      <div><dt>这一原瓶</dt><dd>{selectedBottle.id}</dd></div>
+      <div><dt>这一原瓶</dt><dd>{seerReadableText(selectedBottle.id)}</dd></div>
       <div><dt>原瓶状态</dt><dd>{selectedBottle.status}</dd></div>
       <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
       <div><dt>本次消耗</dt><dd>{confirmation.cost}</dd></div>
@@ -236,7 +240,7 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
       <span className="seer-seal">{marionettist.promoted ? "序列 5" : "秘偶大师晋升卷宗"}</span>
       <h3>{marionettist.title}</h3>
       <p className="seer-next">{readOnly ? "这份卷宗只供回看。" : nextAction
-        ? <><strong>{marionettist.insideCase ? "先实际结束本次接触：" : "下一步："}</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</>
+        ? <><strong>{marionettist.insideCase && nextAction === closeAction ? "先实际结束本次接触：" : "下一步："}</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</>
         : "当前没有可执行的成长行动，可回看已保存的经历。"}</p>
       <p className="slice-muted">{marionettist.digestion}</p>
     </section>
@@ -307,7 +311,7 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
       {marionettist.bottles.map((bottle) => {
         const action = marionettist.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id);
         return <article className={action ? "seer-bottle" : "magician-history-bottle"} key={bottle.id}>
-          <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
+          <div><h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><small>{bottle.status}</small></div>
           {action && !readOnly && <div>
             <button className="slice-button" disabled={locked || !action.enabled} onClick={() => openConfirmation(action)}
               ref={(node) => { if (node) actionButtons.current.set(action.id, node); else actionButtons.current.delete(action.id); }}>

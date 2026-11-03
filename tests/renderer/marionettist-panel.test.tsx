@@ -100,7 +100,7 @@ describe("Marionettist real originals, ritual and explicit irreversible capture"
   it("shows the exact original bottle, live song, four-tier risk and resources before confirmation; cancel spends nothing", async () => {
     const { onCommand } = panel(bottled());
     await userEvent.click(screen.getByRole("button", { name: "查看并准备服用「第二批秘偶大师魔药」" }));
-    expect(screen.getByText("marionettist-batch-2:bottle")).toBeTruthy(); expect(screen.getByText("43%")).toBeTruthy();
+    expect(screen.getByText("第2批秘偶大师原瓶")).toBeTruthy(); expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.getByText("来源：第52周，第二批六件原料独立调配")).toBeTruthy();
     expect(screen.getByRole("region", { name: "秘偶大师服用风险与四档结果" }).textContent).toContain(MARIONETTIST_CONSUMPTION_RISK);
     expect(screen.getByRole("region", { name: "服药现场歌声" }).textContent).toContain("成年自愿美人鱼涟正在现场歌唱");
@@ -121,7 +121,7 @@ describe("Marionettist real originals, ritual and explicit irreversible capture"
     rerender(<MarionettistPanel marionettist={value} resources={resources} busy={false} error={error} onCommand={onCommand} />);
     expect((screen.getByRole("button", { name: "暂不服用" }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.click(screen.getByRole("button", { name: "确认服用「第二批秘偶大师魔药」" })); await userEvent.keyboard("{Escape}");
-    expect(screen.getByText("marionettist-batch-2:bottle")).toBeTruthy(); expect(onCommand).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("第2批秘偶大师原瓶")).toBeTruthy(); expect(onCommand).toHaveBeenCalledTimes(1);
     const failed = { ...value, actions: [], bottles: value.bottles.map((bottle) => ({ ...bottle, status: "原瓶已耗尽，严重排异未晋升。" })) };
     rerender(<MarionettistPanel marionettist={failed} resources={resources} busy={false} onCommand={onCommand} />);
     expect(screen.queryByRole("region", { name: "这瓶秘偶大师魔药的服用确认" })).toBeNull();
@@ -271,5 +271,58 @@ describe("Marionettist real originals, ritual and explicit irreversible capture"
     rerender(<MarionettistFacelessHistory faceless={faceless} blocked onCommand={onCommand} />);
     fireEvent.click(screen.getByRole("button", { name: /^明确恢复原貌/ })); expect(onCommand).toHaveBeenCalledTimes(3);
     expect(screen.getByText(faceless.appearance.summary)).toBeTruthy(); expect(screen.getByText(faceless.outfit.summary)).toBeTruthy();
+  });
+});
+
+
+it("renders current bottle provenance and identity while preserving cancel and the original command", async () => {
+  const value = bottled();
+  value.bottles[0]!.source = "第52周；仅由marionettist-batch-2的六项材料调配，原瓶marionettist-batch-2:bottle";
+  const before = JSON.stringify(value), { onCommand } = panel(value);
+  const readable = "来源：第52周；仅由第2批备料的六项材料调配，第2批秘偶大师原瓶";
+  expect(screen.getByText(readable)).toBeTruthy();
+  await userEvent.click(screen.getByRole("button", { name: "查看并准备服用「第二批秘偶大师魔药」" }));
+  expect(screen.getByText(readable)).toBeTruthy();
+  expect(screen.getByText("第2批秘偶大师原瓶", { selector: "dd" })).toBeTruthy();
+  await userEvent.keyboard("{Escape}");
+  expect(onCommand).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole("button", { name: "查看并准备服用「第二批秘偶大师魔药」" }));
+  await userEvent.click(screen.getByRole("button", { name: "确认服用「第二批秘偶大师魔药」" }));
+  expect(onCommand).toHaveBeenCalledExactlyOnceWith(value.bottles[0]!.command);
+  expect(JSON.stringify(value)).toBe(before);
+});
+
+
+describe("Marionettist coast next-step guidance", () => {
+  it.each(["CONSUME", "BEGIN_SONG", "END_SONG", "RETURN_CLUB"] as const)("uses existing enabled %s on the coast even though insideCase is true", type => {
+    const chosen = type === "CONSUME" ? consume : action({ type }, `公开${type}`, true, "原公开成本");
+    const value = { ...bottled(), insideCase: true, actions: [chosen] };
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    const summary = screen.getByRole("region", { name: "秘偶大师成长下一步" });
+    expect(summary.textContent).toContain(`下一步：${chosen.label}`);
+    expect(summary.textContent).not.toContain("先实际结束本次接触");
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it("keeps actual CLOSE ahead of a ready coast action", () => {
+    const close = action({ type: "CLOSE", caseId: "living-lines" }, "结束原接触", true);
+    panel({ ...bottled(), insideCase: true, actions: [consume, close] });
+    expect(screen.getByRole("region", { name: "秘偶大师成长下一步" }).textContent).toContain("先实际结束本次接触：结束原接触");
+  });
+  it("does not recommend disabled consume or song, preserves ready return and its original command", () => {
+    const back = action({ type: "RETURN_CLUB" }, "按已付原路返回", true, "0行动 · 已付往返费用");
+    const value = { ...bottled(), insideCase: true, actions: [{ ...consume, enabled: false }, action({ type: "BEGIN_SONG" }, "尚不能开歌", false), back] };
+    const { onCommand } = panel(value);
+    expect(screen.getByRole("region", { name: "秘偶大师成长下一步" }).textContent).toContain("下一步：按已付原路返回");
+    fireEvent.click(screen.getByRole("button", { name: /按已付原路返回/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(back.command);
+  });
+  it.each(["no-enabled", "not-coast", "read-only"])("preserves the existing %s fallback", mode => {
+    const value = { ...bottled(), insideCase: true };
+    if (mode === "no-enabled") value.actions = [{ ...consume, enabled: false }];
+    if (mode === "not-coast") value.ritual = { ...value.ritual, location: "CLUB" };
+    render(<MarionettistPanel marionettist={value} resources={resources} busy={false} readOnly={mode === "read-only"} onCommand={vi.fn()} />);
+    const summary = screen.getByRole("region", { name: "秘偶大师成长下一步" });
+    expect(summary.textContent).toContain(mode === "read-only" ? "这份卷宗只供回看" : "当前没有可执行的成长行动");
   });
 });

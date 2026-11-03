@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { FACELESS_ABILITIES, FACELESS_CONSUMPTION_RISK, FACELESS_FORMULA, FACELESS_FORMULA_SOURCE } from "../../src/domain/faceless/content";
+import { FACELESS_ENVIRONMENT } from "../../src/domain/faceless/practice";
 import type { FacelessAction, FacelessCommand, FacelessProjection } from "../../src/domain/faceless/types";
 import type { MagicianProjection } from "../../src/domain/magician/types";
 import { FacelessMagicianHistory, FacelessPanel } from "../../src/renderer/FacelessPanel";
@@ -144,11 +145,11 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     expect((screen.getByRole("button", { name: /^第二批采购/ }) as HTMLButtonElement).disabled).toBe(false);
   });
 
-  it("uses the next batch after an exhausted bottle, without treating its history as usable", () => {
+  it("uses the next batch after recovery, without treating an exhausted bottle as usable", () => {
     const value = bottled(); value.bottles = [{ ...value.bottles[0]!, status: "已耗尽 · 排异，未晋升" }];
     value.actions = [action({ type: "BREW", batchId: "faceless-batch-2" }, "调配第二批", false),
       action({ type: "MATERIAL_WORK", batchId: "faceless-batch-3" }, "第三批劳动")];
-    panel(value);
+    render(<FacelessPanel faceless={{ ...value, pollution: 0 }} resources={{ ...resources, health: 100, mind: 100 }} busy={false} onCommand={vi.fn()} />);
     expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("调配第二批");
     expect(screen.queryByRole("button", { name: /查看并准备服用/ })).toBeNull();
   });
@@ -406,5 +407,88 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
       expect(history.getByText(text)).toBeTruthy();
     expect(history.getByText("原幻术 · 掌握 120：原视听示范不能制造物质。")).toBeTruthy();
     expect(history.queryAllByRole("button")).toHaveLength(0); expect(history.queryByRole("combobox")).toBeNull();
+  });
+});
+
+
+describe("Faceless failed-bottle recovery guidance", () => {
+  const failed = () => faceless({ pollution: 25, bottles: [{ ...bottled().bottles[0]!, status: "已耗尽 · 排异，未晋升" }],
+    actions: [action({ type: "MATERIAL_WORK", batchId: "faceless-batch-2" }, "第二批劳动", true, "1行动 · 实际劳务")] });
+  it("prioritizes recovery without consuming an action or hiding preparation costs", async () => {
+    const value = failed(), before = JSON.stringify(value), onCommand = vi.fn(), onRecovery = vi.fn();
+    render(<FacelessPanel faceless={value} resources={resources} busy={false} onCommand={onCommand} onRecovery={onRecovery} />);
+    const summary = screen.getByRole("region", { name: "无面人成长下一步" });
+    expect(summary.textContent).toContain("下一步：先休养，再考虑重试。");
+    expect(summary.textContent).toContain("健康 76/100 · 精神 88/100 · 排异 25");
+    expect(summary.textContent).toContain("休养不保证晋升成功");
+    expect(screen.getByRole("button", { name: /第二批劳动/ }).textContent).toContain("1行动 · 实际劳务");
+    await userEvent.click(screen.getByRole("button", { name: "返回日常休养" }));
+    expect(onRecovery).toHaveBeenCalledOnce();
+    expect(onCommand).not.toHaveBeenCalled();
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it.each(["busy", "blocked", "error"])("blocks the navigation callback while %s", (mode) => {
+    const onRecovery = vi.fn();
+    render(<FacelessPanel faceless={failed()} resources={resources} busy={mode === "busy"} blocked={mode === "blocked"} error={mode === "error" ? "保存失败" : null} onCommand={vi.fn()} onRecovery={onRecovery} />);
+    const button = screen.getByRole("button", { name: "返回日常休养" }) as HTMLButtonElement;
+    expect(button.disabled).toBe(true); fireEvent.click(button); expect(onRecovery).not.toHaveBeenCalled();
+  });
+  it.each(["normal", "recovered", "promoted", "readOnly", "insideCase"])("does not override %s public guidance", (mode) => {
+    const value = mode === "normal" ? faceless() : { ...failed(), pollution: mode === "recovered" ? 0 : 25, promoted: mode === "promoted", insideCase: mode === "insideCase" };
+    render(<FacelessPanel faceless={value} resources={mode === "recovered" ? { ...resources, health: 100, mind: 100 } : resources} busy={false} readOnly={mode === "readOnly"} onCommand={vi.fn()} onRecovery={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: "返回日常休养" })).toBeNull();
+    expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).not.toContain("下一步：先休养");
+  });
+  it("keeps residual rejection guidance after health and mind recover, without inventing a missing callback", () => {
+    render(<FacelessPanel faceless={failed()} resources={{ ...resources, health: 100, mind: 100 }} busy={false} onCommand={vi.fn()} />);
+    expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("排异 25");
+    expect(screen.queryByRole("button", { name: "返回日常休养" })).toBeNull();
+  });
+});
+
+
+describe("Faceless practice explanation wording", () => {
+  it("uses the public Chinese template and exit names, preserving costs, prop identity and raw projection", () => {
+    const value = faceless({ promoted: true, environment: FACELESS_ENVIRONMENT,
+      outfit: { ...borrowedOutfit(), summary: "同一原物FC6-PROP-COAT-1，已借1次、已还0次。外貌与声音能力不复制衣物；CLOSE和RESTORE_SELF都不代替归还。" } });
+    const before = JSON.stringify(value);
+    panel(value);
+    const scene = screen.getByRole("region", { name: "当前无面人现场" });
+    expect(scene.textContent).toContain("本人原貌、获同意的舞台替身和获同意的搬运工角色（后两者均为成年人）");
+    expect(scene.textContent).toContain("变化2灵性、复原1灵性，均0行动");
+    expect(scene.textContent).toContain("结束本次练习只停止练习，离场不自动复原或归还原服装");
+    for (const code of ["SELF", "STAGE_DOUBLE", "PORTER_PART", "CLOSE"]) expect(scene.textContent).not.toContain(code);
+    const outfit = screen.getByRole("region", { name: "原道具服与实际借还" });
+    expect(outfit.textContent).toContain("同一原物FC6-PROP-COAT-1，已借1次、已还0次");
+    expect(outfit.textContent).toContain("结束本次练习和复原本人外貌与原声都不代替归还");
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it("leaves unknown identifiers and other public wording untouched", () => {
+    const text = "CLOSE_EXTRA RESTORE_SELF_EXTRA X-CLOSE STAGE_DOUBLE_ALT SELF_UNKNOWN FC6-PROP-COAT-1";
+    panel(faceless({ promoted: true, environment: text }));
+    expect(screen.getByRole("region", { name: "当前无面人现场" }).textContent).toBe(`当前现场${text}`);
+  });
+});
+
+
+describe("Faceless current self-report wording", () => {
+  const original = "角色片段已完成，尚须按当前状态结束、复原并归还原服，才可报告。";
+  it("keeps an enabled public report and raw result unchanged without asking to end twice", () => {
+    const report = action({ type: "REPORT", caseId: "remember-self" }, "报告有限结果与身份边界", true, "1行动");
+    const value = faceless({ promoted: true, cases: [{ ...cases()[0]!, id: "remember-self", result: original }], actions: [report] });
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    const result = screen.getByRole("region", { name: "实际结果与有限报告" });
+    expect(result.textContent).toContain("角色片段已完成。按当前外貌与原服状态完成必要的复原和归还，再提交自我报告。");
+    expect(result.textContent).not.toContain("结束");
+    fireEvent.click(screen.getByRole("button", { name: /报告有限结果与身份边界/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(report.command);
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it.each([
+    { id: "stage-double", result: original },
+    { id: "remember-self", result: original + "新增说明。" },
+  ])("preserves unknown case or result: $id", entry => {
+    panel(faceless({ promoted: true, cases: [{ ...cases()[0]!, ...entry }] }));
+    expect(screen.getByRole("region", { name: "实际结果与有限报告" }).textContent).toBe(`实际结果与有限报告${entry.result}`);
   });
 });

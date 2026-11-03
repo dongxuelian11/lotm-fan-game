@@ -134,7 +134,7 @@ describe("Hunter pathway dossier", () => {
     expect(onCommand).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(screen.getByRole("button", { name: /查看并准备服用「第一瓶猎人魔药」/ }));
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶猎人魔药」/ }));
-    expect(screen.getByText("hunter-potion-2")).toBeTruthy();
+    expect(screen.getByText("第2瓶猎人原瓶")).toBeTruthy();
     expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.queryByText("71%")).toBeNull();
     expect(screen.getByText("来源：导师留存的第二原瓶")).toBeTruthy();
@@ -313,5 +313,103 @@ describe("Hunter pathway dossier", () => {
     const battle = await screen.findByRole("dialog", { name: "仓库货物冲突" });
     expect(within(battle).getByText("陷阱原件：随身 1 套 · 现场 1 套 · 已损耗 0 套")).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
+  });
+});
+
+
+describe('Hunter owned original bottle guidance and labels', () => {
+  const work: HunterAction = { id: 'work-second', label: '第2瓶 · 仓库巡检', cost: '1行动', enabled: true, reason: null, command: { type: 'POTION_WORK', bottleId: 'hunter-potion-2' } };
+  function waiting(reason = '普通生活已完成2/4整周，第5周起可以服药。') {
+    const value = bottled(); value.bottles = value.bottles.slice(0, 1);
+    value.actions = [work, { ...value.actions[0]!, label: '服用第1瓶猎人魔药', enabled: false, reason }];
+    return value;
+  }
+  it.each(['普通生活已完成2/4整周，第5周起可以服药。', '当前状态不足，先休养。'])('prioritizes the public owned bottle gate: %s', reason => {
+    const value = waiting(reason), before = JSON.stringify(value);
+    const { onCommand } = panel(value);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(`服用第1瓶猎人魔药。${reason}`);
+    expect((screen.getByRole('button', { name: /查看并准备服用/ }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('button', { name: /第2瓶 · 仓库巡检/ }) as HTMLButtonElement).disabled).toBe(false);
+    expect(JSON.stringify(value)).toBe(before); expect(onCommand).not.toHaveBeenCalled();
+  });
+  it.each(['missing', '导师保管 · 劳动0/2', '已耗尽 · 排异，未晋升', '未知状态'])('does not recommend an unowned or missing bottle: %s', status => {
+    const value = waiting();
+    if (status === 'missing') value.bottles = []; else value.bottles[0]!.status = status;
+    panel(value);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(work.label);
+  });
+  it('prefers enabled consume and does not prioritize waiting bottles after promotion', () => {
+    const value = waiting(), ready = bottled().actions[1]!;
+    value.actions.push(ready); value.bottles.push(bottled().bottles[1]!);
+    const { rerender, onCommand } = panel(value);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(ready.label);
+    const promoted = { ...waiting(), promoted: true };
+    rerender(<HunterPanel hunter={promoted} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(work.label);
+  });
+  it('displays readable source and confirmation while retaining the exact consume command', async () => {
+    const value = bottled(); value.bottles = value.bottles.slice(0, 1); value.actions = value.actions.slice(0, 1);
+    value.actions[0]!.label = '服用第1瓶猎人魔药';
+    value.bottles[0]!.source = '第3周交付给你；原瓶hunter-potion-1。';
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    expect(screen.getByText('来源：第3周交付给你；第1瓶猎人原瓶。')).toBeTruthy();
+    await userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+    const confirm = screen.getByRole('region', { name: '这瓶猎人魔药的服用确认' });
+    expect(confirm.textContent).toContain('这一瓶第1瓶猎人原瓶');
+    expect(confirm.textContent).not.toContain('hunter-potion-');
+    await userEvent.click(screen.getByRole('button', { name: '暂不服用' })); expect(onCommand).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+    await userEvent.click(screen.getByRole('button', { name: '确认服用「第一瓶猎人魔药」' }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith(value.actions[0]!.command);
+    expect(JSON.stringify(value)).toBe(before);
+  });
+});
+
+
+it('prioritizes an enabled reflection over optional trap shopping without replacing practice or cargo priorities', () => {
+  const buy: HunterAction = { id: 'buy-kit', label: '购买一套陷阱原件', cost: '0行动 · 12便士', enabled: true, reason: null, command: { type: 'BUY_TRAP_KIT' } };
+  const reflect: HunterAction = { id: 'reflect', label: '复盘追踪实践与真实撤离的边界', cost: '1行动 · 扮演+28，仅一次', enabled: true, reason: null, command: { type: 'REFLECT' } };
+  const value = hunter({ promoted: true, actions: [buy, reflect] });
+  const { rerender, onCommand } = panel(value);
+  const next = () => screen.getByRole('region', { name: '猎人成长下一步' }).textContent;
+  expect(next()).toContain(reflect.label);
+  expect((screen.getByRole('button', { name: /购买一套陷阱原件/ }) as HTMLButtonElement).disabled).toBe(false);
+  for (const command of [{ type: 'PRACTICE', practiceId: 'muddy-cart' }, { type: 'RECOVER_TRAP' }] as const) {
+    const prior: HunterAction = { id: 'prior', label: '原有优先行动', cost: '1行动', enabled: true, reason: null, command };
+    rerender(<HunterPanel hunter={{ ...value, actions: [buy, reflect, prior] }} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(next()).toContain(prior.label);
+  }
+  for (const altered of [{ ...value, actions: [buy, { ...reflect, enabled: false, reason: '先完成六项实践。' }] }, { ...value, promoted: false }, { ...value, actions: [buy] }]) {
+    rerender(<HunterPanel hunter={altered} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(next()).toContain(buy.label);
+  }
+  expect(onCommand).not.toHaveBeenCalled();
+});
+
+
+describe('Exact completed hunter display points to the existing next-stage conditions', () => {
+  const old = '猎人魔药已消化，能力掌握仍按实际经历分别记录。下一序列尚未开放。';
+  const buy: HunterAction = { id: 'buy-kit', label: '购买一套陷阱原件', cost: '0行动 · 12便士', enabled: true, reason: null, command: { type: 'BUY_TRAP_KIT' } };
+  it('replaces only the known completion copy and optional shopping recommendation without submitting commands', () => {
+    const value = hunter({ promoted: true, acting: 100, digestion: old, actions: [buy] }), before = JSON.stringify(value);
+    const { onCommand } = panel(value);
+    expect(screen.queryByText(/下一序列尚未开放/)).toBeNull();
+    const summary = screen.getByRole('region', { name: '猎人成长下一步' });
+    expect(summary.textContent).toContain('查看挑衅者晋升条件');
+    expect(summary.textContent).toContain('成熟周数与原瓶要求');
+    expect(summary.textContent).not.toContain(buy.label);
+    expect(screen.getByRole('button', { name: /购买一套陷阱原件/ })).toBeTruthy();
+    expect(screen.getByRole('region', { name: '猎人能力与消化' }).textContent).toContain('查看挑衅者晋升条件');
+    expect(JSON.stringify(value)).toBe(before); expect(onCommand).not.toHaveBeenCalled();
+  });
+  it.each([{ promoted: false, acting: 100, digestion: old }, { promoted: true, acting: 99, digestion: old }, { promoted: true, acting: 100, digestion: old + '新说明。' }])('preserves unmatched completion input: %j', patch => {
+    panel(hunter({ ...patch, actions: [buy] }));
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(patch.digestion);
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(buy.label);
+  });
+  it.each([{ type: 'PRACTICE', practiceId: 'muddy-cart' }, { type: 'RECOVER_TRAP' }, { type: 'REFLECT' }] as const)('does not override an existing %s action', command => {
+    const action: HunterAction = { id: 'priority', label: '已有实际成长行动', cost: '1行动', enabled: true, reason: null, command };
+    panel(hunter({ promoted: true, acting: 100, digestion: old, actions: [buy, action] }));
+    expect(screen.getByRole('region', { name: '猎人成长下一步' }).textContent).toContain(action.label);
   });
 });

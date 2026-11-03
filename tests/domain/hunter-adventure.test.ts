@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { sliceDefaultCreationSelection } from '../../src/content/slice-creation.js';
-import { createSliceRun } from '../../src/domain/slice/index.js';
+import { createSliceRun, applySliceIntent, projectSliceState } from '../../src/domain/slice/index.js';
 import type { SliceCombatRound, SliceState } from '../../src/domain/slice/types.js';
 import { awardSeerMastery, type SeerContext } from '../../src/domain/seer/index.js';
 import { applyHunterCommand, createHunterState, validateHunterState } from '../../src/domain/hunter/index.js';
@@ -9,6 +9,7 @@ import {
   HUNTER_CARGO_STORY, HUNTER_PRACTICE_IDS, validateHunterAdventure,
 } from '../../src/domain/hunter/adventure.js';
 import { HUNTER_ABILITY_IDS, type HunterCommand } from '../../src/domain/hunter/types.js';
+import { applyProvokerCommand, projectProvoker } from '../../src/domain/provoker/index.js';
 import { resolveNormalCheck } from '../../src/resolution/normal-check.js';
 import type { PublicCoreStatKey } from '../../src/shared/contracts.js';
 
@@ -529,5 +530,87 @@ describe('hunter adventure saved-state invariants', () => {
     s.hunter.cargo.enemyStatus = 'RESISTING';
     s.seer.completedSources = s.seer.completedSources.filter(source => source !== 'hunter-cargo');
     expect(validateHunterAdventure(s)).toBe(false);
+  });
+});
+
+
+describe('finite hunter reflection after actual cargo withdrawal', () => {
+  function withdrawn() {
+    const s = ready(); buy(s);
+    for (const id of HUNTER_PRACTICE_IDS) apply(s, { type: 'PRACTICE', practiceId: id });
+    apply(s, { type: 'CARGO_FIGHT' });
+    s.combatHistory.push(round({ stance: 'RETREAT', moves: [], retreat: 'SUCCESS' }));
+    settle(s, 'RETREATED');
+    return s;
+  }
+  it.each([72, 84, 88, 100])('adds only capped28 after six practices, preserving all failed encounter facts from acting%i', acting => {
+    const s = withdrawn(); s.progression.acting = acting;
+    const before = structuredClone(s), action = hunterAdventureActions(s).find(a => a.command.type === 'REFLECT')!;
+    expect(action.enabled).toBe(true); expect(action.cost).toContain('+28'); expect(action.label).toContain('真实撤离');
+    const c = apply(s, action.command);
+    expect(s.progression.acting).toBe(Math.min(100, acting + 28));
+    expect(s.actionsRemaining).toBe(before.actionsRemaining - 1);
+    expect([c.checks, c.draws, c.awards]).toEqual([[], [], []]);
+    expect(c.notes[0]!.text).toContain('货运仍未解决');
+    const expected = structuredClone(before);
+    expected.actionsRemaining--; expected.progression.acting = Math.min(100, acting + 28); expected.seer.completedSources.push('hunter-reflection');
+    expect(s).toEqual(expected);
+    expect(validateHunterAdventure(s)).toBe(true); expect(validateHunterState(s)).toBe(true);
+    rejection(s, { type: 'REFLECT' }, /已经复盘/);
+    rejection(s, { type: 'CARGO_FIGHT' }, /不能重开/);
+    expect(hunterAdventureActions(s).some(a => a.command.type === 'REFLECT')).toBe(false);
+  });
+  it('requires six actual completed practices and preserves saved-state reflection validation', () => {
+    const s = withdrawn(), last = HUNTER_PRACTICE_IDS.at(-1)!;
+    s.hunter.observations.pop(); s.seer.completedSources = s.seer.completedSources.filter(x => x !== `hunter-practice:${last}`);
+    expect(hunterAdventureActions(s).some(a => a.command.type === 'REFLECT')).toBe(false);
+    rejection(s, { type: 'REFLECT' }, /六项/);
+    s.seer.completedSources.push('hunter-reflection'); expect(validateHunterAdventure(s)).toBe(false);
+  });
+  it.each(['AVAILABLE', 'FIGHTING', 'LOST'] as const)('does not grant withdrawal reflection for cargo %s', status => {
+    const s = withdrawn(); s.hunter.cargo.status = status;
+    expect(hunterAdventureActions(s).some(a => a.command.type === 'REFLECT')).toBe(false);
+    rejection(s, { type: 'REFLECT' });
+    s.seer.completedSources.push('hunter-reflection'); expect(validateHunterAdventure(s)).toBe(false);
+  });
+  it.each(['dead', 'health', 'mind', 'actions', 'event', 'combat', 'ordinary', 'later-stage', 'other-pathway'] as const)('keeps shared %s gate', gate => {
+    const s = withdrawn();
+    if (gate === 'dead') s.status = 'DEAD';
+    if (gate === 'health') s.health = 0;
+    if (gate === 'mind') s.mind = 0;
+    if (gate === 'actions') s.actionsRemaining = 0;
+    if (gate === 'event') s.activeEvent = { id: 'test-blocker' } as SliceState['activeEvent'];
+    if (gate === 'combat') s.combat = { round: 1 } as SliceState['combat'];
+    if (gate === 'ordinary') s.progression.pathwayId = null;
+    if (gate === 'later-stage') s.progression.sequence = 8;
+    if (gate === 'other-pathway') s.progression.pathwayId = 'audience';
+    rejection(s, { type: 'REFLECT' });
+    expect(hunterAdventureActions(s).find(a => a.command.type === 'REFLECT')?.enabled ?? false).toBe(false);
+  });
+  it('removes only the acting barrier to the existing next potion while retaining maturity and consume rules', () => {
+    const s = withdrawn();
+    applyProvokerCommand(s, { type: 'LEARN_GUIDANCE' }, context(s).ctx);
+    const bottleId = s.provoker.bottles[0]!.id;
+    applyProvokerCommand(s, { type: 'BUY_POTION', bottleId }, context(s).ctx);
+    expect(projectProvoker(s).actions.find(a => a.command.type === 'CONSUME')!.reason).toContain('扮演72/100');
+    apply(s, { type: 'REFLECT' });
+    const blocked = projectProvoker(s).actions.find(a => a.command.type === 'CONSUME')!;
+    expect(blocked.enabled).toBe(false); expect(blocked.reason).not.toContain('扮演');
+    s.week += 6;
+    expect(projectProvoker(s).actions.find(a => a.command.type === 'CONSUME')!.enabled).toBe(true);
+  });
+  it('uses shared last-action week settlement rather than hiding living expenses as a reflection cost', () => {
+    const s = withdrawn(); s.actionsRemaining = 1; s.weeklyBudget = 3;
+    s.arc.stage = 'ENDED';
+    const before = JSON.stringify(s), next = applySliceIntent(s, { type: 'HUNTER', command: { type: 'REFLECT' } });
+    expect(JSON.stringify(s)).toBe(before);
+    expect(applySliceIntent(s, { type: 'HUNTER', command: { type: 'REFLECT' } })).toEqual(next);
+    expect(next.week).toBe(s.week + 1); expect(next.actionsRemaining).toBeGreaterThan(0);
+    expect(next.cash).toBeLessThan(s.cash);
+    expect(next.progression.acting).toBe(100);
+    expect(next.hunter).toEqual(s.hunter); expect(next.combatHistory).toEqual(s.combatHistory);
+    expect(next.chronicle.some(r => (r.title + r.text).includes('生活费'))).toBe(true);
+    expect(projectSliceState(next).hunter.actions.some(a => a.command.type === 'REFLECT')).toBe(false);
+    expect(() => applySliceIntent(next, { type: 'HUNTER', command: { type: 'REFLECT' } })).toThrow();
   });
 });

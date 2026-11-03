@@ -115,7 +115,7 @@ function expectOldOriginals(s: SliceState): void {
 }
 
 describe('Mercury Snake finite originals and paid recovery', () => {
-  it('reads the untouched actual841 source with failed1, embodied2 and unbought3', () => {
+  it('reads the untouched actual841 source with failed1, embodied2 and unbought3', { tags: ['historical-replay'] }, () => {
     expect(createHash('sha256').update(readFileSync(natural)).digest('hex')).toBe(archiveHash);
     const source = readObjectEntry<SliceState>(natural, 'final'), before = stableStringify(source.mercurySnake);
     const originals = resolveMercurySnakeOriginalsSnapshot(source.mercurySnake)!;

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { HunterAction, HunterCommand, HunterProjection } from "../domain/hunter/types";
 import type { SeerResources } from "./SeerPanel";
+import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
 import "./hunter-styles.css";
 
@@ -32,10 +33,22 @@ export function HunterPanel({ hunter, resources, busy, blocked, onCommand }: Hun
   const cargoActions = hunter.actions.filter((action) => cargoTypes.includes(action.command.type));
   const actions = hunter.actions.filter((action) => action.command.type !== "CONSUME"
     && action.command.type !== "PRACTICE" && !cargoTypes.includes(action.command.type));
-  const nextAction = (hunter.promoted ? selectedPractice ?? cargoActions.find((action) => action.enabled) : undefined)
+  const waitingBottleAction = !hunter.promoted ? hunter.actions.find((action) =>
+    action.command.type === "CONSUME" && hunter.bottles.some((bottle) =>
+      action.command.type === "CONSUME" && bottle.id === action.command.bottleId && bottle.status === "已交付，尚未服用")) : undefined;
+  const nextAction = (hunter.promoted ? selectedPractice ?? cargoActions.find((action) => action.enabled)
+    ?? hunter.actions.find((action) => action.enabled && action.command.type === "REFLECT") : undefined)
     ?? hunter.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    ?? waitingBottleAction
     ?? hunter.actions.find((action) => action.enabled)
     ?? hunter.actions[0];
+  const completedDisplay = hunter.promoted && hunter.acting >= 100
+    && hunter.digestion === "猎人魔药已消化，能力掌握仍按实际经历分别记录。下一序列尚未开放。";
+  const digestion = completedDisplay
+    ? "猎人魔药已消化，能力掌握仍按实际经历分别记录。可在成长卷宗中查看挑衅者晋升条件，仍须满足成熟周数与原瓶要求。"
+    : hunter.digestion;
+  const showPromotionGuide = completedDisplay && !selectedPractice && cargoActions.length === 0
+    && !hunter.actions.some((action) => action.command.type === "REFLECT");
   const confirming = !!selectedBottle && selectedAction?.command.type === "CONSUME" && !hunter.promoted;
   const confirmationLocked = busy || blocked || submittedBottleId !== null;
 
@@ -89,9 +102,9 @@ export function HunterPanel({ hunter, resources, busy, blocked, onCommand }: Hun
       <section className="seer-panel hunter-panel seer-confirmation" aria-label="这瓶猎人魔药的服用确认" aria-busy={busy}>
         <div className="slice-eyebrow">服用前，请再确认一次</div>
         <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-        <p className="seer-bottle-source">来源：{selectedBottle.source}</p>
+        <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
         <dl className="seer-facts">
-          <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
+          <div><dt>这一瓶</dt><dd>{seerReadableText(selectedBottle.id)}</dd></div>
           <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
           <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
           <div><dt>本次消耗</dt><dd>{selectedAction.cost}</dd></div>
@@ -131,10 +144,10 @@ export function HunterPanel({ hunter, resources, busy, blocked, onCommand }: Hun
       <section className="seer-summary" aria-label="猎人成长下一步">
         <span className="seer-seal">{hunter.promoted ? "序列 9" : "猎人成长卷宗"}</span>
         <h3>{hunter.title}</h3>
-        {nextAction ? (
+        {showPromotionGuide ? <p className="seer-next"><strong>下一步：</strong>在成长卷宗中查看挑衅者晋升条件；成熟周数与原瓶要求仍须满足。</p> : nextAction ? (
           <p className="seer-next"><strong>下一步：</strong>{nextAction.label}{!nextAction.enabled && nextAction.reason ? `。${nextAction.reason}` : ""}</p>
         ) : <p className="seer-next">{hunter.promoted ? "带着已掌握的本领继续生活与调查。" : "暂时没有可执行的成长行动。"}</p>}
-        <p className="slice-muted">{hunter.digestion}</p>
+        <p className="slice-muted">{digestion}</p>
         {!hunter.promoted && <p className="slice-muted">准备期间仍可工作、调查或休养。成功晋升后，途径不能切换。</p>}
       </section>
 
@@ -197,7 +210,7 @@ export function HunterPanel({ hunter, resources, busy, blocked, onCommand }: Hun
             const action = hunter.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id);
             return (
               <article className="seer-bottle" key={bottle.id}>
-                <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
+                <div><h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><small>{bottle.status}</small></div>
                 {action && !hunter.promoted && (
                   <div>
                     <button
@@ -221,7 +234,7 @@ export function HunterPanel({ hunter, resources, busy, blocked, onCommand }: Hun
       {hunter.promoted && (
         <section className="hunter-abilities" aria-label="猎人能力与消化">
           <h3>能力与消化 · {hunter.abilities.length} 项能力</h3>
-          <p>扮演进度 {hunter.acting} · 消化：{hunter.digestion}</p>
+          <p>扮演进度 {hunter.acting} · 消化：{digestion}</p>
           <p className="slice-muted">灵性 {resources.spirituality} / {resources.maxSpirituality} · 污染 {hunter.pollution}</p>
           {hunter.abilities.map((ability) => (
             <details className="seer-fold" key={ability.id}>

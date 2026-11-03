@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import type { AudienceAction, AudienceCommand, AudienceProjection } from "../domain/audience/types";
 import type { SeerResources } from "./SeerPanel";
+import { seerReadableText } from "./seer-feedback";
 import "./seer-styles.css";
+
+function audienceSceneStatus(status: string): string {
+  switch (status) {
+    case "AVAILABLE": return "尚未观察";
+    case "OBSERVED": return "已观察，待核实";
+    case "RESOLVED": return "核验已完成";
+    default: return status;
+  }
+}
 
 interface AudiencePanelProps {
   audience: AudienceProjection;
@@ -33,12 +43,25 @@ export function AudiencePanel({ audience, resources, busy, blocked, onCommand }:
   const actions = audience.actions.filter((action) => action.command.type !== "CONSUME"
     && action.command.type !== "OBSERVE" && action.command.type !== "DISCUSS" && action.command.type !== "REFLECT"
     && (audience.discovered || action.command.type === "DISCOVER"));
+  // A prepared original bottle remains the next step even while its public gate is unmet.
+  // Reuse the action's reason rather than recommending another batch or recalculating eligibility.
+  const waitingBottleAction = !audience.promoted ? audience.actions.find((action) =>
+    action.command.type === "CONSUME" && audience.bottles.some((bottle) =>
+      action.command.type === "CONSUME" && bottle.id === action.command.bottleId && bottle.status === "已调配，尚未服用")) : undefined;
   const nextAction = (audience.promoted ? selectedSceneActions.find((action) => action.enabled) ?? reflections.find((action) => action.enabled) : undefined)
     ?? audience.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    ?? waitingBottleAction
     ?? actions.find((action) => action.enabled)
     ?? (audience.promoted ? selectedSceneActions[0] : undefined) ?? actions[0];
   const confirming = !!selectedBottle && selectedAction?.command.type === "CONSUME" && !audience.promoted;
   const confirmationLocked = busy || blocked || submittedBottleId !== null;
+
+  // Remember the initially displayed default too, not only explicit selector changes.
+  // A valid scene stays selected when a result changes which actions are enabled.
+  useEffect(() => {
+    const sceneId = audience.promoted ? selectedScene?.id ?? null : null;
+    if (selectedSceneId !== sceneId) setSelectedSceneId(sceneId);
+  }, [audience.promoted, selectedScene?.id, selectedSceneId]);
 
   useEffect(() => {
     if (selectedBottleId && (!selectedBottle || !selectedAction || audience.promoted)) {
@@ -90,9 +113,9 @@ export function AudiencePanel({ audience, resources, busy, blocked, onCommand }:
       <section className="seer-panel audience-panel seer-confirmation" aria-label="这瓶观众魔药的服用确认" aria-busy={busy}>
         <div className="slice-eyebrow">服用前，请再确认一次</div>
         <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-        <p className="seer-bottle-source">来源：{selectedBottle.source}</p>
+        <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
         <dl className="seer-facts">
-          <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
+          <div><dt>这一瓶</dt><dd>{seerReadableText(selectedBottle.id)}</dd></div>
           <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
           <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
           <div><dt>本次消耗</dt><dd>{selectedAction.cost}</dd></div>
@@ -148,13 +171,13 @@ export function AudiencePanel({ audience, resources, busy, blocked, onCommand }:
             <label className="seer-case-selector">
               选择社会情境
               <select value={selectedScene.id} disabled={busy || blocked} onChange={(event) => setSelectedSceneId(event.target.value)}>
-                {audience.scenes.map((scene) => <option key={scene.id} value={scene.id}>{scene.title} · {scene.status}</option>)}
+                {audience.scenes.map((scene) => <option key={scene.id} value={scene.id}>{scene.title} · {audienceSceneStatus(scene.status)}</option>)}
               </select>
             </label>
           )}
           <section className="seer-current-case" aria-label="当前社会情境">
             <h4>{selectedScene.title}</h4>
-            <span className="slice-muted">{selectedScene.status}</span>
+            <span className="slice-muted">{audienceSceneStatus(selectedScene.status)}</span>
             <p>{selectedScene.story}</p>
             <section className="seer-fold" aria-label="亲眼观察到的线索">
               <h4>亲眼观察到的线索</h4>
@@ -189,7 +212,7 @@ export function AudiencePanel({ audience, resources, busy, blocked, onCommand }:
             const action = audience.actions.find((entry) => entry.command.type === "CONSUME" && entry.command.bottleId === bottle.id);
             return (
               <article className="seer-bottle" key={bottle.id}>
-                <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
+                <div><h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><small>{bottle.status}</small></div>
                 {action && !audience.promoted && (
                   <div>
                     <button
