@@ -3071,12 +3071,14 @@ function RoundRecord({
         ))}
       </ol>
       <p>
-        双方最终优势：你 {round.playerAdvantage} / 对手 {round.enemyAdvantage}
-        ；本回合胜率 {displayNumber(round.winChance)}%。
+        双方最终优势：你 {displayNumber(round.playerAdvantage)} / 对手 {displayNumber(round.enemyAdvantage)}
+        ；{round.retreat === "SUCCESS" ? "参考胜率" : "本回合胜率"} {displayNumber(round.winChance)}%{round.retreat === "SUCCESS" ? "（未进入胜负盘）" : ""}。
       </p>
       <p>
         <strong>
-          {round.winner === null
+          {round.retreat === "SUCCESS"
+            ? "成功脱离战斗（未进入胜负盘）"
+            : round.winner === null
             ? "本回合没有决出胜负"
             : round.winner === "PLAYER"
               ? "你赢得本回合"

@@ -1025,3 +1025,36 @@ describe('acknowledged terminal Hunter round bookmark (UI only)', () => {
     expect(hasReadHunterRound(state)).toBe(false);
   });
 });
+
+
+describe('recorded advantage and retreat presentation', () => {
+  it.each([
+    ['SUCCESS', 'ENEMY', '成功脱离战斗（未进入胜负盘）'],
+    ['NONE', 'PLAYER', '你赢得本回合'],
+    ['NONE', 'ENEMY', '对手赢得本回合'],
+    ['NONE', null, '本回合没有决出胜负'],
+    ['FAILURE', 'ENEMY', '对手赢得本回合'],
+  ] as const)('formats public numbers without rewriting %s / %s history', async (retreat, winner, outcome) => {
+    const saved = resolvedRound(candidate => candidate.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    const state = projectSliceState(saved);
+    // Presentation matrix only: retained public data is never submitted back to the game.
+    state.lastCombatRound = { ...state.lastCombatRound!, retreat, winner,
+      playerAdvantage: 198.72000000000003, enemyAdvantage: 122, winChance: 61.963082314792966 };
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const ledger = within(dialog).getByText('查看完整回合记录', { selector: 'summary' }).closest('details')!;
+    expect(ledger.textContent).toContain('双方最终优势：你 198.7 / 对手 122');
+    expect(ledger.textContent).not.toContain('198.72000000000003');
+    expect(within(ledger).getByText(outcome, { selector: 'strong' })).toBeTruthy();
+    if (retreat === 'SUCCESS') {
+      expect(ledger.textContent).toContain('参考胜率 62.0%（未进入胜负盘）');
+      expect(within(ledger).queryByText('对手赢得本回合')).toBeNull();
+    } else {
+      expect(ledger.textContent).toContain('本回合胜率 62.0%');
+      expect(ledger.textContent).not.toContain('未进入胜负盘');
+    }
+    expect(dialog.textContent).toContain(state.lastCombatRound!.consequence);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+});
