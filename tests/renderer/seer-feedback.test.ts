@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { seerFeedbackText, seerReadableText } from '../../src/renderer/seer-feedback';
+import { seerFeedbackText, seerReadableText, marionettistPracticeText, marionettistEnvironmentText } from '../../src/renderer/seer-feedback';
 
 const discovered = { title: '一扇安静的门', text: '你拜访了占卜俱乐部指导者。对方愿意指导配方，并说明现有三批备料的购买与劳动交换方式。这次会面没有赋予你非凡能力。' };
 
@@ -195,4 +195,31 @@ it('labels exact Mindreader provenance and actual brew receipt without changing 
 it('keeps existing potion label outputs while adding Mindreader labels', () => {
   const raw = 'seer-batch-1:bottle；magician-batch-2:bottle；faceless-batch-3:bottle；marionettist-batch-4:bottle；audience-batch-5:bottle；hunter-potion-6；provoker-potion-7；mindreader-batch-8:bottle';
   expect(seerReadableText(raw)).toBe('第1批原瓶；第2批魔术师原瓶；第3批无面人原瓶；第4批秘偶大师原瓶；第5批观众原瓶；第6瓶猎人原瓶；第7瓶挑衅者原瓶；第8批读心者原瓶');
+});
+
+it.each([
+  ['同一成人与无生命木偶的对照', '你真实观察到阿伦的灵体之线，同时确认原普通木偶没有灵体之线；记录只限原现场两个已知对象，不产生秘偶或后台知识。先0行动CLOSE或WITHDRAW真实结束本次接触，再报告。'],
+  ['约定打断后的自主行动复核', '阿伦在本次真实初控中按约拍肩叫停，专注实际中断；乔纳恢复，并由本人自主抬手、走离原站位，已亲眼核实。全部仍为原成年人，没有任何秘偶。先0行动CLOSE或WITHDRAW真实结束本次接触，再报告。'],
+  ['五米内短暂初控并主动放开', '在原5米内对自愿成年乔纳实际短时初控，思维和动作变慢，你也因专注受行动限制。未推进完整转化；现在须0行动CLOSE或WITHDRAW实际释放并核实自主行动，不能带着控制离场或过周。'],
+])('relabels only the exact saved public success receipt for %s', (title, text) => {
+  const record = { title, text }, before = JSON.stringify(record), shown = seerFeedbackText(record, true);
+  expect(shown).toContain('0行动选择“实际停止能力、释放并退开”或“结束本次接触并回到生活”');
+  expect(shown).not.toMatch(/CLOSE|WITHDRAW/);
+  expect(shown).toContain(title === '五米内短暂初控并主动放开' ? '不能带着控制离场或过周。' : '真实结束本次接触，再报告。');
+  expect(seerFeedbackText({ title: '其他事件', text }, true)).toBe(text);
+  expect(seerFeedbackText({ title, text: text + '未知后续。' }, true)).toBe(text + '未知后续。');
+  expect(seerFeedbackText({ title, text: text.replace('CLOSE', 'CLOSE_EXTRA') }, true)).toBe(text.replace('CLOSE', 'CLOSE_EXTRA'));
+  expect(seerFeedbackText({ title, text: shown }, true)).toBe(shown);
+  expect(JSON.stringify(record)).toBe(before);
+});
+
+it('preserves unknown practice sentences, object identifiers and surrounding environment prose', () => {
+  const known = '准备时站位稳定，没有施术；实际接触从PERFORM开始。CLOSE与WITHDRAW均0行动，实际停止能力、释放并退开；未实施准备取消不退款。';
+  const input = '1行动、3灵性，失败照付。M5-WOOD-1。' + known + '失败须下一真实周再准备，已付灵性不返还。';
+  const shown = marionettistEnvironmentText(input);
+  expect(shown).toContain('1行动、3灵性，失败照付。M5-WOOD-1。');
+  expect(shown).toContain('未实施准备取消不退款。失败须下一真实周再准备，已付灵性不返还。');
+  expect(shown).not.toMatch(/PERFORM|CLOSE|WITHDRAW/);
+  expect(marionettistEnvironmentText(input.replace('PERFORM', 'PERFORM_EXTRA'))).toBe(input.replace('PERFORM', 'PERFORM_EXTRA'));
+  for (const text of ['PERFORM CLOSE WITHDRAW PREPARE', '未知CLOSE_EXTRA说明', 'M5-WOOD-1', '__proto__']) expect(marionettistPracticeText(text)).toBe(text);
 });

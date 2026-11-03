@@ -326,3 +326,22 @@ describe("Marionettist coast next-step guidance", () => {
     expect(summary.textContent).toContain(mode === "read-only" ? "这份卷宗只供回看" : "当前没有可执行的成长行动");
   });
 });
+
+it('shows known practice instructions with existing button names without changing commands or public input', () => {
+  const current = cases()[0]!;
+  current.observations = ['PREPARE只核对本人同意与稳定站位，PERFORM才开始真实接触。', '初控成功会使思维、动作变慢，你的专注也限制自身动作；个体抗性可使尝试失败。必须0行动CLOSE或WITHDRAW实际释放后才可报告。'];
+  current.result = '真实短时初控尚未释放，须0行动CLOSE或WITHDRAW；原人成为秘偶的完整转化没有发生。';
+  current.story = '成年自愿者与原物M5-WOOD-1。';
+  const close = action({ type: 'CLOSE', caseId: 'living-lines' }, '实际停止能力、释放并退开', true, '0行动 · 保留原成本与结果');
+  const encounter = action({ type: 'ENCOUNTER_TALK' }, '交涉原争议');
+  const value = projection({ promoted: true, cases: [current], actions: [close, encounter], environment: '准备时站位稳定，没有施术；实际接触从PERFORM开始。CLOSE与WITHDRAW均0行动，实际停止能力、释放并退开；未实施准备取消不退款。' });
+  const before = JSON.stringify(value), { onCommand } = panel(value);
+  expect(screen.getByLabelText('现场观察与本人意愿').textContent).not.toMatch(/PREPARE|PERFORM|CLOSE|WITHDRAW/);
+  expect(screen.getByLabelText('秘偶大师实际实践结果').textContent).toContain('原人成为秘偶的完整转化没有发生');
+  expect(screen.getByLabelText('秘偶大师真实冲突').textContent).toContain('未实施准备取消不退款');
+  expect(screen.getByText('成年自愿者与原物M5-WOOD-1。')).toBeTruthy();
+  expect(onCommand).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole('button', { name: /^实际停止能力、释放并退开/ }));
+  expect(onCommand).toHaveBeenCalledWith(close.command);
+  expect(JSON.stringify(value)).toBe(before);
+});

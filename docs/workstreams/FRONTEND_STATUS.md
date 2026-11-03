@@ -555,3 +555,9 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 仅读兼容新增精确 `sequence === 5 && marionettist.promoted`；S7/S6 规则、S8 显式确认写入门槛、既有 key/签名保持不变，不扩至未知高阶，不改领域／存档／随机结果。
 - 最终 combat-presentation 145 项、完整 main/renderer 类型检查、生产构建通过（既有 chunk-size 警告）；独立源码审查通过。日志 `output/clown-s5-bookmark-20261103/`。
 - 修后在自然推进后的真实 Diviner224 官方冷启零游戏命令验收：直接日常，不自动弹旧回合；手动完整纪事仍可读 round3 原骰13/32、成功撤离及对方保现场后果。未新确认或重写标记；玩家核验三档224/72/52完整状态哈希前后一致。两张实际截图及 `bookmark224-native-qa.json` 在 `output/diviner-s5-native-20261103/`；不是重演219、不是新战斗，也不代表其他未实现高阶原生验证。
+
+## 2026-11-03 — 秘偶大师实践说明使用既有中文动作名
+
+- 基线 `86ac4a898abec6e46dd9fffca7ab4a83536d3b3a`；仅 MarionettistPanel、seer-feedback、对应两测试及本条记录。真实221规则与223成功公开回执含 PREPARE/PERFORM/CLOSE/WITHDRAW；改为精确已知观察／结果句、完整环境规则句及三个精确标题＋完整成功回执的展示映射，使用现有中文按钮名。未知句原样，成本、失败不退、实际释放后报告、自愿成年人及不完整转化限制保留。
+- 不改命令、领域、原始回执、历史、存档或物品编号。最终两文件61测试、完整 main/renderer 类型与生产构建通过（既有 chunk-size 警告）；首次新增测试 caseId 类型过宽的 TS2322 已用已知 literal 修正，初错日志保留。日志 `output/marionettist-practice-copy-20261103/`。
+- 独立源码审查通过。真实 Diviner224 官方冷启零命令验收普通／大字静态规则，完整中文动作名与原费用／失败限制可滚动阅读；三档224/72/52状态哈希由试玩者核验前后一致。图及 `practice-copy224-native-qa.json` 在 `output/diviner-s5-native-20261103/`。223瞬时成功与 controlled-release 新观察修后原生仍 NOT_RUN，仅公开输入／源码／测试覆盖，未重演或制造状态。
