@@ -982,7 +982,7 @@ describe('acknowledged terminal Hunter round bookmark (UI only)', () => {
     expect(JSON.stringify(state)).toBe(before);
   });
 
-  it.each(['missing', 'other-run', 'new-round', 'changed-round', 'changed-history', 'dead', 'active', 'not-promoted', 'other-sequence', 'other-pathway', 'no-round'] as const)('does not suppress %s', scenario => {
+  it.each(['missing', 'other-run', 'new-round', 'changed-round', 'changed-history', 'dead', 'active', 'not-promoted', 'other-pathway', 'no-round'] as const)('does not suppress %s', scenario => {
     const state = terminalHunter();
     rememberHunterRound(state);
     if (scenario === 'missing') window.localStorage.clear();
@@ -993,7 +993,6 @@ describe('acknowledged terminal Hunter round bookmark (UI only)', () => {
     if (scenario === 'dead') state.status = 'DEAD';
     if (scenario === 'active') state.combat = projectSliceState(firstCase()).combat;
     if (scenario === 'not-promoted') state.hunter.promoted = false;
-    if (scenario === 'other-sequence') state.progression.sequence = 8;
     if (scenario === 'other-pathway') state.progression.pathwayId = 'diviner';
     if (scenario === 'no-round') state.lastCombatRound = null;
     expect(hasReadHunterRound(state)).toBe(false);
@@ -1010,6 +1009,43 @@ describe('acknowledged terminal Hunter round bookmark (UI only)', () => {
     const write = vi.spyOn(Storage.prototype, 'setItem');
     rememberHunterRound(state);
     expect(write).not.toHaveBeenCalled();
+  });
+
+  it.each([8, 7, 6, 5, 4, 3, 2, 1] as const)('reads the exact existing S9 acknowledgement at promoted sequence %s but cannot write there', sequence => {
+    const original = terminalHunter(); rememberHunterRound(original);
+    const state = structuredClone(original); state.progression.sequence = sequence;
+    const key = `slice-ui:hunter-read-round:${state.runId}`, saved = window.localStorage.getItem(key);
+    expect(hasReadHunterRound(state)).toBe(true);
+    const write = vi.spyOn(Storage.prototype, 'setItem');
+    rememberHunterRound(state); expect(write).not.toHaveBeenCalled();
+    state.lastCombatRound!.consequence += ' New result';
+    expect(hasReadHunterRound(state)).toBe(false);
+    rememberHunterRound(state); expect(write).not.toHaveBeenCalled();
+    expect(window.localStorage.getItem(key)).toBe(saved);
+    window.localStorage.removeItem(key); rememberHunterRound(state);
+    expect(write).not.toHaveBeenCalled(); expect(window.localStorage.getItem(key)).toBeNull();
+  });
+
+  it.each(['missing', 'other-run', 'changed-history', 'dead', 'active', 'not-promoted', 'other-pathway'] as const)('does not inherit an S9 mark after promotion when %s', scenario => {
+    const state = terminalHunter(); rememberHunterRound(state); state.progression.sequence = 8;
+    if (scenario === 'missing') window.localStorage.clear();
+    if (scenario === 'other-run') state.runId += '-other';
+    if (scenario === 'changed-history') state.combatHistory[0] = { ...state.combatHistory[0]!, consequence: 'Different previous history' };
+    if (scenario === 'dead') state.status = 'DEAD';
+    if (scenario === 'active') state.combat = projectSliceState(firstCase()).combat;
+    if (scenario === 'not-promoted') state.hunter.promoted = false;
+    if (scenario === 'other-pathway') state.progression.pathwayId = 'diviner';
+    expect(hasReadHunterRound(state)).toBe(false);
+  });
+
+  it('loads promoted Hunter without the acknowledged old modal and keeps manual history accessible', async () => {
+    const state = terminalHunter(); rememberHunterRound(state); state.progression.sequence = 8; state.provoker.promoted = true;
+    const before = JSON.stringify(state), bridge = await openSave(state);
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /完整纪事/ }));
+    const heading = await screen.findByRole('heading', { name: '战斗完整回放' });
+    expect(within(heading.closest('section')!).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled(); expect(JSON.stringify(state)).toBe(before);
   });
 
   it('uses a separate key and treats corrupt or unavailable storage as unread', () => {

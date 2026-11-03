@@ -1,8 +1,8 @@
 import type { SliceProjection } from "../domain/slice/types";
 
-function bookmark(state: SliceProjection): { key: string; value: string } | null {
+function bookmark(state: SliceProjection, allowPromotedRead = false): { key: string; value: string } | null {
   if (state.status !== "ACTIVE" || state.progression.pathwayId !== "hunter"
-    || state.progression.sequence !== 9 || !state.hunter.promoted
+    || (!allowPromotedRead && state.progression.sequence !== 9) || !state.hunter.promoted
     || state.combat !== null || !state.lastCombatRound) return null;
   return {
     key: `slice-ui:hunter-read-round:${state.runId}`,
@@ -11,7 +11,8 @@ function bookmark(state: SliceProjection): { key: string; value: string } | null
 }
 
 export function hasReadHunterRound(state: SliceProjection): boolean {
-  const mark = bookmark(state);
+  // Existing S9 acknowledgement remains readable while this Hunter progresses.
+  const mark = bookmark(state, true);
   if (!mark) return false;
   try { return window.localStorage.getItem(mark.key) === mark.value; }
   catch { return false; }
