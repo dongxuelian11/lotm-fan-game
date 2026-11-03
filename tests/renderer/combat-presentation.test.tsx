@@ -1078,9 +1078,19 @@ describe('recorded advantage and retreat presentation', () => {
       playerAdvantage: 198.72000000000003, enemyAdvantage: 122, winChance: 61.963082314792966 };
     const before = JSON.stringify(state);
     const { bridge, dialog } = await openCombat(state);
-    const ledger = within(dialog).getByText('查看完整回合记录', { selector: 'summary' }).closest('details')!;
-    expect(ledger.textContent).toContain('双方最终优势：你 198.7 / 对手 122');
-    expect(ledger.textContent).not.toContain('198.72000000000003');
+    const recordToggle = within(dialog).getByText('查看完整回合记录', { selector: 'summary' });
+    fireEvent.click(recordToggle);
+    const ledger = recordToggle.closest('details')!;
+    expect(ledger.open).toBe(true);
+    const overview = within(ledger).getByText(/双方优势概览（约）/);
+    expect(overview.textContent).toContain('你 198.7 / 对手 122');
+    expect(overview.textContent).not.toContain('198.72000000000003');
+    const precisionToggle = within(ledger).getByText('查看完整优势数值', { selector: 'summary' });
+    const precision = precisionToggle.closest('details')!;
+    expect(precision.open).toBe(false);
+    fireEvent.click(precisionToggle);
+    expect(precision.open).toBe(true);
+    expect(precision.textContent).toContain('双方最终优势：你 198.72000000000003 / 对手 122');
     expect(within(ledger).getByText(outcome, { selector: 'strong' })).toBeTruthy();
     if (retreat === 'SUCCESS') {
       expect(ledger.textContent).toContain('参考胜率 62.0%（未进入胜负盘）');
@@ -1093,4 +1103,24 @@ describe('recorded advantage and retreat presentation', () => {
     expect(bridge.submitIntent).not.toHaveBeenCalled();
     expect(JSON.stringify(state)).toBe(before);
   });
+  it.each([[0, 0], [-12.3456, 1421.5], [1309.6912, 1421.5]])('preserves exact public advantages %s / %s on demand', async (playerAdvantage, enemyAdvantage) => {
+    const state = projectSliceState(resolvedRound(candidate => candidate.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT'));
+    state.lastCombatRound = { ...state.lastCombatRound!, playerAdvantage, enemyAdvantage };
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const recordToggle = within(dialog).getByText('查看完整回合记录', { selector: 'summary' });
+    fireEvent.click(recordToggle);
+    expect(recordToggle.closest('details')!.open).toBe(true);
+    const toggle = within(dialog).getByText('查看完整优势数值', { selector: 'summary' });
+    const precision = toggle.closest('details')!;
+    expect(precision.open).toBe(false);
+    fireEvent.click(toggle);
+    expect(precision.open).toBe(true);
+    expect(precision.textContent).toContain(`双方最终优势：你 ${playerAdvantage} / 对手 ${enemyAdvantage}`);
+    fireEvent.click(toggle);
+    expect(precision.open).toBe(false);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
 });
