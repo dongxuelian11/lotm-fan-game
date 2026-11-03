@@ -1,5 +1,7 @@
 # Frontend workstream status
 
+下方首个状态块是 R1 历史接管记录，不代表当前仅有 R1 技术壳或仍处于该轮 hold。后续工作按日期条目记录；每项验证只覆盖该条目的提交与范围，不能累加为当前完整验收。当前产品版本与范围见根目录 `package.json` 和 `README.md`。
+
 ```text
 WORKSTREAM=FRONTEND
 THREAD_ID=01a04d7d-abe2-7732-9ac0-e4ff95397ca2
@@ -310,3 +312,32 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - Before draft publication, the real Door928 capture comparison failed: only the three `learnTargets` descriptions differed; private state equality passed. No archived input, pinned hash, or historical assertion was changed.
 - Restore the existing public target descriptions exactly. The current learning menu formats accurate capped gains from the existing public character and pathway fields. A small pure calculation is shared with settlement; no rule, random draw, command or projection-field change.
 - Added unchanged-projection and unknown-topic fallback coverage; final targeted tests, exact Door928 comparison, types and builds are recorded outside the repository. Native acceptance remains pending explicit restart confirmation.
+
+## 2026-11-02 — Pro review: bounded daily player clarity (local candidate)
+
+- Base: `a338a72e44e5ab3726fff62b20eefd944a9d98d1`; isolated `work/frontend-pro-player-clarity`, not a change to frozen PR55.
+- Added a wrapping paper-ledger summary in the ordinary daily view and learning/investigation drawer: current week/AP/cash, health/mind/spirituality, current-tier weekly living charge, separately labelled next-week plan, and debt balance explicitly distinguished from this week's repayment.
+- Added transient confirmed before/after public-resource feedback. Same-run intent/revision checks prevent stale or duplicate receipt summaries; failed requests, reload and return-to-title clear it. Week changes explicitly include weekly settlement, not action-only rewards. Existing action/check text, permanent history, hidden fields and combat wheels are unchanged.
+- Scope is these existing daily/drawer surfaces, not a redesign of dedicated high-sequence pages. No new objectives, mechanics, balance, projection or save-schema changes.
+- Verification: affected renderer suite 5 files / 137 tests passed; main and renderer typechecks and production build passed. Renderer typecheck was initially killed during concurrent verification; sequential rerun passed. Build retains large-chunk warnings.
+- Source review confirms wrapping, non-fixed-height layout for normal/large text; no native/browser launch, visual screenshot or real playtest was performed. Native visual/playtest acceptance remains pending explicit restart confirmation. No Git push or PR modification.
+
+## 2026-11-02 — Authorized native continuation and failed-ascent recovery (candidate)
+
+- Following explicit restart/current-test-save permission, launched the documented `npm start` with the source-defined `LOTM_TEST_USER_DATA` pointing to the existing test save. Verified revision80 against its earlier receipt, backed up SQLite outside source, and played naturally to revision96/week25/S8. No state edits, seeding, rollback or forced outcomes.
+- Built26b79f4 native checks: normal/large daily strip; LEARN capped-gain menu and empty INVESTIGATE drawer; close/reopen; WORK +180; REST crossing week with −120 living expense and AP/spirituality reset clearly labelled as net settlement; title/load clears transient feedback. Existing PR55 learning menu was viewed, but completed notes were not replayed.
+- Natural route: paper practice and reflection reached acting100; actual formula purchase, four material labour actions, helper purchase, brewing and original-bottle confirmation. Cancel/reopen preserved the bottle and resources. First S7 attempt genuinely failed roll58/chance54 at revision96: health90, mind80, rejection25, cash6, AP3. Bottle and costs remain spent.
+- This exposed a misleading next-step priority (more materials immediately after failure) and internal batch IDs in player-facing provenance/results. Candidate uses only public failed-bottle status and current recovery resources to prioritize existing daily recovery navigation; preparation remains accessible with its costs and rest never promises success. Renderer-only human labels leave saved records/command identifiers unchanged. No domain, RNG, projection, balance or combat-wheel changes.
+- Targeted final tests:4 renderer files/92 tests passed; main+renderer typechecks and production build passed (existing chunk warning). Native same-save normal/large after screenshots verified at revision96 with byte-identical state JSON before/after restart. Recovery navigation itself costs no AP. Actual subsequent rest advanced to revision97 (health90→100, mind80→95, AP3→2), and work to98; recovery/second preparation continue naturally. Stale/duplicate receipt envelope replacement cases are automated coverage, not manufactured native transactions. Full native chain and backups are outside source under output/pro-native-20261102; no runtime DB or credentials belong in source artifacts. No remote publication.
+
+## 2026-11-02 当前魔术师能力概览与详情入口
+
+基于 `d1a6c0ead4e8628fc0a7dab008c83e4248cda3e0`，在已晋升且能力列表非空时展示当前公开能力名称与实际数量，提供打开、聚焦并滚动至既有能力详情的入口；不将既有能力标为新解锁，不改领域规则、存档、随机数或实践按钮。概览继承正文与大字设置，不使用固定小字号。
+
+验证：魔术师面板定向测试 66/66、renderer typecheck、完整 production build、diff check 通过。原生同存档 revision 120（W32/S7）普通/大字截图分别两行/三行能力名，下一步均可见；详情展开、滚动与键盘焦点通过。字号检查前后 current_json SHA256 相同，未提交游戏行动。源代码和最终实际截图均经独立审查。本条仅覆盖能力概览与入口，不代表其他序列或全流程验收。
+
+## 2026-11-02 无面人原瓶显示编号
+
+基于 `0cf0c3a24e945db1a5b5e0ef97bab29fe7ed04f9`，仅扩展既有显示转换：已知无面人批次显示为“第N批备料”“第N批无面人原瓶”，用于原瓶来源、确认标识和既有反馈显示。未知标识后缀原样保留；原始来源、历史、命令与瓶ID不改。
+
+验证：无面人面板与反馈定向测试 2 文件 38/38、完整 main/renderer typecheck、production build、diff check 通过。原生同 revision 151（W41/S7）普通/大字来源与确认页显示通过，取消/返回不消耗原瓶，检查前后 current_json SHA256 不变。未重新调配；旧调配瞬时反馈的转换仅有单元测试覆盖，不宣称已原生重演。独立源码及修后实际截图审查通过。本条不代表无面人晋升或后续能力验收。

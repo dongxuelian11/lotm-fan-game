@@ -3,18 +3,25 @@
 `BMGD_POLICY=ISOLATED_PROPOSAL_ONLY`
 `BMGD_CONTRACT=docs/BMGD_ADOPTION_CONTRACT.md`
 
+R1 历史合同快照（不是当前产品状态）：
 `CONTRACT_REVISION=9 / STATUS=R1_INTEGRATED_AWAITING_PLAYER_ACCEPTANCE / PRODUCT_CODE=R1_INTEGRATED / USER_DESIGN_AUTHORITY=FINAL`
 
 本文件是所有 Codex/agent 的强制入口。Windows 路径大小写不敏感，仓库只保留规范文件名 `AGENTS.md`，不要再创建重复的 `agents.md`。
 
 当前任务目标是在 `D:\诡秘` 制作一款参考《汴京梦华》节奏、但以《诡秘之主》世界为背景的原创旁线同人单机游戏。用户拥有总设计权；当前主对话负责审查计划、冻结合同、设计决定的文档固化、Git/接线和发任务，独立设计 Grill 任务只负责逐题采访，前端与后端两个开发任务只执行已下发轮次。
 
+## 当前产品状态入口
+
+- 版本以 `package.json` 为准，已实现范围与未完成的交付项见 `README.md` 的“当前范围”；不要从下面的 R1 历史快照推断当前仅有三条途径或仍是技术壳。
+- 玩法阶段证据见 README 链接的阶段记录；近期界面改动见 `docs/workstreams/FRONTEND_STATUS.md` 的日期条目。每项测试、原生试玩、安装与发布结论只覆盖其注明的提交和范围；当前分支与 CI 状态须核对实际提交及 PR。
+- `PROJECT_STATE_LEDGER.md`、`docs/ROUND_LEDGER.md` 和本文件的 R1 状态用于追溯早期决定与轮次，不代替当前产品进度。下列架构、权限、原著与数据边界仍保留，历史完成记录不产生新的操作授权。
+
 ## 1. 自动压缩或接管后的恢复顺序
 
 不得凭聊天摘要继续。按顺序完整读取：
 
 1. `AGENTS.md`；
-2. `PROJECT_STATE_LEDGER.md` 的头部、决定登记、`CURRENT_PROGRESS`、`FOUNDATION_AUDIT` 和 `NEXT_ACTION`；
+2. `package.json` 与 `README.md` 的当前范围，再读 `PROJECT_STATE_LEDGER.md` 的头部、决定登记、`CURRENT_PROGRESS`、`FOUNDATION_AUDIT` 和 `NEXT_ACTION`（其中 R1 进度为历史记录）；
 3. `docs/MASTER_DEVELOPMENT_PLAN.md`；
 4. `docs/ARCHITECTURE_CONTRACT.md`；
 5. `docs/THREAD_HANDOFF_PROTOCOL.md`；
@@ -26,7 +33,9 @@
 
 深度链接只是导航快照，不是权威。聊天与仓库冲突时按：用户最新明确确认 > 台账 `LOCKED` 决定 > 当前轮合同 > 架构合同 > 主题文档 > 任务摘要。发现冲突必须停下并报告，不能静默选一个。
 
-## 2. 当前锁定的产品边界
+## 2. 原始产品边界与 R1 第一版范围
+
+本节的“第一版”覆盖和待确认项记录 R1 时点，不是当前实现清单；当前范围见 README，长期设计约束仍按用户最新明确决定执行。
 
 - 原作同期、受原著约束的原创旁线；玩家是原创普通人角色，不做官场模拟；
 - 第一版玩家途径：占卜家、观众、猎人，从普通人开始，目标至序列7；
@@ -42,7 +51,7 @@
 
 具体公式、决定编号、撤回项和延期项只能从 `PROJECT_STATE_LEDGER.md` 与对应主题文档读取，不以本摘要替代。
 
-## 3. 当前开发边界
+## 3. R0/R1 开发阶段记录（历史）
 
 - R0 已完成开源、Git、合同、任务注册和抗压缩状态；
 - R1 已从同一公开基线完成前后端开发、主任务接线、完整类型/测试/构建与本机两进程 Electron smoke；当前等待用户实际审查，R2 未冻结或下发；
@@ -134,12 +143,13 @@
 
 | 文件 | 作用 |
 |---|---|
-| `PROJECT_STATE_LEDGER.md` | 唯一完整设计决定与总状态登记簿 |
+| `package.json` / `README.md` | 当前版本、实现范围与交付限制 |
+| `PROJECT_STATE_LEDGER.md` | 设计决定与早期 R1 状态登记簿 |
 | `docs/README.md` | 玩法主题文档入口 |
 | `docs/MASTER_DEVELOPMENT_PLAN.md` | 分轮开发、接线和用户审查计划 |
 | `docs/ARCHITECTURE_CONTRACT.md` | 运行时、依赖、公开投影与回执边界 |
 | `docs/THREAD_HANDOFF_PROTOCOL.md` | 三任务写集、状态机、回执和接线流程 |
-| `docs/ROUND_LEDGER.md` | 当前轮次、任务 ID、提交头和证据状态 |
+| `docs/ROUND_LEDGER.md` | 早期轮次、任务 ID、提交头和证据状态的历史记录 |
 | `docs/OPEN_SOURCE_AND_GIT.md` | 许可证、分支、worktree 和发布真值 |
 | `docs/rounds/*.md` | 每轮精确合同 |
 | `docs/workstreams/*_STATUS.md` | 前端/后端抗压缩接管状态 |
@@ -147,7 +157,9 @@
 | `LOTM_CANON_GAMEPLAY_AUDIT.md` | 原著事实、知识和 RAG 边界 |
 | `V1_CHARACTER_CREATION_SPEC.md` | 第一版捏人锁定流程 |
 
-## 11. 当前接管点
+## 11. R1 历史接管点
+
+以下保留当时任务、提交与验收边界供追溯，不是当前任务状态或继续开发的起点。
 
 - 当前轮次：R1 桌面权威纵切；R0 已提交并公开发布；
 - 产品代码：`R1_INTEGRATED / LOCAL_TWO_PROCESS_ELECTRON_SMOKE_PASSED / PLAYER_ACCEPTANCE_NOT_RUN / PACKAGE_NOT_RUN`；

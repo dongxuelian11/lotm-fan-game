@@ -1704,3 +1704,32 @@ body {
   outline: 3px solid var(--slice-red);
   outline-offset: 4px;
 }
+
+/* Public daily ledger: wraps with large type, stays in the existing scroll flow. */
+.slice-daily-summary,
+.slice-settlement-summary {
+  margin: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--slice-line);
+  border-left: 3px solid #8c7751;
+  background: #eee7d7;
+  color: #302c25;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.slice-daily-summary-heading,
+.slice-daily-vitals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  justify-content: space-between;
+}
+.slice-daily-vitals { margin: 8px 0; }
+.slice-daily-vitals > div { display: flex; gap: 8px; }
+.slice-daily-vitals dd { margin: 0; font-variant-numeric: tabular-nums; }
+.slice-daily-summary p,
+.slice-settlement-summary p { margin: 5px 0; }
+.slice-daily-summary small { font-size: .85em; }
+.slice-settlement-summary ul { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 6px 0 0; padding: 0; list-style: none; }
+.slice-dialog-content > .slice-daily-summary,
+.slice-dialog-content > .slice-settlement-summary { margin-inline: 0; }
