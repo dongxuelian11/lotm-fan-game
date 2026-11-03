@@ -60,6 +60,19 @@
 .combat-roulette .slice-wheel-center { width: 84px; height: 84px; padding: 6px; }
 .combat-roulette .slice-wheel-center small { font-size: 14px; }
 .combat-roulette .slice-wheel-center strong { font-size: 20px; }
+/* Large text needs a larger dial, not smaller or clipped labels. */
+.slice-large-text .combat-roulette .slice-wheel { width: 168px; height: 168px; flex: none; }
+.slice-large-text .combat-roulette .slice-wheel-center {
+  width: 132px;
+  height: 132px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+.slice-large-text .combat-roulette .slice-wheel-center small { line-height: 1.35; white-space: nowrap; }
+.slice-large-text .combat-roulette .slice-wheel-center strong { max-width: 100%; text-wrap: balance; }
 .combat-roulette .combat-wheel-note { margin: 0; font-size: 13px; text-align: center; color: #625947; }
 .slice-battle .combat-stance-note { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0 4px; color: #625947; font-size: 14px; line-height: 1.4; text-align: center; }
 .combat-stance-note strong { color: #763d39; white-space: nowrap; }
