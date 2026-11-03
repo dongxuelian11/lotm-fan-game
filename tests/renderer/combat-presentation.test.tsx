@@ -732,6 +732,8 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
     const expectedValues = [String(round.playerCount), String(round.enemyCount), label];
 
     expect(wheelValues(wheels)).toEqual(expectedValues);
+    expect(wheels.querySelector('.spinning')).toBeNull();
+    fireEvent.click(within(wheels).getByRole('button', { name: '重播演示' }));
     expect(wheels.querySelectorAll('.slice-wheel.spinning')).toHaveLength(3);
     const ledger = within(dialog).getByText('查看完整回合记录', { selector: 'summary' })
       .closest('details');
@@ -770,6 +772,8 @@ describe('combat stage presents saved gameplay without inventing outcomes', () =
       String(round.enemyCount),
       round.retreat === 'SUCCESS' ? '未进入胜负盘' : round.winner === 'PLAYER' ? '你胜' : '对手胜',
     ]);
+    expect(wheels.querySelector('.spinning')).toBeNull();
+    fireEvent.click(within(wheels).getByRole('button', { name: '重播演示' }));
     expect(wheels.querySelectorAll('.slice-wheel.spinning')).toHaveLength(stance === 'RETREAT' ? 2 : 3);
     if (stance === 'RETREAT') {
       // Successful retreat records the opponent holding the field, without drawing the victory wheel.

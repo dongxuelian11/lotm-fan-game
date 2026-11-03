@@ -2,6 +2,7 @@ import { DailyStateSummary, SettlementSummary, settlementChange, type Settlement
 import { learningTargetDescription } from "./learning-preview";
 import { hasReadHunterRound, rememberHunterRound } from "./hunter-round-bookmark";
 import { hasReadClownRound, rememberClownRound } from "./clown-round-bookmark";
+import { CombatRoulette } from "./CombatRoulette";
 import { CombatStage, firstCaseInjuryTarget } from "./CombatStage";
 import { MotherPanel } from "./MotherPanel";
 import { JusticiarPanel } from "./JusticiarPanel";
@@ -3051,8 +3052,13 @@ function RoundRecord({
   showConsequence?: boolean;
   characterName?: string;
 }) {
+  const [showSavedWheels, setShowSavedWheels] = useState(false);
   const body = (
     <>
+      {!expanded && <details className="roulette-history" onToggle={event => setShowSavedWheels(event.currentTarget.open)}>
+        <summary>查看已保存轮盘</summary>
+        {showSavedWheels && <CombatRoulette round={round} history/>}
+      </details>}
       <p>
         姿态：{POSTURES[round.stance]} ·{" "}
         {round.first === "PLAYER" ? "你" : "对手"}先行动
@@ -3249,18 +3255,8 @@ function Combat({
           }
         />
         <CombatStage state={state} round={reveal} fast={fast} />
-        <section className="combat-roulette" aria-label="本回合转盘" key={`${state.runId}:${reveal?.round ?? 'ready'}`}>
-          <div className="slice-wheel-row">
-            <div className={`slice-wheel ${reveal && !fast ? "spinning" : ""}`}>
-              <div className="slice-wheel-center"><small>你的次数</small><strong>{reveal ? reveal.playerCount : "待结算"}</strong></div>
-            </div>
-            <div className={`slice-wheel ${reveal && !fast ? "spinning" : ""}`}>
-              <div className="slice-wheel-center"><small>对手次数</small><strong>{reveal ? reveal.enemyCount : "待结算"}</strong></div>
-            </div>
-            <div className={`slice-wheel ${reveal && reveal.retreat !== "SUCCESS" && !fast ? "spinning" : ""}`}>
-              <div className="slice-wheel-center"><small>回合胜负</small><strong>{!reveal ? "待结算" : reveal.retreat === "SUCCESS" ? "未进入胜负盘" : reveal.winner === null ? "平局" : reveal.winner === "PLAYER" ? "你胜" : "对手胜"}</strong></div>
-            </div>
-          </div>
+        <section className="combat-roulette" aria-label="本回合转盘" key={state.runId}>
+          <CombatRoulette round={reveal} fast={fast} playerWeights={battle?.playerCountWheel} enemyWeights={battle?.enemyCountWheel}/>
           <p className="combat-stance-note" role="status" aria-label="当前姿态">
             <strong>{reveal ? "本回合采用：" : "已选"}{stanceChoice?.label ?? POSTURES[shownStance]}</strong>
             {reveal && <span>已保存，回看和快速显示不重掷。{ordinaryFirstCase && "下列数字是胜势，不是健康伤害。"}</span>}
