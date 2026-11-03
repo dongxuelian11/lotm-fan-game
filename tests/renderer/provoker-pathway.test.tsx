@@ -327,3 +327,49 @@ it('shows readable original sources and confirmation while retaining exact raw c
   expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'CONSUME', bottleId: 'provoker-potion-1', confirmed: true });
   expect(JSON.stringify(value)).toBe(before);
 });
+
+
+describe('earned but unclaimed Provoker original guidance', () => {
+  function waiting() {
+    const value = bottled();
+    value.bottles = [{ ...value.bottles[0]!, status: '导师保管 · 劳动3/3' }];
+    value.actions = [
+      { id: 'work-next', label: '第2瓶仓库劳动', cost: '1行动', enabled: true, reason: null, command: { type: 'POTION_WORK', bottleId: 'provoker-potion-2' } },
+      { id: 'claim-first', label: '领取第1瓶挑衅者魔药', cost: '0行动 · 170便士', enabled: false, reason: '领取这瓶魔药需要170便士。', command: { type: 'BUY_POTION', bottleId: 'provoker-potion-1' } },
+    ];
+    return value;
+  }
+  it.each([false, true])('prioritizes the existing earned claim (enabled=%s), keeping other options and raw commands', enabled => {
+    const value = waiting(); value.actions[1]!.enabled = enabled;
+    if (enabled) value.actions[1]!.reason = null;
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    const summary = screen.getByRole('region', { name: '挑衅者成长下一步' });
+    expect(summary.textContent).toContain('下一步：领取第1瓶挑衅者魔药');
+    if (!enabled) expect(summary.textContent).toContain('领取这瓶魔药需要170便士。');
+    const work = screen.getByRole('button', { name: /第2瓶仓库劳动/ });
+    expect((work as HTMLButtonElement).disabled).toBe(false);
+    if (enabled) {
+      fireEvent.click(screen.getByRole('button', { name: /领取第1瓶挑衅者魔药/ }));
+      expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'BUY_POTION', bottleId: 'provoker-potion-1' });
+    } else expect(onCommand).not.toHaveBeenCalled();
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it.each(['导师保管 · 劳动2/3', '已耗尽 · 排异，未晋升', '未知状态', '已交付，尚未服用', 'missing', 'wrong-id'] as const)('does not invent an earned claim for %s', status => {
+    const value = waiting();
+    if (status === 'missing') value.bottles = [];
+    else if (status === 'wrong-id') value.bottles[0]!.id = 'provoker-potion-99';
+    else value.bottles[0]!.status = status;
+    panel(value);
+    expect(screen.getByRole('region', { name: '挑衅者成长下一步' }).textContent).toContain('下一步：第2瓶仓库劳动');
+  });
+  it('keeps enabled consumption before any earned claim', () => {
+    const value = waiting(); value.actions.push(bottled().actions[0]!);
+    panel(value);
+    expect(screen.getByRole('region', { name: '挑衅者成长下一步' }).textContent).toContain('下一步：服用provoker-potion-1');
+  });
+  it('does not carry preparation priority into the promoted stage', () => {
+    const value = waiting(); value.promoted = true;
+    panel(value);
+    expect(screen.getByRole('region', { name: '挑衅者成长下一步' }).textContent).toContain('下一步：第2瓶仓库劳动');
+  });
+});

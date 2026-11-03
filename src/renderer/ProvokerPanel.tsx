@@ -40,8 +40,16 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
   const actions = provoker.actions.filter((action) => action.command.type !== "CONSUME"
     && action.command.type !== "OBSERVE" && action.command.type !== "CHOOSE"
     && action.command.type !== "ENCOUNTER_TALK" && action.command.type !== "ENCOUNTER_FIGHT");
+  const earnedOriginalActions = !provoker.promoted ? provoker.actions.filter((action) =>
+    action.command.type === "BUY_POTION" && provoker.bottles.some((bottle) =>
+      action.command.type === "BUY_POTION" && bottle.id === action.command.bottleId
+      && bottle.status === "导师保管 · 劳动3/3",
+    ),
+  ) : [];
   const nextAction = (provoker.promoted ? selectedCaseActions.find((action) => action.enabled) : undefined)
     ?? provoker.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    ?? earnedOriginalActions.find((action) => action.enabled)
+    ?? earnedOriginalActions[0]
     ?? provoker.actions.find((action) => action.enabled)
     ?? provoker.actions[0];
   const confirming = !!selectedBottle && selectedBottleAction?.command.type === "CONSUME" && !provoker.promoted;
