@@ -1232,7 +1232,8 @@ body {
 .slice-large-text .slice-sources,
 .slice-large-text .slice-recent-item p,
 .slice-large-text .slice-case-focus .slice-next,
-.slice-large-text .slice-definition dt {
+.slice-large-text .slice-definition dt,
+.slice-large-text .slice-next-guide p {
   font-size: 21px;
 }
 .slice-large-text .slice-choice strong,
@@ -1243,7 +1244,8 @@ body {
 .slice-large-text .slice-modifiers,
 .slice-large-text .slice-notice,
 .slice-large-text .slice-round-record .slice-round-detail p,
-.slice-large-text .slice-settings label {
+.slice-large-text .slice-settings label,
+.slice-large-text .slice-guide-links .slice-button {
   font-size: 22px;
 }
 
