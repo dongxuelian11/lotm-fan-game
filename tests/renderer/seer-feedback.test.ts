@@ -163,3 +163,16 @@ it('labels only exact hunter original bottle IDs and preserves recorded facts', 
   expect(seerReadableText(readable)).toBe(readable);
   for (const unknown of ['第2瓶现成魔药hunter-potion-1', '第1瓶现成魔药hunter-potion-1-extra', 'hunter-potion-x', 'hunter-potion-12:bottle', 'hunter-potion-12-extra', 'other-hunter-potion-12', 'hunter-potion-123extra']) expect(seerReadableText(unknown)).toBe(unknown);
 });
+
+
+it('labels exact Provoker originals and same-number finished-potion delivery without changing raw receipts', () => {
+  const raw = '原瓶provoker-potion-12；provoker-potion-1';
+  expect(seerReadableText(raw)).toBe('第12瓶挑衅者原瓶；第1瓶挑衅者原瓶');
+  const record = { title: '挑衅者原瓶交付', text: '导师将第1瓶序列8成品魔药provoker-potion-1交到你手中，支付170便士，0行动。原瓶尚未服用。' };
+  const before = JSON.stringify(record);
+  const shown = seerFeedbackText(record, true);
+  expect(shown).toBe('导师将第1瓶序列8挑衅者成品魔药交到你手中，支付170便士，0行动。原瓶尚未服用。');
+  expect(JSON.stringify(record)).toBe(before);
+  expect(seerReadableText(shown)).toBe(shown);
+  for (const unknown of ['第2瓶序列8成品魔药provoker-potion-1', '第1瓶序列8成品魔药provoker-potion-1-extra', 'provoker-potion-x', 'provoker-potion-12:bottle', 'provoker-potion-12-extra', 'other-provoker-potion-12', 'provoker-potion-123extra']) expect(seerReadableText(unknown)).toBe(unknown);
+});

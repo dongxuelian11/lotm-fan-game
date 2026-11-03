@@ -128,7 +128,7 @@ describe("Provoker pathway dossier", () => {
     expect(onCommand).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(screen.getByRole("button", { name: /查看并准备服用「第一瓶挑衅者魔药」/ }));
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶挑衅者魔药」/ }));
-    expect(screen.getByText("provoker-potion-2")).toBeTruthy();
+    expect(screen.getByText("第2瓶挑衅者原瓶")).toBeTruthy();
     expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.queryByText("71%")).toBeNull();
     expect(screen.getByText("来源：新货源的第二原瓶")).toBeTruthy();
@@ -308,4 +308,22 @@ describe("Provoker pathway dossier", () => {
     await screen.findByRole("dialog", { name: "货栈入口冲突" });
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
+});
+
+
+it('shows readable original sources and confirmation while retaining exact raw commands', async () => {
+  const value = bottled();
+  value.bottles[0]!.source = '独立封存原瓶provoker-potion-1；并非猎人旧瓶改装。';
+  value.bottles[2]!.source = '未知provoker-potion-3:other';
+  const before = JSON.stringify(value);
+  const { onCommand } = panel(value);
+  expect(screen.getByText('来源：独立封存第1瓶挑衅者原瓶；并非猎人旧瓶改装。')).toBeTruthy();
+  expect(screen.getByText('来源：未知provoker-potion-3:other')).toBeTruthy();
+  await userEvent.click(screen.getByRole('button', { name: /查看并准备服用「第一瓶挑衅者魔药」/ }));
+  expect(screen.getByText('第1瓶挑衅者原瓶')).toBeTruthy();
+  expect(screen.getByText('来源：独立封存第1瓶挑衅者原瓶；并非猎人旧瓶改装。')).toBeTruthy();
+  expect(onCommand).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: '确认服用「第一瓶挑衅者魔药」' }));
+  expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'CONSUME', bottleId: 'provoker-potion-1', confirmed: true });
+  expect(JSON.stringify(value)).toBe(before);
 });
