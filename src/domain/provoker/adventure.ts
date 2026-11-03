@@ -1,6 +1,8 @@
 import type {SliceState} from '../slice/types.js';
 import type {SeerContext} from '../seer/index.js';
-import type {ProvokerCommand,ProvokerAction} from './types.js';
+import type {ProvokerCommand,ProvokerAction,ProvokerChoice} from './types.js';
+import {PROVOKER_CHOICE_RULES,PROVOKER_CHOICE_SUCCESS} from '../../shared/provoker-choice-rules.js';
+const choiceRules:Record<ProvokerChoice,(typeof PROVOKER_CHOICE_RULES)[keyof typeof PROVOKER_CHOICE_RULES]>=PROVOKER_CHOICE_RULES;
 const CASES=[
  {id:'invoice-claim',title:'贴在货门上的欠费告示',before:'账房贝丝请你核对一张临时告示。收费员声称这批货没有缴清费用；你可以到公开账台查看原收据与告示的具体日期。',after:'你亲眼核对：收据盖的是昨天的收款章，告示却把同一笔费用列为今天的欠费。收费员当众坚持自己从不记错。这是可核对的矛盾，不说明他的内心或全部账目。',challenge:'当面指出日期矛盾，要求他兑现自己的话',peace:'先把两份日期交给贝丝，请当事人复核'},
  {id:'queue-boast',title:'只认先后的搬运头领',before:'搬运头领威斯在院门分配空车次序。你可花时间查看公开号码单，并听他怎样向等候者说明规则。',after:'你实际听见威斯反复强调“我只认先来后到”，也看到他把熟人的晚号车插到了早号前。他重视自己当众许下的说法，这提供了针对本次行为交涉的依据，不保证他会认错。',challenge:'拿原号码单反问，让他当众说明插队',peace:'请车主按号排开，给威斯留下改正余地'},
@@ -9,6 +11,8 @@ const CASES=[
 export const PROVOKER_STORY='货栈入口的威斯扣住了本来可以通行的空车，坚持由自己重新安排顺序。贝丝希望你陪车主当面解决，原空车与货物仍由各主人保管。可以依据已经亲见的号码单交涉，也可以承担真实伤亡风险介入；退出保留争议，不会把车或同伴自动带走。';
 type Award=(source:string,amount:5|8|25)=>void;
 const won=(tier:string)=>tier==='SUCCESS'||tier==='GREAT_SUCCESS';
+const casesCompleted=(s:SliceState)=>CASES.every(c=>s.provoker.cases[c.id]?.status==='COMPLETED');
+const reflectionOutcome=(s:SliceState)=>s.provoker.encounter.status==='RESOLVED'||s.provoker.encounter.status==='RETREATED';
 function common(s:SliceState){return s.status!=='ACTIVE'?'当前周目无法行动。':s.progression.pathwayId!=='hunter'||s.progression.sequence!==8?'成为挑衅者后才能进行这些实践。':s.world.city!=='BACKLUND'?'需要本人返回贝克兰德。':s.activeEvent||s.combat?'先处理当前事件或战斗。':s.health<=0||s.mind<=0?'先休养恢复身体与精神。':s.actionsRemaining<1?'需要1行动。':null;}
 function blocked(s:SliceState,c:ProvokerCommand):string|null{
  const reason=common(s);if(reason)return reason;
@@ -19,9 +23,9 @@ function blocked(s:SliceState,c:ProvokerCommand):string|null{
   if(record.status!=='OBSERVED')return '先亲自观察，不凭空猜测人物弱点或动物位置。';
   if(record.attemptWeek===s.week)return '本周已经试过，留出时间后再来。';
   const choices=entry.id==='yard-hound'?['ATTRACT','WAIT']:['CHALLENGE','DEESCALATE'];if(!choices.includes(c.choice))return '这不是该情境的真实选择。';
-  return (c.choice==='CHALLENGE'||c.choice==='ATTRACT')&&s.spirituality<2?'这次能力实践需要2灵性。':null;
+  return (c.choice==='CHALLENGE'||c.choice==='ATTRACT')&&s.spirituality<choiceRules[c.choice].spirituality?'这次能力实践需要2灵性。':null;
  }
- if(c.type==='REFLECT')return s.provoker.reflected?'已经整理过这段经历。':CASES.some(x=>s.provoker.cases[x.id]?.status!=='COMPLETED')||s.provoker.encounter.status!=='RESOLVED'?'先完成三段实践并解决货栈争议。':null;
+ if(c.type==='REFLECT')return s.provoker.reflected?'已经整理过这段经历。':!casesCompleted(s)||!reflectionOutcome(s)?'先完成三段实践并解决货栈争议。':null;
  if(c.type==='ENCOUNTER_TALK'||c.type==='ENCOUNTER_FIGHT'){
   if(s.provoker.cases['queue-boast']?.status==='AVAILABLE')return '先观察威斯与原号码单，弄清当面争议。';
   if(s.provoker.encounter.status!=='AVAILABLE')return '本次货栈争议已经结算。';
@@ -39,7 +43,10 @@ export function provokerAdventureActions(s:SliceState):ProvokerAction[]{
   else {actions.push(add(`challenge-${c.id}`,c.challenge,'1行动 · 2灵性 · 可能被拒绝；人的冲突可能导致推搡受伤',{type:'CHOOSE',caseId:c.id,choice:c.id==='yard-hound'?'ATTRACT':'CHALLENGE'}));actions.push(add(`peace-${c.id}`,c.peace,'1行动 · 0灵性 · 沿真实普通方法解决，不保证成功',{type:'CHOOSE',caseId:c.id,choice:c.id==='yard-hound'?'WAIT':'DEESCALATE'}));}
  }
  if(s.provoker.encounter.status==='AVAILABLE'){actions.push(add('provoker-talk','陪车主当面交涉','1行动 · 意志难度14 · 原物不转移',{type:'ENCOUNTER_TALK'}));actions.push(add('provoker-fight','介入货栈争议','1行动 · 真实战斗，可能受伤或死亡；没有自动战利品',{type:'ENCOUNTER_FIGHT'}));}
- if(!s.provoker.reflected)actions.push(add('provoker-reflect','整理激怒与克制的界限','1行动 · 三实践与争议解决后 · 扮演+20仅一次',{type:'REFLECT'}));
+ if(!s.provoker.reflected){
+  const withdrew=casesCompleted(s)&&s.provoker.encounter.status==='RETREATED';
+  actions.push(withdrew?add('provoker-reflect','整理三段实践与真实撤离','1行动 · 扮演+40仅一次 · 争议仍未解决，不追加掌握或取得原物',{type:'REFLECT'}):add('provoker-reflect','整理激怒与克制的界限','1行动 · 三实践与争议解决后 · 扮演+20仅一次',{type:'REFLECT'}));
+ }
  return actions;
 }
 export function applyProvokerAdventure(s:SliceState,c:ProvokerCommand,ctx:SeerContext,award:Award){
@@ -47,12 +54,13 @@ export function applyProvokerAdventure(s:SliceState,c:ProvokerCommand,ctx:SeerCo
  if(c.type==='OBSERVE'){const entry=CASES.find(x=>x.id===c.caseId)!;s.provoker.cases[c.caseId]!.status='OBSERVED';ctx.note(entry.title,entry.after);return;}
  if(c.type==='CHOOSE'){
   const entry=CASES.find(x=>x.id===c.caseId)!,r=s.provoker.cases[c.caseId]!;r.attemptWeek=s.week;r.choice=c.choice;
-  const ability=c.choice==='CHALLENGE'||c.choice==='ATTRACT';if(ability)s.spirituality-=2;
-  const result=ctx.check(c.choice==='CHALLENGE'?'will':c.choice==='DEESCALATE'?'knowledge':'perception',c.choice==='CHALLENGE'||c.choice==='WAIT'?14:12);
-  if(won(result.tier)){r.status='COMPLETED';s.progression.acting=Math.min(100,s.progression.acting+20);award(`provoker-case:${c.caseId}`,8);ctx.note(entry.title,entry.id==='yard-hound'?'看守犬实际走进空犬舍，艾达随即关闭原门；犬仍归主人照看，没有被驯服或成为你的能力。扮演+20，单项掌握+8。':`${c.choice==='CHALLENGE'?'对方被具体矛盾激怒后亲自翻看原记录，最终改正这一次安排；仍不喜欢你的做法。':'当事人按原记录重新安排，你没有代替他作出所有决定。'} 本次事实留下记录，扮演+20，单项掌握+8。`);}
-  else {if(c.choice==='CHALLENGE'){s.health-=4;s.mind-=5;}else if(c.choice==='ATTRACT')s.mind-=5;ctx.note(entry.title,c.choice==='CHALLENGE'?'对方拒绝认错并推开你；健康−4、精神−5。原争议未解决，本周不重复尝试，可休养后再来。':c.choice==='ATTRACT'?'看守犬没有沿预期方向接近，艾达保持原门开放，你仍在隔栏安全侧；精神−5，未完成安置。':'普通协商暂未奏效；原人物和物品没有被改写，下周可再试。');}
+  const rule=choiceRules[c.choice];if(rule.spirituality)s.spirituality-=rule.spirituality;
+  const result=ctx.check(rule.attribute,rule.difficulty);
+  if(won(result.tier)){r.status='COMPLETED';s.progression.acting=Math.min(100,s.progression.acting+PROVOKER_CHOICE_SUCCESS.acting);award(`provoker-case:${c.caseId}`,PROVOKER_CHOICE_SUCCESS.mastery);ctx.note(entry.title,entry.id==='yard-hound'?'看守犬实际走进空犬舍，艾达随即关闭原门；犬仍归主人照看，没有被驯服或成为你的能力。扮演+20，单项掌握+8。':`${c.choice==='CHALLENGE'?'对方被具体矛盾激怒后亲自翻看原记录，最终改正这一次安排；仍不喜欢你的做法。':'当事人按原记录重新安排，你没有代替他作出所有决定。'} 本次事实留下记录，扮演+20，单项掌握+8。`);}
+  else {if(rule.failureHealth)s.health-=rule.failureHealth;if(rule.failureMind)s.mind-=rule.failureMind;ctx.note(entry.title,c.choice==='CHALLENGE'?'对方拒绝认错并推开你；健康−4、精神−5。原争议未解决，本周不重复尝试，可休养后再来。':c.choice==='ATTRACT'?'看守犬没有沿预期方向接近，艾达保持原门开放，你仍在隔栏安全侧；精神−5，未完成安置。':'普通协商暂未奏效；原人物和物品没有被改写，下周可再试。');}
   return;
  }
+ if(c.type==='REFLECT'&&s.provoker.encounter.status==='RETREATED'){s.provoker.reflected=true;s.seer.completedSources.push('provoker-reflection');s.progression.acting=Math.min(100,s.progression.acting+40);ctx.note('激怒与真实撤离的界限','你整理三段亲见实践与实际退出的经历：引发敌意不等于解决争议，及时退离也有代价。扮演+40，仅此一次；货栈争议仍未解决，原物仍归各主人，不追加掌握，不抹去旧失败与损失。');return;}
  if(c.type==='REFLECT'){s.provoker.reflected=true;s.seer.completedSources.push('provoker-reflection');s.progression.acting=Math.min(100,s.progression.acting+20);ctx.note('激怒不等于支配','你整理三段亲见经历和货栈结果：针对性反应依赖实际了解，也会带来敌意；克制或退出同样需要判断。扮演+20，没有追加掌握或抹去旧失败。');return;}
  const e=s.provoker.encounter;e.attemptWeek=s.week;
  if(c.type==='ENCOUNTER_TALK'){const r=ctx.check('will',14);if(won(r.tier)){e.status='RESOLVED';e.enemyStatus='SURRENDERED';s.progression.acting=Math.min(100,s.progression.acting+20);award('provoker-dispute',8);ctx.note('货道重新开放','威斯在当面记录前让开原通路，车主带走自己的空车。扮演+20、单项掌握+8，不取得他人的物品。');}else ctx.note('威斯没有让路','他仍坚持原来的安排，没有被一句话控制。可等下一周再谈，也可自行承担有伤亡风险的介入。');return;}
@@ -74,7 +82,7 @@ export function validateProvokerAdventure(s:SliceState){
   if((r.choice===null)!==(r.attemptWeek===null)||r.status==='AVAILABLE'&&r.choice!==null)return false;
   if((r.status==='COMPLETED')!==s.seer.completedSources.includes(`provoker-case:${c.id}`))return false;
  }
- if(p.reflected!==s.seer.completedSources.includes('provoker-reflection')||p.reflected&&(CASES.some(c=>p.cases[c.id]?.status!=='COMPLETED')||p.encounter.status!=='RESOLVED'))return false;
+ if(p.reflected!==s.seer.completedSources.includes('provoker-reflection')||p.reflected&&(!casesCompleted(s)||!reflectionOutcome(s)))return false;
  if((p.encounter.status==='FIGHTING')!==(s.combat?.encounterId==='PROVOKER_DISPUTE'))return false;
  if(p.encounter.status!=='AVAILABLE'&&p.cases['queue-boast']?.status==='AVAILABLE')return false;
  return true;

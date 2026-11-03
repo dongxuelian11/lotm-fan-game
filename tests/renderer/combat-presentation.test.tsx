@@ -11,6 +11,7 @@ import {
 } from '../../src/domain/slice/index.js';
 import type { SliceProjection, SliceStance, SliceState } from '../../src/domain/slice/types.js';
 import { CombatStage, firstCaseInjuryTarget } from '../../src/renderer/CombatStage.js';
+import { hasReadHunterRound, rememberHunterRound } from '../../src/renderer/hunter-round-bookmark.js';
 import { hasReadClownRound, rememberClownRound } from '../../src/renderer/clown-round-bookmark.js';
 import { SliceApp } from '../../src/renderer/SliceApp.js';
 import { DeterministicActionRandomStream } from '../../src/resolution/deterministic-random.js';
@@ -949,4 +950,177 @@ describe('acknowledged terminal Clown round bookmark (UI only)', () => {
     expect(() => rememberClownRound(state)).not.toThrow();
     expect(hasReadClownRound(state)).toBe(false);
   });
+});
+
+
+describe('acknowledged terminal Hunter round bookmark (UI only)', () => {
+  function terminalHunter() {
+    const saved = resolvedRound(state => state.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    const state = projectSliceState(applySliceIntent(saved, { type: 'CONTINUE_LIFE' }));
+    // Public presentation fixture: no authority, RNG or historical round is rewritten.
+    state.progression = { ...state.progression, pathwayId: 'hunter', sequence: 9 };
+    state.hunter.promoted = true;
+    return state;
+  }
+
+  it('requires explicit acknowledgement, retains manual history and never submits a game action', async () => {
+    const state = terminalHunter(), before = JSON.stringify(state);
+    let bridge = await openSave(state);
+    const dialog = await screen.findByRole('dialog', { name: '战斗回合结果' });
+    expect(hasReadHunterRound(state)).toBe(false);
+    fireEvent.click(within(dialog).getByRole('button', { name: '返回生活' }));
+    expect(hasReadHunterRound(state)).toBe(true);
+    expect(hasReadClownRound(state)).toBe(false);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    cleanup();
+    bridge = await openSave(state);
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /完整纪事/ }));
+    const heading = await screen.findByRole('heading', { name: '战斗完整回放' });
+    expect(within(heading.closest('section')!).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it.each(['missing', 'other-run', 'new-round', 'changed-round', 'changed-history', 'dead', 'active', 'not-promoted', 'other-pathway', 'no-round'] as const)('does not suppress %s', scenario => {
+    const state = terminalHunter();
+    rememberHunterRound(state);
+    if (scenario === 'missing') window.localStorage.clear();
+    if (scenario === 'other-run') state.runId += '-other';
+    if (scenario === 'new-round') state.combatHistory.push(structuredClone(state.lastCombatRound!));
+    if (scenario === 'changed-round') state.lastCombatRound = { ...state.lastCombatRound!, consequence: 'Different terminal result' };
+    if (scenario === 'changed-history') state.combatHistory[0] = { ...state.combatHistory[0]!, consequence: 'Changed earlier history, same length' };
+    if (scenario === 'dead') state.status = 'DEAD';
+    if (scenario === 'active') state.combat = projectSliceState(firstCase()).combat;
+    if (scenario === 'not-promoted') state.hunter.promoted = false;
+    if (scenario === 'other-pathway') state.progression.pathwayId = 'diviner';
+    if (scenario === 'no-round') state.lastCombatRound = null;
+    expect(hasReadHunterRound(state)).toBe(false);
+  });
+
+  it.each(['dead', 'active', 'not-promoted', 'other-sequence', 'other-pathway', 'no-round'] as const)('cannot write for %s', scenario => {
+    const state = terminalHunter();
+    if (scenario === 'dead') state.status = 'DEAD';
+    if (scenario === 'active') state.combat = projectSliceState(firstCase()).combat;
+    if (scenario === 'not-promoted') state.hunter.promoted = false;
+    if (scenario === 'other-sequence') state.progression.sequence = 8;
+    if (scenario === 'other-pathway') state.progression.pathwayId = 'diviner';
+    if (scenario === 'no-round') state.lastCombatRound = null;
+    const write = vi.spyOn(Storage.prototype, 'setItem');
+    rememberHunterRound(state);
+    expect(write).not.toHaveBeenCalled();
+  });
+
+  it.each([8, 7, 6, 5, 4, 3, 2, 1] as const)('reads the exact existing S9 acknowledgement at promoted sequence %s but cannot write there', sequence => {
+    const original = terminalHunter(); rememberHunterRound(original);
+    const state = structuredClone(original); state.progression.sequence = sequence;
+    const key = `slice-ui:hunter-read-round:${state.runId}`, saved = window.localStorage.getItem(key);
+    expect(hasReadHunterRound(state)).toBe(true);
+    const write = vi.spyOn(Storage.prototype, 'setItem');
+    rememberHunterRound(state); expect(write).not.toHaveBeenCalled();
+    state.lastCombatRound!.consequence += ' New result';
+    expect(hasReadHunterRound(state)).toBe(false);
+    rememberHunterRound(state); expect(write).not.toHaveBeenCalled();
+    expect(window.localStorage.getItem(key)).toBe(saved);
+    window.localStorage.removeItem(key); rememberHunterRound(state);
+    expect(write).not.toHaveBeenCalled(); expect(window.localStorage.getItem(key)).toBeNull();
+  });
+
+  it.each(['missing', 'other-run', 'changed-history', 'dead', 'active', 'not-promoted', 'other-pathway'] as const)('does not inherit an S9 mark after promotion when %s', scenario => {
+    const state = terminalHunter(); rememberHunterRound(state); state.progression.sequence = 8;
+    if (scenario === 'missing') window.localStorage.clear();
+    if (scenario === 'other-run') state.runId += '-other';
+    if (scenario === 'changed-history') state.combatHistory[0] = { ...state.combatHistory[0]!, consequence: 'Different previous history' };
+    if (scenario === 'dead') state.status = 'DEAD';
+    if (scenario === 'active') state.combat = projectSliceState(firstCase()).combat;
+    if (scenario === 'not-promoted') state.hunter.promoted = false;
+    if (scenario === 'other-pathway') state.progression.pathwayId = 'diviner';
+    expect(hasReadHunterRound(state)).toBe(false);
+  });
+
+  it('loads promoted Hunter without the acknowledged old modal and keeps manual history accessible', async () => {
+    const state = terminalHunter(); rememberHunterRound(state); state.progression.sequence = 8; state.provoker.promoted = true;
+    const before = JSON.stringify(state), bridge = await openSave(state);
+    expect(screen.queryByRole('dialog', { name: '战斗回合结果' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /完整纪事/ }));
+    const heading = await screen.findByRole('heading', { name: '战斗完整回放' });
+    expect(within(heading.closest('section')!).getByText(state.lastCombatRound!.consequence)).toBeTruthy();
+    expect(bridge.submitIntent).not.toHaveBeenCalled(); expect(JSON.stringify(state)).toBe(before);
+  });
+
+  it('uses a separate key and treats corrupt or unavailable storage as unread', () => {
+    const state = terminalHunter();
+    const key = `slice-ui:hunter-read-round:${state.runId}`;
+    window.localStorage.setItem(`slice-ui:clown-read-round:${state.runId}`, JSON.stringify([state.lastCombatRound, state.combatHistory]));
+    expect(hasReadHunterRound(state)).toBe(false);
+    window.localStorage.setItem(key, 'invalid');
+    expect(hasReadHunterRound(state)).toBe(false);
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('unavailable'); });
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('unavailable'); });
+    expect(() => rememberHunterRound(state)).not.toThrow();
+    expect(hasReadHunterRound(state)).toBe(false);
+  });
+});
+
+
+describe('recorded advantage and retreat presentation', () => {
+  it.each([
+    ['SUCCESS', 'ENEMY', '成功脱离战斗（未进入胜负盘）'],
+    ['NONE', 'PLAYER', '你赢得本回合'],
+    ['NONE', 'ENEMY', '对手赢得本回合'],
+    ['NONE', null, '本回合没有决出胜负'],
+    ['FAILURE', 'ENEMY', '对手赢得本回合'],
+  ] as const)('formats public numbers without rewriting %s / %s history', async (retreat, winner, outcome) => {
+    const saved = resolvedRound(candidate => candidate.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT');
+    const state = projectSliceState(saved);
+    // Presentation matrix only: retained public data is never submitted back to the game.
+    state.lastCombatRound = { ...state.lastCombatRound!, retreat, winner,
+      playerAdvantage: 198.72000000000003, enemyAdvantage: 122, winChance: 61.963082314792966 };
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const recordToggle = within(dialog).getByText('查看完整回合记录', { selector: 'summary' });
+    fireEvent.click(recordToggle);
+    const ledger = recordToggle.closest('details')!;
+    expect(ledger.open).toBe(true);
+    const overview = within(ledger).getByText(/双方优势概览（约）/);
+    expect(overview.textContent).toContain('你 198.7 / 对手 122');
+    expect(overview.textContent).not.toContain('198.72000000000003');
+    const precisionToggle = within(ledger).getByText('查看完整优势数值', { selector: 'summary' });
+    const precision = precisionToggle.closest('details')!;
+    expect(precision.open).toBe(false);
+    fireEvent.click(precisionToggle);
+    expect(precision.open).toBe(true);
+    expect(precision.textContent).toContain('双方最终优势：你 198.72000000000003 / 对手 122');
+    expect(within(ledger).getByText(outcome, { selector: 'strong' })).toBeTruthy();
+    if (retreat === 'SUCCESS') {
+      expect(ledger.textContent).toContain('参考胜率 62.0%（未进入胜负盘）');
+      expect(within(ledger).queryByText('对手赢得本回合')).toBeNull();
+    } else {
+      expect(ledger.textContent).toContain('本回合胜率 62.0%');
+      expect(ledger.textContent).not.toContain('未进入胜负盘');
+    }
+    expect(dialog.textContent).toContain(state.lastCombatRound!.consequence);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+  it.each([[0, 0], [-12.3456, 1421.5], [1309.6912, 1421.5]])('preserves exact public advantages %s / %s on demand', async (playerAdvantage, enemyAdvantage) => {
+    const state = projectSliceState(resolvedRound(candidate => candidate.lastCombatRound?.retreat === 'SUCCESS', 'RETREAT'));
+    state.lastCombatRound = { ...state.lastCombatRound!, playerAdvantage, enemyAdvantage };
+    const before = JSON.stringify(state);
+    const { bridge, dialog } = await openCombat(state);
+    const recordToggle = within(dialog).getByText('查看完整回合记录', { selector: 'summary' });
+    fireEvent.click(recordToggle);
+    expect(recordToggle.closest('details')!.open).toBe(true);
+    const toggle = within(dialog).getByText('查看完整优势数值', { selector: 'summary' });
+    const precision = toggle.closest('details')!;
+    expect(precision.open).toBe(false);
+    fireEvent.click(toggle);
+    expect(precision.open).toBe(true);
+    expect(precision.textContent).toContain(`双方最终优势：你 ${playerAdvantage} / 对手 ${enemyAdvantage}`);
+    fireEvent.click(toggle);
+    expect(precision.open).toBe(false);
+    expect(bridge.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(before);
+  });
+
 });

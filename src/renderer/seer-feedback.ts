@@ -17,6 +17,11 @@ export function seerReadableText(text: string): string {
       (match: string, describedNumber: string | undefined, bottleNumber: string) => {
         if (describedNumber) return describedNumber === bottleNumber ? `第${bottleNumber}瓶现成猎人魔药` : match;
         return `第${bottleNumber}瓶猎人原瓶`;
+      })
+    .replace(/(?<![A-Za-z0-9_:-])(?:第(\d+)瓶序列8成品魔药|原瓶)?provoker-potion-(\d+)(?![A-Za-z0-9_:-])/g,
+      (match: string, describedNumber: string | undefined, bottleNumber: string) => {
+        if (describedNumber) return describedNumber === bottleNumber ? `第${bottleNumber}瓶序列8挑衅者成品魔药` : match;
+        return `第${bottleNumber}瓶挑衅者原瓶`;
       });
 }
 

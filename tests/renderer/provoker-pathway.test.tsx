@@ -128,7 +128,7 @@ describe("Provoker pathway dossier", () => {
     expect(onCommand).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(screen.getByRole("button", { name: /查看并准备服用「第一瓶挑衅者魔药」/ }));
     await userEvent.click(screen.getByRole("button", { name: /查看并准备服用「第二瓶挑衅者魔药」/ }));
-    expect(screen.getByText("provoker-potion-2")).toBeTruthy();
+    expect(screen.getByText("第2瓶挑衅者原瓶")).toBeTruthy();
     expect(screen.getByText("43%")).toBeTruthy();
     expect(screen.queryByText("71%")).toBeNull();
     expect(screen.getByText("来源：新货源的第二原瓶")).toBeTruthy();
@@ -188,8 +188,8 @@ describe("Provoker pathway dossier", () => {
     expect(onCommand).toHaveBeenCalledExactlyOnceWith(choices[0]!.command);
     rerender(<ProvokerPanel provoker={{ ...value, actions: value.actions.slice(0, 1) }} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
     expect(screen.queryByRole("button", { name: /公开行动challenge/ })).toBeNull();
-    expect((screen.getByRole("combobox", { name: "选择当前情境" }) as HTMLSelectElement).value).toBe("invoice-claim");
-    expect(screen.getByRole("region", { name: "当前挑衅者情境" }).textContent).toContain("可以实际去看。");
+    expect((screen.getByRole("combobox", { name: "选择当前情境" }) as HTMLSelectElement).value).toBe("queue-boast");
+    expect(screen.getByRole("region", { name: "当前挑衅者情境" }).textContent).toContain("亲眼看到他把晚号排到早号前。");
   });
 
   it("keeps the encounter folded separately and forwards finite reflection and encounter commands", async () => {
@@ -199,7 +199,7 @@ describe("Provoker pathway dossier", () => {
     await userEvent.click(screen.getByRole("button", { name: /公开行动reflect/ }));
     expect(onCommand).toHaveBeenLastCalledWith({ type: "REFLECT" });
     await userEvent.click(screen.getByText("货栈争议"));
-    expect(screen.getByRole("region", { name: "当前货栈情境" }).textContent).toContain("实际车主保管原空车。");
+    expect(screen.getByRole("region", { name: "货栈争议历史背景" }).textContent).toContain("实际车主保管原空车。");
     for (const item of actions.slice(0, 2)) {
       await userEvent.click(screen.getByRole("button", { name: new RegExp(item.label) }));
       expect(onCommand).toHaveBeenLastCalledWith(item.command);
@@ -308,4 +308,138 @@ describe("Provoker pathway dossier", () => {
     await screen.findByRole("dialog", { name: "货栈入口冲突" });
     expect(screen.queryByRole("dialog", { name: "非凡成长" })).toBeNull();
   });
+});
+
+
+it('shows readable original sources and confirmation while retaining exact raw commands', async () => {
+  const value = bottled();
+  value.bottles[0]!.source = '独立封存原瓶provoker-potion-1；并非猎人旧瓶改装。';
+  value.bottles[2]!.source = '未知provoker-potion-3:other';
+  const before = JSON.stringify(value);
+  const { onCommand } = panel(value);
+  expect(screen.getByText('来源：独立封存第1瓶挑衅者原瓶；并非猎人旧瓶改装。')).toBeTruthy();
+  expect(screen.getByText('来源：未知provoker-potion-3:other')).toBeTruthy();
+  await userEvent.click(screen.getByRole('button', { name: /查看并准备服用「第一瓶挑衅者魔药」/ }));
+  expect(screen.getByText('第1瓶挑衅者原瓶')).toBeTruthy();
+  expect(screen.getByText('来源：独立封存第1瓶挑衅者原瓶；并非猎人旧瓶改装。')).toBeTruthy();
+  expect(onCommand).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button', { name: '确认服用「第一瓶挑衅者魔药」' }));
+  expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'CONSUME', bottleId: 'provoker-potion-1', confirmed: true });
+  expect(JSON.stringify(value)).toBe(before);
+});
+
+
+describe('earned but unclaimed Provoker original guidance', () => {
+  function waiting() {
+    const value = bottled();
+    value.bottles = [{ ...value.bottles[0]!, status: '导师保管 · 劳动3/3' }];
+    value.actions = [
+      { id: 'work-next', label: '第2瓶仓库劳动', cost: '1行动', enabled: true, reason: null, command: { type: 'POTION_WORK', bottleId: 'provoker-potion-2' } },
+      { id: 'claim-first', label: '领取第1瓶挑衅者魔药', cost: '0行动 · 170便士', enabled: false, reason: '领取这瓶魔药需要170便士。', command: { type: 'BUY_POTION', bottleId: 'provoker-potion-1' } },
+    ];
+    return value;
+  }
+  it.each([false, true])('prioritizes the existing earned claim (enabled=%s), keeping other options and raw commands', enabled => {
+    const value = waiting(); value.actions[1]!.enabled = enabled;
+    if (enabled) value.actions[1]!.reason = null;
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    const summary = screen.getByRole('region', { name: '挑衅者成长下一步' });
+    expect(summary.textContent).toContain('下一步：领取第1瓶挑衅者魔药');
+    if (!enabled) expect(summary.textContent).toContain('领取这瓶魔药需要170便士。');
+    const work = screen.getByRole('button', { name: /第2瓶仓库劳动/ });
+    expect((work as HTMLButtonElement).disabled).toBe(false);
+    if (enabled) {
+      fireEvent.click(screen.getByRole('button', { name: /领取第1瓶挑衅者魔药/ }));
+      expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'BUY_POTION', bottleId: 'provoker-potion-1' });
+    } else expect(onCommand).not.toHaveBeenCalled();
+    expect(JSON.stringify(value)).toBe(before);
+  });
+  it.each(['导师保管 · 劳动2/3', '已耗尽 · 排异，未晋升', '未知状态', '已交付，尚未服用', 'missing', 'wrong-id'] as const)('does not invent an earned claim for %s', status => {
+    const value = waiting();
+    if (status === 'missing') value.bottles = [];
+    else if (status === 'wrong-id') value.bottles[0]!.id = 'provoker-potion-99';
+    else value.bottles[0]!.status = status;
+    panel(value);
+    expect(screen.getByRole('region', { name: '挑衅者成长下一步' }).textContent).toContain('下一步：第2瓶仓库劳动');
+  });
+  it('keeps enabled consumption before any earned claim', () => {
+    const value = waiting(); value.actions.push(bottled().actions[0]!);
+    panel(value);
+    expect(screen.getByRole('region', { name: '挑衅者成长下一步' }).textContent).toContain('下一步：服用provoker-potion-1');
+  });
+  it('does not carry preparation priority into the promoted stage', () => {
+    const value = waiting(); value.promoted = true;
+    panel(value);
+    expect(screen.getByRole('region', { name: '挑衅者成长下一步' }).textContent).toContain('下一步：第2瓶仓库劳动');
+  });
+});
+
+
+describe('Provoker current case survives its action removal', () => {
+  function casesValue() {
+    return provoker({ promoted: true,
+      cases: [
+        { id: 'invoice-claim', title: '首案', story: '首案公开事实' },
+        { id: 'queue-boast', title: '次案', story: '次案公开事实' },
+        { id: 'yard-hound', title: '未提供行动的其他案', story: '不扩大下拉公开范围' },
+      ],
+      actions: [action('first', { type: 'OBSERVE', caseId: 'invoice-claim' }), action('second', { type: 'OBSERVE', caseId: 'queue-boast' })],
+    });
+  }
+  it('solidifies the automatic default and keeps it through observation, disablement and completion', async () => {
+    const value = casesValue(); const { rerender, onCommand } = panel(value);
+    const update = (next: ProvokerProjection) => rerender(<ProvokerPanel provoker={next} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    expect(screen.queryByRole('option', { name: '未提供行动的其他案' })).toBeNull();
+    update({ ...value, actions: [action('second-choice', { type: 'CHOOSE', caseId: 'queue-boast', choice: 'CHALLENGE' }), action('first-choice', { type: 'CHOOSE', caseId: 'invoice-claim', choice: 'CHALLENGE' }, { enabled: false, reason: '本周已尝试' })] });
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    update({ ...value, actions: value.actions.slice(1) });
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    expect(screen.getByRole('region', { name: '当前挑衅者情境' }).textContent).toContain('首案公开事实');
+    expect(within(screen.getByRole('group', { name: '当前情境行动' })).queryAllByRole('button')).toHaveLength(0);
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'queue-boast');
+    expect(screen.queryByRole('option', { name: '首案' })).toBeNull();
+    expect(screen.queryByRole('option', { name: '未提供行动的其他案' })).toBeNull();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+  it('falls back only when a case disappears and clears empty or non-promoted selections', () => {
+    const value = casesValue(); const { rerender, onCommand } = panel(value);
+    const update = (next: ProvokerProjection) => rerender(<ProvokerPanel provoker={next} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    update({ ...value, cases: value.cases.slice(1) });
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('queue-boast');
+    update({ ...value, cases: [], actions: [] }); expect(screen.queryByRole('combobox')).toBeNull();
+    update(value); expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    update({ ...value, promoted: false, cases: [], actions: [] });
+    update({ ...value, actions: [action('chosen', { type: 'CHOOSE', caseId: 'queue-boast', choice: 'CHALLENGE' }), ...value.actions] });
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('queue-boast');
+  });
+  it('uses the existing run key to reset a previous run selection', async () => {
+    const value = casesValue(), onCommand = vi.fn();
+    const { rerender } = render(<ProvokerPanel key="run-one" provoker={value} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    await userEvent.selectOptions(screen.getByRole('combobox'), 'queue-boast');
+    rerender(<ProvokerPanel key="run-two" provoker={value} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect((screen.getByRole('combobox') as HTMLSelectElement).value).toBe('invoice-claim');
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+});
+
+
+it.each([true, false])('labels the retained encounter story as historical background with actions=%s', hasActions => {
+  const story = '货栈入口的威斯扣住了本来可以通行的空车。原车与货物仍由主人保管。';
+  const value = provoker({ promoted: true, story,
+    actions: hasActions ? [action('talk', { type: 'ENCOUNTER_TALK' })] : [] });
+  const before = JSON.stringify(value), { onCommand } = panel(value);
+  fireEvent.click(screen.getByText('货栈争议'));
+  const background = screen.getByRole('region', { name: '货栈争议历史背景' });
+  expect(within(background).getByRole('heading', { name: '事件起因（历史背景）' })).toBeTruthy();
+  expect(within(background).getByText(story)).toBeTruthy();
+  expect(screen.queryByRole('region', { name: '当前货栈情境' })).toBeNull();
+  if (hasActions) {
+    fireEvent.click(screen.getByRole('button', { name: /公开行动talk/ }));
+    expect(onCommand).toHaveBeenCalledExactlyOnceWith({ type: 'ENCOUNTER_TALK' });
+  } else {
+    expect(screen.queryByRole('group', { name: '货栈争议行动' })).toBeNull();
+    expect(onCommand).not.toHaveBeenCalled();
+  }
+  expect(JSON.stringify(value)).toBe(before);
 });

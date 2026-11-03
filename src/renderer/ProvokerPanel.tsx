@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { ProvokerAction, ProvokerCommand, ProvokerProjection } from "../domain/provoker/types";
 import type { SeerResources } from "./SeerPanel";
+import { seerReadableText } from "./seer-feedback";
+import { provokerChoicePreview, provokerChoiceCommonNote } from "./provoker-choice-preview";
 import "./seer-styles.css";
 import "./provoker-styles.css";
 
@@ -26,12 +28,15 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
     (action) => action.command.type === "CONSUME" && action.command.bottleId === selectedBottleId,
   );
   const caseActions = provoker.actions.filter((action) => action.command.type === "OBSERVE" || action.command.type === "CHOOSE");
-  const cases = provoker.cases.filter((entry) => caseActions.some((action) =>
+  const actionableCases = provoker.cases.filter((entry) => caseActions.some((action) =>
     (action.command.type === "OBSERVE" || action.command.type === "CHOOSE") && action.command.caseId === entry.id,
   ));
-  const selectedCase = cases.find((entry) => entry.id === selectedCaseId)
-    ?? cases.find((entry) => caseActions.some((action) => action.command.type === "CHOOSE" && action.command.caseId === entry.id))
-    ?? cases[0];
+  const selectedCase = provoker.cases.find((entry) => entry.id === selectedCaseId)
+    ?? actionableCases.find((entry) => caseActions.some((action) => action.command.type === "CHOOSE" && action.command.caseId === entry.id))
+    ?? actionableCases[0];
+  // Keep only the current already-seen case alongside the original actionable choices.
+  const cases = selectedCase && !actionableCases.some((entry) => entry.id === selectedCase.id)
+    ? [...actionableCases, selectedCase] : actionableCases;
   const selectedCaseActions = selectedCase ? caseActions.filter((action) =>
     (action.command.type === "OBSERVE" || action.command.type === "CHOOSE") && action.command.caseId === selectedCase.id,
   ) : [];
@@ -39,12 +44,25 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
   const actions = provoker.actions.filter((action) => action.command.type !== "CONSUME"
     && action.command.type !== "OBSERVE" && action.command.type !== "CHOOSE"
     && action.command.type !== "ENCOUNTER_TALK" && action.command.type !== "ENCOUNTER_FIGHT");
+  const earnedOriginalActions = !provoker.promoted ? provoker.actions.filter((action) =>
+    action.command.type === "BUY_POTION" && provoker.bottles.some((bottle) =>
+      action.command.type === "BUY_POTION" && bottle.id === action.command.bottleId
+      && bottle.status === "导师保管 · 劳动3/3",
+    ),
+  ) : [];
   const nextAction = (provoker.promoted ? selectedCaseActions.find((action) => action.enabled) : undefined)
     ?? provoker.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    ?? earnedOriginalActions.find((action) => action.enabled)
+    ?? earnedOriginalActions[0]
     ?? provoker.actions.find((action) => action.enabled)
     ?? provoker.actions[0];
   const confirming = !!selectedBottle && selectedBottleAction?.command.type === "CONSUME" && !provoker.promoted;
   const confirmationLocked = busy || blocked || submittedBottleId !== null;
+
+  useEffect(() => {
+    const caseId = provoker.promoted ? selectedCase?.id ?? null : null;
+    if (selectedCaseId !== caseId) setSelectedCaseId(caseId);
+  }, [provoker.promoted, selectedCase?.id, selectedCaseId]);
 
   useEffect(() => {
     if (selectedBottleId && (!selectedBottle || !selectedBottleAction || provoker.promoted)) {
@@ -75,6 +93,7 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
   }
 
   function actionButton(action: ProvokerAction) {
+    const preview = provokerChoicePreview(action);
     return (
       <div className="seer-action" key={action.id}>
         <button
@@ -84,7 +103,8 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
           aria-describedby={action.reason ? `provoker-reason-${action.id}` : undefined}
         >
           <strong>{action.label}</strong>
-          <span className="slice-modifiers">{action.cost}</span>
+          <span className="slice-modifiers">{preview?.cost ?? action.cost}</span>
+          {preview && <span className="slice-modifiers">{preview.detail}</span>}
         </button>
         {action.reason && <p className="seer-action-reason" id={`provoker-reason-${action.id}`}>{action.reason}</p>}
       </div>
@@ -96,9 +116,9 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
       <section className="seer-panel provoker-panel seer-confirmation" aria-label="这瓶挑衅者魔药的服用确认" aria-busy={busy}>
         <div className="slice-eyebrow">服用前，请再确认一次</div>
         <h3 ref={confirmationHeading} tabIndex={-1}>{selectedBottle.title}</h3>
-        <p className="seer-bottle-source">来源：{selectedBottle.source}</p>
+        <p className="seer-bottle-source">来源：{seerReadableText(selectedBottle.source)}</p>
         <dl className="seer-facts">
-          <div><dt>这一瓶</dt><dd>{selectedBottle.id}</dd></div>
+          <div><dt>这一瓶</dt><dd>{seerReadableText(selectedBottle.id)}</dd></div>
           <div><dt>当前状态</dt><dd>{selectedBottle.status}</dd></div>
           <div><dt>服药成功率</dt><dd>{selectedBottle.chance}%</dd></div>
           <div><dt>本次消耗</dt><dd>{selectedBottleAction.cost}</dd></div>
@@ -157,6 +177,7 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
             <h4>{selectedCase.title}</h4>
             <p className="provoker-story">{selectedCase.story}</p>
             <div className="seer-actions" role="group" aria-label="当前情境行动">{selectedCaseActions.map(actionButton)}</div>
+            {selectedCaseActions.some((action) => provokerChoicePreview(action)) && <p className="slice-muted seer-small-note">{provokerChoiceCommonNote}</p>}
           </section>
         </section>
       )}
@@ -166,7 +187,7 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
       {(provoker.story || encounterActions.length > 0) && (
         <details className="seer-fold provoker-encounter">
           <summary>货栈争议</summary>
-          {provoker.story && <section aria-label="当前货栈情境"><p className="provoker-story">{provoker.story}</p></section>}
+          {provoker.story && <section aria-label="货栈争议历史背景"><h4>事件起因（历史背景）</h4><p className="provoker-story">{provoker.story}</p></section>}
           {encounterActions.length > 0 && <div className="seer-actions" role="group" aria-label="货栈争议行动">{encounterActions.map(actionButton)}</div>}
         </details>
       )}
@@ -179,7 +200,7 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
             const action = provoker.actions.find((candidate) => candidate.command.type === "CONSUME" && candidate.command.bottleId === bottle.id);
             return (
               <article className="seer-bottle" key={bottle.id}>
-                <div><h4>{bottle.title}</h4><p>来源：{bottle.source}</p><small>{bottle.status}</small></div>
+                <div><h4>{bottle.title}</h4><p>来源：{seerReadableText(bottle.source)}</p><small>{bottle.status}</small></div>
                 {action && !provoker.promoted && (
                   <div>
                     <button
