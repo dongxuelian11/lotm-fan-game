@@ -1,6 +1,8 @@
 import type {SliceState} from '../slice/types.js';
 import type {SeerContext} from '../seer/index.js';
-import type {ProvokerCommand,ProvokerAction} from './types.js';
+import type {ProvokerCommand,ProvokerAction,ProvokerChoice} from './types.js';
+import {PROVOKER_CHOICE_RULES,PROVOKER_CHOICE_SUCCESS} from '../../shared/provoker-choice-rules.js';
+const choiceRules:Record<ProvokerChoice,(typeof PROVOKER_CHOICE_RULES)[keyof typeof PROVOKER_CHOICE_RULES]>=PROVOKER_CHOICE_RULES;
 const CASES=[
  {id:'invoice-claim',title:'贴在货门上的欠费告示',before:'账房贝丝请你核对一张临时告示。收费员声称这批货没有缴清费用；你可以到公开账台查看原收据与告示的具体日期。',after:'你亲眼核对：收据盖的是昨天的收款章，告示却把同一笔费用列为今天的欠费。收费员当众坚持自己从不记错。这是可核对的矛盾，不说明他的内心或全部账目。',challenge:'当面指出日期矛盾，要求他兑现自己的话',peace:'先把两份日期交给贝丝，请当事人复核'},
  {id:'queue-boast',title:'只认先后的搬运头领',before:'搬运头领威斯在院门分配空车次序。你可花时间查看公开号码单，并听他怎样向等候者说明规则。',after:'你实际听见威斯反复强调“我只认先来后到”，也看到他把熟人的晚号车插到了早号前。他重视自己当众许下的说法，这提供了针对本次行为交涉的依据，不保证他会认错。',challenge:'拿原号码单反问，让他当众说明插队',peace:'请车主按号排开，给威斯留下改正余地'},
@@ -21,7 +23,7 @@ function blocked(s:SliceState,c:ProvokerCommand):string|null{
   if(record.status!=='OBSERVED')return '先亲自观察，不凭空猜测人物弱点或动物位置。';
   if(record.attemptWeek===s.week)return '本周已经试过，留出时间后再来。';
   const choices=entry.id==='yard-hound'?['ATTRACT','WAIT']:['CHALLENGE','DEESCALATE'];if(!choices.includes(c.choice))return '这不是该情境的真实选择。';
-  return (c.choice==='CHALLENGE'||c.choice==='ATTRACT')&&s.spirituality<2?'这次能力实践需要2灵性。':null;
+  return (c.choice==='CHALLENGE'||c.choice==='ATTRACT')&&s.spirituality<choiceRules[c.choice].spirituality?'这次能力实践需要2灵性。':null;
  }
  if(c.type==='REFLECT')return s.provoker.reflected?'已经整理过这段经历。':!casesCompleted(s)||!reflectionOutcome(s)?'先完成三段实践并解决货栈争议。':null;
  if(c.type==='ENCOUNTER_TALK'||c.type==='ENCOUNTER_FIGHT'){
@@ -52,10 +54,10 @@ export function applyProvokerAdventure(s:SliceState,c:ProvokerCommand,ctx:SeerCo
  if(c.type==='OBSERVE'){const entry=CASES.find(x=>x.id===c.caseId)!;s.provoker.cases[c.caseId]!.status='OBSERVED';ctx.note(entry.title,entry.after);return;}
  if(c.type==='CHOOSE'){
   const entry=CASES.find(x=>x.id===c.caseId)!,r=s.provoker.cases[c.caseId]!;r.attemptWeek=s.week;r.choice=c.choice;
-  const ability=c.choice==='CHALLENGE'||c.choice==='ATTRACT';if(ability)s.spirituality-=2;
-  const result=ctx.check(c.choice==='CHALLENGE'?'will':c.choice==='DEESCALATE'?'knowledge':'perception',c.choice==='CHALLENGE'||c.choice==='WAIT'?14:12);
-  if(won(result.tier)){r.status='COMPLETED';s.progression.acting=Math.min(100,s.progression.acting+20);award(`provoker-case:${c.caseId}`,8);ctx.note(entry.title,entry.id==='yard-hound'?'看守犬实际走进空犬舍，艾达随即关闭原门；犬仍归主人照看，没有被驯服或成为你的能力。扮演+20，单项掌握+8。':`${c.choice==='CHALLENGE'?'对方被具体矛盾激怒后亲自翻看原记录，最终改正这一次安排；仍不喜欢你的做法。':'当事人按原记录重新安排，你没有代替他作出所有决定。'} 本次事实留下记录，扮演+20，单项掌握+8。`);}
-  else {if(c.choice==='CHALLENGE'){s.health-=4;s.mind-=5;}else if(c.choice==='ATTRACT')s.mind-=5;ctx.note(entry.title,c.choice==='CHALLENGE'?'对方拒绝认错并推开你；健康−4、精神−5。原争议未解决，本周不重复尝试，可休养后再来。':c.choice==='ATTRACT'?'看守犬没有沿预期方向接近，艾达保持原门开放，你仍在隔栏安全侧；精神−5，未完成安置。':'普通协商暂未奏效；原人物和物品没有被改写，下周可再试。');}
+  const rule=choiceRules[c.choice];if(rule.spirituality)s.spirituality-=rule.spirituality;
+  const result=ctx.check(rule.attribute,rule.difficulty);
+  if(won(result.tier)){r.status='COMPLETED';s.progression.acting=Math.min(100,s.progression.acting+PROVOKER_CHOICE_SUCCESS.acting);award(`provoker-case:${c.caseId}`,PROVOKER_CHOICE_SUCCESS.mastery);ctx.note(entry.title,entry.id==='yard-hound'?'看守犬实际走进空犬舍，艾达随即关闭原门；犬仍归主人照看，没有被驯服或成为你的能力。扮演+20，单项掌握+8。':`${c.choice==='CHALLENGE'?'对方被具体矛盾激怒后亲自翻看原记录，最终改正这一次安排；仍不喜欢你的做法。':'当事人按原记录重新安排，你没有代替他作出所有决定。'} 本次事实留下记录，扮演+20，单项掌握+8。`);}
+  else {if(rule.failureHealth)s.health-=rule.failureHealth;if(rule.failureMind)s.mind-=rule.failureMind;ctx.note(entry.title,c.choice==='CHALLENGE'?'对方拒绝认错并推开你；健康−4、精神−5。原争议未解决，本周不重复尝试，可休养后再来。':c.choice==='ATTRACT'?'看守犬没有沿预期方向接近，艾达保持原门开放，你仍在隔栏安全侧；精神−5，未完成安置。':'普通协商暂未奏效；原人物和物品没有被改写，下周可再试。');}
   return;
  }
  if(c.type==='REFLECT'&&s.provoker.encounter.status==='RETREATED'){s.provoker.reflected=true;s.seer.completedSources.push('provoker-reflection');s.progression.acting=Math.min(100,s.progression.acting+40);ctx.note('激怒与真实撤离的界限','你整理三段亲见实践与实际退出的经历：引发敌意不等于解决争议，及时退离也有代价。扮演+40，仅此一次；货栈争议仍未解决，原物仍归各主人，不追加掌握，不抹去旧失败与损失。');return;}

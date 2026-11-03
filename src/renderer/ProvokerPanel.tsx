@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { ProvokerAction, ProvokerCommand, ProvokerProjection } from "../domain/provoker/types";
 import type { SeerResources } from "./SeerPanel";
 import { seerReadableText } from "./seer-feedback";
+import { provokerChoicePreview, provokerChoiceCommonNote } from "./provoker-choice-preview";
 import "./seer-styles.css";
 import "./provoker-styles.css";
 
@@ -92,6 +93,7 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
   }
 
   function actionButton(action: ProvokerAction) {
+    const preview = provokerChoicePreview(action);
     return (
       <div className="seer-action" key={action.id}>
         <button
@@ -101,7 +103,8 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
           aria-describedby={action.reason ? `provoker-reason-${action.id}` : undefined}
         >
           <strong>{action.label}</strong>
-          <span className="slice-modifiers">{action.cost}</span>
+          <span className="slice-modifiers">{preview?.cost ?? action.cost}</span>
+          {preview && <span className="slice-modifiers">{preview.detail}</span>}
         </button>
         {action.reason && <p className="seer-action-reason" id={`provoker-reason-${action.id}`}>{action.reason}</p>}
       </div>
@@ -174,6 +177,7 @@ export function ProvokerPanel({ provoker, resources, busy, blocked, onCommand }:
             <h4>{selectedCase.title}</h4>
             <p className="provoker-story">{selectedCase.story}</p>
             <div className="seer-actions" role="group" aria-label="当前情境行动">{selectedCaseActions.map(actionButton)}</div>
+            {selectedCaseActions.some((action) => provokerChoicePreview(action)) && <p className="slice-muted seer-small-note">{provokerChoiceCommonNote}</p>}
           </section>
         </section>
       )}
