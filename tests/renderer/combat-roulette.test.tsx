@@ -21,16 +21,28 @@ describe('public saved roulette geometry', () => {
   });
 });
 describe('saved roulette presentation', () => {
+  it('keeps saved-result status identical after a fast display is unmounted and reopened', () => {
+    const first = render(<CombatRoulette round={saved} fast/>);
+    const original = first.container.textContent;
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
+    first.unmount();
+    const reopened = render(<CombatRoulette round={saved}/>);
+    expect(reopened.container.querySelector('.is-moving')).toBeNull();
+    expect(reopened.container.textContent).toBe(original);
+  });
   it('starts loaded history still, replays and skips without mutating input', () => {
     const before=JSON.stringify(saved); const {container}=render(<CombatRoulette round={saved} history/>);
     expect(container.querySelector('.is-moving')).toBeNull();
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     expect(screen.getByText('原骰 34 / 100')).toBeTruthy();
     expect(screen.getByText('你的胜率约 62%')).toBeTruthy();
     expect(screen.queryByText(/本回合胜率约/)).toBeNull();
     fireEvent.click(screen.getByRole('button',{name:'重播演示'}));
     expect(container.querySelectorAll('.is-moving')).toHaveLength(3);
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     fireEvent.click(screen.getByRole('button',{name:'跳过动画'}));
     expect(container.querySelector('.is-moving')).toBeNull();
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     expect(JSON.stringify(saved)).toBe(before);
   });
   it('animates only a new result transition, finishes without timers, and resets planning', () => {
@@ -39,10 +51,13 @@ describe('saved roulette presentation', () => {
     expect(container.querySelector('.roulette-needle')).toBeNull();
     rerender(<CombatRoulette round={saved}/>);
     expect(container.querySelectorAll('.is-moving')).toHaveLength(3);
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     fireEvent(container.querySelectorAll('.is-moving')[2]!, new Event('webkitAnimationEnd', { bubbles: true }));
     expect(container.querySelector('.is-moving')).toBeNull();
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     rerender(<CombatRoulette round={{...saved}}/>);
     expect(container.querySelector('.is-moving')).toBeNull();
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     rerender(<CombatRoulette round={null}/>);
     expect(screen.getAllByText('待结算')).toHaveLength(3);
   });
@@ -54,6 +69,7 @@ describe('saved roulette presentation', () => {
     expect(screen.getByText('未进入胜负盘')).toBeTruthy();
     fireEvent(container.querySelectorAll('.is-moving')[1]!, new Event('webkitAnimationEnd', { bubbles: true }));
     expect(container.querySelector('.is-moving')).toBeNull();
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     rerender(<CombatRoulette round={{...saved,winner:null}} history/>);
     expect(container.querySelector('.roulette-outcome .roulette-share-player')).toBeNull();
     expect(screen.getByText('未决出胜负')).toBeTruthy();
@@ -65,9 +81,11 @@ describe('saved roulette presentation', () => {
     fireEvent.click(screen.getByRole('button',{name:'重播演示'}));
     rerender(<CombatRoulette round={saved} fast/>);
     expect(container.querySelector('.is-moving')).toBeNull();
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     expect(screen.getByRole('button',{name:'重播演示'}).hasAttribute('disabled')).toBe(true);
     rerender(<CombatRoulette round={saved}/>);
     expect(container.querySelector('.is-moving')).toBeNull();
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
   });
   it('honors reduced motion changes and cleans its listener', () => {
     let listener=()=>{}; const remove=vi.fn(); const media={matches:false,addEventListener:vi.fn((_name:string,fn:()=>void)=>{listener=fn;}),removeEventListener:remove};
@@ -76,6 +94,7 @@ describe('saved roulette presentation', () => {
     fireEvent.click(screen.getByRole('button',{name:'重播演示'}));
     act(()=>{media.matches=true;listener();});
     expect(container.querySelector('.is-moving')).toBeNull();
+    expect(screen.getByText('结果已保存，动画仅作演示')).toBeTruthy();
     expect(screen.getByRole('button',{name:'跳过动画'}).hasAttribute('disabled')).toBe(true);
     unmount(); expect(remove).toHaveBeenCalled();
   });

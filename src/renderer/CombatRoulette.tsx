@@ -87,7 +87,7 @@ export function CombatRoulette({ round, fast = false, history = false, playerWei
     {round && <div className="roulette-controls">
       <button type="button" className="slice-button" disabled={fast || reduced || lastMoving < 0} onClick={() => setPlay(old => ({ serial: old.serial + 1, active: true }))}>重播演示</button>
       <button type="button" className="slice-button" disabled={!moving} onClick={stop}>跳过动画</button>
-      {(fast || reduced) && <span>已直接显示保存结果</span>}
+      <span>结果已保存，动画仅作演示</span>
     </div>}
   </div>;
 }

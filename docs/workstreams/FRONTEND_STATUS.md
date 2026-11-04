@@ -568,3 +568,10 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - Linux Node24.22.1/Vitest4.1.11、同 canonical 原输入和 `--max-old-space-size=768` 对照：main66048与1234原第4单例、原7例整套均通过，未复现 Windows OOM。原53,482,831字节 boundaries 含37条；只将该测试的全量解析改为现有 `readObjectEntry` 读取原键，7例、顺序、旧断言、fixtures、产品代码和内存预算不变。五种键值逐条与旧查找 deepStrictEqual，缺键仍抛错。
 - 单次同环境全套实测：1234原加载33.72秒／RSS峰值999.9MiB；流式28.59秒／895.4MiB。RSS包含非堆内存；采样heap只作当前线程下界，不是全部worker堆峰值。最终原7例、既有helper测试1例、完整 main/renderer 类型及生产构建通过；独立源码审查通过。构建仅既有chunk-size警告。
 - 证据在 `output/chaos-oom-probe-20261103/` 与 `output/chaos-fixture-stream-20261103/`；最初计时壳因 `/usr/bin/time` 不存在，在测试启动前退出127，改用Python资源计量，保留记录。此为测试内存加固，不宣称 Windows CI 已验证；未推送、重试CI、改冻结头或进行游戏行动。
+
+## 2026-11-04 — 已保存轮盘回看提示保持事实一致
+
+- 基线 `1234d47c23c3cbd99dafef559ef76ead7163425d`。PR59 historical11 原 Dark Angel 重开断言失败：快速显示临时设置重置后，静止的同一保存结果少了提示。产品仅将条件提示改为恒定事实“结果已保存，动画仅作演示”，不声称当前播放阶段；指针、动画、重播、跳过、快速显示、减少动态的逻辑与按钮状态全部不变。
+- 原历史套件及全部断言、canonical fixture、领域、概率、存档均未修改。基线完整6例复现5通过／第353行失败；初版动态状态文案修好353但引起原256行新动画与冷重开文本差异，原失败日志保留，未采用该版本。
+- 最终原历史6例＋轮盘16例＋战斗展示145例，共167项通过；完整main/renderer类型与生产构建通过（既有chunk警告）。新增冷重挂及各播放阶段事实提示断言，独立只读源码审查通过。证据在 `output/roulette-reopen-status-20261104/`。
+- 仅本地Linux自动验证；修后Electron原生、Windows与远端CI仍NOT_RUN。未推送或修改冻结PR头。
