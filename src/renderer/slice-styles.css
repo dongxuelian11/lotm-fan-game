@@ -1699,6 +1699,8 @@ body.slice-modal-open {
 .slice-growth-routes > summary { cursor: pointer; color: var(--slice-ink); padding: 8px 0; }
 .slice-growth-routes[open] > summary { margin-bottom: 12px; }
 .slice-action-feedback { position: sticky; top: 0; z-index: 2; padding: 10px 16px; margin: 0 0 18px; background: #f5f0e4; border-left: 3px solid #63795e; box-shadow: 0 2px 8px #0001; font-size: 16px; }
+/* Illustrated potion milestones are long: keep them in the document flow. */
+.slice-action-feedback:has(.seer-potion-moment) { position: static; }
 .slice-action-feedback p { margin: 4px 0; }
 :where(.slice-large-text) .slice-action-feedback { font-size: 22px; line-height: 1.5; }
 

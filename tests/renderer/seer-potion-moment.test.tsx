@@ -6,6 +6,23 @@ import { SeerActionFeedback } from "../../src/renderer/SeerPotionMoment";
 
 afterEach(cleanup);
 describe("saved potion milestone presentation", () => {
+  it("keeps long potion milestones in flow while ordinary receipts remain sticky", () => {
+    const style = document.createElement("style");
+    style.textContent = readFileSync("src/renderer/slice-styles.css", "utf8");
+    document.head.append(style);
+    try {
+      const record = { title: "成为占卜家", text: "原瓶seer-batch-1:bottle已耗尽。" };
+      const view = render(<section className="slice-action-feedback"><SeerActionFeedback record={record} firstCaseResolved milestones fast /></section>);
+      const feedback = view.container.querySelector(".slice-action-feedback")!;
+      expect(getComputedStyle(feedback).position).toBe("static");
+      expect(document.activeElement).toBe(screen.getByRole("heading", { name: record.title }));
+      view.rerender(<section className="slice-action-feedback"><SeerActionFeedback record={{ title: "观察完成", text: "已记录观察结果。" }} firstCaseResolved milestones fast /></section>);
+      expect(getComputedStyle(feedback).position).toBe("sticky");
+    } finally {
+      style.remove();
+    }
+  });
+
   it.each([
     ["一瓶占卜家魔药", "第1批七项材料已全部投入调配，花费1行动、60便士。", "prepared", "调配完成 · 原瓶待服"],
     ["成为占卜家", "原瓶seer-batch-1:bottle已耗尽。精神100→90。", "success", "晋升已成 · 仍须谨慎"],

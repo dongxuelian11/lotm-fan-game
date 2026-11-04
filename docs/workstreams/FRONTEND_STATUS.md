@@ -611,3 +611,8 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 基线 `b389ae5`，独立 `fix/seer-prepared-guidance`。新手真实revision19第4周已调配首瓶，但服药尚待第5周，摘要误优先推荐第2批劳动。领域仅为PREPARED瓶公开CONSUME动作；只调整摘要优先级，未晋升时已有服药动作及其原禁用原因先于备用材料。已启用服药仍最优先，晋升后与无原瓶保持原逻辑。
 - 两文件24项测试通过，覆盖原瓶受限→可服→无原瓶的摘要、原备用行动仍可用、无命令与投影不变；独立只读源码审查无阻断。原命令、成本、确认流程、资格、随机与存档不变。
 - 首次renderer类型进程被系统Killed（exit137、无TS诊断），保留原日志，停止并行重型检查后完整串行main/renderer类型与生产构建全部通过；diff check通过，构建仅既有chunk警告。证据 `output/seer-guidance-20261105/`。真实19已自然继续晋9，不回滚重演；修后目标原生NOT_RUN。尚未推送，不修改冻结PR。
+
+### 2026-11-05 长魔药里程碑不再悬浮遮挡（本地候选）
+- 基线 `b389ae5`，独立 `fix/potion-feedback-flow`。真实新手rev21晋升图中，旧滚动位置使sticky长结果遮挡“已耗尽魔药记录”；标题本就在sticky可见区，既有focus未带回正文起点。仅含.seer-potion-moment插画的结果容器改position:static，其他短回执及原小丑/魔术师例外保持原样；不添加强制滚动、不改标题focus或任何结果/规则/存档。
+- 两文件7项测试通过，覆盖四类魔药里程碑既有文本/焦点/动态设置及新CSS静态流→普通回执sticky。独立源码审查无阻断。截图来源 `output/natural-continuation-20261104/rev21-promotion-success-sticky.png`。
+- 完整main/renderer类型检查、生产构建及diff check通过（既有chunk体积警告），证据 `output/potion-feedback-20261105/`。修后原生滚动/遮挡/焦点待核，未回滚或重演晋升，尚未推送。
