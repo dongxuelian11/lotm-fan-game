@@ -33,6 +33,10 @@ body {
   overflow: auto;
   background: #202728;
 }
+/* A dossier owns scrolling until it closes; the daily page stays in place. */
+body.slice-modal-open {
+  overflow: hidden;
+}
 .slice-shell {
   min-height: 100dvh;
   color: var(--slice-ink);
@@ -706,6 +710,7 @@ body {
     sans-serif;
 }
 .slice-dialog {
+  overscroll-behavior: contain;
   max-height: calc(100dvh - 60px);
   width: min(1220px, 100%);
   overflow: auto;

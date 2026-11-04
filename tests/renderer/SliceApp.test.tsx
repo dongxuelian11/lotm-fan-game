@@ -405,6 +405,31 @@ describe("readable playable slice", () => {
         within(screen.getByRole("dialog")).getByText(record.text),
       ).toBeTruthy();
   }, 15_000);
+  it("locks background scrolling only while a dossier is open and cleans up on unmount", async () => {
+    const state = projection();
+    const original = JSON.stringify(state);
+    const b = bridge(state);
+    await enter(state, b);
+    document.body.classList.add("unrelated-setting");
+    expect(document.body.classList.contains("slice-modal-open")).toBe(false);
+    await userEvent.click(screen.getByRole("button", { name: /学习，1行动/ }));
+    expect(document.body.classList.contains("slice-modal-open")).toBe(true);
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.body.classList.contains("slice-modal-open")).toBe(false);
+    await userEvent.click(screen.getByRole("button", { name: /完整纪事/ }));
+    expect(document.body.classList.contains("slice-modal-open")).toBe(true);
+    await userEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: /关闭/ }));
+    expect(document.body.classList.contains("slice-modal-open")).toBe(false);
+    await userEvent.click(screen.getByRole("button", { name: /学习，1行动/ }));
+    expect(document.body.classList.contains("slice-modal-open")).toBe(true);
+    cleanup();
+    expect(document.body.classList.contains("slice-modal-open")).toBe(false);
+    expect(document.body.classList.contains("unrelated-setting")).toBe(true);
+    document.body.classList.remove("unrelated-setting");
+    expect(b.submitIntent).not.toHaveBeenCalled();
+    expect(JSON.stringify(state)).toBe(original);
+  });
   it("keeps a blocking event inert, traps keyboard focus and ignores Escape", async () => {
     const event = {
       instanceId: "event-one",
@@ -438,7 +463,9 @@ describe("readable playable slice", () => {
     expect((document.querySelector(".slice-shell") as HTMLElement).inert).toBe(
       true,
     );
+    expect(document.body.classList.contains("slice-modal-open")).toBe(true);
     fireEvent.keyDown(document, { key: "Escape" });
+    expect(document.body.classList.contains("slice-modal-open")).toBe(true);
     expect(screen.getByRole("dialog", { name: "消失的夜班" })).toBeTruthy();
     const buttons = within(dialog).getAllByRole("button");
     buttons[buttons.length - 1]!.focus();

@@ -600,3 +600,8 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - `action-feedback-style`、`SliceApp`、`daily-state-summary` 共 21 项通过；完整 main/renderer 类型检查、生产构建及 diff check 通过。样式测试按真实先小丑后通用 CSS 顺序检查计算样式；不代替布局验收。
 - 初次新增级联断言误将 computed px 期待为 em，失败日志保留；修正为原计算值对照后重跑通过。独立源码审查通过。
 - 官方冷启同新手 revision 9 后瞬时会面回执已消失：目标 22px 长反馈与 1280 目标布局均 NOT_RUN，不重演行动。1364 普通/大字一般导航、Tab 焦点关闭及 Return/Escape 通过；独立试玩者核验新手及旧三档哈希不变。证据 `output/large-feedback-native-20261104/native-qa.json`，不以一般导航代替目标反馈验收。Windows 未验证。
+
+### 2026-11-05 卷宗弹层滚动隔离（本地候选）
+- 基线 `b389ae5`，独立 `fix/modal-scroll-isolation`。新手真实配方截图同时可见卷宗与底层页面滚动条；源码原先只令底层 inert，未锁定页面滚动。仅将 body 滚动锁绑定既有 modalOpen 生命周期，关闭/卸载恢复，卷宗 overflow:auto 保留并加 overscroll-behavior:contain。未改规则、命令、存档、文本或版式尺寸。
+- 两文件18项测试通过，覆盖开启/关闭/Escape/重复开启/卸载、不干扰其他body类、阻塞事件Escape保持锁、无命令/公开投影不变及CSS计算样式。独立源码审查通过。测试不冒充真实滚轮/边界滚动/位置恢复验收；原生与Windows均待核。
+- 完整main/renderer类型检查、生产构建及diff check均通过（既有chunk体积警告）。证据 `output/modal-scroll-20261105/`；尚未推送，不修改冻结PR。

@@ -4443,8 +4443,10 @@ export function SliceApp() {
   }, [large]);
   useEffect(() => {
     if (shell.current) shell.current.inert = modalOpen;
+    document.body.classList.toggle("slice-modal-open", modalOpen);
     return () => {
       if (shell.current) shell.current.inert = false;
+      document.body.classList.remove("slice-modal-open");
     };
   }, [modalOpen]);
   async function execute(envelope: SliceEnvelope) {
