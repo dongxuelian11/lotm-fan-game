@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { FacelessCommand, FacelessProjection } from "../domain/faceless/types";
 import type { MarionettistAction, MarionettistCommand, MarionettistProjection } from "../domain/marionettist/types";
 import type { SeerResources } from "./SeerPanel";
-import { seerReadableText } from "./seer-feedback";
+import { seerReadableText, marionettistPracticeText, marionettistEnvironmentText } from "./seer-feedback";
 import "./seer-styles.css";
 
 const CASE_STATUS: Record<string, string> = {
@@ -283,17 +283,17 @@ export function MarionettistPanel({ marionettist, resources, busy, blocked = fal
         <h4>{selectedCase.title}</h4><p>{selectedCase.story}</p>
         <p className="slice-muted">{selectedCase.contactOpen} · 实际结束 {selectedCase.closes} 次</p>
         {selectedCase.observations.length > 0 && <section aria-label="现场观察与本人意愿"><h4>实际观察</h4>
-          <ul>{selectedCase.observations.map((observation, index) => <li key={`${selectedCase.id}-${index}`}>{observation}</li>)}</ul>
+          <ul>{selectedCase.observations.map((observation, index) => <li key={`${selectedCase.id}-${index}`}>{marionettistPracticeText(observation)}</li>)}</ul>
         </section>}
         <p>{selectedCase.preparation || "尚无待执行的准备；选定方法不会提前施术。"}</p>
-        {selectedCase.result && <section className="slice-notice" aria-label="秘偶大师实际实践结果" aria-live="polite"><h4>实际结果</h4><p>{selectedCase.result}</p></section>}
+        {selectedCase.result && <section className="slice-notice" aria-label="秘偶大师实际实践结果" aria-live="polite"><h4>实际结果</h4><p>{marionettistPracticeText(selectedCase.result)}</p></section>}
         {selectedCaseActions.length > 0 && <div className="magician-action-list" role="group" aria-label="当前秘偶大师实践行动">{selectedCaseActions.map(actionButton)}</div>}
         <p className="slice-muted">和平练习不会制造秘偶。实际释放与结束接触为0行动，不退款、不治疗，也不抹去失败。受影响的意志不等于本人同意。</p>
       </section>
     </section>}
 
     {encounterActions.length > 0 && <section aria-label="秘偶大师真实冲突"><h3>现场争议</h3>
-      {marionettist.environment && <p>{marionettist.environment}</p>}
+      {marionettist.environment && <p>{marionettistEnvironmentText(marionettist.environment)}</p>}
       <div className="magician-action-list">{encounterActions.map(actionButton)}</div>
     </section>}
     {growthActions.length > 0 && <div className="magician-action-list" role="group" aria-label="秘偶大师成长行动">{growthActions.map(actionButton)}</div>}

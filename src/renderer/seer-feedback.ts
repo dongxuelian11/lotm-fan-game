@@ -13,6 +13,8 @@ export function seerReadableText(text: string): string {
     .replace(/(?<![A-Za-z0-9_:-])marionettist-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料')
     .replace(/(?<![A-Za-z0-9_:-])(?:原瓶)?audience-batch-(\d+):bottle(?![A-Za-z0-9_:-])/g, '第$1批观众原瓶')
     .replace(/(?<![A-Za-z0-9_:-])audience-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料')
+    .replace(/(?<![A-Za-z0-9_:-])(?:原瓶)?mindreader-batch-(\d+):bottle(?![A-Za-z0-9_:-])/g, '第$1批读心者原瓶')
+    .replace(/(?<![A-Za-z0-9_:-])mindreader-batch-(\d+)(?![A-Za-z0-9_:-])/g, '第$1批备料')
     .replace(/(?<![A-Za-z0-9_:-])(?:第(\d+)瓶现成魔药|原瓶)?hunter-potion-(\d+)(?![A-Za-z0-9_:-])/g,
       (match: string, describedNumber: string | undefined, bottleNumber: string) => {
         if (describedNumber) return describedNumber === bottleNumber ? `第${bottleNumber}瓶现成猎人魔药` : match;
@@ -25,9 +27,33 @@ export function seerReadableText(text: string): string {
       });
 }
 
+// Only known public practice sentences are relabeled; commands and saved prose remain untouched.
+const RELEASE_CHOICES = '“实际停止能力、释放并退开”或“结束本次接触并回到生活”';
+const MARIONETTIST_PRACTICE_COPY: Readonly<Record<string, string>> = {
+  'PREPARE只核对本人同意与稳定站位，PERFORM才开始真实接触。': '“准备有限灵体之线实践”只核对本人同意与稳定站位，“实际进行短时能力实践”才开始真实接触。',
+  '初控成功会使思维、动作变慢，你的专注也限制自身动作；个体抗性可使尝试失败。必须0行动CLOSE或WITHDRAW实际释放后才可报告。': `初控成功会使思维、动作变慢，你的专注也限制自身动作；个体抗性可使尝试失败。必须以0行动选择${RELEASE_CHOICES}，实际释放后才可报告。`,
+  '真实短时初控尚未释放，须0行动CLOSE或WITHDRAW；原人成为秘偶的完整转化没有发生。': `真实短时初控尚未释放，须以0行动选择${RELEASE_CHOICES}；原人成为秘偶的完整转化没有发生。`,
+};
+export function marionettistPracticeText(text: string): string {
+  return Object.hasOwn(MARIONETTIST_PRACTICE_COPY, text) ? MARIONETTIST_PRACTICE_COPY[text]! : text;
+}
+export function marionettistEnvironmentText(text: string): string {
+  const known = '准备时站位稳定，没有施术；实际接触从PERFORM开始。CLOSE与WITHDRAW均0行动，实际停止能力、释放并退开；未实施准备取消不退款。';
+  return text.replace(known, `准备时站位稳定，没有施术；实际接触从“实际进行短时能力实践”开始。${RELEASE_CHOICES}均为0行动，实际停止能力、释放并退开；未实施准备取消不退款。`);
+}
+const MARIONETTIST_SUCCESS_COPY: ReadonlyArray<readonly [string, string, string]> = [
+  ['同一成人与无生命木偶的对照', '你真实观察到阿伦的灵体之线，同时确认原普通木偶没有灵体之线；记录只限原现场两个已知对象，不产生秘偶或后台知识。', '先0行动CLOSE或WITHDRAW真实结束本次接触，再报告。'],
+  ['约定打断后的自主行动复核', '阿伦在本次真实初控中按约拍肩叫停，专注实际中断；乔纳恢复，并由本人自主抬手、走离原站位，已亲眼核实。全部仍为原成年人，没有任何秘偶。', '先0行动CLOSE或WITHDRAW真实结束本次接触，再报告。'],
+  ['五米内短暂初控并主动放开', '在原5米内对自愿成年乔纳实际短时初控，思维和动作变慢，你也因专注受行动限制。未推进完整转化；', '现在须0行动CLOSE或WITHDRAW实际释放并核实自主行动，不能带着控制离场或过周。'],
+];
+
 /** Add the current scene around the saved result without rewriting any saved fact. */
 export function seerFeedbackText(record: Pick<SliceRecord, 'title' | 'text'>, firstCaseResolved: boolean): string {
   const text = seerReadableText(record.text);
+  const practice = MARIONETTIST_SUCCESS_COPY.find(([title, prefix, tail]) => record.title === title && record.text === prefix + tail);
+  if (practice) return practice[1] + (practice[0] === '五米内短暂初控并主动放开'
+    ? `现在须以0行动选择${RELEASE_CHOICES}，实际释放并核实自主行动，不能带着控制离场或过周。`
+    : `先以0行动选择${RELEASE_CHOICES}，真实结束本次接触，再报告。`);
   if (record.title === '扮演结束后记住自己'
     && record.text === '角色片段已经完成；还须明确复原本人外貌与原声，才足以提交自我报告。先0行动结束练习。') {
     return '角色片段已经完成；先0行动结束练习。结束练习后，按当前外貌与原服状态完成必要的复原和归还，再提交自我报告。';

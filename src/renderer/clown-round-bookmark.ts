@@ -4,9 +4,10 @@ function bookmark(state: SliceProjection, allowPromotedRead = false): { key: str
   if (state.status !== "ACTIVE" || state.progression.pathwayId !== "diviner"
     || state.combat !== null || !state.lastCombatRound) return null;
   const writableClown = state.progression.sequence === 8 && state.clown.rescueCombatStarted === true;
-  // Promotion may recognize an existing exact bookmark, but must never write a new S7/S6 one.
+  // Promotion may recognize an existing exact bookmark, but must never write a new post-promotion one.
   const promotedRead = allowPromotedRead && ((state.progression.sequence === 7 && state.magician?.promoted)
-    || (state.progression.sequence === 6 && state.faceless?.promoted));
+    || (state.progression.sequence === 6 && state.faceless?.promoted)
+    || (state.progression.sequence === 5 && state.marionettist?.promoted));
   if (!writableClown && !promotedRead) return null;
   return {
     key: `slice-ui:clown-read-round:${state.runId}`,

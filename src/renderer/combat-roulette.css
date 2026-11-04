@@ -1,0 +1,46 @@
+/* Original instrument-board artwork. All dial positions come from public saved results. */
+.roulette-workbench { --dial-brass: #c8ae70; --dial-ink: #172622; margin: 16px 0; padding: 18px; color: #f4ead3; background: radial-gradient(ellipse at top, #34443c, #182522 80%); border: 1px solid #8b7752; box-shadow: inset 0 0 0 4px #bca16c18, 0 5px 14px #1b251c24; }
+.roulette-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #c8ae704d; padding: 0 4px 12px; color: #d9c28c; letter-spacing: .08em; font-size: 15px; }
+.roulette-workbench .roulette-grid.slice-wheel-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 16px 0 12px; }
+.roulette-workbench .roulette-card.slice-wheel { display: block; width: auto; height: auto; min-width: 0; padding: 16px 12px; border: 1px solid #9a86524f; border-radius: 3px; background: linear-gradient(160deg, #ffffff08, #00000010); box-shadow: none; animation: none; }
+.roulette-workbench .roulette-card::before, .roulette-workbench .roulette-card::after { display: none; }
+.roulette-workbench .roulette-card.roulette-outcome { border-color: #c8ae7099; background: linear-gradient(160deg, #c8ae7012, #00000015); }
+.roulette-workbench .roulette-card .slice-wheel-center { display: flex; flex-direction: column; gap: 8px; width: auto; height: auto; padding: 0; border: 0; border-radius: 0; background: none; color: #f4ead3; }
+.roulette-workbench .roulette-card .slice-wheel-center small { font-size: 17px; letter-spacing: .06em; }
+.roulette-workbench .roulette-card .slice-wheel-center strong { min-height: 1.3em; max-width: 100%; font-size: 30px; line-height: 1.3; color: #f0d392; text-wrap: balance; }
+.roulette-dial { display: block; width: min(100%, 220px); height: auto; margin: 3px auto; overflow: visible; }
+.roulette-rim { fill: #665536; stroke: #d7c18b; stroke-width: 2; }
+.roulette-face { fill: #14221e; stroke: #8a7850; stroke-width: 2; }
+.roulette-tick { stroke: #9a8b68; stroke-width: 1; }
+.roulette-tick.major { stroke: #dcc58a; stroke-width: 2; }
+.roulette-scale { fill: #f0dfb7; text-anchor: middle; font-size: 15px; font-family: Georgia, serif; }
+.roulette-inner-ring { fill: none; stroke: #a38b554d; stroke-width: 1; }
+.roulette-share-enemy { fill: none; stroke: #a45f50; stroke-width: 23; }
+.roulette-share-player { fill: none; stroke: #85a18b; stroke-width: 23; }
+.roulette-needle { transform-origin: 120px 120px; transform: rotate(var(--needle-angle)); }
+.roulette-needle path { fill: #f5d793; stroke: #322919; stroke-width: 1.5; }
+.roulette-hub { fill: #c6a86b; stroke: #f0dbac; stroke-width: 2; }
+.roulette-rest-mark { fill: none; stroke: #25322a; stroke-width: 2; }
+.roulette-needle.is-moving { animation: roulette-saved-stop 850ms cubic-bezier(.14,.58,.22,1) var(--needle-delay) both; }
+@keyframes roulette-saved-stop { from { transform: rotate(var(--needle-start)); } to { transform: rotate(var(--needle-angle)); } }
+.slice-shell .roulette-fact, .slice-overlay .roulette-fact { margin: 10px 0 0; font-size: 15px; line-height: 1.5; color: #e0d7c2; text-align: center; }
+.roulette-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 18px; margin-top: 8px; font-size: 14px; }
+.roulette-legend span:first-child { color: #b3d2b9; }
+.roulette-legend span:last-child { color: #e8a394; }
+.slice-shell .roulette-explainer, .slice-overlay .roulette-explainer { margin: 12px 0; color: #ded3b9; font-size: 15px; line-height: 1.6; }
+.roulette-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.roulette-controls .slice-button { color: #f4ead3; border-color: #a38b55; background: #25382f; min-height: 44px; }
+.roulette-controls .slice-button:focus-visible { outline: 3px solid #f1c46b; outline-offset: 3px; }
+.roulette-weights { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.slice-shell .roulette-weights p, .slice-overlay .roulette-weights p { color: #e0d7c2; margin: 4px 0; font-size: 15px; line-height: 1.5; }
+.slice-large-text .roulette-workbench .roulette-card .slice-wheel-center { width: auto; height: auto; padding: 0; }
+.slice-large-text .roulette-workbench .roulette-card .slice-wheel-center small { font-size: 22px; white-space: normal; }
+.slice-large-text .roulette-workbench .roulette-card .slice-wheel-center strong { font-size: 32px; }
+.slice-large-text .roulette-workbench .roulette-fact, .slice-large-text .roulette-workbench .roulette-explainer, .slice-large-text .roulette-workbench .roulette-weights p, .slice-large-text .roulette-workbench .roulette-legend, .slice-large-text .roulette-workbench .roulette-heading { font-size: 21px; }
+.slice-large-text .roulette-controls .slice-button { font-size: 22px; }
+.roulette-history > summary { cursor: pointer; padding: 12px 0; }
+@media (max-width: 760px) { .roulette-workbench .roulette-grid.slice-wheel-row { grid-template-columns: 1fr; } .roulette-workbench { padding: 12px; } .roulette-workbench .roulette-card.slice-wheel { padding: 16px; } }
+@media (prefers-reduced-motion: reduce) { .roulette-needle.is-moving { animation: none !important; } }
+.slice-large-text .roulette-workbench .roulette-card.slice-wheel { width: auto; height: auto; flex: initial; }
+
+.roulette-workbench .roulette-controls .slice-button:not(:disabled):hover { color: #fff3d7; background: #3a5144; border-color: #e3c686; }

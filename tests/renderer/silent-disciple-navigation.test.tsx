@@ -1,5 +1,6 @@
 /* @vitest-environment jsdom */
 import { readFileSync } from 'node:fs';
+import { readObjectEntry } from '../helpers/read-object-entry';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -114,8 +115,8 @@ describe('SilentDisciple navigation with actual saved command boundaries', () =>
     expect(game.state.puppet).toEqual(original().final.puppet);
   }, 20_000);
   it('offers the real new-battle curse policy default-off and submits only the explicitly chosen strategy', async () => {
-    const all = Object.values(JSON.parse(readFileSync('tests/fixtures/silent-disciple-v01570/boundaries.json', 'utf8')) as Record<string, Boundary>);
-    const b = all.find(v => v.lastIntent.type === 'COMBAT_ROUND')!;
+    // The first recorded COMBAT_ROUND; avoid retaining every boundary during rendering.
+    const b = readObjectEntry<Boundary>('tests/fixtures/silent-disciple-v01570/boundaries.json', 'combat-first');
     const game = savedGame(b.beforeLast), before = structuredClone(game.state); await mount(game, false);
     const policy = screen.getByRole('group', { name: '本回合木偶伤己联系' });
     const toggle = within(policy).getByRole('checkbox') as HTMLInputElement;
