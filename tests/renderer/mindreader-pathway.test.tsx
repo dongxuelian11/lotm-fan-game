@@ -521,3 +521,55 @@ describe('new confirmed Mindreader discussion display only', () => {
     expect(c.next.lastResult.text).toBe(unreadFailure);
   });
 });
+
+describe('completed unread Mindreader scene display', () => {
+  const unread = '尚未读到本次浅层想法；普通观察和当面询问仍可进行。';
+  const complete = '未读到本次浅层片段；本案已完成。';
+  it.each(['lost-key', 'curtain-call', 'harbor-message'])('marks only the selected completed unread %s without changing projection', caseId => {
+    const value = social();
+    value.scenes = [{ id: caseId, title: '已核实的本案', story: '原公开故事', observations: ['原观察'], status: 'RESOLVED', impression: unread, dialogue: '本人完成普通核实，原物未转移。' }];
+    value.actions = [{ id: 'other-read', label: '其他案读取', cost: '1行动', enabled: true, reason: null, command: { type: 'READ', caseId: 'another-case' } }];
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    const region = screen.getByRole('region', { name: '读心获得的浅层印象' });
+    expect(region.textContent).toContain(complete);
+    expect(region.textContent).not.toContain('这是该次能力读取到');
+    expect(screen.getByRole('region', { name: '交谈与核实的结果' }).textContent).toContain(value.scenes[0]!.dialogue);
+    expect(screen.queryByRole('group', { name: '当前社会情境的处理方式' })).toBeNull();
+    expect(JSON.stringify(value)).toBe(before); expect(onCommand).not.toHaveBeenCalled();
+  });
+  it.each([
+    ['OBSERVED', 'harbor-message', unread, false],
+    ['AVAILABLE', 'harbor-message', unread, false],
+    ['FUTURE_STATUS', 'harbor-message', unread, false],
+    ['RESOLVED_EXTRA', 'harbor-message', unread, false],
+    ['RESOLVED', 'unknown-case', unread, false],
+    ['RESOLVED', 'harbor-message', unread + ' 未知追加。', false],
+    ['RESOLVED', 'harbor-message', '第13周留下的读取记录：原公开浅层片段。', false],
+    ['RESOLVED', 'harbor-message', unread, true],
+  ] as const)('preserves unmatched %s/%s/%s/action=%s', (status, id, impression, sameAction) => {
+    const value = social();
+    value.scenes = [{ id, title: '原情境', story: '原故事', observations: [], status, impression }];
+    value.actions = sameAction ? [{ id: 'unexpected-action', label: '原动作', cost: '1行动', enabled: false, reason: '原禁用原因', command: { type: 'READ', caseId: id } }] : [];
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    const region = screen.getByRole('region', { name: '读心获得的浅层印象' });
+    expect(region.textContent).toContain(impression);
+    expect(region.textContent).toContain('这是该次能力读取到的表层内容');
+    expect(region.textContent).not.toContain(complete);
+    expect(JSON.stringify(value)).toBe(before); expect(onCommand).not.toHaveBeenCalled();
+  });
+  it('does not borrow completion from another case when navigating', () => {
+    const value = social();
+    value.scenes = [
+      { id: 'harbor-message', title: '完成案', story: '原故事', observations: [], status: 'RESOLVED', impression: unread },
+      { id: 'curtain-call', title: '未完成案', story: '原故事', observations: [], status: 'OBSERVED', impression: unread },
+    ];
+    value.actions = [{ id: 'other-read', label: '读取未完成案', cost: '1行动', enabled: false, reason: '本周不可', command: { type: 'READ', caseId: 'curtain-call' } }];
+    const before = JSON.stringify(value), { onCommand } = panel(value);
+    expect(screen.getByText(complete)).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('选择社会情境'), { target: { value: 'curtain-call' } });
+    expect(screen.getByText(unread)).toBeTruthy(); expect(screen.queryByText(complete)).toBeNull();
+    fireEvent.change(screen.getByLabelText('选择社会情境'), { target: { value: 'harbor-message' } });
+    expect(screen.getByText(complete)).toBeTruthy();
+    expect(JSON.stringify(value)).toBe(before); expect(onCommand).not.toHaveBeenCalled();
+  });
+});

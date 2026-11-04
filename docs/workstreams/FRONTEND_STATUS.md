@@ -582,3 +582,9 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 精确确认 intentId、run、前后revision、新增chronicle成员、非replayed、S8观众及已晋升、对应DISCUSS的已知case/title/完整失败句；仅当同案OBSERVED且公开READ动作仍存在，显示“尚未读到本次浅层片段”。READ动作由领域仅在该案未读成功时公开，不解析impression、不使用其他案状态。缺少依据、已读成功、未知句、旧/迟到/不匹配回执全部原样；原receipt、lastResult、chronicle、命令、规则、随机与存档均不修改。
 - 定向Mindreader与seer-feedback两文件87项、SliceApp与日常结算两文件20项回归通过，完整main/renderer类型及生产构建通过（既有chunk警告），独立只读源码审查无阻断。证据 `output/mindreader-unread-feedback-20261104/`。
 - 真实55瞬时失败没有重演，修后仅公开原句输入和受控组件/桥接测试；修后原生与Windows均NOT_RUN。旧保存历史原文有意不追改，未推送、不修改冻结PR59。
+
+## 2026-11-04 — 已完成的未读心案不再暗示还可继续处理
+
+- 基线 `91b37610fc3277bf48f8f36daaac7a49ef671d59`。真实57第三案普通交谈完成后，公开投影为RESOLVED、无本案动作，但旧未读说明仍称普通观察/询问可继续。仅选中已知三案之一、精确RESOLVED、精确旧未读整句、无同案处理动作四条件同时成立时，显示“未读到本次浅层片段；本案已完成。”并不显示该分支误称已有读取内容的通用说明。
+- 未完成、未知状态/文本/案号、真实已有读取记录、有同案动作等全部保留原样；其它案动作不干扰本案判断。原投影、历史、领域、命令、选择行为与规则不变。两测试文件99项、完整main/renderer类型与生产构建通过，独立源码审查无阻断；日志 `output/mindreader-completed-impression-20261104/`。
+- 官方同57冷启零游戏命令原生检查普通/大字完成第三案与未完成第二案：完成句及原核实结果完整、无重复处理动作，未完成第二案原说明和三动作仍可见。实际截图与 `native-qa.json` 在 `output/mindreader-completed-native-20261104/`；本人已看像素无截断。57完整currentJSON哈希及其它封存档文件哈希由试玩者核验守恒，未重演57成功或55失败。Windows未验证，未推送。
