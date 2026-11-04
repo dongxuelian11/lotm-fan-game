@@ -1,4 +1,5 @@
-import type { SliceRecord } from '../domain/slice/types';
+import type { SliceEnvelope, SliceReceipt } from '../shared/slice-contracts';
+import type { SliceProjection, SliceRecord } from '../domain/slice/types';
 import { SEER_MENTOR } from '../domain/seer/content';
 
 /** Display labels only. Historical source strings and chronicle records stay replay-stable. */
@@ -76,4 +77,29 @@ export function seerFeedbackText(record: Pick<SliceRecord, 'title' | 'text'>, fi
     return `${record.title === '指导者中断了晋升' ? '钟摆声碎成刺耳的重音，椅背在你眼前扭曲。' : '胃里一阵翻搅，杯沿在眼前晃出重影。'}${SEER_MENTOR}扶住你：“先把呼吸放慢。这瓶已经用完，今天先休养。”${text}`;
   }
   return text;
+}
+
+/** Correct only a newly confirmed unread discussion's display copy, never saved history. */
+export function mindreaderDiscussionFeedback(record: SliceRecord, current: SliceProjection | null,
+  envelope: SliceEnvelope, receipt: SliceReceipt): SliceRecord {
+  const next = receipt.state;
+  if (!current || receipt.replayed || current.runId !== envelope.runId || receipt.runId !== envelope.runId
+    || next.runId !== envelope.runId || current.revision !== envelope.expectedRevision
+    || receipt.intentId !== envelope.intentId || receipt.previousRevision !== current.revision
+    || receipt.newRevision !== next.revision || next.revision <= current.revision
+    || current.progression.pathwayId !== 'audience' || current.progression.sequence !== 8
+    || next.progression.pathwayId !== 'audience' || next.progression.sequence !== 8 || !next.mindreader.promoted
+    || envelope.payload.type !== 'MINDREADER' || envelope.payload.command.type !== 'DISCUSS') return record;
+  const { caseId } = envelope.payload.command;
+  const titles: Readonly<Record<string, string>> = {
+    'lost-key': '阅览室的最后一把钥匙', 'curtain-call': '登台前的停顿', 'harbor-message': '码头的未签收信件',
+  };
+  const known = '这次没有取得共同确认。已读到的历史片段保留，但不代表对方现在仍在想同一件事；原物与本人决定没有变化，下周可再谈。';
+  if (!Object.hasOwn(titles, caseId) || record.title !== titles[caseId] || record.text !== known
+    || current.chronicle.some(row => row.id === record.id)
+    || !next.chronicle.some(row => row.id === record.id && row.title === record.title && row.text === record.text)
+    || !next.mindreader.scenes.some(scene => scene.id === caseId && scene.title === record.title && scene.status === 'OBSERVED')
+    // The public READ action exists only while this particular scene has no successful reading.
+    || !next.mindreader.actions.some(action => action.command.type === 'READ' && action.command.caseId === caseId)) return record;
+  return { ...record, text: '这次没有取得共同确认。尚未读到本次浅层片段；原物与本人决定没有变化，下周可再谈。' };
 }

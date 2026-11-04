@@ -74,6 +74,11 @@ export function MindreaderPanel({ mindreader, resources, busy, blocked, onComman
     ?? mindreader.scenes.find((scene) => sceneActions.some((action) => "caseId" in action.command && action.command.caseId === scene.id && action.enabled))
     ?? mindreader.scenes[0];
   const selectedSceneActions = selectedScene ? sceneActions.filter((action) => "caseId" in action.command && action.command.caseId === selectedScene.id) : [];
+  const completedUnreadScene = !!selectedScene
+    && ['lost-key', 'curtain-call', 'harbor-message'].includes(selectedScene.id)
+    && selectedScene.status === 'RESOLVED'
+    && selectedScene.impression === '尚未读到本次浅层想法；普通观察和当面询问仍可进行。'
+    && selectedSceneActions.length === 0;
   const reflections = mindreader.actions.filter((action) => action.command.type === "REFLECT");
   const actions = mindreader.actions.filter((action) => action.command.type !== "CONSUME"
     && action.command.type !== "OBSERVE" && action.command.type !== "READ" && action.command.type !== "DISCUSS" && action.command.type !== "REFLECT");
@@ -208,8 +213,8 @@ export function MindreaderPanel({ mindreader, resources, busy, blocked, onComman
             {selectedScene.impression && (
               <section className="slice-notice" aria-label="读心获得的浅层印象">
                 <strong>浅层心声与情绪灵光</strong>
-                <p>{selectedScene.impression}</p>
-                <p className="slice-muted">这是该次能力读取到的表层内容，不是完整记忆或整件事情的真相；记录保留读取时的状态。</p>
+                <p>{completedUnreadScene ? "未读到本次浅层片段；本案已完成。" : selectedScene.impression}</p>
+                {!completedUnreadScene && <p className="slice-muted">这是该次能力读取到的表层内容，不是完整记忆或整件事情的真相；记录保留读取时的状态。</p>}
               </section>
             )}
             {selectedScene.dialogue && (

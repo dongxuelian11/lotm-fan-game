@@ -209,7 +209,7 @@ import type {
 import { LifeActionVignette } from "./LifeActionVignette";
 import { SeerActionFeedback } from "./SeerPotionMoment";
 import { isSeerCommissionResult, SeerPanel } from "./SeerPanel";
-import { seerFeedbackText, seerReadableText } from "./seer-feedback";
+import { mindreaderDiscussionFeedback, seerFeedbackText, seerReadableText } from "./seer-feedback";
 import { TownPanel } from "./TownPanel";
 import { ClownPanel } from "./ClownPanel";
 import { ClownHistory, MagicianPanel, SeerHistory } from "./MagicianPanel";
@@ -4499,7 +4499,7 @@ export function SliceApp() {
           setActionResults(newRecords.map(record => resting && record.title === "完成休养" ? {
             ...record,
             text: `休养及本次结算后：健康${current.health}→${next.health}；精神${current.mind}→${next.mind}；灵性${current.spirituality}→${next.spirituality}；魔药排异${current.seer.pollution}→${next.seer.pollution}。`,
-          } : record));
+          } : mindreaderDiscussionFeedback(record, current, envelope, result.value)));
         }
         stateRef.current = next;
         setState(next);
