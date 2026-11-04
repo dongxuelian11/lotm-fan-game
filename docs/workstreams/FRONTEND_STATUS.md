@@ -588,3 +588,9 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 基线 `91b37610fc3277bf48f8f36daaac7a49ef671d59`。真实57第三案普通交谈完成后，公开投影为RESOLVED、无本案动作，但旧未读说明仍称普通观察/询问可继续。仅选中已知三案之一、精确RESOLVED、精确旧未读整句、无同案处理动作四条件同时成立时，显示“未读到本次浅层片段；本案已完成。”并不显示该分支误称已有读取内容的通用说明。
 - 未完成、未知状态/文本/案号、真实已有读取记录、有同案动作等全部保留原样；其它案动作不干扰本案判断。原投影、历史、领域、命令、选择行为与规则不变。两测试文件99项、完整main/renderer类型与生产构建通过，独立源码审查无阻断；日志 `output/mindreader-completed-impression-20261104/`。
 - 官方同57冷启零游戏命令原生检查普通/大字完成第三案与未完成第二案：完成句及原核实结果完整、无重复处理动作，未完成第二案原说明和三动作仍可见。实际截图与 `native-qa.json` 在 `output/mindreader-completed-native-20261104/`；本人已看像素无截断。57完整currentJSON哈希及其它封存档文件哈希由试玩者核验守恒，未重演57成功或55失败。Windows未验证，未推送。
+
+## 2026-11-05 — 第二项秘偶大师观察回执复用既有中文动作说明
+
+- 基线 `d704990cca7f9280237b7e6b7bbb8a9ba3bdf5a8`。真实226观察回执将固定故事与两条facts合并，顶部仍含PREPARE/PERFORM/CLOSE/WITHDRAW，而下方逐条观察已中文。仅精确标题“五米内短暂初控并主动放开”与完整226公开原句同时匹配时，逐字保留故事，复用已有两条facts中文显示映射。未知标题、追加/前缀、人物或命令变体原样保留。
+- 只改seer-feedback显示函数和对应测试；原始回执、领域、投影、存档、完整纪事及已有成功回执映射均不变。两文件62项测试、完整main/renderer类型与生产构建通过，独立只读源码/修前像素及公开回执审查无阻断。证据 `output/marionettist-observation-copy-20261104/`。
+- 修前证据为 `output/diviner-second-practice-20261104/rev226-observed-normal.png` 与公开record-226-369。当前229公开近期只含228/229，226不再位于该formatter的当前/近期展示；未回滚或重演226，修后目标原生NOT_RUN，仅实际公开输入测试覆盖。Windows未验证，未推送，不改冻结PR60。

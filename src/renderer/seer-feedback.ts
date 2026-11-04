@@ -42,6 +42,8 @@ export function marionettistEnvironmentText(text: string): string {
   const known = '准备时站位稳定，没有施术；实际接触从PERFORM开始。CLOSE与WITHDRAW均0行动，实际停止能力、释放并退开；未实施准备取消不退款。';
   return text.replace(known, `准备时站位稳定，没有施术；实际接触从“实际进行短时能力实践”开始。${RELEASE_CHOICES}均为0行动，实际停止能力、释放并退开；未实施准备取消不退款。`);
 }
+const MARIONETTIST_OBSERVATION_STORY = "成年搬运工乔纳·里德在同一原排练室内自愿参与，与你相距3米，范围始终小于新晋5米起控参考。双方只约定约20秒有限初控及实际释放，绝不推进约5分钟完整转化；原人始终存活。";
+const MARIONETTIST_OBSERVATION_FACTS = ["PREPARE只核对本人同意与稳定站位，PERFORM才开始真实接触。", "初控成功会使思维、动作变慢，你的专注也限制自身动作；个体抗性可使尝试失败。必须0行动CLOSE或WITHDRAW实际释放后才可报告。"];
 const MARIONETTIST_SUCCESS_COPY: ReadonlyArray<readonly [string, string, string]> = [
   ['同一成人与无生命木偶的对照', '你真实观察到阿伦的灵体之线，同时确认原普通木偶没有灵体之线；记录只限原现场两个已知对象，不产生秘偶或后台知识。', '先0行动CLOSE或WITHDRAW真实结束本次接触，再报告。'],
   ['约定打断后的自主行动复核', '阿伦在本次真实初控中按约拍肩叫停，专注实际中断；乔纳恢复，并由本人自主抬手、走离原站位，已亲眼核实。全部仍为原成年人，没有任何秘偶。', '先0行动CLOSE或WITHDRAW真实结束本次接触，再报告。'],
@@ -51,6 +53,10 @@ const MARIONETTIST_SUCCESS_COPY: ReadonlyArray<readonly [string, string, string]
 /** Add the current scene around the saved result without rewriting any saved fact. */
 export function seerFeedbackText(record: Pick<SliceRecord, 'title' | 'text'>, firstCaseResolved: boolean): string {
   const text = seerReadableText(record.text);
+  if (record.title === "五米内短暂初控并主动放开"
+    && record.text === MARIONETTIST_OBSERVATION_STORY + MARIONETTIST_OBSERVATION_FACTS.join(' ')) {
+    return MARIONETTIST_OBSERVATION_STORY + MARIONETTIST_OBSERVATION_FACTS.map(marionettistPracticeText).join(' ');
+  }
   const practice = MARIONETTIST_SUCCESS_COPY.find(([title, prefix, tail]) => record.title === title && record.text === prefix + tail);
   if (practice) return practice[1] + (practice[0] === '五米内短暂初控并主动放开'
     ? `现在须以0行动选择${RELEASE_CHOICES}，实际释放并核实自主行动，不能带着控制离场或过周。`

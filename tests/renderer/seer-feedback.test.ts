@@ -223,3 +223,23 @@ it('preserves unknown practice sentences, object identifiers and surrounding env
   expect(marionettistEnvironmentText(input.replace('PERFORM', 'PERFORM_EXTRA'))).toBe(input.replace('PERFORM', 'PERFORM_EXTRA'));
   for (const text of ['PERFORM CLOSE WITHDRAW PREPARE', '未知CLOSE_EXTRA说明', 'M5-WOOD-1', '__proto__']) expect(marionettistPracticeText(text)).toBe(text);
 });
+
+
+it('formats only the exact actual rev226 observation receipt without changing stored facts', () => {
+  const record = {"id": "record-226-369", "week": 58, "title": "五米内短暂初控并主动放开", "text": "成年搬运工乔纳·里德在同一原排练室内自愿参与，与你相距3米，范围始终小于新晋5米起控参考。双方只约定约20秒有限初控及实际释放，绝不推进约5分钟完整转化；原人始终存活。PREPARE只核对本人同意与稳定站位，PERFORM才开始真实接触。 初控成功会使思维、动作变慢，你的专注也限制自身动作；个体抗性可使尝试失败。必须0行动CLOSE或WITHDRAW实际释放后才可报告。"};
+  const before = JSON.stringify(record);
+  const shown = seerFeedbackText(record, true);
+  expect(shown.startsWith("成年搬运工乔纳·里德在同一原排练室内自愿参与，与你相距3米，范围始终小于新晋5米起控参考。双方只约定约20秒有限初控及实际释放，绝不推进约5分钟完整转化；原人始终存活。")).toBe(true);
+  expect(shown).toContain(marionettistPracticeText("PREPARE只核对本人同意与稳定站位，PERFORM才开始真实接触。"));
+  expect(shown).toContain(marionettistPracticeText("初控成功会使思维、动作变慢，你的专注也限制自身动作；个体抗性可使尝试失败。必须0行动CLOSE或WITHDRAW实际释放后才可报告。"));
+  expect(shown).not.toMatch(/PREPARE|PERFORM|CLOSE|WITHDRAW/);
+  expect(JSON.stringify(record)).toBe(before);
+  expect(seerFeedbackText({ ...record, text: shown }, true)).toBe(shown);
+  for (const changed of [
+    { ...record, title: '其他观察' },
+    { ...record, text: '未知前缀' + record.text },
+    { ...record, text: record.text + '未知后缀' },
+    { ...record, text: record.text.replace('PERFORM', 'PERFORM_EXTRA') },
+    { ...record, text: record.text.replace('乔纳', '其他人') },
+  ]) expect(seerFeedbackText(changed, true)).toBe(changed.text);
+});
