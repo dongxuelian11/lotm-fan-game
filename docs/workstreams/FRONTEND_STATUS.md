@@ -594,3 +594,9 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 基线 `d704990cca7f9280237b7e6b7bbb8a9ba3bdf5a8`。真实226观察回执将固定故事与两条facts合并，顶部仍含PREPARE/PERFORM/CLOSE/WITHDRAW，而下方逐条观察已中文。仅精确标题“五米内短暂初控并主动放开”与完整226公开原句同时匹配时，逐字保留故事，复用已有两条facts中文显示映射。未知标题、追加/前缀、人物或命令变体原样保留。
 - 只改seer-feedback显示函数和对应测试；原始回执、领域、投影、存档、完整纪事及已有成功回执映射均不变。两文件62项测试、完整main/renderer类型与生产构建通过，独立只读源码/修前像素及公开回执审查无阻断。证据 `output/marionettist-observation-copy-20261104/`。
 - 修前证据为 `output/diviner-second-practice-20261104/rev226-observed-normal.png` 与公开record-226-369。当前229公开近期只含228/229，226不再位于该formatter的当前/近期展示；未回滚或重演226，修后目标原生NOT_RUN，仅实际公开输入测试覆盖。Windows未验证，未推送，不改冻结PR60。
+
+### 2026-11-05 大字行动回执字号（本地候选）
+- 基线 `598411a`；仅 `slice-styles.css` 为通用本次行动结果增加大字 22px / 1.5 行高，使用 `:where` 保留小丑更具体的局部规则，普通字号不变。未改内容、命令或领域。
+- `action-feedback-style`、`SliceApp`、`daily-state-summary` 共 21 项通过；完整 main/renderer 类型检查、生产构建及 diff check 通过。样式测试按真实先小丑后通用 CSS 顺序检查计算样式；不代替布局验收。
+- 初次新增级联断言误将 computed px 期待为 em，失败日志保留；修正为原计算值对照后重跑通过。独立源码审查通过。
+- 官方冷启同新手 revision 9 后瞬时会面回执已消失：目标 22px 长反馈与 1280 目标布局均 NOT_RUN，不重演行动。1364 普通/大字一般导航、Tab 焦点关闭及 Return/Escape 通过；独立试玩者核验新手及旧三档哈希不变。证据 `output/large-feedback-native-20261104/native-qa.json`，不以一般导航代替目标反馈验收。Windows 未验证。
