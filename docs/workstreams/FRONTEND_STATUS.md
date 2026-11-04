@@ -575,3 +575,10 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 原历史套件及全部断言、canonical fixture、领域、概率、存档均未修改。基线完整6例复现5通过／第353行失败；初版动态状态文案修好353但引起原256行新动画与冷重开文本差异，原失败日志保留，未采用该版本。
 - 最终原历史6例＋轮盘16例＋战斗展示145例，共167项通过；完整main/renderer类型与生产构建通过（既有chunk警告）。新增冷重挂及各播放阶段事实提示断言，独立只读源码审查通过。证据在 `output/roulette-reopen-status-20261104/`。
 - 仅本地Linux自动验证；修后Electron原生、Windows与远端CI仍NOT_RUN。未推送或修改冻结PR头。
+
+## 2026-11-04 — 未读成功的普通交谈失败回执不声称已有片段
+
+- 基线 `82ca36f729129d6f0b31bd9b680b45c3437ba9c8`。真实观众55在第二案读取失败后普通交谈也失败，上方原回执固定声称“已读到的历史片段保留”，与公开未读说明矛盾。领域旧句与历史回放保持原样，本片只修新确认回执的临时显示副本。
+- 精确确认 intentId、run、前后revision、新增chronicle成员、非replayed、S8观众及已晋升、对应DISCUSS的已知case/title/完整失败句；仅当同案OBSERVED且公开READ动作仍存在，显示“尚未读到本次浅层片段”。READ动作由领域仅在该案未读成功时公开，不解析impression、不使用其他案状态。缺少依据、已读成功、未知句、旧/迟到/不匹配回执全部原样；原receipt、lastResult、chronicle、命令、规则、随机与存档均不修改。
+- 定向Mindreader与seer-feedback两文件87项、SliceApp与日常结算两文件20项回归通过，完整main/renderer类型及生产构建通过（既有chunk警告），独立只读源码审查无阻断。证据 `output/mindreader-unread-feedback-20261104/`。
+- 真实55瞬时失败没有重演，修后仅公开原句输入和受控组件/桥接测试；修后原生与Windows均NOT_RUN。旧保存历史原文有意不追改，未推送、不修改冻结PR59。

@@ -1,3 +1,5 @@
+import { mindreaderDiscussionFeedback } from '../../src/renderer/seer-feedback';
+import { mindreaderSocialActions } from '../../src/domain/mindreader/social';
 /* @vitest-environment jsdom */
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -427,4 +429,95 @@ it.each([
   expect(within(current).getByText(label)).toBeTruthy();
   expect(onCommand).not.toHaveBeenCalled();
   expect(JSON.stringify(value)).toBe(before);
+});
+
+const unreadFailure = '这次没有取得共同确认。已读到的历史片段保留，但不代表对方现在仍在想同一件事；原物与本人决定没有变化，下周可再谈。';
+const correctedFailure = '这次没有取得共同确认。尚未读到本次浅层片段；原物与本人决定没有变化，下周可再谈。';
+function discussionCapture(caseId = 'curtain-call', title = '登台前的停顿') {
+  const value = social();
+  value.scenes = [{ id: caseId, title, story: '已公开情境', observations: [], impression: '尚未读到本次浅层想法；普通观察和当面询问仍可进行。', status: 'OBSERVED' }];
+  value.actions = [
+    { id: 'read', label: '读取当前浅层想法', cost: '1行动 · 2灵性', enabled: false, reason: '本周读取没有成功，休养或交谈后再来。', command: { type: 'READ', caseId } },
+    { id: 'discuss', label: '普通交谈', cost: '1行动', enabled: true, reason: null, command: { type: 'DISCUSS', caseId, approach: 'ASK' } },
+  ];
+  const current = fixture(value, 8);
+  const record = { id: 'new-discuss-failure', week: current.week, title, text: unreadFailure };
+  const next = { ...structuredClone(current), revision: current.revision + 1, chronicle: [...current.chronicle, record], lastResult: record };
+  const envelope: SliceEnvelope = { intentId: 'confirmed-discuss', runId: current.runId, expectedRevision: current.revision, payload: { type: 'MINDREADER', command: { type: 'DISCUSS', caseId, approach: 'ASK' } } };
+  const result = receipt(next, envelope);
+  if (!result.ok) throw new Error('Fixture receipt expected.');
+  return { current, record, next, envelope, receipt: result.value };
+}
+
+describe('new confirmed Mindreader discussion display only', () => {
+  it.each(['lost-key', 'curtain-call', 'harbor-message'])('public READ presence is case-specific and means unread for %s', caseId => {
+    const raw = createSliceRun('read-action-proof', sliceDefaultCreationSelection, 'proof');
+    raw.progression.pathwayId = 'audience'; raw.progression.sequence = 8;
+    const entry = raw.mindreader.cases[caseId]!;
+    entry.status = 'OBSERVED'; entry.readWeek = raw.week; entry.readSucceeded = false;
+    expect(mindreaderSocialActions(raw).some(a => a.command.type === 'READ' && a.command.caseId === caseId)).toBe(true);
+    entry.readSucceeded = true;
+    expect(mindreaderSocialActions(raw).some(a => a.command.type === 'READ' && a.command.caseId === caseId)).toBe(false);
+  });
+  it.each([
+    ['lost-key', '阅览室的最后一把钥匙'], ['curtain-call', '登台前的停顿'], ['harbor-message', '码头的未签收信件'],
+  ])('corrects only the confirmed unread failure for %s without mutating input', (id, title) => {
+    const c = discussionCapture(id, title), before = JSON.stringify(c);
+    expect(mindreaderDiscussionFeedback(c.record, c.current, c.envelope, c.receipt)).toEqual({ ...c.record, text: correctedFailure });
+    expect(JSON.stringify(c)).toBe(before);
+    c.envelope.payload = { type: 'MINDREADER', command: { type: 'DISCUSS', caseId: id, approach: 'VERIFY' } };
+    expect(mindreaderDiscussionFeedback(c.record, c.current, c.envelope, c.receipt).text).toBe(correctedFailure);
+  });
+  const negatives: Array<[string, (c: ReturnType<typeof discussionCapture>) => void]> = [
+    ['wrong intent', c => { c.receipt.intentId = 'other'; }],
+    ['wrong receipt run', c => { c.receipt.runId = 'other'; }],
+    ['wrong next run', c => { c.next.runId = 'other'; }],
+    ['wrong envelope run', c => { c.envelope.runId = 'other'; }],
+    ['late current revision', c => { c.current.revision += 2; }],
+    ['wrong previous revision', c => { c.receipt.previousRevision++; }],
+    ['wrong new revision', c => { c.receipt.newRevision++; }],
+    ['equal revision', c => { c.next.revision = c.current.revision; c.receipt.newRevision = c.next.revision; }],
+    ['replayed receipt', c => { c.receipt.replayed = true; }],
+    ['another command', c => { c.envelope.payload = { type: 'ACTION', action: 'WORK' }; }],
+    ['another case command', c => { c.envelope.payload = { type: 'MINDREADER', command: { type: 'DISCUSS', caseId: 'lost-key', approach: 'ASK' } }; }],
+    ['no action after successful reading', c => { c.next.mindreader.actions = []; }],
+    ['only another case READ', c => { c.next.mindreader.actions = [{ ...c.next.mindreader.actions[0]!, command: { type: 'READ', caseId: 'lost-key' } }]; }],
+    ['unknown text', c => { c.record.text += ' 未知追加。'; }],
+    ['unknown title', c => { c.record.title = '其他情境'; }],
+    ['unknown case', c => { c.envelope.payload = { type: 'MINDREADER', command: { type: 'DISCUSS', caseId: 'unknown', approach: 'ASK' } }; }],
+    ['missing scene', c => { c.next.mindreader.scenes = []; }],
+    ['resolved scene', c => { c.next.mindreader.scenes[0]!.status = 'RESOLVED'; }],
+    ['old historical record', c => { c.current.chronicle.push(c.record); }],
+    ['absent in receipt chronicle', c => { c.next.chronicle = []; }],
+    ['other pathway', c => { c.next.progression.pathwayId = 'hunter'; }],
+    ['other stage', c => { c.next.progression.sequence = 7; }],
+    ['not promoted', c => { c.next.mindreader.promoted = false; }],
+  ];
+  it.each(negatives)('preserves exact raw text for %s', (_name, mutate) => {
+    const c = discussionCapture(); mutate(c); const before = JSON.stringify(c);
+    expect(mindreaderDiscussionFeedback(c.record, c.current, c.envelope, c.receipt)).toBe(c.record);
+    expect(JSON.stringify(c)).toBe(before);
+  });
+  it('does not infer a current result without a current run', () => {
+    const c = discussionCapture();
+    expect(mindreaderDiscussionFeedback(c.record, null, c.envelope, c.receipt)).toBe(c.record);
+  });
+  it.each([false, true])('uses a confirmed new display copy only, with delayed mismatch %s', async mismatch => {
+    const c = discussionCapture(), value = bridge(c.current);
+    let finish!: (result: SliceResult<SliceReceipt>) => void;
+    value.submitIntent = vi.fn(() => new Promise<SliceResult<SliceReceipt>>(resolve => { finish = resolve; }));
+    await enter(value); await openMindreader();
+    await userEvent.click(screen.getByRole('button', { name: /普通交谈/ }));
+    const actualEnvelope = vi.mocked(value.submitIntent).mock.calls[0]![0];
+    const result = receipt(c.next, actualEnvelope);
+    if (!result.ok) throw new Error('Fixture receipt expected.');
+    if (mismatch) result.value.intentId = 'late-other-intent';
+    const before = JSON.stringify(result);
+    await act(async () => { finish(result); });
+    const feedback = screen.getByRole('status', { name: '本次行动结果' });
+    expect(feedback.textContent).toContain(mismatch ? unreadFailure : correctedFailure);
+    expect(JSON.stringify(result)).toBe(before);
+    expect(c.next.chronicle.at(-1)!.text).toBe(unreadFailure);
+    expect(c.next.lastResult.text).toBe(unreadFailure);
+  });
 });
