@@ -605,3 +605,4 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 基线 `b389ae5`，独立 `fix/modal-scroll-isolation`。新手真实配方截图同时可见卷宗与底层页面滚动条；源码原先只令底层 inert，未锁定页面滚动。仅将 body 滚动锁绑定既有 modalOpen 生命周期，关闭/卸载恢复，卷宗 overflow:auto 保留并加 overscroll-behavior:contain。未改规则、命令、存档、文本或版式尺寸。
 - 两文件18项测试通过，覆盖开启/关闭/Escape/重复开启/卸载、不干扰其他body类、阻塞事件Escape保持锁、无命令/公开投影不变及CSS计算样式。独立源码审查通过。测试不冒充真实滚轮/边界滚动/位置恢复验收；原生与Windows均待核。
 - 完整main/renderer类型检查、生产构建及diff check均通过（既有chunk体积警告）。证据 `output/modal-scroll-20261105/`；尚未推送，不修改冻结PR。
+- 原生补验：代码头 `38b173f`，从真实rev25备份装入独立candidate-userdata，普通/大字成长与完整纪事到底继续滚轮时底层不动，Escape/Close后日常中栏与右栏滚动恢复，重复打开关闭正常；Tab首个可见焦点在关闭按钮，未穷举完整循环。本人已查看普通/大字底部实际像素，未见外层滚动条或内容裁切。试玩者核验主/候选current_json SHA均为`b374aa1669473aafb1c4c92a4662a769a7261e55a2f8b33a3be693533ac89f40`，仍rev25；未提交游戏命令。图在 `output/natural-continuation-20261104/candidate-*-bottom.png`，Windows未验证。
