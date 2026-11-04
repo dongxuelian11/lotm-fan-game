@@ -82,6 +82,33 @@ beforeEach(() => { vi.spyOn(window, "scrollTo").mockImplementation(() => {}); })
 afterEach(() => { cleanup(); delete window.sliceGame; vi.restoreAllMocks(); });
 
 describe("Seer progression dossier", () => {
+  it("explains a prepared bottle's public gate before recommending another batch", () => {
+    const value = bottled();
+    const waiting = value.actions[0]!;
+    waiting.enabled = false;
+    waiting.reason = "普通生活已完成3/4整周，第5周起可以服药。";
+    value.actions = [
+      { id: "spare", label: "第2批 · 抄录藏书目录", cost: "1行动", enabled: true, reason: null, command: { type: "MATERIAL_WORK", batchId: "spare" } },
+      waiting,
+    ];
+    const original = JSON.stringify(value);
+    const { onCommand, rerender } = panel(value);
+    const summary = () => screen.getByRole("region", { name: "成长下一步" });
+    expect(within(summary()).getByText(/服用bottle-a。普通生活已完成3\/4整周，第5周起可以服药。/)).toBeTruthy();
+    expect(within(summary()).queryByText(/第2批/)).toBeNull();
+    expect((screen.getByRole("button", { name: /第2批 · 抄录藏书目录/ }) as HTMLButtonElement).disabled).toBe(false);
+    expect(JSON.stringify(value)).toBe(original);
+    expect(onCommand).not.toHaveBeenCalled();
+    const ready = { ...value, actions: [value.actions[0]!, { ...waiting, enabled: true, reason: null }] };
+    rerender(<SeerPanel seer={ready} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(within(summary()).getByText(/服用bottle-a/)).toBeTruthy();
+    expect(within(summary()).queryByText(/3\/4/)).toBeNull();
+    const noPrepared = { ...value, bottles: [], actions: [value.actions[0]!] };
+    rerender(<SeerPanel seer={noPrepared} resources={resources} busy={false} blocked={false} onCommand={onCommand} />);
+    expect(within(summary()).getByText(/第2批 · 抄录藏书目录/)).toBeTruthy();
+    expect(onCommand).not.toHaveBeenCalled();
+  });
+
   it("places the prepared bottle before spare materials without submitting or losing its projected facts", async () => {
     const value = bottled();
     value.actions.push({ id: "spare", label: "下一批备料", cost: "领域备料成本", enabled: true, reason: null, command: { type: "MATERIAL_WORK", batchId: "spare" } });

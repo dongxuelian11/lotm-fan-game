@@ -606,3 +606,8 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 两文件18项测试通过，覆盖开启/关闭/Escape/重复开启/卸载、不干扰其他body类、阻塞事件Escape保持锁、无命令/公开投影不变及CSS计算样式。独立源码审查通过。测试不冒充真实滚轮/边界滚动/位置恢复验收；原生与Windows均待核。
 - 完整main/renderer类型检查、生产构建及diff check均通过（既有chunk体积警告）。证据 `output/modal-scroll-20261105/`；尚未推送，不修改冻结PR。
 - 原生补验：代码头 `38b173f`，从真实rev25备份装入独立candidate-userdata，普通/大字成长与完整纪事到底继续滚轮时底层不动，Escape/Close后日常中栏与右栏滚动恢复，重复打开关闭正常；Tab首个可见焦点在关闭按钮，未穷举完整循环。本人已查看普通/大字底部实际像素，未见外层滚动条或内容裁切。试玩者核验主/候选current_json SHA均为`b374aa1669473aafb1c4c92a4662a769a7261e55a2f8b33a3be693533ac89f40`，仍rev25；未提交游戏命令。图在 `output/natural-continuation-20261104/candidate-*-bottom.png`，Windows未验证。
+
+### 2026-11-05 已有占卜家原瓶的下一步提示（本地候选）
+- 基线 `b389ae5`，独立 `fix/seer-prepared-guidance`。新手真实revision19第4周已调配首瓶，但服药尚待第5周，摘要误优先推荐第2批劳动。领域仅为PREPARED瓶公开CONSUME动作；只调整摘要优先级，未晋升时已有服药动作及其原禁用原因先于备用材料。已启用服药仍最优先，晋升后与无原瓶保持原逻辑。
+- 两文件24项测试通过，覆盖原瓶受限→可服→无原瓶的摘要、原备用行动仍可用、无命令与投影不变；独立只读源码审查无阻断。原命令、成本、确认流程、资格、随机与存档不变。
+- 首次renderer类型进程被系统Killed（exit137、无TS诊断），保留原日志，停止并行重型检查后完整串行main/renderer类型与生产构建全部通过；diff check通过，构建仅既有chunk警告。证据 `output/seer-guidance-20261105/`。真实19已自然继续晋9，不回滚重演；修后目标原生NOT_RUN。尚未推送，不修改冻结PR。

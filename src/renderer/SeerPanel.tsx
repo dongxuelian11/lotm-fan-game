@@ -162,6 +162,9 @@ export function SeerPanel({
     (action) => action.command.type !== "CONSUME" && (seer.discovered || action.command.type === "DISCOVER"),
   );
   const nextAction = seer.actions.find((action) => action.enabled && action.command.type === "CONSUME")
+    // A public consume action identifies an existing prepared bottle. Explain its
+    // current gate before suggesting optional supplies for another batch.
+    ?? (!seer.promoted ? seer.actions.find((action) => action.command.type === "CONSUME") : undefined)
     ?? seer.actions.find((action) => action.enabled)
     ?? (seer.promoted ? seer.practice?.cases.flatMap((entry) => entry.choices).find((choice) => choice.enabled) : undefined)
     ?? (seer.promoted && seer.practice?.reflection.enabled ? seer.practice.reflection : undefined)
