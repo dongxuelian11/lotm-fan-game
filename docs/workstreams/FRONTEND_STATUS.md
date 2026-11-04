@@ -616,3 +616,8 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 基线 `b389ae5`，独立 `fix/potion-feedback-flow`。真实新手rev21晋升图中，旧滚动位置使sticky长结果遮挡“已耗尽魔药记录”；标题本就在sticky可见区，既有focus未带回正文起点。仅含.seer-potion-moment插画的结果容器改position:static，其他短回执及原小丑/魔术师例外保持原样；不添加强制滚动、不改标题focus或任何结果/规则/存档。
 - 两文件7项测试通过，覆盖四类魔药里程碑既有文本/焦点/动态设置及新CSS静态流→普通回执sticky。独立源码审查无阻断。截图来源 `output/natural-continuation-20261104/rev21-promotion-success-sticky.png`。
 - 完整main/renderer类型检查、生产构建及diff check通过（既有chunk体积警告），证据 `output/potion-feedback-20261105/`。修后原生滚动/遮挡/焦点待核，未回滚或重演晋升，尚未推送。
+
+### 2026-11-05 新手卷宗联合候选
+- 从 `b389ae5` 合入三片至 `ad85349`，相对PR60头 `d704990` 共11文件，仅renderer、其测试及本状态文档。产品文件无冲突；状态文档追加冲突保留全部记录，独立源码审查确认候选内容无遗漏。
+- 联合8文件84项及补充完整秘偶大师panel文件31项，共9文件115项通过；完整main/renderer类型、生产构建与diff check通过，既有chunk警告保留。初始命令中的不存在marionettist-pathway过滤项未计入覆盖，随后使用真实marionettist-panel文件独立补齐31项。证据 `output/dossier-polish-integration-20261105/`。
+- 此联合树尚未原生重启或跑Windows实机/全部历史；滚动片的真实rev25只读原生通过，其他瞬时目标边界仍按各片记录。等待PR60合并后以实际最新main生成发布候选，不修改试玩存档。
