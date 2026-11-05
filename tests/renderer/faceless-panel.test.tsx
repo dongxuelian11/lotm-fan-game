@@ -76,7 +76,7 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     expect(JSON.stringify(value)).toBe(before);
   });
 
-  it("keeps current cash and actions beside visibly separate material batches without hiding spare choices", () => {
+  it("keeps current cash and actions beside the current batch, with spare choices available on demand", () => {
     const firstBuy = action({ type: "BUY_MATERIALS", batchId: "faceless-batch-1" }, "第一批采购", false, "240便士");
     const firstWork = action({ type: "MATERIAL_WORK", batchId: "faceless-batch-1" }, "第一批劳动");
     const spare = action({ type: "MATERIAL_WORK", batchId: "faceless-batch-2" }, "第二批劳动");
@@ -87,6 +87,8 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     expect(within(current).getAllByRole("button")).toHaveLength(2);
     expect(current.textContent).toContain("240便士");
     expect(current.textContent).not.toContain("第二批劳动");
+    expect(screen.getByText("其他批次 · 备用材料（1批）").closest("details")!.open).toBe(false);
+    fireEvent.click(screen.getByText("其他批次 · 备用材料（1批）"));
     const reserve = screen.getByRole("region", { name: "备用准备批次" });
     fireEvent.click(within(reserve).getByRole("button", { name: /^第二批劳动/ }));
     expect(onCommand).toHaveBeenCalledExactlyOnceWith(spare.command);
@@ -121,6 +123,7 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     const summary = screen.getByRole("region", { name: "无面人成长下一步" });
     expect(summary.textContent).toContain("领取第一批。这批采购需要240便士。");
     expect(summary.textContent).not.toContain("备用第二批劳动");
+    fireEvent.click(screen.getByText("其他批次 · 备用材料（1批）"));
     fireEvent.click(screen.getByRole("button", { name: /^备用第二批劳动/ }));
     expect(onCommand).toHaveBeenCalledExactlyOnceWith(spare.command);
   });
@@ -142,6 +145,7 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     panel(faceless({ actions: [action({ type: "BUY_MATERIALS", batchId: "faceless-batch-1" }, "第一批采购", false), work,
       action({ type: "BUY_MATERIALS", batchId: "faceless-batch-2" }, "第二批采购")] }));
     expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain("第一批劳动");
+    fireEvent.click(screen.getByText("其他批次 · 备用材料（1批）"));
     expect((screen.getByRole("button", { name: /^第二批采购/ }) as HTMLButtonElement).disabled).toBe(false);
   });
 
@@ -193,6 +197,7 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     const labels = ["学习已知配方", "完成本批第五步劳务", "取得原六料", "调配第二批原料", "请求下一批供货", "领取实际到货"];
     const costs = ["360便士 · 1行动", "1行动 · 劳务5/5", "240便士 · 0行动", "80便士 · 1行动", "1行动 · 下周到货", "0行动"];
     const { onCommand } = panel(faceless({ actions: commands.map((command, index) => action(command, labels[index]!, true, costs[index]!)) }));
+    await userEvent.click(screen.getByText("其他批次 · 备用材料（1批）"));
     for (const label of labels) await userEvent.click(screen.getByRole("button", { name: new RegExp(`^${label}`) }));
     expect(onCommand.mock.calls.map(([command]) => command)).toEqual(commands);
     for (const cost of costs) expect(screen.getByText(cost)).toBeTruthy();
@@ -295,12 +300,12 @@ describe("Faceless sequence-six committed appearance, original bottles and expli
     expect(onCommand).toHaveBeenLastCalledWith(borrow.command); expect(screen.getByText(value.outfit.summary)).toBeTruthy();
     const borrowed = { ...value, outfit: borrowedOutfit(), actions: [giveBack] };
     rerender(<FacelessPanel faceless={borrowed} resources={resources} busy={false} onCommand={onCommand} />);
-    expect(screen.getByText("FC6-PROP-COAT-1")).toBeTruthy();
+    expect(screen.getByText("原排练道具外套")).toBeTruthy(); expect(value.outfit.id).toBe("FC6-PROP-COAT-1");
     await userEvent.click(screen.getByRole("button", { name: /^归还同一件原排练道具服/ }));
     expect(onCommand).toHaveBeenLastCalledWith(giveBack.command); expect(screen.getByText(borrowed.outfit.summary)).toBeTruthy();
     const returned = { ...borrowed, outfit: { ...value.outfit, summary: "原服借出1次，归还1次；同一原物已放回衣柜。" }, actions: [borrow] };
     rerender(<FacelessPanel faceless={returned} resources={resources} busy={false} onCommand={onCommand} />);
-    expect(screen.getByText(returned.outfit.summary)).toBeTruthy(); expect(screen.getByText("FC6-PROP-COAT-1")).toBeTruthy();
+    expect(screen.getByText(returned.outfit.summary)).toBeTruthy(); expect(screen.getByText("原排练道具外套")).toBeTruthy(); expect(value.outfit.id).toBe("FC6-PROP-COAT-1");
   });
 
   it("separates observation, ordinary preparation and execution without faking appearance, consent or success", async () => {
@@ -459,7 +464,7 @@ describe("Faceless practice explanation wording", () => {
     expect(scene.textContent).toContain("结束本次练习只停止练习，离场不自动复原或归还原服装");
     for (const code of ["SELF", "STAGE_DOUBLE", "PORTER_PART", "CLOSE"]) expect(scene.textContent).not.toContain(code);
     const outfit = screen.getByRole("region", { name: "原道具服与实际借还" });
-    expect(outfit.textContent).toContain("同一原物FC6-PROP-COAT-1，已借1次、已还0次");
+    expect(outfit.textContent).toContain("同一件原排练道具外套，已借1次、已还0次");
     expect(outfit.textContent).toContain("结束本次练习和复原本人外貌与原声都不代替归还");
     expect(JSON.stringify(value)).toBe(before);
   });
@@ -491,4 +496,59 @@ describe("Faceless current self-report wording", () => {
     panel(faceless({ promoted: true, cases: [{ ...cases()[0]!, ...entry }] }));
     expect(screen.getByRole("region", { name: "实际结果与有限报告" }).textContent).toBe(`实际结果与有限报告${entry.result}`);
   });
+});
+
+
+it("keeps preparation references collapsed and intact, without hiding current costs, supply or maturity", async () => {
+  const current = { ...action({ type: "BUY_MATERIALS", batchId: "faceless-batch-1" }, "当前材料采购", false, "1行动 · 3240便士"), reason: "当前采购需要3240便士。" };
+  const spare = action({ type: "MATERIAL_WORK", batchId: "faceless-batch-2" }, "备用劳动", true, "1行动 · 劳动0/5");
+  const third = { ...action({ type: "BUY_MATERIALS", batchId: "faceless-batch-3" }, "备用采购", false, "3240便士"), reason: "本批仍需3240便士。" };
+  const value = faceless({ formulaKnown: true, formula: [...FACELESS_FORMULA], story: FACELESS_FORMULA_SOURCE,
+    supplies: "供应方剩余3批，现有未服原瓶0瓶。", digestion: "魔术师扮演100/100，晋升后17/12整周。", actions: [current, spare, third] });
+  const snapshot = JSON.stringify(value);
+  const { container, onCommand, rerender } = panel(value);
+  const spareSummary = screen.getByText("其他批次 · 备用材料（2批）");
+  const spareDetails = spareSummary.closest("details")!;
+  const reference = screen.getByLabelText("无面人配方来源与能力边界") as HTMLDetailsElement;
+  const formula = screen.getByLabelText("无面人已知配方") as HTMLDetailsElement;
+  expect(spareDetails.open).toBe(false); expect(reference.open).toBe(false); expect(formula.open).toBe(false);
+  expect(screen.getByRole("button", { name: /^备用劳动/ }).closest("details")).toBe(spareDetails);
+  expect(screen.getByRole("region", { name: "当前准备批次" }).textContent).toContain(current.cost);
+  expect(screen.getByRole("region", { name: "当前准备批次" }).textContent).toContain(current.reason);
+  expect(screen.getByRole("region", { name: "无面人实际材料与批次" }).textContent).toContain(value.supplies);
+  expect(screen.getByRole("region", { name: "无面人成长下一步" }).textContent).toContain(value.digestion);
+  expect(spareSummary.tagName).toBe("SUMMARY");
+  await userEvent.click(spareSummary);
+  expect(spareDetails.open).toBe(true);
+  expect(screen.getAllByRole("region", { name: "备用准备批次" })).toHaveLength(2);
+  expect(container.querySelectorAll(".faceless-current-batch")).toHaveLength(1);
+  expect((screen.getByRole("button", { name: /^备用采购/ }) as HTMLButtonElement).disabled).toBe(true);
+  expect(screen.getByText(third.reason)).toBeTruthy();
+  await userEvent.click(screen.getByText("查阅配方来源与能力边界"));
+  expect(reference.open).toBe(true); expect(reference.textContent).toContain(value.story);
+  await userEvent.click(screen.getByText("查阅配方来源与能力边界"));
+  await userEvent.click(spareSummary); expect(spareDetails.open).toBe(false);
+  await userEvent.click(spareSummary); expect(spareDetails.open).toBe(true);
+  expect(onCommand).not.toHaveBeenCalled(); expect(JSON.stringify(value)).toBe(snapshot);
+  rerender(<FacelessPanel faceless={value} resources={resources} busy onCommand={onCommand} />);
+  expect(spareDetails.open).toBe(true);
+  expect((screen.getByRole("button", { name: /^备用劳动/ }) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: /^备用劳动/ })); expect(onCommand).not.toHaveBeenCalled();
+  rerender(<FacelessPanel faceless={{ ...value, promoted: true }} resources={resources} busy={false} onCommand={onCommand} />);
+  expect(screen.queryByLabelText("无面人配方来源与能力边界")).toBeNull();
+  expect(screen.getByText(FACELESS_FORMULA_SOURCE).closest("details")).toBeNull();
+});
+
+
+it('shows a natural original-coat label in facts and observations without changing public data or commands', async () => {
+  const borrow = action({ type: "BORROW_OUTFIT", caseId: "stage-double" }, "借原道具服");
+  const value = faceless({ promoted: true, outfit: { ...faceless().outfit, summary: "同一原物FC6-PROP-COAT-1，已借1次、已还1次。" }, cases: [{ ...cases()[0]!, observations: ["原道具外套FC6-PROP-COAT-1还在衣架上，变脸不能把外套变到身上。"] }], actions: [borrow] });
+  const before = JSON.stringify(value); const { onCommand } = panel(value);
+  expect(screen.queryByText("FC6-PROP-COAT-1", { exact: false })).toBeNull();
+  expect(within(screen.getByRole("region", { name: "原道具服与实际借还" })).getByText("原排练道具外套")).toBeTruthy();
+  expect(screen.getByText("原排练道具外套还在衣架上，变脸不能把外套变到身上。")).toBeTruthy();
+  expect(screen.getByText("同一件原排练道具外套，已借1次、已还1次。")).toBeTruthy();
+  await userEvent.click(screen.getByRole("button", { name: /借原道具服/ }));
+  expect(onCommand).toHaveBeenCalledExactlyOnceWith(borrow.command);
+  expect(JSON.stringify(value)).toBe(before);
 });

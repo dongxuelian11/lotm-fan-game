@@ -209,7 +209,7 @@ import type {
 import { LifeActionVignette } from "./LifeActionVignette";
 import { SeerActionFeedback } from "./SeerPotionMoment";
 import { isSeerCommissionResult, SeerPanel } from "./SeerPanel";
-import { mindreaderDiscussionFeedback, seerFeedbackText, seerReadableText } from "./seer-feedback";
+import { facelessCheckFeedback, clownCheckFeedback, magicianCheckFeedback, mindreaderDiscussionFeedback, seerFeedbackText, seerReadableText } from "./seer-feedback";
 import { TownPanel } from "./TownPanel";
 import { ClownPanel } from "./ClownPanel";
 import { ClownHistory, MagicianPanel, SeerHistory } from "./MagicianPanel";
@@ -4274,6 +4274,20 @@ export function SliceApp() {
     }
     previousMagicianStage.current = state && promoted !== undefined ? { runId: state.runId, promoted } : null;
   }, [clownResourceView, magicianPreparationView, drawer, showingMagician, state?.runId, state?.magician?.promoted, state?.revision]);
+  const previousFacelessStage = useRef<{ runId: string; promoted: boolean } | null>(null);
+  useEffect(() => {
+    const previous = previousFacelessStage.current;
+    const promoted = state?.faceless?.promoted;
+    if (drawer === "SEER" && showingFaceless && promoted && previous?.runId === state?.runId && !previous.promoted) {
+      // A committed same-run promotion replaces the long confirmation, not an ordinary receipt.
+      const dialog = clownFeedback.current?.closest<HTMLElement>(".slice-dialog");
+      if (dialog) {
+        dialog.querySelector<HTMLElement>("[data-modal-heading]")?.focus({ preventScroll: true });
+        dialog.scrollTop = 0;
+      }
+    }
+    previousFacelessStage.current = state && promoted !== undefined ? { runId: state.runId, promoted } : null;
+  }, [drawer, showingFaceless, state?.runId, state?.faceless?.promoted]);
   const drawerLocked = (drawer === "SEER" || drawer === "TOWN") && (busy || pending.current !== null || gladiatorInside || assassinInside || instigatorInside || pryerInside || combatScholarInside || wizardInside || secretSupplicantInside || listenerInside || shadowAsceticInside || criminalInside || unwingedInside || serialKillerInside || prisonerInside || madmanInside || werewolfLocked || monsterInside || machineInside || luckyInside || lawyerInside || barbarianInside || briberInside || arbiterInside || sheriffInside || interrogatorInside || cultivatorInside || physicianInside || harvestpriestInside || facelessInside || conspiratorInside || hypnotistInside || artisanInside || potionProfessorInside || sootherInside || polymathInside || windBlessedInside || notaryInside || spiritGuideInside || recorderInside || fireThiefInside || dawnPaladinInside || pleasureInside || scrollProfessorInside || roseBishopInside || demonInside || zombieInside || calamityPriestInside || corruptionBaronInside || judgeInside || biologistInside || marionettistInside || reaperInside || dreamwalkerInside || astronomerInside || crimsonScholarInside || spiritWarlockInside || mysticismMagisterInside || oceanSingerInside || priestOfLightInside || gatekeeperInside || travelerInside || dreamStealerInside || guardianInside || painInside || starMysticInside || shepherdInside || desireApostleInside || wraithInside || winnerInside || mentorDisorderInside || punishmentKnightInside || druidInside || bizarroInside || ironBloodInside || manipulatorInside || alchemistInside || witchKingInside || nightwatcherInside || prophetInside || undyingInside || secretsSorcererInside || parasiteInside || demonHunterInside || despairInside || mysticInside || blackKnightInside || devilInside || puppetInside || misfortuneMageInside || fallenEarlInside || imperativeMageInside || ancientAlchemistInside || unshadowedInside || cataclysmPriestInside);
   useEffect(() => {
     if (activePlay && !unwingedInside && !criminalInside && !assassinInside && !instigatorInside && !gladiatorInside && !apprenticeInside && !pryerInside && !combatScholarInside && !wizardInside && !secretSupplicantInside && !listenerInside && !shadowAsceticInside && serialKillerInside && !event && !combat && !isEnding) {
@@ -4501,7 +4515,7 @@ export function SliceApp() {
           setActionResults(newRecords.map(record => resting && record.title === "完成休养" ? {
             ...record,
             text: `休养及本次结算后：健康${current.health}→${next.health}；精神${current.mind}→${next.mind}；灵性${current.spirituality}→${next.spirituality}；魔药排异${current.seer.pollution}→${next.seer.pollution}。`,
-          } : mindreaderDiscussionFeedback(record, current, envelope, result.value)));
+          } : facelessCheckFeedback(magicianCheckFeedback(clownCheckFeedback(mindreaderDiscussionFeedback(record, current, envelope, result.value), current, envelope, result.value), current, envelope, result.value), current, envelope, result.value)));
         }
         stateRef.current = next;
         setState(next);

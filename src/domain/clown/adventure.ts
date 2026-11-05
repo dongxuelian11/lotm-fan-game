@@ -1,3 +1,5 @@
+import { computeCheckChance } from '../../resolution/normal-check.js';
+import type { PublicCoreStatKey } from '../../shared/contracts.js';
 import type {SliceState} from '../slice/types.js';
 import type {SeerContext} from '../seer/index.js';
 import type {ClownCommand,ClownAction} from './types.js';
@@ -8,6 +10,10 @@ const LESSONS=[
  {id:'paper-target',title:'一张纸与固定靶',body:'指导者把厚软木靶固定在无人通行的练习区。只使用你实际买来的普通纸，投出的一张不回库存，也不对真人练刀。',stat:'physique' as const,difficulty:12,spirituality:1},
  {id:'composed-apology',title:'在责备声中把话说完',body:'你在整理剧院告示时漏掉了排练时刻，朱迪丝当面提出责备。练习稳住表情并诚实道歉，不把角色表情当作自己没有难过，也不否认这次疏漏。',stat:'will' as const,difficulty:12,spirituality:0},
 ];
+const STAT_LABELS: Record<PublicCoreStatKey, string> = { physique: '体质', perception: '感知', will: '意志', knowledge: '知识' };
+function checkPreview(s: SliceState, stat: PublicCoreStatKey, difficulty: number): string {
+ return `${STAT_LABELS[stat]}难度${difficulty} · 成功率${computeCheckChance({baseAbility:s.character.coreStats[stat],difficulty,modifiers:[]})}%`;
+}
 const RETREAT_REFLECTION='retreat-reflection';
 const REFLECTION_SOURCE=`clown-practice:${RETREAT_REFLECTION}`;
 const allLessonsComplete=(s:SliceState)=>LESSONS.every(lesson=>s.clown.practices.includes(lesson.id));
@@ -39,10 +45,10 @@ export function clownAdventureActions(s:SliceState):ClownAction[]{
  if(s.progression.pathwayId!=='diviner'||s.progression.sequence!==8)return [];
  const add=(id:string,label:string,cost:string,command:ClownCommand):ClownAction=>{const reason=blocked(s,command);return{id,label,cost,command,enabled:!reason,reason};};
  return [
- ...(reflectionAvailable(s)?[add(RETREAT_REFLECTION,'撤离后的复盘与自控','1行动 · 意志难度12 · 成功扮演+20（最多100），仅一次；失败消耗行动，下周可重试。护送仍是撤离，不改变快递员与包裹的未知后续。',{type:'PRACTICE',practiceId:RETREAT_REFLECTION})]:[]),
- ...LESSONS.filter(x=>!s.clown.practices.includes(x.id)).map(x=>add(x.id,x.title,`1行动 · ${x.spirituality}灵性${x.id==='paper-target'?' · 1张原纸':''} · ${x.body}`,{type:'PRACTICE',practiceId:x.id})),
+ ...(reflectionAvailable(s)?[add(RETREAT_REFLECTION,'撤离后的复盘与自控',`1行动 · ${checkPreview(s,'will',12)} · 成功扮演+20（最多100），仅一次；失败消耗行动，下周可重试。护送仍是撤离，不改变快递员与包裹的未知后续。`,{type:'PRACTICE',practiceId:RETREAT_REFLECTION})]:[]),
+ ...LESSONS.filter(x=>!s.clown.practices.includes(x.id)).map(x=>add(x.id,x.title,`1行动 · ${x.spirituality}灵性${x.id==='paper-target'?' · 1张原纸':''} · ${checkPreview(s,x.stat,x.difficulty)} · ${x.body}`,{type:'PRACTICE',practiceId:x.id})),
  ...(s.clown.rescue.status==='AVAILABLE'?[
- add('clown-rescue-talk','陪快递员当面交涉',`1行动 · 意志难度14 · 成功护送离开，失败不转移原物`,{type:'RESCUE_TALK'}),
+ add('clown-rescue-talk','陪快递员当面交涉',`1行动 · ${checkPreview(s,'will',14)} · 成功护送离开，失败不转移原物`,{type:'RESCUE_TALK'}),
  add('clown-rescue-fight','介入护送冲突',`1行动 · 真实战斗，可能受伤或死亡；纸飞刀逐张消耗原纸`,{type:'RESCUE_FIGHT'}),
  ]:[]),
  ];

@@ -590,3 +590,27 @@ describe("S6 current daily guidance reuses the dashboard route", () => {
     expect(clownLifeGuidance(state)).toBe(state.nextStep);
   });
 });
+
+it('labels real bottle provenance and confirmation without changing the selected command or saved projection', async () => {
+  const id = 'clown-batch-1:bottle';
+  const command = { type: 'CONSUME', bottleId: id, confirmed: true } as const;
+  const source = '占卜俱乐部指导者调配台，第16周；仅由clown-batch-1的七项材料调配，原瓶clown-batch-1:bottle';
+  const value = clown({ formulaKnown: true, actions: [{ id: `consume-${id}`, label: '服用第1批小丑原瓶', cost: '0行动 · 独立确认', enabled: true, reason: null, command }],
+    bottles: [{ id, title: '第1批 · 小丑魔药', source, status: '已调配，尚未服用', chance: 62, command }] });
+  const snapshot = JSON.stringify(value);
+  const { container, onCommand } = panel(value);
+  const readableSource = '来源：占卜俱乐部指导者调配台，第16周；仅由第1批备料的七项材料调配，第1批小丑原瓶';
+  expect(screen.getByText(readableSource)).toBeTruthy();
+  expect(container.textContent).not.toContain('clown-batch-');
+  const open = () => userEvent.click(screen.getByRole('button', { name: /查看并准备服用/ }));
+  await open();
+  expect(screen.getByRole('region', { name: '这瓶小丑魔药的服用确认' }).textContent).not.toContain('clown-batch-');
+  expect(screen.getByText('第1批小丑原瓶')).toBeTruthy();
+  expect(screen.getByText(readableSource)).toBeTruthy();
+  await userEvent.click(screen.getByRole('button', { name: '暂不服用' }));
+  expect(onCommand).not.toHaveBeenCalled();
+  await open();
+  await userEvent.click(screen.getByRole('button', { name: '确认服用「第1批 · 小丑魔药」' }));
+  expect(onCommand).toHaveBeenCalledExactlyOnceWith(command);
+  expect(JSON.stringify(value)).toBe(snapshot);
+});
