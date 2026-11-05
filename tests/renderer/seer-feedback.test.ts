@@ -243,3 +243,51 @@ it('formats only the exact actual rev226 observation receipt without changing st
     { ...record, text: record.text.replace('乔纳', '其他人') },
   ]) expect(seerFeedbackText(changed, true)).toBe(changed.text);
 });
+
+
+// Exact loan/return wording observed in read-only rev214, records 207-343 and 210-346.
+describe('Faceless original rehearsal coat display label', () => {
+  it.each([
+    ['FC6-PROP-COAT-1', '原排练道具外套'],
+    ['同一原物FC6-PROP-COAT-1，已借1次、已还1次。', '同一件原排练道具外套，已借1次、已还1次。'],
+    ['原道具外套FC6-PROP-COAT-1还在衣架上，变脸不能把外套变到身上。', '原排练道具外套还在衣架上，变脸不能把外套变到身上。'],
+    ['FC6-PROP-COAT-1从原衣架交到你手中并穿好，0行动。第1次借用只用于约定练习，不因变脸新增或复制衣物。', '原排练道具外套从原衣架交到你手中并穿好，0行动。第1次借用只用于约定练习，不因变脸新增或复制衣物。'],
+    ['FC6-PROP-COAT-1脱下并交回原保管员、放回原衣架，0行动。已借1次、已还1次；当前外貌与声线没有改变。', '原排练道具外套脱下并交回原保管员、放回原衣架，0行动。已借1次、已还1次；当前外貌与声线没有改变。'],
+  ])('maps only the known original object in %s', (text, expected) => {
+    const record = { title: '实际借还原道具', text }; const before = JSON.stringify(record);
+    expect(seerReadableText(text)).toBe(expected);
+    expect(seerReadableText(expected)).toBe(expected);
+    expect(seerFeedbackText(record, false)).toBe(expected);
+    expect(JSON.stringify(record)).toBe(before);
+  });
+  it.each(['FC6-PROP-COAT-10', 'FC6-PROP-COAT-2', 'xFC6-PROP-COAT-1', 'FC6-PROP-COAT-1:copy', 'FC6-PROP-COAT-1_extra'])('preserves unknown object %s', text => {
+    expect(seerReadableText(text)).toBe(text);
+  });
+});
+
+describe('Clown public bottle labels without changing real saved receipts', () => {
+  // Observed native run: public records record-57-94 and record-58-95, week 16.
+  const records = [
+    { title: '一瓶小丑魔药', text: '花费1行动、80便士，把第1批五项辅材依次加入，再投入完整人脸玫瑰，最后加入独角结晶。七项材料已全部消耗，得到独立原瓶clown-batch-1:bottle，尚未服用。占卜家扮演100且晋升后满6整周才能确认服药。' },
+    { title: '成为小丑', text: '原瓶clown-batch-1:bottle已耗尽。意志判定41/62，成功：精神−10，体质+6、感知+4、意志+2、知识+1。四项占卜家掌握完整继承，五项小丑能力从0开始；占卜家消化成果保留，小丑扮演从0开始。灵性上限提高到45，当前灵性没有补满。' },
+  ];
+  it.each(records)('preserves every saved fact in $title while relabeling the original bottle', record => {
+    Object.freeze(record);
+    const snapshot = JSON.stringify(record);
+    const expected = record.text.replace('原瓶clown-batch-1:bottle', '第1批小丑原瓶');
+    expect(seerFeedbackText(record, true)).toBe(expected);
+    expect(seerReadableText(record.text)).toBe(expected);
+    expect(seerReadableText(expected)).toBe(expected);
+    expect(JSON.stringify(record)).toBe(snapshot);
+  });
+  it('labels bottle provenance and later batches while leaving outcome prose intact', () => {
+    const source = '占卜俱乐部指导者调配台，第16周；仅由clown-batch-12的七项材料调配，原瓶clown-batch-12:bottle';
+    expect(seerReadableText(source)).toBe('占卜俱乐部指导者调配台，第16周；仅由第12批备料的七项材料调配，第12批小丑原瓶');
+    expect(seerReadableText('clown-batch-12:bottle')).toBe('第12批小丑原瓶');
+    const failure = '原瓶clown-batch-2:bottle已耗尽。意志判定99/62，灾难：精神−40、健康−20、排异+50。你仍是占卜家。';
+    expect(seerFeedbackText({ title: '指导者中断了小丑晋升', text: failure }, false)).toBe(failure.replace('原瓶clown-batch-2:bottle', '第2批小丑原瓶'));
+  });
+  it.each(['clown-batch-x:bottle', 'clown-batch-0:bottle', 'clown-batch-01:bottle', 'clown-batch-12:unknown', 'clown-batch-12:bottle-extra', 'other-clown-batch-12:bottle', 'clown-batch-12_extra', 'clown-batch-123extra'])('keeps unfamiliar identifiers unchanged: %s', unknown => {
+    expect(seerReadableText(unknown)).toBe(unknown);
+  });
+});

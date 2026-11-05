@@ -1,3 +1,5 @@
+import { computeCheckChance } from '../../resolution/normal-check.js';
+import type { PublicCoreStatKey } from '../../shared/contracts.js';
 import type { SliceState } from '../slice/types.js';
 import type { SeerContext } from '../seer/index.js';
 import { FACELESS_TEMPLATES } from './content.js';
@@ -172,6 +174,11 @@ export function applyFacelessActivity(s: SliceState, c: FacelessActivityCommand,
 export function facelessActions(s: SliceState): FacelessAction[] {
   if (!promoted(s)) return [];
   const out: FacelessAction[] = [];
+  const checkPreview = (stat: PublicCoreStatKey, difficulty: number): string => {
+    if (s.progression.sequence !== 6) return '';
+    const labels = { physique: '体质', perception: '感知', will: '意志', knowledge: '知识' };
+    return ` · ${labels[stat]}难度${difficulty} · 成功率${computeCheckChance({ baseAbility: s.character.coreStats[stat], difficulty, modifiers: [] })}%`;
+  };
   const add = (id: string, label: string, cost: string, command: FacelessActivityCommand) => {
     if ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) && !['RESTORE_SELF', 'CHANGE_APPEARANCE', 'RETURN_OUTFIT', 'CLOSE'].includes(command.type)) return;
     const reason = blocked(s, command); out.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -189,13 +196,13 @@ export function facelessActions(s: SliceState): FacelessAction[] {
     }
     if (r.status === 'PREPARED') {
       if (s.faceless.outfit.location === 'WARDROBE') add(`${p.id}-borrow`, '实际借用同一原道具外套', '0行动 · 能力方法必需，普通方法可选', { type: 'BORROW_OUTFIT', caseId: p.id });
-      add(`${p.id}-perform`, '实际完成本次角色练习', '1行动 · 不自动变形或生成服装', { type: 'PERFORM', caseId: p.id });
+      add(`${p.id}-perform`, '实际完成本次角色练习', `1行动 · 不自动变形或生成服装${r.method === 'ABILITY' ? checkPreview(p.stat, 10) : r.method === 'ORDINARY' ? checkPreview('knowledge', 12) : ''}`, { type: 'PERFORM', caseId: p.id });
       add(`${p.id}-withdraw`, '取消尚未实施的准备', '0行动 · 保留实际外貌与原服状态', { type: 'WITHDRAW', caseId: p.id });
     }
     if (r.status === 'EXAMINED') add(`${p.id}-report`, '报告有限结果与身份边界', '1行动 · 先结束接触并归还原服', { type: 'REPORT', caseId: p.id });
   }
   if (s.faceless.encounter.status === 'AVAILABLE') {
-    add('faceless-encounter-talk', '当面澄清后门交接误会', '1行动 · 普通交涉 · 无额外扮演', { type: 'ENCOUNTER_TALK' });
+    add('faceless-encounter-talk', '当面澄清后门交接误会', `1行动 · 普通交涉 · 无额外扮演${checkPreview('will', 16)}`, { type: 'ENCOUNTER_TALK' });
     add('faceless-encounter-fight', '承担风险，面对后门真实冲突', '1行动 · 对方普通短棍 · 可实际撤退', { type: 'ENCOUNTER_FIGHT' });
   }
   if (!s.faceless.reflected) add('faceless-reflect', '回看扮演与自己原有的经历', '1行动 · 三项报告后 · 本人原貌与原声', { type: 'REFLECT' });

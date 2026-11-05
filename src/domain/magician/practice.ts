@@ -1,3 +1,4 @@
+import { computeCheckChance } from '../../resolution/normal-check.js';
 import type { PublicCoreStatKey } from '../../shared/contracts.js';
 import type { SeerContext } from '../seer/index.js';
 import type { SliceState } from '../slice/types.js';
@@ -170,6 +171,9 @@ export function applyMagicianPractice(s: SliceState, c: MagicianActivityCommand,
 export function magicianActions(s: SliceState): MagicianAction[] {
   if (!promoted(s)) return [];
   const actions: MagicianAction[] = [];
+  // Current S7 display only; inherited S6/S5 practice presentation stays unchanged.
+  const chance = (stat: PublicCoreStatKey) => s.progression.sequence === 7
+    ? ` · 成功率${computeCheckChance({ baseAbility: s.character.coreStats[stat], difficulty: 14, modifiers: [] })}%` : '';
   const add = (id: string, label: string, cost: string, command: MagicianActivityCommand) => {
     if ((s.progression.sequence===4||(s.progression.sequence===3||s.progression.sequence===2)) && !['BUY_OIL', 'PREPARE_LANTERN', 'PREPARE_FIGURINE', 'TRANSFER_INJURY'].includes(command.type)) return;
     const reason = blocked(s, command); actions.push({ id, label, cost, command, enabled: reason === null, reason });
@@ -179,13 +183,13 @@ export function magicianActions(s: SliceState): MagicianAction[] {
   add('magician-prepare-figurine', '用一张原纸剪制纸人', '1行动 · 原纸1张 · 预制库存+1 · 无成长奖励', { type: 'PREPARE_FIGURINE' });
   for (const p of PRACTICES) if (!s.magician.practices.includes(p.id)) {
     const stat = p.stat === 'will' ? '意志' : p.stat === 'physique' ? '体质' : '感知';
-    add(`magician-practice-${p.id}`, p.title, `1行动 · ${p.spirituality}灵性${p.paper ? ' · 原纸1张' : ''}${p.lamp ? ' · 当前真实灯火' : ''} · ${stat}难度14 · 成功扮演+12（G）`, { type: 'PRACTICE', practiceId: p.id });
+    add(`magician-practice-${p.id}`, p.title, `1行动 · ${p.spirituality}灵性${p.paper ? ' · 原纸1张' : ''}${p.lamp ? ' · 当前真实灯火' : ''} · ${stat}难度14${chance(p.stat)} · 成功扮演+12（G）`, { type: 'PRACTICE', practiceId: p.id });
   }
   for (const injury of s.injuries) if (injury.severity === 'HEAVY' && !s.magician.damageTransfers.includes(injury.id)) {
     add(`magician-transfer-${injury.id}`, `转移自身原重伤：${injury.id}`, '1行动 · 3灵性 · 同一伤势一次 · 不恢复健康', { type: 'TRANSFER_INJURY', injuryId: injury.id });
   }
   if (s.magician.encounter.status === 'AVAILABLE') {
-    add('magician-dispute-talk', '陪搬运工当面核对原通行记录', '1行动 · 意志难度14 · 原道具箱仍归剧院', { type: 'ENCOUNTER_TALK' });
+    add('magician-dispute-talk', '陪搬运工当面核对原通行记录', `1行动 · 意志难度14${chance('will')} · 原道具箱仍归剧院`, { type: 'ENCOUNTER_TALK' });
     add('magician-dispute-fight', '介入侧巷搬运争议', '1行动 · 真实战斗，可能受伤或死亡 · 无自动战利品', { type: 'ENCOUNTER_FIGHT' });
   }
   if (!s.magician.reflected) add('magician-reflect', '整理六次实践与争议结果', '1行动 · 六实践与争议完成后 · 扮演+8仅一次', { type: 'REFLECT' });

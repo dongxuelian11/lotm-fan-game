@@ -4,6 +4,7 @@ import type { FacelessAction, FacelessCommand, FacelessProjection } from "../dom
 import type { MagicianProjection } from "../domain/magician/types";
 import type { SeerResources } from "./SeerPanel";
 import { seerReadableText } from "./seer-feedback";
+import { FacelessLabourProgress } from "./FacelessLabourProgress";
 import "./seer-styles.css";
 
 // Display-only wording for the two public practice explanations, not commands or saved history.
@@ -141,6 +142,14 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
     preparationGroups.set(key, [...(preparationGroups.get(key) ?? []), action]);
   }
   const preparationBatches = [...preparationGroups.entries()];
+  function preparationBatch([id, actions]: [string, FacelessAction[]], index: number) {
+    return <section className={`faceless-preparation-batch${index === 0 ? " faceless-current-batch" : ""}`} key={id}
+      aria-label={index === 0 ? "当前准备批次" : "备用准备批次"}>
+      <h5>{id === "guidance" ? "配方与补货" : index === 0 ? "当前批次" : "备用材料"}</h5>
+      <FacelessLabourProgress batchId={id} actions={actions} />
+      <div className="seer-actions magician-preparation-batch" role="group" aria-label={index === 0 ? "当前批次行动" : "备用材料行动"}>{actions.map(actionButton)}</div>
+    </section>;
+  }
   const nextAction = faceless.insideCase ? closeAction : !faceless.promoted
     ? preparedBottleAction ?? currentPreparationActions.find((action) => action.enabled) ?? firstPreparation
     : [...selectedCaseActions, ...appearanceActions, ...outfitActions, ...growthActions].find((action) => action.enabled)
@@ -278,10 +287,10 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
       <h4>原道具服与实际借还</h4>
       <dl className="seer-facts">
         <div><dt>原道具服</dt><dd>{faceless.outfit.label}</dd></div>
-        <div><dt>原物编号</dt><dd>{faceless.outfit.id}</dd></div>
+        <div><dt>原物</dt><dd>{seerReadableText(faceless.outfit.id)}</dd></div>
         <div><dt>当前去向</dt><dd>{faceless.outfit.location}</dd></div>
       </dl>
-      <p>{facelessPracticeText(faceless.outfit.summary)}</p>
+      <p>{seerReadableText(facelessPracticeText(faceless.outfit.summary))}</p>
       <p className="slice-muted">改变外貌不会生成或更换衣物。借出与归还须分别提交，关闭接触、失败、撤回准备或复原都不会自动把原物送回。</p>
       {outfitActions.length > 0 && <div className="magician-action-list" role="group" aria-label="原道具服借还行动">{outfitActions.map(actionButton)}</div>}
     </section>}
@@ -299,7 +308,7 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
         <p className="slice-muted">本次接触：{selectedCase.contactOpen} · 实际结束次数：{selectedCase.closes}</p>
         <p className="slice-muted">实践状态：{caseStatus(selectedCase)}</p>
         <section aria-label="实际观察与同意边界"><h4>实际观察与同意边界</h4>
-          {selectedCase.observations.length > 0 ? <ul>{selectedCase.observations.map((observation, index) => <li key={index}>{observation}</li>)}</ul>
+          {selectedCase.observations.length > 0 ? <ul>{selectedCase.observations.map((observation, index) => <li key={index}>{seerReadableText(observation)}</li>)}</ul>
             : <p className="slice-muted">尚无本次实际观察记录；不能把模板外貌当作已了解当事人的声音、举止或身份。</p>}
         </section>
         <section aria-label="本次方法与准备"><h4>本次方法与准备</h4>
@@ -318,14 +327,17 @@ export function FacelessPanel({ faceless, resources, busy, blocked = false, erro
     {growthActions.length > 0 && <section aria-label={faceless.promoted ? "无面人成长行动" : "无面人材料与调配"}>
       {faceless.promoted ? <div className="magician-action-list">{growthActions.map(actionButton)}</div> : <>
         <h4>材料与调配</h4>
-        {preparationBatches.map(([id, actions], index) => <section className="faceless-preparation-batch" key={id}
-          aria-label={index === 0 ? "当前准备批次" : "备用准备批次"}>
-          <h5>{id === "guidance" ? "配方与补货" : index === 0 ? "当前批次" : "备用材料"}</h5>
-          <div className="seer-actions magician-preparation-batch" role="group" aria-label={index === 0 ? "当前批次行动" : "备用材料行动"}>{actions.map(actionButton)}</div>
-        </section>)}
+        {preparationBatches.slice(0, 1).map(preparationBatch)}
+        {preparationBatches.length > 1 && <details className="seer-fold magician-spare-batches">
+          <summary>其他批次 · 备用材料（{preparationBatches.length - 1}批）</summary>
+          {preparationBatches.slice(1).map((batch, index) => preparationBatch(batch, index + 1))}
+        </details>}
       </>}
     </section>}
-    {faceless.story && <p className="slice-muted">{faceless.story}</p>}
+    {faceless.story && (faceless.promoted ? <p className="slice-muted">{faceless.story}</p>
+      : <details className="seer-fold" aria-label="无面人配方来源与能力边界">
+        <summary>查阅配方来源与能力边界</summary><p className="slice-muted">{faceless.story}</p>
+      </details>)}
     {faceless.discovered && faceless.supplies && <section className="slice-notice" aria-label="无面人实际材料与批次">
       <h4>实际材料与独立批次</h4><p>{faceless.supplies}</p>
     </section>}
