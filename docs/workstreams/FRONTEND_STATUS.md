@@ -588,3 +588,36 @@ MASTER_GATE=PASS:FULL_TYPECHECK;PASS:6_FILES_44_TESTS;PASS:FULL_BUILD;PASS:TWO_P
 - 基线 `91b37610fc3277bf48f8f36daaac7a49ef671d59`。真实57第三案普通交谈完成后，公开投影为RESOLVED、无本案动作，但旧未读说明仍称普通观察/询问可继续。仅选中已知三案之一、精确RESOLVED、精确旧未读整句、无同案处理动作四条件同时成立时，显示“未读到本次浅层片段；本案已完成。”并不显示该分支误称已有读取内容的通用说明。
 - 未完成、未知状态/文本/案号、真实已有读取记录、有同案动作等全部保留原样；其它案动作不干扰本案判断。原投影、历史、领域、命令、选择行为与规则不变。两测试文件99项、完整main/renderer类型与生产构建通过，独立源码审查无阻断；日志 `output/mindreader-completed-impression-20261104/`。
 - 官方同57冷启零游戏命令原生检查普通/大字完成第三案与未完成第二案：完成句及原核实结果完整、无重复处理动作，未完成第二案原说明和三动作仍可见。实际截图与 `native-qa.json` 在 `output/mindreader-completed-native-20261104/`；本人已看像素无截断。57完整currentJSON哈希及其它封存档文件哈希由试玩者核验守恒，未重演57成功或55失败。Windows未验证，未推送。
+
+## 2026-11-05 — 第二项秘偶大师观察回执复用既有中文动作说明
+
+- 基线 `d704990cca7f9280237b7e6b7bbb8a9ba3bdf5a8`。真实226观察回执将固定故事与两条facts合并，顶部仍含PREPARE/PERFORM/CLOSE/WITHDRAW，而下方逐条观察已中文。仅精确标题“五米内短暂初控并主动放开”与完整226公开原句同时匹配时，逐字保留故事，复用已有两条facts中文显示映射。未知标题、追加/前缀、人物或命令变体原样保留。
+- 只改seer-feedback显示函数和对应测试；原始回执、领域、投影、存档、完整纪事及已有成功回执映射均不变。两文件62项测试、完整main/renderer类型与生产构建通过，独立只读源码/修前像素及公开回执审查无阻断。证据 `output/marionettist-observation-copy-20261104/`。
+- 修前证据为 `output/diviner-second-practice-20261104/rev226-observed-normal.png` 与公开record-226-369。当前229公开近期只含228/229，226不再位于该formatter的当前/近期展示；未回滚或重演226，修后目标原生NOT_RUN，仅实际公开输入测试覆盖。Windows未验证，未推送，不改冻结PR60。
+
+### 2026-11-05 大字行动回执字号（本地候选）
+- 基线 `598411a`；仅 `slice-styles.css` 为通用本次行动结果增加大字 22px / 1.5 行高，使用 `:where` 保留小丑更具体的局部规则，普通字号不变。未改内容、命令或领域。
+- `action-feedback-style`、`SliceApp`、`daily-state-summary` 共 21 项通过；完整 main/renderer 类型检查、生产构建及 diff check 通过。样式测试按真实先小丑后通用 CSS 顺序检查计算样式；不代替布局验收。
+- 初次新增级联断言误将 computed px 期待为 em，失败日志保留；修正为原计算值对照后重跑通过。独立源码审查通过。
+- 官方冷启同新手 revision 9 后瞬时会面回执已消失：目标 22px 长反馈与 1280 目标布局均 NOT_RUN，不重演行动。1364 普通/大字一般导航、Tab 焦点关闭及 Return/Escape 通过；独立试玩者核验新手及旧三档哈希不变。证据 `output/large-feedback-native-20261104/native-qa.json`，不以一般导航代替目标反馈验收。Windows 未验证。
+
+### 2026-11-05 卷宗弹层滚动隔离（本地候选）
+- 基线 `b389ae5`，独立 `fix/modal-scroll-isolation`。新手真实配方截图同时可见卷宗与底层页面滚动条；源码原先只令底层 inert，未锁定页面滚动。仅将 body 滚动锁绑定既有 modalOpen 生命周期，关闭/卸载恢复，卷宗 overflow:auto 保留并加 overscroll-behavior:contain。未改规则、命令、存档、文本或版式尺寸。
+- 两文件18项测试通过，覆盖开启/关闭/Escape/重复开启/卸载、不干扰其他body类、阻塞事件Escape保持锁、无命令/公开投影不变及CSS计算样式。独立源码审查通过。测试不冒充真实滚轮/边界滚动/位置恢复验收；原生与Windows均待核。
+- 完整main/renderer类型检查、生产构建及diff check均通过（既有chunk体积警告）。证据 `output/modal-scroll-20261105/`；尚未推送，不修改冻结PR。
+- 原生补验：代码头 `38b173f`，从真实rev25备份装入独立candidate-userdata，普通/大字成长与完整纪事到底继续滚轮时底层不动，Escape/Close后日常中栏与右栏滚动恢复，重复打开关闭正常；Tab首个可见焦点在关闭按钮，未穷举完整循环。本人已查看普通/大字底部实际像素，未见外层滚动条或内容裁切。试玩者核验主/候选current_json SHA均为`b374aa1669473aafb1c4c92a4662a769a7261e55a2f8b33a3be693533ac89f40`，仍rev25；未提交游戏命令。图在 `output/natural-continuation-20261104/candidate-*-bottom.png`，Windows未验证。
+
+### 2026-11-05 已有占卜家原瓶的下一步提示（本地候选）
+- 基线 `b389ae5`，独立 `fix/seer-prepared-guidance`。新手真实revision19第4周已调配首瓶，但服药尚待第5周，摘要误优先推荐第2批劳动。领域仅为PREPARED瓶公开CONSUME动作；只调整摘要优先级，未晋升时已有服药动作及其原禁用原因先于备用材料。已启用服药仍最优先，晋升后与无原瓶保持原逻辑。
+- 两文件24项测试通过，覆盖原瓶受限→可服→无原瓶的摘要、原备用行动仍可用、无命令与投影不变；独立只读源码审查无阻断。原命令、成本、确认流程、资格、随机与存档不变。
+- 首次renderer类型进程被系统Killed（exit137、无TS诊断），保留原日志，停止并行重型检查后完整串行main/renderer类型与生产构建全部通过；diff check通过，构建仅既有chunk警告。证据 `output/seer-guidance-20261105/`。真实19已自然继续晋9，不回滚重演；修后目标原生NOT_RUN。尚未推送，不修改冻结PR。
+
+### 2026-11-05 长魔药里程碑不再悬浮遮挡（本地候选）
+- 基线 `b389ae5`，独立 `fix/potion-feedback-flow`。真实新手rev21晋升图中，旧滚动位置使sticky长结果遮挡“已耗尽魔药记录”；标题本就在sticky可见区，既有focus未带回正文起点。仅含.seer-potion-moment插画的结果容器改position:static，其他短回执及原小丑/魔术师例外保持原样；不添加强制滚动、不改标题focus或任何结果/规则/存档。
+- 两文件7项测试通过，覆盖四类魔药里程碑既有文本/焦点/动态设置及新CSS静态流→普通回执sticky。独立源码审查无阻断。截图来源 `output/natural-continuation-20261104/rev21-promotion-success-sticky.png`。
+- 完整main/renderer类型检查、生产构建及diff check通过（既有chunk体积警告），证据 `output/potion-feedback-20261105/`。修后原生滚动/遮挡/焦点待核，未回滚或重演晋升，尚未推送。
+
+### 2026-11-05 新手卷宗联合候选
+- 从 `b389ae5` 合入三片至 `ad85349`，相对PR60头 `d704990` 共11文件，仅renderer、其测试及本状态文档。产品文件无冲突；状态文档追加冲突保留全部记录，独立源码审查确认候选内容无遗漏。
+- 联合8文件84项及补充完整秘偶大师panel文件31项，共9文件115项通过；完整main/renderer类型、生产构建与diff check通过，既有chunk警告保留。初始命令中的不存在marionettist-pathway过滤项未计入覆盖，随后使用真实marionettist-panel文件独立补齐31项。证据 `output/dossier-polish-integration-20261105/`。
+- 此联合树尚未原生重启或跑Windows实机/全部历史；滚动片的真实rev25只读原生通过，其他瞬时目标边界仍按各片记录。等待PR60合并后以实际最新main生成发布候选，不修改试玩存档。
